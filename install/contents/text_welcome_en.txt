@@ -1,0 +1,6 @@
+<h2>Welcome to your new SwiftyEdit page</h2>
+<p class="lead">This content management system is based on PHP and uses MySQL or SQLite3. It is as minimalistic as possible, but can easily be expanded thanks to the modular structure.</p>
+
+<p>You can edit this page in the <a href="/acp/">ACP</a>. You can also add other pages here.</p>
+
+<p>Find more information on addons, plugins and themes at <a href="https://swiftyedit.com">SwiftyEdit.com</a></p>

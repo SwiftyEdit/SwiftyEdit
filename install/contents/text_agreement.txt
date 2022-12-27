@@ -1,0 +1,10 @@
+<div class="alert alert-info"><p>Dieser Text kann unter Inhalt &gt; Snippets ge&auml;ndert werden</p></div>
+
+<h3>Nutzungsbedingungen</h3>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+
+<h4>Datenschutzbestimmungen</h4>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+
+<h5>Verwendung Ihrer persönlichen Daten</h5>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>

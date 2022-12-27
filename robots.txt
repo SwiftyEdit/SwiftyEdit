@@ -1,0 +1,8 @@
+# robots.txt
+User-agent: *
+Disallow: /acp/
+Disallow: /core/
+Disallow: /global/
+Disallow: /install/
+Disallow: /lib/
+Disallow: /styles/

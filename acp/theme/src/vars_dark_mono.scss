@@ -1,0 +1,119 @@
+/**!
+ * SwiftyEdit Backend Theme
+ * light mode
+ */
+
+/* bootstrap colors */
+$primary: #6F2F7E;
+$secondary: #8D70A0;
+$success: #8EA53C;
+$danger: #94292C;
+$warning: #E26D27;
+$info: #A1A1BB;
+
+$brand_primary: #6F2F7E;
+$brand_secondary: #4E205C;
+$dark_brand: darken(desaturate($primary,35%),20%);
+
+$section_color_contents: $secondary;
+$section_color_blog: #85d7f5;
+$section_color_shop: #c7f19b;
+$section_color_events: #f3be5b;
+$section_color_addons: #95efcc;
+$section_color_reactions: #bede97;
+$section_color_uploads: #c9b2f5;
+$section_color_user: #e3b981;
+
+$page_bg: mix($primary,#111,10%);
+$content_bg: $page_bg;
+
+$font_color: #ccc;
+$link-color: $secondary;
+$widget_background: mix($primary,#353535,20%); /* background for cards, fieldsets etc. */
+
+$page_header_bg: mix($brand_primary,#000,5%);
+
+$sidebar_background: #2A2030;
+$sidebar_link_background: #151515;
+$sidebar_color: #e5e5e5;
+$sidebar_active_color: lighten($secondary,5);
+$sidebar_help_background: #111;
+$sidebar_help_color: #ccc;
+
+$input_background: #111;
+$input_color: $brand_primary;
+$input_fill: 'white';
+
+/* default buttons */
+$btn_se_background: #222;
+$btn_se_background_active: #151515;
+$btn_se_background_disabled: #222;
+$btn_se_background_hover: #111;
+$btn_se_color: lighten($secondary,5);
+$btn_se_color_active: $secondary;
+
+$pages_list_items_background: darken($widget_background,5);
+
+/* dropdown */
+$dropdown-bg: $widget_background;
+$dropdown-border-color: darken($widget_background,5);
+$dropdown-divider-bg: $dropdown-border-color;
+$dropdown-link-color: #eee;
+$dropdown-link-hover-bg: lighten($widget_background,5);
+
+/* pages - status colors */
+$color_public: #5cb85c;
+$color_ghost: #bcdbbc;
+$color_private: #d9534f;
+$color_draft: #989898;
+$color_redirect: #078dfe;
+
+/* user - status colors */
+$color_verified: #5cb85c;
+$color_queue: $color_ghost;
+$color_banned: #f0ad4e;
+$color_deleted: #d9534f;
+
+$border-color: darken($widget_background,10);
+
+$headings-font-weight: 300;
+$headings-color: lighten($secondary,5);
+
+/* tables */
+
+$table_striped_bg_odd: lighten($widget_background,5);
+$table_striped_color_odd: $font_color;
+$table-bg-scale: 45%;
+
+
+
+/* offcanvas */
+
+$offcanvas-bg-color: $widget_background;
+$offcanvas-horizontal-width: 30vw;
+
+/* footer */
+
+$footer-bg: $widget_background;
+
+/* accordion */
+
+$accordion-color: $font_color;
+$accordion-bg: $widget_background;
+$accordion-border-color: darken($widget_background,20);
+
+$accordion-button-active-bg: $brand_primary;
+$accordion-button-active-color: $font_color;
+
+/* list group */
+
+$list-group-bg: $widget_background;
+$list-group-color: $font_color;
+$list-group-hover-bg: darken($widget_background,5);
+$list-group-active-color: $font_color;
+$list-group-active-bg: $brand_primary;
+$list-group-action-active-color: $font_color;
+$list-group-action-active-bg: darken($brand_primary,10);
+$list-group-action-hover-color: $brand_primary;
+
+@import "styles";

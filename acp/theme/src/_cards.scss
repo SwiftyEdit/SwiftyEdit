@@ -1,0 +1,75 @@
+.card {
+	background: $widget_background;
+	color: $font_color;
+	
+	.card-header {
+		background: rgba($widget_background,0.5);
+		border-bottom: 1px solid darken($widget_background,5);
+	}
+
+	.card-header-tabs {
+		border-bottom: 1px solid darken($widget_background,2);
+		li {
+			.nav-link {
+				color: $font_color;
+				background: lighten($widget_background,3);
+				border-color: darken($widget_background,2);
+				&:hover {
+					border-color: darken($widget_background,10);
+					border-bottom-color: darken($widget_background,10);
+					background: darken($widget_background,5);
+					color: $brand_primary;
+				}
+			}
+			.active,
+			.active:hover {
+				background: linear-gradient(0deg, darken($widget_background,2) 0%, rgba($widget_background,0) 100%);
+				border-color: darken($widget_background,3);
+				color: $secondary;
+			}
+		}
+	}
+	
+	.card-body {
+		background: linear-gradient(180deg, darken($widget_background,3) 0%, rgba($widget_background,0) 20%);
+	}
+
+}
+
+@media (min-width: 992px) {
+    .custom-columns {
+        column-count: 4;
+    }
+}
+@media (min-width: 1200px) {
+    .custom-columns {
+        column-count: 5;
+    }
+}
+
+@media (min-width: 1500px) {
+    .custom-columns {
+        column-count: 7;
+    }
+}
+
+
+.card:hover {
+	.card-img-overlay.d-none {
+		visibility: visible;
+	}
+}
+
+.card .fade-menu {
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+    padding: 0;
+}
+
+.card:hover .fade-menu {
+    height: auto;
+    visibility: visible;
+    opacity: 10;
+    transition: opacity .5s ease;
+}

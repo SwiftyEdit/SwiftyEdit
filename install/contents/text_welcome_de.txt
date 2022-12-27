@@ -1,0 +1,7 @@
+<h1>Willkommen <small>auf Deiner neuen SwiftyEdit Seite</small></h1>
+
+<p class="lead">Dieses Content Management System basiert auf PHP und nutzt als Datenbank MySQL oder SQLite3. Die Standardinstallation ist so minimalistisch wie m&ouml;glich, kann jedoch durch den modularen Aufbau einfach erweitert werden.</p>
+
+<p>Du kannst diese Seite im <a href="/acp/">ACP</a> bearbeiten. Hier kannst Du auch weitere Seiten hinzuf&uuml;gen.</p>
+
+<p>Weiere Informationen zu Modulen, Plugins und Themes findest du auf <a href="https://swiftyedit.com">SwiftyEdit.com</a></p>
