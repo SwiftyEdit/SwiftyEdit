@@ -7,7 +7,7 @@ SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or 
 
 :star: give us a star, it motivates us a lot.
 
-### Usermanual and Developer Documentation
+### Usermanual and Developer Documentation (coming soon)
 * https://swiftyedit.org/documentation/
 * https://swiftyedit.org/de/dokumentation/
 
