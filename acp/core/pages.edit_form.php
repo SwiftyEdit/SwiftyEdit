@@ -2,6 +2,25 @@
 //prohibit unauthorized access
 require 'core/access.php';
 
+/**
+ * SwiftyEdit backend
+ * show form to edit page data
+ *
+ * variables from pages.edit.php
+ * @var string $submit_button
+ * @var string $delete_button
+ * @var string $previev_button
+ * @var string $form_title
+ *
+ * global variables
+ * @var array $icon icons set in acp/core/icons.php
+ * @var object $db_content medoo database object
+ * @var string $se_base_url
+ * @var array $se_prefs
+ * @var integer $cnt_mods
+ * @var array $all_mods
+ */
+
 echo '<form id="editpage" action="acp.php?tn=pages&sub=edit" class="form-horizontal" method="POST" autocomplete="off">';
 
 $custom_fields = get_custom_fields();
@@ -133,7 +152,7 @@ for($i=0;$i<$cnt_all_pages;$i++) {
 	$sm_string .= "$end_ul";
 	$sm_string .= $start_li;
 	$sm_string .= '<label class="page-container" for="radio'.$i.'">';
-	$sm_string .= '<code>'.$sm_page_sort.'</code> - <strong>'.$sm_page_linkname.'</strong> '.$short_title.' '.$flag.'';
+	$sm_string .= '<code>'.$sm_page_sort.'</code> - <strong>'.$sm_page_linkname.'</strong> '.$short_title.' '.$flag;
 	$sm_string .= '<span class="page-toggler"><input type="radio" id="radio'.$i.'" name="page_position" value="'.$sm_page_sort.'" '.$checked.' '.$disabled.'></span>';
 	$sm_string .= '</label>';
 	$sm_string .= $end_li;
@@ -202,6 +221,11 @@ echo '</div>'; // end tab position
 /* tab_info */
 echo'<div class="tab-pane fade show active" id="info">';
 
+$sel_self = '';
+$sel_blank = '';
+$sel_parent = '';
+$sel_top = '';
+
 if($page_target == '' OR $page_target == '_self') {
 	$sel_self = 'selected';
 } else if($page_target == '_blank') {
@@ -248,12 +272,14 @@ echo '</div>';
 ?>
 <script>
 $(function() {
-	var se_base_url = "<? echo $se_base_url; ?>";	
+	var se_base_url = "<?php echo $se_base_url; ?>";
 	$("#set_permalink").keyup(function(){
 		var permalink = this.value;
 		var check_url = se_base_url.concat(permalink);
-		$("a#check_link").attr("href", check_url);
-		$("a#check_link").attr("title", check_url);
+        $("a#check_link").attr({
+            href: check_url,
+            title: check_url
+        });
 	});
 });
 </script>

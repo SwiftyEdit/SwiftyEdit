@@ -8,6 +8,7 @@ $cols = array(
   "media_lang"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_type"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_file"  => "VARCHAR(255) NOT NULL DEFAULT ''",
+  "media_file_hits" => 'INTEGER(12)',
   "media_thumb"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_title"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_description"  => "VARCHAR(255) NOT NULL DEFAULT ''",
@@ -29,5 +30,3 @@ $cols = array(
   "media_upload_time"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_upload_from"  => "VARCHAR(255) NOT NULL DEFAULT ''"
   );
-
-?>

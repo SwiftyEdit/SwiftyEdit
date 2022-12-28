@@ -1,10 +1,20 @@
 <?php
 error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 
+/**
+ * SfiftyEdit frontend
+ * display product from se_products
+ *
+ * @var integer $get_product_id is set in core/products.php
+ *
+ * global variables
+ * @var object $db_content meedoo database object
+ */
+
 $product_data = se_get_product_data($get_product_id);
 
 $hits = (int) $product_data['hits'];
-se_increase_posts_hits($get_product_id);
+se_increase_product_hits($get_product_id);
 
 // get the posting-page by 'type_of_use' and $languagePack
 // we need this if we link to product variants
