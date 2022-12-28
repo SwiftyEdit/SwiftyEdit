@@ -20,6 +20,7 @@ Thumbs.db
 sitemap.xml
 
 #/content/**/*
+/content/config.php
 /content/avatars/*
 /content/cache/active_mods.php
 /content/cache/active_urls.php
