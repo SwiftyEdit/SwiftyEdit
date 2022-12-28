@@ -257,6 +257,32 @@ function se_increase_downloads_hits($product_id) {
 
 }
 
+/**
+ * increase the hits counter
+ */
+
+function se_increase_product_hits($product_id) {
+
+    global $db_posts;
+
+    if(!is_numeric($product_id)) {
+        return false;
+    }
+
+    $product_data_hits = $db_posts->get("se_products","hits", [
+        "id" => $product_id
+    ]);
+
+    $product_data_hits = ((int) $product_data_hits)+1;
+
+    $update = $db_posts->update("se_products", [
+        "hits" => $product_data_hits
+    ],[
+        "id" => $product_id
+    ]);
+
+}
+
 
 /**
  * add a product to cart
@@ -732,6 +758,3 @@ function se_get_order_details($id) {
 	
 	return $order;
 }
-
-
-?>

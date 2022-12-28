@@ -433,7 +433,7 @@ function se_increase_posts_hits($post_id) {
 		"post_id" => $post_id
 	]);
 	
-	$post_data_hits = $post_data_hits+1;
+	$post_data_hits = ((int) $post_data_hits)+1;
 
 	$update = $db_posts->update("se_posts", [
 		"post_hits" => $post_data_hits
