@@ -1,7 +1,7 @@
 <?php
 session_start();
 //error_reporting(0);
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING);
+error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 require '../lib/Medoo.php';
 use Medoo\Medoo;
 
