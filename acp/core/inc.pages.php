@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * SwiftyEdit backend
+ * switch file for section pages
+ *
+ * variables
+ * @var string $sub request
+ *
+ * global variables
+ * @var object $db_content medoo database object
+ * @var array $icon icons set in acp/core/icons.php
+ * @var array $lang language
+ * @var string $hidden_csrf_token
+ * @var array $se_labels
+ */
+
 //prohibit unauthorized access
 require 'core/access.php';
 
@@ -8,7 +23,7 @@ switch ($sub) {
 	case "pages-list":
 		$subinc = "pages.list";
 		break;
-		
+
 	case "edit-pages":
 		$subinc = "pages.edit";
 		break;
@@ -22,19 +37,19 @@ switch ($sub) {
 	case "pages-index":
 		$subinc = "pages.index";
 		break;
-	
+
 	case "snippets":
 		$subinc = "pages.snippets";
 		break;
-		
+
 	case "shortcodes":
 		$subinc = "pages.shortcodes";
 		break;
-			
+
 	case "rss":
 		$subinc = "pages.edit_rss";
 		break;
-		
+
 	default:
 		$subinc = "pages.list";
 		break;
@@ -325,11 +340,11 @@ if($sub == "pages-list" OR $sub == "snippets") {
 	$nav_btn_group .= '<div class="card-header p-1 px-2">Status</div>';
 	
 	$nav_btn_group .= '<div class="list-group list-group-flush">';
-	$nav_btn_group .= '<a href="acp.php?tn=pages&sub=pages-list&switch=statusPuplic" class="list-group-item list-group-item-ghost p-1 px-2 text-public '.$btn_status_public.'">'.$dot_public.' '.$lang['f_page_status_puplic'].' ('.$count_pages['public'].')</a>';
-	$nav_btn_group .= '<a href="acp.php?tn=pages&sub=pages-list&switch=statusGhost" class="list-group-item list-group-item-ghost p-1 px-2  text-ghost '.$btn_status_ghost.'">'.$dot_ghost.' '.$lang['f_page_status_ghost'].' ('.$count_pages['ghost'].')</a>';
-	$nav_btn_group .= '<a href="acp.php?tn=pages&sub=pages-list&switch=statusPrivate" class="list-group-item list-group-item-ghost p-1 px-2  text-private '.$btn_status_private.'">'.$dot_private.' '.$lang['f_page_status_private'].' ('.$count_pages['private'].')</a>';
-	$nav_btn_group .= '<a href="acp.php?tn=pages&sub=pages-list&switch=statusDraft" class="list-group-item list-group-item-ghost p-1 px-2  text-draft '.$btn_status_draft.'">'.$dot_draft.' '.$lang['f_page_status_draft'].' ('.$count_pages['draft'].')</a>';
-	$nav_btn_group .= '<a href="acp.php?tn=pages&sub=pages-list&switch=statusRedirect" class="list-group-item list-group-item-ghost p-1 px-2  text-redirect '.$btn_status_redirect.'">'.$dot_redirect.' '.$lang['btn_redirect'].' ('.$count_pages['redirect'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPuplic" class="list-group-item list-group-item-ghost p-1 px-2 text-public '.$btn_status_public.'">'.$dot_public.' '.$lang['f_page_status_puplic'].' ('.$count_pages['public'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusGhost" class="list-group-item list-group-item-ghost p-1 px-2  text-ghost '.$btn_status_ghost.'">'.$dot_ghost.' '.$lang['f_page_status_ghost'].' ('.$count_pages['ghost'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPrivate" class="list-group-item list-group-item-ghost p-1 px-2  text-private '.$btn_status_private.'">'.$dot_private.' '.$lang['f_page_status_private'].' ('.$count_pages['private'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusDraft" class="list-group-item list-group-item-ghost p-1 px-2  text-draft '.$btn_status_draft.'">'.$dot_draft.' '.$lang['f_page_status_draft'].' ('.$count_pages['draft'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusRedirect" class="list-group-item list-group-item-ghost p-1 px-2  text-redirect '.$btn_status_redirect.'">'.$dot_redirect.' '.$lang['btn_redirect'].' ('.$count_pages['redirect'].')</a>';
 	$nav_btn_group .= '</div>';
 	$nav_btn_group .= '</div>'; // card
 	
