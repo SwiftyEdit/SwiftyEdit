@@ -19,19 +19,34 @@ Thumbs.db
 
 sitemap.xml
 
-/content/**/*
+#/content/**/*
+/content/avatars/*
+/content/cache/active_mods.php
+/content/cache/active_urls.php
+/content/cache/cache_keywords.html
+/content/cache/cache_lastedit.php
 /content/cache/templates_c/*
+/content/files/*
+/content/galleries/*
+/content/images/*
+/content/images_tmb/*
+/content/modules/*
+/content/plugins/*
+!/content/plugins/index.html
+/content/SQLite/*
 
-/modules/**/*
-/modules/*
 !index.html
 
 # styles, except default #
-/styles/**/*
+#/styles/**/*
 /styles/default/.DS_Store
+/styles/default/node_modules
+/styles/default/node_modules/*
+/styles/default/node_modules/**/*
+/styles/default/config.codekit3
 
-!/styles/default/*
-!/styles/default/**/*
+#!/styles/default/*
+#!/styles/default/**/*
 !/styles/default/php/*
 !/styles/default/templates/*
 !/styles/default/templates/posts/*
