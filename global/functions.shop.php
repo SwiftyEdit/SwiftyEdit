@@ -247,7 +247,7 @@ function se_increase_downloads_hits($product_id) {
         "id" => $product_id
     ]);
 
-    $product_file_hits = $product_file_hits+1;
+    $product_file_hits = ((int) $product_file_hits)+1;
 
     $update = $db_posts->update("se_products", [
         "file_attachment_hits" => $product_file_hits
