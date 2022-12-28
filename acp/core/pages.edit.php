@@ -685,7 +685,7 @@ if(is_numeric($editpage)) {
 	
 	if($modus == 'duplicate') {
 		$form_title = '<h3>'.$lang['h_modus_duplicate'].' - '.$page_title.'</h3>';
-		$submit_button = "<input type='submit' class='btn btn-success w-100 btn-outline-success' name='save_the_page' value='$lang[save_duplicate]'>";
+		$submit_button = "<input type='submit' class='btn w-100 btn-success' name='save_the_page' value='$lang[save_duplicate]'>";
 		$delete_button = '';
 		$previev_button = '';
 	}
