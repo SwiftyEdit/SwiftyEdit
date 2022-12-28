@@ -25,8 +25,6 @@ if(isset($_POST['update_category'])) {
 		], [
 		"cat_id" => $editcat
 		]);
-		
-	
 }
 
 /* new category */
@@ -68,8 +66,8 @@ if(isset($_POST['editcat']) && ($_POST['editcat'] != '')) {
 	
 	$editcat = (int) $_POST['editcat'];
 	
-	$submit_button = '<input type="submit" class="btn btn-success" name="update_category" value="'.$lang['update'].'">';
-	$delete_button = "<input type='submit' class='btn btn-primary text-danger' name='delete_category' value='$lang[delete]' onclick=\"return confirm('$lang[confirm_delete_data]')\">";
+	$submit_button = '<input type="submit" class="btn btn-success order-2 mx-1" name="update_category" value="'.$lang['update'].'">';
+	$delete_button = "<input type='submit' class='btn btn-danger order-1' name='delete_category' value='$lang[delete]' onclick=\"return confirm('$lang[confirm_delete_data]')\">";
 	$hidden_field = "<input type='hidden' name='editcat' value='$editcat'>";
 	
 	$get_category = $db_content->get("se_categories","*",[
@@ -167,10 +165,12 @@ echo '</div>';
 
 
 
-echo"<div class='formfooter'>";
-echo"$hidden_field $delete_button $submit_button";
+echo '<div class="formfooter d-flex">';
+echo $submit_button;
+echo $delete_button;
+echo $hidden_field;
 echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-echo"</div>";
+echo '</div>';
 
 echo"</form>";
 
