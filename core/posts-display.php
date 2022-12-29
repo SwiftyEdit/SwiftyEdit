@@ -128,37 +128,10 @@ if($post_data['post_votings'] == 2 || $post_data['post_votings'] == 3) {
 }
 
 
-$this_entry = str_replace('{post_img_src}', $first_post_image, $this_entry);
-$this_entry = str_replace('{post_img_caption}', $post_image_data['media_text'], $this_entry);
-
-$this_entry = str_replace("{post_source}", $post_data['post_source'], $this_entry);
-
-
-$this_entry = str_replace("{post_releasedate_ts}", $post_data['post_releasedate'], $this_entry); /* timestring */
-$this_entry = str_replace("{post_releasedate}", $post_releasedate, $this_entry);
-$this_entry = str_replace("{post_releasedate_year}", $post_releasedate_year, $this_entry);
-$this_entry = str_replace("{post_releasedate_month}", $post_releasedate_month, $this_entry);
-$this_entry = str_replace("{post_releasedate_day}", $post_releasedate_day, $this_entry);
-$this_entry = str_replace("{post_releasedate_time}", $post_releasedate_time, $this_entry);
-
-
-
-
-$this_entry = str_replace("{post_cats}", $post_cats_btn, $this_entry);
-$this_entry = str_replace("{post_cats_string}", $post_cats_string, $this_entry);
-$this_entry = str_replace("{back_to_overview}", $lang['back_to_overview'], $this_entry);
-$this_entry = str_replace("{back_link}", "/$swifty_slug", $this_entry);
-
 /* file */
-$this_entry = str_replace("{lang_download}", $lang['btn_download'], $this_entry);
-$this_entry = str_replace("{post_file_version}", $post_data['post_file_version'], $this_entry);
-$this_entry = str_replace("{post_file_license}", $post_data['post_file_license'], $this_entry);
-$filepath = str_replace('../','/',$post_data['post_file_attachment']);
-$this_entry = str_replace("{post_file_attachment}", $filepath, $this_entry);
-$this_entry = str_replace("{post_file_attachment_external}", $post_data['post_file_attachment_external'], $this_entry);
+$post_file_attachment = str_replace('../','/',$post_data['post_file_attachment']);
 
 $form_action = '/'.$swifty_slug.$mod_slug;
-$this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
 
 $redirect = '?goto='.$post_data['post_id'];
@@ -178,11 +151,11 @@ if($post_data['post_meta_description'] == '') {
 
 $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_post_image);
 
+
 $smarty->assign('page_title', html_entity_decode($post_data['post_meta_title']));
 $smarty->assign('page_meta_description', html_entity_decode($post_data['post_meta_description']));
 $smarty->assign('page_meta_keywords', html_entity_decode($post_data['post_tags']));
 $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
-
 
 $smarty->assign('post_id', $get_post_id);
 $smarty->assign('post_type', $post_data['post_type']);
@@ -205,6 +178,11 @@ $smarty->assign('gallery_thumbs', $gallery_thumbs);
 
 $smarty->assign('form_action', $form_action);
 $smarty->assign('btn_download', $lang['btn_download']);
+
+$smarty->assign('post_file_version', $post_data['post_file_version']);
+$smarty->assign('post_file_license', $post_data['post_file_license']);
+$smarty->assign('post_file_attachment', $post_file_attachment);
+$smarty->assign('post_file_attachment_external', $post_data['post_file_attachment_external']);
 
 $posts_page = $smarty->fetch("posts-display.tpl", $cache_id);
 $smarty->assign('page_content', $posts_page, true);

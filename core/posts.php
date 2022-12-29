@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * SwiftyEdit frontend
+ *
+ * variables
+ * @var array $page_contents
+ * @var string $mod_slug
+ * @var string $swifty_slug
+ *
+ * global variables
+ * @var array $se_prefs
+ * @var object $db_content medoo database object
+ * @var object $db_posts medoo database object
+ */
+
 $time_string_now = time();
 $display_mode = 'list_posts';
 
@@ -25,7 +39,8 @@ $posts_filter['categories'] = $page_contents['page_posts_categories'];
 
 
 if(substr("$mod_slug", -5) == '.html') {
-	$get_post_id = (int) basename(end(explode("-", $mod_slug)));
+    $mod_slug_array = explode("-", $mod_slug);
+	$get_post_id = (int) basename(end($mod_slug_array));
 	$display_mode = 'show_post';	
 }
 
@@ -111,7 +126,7 @@ if(isset($_GET['goto'])) {
 	]);
 	
 	$target_url = $target_post['post_link'];
-	$upd_counter = $target_post['post_link_hits']+1;
+	$upd_counter = ((int) $target_post['post_link_hits'])+1;
 	
 	$update_counter = $db_posts->update("se_posts", [
 		"post_link_hits" => $upd_counter
@@ -135,7 +150,7 @@ if(isset($_POST['post_attachment'])) {
 			"post_file_attachment_external" => $_POST['post_attachment_external']
 		]);
 		
-		$counter = $target_file['post_file_attachment_hits']+1;
+		$counter = ((int) $target_file['post_file_attachment_hits'])+1;
 
 		$update_file = $db_posts->update("se_posts", [
 			"post_file_attachment_hits" => $counter
@@ -158,7 +173,7 @@ if(isset($_POST['post_attachment'])) {
 			"post_file_attachment" => $get_target_file
 		]);
 		
-		$counter = $target_file['post_file_attachment_hits']+1;
+		$counter = ((int) $target_file['post_file_attachment_hits'])+1;
 		
 		$update_file = $db_posts->update("se_posts", [
 			"post_file_attachment_hits" => $counter
@@ -179,7 +194,7 @@ if(isset($_POST['post_attachment'])) {
 			header('Content-Length: ' . filesize($download_file));
 			readfile($download_file);
 			exit;
-		}	
+		}
 	}
 }
 
