@@ -61,9 +61,14 @@ if(substr("$mod_slug", -5) == '.html') {
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
 
+$this_page_categories = explode(',',$page_contents['page_posts_categories']);
 
 foreach($all_categories as $cats) {
 
+    if(!in_array($cats['cat_id'],$this_page_categories)) {
+        // skip this category
+        continue;
+    }
     //$this_nav_cat_item = $tpl_nav_cats_item;
     $show_category_title = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
