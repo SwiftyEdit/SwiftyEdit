@@ -160,7 +160,7 @@ $select_dir .= '</form>';
 $tpl_file = file_get_contents('templates/list-files-grid.tpl');
 $tpl_file_type = 'grid';
 $tpl_container_class = 'list-container';
-$cretae_thumbs = false;
+$create_thumbs = false;
 if(strpos($disk,$path_img) !== FALSE) {
 	$tpl_file = file_get_contents('templates/list-files-thumbs.tpl');
 	$tpl_file_type = 'thumbs';
@@ -328,7 +328,7 @@ if(isset($_POST['rebuild']) && ($_POST['rebuild'] == 'database')) {
      * skip if we are in the /files/ directory
      */
 	$cnt_created_tmbs = 0;
-    if ($create_thumbs == true) {
+    if ($create_thumbs !== false) {
         foreach ($storedFiles as $k) {
 
             /* thumbnail directories */
