@@ -32,6 +32,8 @@
     </div>
 </div>
 
+{if $show_products_list == true}
+
 {foreach $products as $product => $value}
 
 
@@ -104,13 +106,16 @@
         </div>
     </div>
 
-
-
-
  {/foreach}
 
-<div id="article_footer">
+{else}
+    <div class="alert alert-info">
+        {$lang_msg_no_products_found}
+    </div>
+{/if}
 
+<div class="product-list-footer">
+    {if $show_pagination == true}
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <li>
@@ -128,5 +133,6 @@
             </li>
         </ul>
     </nav>
+    {/if}
 
 </div>

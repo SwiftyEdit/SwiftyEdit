@@ -142,6 +142,7 @@ function se_get_files_data($file,$parameters=NULL) {
 	$tpl = str_replace('{$file_alt}', $fileData['media_alt'], $tpl);
 	$tpl = str_replace('{$file_caption}', $fileData['media_text'], $tpl);
 	$tpl = str_replace('{$file_license}', $fileData['media_license'], $tpl);
+    $tpl = str_replace('{$file_version}', $fileData['media_version'], $tpl);
 	$tpl = str_replace('{$file_credits}', $fileData['media_credits'], $tpl);
 	$tpl = str_replace('{$file_priority}', $fileData['media_priority'], $tpl);
 	$tpl = str_replace('{$file_link_class}', $aclass, $tpl);

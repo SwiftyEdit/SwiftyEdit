@@ -1,6 +1,25 @@
 <?php
 
-//error_reporting(E_ALL ^E_NOTICE);
+/**
+ * SwiftyEdit backend
+ * list all files from /content/images/.. or /content/files/..
+ *
+ * variables
+ * @var string $tn
+ * @var string $db_type
+ *
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $db_content
+ * @var string $languagePack
+ * @var array $se_prefs
+ * @var array $se_labels
+ * @var string $hidden_csrf_token
+ * @var string $img_tmb_path
+ */
+
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 //prohibit unauthorized access
 require 'core/access.php';
 
@@ -57,8 +76,6 @@ if(isset($_GET['sort_direction'])) {
 }
 
 
-
-
 /* labels */
 if(!isset($_SESSION['checked_label_str'])) {
 	$_SESSION['checked_label_str'] = '';
@@ -99,13 +116,13 @@ if($_SESSION['sort_by'] == 'media_lastedit') {
 
 
 $select_dir = '';
-$select_dir  .= '<form action="acp.php?tn=filebrowser&sub=browse" method="POST" class="d-inline dirtyignore">';
+$select_dir  .= '<form action="?tn=filebrowser&sub=browse" method="POST" class="d-inline dirtyignore">';
 
 $select_dir  .= '<div class="row">';
 if($disk != $path_img AND $disk != $path_files) {
 	$level_up = dirname($disk);
 	$select_dir  .= '<div class="col-1">';
-	$select_dir .= '<a href="acp.php?tn=filebrowser&sub=browse&selected_folder='.$level_up.'" class="btn btn-default">'.$icon['level_up_alt'].'</a> ';
+	$select_dir .= '<a href="?tn=filebrowser&sub=browse&selected_folder='.$level_up.'" class="btn btn-default">'.$icon['level_up_alt'].'</a> ';
 	$select_dir  .= '</div>';
 }
 $select_dir  .= '<div class="col">';
@@ -143,10 +160,12 @@ $select_dir .= '</form>';
 $tpl_file = file_get_contents('templates/list-files-grid.tpl');
 $tpl_file_type = 'grid';
 $tpl_container_class = 'list-container';
+$create_thumbs = false;
 if(strpos($disk,$path_img) !== FALSE) {
 	$tpl_file = file_get_contents('templates/list-files-thumbs.tpl');
 	$tpl_file_type = 'thumbs';
 	$tpl_container_class = 'row';
+    $create_thumbs = true;
 }
 
 /* create new directory */
@@ -304,36 +323,39 @@ if(isset($_POST['rebuild']) && ($_POST['rebuild'] == 'database')) {
 	}
 	
 	
-	/* check if thumbnail exists and create missing thumbnail file */
+	/**
+     * check if thumbnail exists and create missing thumbnail file
+     * skip if we are in the /files/ directory
+     */
 	$cnt_created_tmbs = 0;
-	foreach($storedFiles as $k) {
+    if ($create_thumbs !== false) {
+        foreach ($storedFiles as $k) {
 
-		/* thumbnail directories */
-		$tmb_dir = '../'.$img_tmb_path;
-		$tmb_dir_year = $tmb_dir.'/'.date('Y',$k['media_upload_time']);
-		$tmb_destination = $tmb_dir_year.'/'.date('m',$k['media_upload_time']);
-				
-		if(!is_dir($tmb_destination)) {
-			mkdir($tmb_destination, 0777, true);
-		}
-		
-		$tmb_name = md5($k['media_file']).'.jpg';
-		
-		$ckeck_tmb = $tmb_destination.'/'.$tmb_name;
-		
-		if(!file_exists($ckeck_tmb)) {
-			$cnt_created_tmbs++;
-			se_create_thumbnail($k['media_file'], $tmb_name, $tmb_destination, $se_prefs['prefs_maxtmbwidth'], $se_prefs['prefs_maxtmbheight'], 80);
-			$db_content->update("se_media", [
-				"media_thumb" => $ckeck_tmb
-				],[
-					"media_file" => $k['media_file']
-			]);	
-			
-		}
-		
-		
-	}
+            /* thumbnail directories */
+            $tmb_dir = '../' . $img_tmb_path;
+            $tmb_dir_year = $tmb_dir . '/' . date('Y', $k['media_upload_time']);
+            $tmb_destination = $tmb_dir_year . '/' . date('m', $k['media_upload_time']);
+
+            if (!is_dir($tmb_destination)) {
+                mkdir($tmb_destination, 0777, true);
+            }
+
+            $tmb_name = md5($k['media_file']) . '.jpg';
+
+            $ckeck_tmb = $tmb_destination . '/' . $tmb_name;
+
+            if (!file_exists($ckeck_tmb)) {
+                $cnt_created_tmbs++;
+                se_create_thumbnail($k['media_file'], $tmb_name, $tmb_destination, $se_prefs['prefs_maxtmbwidth'], $se_prefs['prefs_maxtmbheight'], 80);
+                $db_content->update("se_media", [
+                    "media_thumb" => $ckeck_tmb
+                ], [
+                    "media_file" => $k['media_file']
+                ]);
+
+            }
+        }
+    }
 
 
 	/* create missing thumbnail files if 'media_thumb' is empty */
@@ -452,7 +474,7 @@ if($_SESSION['media_filter'] != "") {
 
 
 
-$kw_form  = '<form action="acp.php?tn=filebrowser&sub=browse&d=" method="POST" class="form-inline dirtyignore">';
+$kw_form  = '<form action="?tn=filebrowser&sub=browse&d=" method="POST" class="form-inline dirtyignore">';
 $kw_form .= '<div class="input-group">';
 $kw_form .= '<span class="input-group-text">'.$icon['search'].'</span>';
 $kw_form .= '<input class="form-control" type="text" name="media_filter" value="" placeholder="'.$lang['button_search'].'">';
@@ -469,7 +491,7 @@ echo $select_dir;
 echo '</div>';
 
 echo '<div class="col-md-4">';
-echo '<form action="acp.php?tn=filebrowser&sub=browse" method="POST" class="form dirtyignore">';
+echo '<form action="?tn=filebrowser&sub=browse" method="POST" class="form dirtyignore">';
 echo '<div class="input-group">';
 echo '<input type="text" name="new_folder" class="form-control">';
 echo '<div class="input-group-append">';
@@ -690,7 +712,7 @@ for($i=0;$i<$cnt_get_files;$i++) {
 	
 	if(is_dir($filename)) {
 		$set_style = '';
-		$preview_img = '<a href="acp.php?tn=filebrowser&sub=browse&selected_folder='.$filename.'"><img src="images/folder.png" class="card-img"></a>';
+		$preview_img = '<a href="acp.php?tn=filebrowser&sub=browse&selected_folder='.$filename.'"><img src="images/folder.png" alt="folder icon" class="card-img"></a>';
 		$tpl_list = str_replace('{preview_link}', 'acp.php?tn=filebrowser&sub=browse&selected_folder={filename}', $tpl_list);
 		$edit_btn = '';
 		$delete_btn = '';
@@ -797,7 +819,7 @@ echo $label_filter_box;
 
 
 
-echo '<form action="acp.php?tn=filebrowser&sub=browse" method="POST" class="mt-4">';
+echo '<form action="?tn=filebrowser&sub=browse" method="POST" class="mt-4">';
 echo '<div class="btn-group d-flex" role="group">';
 echo '<button class="btn btn-sm btn-default w-100" type="submit" name="rebuild" value="database">Database '.$icon['wrench'].'</button>';
 echo '<button class="btn btn-sm btn-default w-100" type="submit" name="clear_tmb">Thumbnails '.$icon['trash_alt'].'</button>';
@@ -830,6 +852,3 @@ function show_sort_arrow() {
 	}
 	return $ic;
 }
-
-
-?>

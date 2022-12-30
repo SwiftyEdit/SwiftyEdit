@@ -105,8 +105,7 @@ if($upload_type == 'images') {
 		$prefix = basename($org_name,".$suffix");
 		$img_name = clean_filename($prefix,$suffix);
 		$target = "$destination/$img_name";
-		
-		
+
 		//$se_upload_img_types from config.php
 		if(!in_array($suffix, $se_upload_img_types)) {
 			exit;
@@ -118,12 +117,12 @@ if($upload_type == 'images') {
 				resize_image($tmp_name,$target,$max_w,$max_h,100);
 				$tmb_name = md5(substr($target, 3,strlen($target))).'.jpg';
 				$store_tmb_name = $tmb_destination.'/'.$tmb_name;
-				se_create_tmb($target,$tmb_name,$max_w_tmb,$max_h_tmb,80);
+                se_create_tmb($target,$tmb_name,$max_w_tmb,$max_h_tmb,80);
 			}
 						
 			$filetype = mime_content_type(realpath($target));
 			$filesize = filesize(realpath($target));
-			if($_POST['file_mode'] != 'overwrite') {
+			if($_POST['file_mode'] !== 'overwrite') {
 				se_write_media_data_name($target,$store_tmb_name,$filesize,$time,$filetype);
 			}
 			

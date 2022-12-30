@@ -1144,12 +1144,12 @@ function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_qualit
 	if(!is_dir($tmb_destination)) {
 		mkdir($tmb_destination);
 	}
-	
+
 	$arr_image_details	= GetImageSize("$img_src");
 	$original_width		= $arr_image_details[0];
 	$original_height	= $arr_image_details[1];
 	$a = $tmb_width / $tmb_height;
-  $b = $original_width / $original_height;
+    $b = $original_width / $original_height;
 	
 	
 	if ($a<$b) {
@@ -1180,19 +1180,36 @@ function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_qualit
 	
 }
 
+
 /**
- * $img_src = path to original image
- * $tmb_name = name of the new thumbnail
- * $tmb_dir = directory where the thumb should be saved
- * $tmb_width $tmb_height $tmb_quality = size and quality
+ * @param string $img_src path to original image
+ * @param string $tmb_name name of the new thumbnail
+ * @param string $tmb_dir directory where the thumb should be saved
+ * @param integer $tmb_width size
+ * @param integer $tmb_height size
+ * @param integer $tmb_quality quality
+ * @return void
  */
 
 function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100, $tmb_height=100, $tmb_quality=50) {
 	
 	global $img_tmb_path;
+
+    $arr_image_details	= GetImageSize("$img_src");
+    $original_width		= $arr_image_details[0];
+    $original_height	= $arr_image_details[1];
+
+    if($original_width < 1) {
+        return;
+    }
+
+    $a = $tmb_width / $tmb_height;
+    $b = $original_width / $original_height;
+
+
 		
 	/* thumbnail directories */
-	if($tmb_dir == NULL) {
+	if($tmb_dir == NULL OR $tmb_dir == '') {
 		$dir = '../'.$img_tmb_path;
 		$dir_year = $tmb_dir.'/'.date('Y',time());
 		$tmb_destination = $tmb_dir_year.'/'.date('m',time());
@@ -1204,11 +1221,7 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 		mkdir($tmb_destination,0777,true);
 	}
 	
-	$arr_image_details	= GetImageSize("$img_src");
-	$original_width		= $arr_image_details[0];
-	$original_height	= $arr_image_details[1];
-	$a = $tmb_width / $tmb_height;
-  $b = $original_width / $original_height;
+
 	
 	
 	if ($a<$b) {
