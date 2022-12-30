@@ -38,6 +38,12 @@ $get_products = se_get_products($sql_start, $products_limit, $products_filter);
 $cnt_filter_products = $get_products[0]['cnt_products_match'];
 $cnt_get_products = count($get_products);
 
+$show_products_list = true;
+if($get_products[0]['cnt_products_match'] < 1) {
+    // we have no products to show
+    $show_products_list = false;
+}
+
 $nextPage = $products_start + $products_limit;
 $prevPage = $products_start - $products_limit;
 $cnt_pages = ceil($cnt_filter_products / $products_limit);
@@ -296,6 +302,8 @@ $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
 $smarty->assign('product_cnt', $cnt_filter_products);
 $smarty->assign('products', $get_products);
+
+$smarty->assign('show_products_list', $show_products_list);
 
 $smarty->assign('show_pagination', $show_pagination);
 $smarty->assign('pagination', $pagination);
