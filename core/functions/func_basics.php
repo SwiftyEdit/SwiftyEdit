@@ -120,6 +120,7 @@ function se_get_files_data($file,$parameters=NULL) {
 	global $db_content;
 	global $se_template;
 	global $languagePack;
+    global $se_slug;
 	
 	if($parameters !== NULL) {
 		$parameter = parse_str(html_entity_decode($parameters),$output);
@@ -137,7 +138,9 @@ function se_get_files_data($file,$parameters=NULL) {
 	
 	$file_src = str_replace('../content/files/', '/content/files/', $fileData['media_file']);
 	$tpl = file_get_contents('./styles/'.$se_template.'/templates/download.tpl');
-	$tpl = str_replace('{$file_src}', $file_src, $tpl);
+    $tpl = str_replace('{$form_Action}', $se_slug, $tpl);
+    $tpl = str_replace('{$csrf_token}', $_SESSION['visitor_csrf_token'], $tpl);
+	$tpl = str_replace('{$file_src}', $fileData['media_file'], $tpl);
 	$tpl = str_replace('{$file_title}', $fileData['media_title'], $tpl);
 	$tpl = str_replace('{$file_alt}', $fileData['media_alt'], $tpl);
 	$tpl = str_replace('{$file_caption}', $fileData['media_text'], $tpl);

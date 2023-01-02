@@ -1,6 +1,9 @@
-<a href="{$file_src}" class="{$file_link_class} download-link" title="{$file_title}">
-	<div class="download-container">
-		<h4><span class="glyphicon glyphicon-download"></span> {$file_title}</h4>
-		<p class="download-caption">{$file_caption}</p>
-	</div>
-</a>
+<form action="{$form_Action}" method="POST">
+	<h4>{$file_title}</h4>
+	<p class="download-caption">{$file_caption}</p>
+	<input type="hidden" name="file" value="{$file_src}">
+	<input type="hidden" name="csrf_token" value="{$csrf_token}">
+	<button class="btn btn-success" type="submit" name="download" value="{$file_src}">
+		<i class="bi-arrow-down-circle"></i> Download
+	</button>
+</form>
