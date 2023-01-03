@@ -39,8 +39,26 @@ $lastedit = date('d.m.Y H:i',filemtime("$realpath"));
 if(isset($_POST['save'])) {
 	
 	$filesize = filesize($_POST['realpath']);
+
+    $filedata = array(
+        'filename' => $_POST['realpath'],
+        'title' => $_POST['title'],
+        'notes' => $_POST['notes'],
+        'keywords' => $_POST['keywords'],
+        'text' => $_POST['text'],
+        'url' => $_POST['url'],
+        'alt' => $_POST['alt'],
+        'lang' => $_POST['set_lang'],
+        'credit' => $_POST['credit'],
+        'priority' => $_POST['priority'],
+        'license' => $_POST['license'],
+        'lastedit' => time(),
+        'filesize' => $filesize,
+        'version' => $_POST['version'],
+        'labels' => $_POST['media_labels']
+    );
 	
-	$savedMedia = se_write_media_data($_POST['realpath'],$_POST['title'],$_POST['notes'],$_POST['keywords'],$_POST['text'],$_POST['url'],$_POST['alt'],$_POST['set_lang'],$_POST['credit'],$_POST['priority'],$_POST['license'],time(),$filesize,$_POST['version'],$_POST['media_labels']);
+	$savedMedia = se_write_media_data($filedata);
 	if($savedMedia == 'success') {
 		$message = '<div class="alert alert-success alert-auto-close">'.$lang['db_changed'].'</div>';
 	} else {

@@ -820,41 +820,63 @@ function se_delete_media_data($filename) {
  * write data into se_media
  * check by file name if data already exists
  *
+ * filename,title,notes, keywords, text, url, alt, lang,
+ * credit, priority, license, lastedit
+ * filesize, version, labels
+ *
+ * @param array $data
+ * @return mixed|string
  */
 
-function se_write_media_data($filename,$title=NULL,$notes=NULL,$keywords=NULL,$text=NULL,$url=NULL,$alt=NULL,$lang=NULL,$credit=NULL,$priority=NULL,$license=NULL,$lastedit=NULL,$filesize=NULL,$version=NULL,$labels=NULL) {
+function se_write_media_data($data) {
+
 
 	global $db_content;
 	global $languagePack;
-	
-	if($lang === NULL) {
+
+    if(!is_array($data)) {
+        return 'error';
+    }
+
+
+	if(!isset($data['lang']) OR ($data['lang'] == '')) {
 		$lang = $languagePack;
-	}
+	} else {
+        $lang = $data['lang'];
+    }
+
+    if(!isset($data['lastedit']) OR ($data['lastedit'] == '')) {
+        $lastedit = time();
+    } else {
+        $lastedit = $data['lastedit'];
+    }
 	
-	$title = se_return_clean_value($title);
-	$notes = se_return_clean_value($notes);
-	$keywords = se_return_clean_value($keywords);
-	$text = se_return_clean_value($text);
-	$alt = se_return_clean_value($alt);
-	$priority = (int) $priority;
-	$credit = se_return_clean_value($credit);
-	$license = se_return_clean_value($license);
-	$version = se_return_clean_value($version);
+	$title = se_return_clean_value($data['title']);
+	$notes = se_return_clean_value($data['notes']);
+	$keywords = se_return_clean_value($data['keywords']);
+    $url = se_return_clean_value($data['url']);
+	$text = se_return_clean_value($data['text']);
+	$alt = se_return_clean_value($data['alt']);
+	$priority = (int) $data['priority'];
+	$credit = se_return_clean_value($data['credit']);
+	$license = se_return_clean_value($data['license']);
+	$version = se_return_clean_value($data['version']);
+    $filesize = se_return_clean_value($data['filesize']);
 	
 	/* labels */
-	if(is_array($labels)) {
-		sort($labels);
-		$string_labels = implode(",", $labels);
+	if(is_array($data['labels'])) {
+		sort($data['labels']);
+		$string_labels = implode(",", $data['labels']);
 	} else {
 		$string_labels = "";
 	}	
 		
-	$filetype = mime_content_type(realpath($filename));
+	$filetype = mime_content_type(realpath($data['filename']));
 	
 	$cnt = $db_content->count("se_media", [
 		"AND" => [
-		"media_file" => "$filename",
-		"media_lang" => "$lang"
+		    "media_file" => $data['filename'],
+		    "media_lang" => $lang
 		]
 	]);
 	
@@ -881,7 +903,7 @@ function se_write_media_data($filename,$title=NULL,$notes=NULL,$keywords=NULL,$t
 		
 		$cnt_changes = $db_content->update("se_media", $columns, [
 			"AND" => [
-				"media_file" => "$filename",
+				"media_file" => $data['filename'],
 				"media_lang" => "$lang"
 			]
 		]);
@@ -892,12 +914,11 @@ function se_write_media_data($filename,$title=NULL,$notes=NULL,$keywords=NULL,$t
 		$cnt_changes = $db_content->insert("se_media", $columns);
 		$lastId = $db_content->id();
 	}
-	
+
 	if($cnt_changes->rowCount() > 0) {
 		return 'success';
 	} else {
-		
-		return $error;
+		return 'error';
 	}
 
 }
@@ -1014,7 +1035,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
 		$img_filename = basename($images[$i]['media_file']);
 		$image_name = $images[$i]['media_file'];
 		$image_tmb_name = $images[$i]['media_thumb'];
-		$lastedit = $images[$i]['media_lastedit'];
+		$lastedit = (int) $images[$i]['media_lastedit'];
 		$lastedit_year = date('Y',$lastedit);
 		$filemtime = $lastedit_year;
 		
@@ -1031,7 +1052,8 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
 		}
 		
 		/* new label for each year */
-		if(date('Y',$images[$i-1]['media_lastedit']) != $lastedit_year) {	
+        $prev_image_ts = (int) $images[$i-1]['media_lastedit'];
+		if(date('Y',$prev_image_ts) != $lastedit_year) {
 			if($i == 0) {
 				$choose_images .= '<optgroup label="'.$filemtime.'">'."\r\n";
 			} else {
