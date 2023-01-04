@@ -195,6 +195,7 @@ function text_parser($text) {
 		return;
 	}
 
+    /* remove <p> tag from shortcodes */
 	$text = str_replace('<p>[', '[', $text);
 	$text = str_replace(']</p>', ']', $text);
 
@@ -202,6 +203,27 @@ function text_parser($text) {
 		return;
 	}
 
+    /* don't replace within <pre> tags */
+    if(preg_match_all('#\<pre.*?\>(.*?)\</pre\>#', $text, $matches)) {
+        $match = $matches[0];
+        foreach($match as $k => $v) {
+            $o = $match[$k];
+            $v = str_replace(array('[',']'),array('&#91','&#93'),$v);
+            $text = str_replace($o, $v, $text);
+        }
+    }
+
+    /* don't replace within <code> tags */
+    if(preg_match_all('#\<code.*?\>(.*?)\</code\>#', $text, $matches)) {
+        $match = $matches[0];
+        foreach($match as $k => $v) {
+            $o = $match[$k];
+            $v = str_replace(array('[',']'),array('&#91','&#93'),$v);
+            $text = str_replace($o, $v, $text);
+        }
+    }
+
+    /* if the theme has an own text parser in styles/theme/php/index.php */
     if(function_exists('theme_text_parser')) {
         $text = theme_text_parser($text);
     }
@@ -214,24 +236,6 @@ function text_parser($text) {
 			if($count > 0) {
 				se_store_admin_helper('sc',$v['snippet_shortcode']);
 			}
-		}
-	}
-	
-	if(preg_match_all('#\<pre.*?\>(.*?)\</pre\>#', $text, $matches)) {
-		$match = $matches[0];
-		foreach($match as $k => $v) {
-			$o = $match[$k];
-			$v = str_replace(array('[',']'),array('&#91','&#93'),$v);
-			$text = str_replace($o, $v, $text);
-		}
-	}
-	
-	if(preg_match_all('#\<code.*?\>(.*?)\</code\>#', $text, $matches)) {
-		$match = $matches[0];
-		foreach($match as $k => $v) {
-			$o = $match[$k];
-			$v = str_replace(array('[',']'),array('&#91','&#93'),$v);
-			$text = str_replace($o, $v, $text);
 		}
 	}
 
