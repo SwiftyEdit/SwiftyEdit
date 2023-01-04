@@ -21,6 +21,7 @@
         </div>
 </div>
 
+{if $show_events_list == true}
 {foreach $events as $event => $value}
 
 
@@ -85,6 +86,11 @@
 
 
 {/foreach}
+{else}
+    <div class="alert alert-info">
+        {$lang_msg_no_entries_found}
+    </div>
+{/if}
 
 <div id="article_footer">
     {if $show_pagination == true}
