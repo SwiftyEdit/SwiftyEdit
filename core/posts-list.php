@@ -31,6 +31,13 @@ $get_posts = se_get_post_entries($sql_start,$posts_limit,$posts_filter);
 $cnt_filter_posts = $get_posts[0]['cnt_posts'];
 $cnt_get_posts = count($get_posts);
 
+$show_posts_list = true;
+if($get_posts[0]['cnt_posts'] < 1) {
+    // we have no products to show
+    $show_posts_list = false;
+}
+
+
 $nextPage = $posts_start+$posts_limit;
 $prevPage = $posts_start-$posts_limit;
 $cnt_pages = ceil($cnt_filter_posts / $posts_limit);
@@ -280,6 +287,7 @@ $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
 $smarty->assign('btn_download', $lang['btn_download']);
 
+$smarty->assign('show_posts_list', $show_posts_list);
 $smarty->assign('show_pagination', $show_pagination);
 $smarty->assign('pagination', $pagination);
 
