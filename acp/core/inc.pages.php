@@ -290,7 +290,7 @@ if($set_keyword_filter != "") {
 $_SESSION['filter_string'] = $filter_string;
 
 
-if($sub == "pages-list" OR $sub == "snippets") {
+if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	
 
 	$label_filter_box  = '<div class="card mt-2">';
