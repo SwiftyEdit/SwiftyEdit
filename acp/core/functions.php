@@ -910,7 +910,7 @@ function se_write_media_data($data) {
 		
 	} else {
 		$modus = 'new';
-		$columns["media_file"] = "$filename";
+		$columns["media_file"] = $data['filename'];
 		$cnt_changes = $db_content->insert("se_media", $columns);
 		$lastId = $db_content->id();
 	}
