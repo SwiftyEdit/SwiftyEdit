@@ -248,6 +248,9 @@ if($product_data['file_attachment'] != '') {
 
     $smarty->assign('download_title', $file_data['media_title']);
     $smarty->assign('download_text', $file_data['media_text']);
+    $smarty->assign('download_credit', $file_data['media_credit']);
+    $smarty->assign('download_version', $file_data['media_version']);
+    $smarty->assign('download_license', $file_data['media_license']);
     $smarty->assign('attachment_filename', $file_name);
     $smarty->assign('attachment_download_url', $download_target);
 }
