@@ -151,7 +151,7 @@
                 <i class="bi bi-hand-thumbs-up-fill"></i> <span id="vote-up-nbr-{$product_id}">{$votes_up}</span>
             </button>
             <button class="btn btn-sm btn-outline-secondary" name="dnvote" onclick="vote(this.value)"
-                    value="dn-post-{$value.product_id}" {$votes_status_dn}>
+                    value="dn-post-{$product_id}" {$votes_status_dn}>
                 <i class="bi bi-hand-thumbs-down-fill"></i> <span id="vote-dn-nbr-{$product_id}">{$votes_dn}</span>
             </button>
         </div>
