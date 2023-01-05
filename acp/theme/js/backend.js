@@ -1,7 +1,7 @@
 /**
  * Prepend to this file:
  * - jquery
- * - umd/popper.js
+ * - popper.js
  * - bootstrap.js
  * - accounting
  * - tempus dominus
@@ -58,9 +58,10 @@ $(function() {
 				close: 'bi bi-x',
 			},
 			components: {
-				useTwentyfourHour: true,
 				seconds: false
 			}
+		},localization: {
+			hourCycle: 'h24'
 		}
 	});
 

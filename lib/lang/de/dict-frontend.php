@@ -115,6 +115,7 @@ $lang['msg_upload_avatar_filesize']  = "Das Benutzerbild ist zu groß";
 $lang['msg_upload_avatar_filetype']  = "Das Bild muss vom Typ PNG sein";
 
 $lang['msg_no_products_found']  = "Es wurden keine Produkte gefunden";
+$lang['msg_no_entries_found']  = "Es wurden keine Einträge gefunden";
 
 $lang['msg_search_undersized'] = "Das Suchwort muß mindestens 3 Buchstaben lang sein.";
 $lang['msg_search_results'] = "Die Suchanfrage ergab %d Treffer:";

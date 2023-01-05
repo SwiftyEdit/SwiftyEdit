@@ -674,6 +674,7 @@ for($i=0;$i<$cnt_get_files;$i++) {
 	$filetime = $get_files[$i]['media_lastedit'];
 	$filesize = readable_filesize($get_files[$i]['media_filesize']);
 	$show_filetime = date('d.m.Y H:i',$filetime);
+    $media_file_hits = (int) $get_files[$i]['media_file_hits'];
 
 	if($tpl_file_type == 'grid') {
 		$short_filename = str_replace('../content/files/', '', $filename);
@@ -738,6 +739,7 @@ for($i=0;$i<$cnt_get_files;$i++) {
 	
 
 	$tpl_list = str_replace('{short_filename}', $short_filename, $tpl_list);
+    $tpl_list = str_replace('{media_file_hits}', $media_file_hits, $tpl_list);
 	$tpl_list = str_replace('{labels}', $labels, $tpl_list);
 	$tpl_list = str_replace('{filename}', $filename, $tpl_list);
 	$tpl_list = str_replace('{set_style}', $set_style, $tpl_list);

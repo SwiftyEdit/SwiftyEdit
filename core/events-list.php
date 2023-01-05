@@ -30,6 +30,12 @@ $get_events = se_get_event_entries($sql_start, $events_limit, $events_filter);
 $cnt_filter_events = $get_events[0]['cnt_events'];
 $cnt_get_events = count($get_events);
 
+$show_events_list = true;
+if($get_events[0]['cnt_events'] < 1) {
+    // we have no products to show
+    $show_events_list = false;
+}
+
 $nextPage = $events_start + $events_limit;
 $prevPage = $events_start - $events_limit;
 $cnt_pages = ceil($cnt_filter_events / $events_limit);
@@ -227,6 +233,7 @@ $smarty->assign('form_action', $form_action);
 $smarty->assign('events_cnt', $cnt_filter_products);
 $smarty->assign('events', $get_events);
 
+$smarty->assign('show_events_list', $show_events_list);
 $smarty->assign('show_pagination', $show_pagination);
 $smarty->assign('pagination', $pagination);
 

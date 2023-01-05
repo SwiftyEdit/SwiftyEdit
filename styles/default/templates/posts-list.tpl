@@ -28,6 +28,7 @@
     </div>
 </div>
 
+{if $show_posts_list == true}
 {foreach $posts as $post => $value}
 
 
@@ -172,9 +173,14 @@
 
 
 {/foreach}
+{else}
+    <div class="alert alert-info">
+        {$lang_msg_no_entries_found}
+    </div>
+{/if}
 
 <div id="article_footer">
-
+    {if $show_pagination == true}
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <li>
@@ -192,5 +198,5 @@
             </li>
         </ul>
     </nav>
-
+    {/if}
 </div>

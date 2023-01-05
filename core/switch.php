@@ -309,6 +309,11 @@ if($p == "posts") {
 	include 'posts.php';
 }
 
+/* start download from /content/files/ */
+if(isset($_POST['download'])) {
+    include 'download.php';
+}
+
 
 /* comments */
 $post_comments = 0;

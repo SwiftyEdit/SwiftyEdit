@@ -129,7 +129,7 @@ $lang['msg_upload_avatar_filetype'] = "The image must be of type PNG";
 $lang['msg_signed_out'] = "Signed out with success";
 
 $lang['msg_no_products_found']  = "No products found";
-
+$lang['msg_no_entries_found']  = "No entries found";
 
 $lang['msg_search_undersized'] = "The query must be at least 3 letters long.";
 $lang['msg_search_results'] = "The query returned %d matches:";

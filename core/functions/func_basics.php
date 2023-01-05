@@ -120,6 +120,7 @@ function se_get_files_data($file,$parameters=NULL) {
 	global $db_content;
 	global $se_template;
 	global $languagePack;
+    global $swifty_slug;
 	
 	if($parameters !== NULL) {
 		$parameter = parse_str(html_entity_decode($parameters),$output);
@@ -134,13 +135,18 @@ function se_get_files_data($file,$parameters=NULL) {
 			"media_lang" => "$languagePack"
 			]
 	]);
+
+    $form_action = $swifty_slug;
+    $form_action = str_replace('//','/',$form_action);
 	
 	$file_src = str_replace('../content/files/', '/content/files/', $fileData['media_file']);
 	$tpl = file_get_contents('./styles/'.$se_template.'/templates/download.tpl');
-	$tpl = str_replace('{$file_src}', $file_src, $tpl);
+    $tpl = str_replace('{$form_Action}', $form_action, $tpl);
+    $tpl = str_replace('{$csrf_token}', $_SESSION['visitor_csrf_token'], $tpl);
+	$tpl = str_replace('{$file_src}', $fileData['media_file'], $tpl);
 	$tpl = str_replace('{$file_title}', $fileData['media_title'], $tpl);
 	$tpl = str_replace('{$file_alt}', $fileData['media_alt'], $tpl);
-	$tpl = str_replace('{$file_caption}', $fileData['media_text'], $tpl);
+	$tpl = str_replace('{$file_caption}', html_entity_decode($fileData['media_text']), $tpl);
 	$tpl = str_replace('{$file_license}', $fileData['media_license'], $tpl);
     $tpl = str_replace('{$file_version}', $fileData['media_version'], $tpl);
 	$tpl = str_replace('{$file_credits}', $fileData['media_credits'], $tpl);
@@ -189,6 +195,7 @@ function text_parser($text) {
 		return;
 	}
 
+    /* remove <p> tag from shortcodes */
 	$text = str_replace('<p>[', '[', $text);
 	$text = str_replace(']</p>', ']', $text);
 
@@ -196,6 +203,27 @@ function text_parser($text) {
 		return;
 	}
 
+    /* don't replace within <pre> tags */
+    if(preg_match_all('#\<pre.*?\>(.*?)\</pre\>#', $text, $matches)) {
+        $match = $matches[0];
+        foreach($match as $k => $v) {
+            $o = $match[$k];
+            $v = str_replace(array('[',']'),array('&#91','&#93'),$v);
+            $text = str_replace($o, $v, $text);
+        }
+    }
+
+    /* don't replace within <code> tags */
+    if(preg_match_all('#\<code.*?\>(.*?)\</code\>#', $text, $matches)) {
+        $match = $matches[0];
+        foreach($match as $k => $v) {
+            $o = $match[$k];
+            $v = str_replace(array('[',']'),array('&#91','&#93'),$v);
+            $text = str_replace($o, $v, $text);
+        }
+    }
+
+    /* if the theme has an own text parser in styles/theme/php/index.php */
     if(function_exists('theme_text_parser')) {
         $text = theme_text_parser($text);
     }
@@ -208,24 +236,6 @@ function text_parser($text) {
 			if($count > 0) {
 				se_store_admin_helper('sc',$v['snippet_shortcode']);
 			}
-		}
-	}
-	
-	if(preg_match_all('#\<pre.*?\>(.*?)\</pre\>#', $text, $matches)) {
-		$match = $matches[0];
-		foreach($match as $k => $v) {
-			$o = $match[$k];
-			$v = str_replace(array('[',']'),array('&#91','&#93'),$v);
-			$text = str_replace($o, $v, $text);
-		}
-	}
-	
-	if(preg_match_all('#\<code.*?\>(.*?)\</code\>#', $text, $matches)) {
-		$match = $matches[0];
-		foreach($match as $k => $v) {
-			$o = $match[$k];
-			$v = str_replace(array('[',']'),array('&#91','&#93'),$v);
-			$text = str_replace($o, $v, $text);
 		}
 	}
 

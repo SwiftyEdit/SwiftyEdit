@@ -9,6 +9,9 @@ error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
  *
  * global variables
  * @var object $db_content meedoo database object
+ * @var string $languagePack de | en ...
+ * @var string $swifty_slug query
+ * @var array $se_prefs global preferences
  */
 
 $product_data = se_get_product_data($get_product_id);
@@ -238,13 +241,16 @@ $get_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_c
  */
 
 if($product_data['file_attachment'] != '') {
-    $file_name = '../content/files/'.basename($product_data['file_attachment']);
-    $download_target = SE_CONTENT.$product_data['file_attachment'];
 
-    $file_data = se_get_media_data($file_name,$languagPack);
+    $file_name = '../content/files'.$product_data['file_attachment'];
+    $download_target = SE_CONTENT.$product_data['file_attachment'];
+    $file_data = se_get_media_data($file_name,$languagePack);
 
     $smarty->assign('download_title', $file_data['media_title']);
     $smarty->assign('download_text', $file_data['media_text']);
+    $smarty->assign('download_credit', $file_data['media_credit']);
+    $smarty->assign('download_version', $file_data['media_version']);
+    $smarty->assign('download_license', $file_data['media_license']);
     $smarty->assign('attachment_filename', $file_name);
     $smarty->assign('attachment_download_url', $download_target);
 }

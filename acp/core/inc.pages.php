@@ -290,7 +290,7 @@ if($set_keyword_filter != "") {
 $_SESSION['filter_string'] = $filter_string;
 
 
-if($sub == "pages-list" OR $sub == "snippets") {
+if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	
 
 	$label_filter_box  = '<div class="card mt-2">';
@@ -306,7 +306,7 @@ if($sub == "pages-list" OR $sub == "snippets") {
 		}		
 
 		$label_text = '<span class="label-dot" style="background-color:'.$label['label_color'].';"></span> '.$label['label_title'];
-		$label_filter_box .= '<a href="acp.php?tn=pages&sub='.$sub.'&switchLabel='.$label['label_id'].'" class="btn btn-default btn-sm m-1 '.$this_btn_status.'" data-bs-toggle="tooltip" data-bs-title="'.$label['label_description'].'">'.$label_text.'</a>';
+		$label_filter_box .= '<a href="acp.php?tn=pages&sub='.$sub.'&switchLabel='.$label['label_id'].'" class="btn btn-default btn-sm m-1 '.$this_btn_status.'" data-bs-toggle="tooltip" title="'.$label['label_description'].'">'.$label_text.'</a>';
 		
 	}
 	$label_filter_box .= '</div>';
