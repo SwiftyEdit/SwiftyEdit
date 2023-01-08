@@ -45,6 +45,11 @@
                             {/foreach}
 
                         {/if}
+
+                        {if $product_options_comment_label != ""}
+                            <label class="form-label">{$product_options_comment_label}</label>
+                            <textarea class="form-control" name="customer_options_comment"></textarea>
+                        {/if}
                         <div class="mt-2">
                             <hr>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>

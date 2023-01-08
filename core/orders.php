@@ -99,6 +99,8 @@ for($i=0;$i<$cnt_orders;$i++) {
 		
 		$products[$x]['title'] = $order_products[$x]['title'];
         $products[$x]['options'] = $order_products[$x]['options'];
+        $products[$x]['options_comment'] = $order_products[$x]['options_comment'];
+        $products[$x]['options_comment_label'] = $order_products[$x]['options_comment_label'];
 		$products[$x]['product_nbr'] = $order_products[$x]['product_number'];
         $products[$x]['amount'] = $order_products[$x]['amount'];
 		$products[$x]['price_gross'] = $this_item_price_gross;

@@ -240,6 +240,10 @@
 				</div> <!-- #prices_delivery -->
 
 				<div class="tab-pane fade" id="options">
+					<div class="mb-3">
+						<label>{label_product_customer_feedback}</label>
+						<input type="text" class="form-control" name="product_options_comment_label" value="{product_options_comment_label}">
+					</div>
 					{options_input}
 				</div> <!-- #options -->
 

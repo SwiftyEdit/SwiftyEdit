@@ -13,7 +13,13 @@
 	{foreach $cart_items as $item}
 	<tr>
 		<td>{$item.nbr}</td>
-		<td><small class="text-muted">{$item.product_number}</small> {$item.title}<div class="sc-items-options">{$item.options}</div></td>
+		<td>
+			<small class="text-muted">{$item.product_number}</small> {$item.title}
+			<div class="sc-items-options">{$item.options}</div>
+			{if $item.options_comment != ""}
+			<div class="sc-items-options-comment">{$item.options_comment_label}:<br>{$item.options_comment}</div>
+			{/if}
+		</td>
 		<td>
 			<form action="{$shopping_cart_uri}" method="POST">
 				<input type="number" name="cart_product_amount" value="{$item.amount}" class="form-control" onchange="this.form.submit()">

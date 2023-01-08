@@ -15,7 +15,8 @@
  * product_price_net_purchasing -> purchasing price
  * product_price_addition -> how much would you like to add to the purchase price (in %)
  *
- * product_options -> json for example {"color":"red","color:"blue"}
+ * product_options -> json for options
+ * product_options_comment_label -> if we need customer instruction or feedback for this product
  *
  */
 
@@ -64,6 +65,7 @@ $cols = array(
     "product_price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_features" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options" => "LONGTEXT NOT NULL DEFAULT ''",
+    "product_options_comment_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_variant_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_variant_description" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_shipping_mode" => 'INTEGER(12)',

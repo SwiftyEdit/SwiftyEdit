@@ -281,6 +281,7 @@ $smarty->assign('page_meta_description', html_entity_decode($product_data['meta_
 $smarty->assign('page_meta_keywords', html_entity_decode($product_data['tags']));
 $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
 
+$smarty->assign('product_options_comment_label', $product_data['product_options_comment_label']);
 
 $smarty->assign('votes_status_up', $product_data['votes_status_up']);
 $smarty->assign('votes_status_dn', $product_data['votes_status_dn']);

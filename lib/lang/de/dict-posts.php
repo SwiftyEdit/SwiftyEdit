@@ -117,6 +117,8 @@ $lang['product_no_delivery_time'] = 'Keine Angabe';
 
 $lang['label_product_option_key'] = 'Bezeichnung';
 $lang['label_product_option_value'] = 'Wert';
+$lang['label_product_customer_feedback'] = 'Beschriftung für ein Eingabefeld';
+
 
 $lang['label_product_cart_mode'] = 'Warenkorb';
 $lang['product_cart_mode_on'] = 'Warenkorbfunktion aktivieren';

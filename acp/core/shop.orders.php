@@ -204,7 +204,9 @@ if(is_numeric($_POST['open_order'])) {
         $products_str .= '<tr>';
 
         $products_str .= '<td>'.$order_products[$i]['product_number'].'</td>';
-        $products_str .= '<td>'.$order_products[$i]['title'].'<div class="item-options">'.$order_products[$i]['options'].'</div></td>';
+        $products_str .= '<td>'.$order_products[$i]['title'];
+        $products_str .= '<div class="item-options">'.$order_products[$i]['options'].'<br>'.$order_products[$i]['options_comment_label'].':<br>'.$order_products[$i]['options_comment'].'</div>';
+        $products_str .= '</td>';
         $products_str .= '<td>'.$order_products[$i]['amount'].'</td>';
         $products_str .= '<td>'.se_post_print_currency($order_products[$i]['price_net_raw']).'</td>';
         $products_str .= '<td>'.$order_products[$i]['tax'].'</td>';

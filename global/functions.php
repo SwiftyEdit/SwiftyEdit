@@ -492,7 +492,10 @@ function se_send_order_status($recipient,$order,$reason) {
     for($i=0;$i<$cnt_order_products;$i++) {
         $products_str .= '<tr>';
         $products_str .= '<td>'.$order_products[$i]['product_number'].'</td>';
-        $products_str .= '<td>'.$order_products[$i]['title'].'<br>'.$order_products[$i]['options'].'</td>';
+        $products_str .= '<td>'.$order_products[$i]['title'];
+        $products_str .= '<p>'.$order_products[$i]['options'].'</p>';
+        $products_str .= '<p>'.$order_products[$i]['options_comment_label'].': '.$order_products[$i]['options_comment'].'</p>';
+        $products_str .= '</td>';
         $products_str .= '<td>'.$order_products[$i]['amount'].'</td>';
         $products_str .= '<td>'.se_post_print_currency($order_products[$i]['price_gross_raw']).' '.$this_order['order_currency'].'</td>';
         $products_str .= '</tr>';
