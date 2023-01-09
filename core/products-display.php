@@ -38,7 +38,9 @@ $text = htmlspecialchars_decode($product_data['text']);
 
 
 
-$post_images = explode("<->", $product_data['images']);
+$product_images = explode("<->", $product_data['images']);
+$product_images = array_filter($product_images); /* remove empty elements */
+
 $product_datetimeformat = $se_prefs['dateformat'].' '.$se_prefs['timeformat'];
 
 $post_releasedate = date("$product_datetimeformat",$product_data['releasedate']);
@@ -58,16 +60,33 @@ $entrydate_year = date('Y',$product_data['date']);
 
 /* images */
 
-if($post_images[1] != "") {
-    $first_post_image = '/' . $img_path . '/' . str_replace('../content/images/','',$post_images[1]);
-    $post_image_data = se_get_images_data($first_post_image,'data=array');
-} else if($se_prefs['prefs_shop_default_banner'] == "without_image") {
-    $first_post_image = '';
-} else {
-    $first_post_image = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+/* if we have more than one image */
+if(is_array($product_images) && count($product_images) > 0) {
+    foreach($product_images as $image) {
+        $show_images[] = se_get_images_data($image,'data=array');
+    }
+
+    /* replace img src with absolute path */
+    $cnt_images = count($show_images);
+    for($i=0;$i<$cnt_images;$i++) {
+        $show_images[$i]['media_file'] = '/' . $img_path . '/' . str_replace('../content/images/','',$show_images[$i]['media_file']);
+        $show_images[$i]['media_thumb'] = '/' . $img_tmb_path . '/' . str_replace('../content/images_tmb/','',$show_images[$i]['media_thumb']);
+    }
+
+
+
 }
 
-
+if($show_images[0]['media_file'] != "") {
+    $first_product_img_src = $show_images[0]['media_file'];
+    $first_product_img_alt = $show_images[0]['media_alt'];
+    $first_product_img_title = $show_images[0]['media_title'];
+    $first_product_img_caption = $show_images[0]['media_text'];
+} else if($se_prefs['prefs_shop_default_banner'] == "without_image") {
+    $first_product_image = '';
+} else {
+    $first_product_image = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+}
 
 
 /* vote up or down this post */
@@ -196,9 +215,9 @@ if($cnt_variants > 1) {
     foreach($variants as $k => $v) {
         $var[$k]['title'] = $v['title'];
         $var[$k]['teaser'] = se_return_words_str(html_entity_decode($v['teaser']),10);
-        $post_images = explode("<->",$v['images']);
-        if ($post_images[1] != "") {
-            $var[$k]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $post_images[1]);
+        $product_images = explode("<->",$v['images']);
+        if ($product_images[1] != "") {
+            $var[$k]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
         } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
             $var[$k]['image'] = '';
         } else {
@@ -227,7 +246,7 @@ if($product_data['meta_description'] == '') {
     $product_data['meta_description'] = substr(strip_tags($post_teaser),0,160);
 }
 
-$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_post_image);
+$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_product_image);
 
 /* delivery time */
 $product_delivery_time = (int) $product_data['product_delivery_time'];
@@ -289,7 +308,16 @@ $smarty->assign('votes_up', $product_data['votes_up']);
 $smarty->assign('votes_dn', $product_data['votes_dn']);
 
 $smarty->assign('show_voting', $show_voting);
-$smarty->assign('product_img_src', $first_post_image);
+
+/* first image */
+$smarty->assign('product_img_src', $first_product_img_src);
+$smarty->assign('product_img_alt', $first_product_img_alt);
+$smarty->assign('product_img_title', $first_product_img_title);
+$smarty->assign('product_img_caption', $first_product_img_caption);
+
+/* all images (array) */
+$smarty->assign('product_show_images', $show_images);
+
 
 $smarty->assign('product_id', $product_data['id']);
 $smarty->assign('product_title', $product_data['title']);

@@ -5,7 +5,22 @@
 
         {if $product_img_src != ''}
         <div class="col-md-4">
-            <p><img src="{$product_img_src}" class="img-fluid"><br><small>{$product_img_caption}</small></p>
+            <img src="{$product_img_src}" alt="{$product_img_alt}" title="{$product_img_title}" class="img-fluid"><br>
+            <small>{$product_img_caption}</small>
+
+            {if is_array($product_show_images)}
+            <section data-featherlight-gallery data-featherlight-filter="a">
+            <div class="row mt-3 g-1">
+
+                {foreach $product_show_images as $img => $value}
+                <div class="col-3">
+                    <a href="{$value.media_file}" title="{$value.media_title}"><img src="{$value.media_thumb}" alt="{$value.media_alt}" class="img-fluid"></a>
+                </div>
+                {/foreach}
+
+            </div>
+            </section>
+            {/if}
         </div>
         {/if}
 
