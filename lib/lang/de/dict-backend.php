@@ -154,6 +154,8 @@ $lang['activate_xml_sitemap'] = "XML Sitemap aktivieren";
 $lang['select_logfile'] = "Logfile auswählen";
 $lang['logfile_hits'] = "Einträge";
 
+$lang['option_nothing_selected'] = "Auswählen ...";
+
 $lang['pagination_forward'] = "Weiter";
 $lang['pagination_backward'] = "Zurück";
 

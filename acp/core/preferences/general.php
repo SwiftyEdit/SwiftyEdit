@@ -146,9 +146,30 @@ echo '<h5 class="heading-line">'.$lang['system_images'].'</h5>';
 
 echo '<form action="?tn=system&sub=general&file=general" method="POST" class="form-horizontal">';
 
-$select_prefs_thumbnail  = '<select name="prefs_pagethumbnail" class="form-control custom-select">';
-$select_prefs_thumbnail .= '<option value="">'.$lang['page_thumbnail'].'</option>';
 $arr_Images = se_get_all_images_rec();
+
+/* default page logo */
+$select_prefs_pagelogo  = '<select name="prefs_pagelogo" class="form-control custom-select">';
+$select_prefs_pagelogo .= '<option value="">'.$lang['option_nothing_selected'].'</option>';
+
+foreach($arr_Images as $page_logo) {
+    $selected = "";
+    if($prefs_pagelogo == "$page_logo") {
+        $selected = "selected";
+    }
+    $show_page_logo_filename = str_replace('../content/','/',$page_logo);
+    $select_prefs_pagelogo .= '<option '.$selected.' value="'.$page_logo.'">'.$show_page_logo_filename.'</option>';
+}
+
+$select_prefs_pagelogo .= "</select>";
+
+echo tpl_form_control_group('',"Logo",$select_prefs_pagelogo);
+
+/* default thumbnail */
+
+$select_prefs_thumbnail  = '<select name="prefs_pagethumbnail" class="form-control custom-select">';
+$select_prefs_thumbnail .= '<option value="">'.$lang['option_nothing_selected'].'</option>';
+
 foreach($arr_Images as $page_thumbnail) {
     $selected = "";
     if($prefs_pagethumbnail == "$page_thumbnail") {
@@ -162,13 +183,19 @@ $select_prefs_thumbnail .= "</select>";
 echo tpl_form_control_group('',$lang['page_thumbnail'],$select_prefs_thumbnail);
 
 /* Thumbnail Prefix */
-$prefs_tmb_prefix_input = "<input class='form-control' type='text' name='prefs_pagethumbnail_prefix' value='$prefs_pagethumbnail_prefix'>";
-echo tpl_form_control_group('',$lang['page_thumbnail_prefix'],$prefs_tmb_prefix_input);
+
+$input_tmb_prefix = [
+    "input_name" => "prefs_pagethumbnail_prefix",
+    "input_value" => $prefs_pagethumbnail_prefix,
+    "label" => $lang['page_thumbnail_prefix']
+];
+
+echo tpl_form_input_text($input_tmb_prefix);
 
 /* Favicon */
 $select_prefs_favicon  = '<select name="prefs_pagefavicon" class="form-control custom-select">';
-$select_prefs_favicon .= '<option value="">'.$lang['page_favicon'].'</option>';
-$arr_Images = se_get_all_images_rec();
+$select_prefs_favicon .= '<option value="">'.$lang['option_nothing_selected'].'</option>';
+
 foreach($arr_Images as $page_favicon) {
 
     if(substr($page_favicon, -4) != '.png') {
