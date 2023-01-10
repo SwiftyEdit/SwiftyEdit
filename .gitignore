@@ -35,6 +35,8 @@ sitemap.xml
 /content/plugins/*
 !/content/plugins/index.html
 /content/SQLite/*
+/content/uploads/*
+!/content/uploads/index.html
 
 !index.html
 
