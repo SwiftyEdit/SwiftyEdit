@@ -1,9 +1,9 @@
 ## SwiftyEdit CMS
 
-SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or SQLite.
+SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or SQLite. Build websites, blogs, webshops and much more for you or your customers.
 
 * License: GNU GENERAL PUBLIC LICENSE Version 3
-* Official Site: https://swiftyedit.com
+* Official Site: https://swiftyedit.org
 
 :star: give us a star, it motivates us a lot.
 

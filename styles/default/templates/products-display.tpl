@@ -5,7 +5,22 @@
 
         {if $product_img_src != ''}
         <div class="col-md-4">
-            <p><img src="{$product_img_src}" class="img-fluid"><br><small>{$product_img_caption}</small></p>
+            <img src="{$product_img_src}" alt="{$product_img_alt}" title="{$product_img_title}" class="img-fluid"><br>
+            <small>{$product_img_caption}</small>
+
+            {if is_array($product_show_images)}
+            <section data-featherlight-gallery data-featherlight-filter="a">
+            <div class="row mt-3 g-1">
+
+                {foreach $product_show_images as $img => $value}
+                <div class="col-3">
+                    <a href="{$value.media_file}" title="{$value.media_title}"><img src="{$value.media_thumb}" alt="{$value.media_alt}" class="img-fluid"></a>
+                </div>
+                {/foreach}
+
+            </div>
+            </section>
+            {/if}
         </div>
         {/if}
 
@@ -44,6 +59,11 @@
                                 </select>
                             {/foreach}
 
+                        {/if}
+
+                        {if $product_options_comment_label != ""}
+                            <label class="form-label">{$product_options_comment_label}</label>
+                            <textarea class="form-control" name="customer_options_comment"></textarea>
                         {/if}
                         <div class="mt-2">
                             <hr>
@@ -151,7 +171,7 @@
                 <i class="bi bi-hand-thumbs-up-fill"></i> <span id="vote-up-nbr-{$product_id}">{$votes_up}</span>
             </button>
             <button class="btn btn-sm btn-outline-secondary" name="dnvote" onclick="vote(this.value)"
-                    value="dn-post-{$value.product_id}" {$votes_status_dn}>
+                    value="dn-post-{$product_id}" {$votes_status_dn}>
                 <i class="bi bi-hand-thumbs-down-fill"></i> <span id="vote-dn-nbr-{$product_id}">{$votes_dn}</span>
             </button>
         </div>

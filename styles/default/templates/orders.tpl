@@ -37,7 +37,7 @@
 							{foreach $order.products as $product}
 								<tr>
 									<td>{$product.product_nbr}</td>
-									<td>{$product.title}<br>{$product.options}</td>
+									<td>{$product.title}<br>{$product.options}<br>{$product.options_comment_label}: {$product.options_comment}</td>
 									<td>{$product.amount}</td>
 									<td>{$product.price_gross} {$order.currency}</td>
 									<td class="text-end">

@@ -774,6 +774,7 @@ $form_tpl = str_replace('{variants_list}', $variants_list, $form_tpl);
 $form_tpl = str_replace('{product_variant_title}', $product_variant_title, $form_tpl);
 $form_tpl = str_replace('{product_variant_description}', $product_variant_description, $form_tpl);
 $form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
+$form_tpl = str_replace('{product_options_comment_label}', $product_data['product_options_comment_label'], $form_tpl);
 
 
 /* links */

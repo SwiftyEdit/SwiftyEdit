@@ -313,6 +313,9 @@ function se_add_to_cart() {
             $option_string .= '<span>'.$option.'</span>';
         }
     }
+
+    $cart_product_options_comment = clean_visitors_input($_POST['customer_options_comment']);
+
 	
 	$cart_status = 'progress';
 	
@@ -340,6 +343,7 @@ function se_add_to_cart() {
 		"cart_product_tax" =>  $cart_product_tax,
 		"cart_product_title" =>  $cart_product_title,
         "cart_product_options" =>  $option_string,
+        "cart_product_options_comment" =>  $cart_product_options_comment,
 		"cart_product_number" =>  $cart_product_number,
 		"cart_status" =>  $cart_status
 	]);

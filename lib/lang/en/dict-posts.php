@@ -113,6 +113,8 @@ $lang['product_no_snippet'] = 'No Snippet';
 $lang['label_product_delivery_time'] = 'Delivery time';
 $lang['product_no_delivery_time'] = 'Not specified';
 
+$lang['label_product_customer_feedback'] = 'Label for an input field';
+
 $lang['label_product_cart_mode'] = 'Shopping cart';
 $lang['product_cart_mode_on'] = 'Activate shopping cart';
 $lang['product_cart_mode_off'] = 'Deactivate shopping cart';

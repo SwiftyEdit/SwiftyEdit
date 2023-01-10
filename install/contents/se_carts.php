@@ -22,6 +22,7 @@ $cols = array(
     "cart_product_price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "cart_product_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cart_product_options" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "cart_product_options_comment" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cart_product_number" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "cart_status" => "VARCHAR(50) NOT NULL DEFAULT ''"
 );
