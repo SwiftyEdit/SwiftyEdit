@@ -20,10 +20,20 @@
 		
 		{if $social_media_block != ''}
 			{include file='socialmedia.tpl'}
-		{/if}	
+		{/if}
+
+		<div class="row">
+			<div class="col-lg-2 col-sm-3 text-center text-sm-start">
+		{if {$page_logo} != ''}
+			<a href="/" title="{$prefs_pagetitle}"><img src="{$page_logo}" alt="Logo" title="{$prefs_pagetitle}" class="img-fluid"></a>
+		{/if}
+			</div>
+			<div class="col text-center text-sm-start">
 		
-		<p class="h1">{$prefs_pagetitle}</p>
+		<p class="h1 mb-0">{$prefs_pagetitle}</p>
 		<p class="h2">{$prefs_pagesubtitle}</p>
+			</div>
+		</div>
 	</div>
 	
 	{include file='navigation.tpl'}
