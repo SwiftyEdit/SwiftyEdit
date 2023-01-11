@@ -11,11 +11,7 @@ if($order_page['page_permalink'] == '') {
 $smarty->assign('order_page_uri_uri', $order_page_uri);
 
 
-/**
- * show orders
- */
-
-/* start purchesed download */
+/* start purchased download */
 if(isset($_POST['dl_p_file']) OR isset($_POST['dl_p_file_ext'])) {
 	
 	if(is_numeric($_POST['dl_p_file'])) {
@@ -55,6 +51,90 @@ if(isset($_POST['dl_p_file']) OR isset($_POST['dl_p_file_ext'])) {
 
 }
 
+/**
+ * download customers uploads
+ * we do not provide a preview but the customer can download his files
+ */
+
+if(isset($_POST['download_user_file'])) {
+
+    $target_dir = SE_CONTENT.'/uploads/';
+    $check_filename = $target_dir.$_POST['order'].'-'.$_POST['pos'].'-';
+    $checkfile = glob("$check_filename*");
+    if(is_array($checkfile) && $checkfile[0] != '') {
+
+        $download_file = $checkfile[0];
+        $path_parts = pathinfo($download_file);
+        $extension = strtolower($path_parts['extension']);
+
+        $set_filename = $_POST['order'].'-'.$_POST['pos'].'.'.$extension;
+        if(is_file($download_file)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . mime_content_type($download_file));
+            header('Content-Disposition: attachment; filename="'.$set_filename.'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($download_file));
+            readfile($download_file);
+            exit;
+        }
+    }
+}
+
+/**
+ * @var array $se_upload_frontend_types from config.php
+ */
+if(isset($_POST['startUpload'])) {
+
+    $start_upload = true;
+    $upload_status = '';
+    $target_dir = SE_CONTENT.'/uploads/';
+
+    $get_name = $_FILES["upload_file"]["name"];
+    $path_parts = pathinfo($get_name);
+    $extension = strtolower($path_parts['extension']);
+
+    if(!in_array("$extension",$se_upload_frontend_types)) {
+        $start_upload = false;
+    }
+
+    /**
+     * we don't want anyone to know what the file is named on the server
+     * filename is order number + item position + time + extension
+     */
+
+    $check_filename = $target_dir.$_POST['order'].'-'.$_POST['pos'].'-';
+    $checkfile = glob("$check_filename*");
+    if(is_array($checkfile) && $checkfile[0] != '') {
+        // there is already an upload for this, delete it first
+        unlink($checkfile[0]);
+    }
+
+    $filename = $_POST['order'].'-'.$_POST['pos'].'-'.time().'.'.$extension;
+    $target_file = $target_dir.$filename;
+    if($start_upload == true) {
+        if (move_uploaded_file($_FILES["upload_file"]["tmp_name"], $target_file)) {
+            $upload_status = 'success';
+        } else {
+            $upload_status = 'failed';
+        }
+    }
+
+    if($upload_status == 'success') {
+        $smarty->assign('upload_message_class', 'success');
+        $smarty->assign('upload_message', 'success message');
+    } else {
+        $smarty->assign('upload_message_class', 'danger');
+        $smarty->assign('upload_message', 'error message');
+    }
+
+}
+
+
+/**
+ * show orders
+ */
 
 $user_id = (int) $_SESSION['user_id'];
 $order_filter = array();
@@ -96,7 +176,8 @@ for($i=0;$i<$cnt_orders;$i++) {
 		
 		
 		$this_item_price_gross = se_post_print_currency($order_products[$x]['price_gross_raw']);
-		
+
+        $products[$x]['pos'] = $x+1;
 		$products[$x]['title'] = $order_products[$x]['title'];
         $products[$x]['options'] = $order_products[$x]['options'];
         $products[$x]['options_comment'] = $order_products[$x]['options_comment'];
@@ -105,6 +186,22 @@ for($i=0;$i<$cnt_orders;$i++) {
         $products[$x]['amount'] = $order_products[$x]['amount'];
 		$products[$x]['price_gross'] = $this_item_price_gross;
 		$products[$x]['post_id'] = $post_id;
+
+        // check if item needs an upload
+        if($order_products[$x]['need_upload'] == 'true') {
+            $products[$x]['need_upload'] = $order_products[$x]['need_upload'];
+            /* filename for this upload order number + pos + time() */
+            $check_dir = SE_CONTENT.'/uploads/';
+            $check_filename = $check_dir.$order_item[$i]['nbr'].'-'.$products[$x]['pos'].'-';
+            $checkfile = glob("$check_filename*");
+
+            $products[$x]['user_upload'] = '';
+            $products[$x]['user_upload_status'] = '';
+            if(is_array($checkfile) && $checkfile[0] != '') {
+                $products[$x]['user_upload'] = $checkfile[0];
+                $products[$x]['user_upload_status'] = 'uploaded';
+            }
+        }
 				
 		// check if this item has an attachment
 		$items_download = $this_item['post_file_attachment'];

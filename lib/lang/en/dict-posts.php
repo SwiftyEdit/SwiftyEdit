@@ -114,6 +114,7 @@ $lang['label_product_delivery_time'] = 'Delivery time';
 $lang['product_no_delivery_time'] = 'Not specified';
 
 $lang['label_product_customer_feedback'] = 'Label for an input field';
+$lang['label_product_customer_upload'] = 'Add an upload option to this item';
 
 $lang['label_product_cart_mode'] = 'Shopping cart';
 $lang['product_cart_mode_on'] = 'Activate shopping cart';

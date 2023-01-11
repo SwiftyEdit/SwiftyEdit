@@ -74,6 +74,12 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
 
     $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
 
+    if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
+        $file_attachment_user = 2;
+    } else {
+        $file_attachment_user = 1;
+    }
+
     if($_POST['date'] == "") {
         $date = time();
     }
@@ -524,6 +530,11 @@ for($i=0;$i<$cnt_options;$i++) {
     $options_input_str .= '</div>';
 }
 
+$checked_user_uploads = '';
+if($product_data['file_attachment_user'] == '2') {
+    $checked_user_uploads = 'checked';
+}
+
 // template variable
 $options_input = $options_input_str;
 
@@ -788,7 +799,7 @@ $form_tpl = str_replace('{select_file}', $select_file, $form_tpl);
 $form_tpl = str_replace('{select_file_as}', $select_file_as, $form_tpl);
 $form_tpl = str_replace('{cnt_attachment_as_hits}', $product_data['file_attachment_as_hits'], $form_tpl);
 $form_tpl = str_replace('{cnt_attachment_hits}', $product_data['file_attachment_hits'], $form_tpl);
-
+$form_tpl = str_replace('{checked_user_uploads}', $checked_user_uploads, $form_tpl);
 
 /* product */
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);

@@ -244,6 +244,13 @@
 						<label>{label_product_customer_feedback}</label>
 						<input type="text" class="form-control" name="product_options_comment_label" value="{product_options_comment_label}">
 					</div>
+					<div class="mb-3">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" name="file_attachment_user" value="2" id="file_attachment_user" {checked_user_uploads}>
+							<label class="form-check-label" for="file_attachment_user">{label_product_customer_upload}</label>
+						</div>
+					</div>
+					<hr>
 					{options_input}
 				</div> <!-- #options -->
 
