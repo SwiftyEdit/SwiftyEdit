@@ -125,6 +125,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $post_fixed = 1;
     }
 
+    $priority = (int) $_POST['priority'];
+
     /* stock mode */
     $product_stock_mode = 2;
     if(isset($_POST['product_ignore_stock']) AND $_POST['product_ignore_stock'] == 1) {
