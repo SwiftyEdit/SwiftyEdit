@@ -30,7 +30,7 @@ if((!empty($_POST['edit_id'])) && is_numeric($_POST['edit_id'])) {
     $form_header_mode = 'Edit: '.$id;
     $product_data = se_get_product_data($id);
     $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
-    $submit_delete_btn = '<button type="submit" class="btn btn-danger w-100 my-1" name="delete_product" value="'.$id.'">'.$lang['delete'].'</button>';
+    $submit_delete_btn = '<button onclick="return confirm(\''.$lang['confirm_delete_data'].'\');" type="submit" class="btn btn-danger w-100 my-1" name="delete_product" value="'.$id.'">'.$lang['delete'].'</button>';
 }
 
 if($modus == 'new') {
