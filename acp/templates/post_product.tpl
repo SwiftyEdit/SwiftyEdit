@@ -1,3 +1,13 @@
+<div class="subHeader">
+	<div class="row">
+		<div class="col-9">
+			{form_header_message}
+		</div>
+		<div class="col-3">
+			{form_header_mode}
+		</div>
+	</div>
+</div>
 <form action='{formaction}' class='form-horizontal' id='editpage' method='post' name="editpage">
 	<div class="row">
 		<div class="col-md-9">
@@ -342,7 +352,7 @@
 				<input name="type" type="hidden" value="{type}">
 				<input name="parent_id" type="hidden" value="{parent_id}">
 				<input name="modus" type="hidden" value="{modus}">
-				<input name="id" type="hidden" value="{id}">
+				<input name="edit_id" type="hidden" value="{id}">
 				<input type="hidden" name="csrf_token" value="{token}">
 				<input type="hidden" name="date" value="{date}">
 

@@ -14,9 +14,11 @@ if((isset($_POST['delete_product'])) && is_numeric($_POST['delete_product'])) {
 /* set modus */
 
 $modus = 'new';
+$form_header_mode = 'New item';
 if((!empty($_POST['duplicate'])) OR ($_POST['modus'] == 'duplicate')) {
     $id = (int) $_POST['duplicate'];
     $modus = "duplicate";
+    $form_header_mode = 'Duplicate: '.$id;
     $product_data = se_get_product_data($id);
     $submit_btn = '<input type="submit" class="btn btn-success w-100" name="save_product" value="'.$lang['duplicate'].'">';
     $submit_variant_btn = '<button type="submit" class="btn btn-default w-100 my-1" name="save_variant" value="'.$id.'">'.$lang['btn_submit_variant'].'</button>';
@@ -25,6 +27,7 @@ if((!empty($_POST['duplicate'])) OR ($_POST['modus'] == 'duplicate')) {
 if((!empty($_POST['edit_id'])) && is_numeric($_POST['edit_id'])) {
     $id = (int) $_POST['edit_id'];
     $modus = 'update';
+    $form_header_mode = 'Edit: '.$id;
     $product_data = se_get_product_data($id);
     $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
     $submit_delete_btn = '<button type="submit" class="btn btn-danger w-100 my-1" name="delete_product" value="'.$id.'">'.$lang['delete'].'</button>';
@@ -170,6 +173,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $db_posts->update("se_products", $inputs, [
             "id" => $id
         ]);
+        $form_header_message = $lang['db_record_changed'];
     } else if($modus == "save_variant") {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
@@ -833,6 +837,9 @@ $form_tpl = str_replace('{select_delivery_time}', $snippet_select_delivery_time,
 
 
 /* form modes */
+
+$form_tpl = str_replace('{form_header_message}', $form_header_message, $form_tpl);
+$form_tpl = str_replace('{form_header_mode}', $form_header_mode, $form_tpl);
 
 $form_tpl = str_replace('{type}', $product_data['type'], $form_tpl);
 $form_tpl = str_replace('{id}', $product_data['id'], $form_tpl);
