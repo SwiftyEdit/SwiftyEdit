@@ -85,11 +85,16 @@ $(function() {
 
 echo '<div class="tab-content">';
 
-$sql = "SELECT page_linkname, page_sort, page_title, page_language, page_status FROM se_pages
-		    WHERE page_sort != 'portal'
-		    ORDER BY page_language ASC, page_sort ASC	";
+$all_pages = $db_content->select("se_pages",
+        ["page_linkname","page_sort","page_title","page_language","page_status"],
+        ["page_sort[!]" => "portal",
+            "ORDER" => [
+                    "page_language" => "ASC",
+                    "page_sort" => "ASC"
+            ]
+        ]
+);
 
-$all_pages = $db_content->query($sql)->fetchAll();
 $all_pages = se_array_multisort($all_pages, 'page_language', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
 
 /* tab position */
