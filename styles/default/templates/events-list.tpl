@@ -25,7 +25,7 @@
 {foreach $events as $event => $value}
 
 
-    <div class="post-list-product {$value.event_css_classes}">
+    <div class="event-list-entry {$value.event_css_classes}">
         {$value.draft_message}
         <div class="row">
             <div class="col-md-2">

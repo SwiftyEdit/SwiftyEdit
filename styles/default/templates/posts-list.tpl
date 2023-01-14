@@ -32,7 +32,7 @@
 {foreach $posts as $post => $value}
 
 
-    <div class="post-list-{$value.post_type} {$value.post_css_classes}">
+    <div class="post-list-entry post-list-{$value.post_type} {$value.post_css_classes}">
         {$value.draft_message}
 
 

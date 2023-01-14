@@ -16353,6 +16353,185 @@ html.with-featherlight {
     font-size: 40px;
   }
 }
+/**
+ * css for all post entries
+ * you can add more css for all types
+ * example: .post-list-m (messages) or .post-list-i (images) ...
+ */
+.post-list-entry {
+  border-bottom: 1px solid #adb5bd;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
+.post-list-entry.draft {
+  opacity: 0.8;
+  border: 1px solid #7199b0;
+  padding: 15px;
+}
+.post-list-entry.draft .alert-draft {
+  margin-top: -15px;
+  margin-left: -15px;
+  margin-right: -15px;
+  border-radius: 0;
+  padding: 5px 15px;
+  background: #ddd;
+  color: #7199b0;
+}
+
+a.post-headline-link {
+  text-decoration: none;
+}
+
+.post-footer {
+  padding-top: 15px;
+}
+
+.post-thumbnail {
+  background: rgba(0, 0, 0, 0.1);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 5px;
+  margin: 5px;
+  float: left;
+  width: 155px;
+  height: 155px;
+  border-radius: 5px;
+}
+
+.post-thumbnail:hover {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.post-author,
+.post-releasedate {
+  font-size: smaller;
+}
+
+/**
+ * css for all shop entries
+ */
+.product-list-entry {
+  border-bottom: 1px solid #adb5bd;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
+.product-list-entry.draft {
+  opacity: 0.8;
+  border: 1px solid #7199b0;
+  padding: 15px;
+}
+.product-list-entry.draft .alert-draft {
+  margin-top: -15px;
+  margin-left: -15px;
+  margin-right: -15px;
+  border-radius: 0;
+  padding: 5px 15px;
+  background: #ddd;
+  color: #7199b0;
+}
+
+.price-tag {
+  background: #438555;
+  color: #fff;
+  padding: 5px 15px;
+  text-align: center;
+}
+.price-tag.price-tag-fix {
+  float: right;
+  width: 180px;
+}
+
+.price-tag-note {
+  display: block;
+  color: #6c757d;
+}
+
+.price-predecimal {
+  font-size: 34px;
+  font-weight: 300;
+}
+
+.price-decimal {
+  vertical-align: super;
+  font-size: 18px;
+  font-weight: 300;
+  text-decoration: underline;
+}
+
+.product-unit,
+.product-amount {
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+.product-amount::before {
+  content: " / ";
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+.price-tag-label:not(:empty) {
+  font-size: 11px;
+  opacity: 0.5;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  padding: 3px;
+  margin-top: -5px;
+  margin-left: -5px;
+}
+
+.delivery-time span {
+  color: #57af6f;
+}
+
+/**
+ * styles for events
+ */
+.event-list-entry {
+  border-bottom: 1px solid #adb5bd;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
+.event-list-entry.draft {
+  opacity: 0.8;
+  border: 1px solid #7199b0;
+  padding: 15px;
+}
+.event-list-entry.draft .alert-draft {
+  margin-top: -15px;
+  margin-left: -15px;
+  margin-right: -15px;
+  border-radius: 0;
+  padding: 5px 15px;
+  background: #ddd;
+  color: #7199b0;
+}
+.event-list-entry .event-date {
+  background: #e9ecef;
+  padding: 2px;
+  text-align: center;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.event-list-entry .event-date .event-date-header {
+  background: #dee2e6;
+  padding: 3px;
+  margin: -2px -2px 0 -2px;
+  font-size: 14px;
+}
+.event-list-entry .event-date .event-start-year {
+  display: block;
+  font-size: 35px;
+  line-height: 35px;
+  opacity: 0.5;
+}
+.event-list-entry .event-date .event-end-date {
+  font-size: 12px;
+  line-height: 14px;
+  opacity: 0.3;
+}
+
 #pageHeader {
   background: #000;
 }
@@ -16448,176 +16627,6 @@ footer div.tags a:hover {
   overflow: auto;
   background: rgba(0, 0, 0, 0.1);
   padding: 15px;
-}
-
-/* posts */
-a.post-headline-link:hover {
-  text-decoration: none;
-}
-
-.post-footer {
-  padding-top: 15px;
-}
-
-.event-date {
-  background: rgba(0, 0, 0, 0.1);
-  padding: 2px;
-  text-align: center;
-}
-
-.event-date-header {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 3px;
-  margin: -2px -2px 0 -2px;
-  font-size: 14px;
-}
-
-.event-start-year {
-  display: block;
-  font-size: 35px;
-  line-height: 35px;
-  opacity: 0.5;
-}
-
-.event-end-date {
-  font-size: 12px;
-  line-height: 14px;
-  opacity: 0.3;
-}
-
-.price-tag {
-  background: #438555;
-  color: #fff;
-  padding: 5px 15px;
-  text-align: center;
-}
-.price-tag.price-tag-fix {
-  float: right;
-  width: 180px;
-}
-
-.price-tag-note {
-  display: block;
-  color: #6c757d;
-}
-
-.price-predecimal {
-  font-size: 34px;
-  font-weight: 300;
-}
-
-.price-decimal {
-  vertical-align: super;
-  font-size: 18px;
-  font-weight: 300;
-  text-decoration: underline;
-}
-
-.product-unit,
-.product-amount {
-  font-size: 11px;
-  opacity: 0.5;
-}
-
-.product-amount::before {
-  content: " / ";
-  font-size: 11px;
-  opacity: 0.5;
-}
-
-.price-tag-label:not(:empty) {
-  font-size: 11px;
-  opacity: 0.5;
-  background: rgba(0, 0, 0, 0.1);
-  float: left;
-  padding: 3px;
-  margin-top: -5px;
-  margin-left: -5px;
-}
-
-.delivery-time span {
-  color: #57af6f;
-}
-
-.post-list-message,
-.post-list-m,
-.post-list-event,
-.post-list-link,
-.post-list-l,
-.post-list-video,
-.post-list-v,
-.post-list-image,
-.post-list-i,
-.post-list-gallery,
-.post-list-g,
-.post-list-product,
-.post-list-file,
-.post-list-f {
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-}
-.post-list-message.draft,
-.post-list-m.draft,
-.post-list-event.draft,
-.post-list-link.draft,
-.post-list-l.draft,
-.post-list-video.draft,
-.post-list-v.draft,
-.post-list-image.draft,
-.post-list-i.draft,
-.post-list-gallery.draft,
-.post-list-g.draft,
-.post-list-product.draft,
-.post-list-file.draft,
-.post-list-f.draft {
-  opacity: 0.8;
-  border: 1px solid #7199b0;
-  padding: 15px;
-}
-.post-list-message.draft .alert-draft,
-.post-list-m.draft .alert-draft,
-.post-list-event.draft .alert-draft,
-.post-list-link.draft .alert-draft,
-.post-list-l.draft .alert-draft,
-.post-list-video.draft .alert-draft,
-.post-list-v.draft .alert-draft,
-.post-list-image.draft .alert-draft,
-.post-list-i.draft .alert-draft,
-.post-list-gallery.draft .alert-draft,
-.post-list-g.draft .alert-draft,
-.post-list-product.draft .alert-draft,
-.post-list-file.draft .alert-draft,
-.post-list-f.draft .alert-draft {
-  margin-top: -15px;
-  margin-left: -15px;
-  margin-right: -15px;
-  border-radius: 0;
-  padding: 5px 15px;
-  background: #ddd;
-  color: #7199b0;
-}
-
-.post-thumbnail {
-  background: rgba(0, 0, 0, 0.1);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  padding: 5px;
-  margin: 5px;
-  float: left;
-  width: 155px;
-  height: 155px;
-  border-radius: 5px;
-}
-
-.post-thumbnail:hover {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-}
-
-.post-author,
-.post-releasedate {
-  font-size: smaller;
 }
 
 /* comments */

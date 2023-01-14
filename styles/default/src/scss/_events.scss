@@ -1,0 +1,61 @@
+/**
+ * styles for events
+ */
+
+.event-list-entry {
+  border-bottom: 1px solid $gray-500;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  &.draft {
+    opacity: 0.8;
+    border: 1px solid $info;
+    padding: 15px;
+
+    .alert-draft {
+      margin-top: -15px;
+      margin-left: -15px;
+      margin-right: -15px;
+      border-radius: 0;
+      padding: 5px 15px;
+      background: #ddd;
+      color: $info;
+    }
+
+  }
+
+  .event-date {
+    background: $gray-200;
+    padding: 2px;
+    text-align: center;
+
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+
+    .event-date-header {
+      background: $gray-300;
+      padding: 3px;
+      margin: -2px -2px 0 -2px;
+      font-size: 14px;
+    }
+
+    .event-start-year {
+      display: block;
+      font-size: 35px;
+      line-height: 35px;
+      opacity: .5;
+    }
+
+    .event-end-date {
+      font-size: 12px;
+      line-height: 14px;
+      opacity: .3;
+    }
+
+  }
+
+}
+
+
+
+
+

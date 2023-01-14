@@ -1,0 +1,88 @@
+
+/**
+ * css for all shop entries
+ */
+
+.product-list-entry {
+  border-bottom: 1px solid $gray-500;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  &.draft {
+    opacity: 0.8;
+    border: 1px solid $info;
+    padding: 15px;
+
+    .alert-draft {
+      margin-top: -15px;
+      margin-left: -15px;
+      margin-right: -15px;
+      border-radius: 0;
+      padding: 5px 15px;
+      background: #ddd;
+      color: $info;
+    }
+
+  }
+}
+
+
+
+.price-tag {
+  background: $price-tag-bg;
+  color: $price-tag-color;
+  padding: 5px 15px;
+
+  text-align: center;
+
+  &.price-tag-fix {
+    float: right;
+    width: 180px;
+  }
+
+}
+
+.price-tag-note {
+  display: block;
+  color: $text-muted;
+}
+
+.price-predecimal {
+  font-size: 34px;
+  font-weight: 300;
+}
+
+.price-decimal {
+  vertical-align: super;
+  font-size: 18px;
+  font-weight: 300;
+  text-decoration: underline;
+}
+
+.product-unit,
+.product-amount {
+  font-size: 11px;
+  opacity: .5;
+}
+
+.product-amount::before {
+  content: " / ";
+  font-size: 11px;
+  opacity: .5;
+}
+
+.price-tag-label:not(:empty) {
+  font-size: 11px;
+  opacity: .5;
+  background: rgba(0,0,0,0.1);
+  float: left;
+  padding: 3px;
+  margin-top: -5px;
+  margin-left: -5px;
+}
+
+.delivery-time {
+
+  span {
+    color: $success;
+  }
+}
