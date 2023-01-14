@@ -65,9 +65,11 @@ $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 
 foreach($all_categories as $cats) {
 
-    if(!in_array($cats['cat_id'],$this_page_categories)) {
-        // skip this category
-        continue;
+    if($page_contents['page_posts_categories'] != 'all') {
+        if (!in_array($cats['cat_id'], $this_page_categories)) {
+            // skip this category
+            continue;
+        }
     }
     //$this_nav_cat_item = $tpl_nav_cats_item;
     $show_category_title = $cats['cat_description'];

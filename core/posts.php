@@ -51,9 +51,11 @@ $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 
 foreach($all_categories as $cats) {
 
-    if(!in_array($cats['cat_id'],$this_page_categories)) {
-        // skip this category
-        continue;
+    if($page_contents['page_posts_categories'] != 'all') {
+        if (!in_array($cats['cat_id'], $this_page_categories)) {
+            // skip this category
+            continue;
+        }
     }
 	
 	//$this_nav_cat_item = $tpl_nav_cats_item;
@@ -77,7 +79,7 @@ foreach($all_categories as $cats) {
         "cat_class" => $cat_class
     );
 
-	
+
 	if($cats['cat_name_clean'] == $array_mod_slug[0]) {
 		// show only posts from this category
 		$posts_filter['categories'] = $cats['cat_id'];
