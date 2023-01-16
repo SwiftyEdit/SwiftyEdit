@@ -14,11 +14,14 @@ $languagePack = "en";
 $lang = array();
 
 
-/* allow image uploads in acp */
+/* allowed image uploads at the backend */
 $se_upload_img_types = array('gif','jpg','jpe','jpeg','png','ico','webp');
 
-/* allow file uploads in acp */
+/* allowed file uploads at the backend */
 $se_upload_file_types = array('pdf','doc','docx','ppt','pptx','xls','xlsx','mp3','mp4','m4a','wav','mpg','mov','avi','epub','ogg');
+
+/* allowed uploads at the frontend */
+$se_upload_frontend_types = array('jpg','jpeg','png');
 
 /* page types */
 $se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders');

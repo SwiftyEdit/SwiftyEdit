@@ -1,4 +1,6 @@
-## SwiftyEdit CMS
+![swiftyedit](https://user-images.githubusercontent.com/5982156/211496033-fc3d3fb3-123b-46cf-b100-05a7e0372922.svg)
+
+# SwiftyEdit CMS
 
 SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or SQLite. Build websites, blogs, webshops and much more for you or your customers.
 

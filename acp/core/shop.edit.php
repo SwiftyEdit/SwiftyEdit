@@ -14,9 +14,11 @@ if((isset($_POST['delete_product'])) && is_numeric($_POST['delete_product'])) {
 /* set modus */
 
 $modus = 'new';
+$form_header_mode = 'New item';
 if((!empty($_POST['duplicate'])) OR ($_POST['modus'] == 'duplicate')) {
     $id = (int) $_POST['duplicate'];
     $modus = "duplicate";
+    $form_header_mode = 'Duplicate: '.$id;
     $product_data = se_get_product_data($id);
     $submit_btn = '<input type="submit" class="btn btn-success w-100" name="save_product" value="'.$lang['duplicate'].'">';
     $submit_variant_btn = '<button type="submit" class="btn btn-default w-100 my-1" name="save_variant" value="'.$id.'">'.$lang['btn_submit_variant'].'</button>';
@@ -25,9 +27,10 @@ if((!empty($_POST['duplicate'])) OR ($_POST['modus'] == 'duplicate')) {
 if((!empty($_POST['edit_id'])) && is_numeric($_POST['edit_id'])) {
     $id = (int) $_POST['edit_id'];
     $modus = 'update';
+    $form_header_mode = 'Edit: '.$id;
     $product_data = se_get_product_data($id);
     $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
-    $submit_delete_btn = '<button type="submit" class="btn btn-danger w-100 my-1" name="delete_product" value="'.$id.'">'.$lang['delete'].'</button>';
+    $submit_delete_btn = '<button onclick="return confirm(\''.$lang['confirm_delete_data'].'\');" type="submit" class="btn btn-danger w-100 my-1" name="delete_product" value="'.$id.'">'.$lang['delete'].'</button>';
 }
 
 if($modus == 'new') {
@@ -74,6 +77,12 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
 
     $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
 
+    if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
+        $file_attachment_user = 2;
+    } else {
+        $file_attachment_user = 1;
+    }
+
     if($_POST['date'] == "") {
         $date = time();
     }
@@ -119,6 +128,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $post_fixed = 1;
     }
 
+    $priority = (int) $_POST['priority'];
+
     /* stock mode */
     $product_stock_mode = 2;
     if(isset($_POST['product_ignore_stock']) AND $_POST['product_ignore_stock'] == 1) {
@@ -162,6 +173,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $db_posts->update("se_products", $inputs, [
             "id" => $id
         ]);
+        $form_header_message = $lang['db_record_changed'];
     } else if($modus == "save_variant") {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
@@ -524,6 +536,11 @@ for($i=0;$i<$cnt_options;$i++) {
     $options_input_str .= '</div>';
 }
 
+$checked_user_uploads = '';
+if($product_data['file_attachment_user'] == '2') {
+    $checked_user_uploads = 'checked';
+}
+
 // template variable
 $options_input = $options_input_str;
 
@@ -788,7 +805,7 @@ $form_tpl = str_replace('{select_file}', $select_file, $form_tpl);
 $form_tpl = str_replace('{select_file_as}', $select_file_as, $form_tpl);
 $form_tpl = str_replace('{cnt_attachment_as_hits}', $product_data['file_attachment_as_hits'], $form_tpl);
 $form_tpl = str_replace('{cnt_attachment_hits}', $product_data['file_attachment_hits'], $form_tpl);
-
+$form_tpl = str_replace('{checked_user_uploads}', $checked_user_uploads, $form_tpl);
 
 /* product */
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
@@ -820,6 +837,9 @@ $form_tpl = str_replace('{select_delivery_time}', $snippet_select_delivery_time,
 
 
 /* form modes */
+
+$form_tpl = str_replace('{form_header_message}', $form_header_message, $form_tpl);
+$form_tpl = str_replace('{form_header_mode}', $form_header_mode, $form_tpl);
 
 $form_tpl = str_replace('{type}', $product_data['type'], $form_tpl);
 $form_tpl = str_replace('{id}', $product_data['id'], $form_tpl);

@@ -411,7 +411,7 @@ if($cnt_filter_posts > 0) {
 
         echo $hidden_csrf_token;
         echo '</form> ';
-        echo '<form class="form-inline p-1" action="acp.php?tn=shop&sub=shop-list" method="POST">';
+        echo '<form class="form-inline p-1" action="acp.php?tn=shop&sub=shop-list" method="POST" onsubmit="return confirm(\''.$lang['confirm_delete_data'].'\');">';
         echo '<button class="btn btn-default text-danger btn-sm" type="submit" name="delete_id" value="'.$get_products[$i]['id'].'">'.$icon['trash_alt'].'</button>';
         echo $hidden_csrf_token;
         echo '</form>';

@@ -45,7 +45,7 @@
                     {$label_delivery_time}: <span>{$product_delivery_time_title}</span>
                 </div>
                 {if $product_cart_mode != "2"}
-                    <div class="mt-3">
+                <div class="mt-3">
                     <form action="{$form_action}" method="POST" class="text-start d-inline">
 
                         {if is_array($select_options)}
@@ -65,6 +65,11 @@
                             <label class="form-label">{$product_options_comment_label}</label>
                             <textarea class="form-control" name="customer_options_comment"></textarea>
                         {/if}
+                    {if $file_upload_message != ''}
+                        <div class="alert alert-info my-3">
+                            {$file_upload_message}
+                        </div>
+                    {/if}
                         <div class="mt-2">
                             <hr>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
@@ -72,9 +77,8 @@
                         <input type="hidden" name="csrf_token" value="{$csrf_token}">
 
                     </form>
-                    </div>
+                </div>
                 {/if}
-
             {/if}
             <!-- pricetag end -->
 

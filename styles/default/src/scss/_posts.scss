@@ -1,0 +1,58 @@
+
+/**
+ * css for all post entries
+ * you can add more css for all types
+ * example: .post-list-m (messages) or .post-list-i (images) ...
+ */
+
+.post-list-entry {
+  border-bottom: 1px solid $gray-500;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  &.draft {
+    opacity: 0.8;
+    border: 1px solid $info;
+    padding: 15px;
+
+    .alert-draft {
+      margin-top: -15px;
+      margin-left: -15px;
+      margin-right: -15px;
+      border-radius: 0;
+      padding: 5px 15px;
+      background: #ddd;
+      color: $info;
+    }
+
+  }
+}
+
+a.post-headline-link {
+  text-decoration: none;
+}
+
+.post-footer {
+  padding-top: 15px;
+}
+
+.post-thumbnail {
+  background: rgba(0,0,0,0.1);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 5px;
+  margin: 5px;
+  float: left;
+  width: 155px;
+  height: 155px;
+  border-radius: 5px;
+}
+
+.post-thumbnail:hover {
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+.post-author,
+.post-releasedate {
+  font-size: smaller;
+}

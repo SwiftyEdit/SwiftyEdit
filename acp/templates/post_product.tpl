@@ -1,3 +1,13 @@
+<div class="subHeader">
+	<div class="row">
+		<div class="col-9">
+			{form_header_message}
+		</div>
+		<div class="col-3">
+			{form_header_mode}
+		</div>
+	</div>
+</div>
 <form action='{formaction}' class='form-horizontal' id='editpage' method='post' name="editpage">
 	<div class="row">
 		<div class="col-md-9">
@@ -244,6 +254,13 @@
 						<label>{label_product_customer_feedback}</label>
 						<input type="text" class="form-control" name="product_options_comment_label" value="{product_options_comment_label}">
 					</div>
+					<div class="mb-3">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" name="file_attachment_user" value="2" id="file_attachment_user" {checked_user_uploads}>
+							<label class="form-check-label" for="file_attachment_user">{label_product_customer_upload}</label>
+						</div>
+					</div>
+					<hr>
 					{options_input}
 				</div> <!-- #options -->
 
@@ -335,7 +352,7 @@
 				<input name="type" type="hidden" value="{type}">
 				<input name="parent_id" type="hidden" value="{parent_id}">
 				<input name="modus" type="hidden" value="{modus}">
-				<input name="id" type="hidden" value="{id}">
+				<input name="edit_id" type="hidden" value="{id}">
 				<input type="hidden" name="csrf_token" value="{token}">
 				<input type="hidden" name="date" value="{date}">
 

@@ -12,6 +12,10 @@
 @import '../../node_modules/featherlight/src/featherlight';
 @import '../../node_modules/featherlight/src/featherlight.gallery';
 
+@import 'posts';
+@import 'shop';
+@import 'events';
+
 #pageHeader {
 	background: $header-bg;
 	p.h1, p.h2 {
@@ -120,162 +124,6 @@ footer div.tags a {
 
 
 
-/* posts */
-
-a.post-headline-link:hover {
-	text-decoration: none;
-}
-
-.post-footer {
-	padding-top: 15px;
-}
-
-
-.event-date {
-	background: rgba(0,0,0,0.1);
-	padding: 2px;
-	text-align: center;
-}
-
-.event-date-header {
-	background: rgba(0,0,0,0.2);
-	padding: 3px;
-	margin: -2px -2px 0 -2px;
-	font-size: 14px;
-}
-
-.event-start-year {
-	display: block;
-	font-size: 35px;
-	line-height: 35px;
-	opacity: .5;
-}
-
-.event-end-date {
-	font-size: 12px;
-	line-height: 14px;
-	opacity: .3;
-}
-
-.price-tag {
-	background: $price-tag-bg;
-	color: $price-tag-color;
-	padding: 5px 15px;
-
-	text-align: center;
-
-	&.price-tag-fix {
-		float: right;
-		width: 180px;
-	}
-
-}
-
-.price-tag-note {
-	display: block;
-	color: $text-muted;
-}
-
-.price-predecimal {
-	font-size: 34px;
-	font-weight: 300;
-}
-
-.price-decimal {
-	vertical-align: super;
-	font-size: 18px;
-	font-weight: 300;
-	text-decoration: underline;
-}
-
-.product-unit,
-.product-amount {
-	font-size: 11px;
-	opacity: .5;
-}
-
-.product-amount::before {
-    content: " / ";
-    font-size: 11px;
-    opacity: .5;
-}
-
-.price-tag-label:not(:empty) {
-	font-size: 11px;
-	opacity: .5;
-	background: rgba(0,0,0,0.1);
-	float: left;
-	padding: 3px;
-	margin-top: -5px;
-	margin-left: -5px;
-}
-
-.delivery-time {
-
-	span {
-		color: $success;
-	}
-}
-
-
-
-.post-list-message,
-.post-list-m,
-.post-list-event,
-.post-list-link,
-.post-list-l,
-.post-list-video,
-.post-list-v,
-.post-list-image,
-.post-list-i,
-.post-list-gallery,
-.post-list-g,
-.post-list-product,
-.post-list-file,
-.post-list-f {
-	border-bottom: 1px solid #ddd;
-	margin-bottom: 15px;
-	padding-bottom: 15px;
-	&.draft {
-		opacity: 0.8;
-		border: 1px solid $info;
-		padding: 15px;
-
-		.alert-draft {
-			margin-top: -15px;
-			margin-left: -15px;
-			margin-right: -15px;
-			border-radius: 0;
-			padding: 5px 15px;
-			background: #ddd;
-			color: $info;
-		}
-
-	}
-}
-
-
-.post-thumbnail {
-	background: rgba(0,0,0,0.1);
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-size: cover;
-	padding: 5px;
-	margin: 5px;
-	float: left;
-	width: 155px;
-	height: 155px;
-	border-radius: 5px;
-}
-
-.post-thumbnail:hover {
-	box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-}
-
-.post-author,
-.post-releasedate {
-	font-size: smaller;
-}
 
 /* comments */
 

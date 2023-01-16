@@ -143,8 +143,8 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 	
 	if($page_position != 'null' OR $page_position != 'portal') {
 		$page_order = (int) $page_order;
-		if(strlen($page_order) < $prefs_pagesort_minlength) {
-			$page_order = str_pad($page_order, $prefs_pagesort_minlength, "0", STR_PAD_LEFT);
+		if(strlen($page_order) < $se_prefs['prefs_pagesort_minlength']) {
+			$page_order = str_pad($page_order, $se_prefs['prefs_pagesort_minlength'], "0", STR_PAD_LEFT);
 		}
 		
 	}

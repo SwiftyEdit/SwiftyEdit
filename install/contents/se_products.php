@@ -19,6 +19,8 @@
  * product_options -> json for options
  * product_options_comment_label -> if we need customer instruction or feedback for this product
  *
+ * file_attachment_user -> 1 || empty || null = no, 2 = yes
+ *
  */
 
 $database = "posts";
@@ -89,6 +91,8 @@ $cols = array(
     "file_attachment" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "file_attachment_hits" => 'INTEGER(12)',
     "file_attachment_external" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    /* customer can upload */
+    "file_attachment_user" => 'INTEGER(12)',
     /* files after sale - only for users who have purchased the item */
     "file_attachment_as" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "file_attachment_as_hits" => 'INTEGER(12)'

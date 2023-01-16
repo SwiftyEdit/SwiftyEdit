@@ -37,7 +37,7 @@
 {foreach $products as $product => $value}
 
 
-    <div class="post-list-product {$value.product_css_classes}">
+    <div class="product-list-entry {$value.product_css_classes}">
         {$value.draft_message}
         <div class="row">
             {if $value.product_img_src != ''}

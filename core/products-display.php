@@ -191,6 +191,15 @@ if(is_array($product_options)) {
     $smarty->assign('select_options', $select_options);
 }
 
+/**
+ * user file upload
+ * check if item has a file upload option
+ */
+
+if($product_data['file_attachment_user'] == 2 && $_SESSION['user_nick'] != "") {
+    $smarty->assign('file_upload_message', $lang['msg_item_needs_upload']);
+}
+
 
 /* product features */
 $product_features = json_decode($product_data['product_features'],JSON_FORCE_OBJECT);

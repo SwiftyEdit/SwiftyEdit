@@ -115,9 +115,16 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 		if($this_item['product_shipping_cat'] > $store_shipping_cat) {
 			$store_shipping_cat = $this_item['product_shipping_cat'];
 		}
-		
 	}
-	
+
+    /**
+     * check, if we need a file from customer
+     */
+
+    $cart_item[$i]['need_upload'] = '';
+    if($this_item['file_attachment_user'] == 2) {
+        $cart_item[$i]['need_upload'] = 'true';
+    }
 
 	if($this_item['product_tax'] == '1') {
 		$tax = $se_prefs['prefs_posts_products_default_tax'];

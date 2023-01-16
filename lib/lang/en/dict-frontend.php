@@ -128,6 +128,8 @@ $lang['msg_upload_avatar_filesize'] = "The Avatar is too big";
 $lang['msg_upload_avatar_filetype'] = "The image must be of type PNG";
 $lang['msg_signed_out'] = "Signed out with success";
 
+$lang['msg_item_needs_upload']  = "For this item we need a file from you. You can upload the file once the order is completed.";
+
 $lang['msg_no_products_found']  = "No products found";
 $lang['msg_no_entries_found']  = "No entries found";
 
