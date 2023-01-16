@@ -651,10 +651,28 @@ for($i=0;$i<count($categories);$i++) {
     }
 
     echo '<div class="form-check">';
-    echo '<input type="checkbox" class="form-check-input" id="cat'.$i.'" name="page_post_categories[]" value="'.$categories[$i]['cat_id'].'" '.$checked_cat.'>';
+    echo '<input type="checkbox" class="form-check-input checkbox-categories" id="cat'.$i.'" name="page_post_categories[]" value="'.$categories[$i]['cat_id'].'" '.$checked_cat.'>';
     echo '<label class="form-check-label" for="cat'.$i.'">'.$categories[$i]['cat_name'].' <small>('.$categories[$i]['cat_lang'].')</small></label>';
     echo '</div>';
 }
+
+?>
+
+<script>
+    $(function() {
+        $('input#cat_all').change(function() {
+            if($('input#cat_all').prop('checked')) {
+                $("input.checkbox-categories").prop('checked', false);
+            }
+        });
+
+        $('input.checkbox-categories').change(function() {
+            $("input#cat_all").prop('checked', false);
+        });
+    });
+</script>
+
+<?php
 
 echo '</fieldset>';
 
