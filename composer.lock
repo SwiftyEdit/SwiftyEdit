@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b0856f0ed01db359af490f478cf3f14",
+    "content-hash": "df8dc4c778feeb101240685a7e21eadf",
     "packages": [
         {
             "name": "catfan/medoo",
@@ -160,33 +160,29 @@
         },
         {
             "name": "erusev/parsedown",
-            "version": "v2.0.0-beta-1",
+            "version": "1.8.0-beta-7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "32278afaf36c758de026b66661d3afd6dfbea743"
+                "reference": "fe7a50eceb4a3c867cc9fa9c0aa906b1067d1955"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/32278afaf36c758de026b66661d3afd6dfbea743",
-                "reference": "32278afaf36c758de026b66661d3afd6dfbea743",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/fe7a50eceb4a3c867cc9fa9c0aa906b1067d1955",
+                "reference": "fe7a50eceb4a3c867cc9fa9c0aa906b1067d1955",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": "^7.1||^8.0"
+                "php": ">=5.3.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.0.0",
-                "infection/infection": "^0.25.0",
-                "phpunit/phpunit": "^9.3.11||^8.5.21||^7.5.20",
-                "roave/infection-static-analysis-plugin": "^1.10.0",
-                "vimeo/psalm": "^4.10.0"
+                "phpunit/phpunit": "^4.8.35"
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "Erusev\\Parsedown\\": "src/"
+                "psr-0": {
+                    "Parsedown": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -208,9 +204,9 @@
             ],
             "support": {
                 "issues": "https://github.com/erusev/parsedown/issues",
-                "source": "https://github.com/erusev/parsedown/tree/v2.0.0-beta-1"
+                "source": "https://github.com/erusev/parsedown/tree/1.8.0-beta-7"
             },
-            "time": "2022-05-21T21:40:24+00:00"
+            "time": "2019-03-17T18:47:21+00:00"
         },
         {
             "name": "mollie/mollie-api-php",
