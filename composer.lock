@@ -1,0 +1,518 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "3b0856f0ed01db359af490f478cf3f14",
+    "packages": [
+        {
+            "name": "catfan/medoo",
+            "version": "v2.1.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/catfan/Medoo.git",
+                "reference": "74be58f80d330d1075ef3bfd0fb3d057349597ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/catfan/Medoo/zipball/74be58f80d330d1075ef3bfd0fb3d057349597ae",
+                "reference": "74be58f80d330d1075ef3bfd0fb3d057349597ae",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0"
+            },
+            "suggest": {
+                "ext-pdo_dblib": "For MSSQL or Sybase database on Linux/UNIX platform",
+                "ext-pdo_mysql": "For MySQL or MariaDB database",
+                "ext-pdo_oci": "For Oracle database",
+                "ext-pdo_pqsql": "For PostgreSQL database",
+                "ext-pdo_sqlite": "For SQLite database",
+                "ext-pdo_sqlsrv": "For MSSQL database on both Window/Liunx platform"
+            },
+            "type": "framework",
+            "autoload": {
+                "psr-4": {
+                    "Medoo\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Angel Lai",
+                    "email": "angel@medoo.in"
+                }
+            ],
+            "description": "The lightweight PHP database framework to accelerate development",
+            "homepage": "https://medoo.in",
+            "keywords": [
+                "database",
+                "database library",
+                "lightweight",
+                "mariadb",
+                "mssql",
+                "mysql",
+                "oracle",
+                "php framework",
+                "postgresql",
+                "sql",
+                "sqlite"
+            ],
+            "support": {
+                "issues": "https://github.com/catfan/Medoo/issues",
+                "source": "https://github.com/catfan/Medoo"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/AngelaonLai",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://opencollective.com/medoo",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2022-07-02T04:27:50+00:00"
+        },
+        {
+            "name": "composer/ca-bundle",
+            "version": "1.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/ca-bundle.git",
+                "reference": "74780ccf8c19d6acb8d65c5f39cd72110e132bbd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/74780ccf8c19d6acb8d65c5f39cd72110e132bbd",
+                "reference": "74780ccf8c19d6acb8d65c5f39cd72110e132bbd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "ext-pcre": "*",
+                "php": "^5.3.2 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.55",
+                "psr/log": "^1.0",
+                "symfony/phpunit-bridge": "^4.2 || ^5",
+                "symfony/process": "^2.5 || ^3.0 || ^4.0 || ^5.0 || ^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\CaBundle\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                }
+            ],
+            "description": "Lets you find a path to the system CA bundle, and includes a fallback to the Mozilla CA bundle.",
+            "keywords": [
+                "cabundle",
+                "cacert",
+                "certificate",
+                "ssl",
+                "tls"
+            ],
+            "support": {
+                "irc": "irc://irc.freenode.org/composer",
+                "issues": "https://github.com/composer/ca-bundle/issues",
+                "source": "https://github.com/composer/ca-bundle/tree/1.3.5"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2023-01-11T08:27:00+00:00"
+        },
+        {
+            "name": "erusev/parsedown",
+            "version": "v2.0.0-beta-1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "32278afaf36c758de026b66661d3afd6dfbea743"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/32278afaf36c758de026b66661d3afd6dfbea743",
+                "reference": "32278afaf36c758de026b66661d3afd6dfbea743",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.1||^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0.0",
+                "infection/infection": "^0.25.0",
+                "phpunit/phpunit": "^9.3.11||^8.5.21||^7.5.20",
+                "roave/infection-static-analysis-plugin": "^1.10.0",
+                "vimeo/psalm": "^4.10.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Erusev\\Parsedown\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/erusev/parsedown/issues",
+                "source": "https://github.com/erusev/parsedown/tree/v2.0.0-beta-1"
+            },
+            "time": "2022-05-21T21:40:24+00:00"
+        },
+        {
+            "name": "mollie/mollie-api-php",
+            "version": "v2.50.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mollie/mollie-api-php.git",
+                "reference": "2291b114ec636392e3e48b73d33199b3b4a790d5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mollie/mollie-api-php/zipball/2291b114ec636392e3e48b73d33199b3b4a790d5",
+                "reference": "2291b114ec636392e3e48b73d33199b3b4a790d5",
+                "shasum": ""
+            },
+            "require": {
+                "composer/ca-bundle": "^1.2",
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "php": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "eloquent/liberator": "^2.0||^3.0",
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "guzzlehttp/guzzle": "^6.3 || ^7.0",
+                "phpstan/phpstan": "^1.4",
+                "phpunit/phpunit": "^8.5 || ^9.5"
+            },
+            "suggest": {
+                "mollie/oauth2-mollie-php": "Use OAuth to authenticate with the Mollie API. This is needed for some endpoints. Visit https://docs.mollie.com/ for more information."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mollie\\Api\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Mollie B.V.",
+                    "email": "info@mollie.com"
+                }
+            ],
+            "description": "Mollie API client library for PHP. Mollie is a European Payment Service provider and offers international payment methods such as Mastercard, VISA, American Express and PayPal, and local payment methods such as iDEAL, Bancontact, SOFORT Banking, SEPA direct debit, Belfius Direct Net, KBC Payment Button and various gift cards such as Podiumcadeaukaart and fashioncheque.",
+            "homepage": "https://www.mollie.com/en/developers",
+            "keywords": [
+                "Apple Pay",
+                "CBC",
+                "Przelewy24",
+                "api",
+                "bancontact",
+                "banktransfer",
+                "belfius",
+                "belfius direct net",
+                "charges",
+                "creditcard",
+                "direct debit",
+                "fashioncheque",
+                "gateway",
+                "gift cards",
+                "ideal",
+                "inghomepay",
+                "intersolve",
+                "kbc",
+                "klarna",
+                "mistercash",
+                "mollie",
+                "paylater",
+                "payment",
+                "payments",
+                "paypal",
+                "paysafecard",
+                "podiumcadeaukaart",
+                "recurring",
+                "refunds",
+                "sepa",
+                "service",
+                "sliceit",
+                "sofort",
+                "sofortbanking",
+                "subscriptions"
+            ],
+            "support": {
+                "issues": "https://github.com/mollie/mollie-api-php/issues",
+                "source": "https://github.com/mollie/mollie-api-php/tree/v2.50.0"
+            },
+            "time": "2023-01-02T08:49:24+00:00"
+        },
+        {
+            "name": "mustangostang/spyc",
+            "version": "0.6.3",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:mustangostang/spyc.git",
+                "reference": "4627c838b16550b666d15aeae1e5289dd5b77da0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mustangostang/spyc/zipball/4627c838b16550b666d15aeae1e5289dd5b77da0",
+                "reference": "4627c838b16550b666d15aeae1e5289dd5b77da0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*@dev"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.5.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "Spyc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mustangostang",
+                    "email": "vlad.andersen@gmail.com"
+                }
+            ],
+            "description": "A simple YAML loader/dumper class for PHP",
+            "homepage": "https://github.com/mustangostang/spyc/",
+            "keywords": [
+                "spyc",
+                "yaml",
+                "yml"
+            ],
+            "time": "2019-09-10T13:16:29+00:00"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v6.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "49cd7ea3d2563f028d7811f06864a53b1f15ff55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/49cd7ea3d2563f028d7811f06864a53b1f15ff55",
+                "reference": "49cd7ea3d2563f028d7811f06864a53b1f15ff55",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-filter": "*",
+                "ext-hash": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+                "doctrine/annotations": "^1.2.6 || ^1.13.3",
+                "php-parallel-lint/php-console-highlighter": "^1.0.0",
+                "php-parallel-lint/php-parallel-lint": "^1.3.2",
+                "phpcompatibility/php-compatibility": "^9.3.5",
+                "roave/security-advisories": "dev-latest",
+                "squizlabs/php_codesniffer": "^3.7.1",
+                "yoast/phpunit-polyfills": "^1.0.4"
+            },
+            "suggest": {
+                "ext-mbstring": "Needed to send email in multibyte encoding charset or decode encoded addresses",
+                "ext-openssl": "Needed for secure SMTP sending and DKIM signing",
+                "greew/oauth2-azure-provider": "Needed for Microsoft Azure XOAUTH2 authentication",
+                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+                "psr/log": "For optional PSR-3 debug logging",
+                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)",
+                "thenetworg/oauth2-azure": "Needed for Microsoft XOAUTH2 authentication"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-only"
+            ],
+            "authors": [
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "support": {
+                "issues": "https://github.com/PHPMailer/PHPMailer/issues",
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.7.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Synchro",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-12-08T13:30:06+00:00"
+        },
+        {
+            "name": "smarty/smarty",
+            "version": "v4.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smarty-php/smarty.git",
+                "reference": "c02e9e135ea719b91f457a0072748ded0e852e7d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/c02e9e135ea719b91f457a0072748ded0e852e7d",
+                "reference": "c02e9e135ea719b91f457a0072748ded0e852e7d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5 || ^7.5",
+                "smarty/smarty-lexer": "^3.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "libs/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Monte Ohrt",
+                    "email": "monte@ohrt.com"
+                },
+                {
+                    "name": "Uwe Tews",
+                    "email": "uwe.tews@googlemail.com"
+                },
+                {
+                    "name": "Rodney Rehm",
+                    "email": "rodney.rehm@medialize.de"
+                },
+                {
+                    "name": "Simon Wisselink",
+                    "homepage": "https://www.iwink.nl/"
+                }
+            ],
+            "description": "Smarty - the compiling PHP template engine",
+            "homepage": "https://smarty-php.github.io/smarty/",
+            "keywords": [
+                "templating"
+            ],
+            "support": {
+                "forum": "https://github.com/smarty-php/smarty/discussions",
+                "issues": "https://github.com/smarty-php/smarty/issues",
+                "source": "https://github.com/smarty-php/smarty/tree/v4.3.0"
+            },
+            "time": "2022-11-22T21:47:32+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "erusev/parsedown": 10
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "platform-overrides": {
+        "php": "8.1.1"
+    },
+    "plugin-api-version": "2.3.0"
+}

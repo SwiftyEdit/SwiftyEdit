@@ -9,7 +9,8 @@ ehthumbs.db
 Thumbs.db
 
 .idea/*
-.idea/vcs.xml
+composer.phar
+/lib/vendor
 
 # Database files and generated content #
 *.sqlite

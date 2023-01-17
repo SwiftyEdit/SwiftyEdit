@@ -371,10 +371,7 @@ function se_send_mail($recipient,$subject,$message) {
 	$subject = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $subject );
 	$message = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $message );
 
-	
-	require_once SE_ROOT.'lib/PHPMailer/src/Exception.php';
-	require_once SE_ROOT.'lib/PHPMailer/src/PHPMailer.php';
-	require_once SE_ROOT.'lib/PHPMailer/src/SMTP.php';
+
 	
 	$mail = new PHPMailer(true);
 	

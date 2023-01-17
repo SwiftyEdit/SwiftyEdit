@@ -15,8 +15,7 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
  */
 
 function se_delete_smarty_cache($cache_id) {
-	
-	require_once '../lib/Smarty/Smarty.class.php';
+
 	$smarty = new Smarty;
 	$smarty->cache_dir = SE_CONTENT.'/cache/cache/';
 	$smarty->compile_dir = SE_CONTENT.'/cache/templates_c/';
