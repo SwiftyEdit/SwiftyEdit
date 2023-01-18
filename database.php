@@ -4,7 +4,6 @@ if(!defined('SE_SECTION')) {
 	die("PERMISSION DENIED!");
 }
 
-require SE_ROOT.'/lib/Medoo.php';
 use Medoo\Medoo;
 
 if(is_file(SE_ROOT.'/config_database.php')) {

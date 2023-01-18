@@ -102,6 +102,26 @@ echo '<input type="text" class="form-control" name="prefs_payment_costs_cash" va
 echo '</td>';
 echo '</tr>';
 
+echo '<tr>';
+echo '<td>';
+$check_mollie = ($prefs_pm_mollie == 1) ? 'checked' : '';
+echo '<input class="form-check-input" type="checkbox" name="prefs_pm_mollie" value="1" id="checkMollie" '.$check_mollie.'>';
+echo '</td>';
+echo '<td>';
+echo '<label class="form-check-label" for="checkMollie">mollie.com</label>';
+echo '</td>';
+echo '<td>';
+echo '<div class="mb-3">';
+echo '<label>Live API Key</label>';
+echo '<input type="text" class="form-control" name="prefs_payment_mollie_live_api_key" value="'.$prefs_payment_mollie_live_api_key.'">';
+echo '</div>';
+echo '<div class="mb-3">';
+echo '<label>Test API Key</label>';
+echo '<input type="text" class="form-control" name="prefs_payment_mollie_test_api_key" value="'.$prefs_payment_mollie_test_api_key.'">';
+echo '</div>';
+echo '</td>';
+echo '</tr>';
+
 echo '</table>';
 
 

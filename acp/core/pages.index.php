@@ -242,7 +242,7 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 			$img_str .= '<tr>';
 			
 			if(substr($this_img[0], 0,4) == 'http') {
-				$file_headers = @get_headers($remote_filename);
+				$file_headers = get_headers($this_img[0]);
 				if (stripos($file_headers[0],"404 Not Found") > 0  || (stripos($file_headers[0], "302 Found") > 0 && stripos($file_headers[7],"404 Not Found") > 0)) {
 					$img_str .= '<td>'.$this_img[0].' <span class="text-danger">(extern file not found)</span></td>';
 					$missing_img = true;

@@ -340,7 +340,10 @@ function scandir_recursive($dir) {
             }
         }
     }
-    $result = array_filter($result);
+    if(is_array($result)) {
+        $result = array_filter($result);
+    }
+
     return $result;
 }
 

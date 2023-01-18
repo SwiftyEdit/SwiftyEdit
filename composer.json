@@ -1,0 +1,25 @@
+{
+  "description": "SwiftyEdit is a Web Content Management System for Websites, Blogs and Shops",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "SwiftyEdit Developer",
+      "role": "Developer",
+      "homepage": "https://github.com/SwiftyEdit/SwiftyEdit"
+    }
+  ],
+  "config": {
+    "platform": {
+      "php": "8.1.1"
+    },
+    "vendor-dir": "lib/vendor"
+  },
+  "require": {
+    "catfan/medoo": "^2.1.7",
+    "erusev/parsedown": "^1.8.0-beta-7",
+    "phpmailer/phpmailer": "^v6.7.1",
+    "smarty/smarty": "^v4.3.0",
+    "mustangostang/spyc": "^0.6.3",
+    "mollie/mollie-api-php": "^v2.50.0"
+  }
+}

@@ -3,6 +3,7 @@ session_start();
 error_reporting(0);
 
 define('SE_SECTION', 'frontend');
+require '../lib/vendor/autoload.php';
 include_once '../config.php';
 include_once '../database.php';
 include_once '../global/functions.posts.php';

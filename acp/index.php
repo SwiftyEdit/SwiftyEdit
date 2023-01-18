@@ -2,7 +2,7 @@
 session_start();
 //error_reporting(0);
 error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
-require '../lib/Medoo.php';
+require '../lib/vendor/autoload.php';
 use Medoo\Medoo;
 
 require '../config.php';

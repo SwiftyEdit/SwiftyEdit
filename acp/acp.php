@@ -1,12 +1,11 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 
-require '../lib/Medoo.php';
+require '../lib/vendor/autoload.php';
 
 use Medoo\Medoo;
 
-require '../lib/Spyc/Spyc.php';
 include 'core/icons.php';
 
 require '../config.php';
@@ -83,7 +82,7 @@ $db_index = new Medoo([
 
 require 'core/access.php';
 include 'versions.php';
-include '../lib/parsedown/Parsedown.php';
+//include '../lib/parsedown/Parsedown.php';
 
 
 if (!isset($_SESSION['editor_class'])) {

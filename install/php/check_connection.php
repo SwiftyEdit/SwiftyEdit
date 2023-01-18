@@ -1,6 +1,5 @@
 <?php
 
-require '../lib/Medoo.php';
 use Medoo\Medoo;
 
 $conn = false;

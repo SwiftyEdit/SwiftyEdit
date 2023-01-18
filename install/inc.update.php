@@ -18,8 +18,6 @@ if($_SESSION['user_class'] != "administrator"){
 
 copy('maintenance.html', '../maintenance.html');
 
-
-require '../lib/Medoo.php';
 use Medoo\Medoo;
 
 require '../config.php';

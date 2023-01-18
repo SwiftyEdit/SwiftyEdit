@@ -15,6 +15,8 @@ header("X-Frame-Options: SAMEORIGIN");
 
 $se_start_time = microtime(true);
 
+require 'lib/vendor/autoload.php';
+
 /**
  * include the default config file
  * @var string $languagePack
@@ -305,7 +307,7 @@ if(!empty($page_contents['page_modul'])) {
 }
 
 /* START SMARTY */
-require_once('lib/Smarty/Smarty.class.php');
+//require_once('lib/Smarty/Smarty.class.php');
 $smarty = new Smarty;
 $smarty->setErrorReporting(0);
 $smarty->compile_dir = 'content/cache/templates_c/';
