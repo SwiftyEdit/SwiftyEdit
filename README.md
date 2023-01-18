@@ -19,6 +19,15 @@ SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or 
 + Web Server: Apache with PDO/SQLite Module and mod_rewrite
 + Database: SQLite, MySQL 5.6+ (optional)
 
+#### Download
+
+Get the latest Version from https://swiftyedit.org/download/
+
+#### Or install using Composer
+```
+composer create-project swiftyedit/swiftyedit
+```
+
 ### Contribution
 
 __You are very welcome to take part in this project.__ We are happy for every contribution. Please submit your code to the develop branch, and start a pull request.
