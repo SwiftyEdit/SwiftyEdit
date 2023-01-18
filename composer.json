@@ -1,4 +1,6 @@
 {
+  "name": "swiftyedit/swiftyedit",
+  "type": "project",
   "description": "SwiftyEdit is a Web Content Management System for Websites, Blogs and Shops",
   "license": "GPL-3.0-or-later",
   "authors": [
@@ -10,7 +12,7 @@
   ],
   "config": {
     "platform": {
-      "php": "8.1.1"
+      "php": "7.3"
     },
     "vendor-dir": "lib/vendor"
   },
