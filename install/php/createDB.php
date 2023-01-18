@@ -10,7 +10,6 @@ if(!defined('INSTALLER')) {
 	die("PERMISSION DENIED!");
 }
 
-require '../lib/Medoo.php';
 use Medoo\Medoo;
 
 $username = $_SESSION['temp_username'];

@@ -4,11 +4,8 @@ error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 
 require '../lib/vendor/autoload.php';
 
-//require '../lib/Medoo.php';
-
 use Medoo\Medoo;
 
-//require '../lib/Spyc/Spyc.php';
 include 'core/icons.php';
 
 require '../config.php';
