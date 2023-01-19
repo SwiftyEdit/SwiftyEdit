@@ -10,51 +10,124 @@ if($_SESSION['user_nick'] == "") {
 
 	$get_my_userdata = get_my_userdata();
 
-	/* Write Data into the database */
-	if(isset($_POST['update_profile'])) {
-
-		// all incoming data -> sanitizeUserInputs
-		foreach($_POST as $key => $val) {
+    /* update billing and delivery data */
+    if(isset($_POST['update_ba_data'])) {
+        foreach($_POST as $key => $val) {
             $$key = sanitizeUserInputs($val);
-		}
-		
-		
-		$user_psw_hash = $get_my_userdata['user_psw_hash'];
-		
-		// check psw entries
-		$set_psw = "false";
-		
-		if(isset($_POST['s_psw']) AND trim($_POST['s_psw']) != '') {
-			/* USER SEND NEW PSW */
-			if($_POST['s_psw'] == $_POST['s_psw_repeat']) {
-				$user_psw_hash = password_hash($_POST['s_psw'], PASSWORD_DEFAULT);
-			}
-		}
-		
-		$count = $db_user->update("se_user", [
-				"user_firstname" => "$s_firstname",
-				"user_lastname" => "$s_lastname",
-				"user_street" => "$s_street",
-				"user_street_nbr" => "$s_nr",
-				"user_zip" => "$s_zip",
-				"user_city" => "$s_city",
-				"user_public_profile" => "$about_you",
-				"user_psw_hash" => "$user_psw_hash"
-					], [
-				"user_id" => $_SESSION['user_id']
-			]);
-		
-		
-		if($count->rowCount() == 1){
-			$smarty->assign("msg_status","alert alert-success",true);
-			$smarty->assign("register_message",$lang['msg_update_profile'],true);
-		} else {
-			$smarty->assign("msg_status","alert alert-danger",true);
-			$smarty->assign("register_message",$lang['msg_update_profile_error'],true);
-		}
+        }
 
-	}
-	
+        $update_ba_data = $db_user->update("se_user", [
+            "ba_company" => "$ba_company",
+            "ba_firstname" => "$ba_firstname",
+            "ba_lastname" => "$ba_lastname",
+            "ba_street" => "$ba_street",
+            "ba_street_nbr" => "$ba_street_nbr",
+            "ba_zip" => "$ba_zip",
+            "ba_city" => "$ba_city"
+        ], [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+
+        if($update_ba_data->rowCount() == 1){
+            $smarty->assign("msg_status","alert alert-success",true);
+            $smarty->assign("register_message",$lang['msg_update_profile'],true);
+        } else {
+            $smarty->assign("msg_status","alert alert-danger",true);
+            $smarty->assign("register_message",$lang['msg_update_profile_error'],true);
+        }
+    }
+
+    /* update address data */
+    if(isset($_POST['update_address_data'])) {
+        foreach ($_POST as $key => $val) {
+            $$key = sanitizeUserInputs($val);
+        }
+
+        $update_address_data = $db_user->update("se_user", [
+            "user_firstname" => "$s_firstname",
+            "user_lastname" => "$s_lastname",
+            "user_street" => "$s_street",
+            "user_street_nbr" => "$s_nr",
+            "user_zip" => "$s_zip",
+            "user_city" => "$s_city",
+            "user_public_profile" => "$about_you"
+        ], [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+        if($update_address_data->rowCount() == 1){
+            $smarty->assign("msg_status","alert alert-success",true);
+            $smarty->assign("register_message",$lang['msg_update_profile'],true);
+        } else {
+            $smarty->assign("msg_status","alert alert-danger",true);
+            $smarty->assign("register_message",$lang['msg_update_profile_error'],true);
+        }
+    }
+
+    /* update password */
+    if(isset($_POST['update_psw_data'])) {
+        $user_psw_hash = $get_my_userdata['user_psw_hash'];
+        if(isset($_POST['s_psw']) AND trim($_POST['s_psw']) != '') {
+            /* USER SEND NEW PSW */
+            if($_POST['s_psw'] == $_POST['s_psw_repeat']) {
+                $user_psw_hash = password_hash($_POST['s_psw'], PASSWORD_DEFAULT);
+            }
+        }
+        $update_psw = $db_user->update("se_user", [
+            "user_psw_hash" => "$user_psw_hash"
+        ], [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+
+        if($update_psw->rowCount() == 1){
+            $smarty->assign("msg_status","alert alert-success",true);
+            $smarty->assign("register_message",$lang['msg_update_profile'],true);
+        } else {
+            $smarty->assign("msg_status","alert alert-danger",true);
+            $smarty->assign("register_message",$lang['msg_update_profile_error'],true);
+        }
+    }
+
+
+
+        /* update email data */
+    if(isset($_POST['update_email_data'])) {
+
+        $new_user_mail = '';
+
+        if(isset($_POST['set_mail']) AND trim($_POST['set_mail']) != '') {
+            if($_POST['set_mail'] == $_POST['set_mail_repeat']) {
+                $new_user_mail = sanitizeUserInputs($_POST['set_mail']);
+            }
+        }
+
+        /* check if mail exists */
+        $all_registered_mails = get_all_usermail();
+        foreach ($all_registered_mails as $user_mails) {
+            if($new_user_mail == $user_mails['user_mail']) {
+                // the address is already registered - do nothing
+                $new_user_mail = '';
+            }
+        }
+
+        if($new_user_mail != '') {
+            $update_mail = $db_user->update("se_user", [
+                "user_mail" => "$new_user_mail"
+            ], [
+                "user_id" => (int) $_SESSION['user_id']
+            ]);
+
+            if($update_mail->rowCount() == 1){
+                $smarty->assign("msg_status","alert alert-success",true);
+                $smarty->assign("register_message",$lang['msg_update_profile'],true);
+            } else {
+                $smarty->assign("msg_status","alert alert-danger",true);
+                $smarty->assign("register_message",$lang['msg_update_profile_error'],true);
+            }
+
+        }
+
+    }
+
 
 	/**
 	 * upload avatar
@@ -153,6 +226,16 @@ if($_SESSION['user_nick'] == "") {
 	//example: $get_my_userdata['user_nick']
 	
 	$smarty->assign("user_nick",$_SESSION['user_nick'],true);
+
+    $smarty->assign("ba_company",$get_my_userdata['ba_company'],true);
+    $smarty->assign("ba_firstname",$get_my_userdata['ba_firstname'],true);
+    $smarty->assign("ba_lastname",$get_my_userdata['ba_lastname'],true);
+    $smarty->assign("ba_street",$get_my_userdata['ba_street'],true);
+    $smarty->assign("ba_street_nbr",$get_my_userdata['ba_street_nbr'],true);
+    $smarty->assign("ba_zip",$get_my_userdata['ba_zip'],true);
+    $smarty->assign("ba_city",$get_my_userdata['ba_city'],true);
+
+    $smarty->assign("get_mail_address",$get_my_userdata['user_mail'],true);
 	$smarty->assign("get_firstname",$get_my_userdata['user_firstname'],true);
 	$smarty->assign("get_lastname",$get_my_userdata['user_lastname'],true);
 	$smarty->assign("get_street",$get_my_userdata['user_street'],true);
