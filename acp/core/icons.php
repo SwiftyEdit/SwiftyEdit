@@ -17,6 +17,7 @@ $icon = [
     "ban" => '<i class="bi bi-slash-circle"></i>',
     "bars" => '<i class="bi bi-chart-bar"></i>',
     "bookmark" => '<i class="bi bi-bookmark"></i>',
+    "bookmarks_fill" => '<i class="bi bi-bookmarks-fill"></i>',
 
     "calendar_check" => '<i class="bi bi-calendar-check"></i>',
     "calendar_event" => '<i class="bi bi-calendar-event"></i>',
@@ -121,6 +122,7 @@ $icon = [
 
     "table" => '<i class="bi bi-table"></i>',
     "tags" => '<i class="bi bi-tags"></i>',
+    "tags_fill" => '<i class="bi bi-tags-fill"></i>',
     "tasks" => '<i class="bi bi-list-task"></i>',
     "three_dots" => '<i class="bi bi-three-dots"></i>',
     "thumbs_down" => '<i class="bi bi-hand-thumbs-down"></i>',

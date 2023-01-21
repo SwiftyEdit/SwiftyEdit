@@ -1,0 +1,12 @@
+<div class="alert alert-info">
+    <p>This text can be modified in ACP &gt; Contents &gt; Snippets</p>
+</div>
+
+<h3>Terms of use</h3>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+
+<h4>Privacy policy</h4>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+
+<h5>Use of your personal data</h5>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>

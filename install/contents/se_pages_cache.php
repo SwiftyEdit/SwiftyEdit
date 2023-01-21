@@ -58,6 +58,7 @@ $cols = array(
 	"page_version_date" => "VARCHAR(50) NOT NULL DEFAULT ''",
   "page_labels" => "VARCHAR(100) NOT NULL DEFAULT ''",
   "page_categories" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "page_categories_mode" => 'INTEGER(12)',
   "page_comments" => 'INTEGER(12)'
 	
   );
