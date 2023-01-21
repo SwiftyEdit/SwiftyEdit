@@ -173,14 +173,17 @@ $dbh_user->insert("se_user", [
 
 
 $portal_content = file_get_contents("contents/text_welcome_en.txt");
+$email_confirm_content = file_get_contents("contents/text_email_confirm_en.txt");
+$agreement_content = file_get_contents("contents/text_agreement_en.txt");
 if($_SESSION['lang'] == 'de') {
     $portal_content = file_get_contents("contents/text_welcome_de.txt");
+    $email_confirm_content = file_get_contents("contents/text_email_confirm_de.txt");
+    $agreement_content = file_get_contents("contents/text_agreement_de.txt");
 }
 
 $example_content = file_get_contents("contents/text_example.txt");
 $footer_content = file_get_contents("contents/text_footer.txt");
-$agreement_content = file_get_contents("contents/text_agreement.txt");
-$email_confirm_content = file_get_contents("contents/text_email_confirm.txt");
+
 $time = time();
 
 

@@ -1,0 +1,15 @@
+<p>Hello {USERNAME},</p>
+
+<p>Your account has been successfully created.<br>
+In order to log in to {SITENAME} you need to activate your account.<br>
+Click on the following activation link or copy the complete address into the address bar of your browser.</p>
+
+<p>Activation link:<br>
+{ACTIVATIONLINK}</p>
+
+<p>________________</p>
+
+<p>For security reasons, your password is only stored in encrypted form on the server.</p>
+<p>If you forget your password, you can have a new one sent to you on the profile page.</p>
+
+<p>Thank you for your registration.</p>

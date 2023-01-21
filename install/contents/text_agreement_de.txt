@@ -1,4 +1,6 @@
-<div class="alert alert-info"><p>Dieser Text kann unter Inhalt &gt; Snippets ge&auml;ndert werden</p></div>
+<div class="alert alert-info">
+    <p>Dieser Text kann unter Inhalt &gt; Snippets ge&auml;ndert werden</p>
+</div>
 
 <h3>Nutzungsbedingungen</h3>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
