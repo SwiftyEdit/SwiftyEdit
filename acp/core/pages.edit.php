@@ -227,7 +227,9 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 		$string_page_categories = implode(",", $arr_categories);
 	} else {
 		$string_page_categories = "";
-	}	
+	}
+
+    $page_categories_mode = (int) $_POST['page_categories_mode'];
 	
 	// template
 	$select_template = explode("<|-|>", $_POST['select_template']);
@@ -325,6 +327,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_version" => $page_version,
 			"page_labels" => "$string_labels",
 			"page_categories" => "$string_page_categories",
+            "page_categories_mode" => $page_categories_mode,
 			"page_comments" => "$page_comments",
 			"page_psw" => "$page_psw"		
 		];
@@ -394,6 +397,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_version" => $page_version,
 			"page_labels" => "$string_labels",
 			"page_categories" => "$string_page_categories",
+            "page_categories_mode" => $page_categories_mode,
 			"page_comments" => "$page_comments",
 			"page_psw" => "$page_psw"
 		];
@@ -453,6 +457,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_version" => $page_version,
 			"page_labels" => "$string_labels",
 			"page_categories" => "$string_page_categories",
+            "page_categories_mode" => $page_categories_mode,
 			"page_comments" => "$page_comments",
 			"page_psw" => "$page_psw"
 		];
@@ -523,6 +528,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_version" => $page_version,
 			"page_labels" => "$string_labels",
 			"page_categories" => "$string_page_categories",
+            "page_categories_mode" => $page_categories_mode,
 			"page_comments" => "$page_comments",
 			"page_psw" => "$page_psw"
 		];
@@ -587,6 +593,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_version" => $page_version,
 			"page_labels" => "$string_labels",
 			"page_categories" => "$string_page_categories",
+            "page_categories_mode" => $page_categories_mode,
 			"page_comments" => "$page_comments",
 			"page_psw" => "$page_psw"
 		];

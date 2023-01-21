@@ -629,6 +629,22 @@ echo '<div class="col-6">';
 echo '<fieldset>';
 echo '<legend>'.$lang['categories'].'</legend>';
 
+if($page_categories_mode == '' OR $page_categories_mode == 1) {
+    $sel_show_categories = 'selected';
+    $sel_hide_categories = '';
+} else {
+    $sel_show_categories = '';
+    $sel_hide_categories = 'selected';
+}
+
+echo '<div class="mb-3">';
+echo '<select class="form-control" name="page_categories_mode">';
+echo '<option value="1" '.$sel_show_categories.'>'.$lang['categories_select_show'].'</option>';
+echo '<option value="2" '.$sel_hide_categories.'>'.$lang['categories_select_hide'].'</option>';
+echo '</select>';
+echo '</div>';
+
+
 $categories = se_get_categories();
 $page_cats_array = explode(',', $page_posts_categories);
 

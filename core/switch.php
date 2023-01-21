@@ -292,6 +292,9 @@ if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
 	$smarty->assign('extra_content', "");
 }
 
+/* show or hide categories */
+$smarty->assign('page_categories_mode', $page_contents['page_categories_mode']);
+
 /* show checkout */
 if($p == "checkout") {
 	include 'checkout.php';

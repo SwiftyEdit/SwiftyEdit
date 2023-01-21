@@ -37,7 +37,10 @@ $lang += [
     'nav_addons' => 'Addons',
     /* mailbox */
     'nav_inbox' => 'Inbox',
-    'nav_mailbox' => 'E-Mails'
+    'nav_mailbox' => 'E-Mails',
+    /* categories */
+    'categories_select_show' => 'Rubriken anzeigen',
+    'categories_select_hide' => 'Rubriken verbergen'
 ];
 
 $lang += [
