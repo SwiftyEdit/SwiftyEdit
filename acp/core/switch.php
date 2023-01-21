@@ -68,6 +68,10 @@ switch ($tn) {
 		$maininc = "inc.inbox";
 		break;
 
+    case "categories":
+        $maininc = "inc.categories";
+        break;
+
     case "dashboard":
     default:
 		$maininc = "inc.dashboard";

@@ -128,7 +128,7 @@ echo '</div>';
 echo '</li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a class="sidebar-nav-link color-uploads" href="acp.php?tn=filebrowser&sub=browse">';
+echo '<a class="sidebar-nav-link '.($tn == "filebrowser" ? 'sidebar-nav-active' :'').' color-uploads" href="acp.php?tn=filebrowser&sub=browse">';
 echo $icon['folder'];
 echo '<span>'.$lang['tn_filebrowser'].'</span></a></li>';
 
@@ -161,6 +161,11 @@ echo '</div>';
 echo '</li>';
 
 echo '<li class="sidebar-nav-item">';
+echo '<a class="sidebar-nav-link '.($tn == "categories" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=categories">';
+echo $icon['bookmarks_fill'];
+echo '<span>'.$lang['categories'].'</span></a></li>';
+
+echo '<li class="sidebar-nav-item">';
 echo '<a data-bs-toggle="collapse" href="#sidebarPrefs" aria-expanded="false" aria-controls="sidebarPrefs" class="sidebar-nav-link d-block">';
 echo $icon['gear'];
 echo '<span>'.$lang['nav_preferences'].'</span>';
@@ -168,18 +173,17 @@ echo '</a>';
 echo '<div class="collapse '.($tn == "system" ? 'show' :'').'" id="sidebarPrefs">';
 echo '<ul>';
 echo '<li><a class="sidebar-nav '.($sub == "general" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=general">'.$icon['arrow_right_short'].' '.$lang['nav_general'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "posts" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=posts">'.$icon['arrow_right_short'].' '.$lang['tn_posts'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shop" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=shop">'.$icon['arrow_right_short'].' '.$lang['tn_shop'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "posts" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=posts">'.$icon['file_earmark_post'].' '.$lang['tn_posts'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "shop" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=shop">'.$icon['store'].' '.$lang['tn_shop'].'</a></li>';
 echo '</ul>';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "labels" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=labels">'.$icon['arrow_right_short'].' '.$lang['labels'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "categories" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=categories">'.$icon['arrow_right_short'].' '.$lang['categories'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "labels" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=labels">'.$icon['tags_fill'].' '.$lang['labels'].'</a></li>';
 echo '</ul>';
 echo '<ul>';
-echo '<li class="mt-2"><a class="sidebar-nav '.($sub == "customize" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=customize">'.$icon['arrow_right_short'].' '.$lang['customize_database'].'</a></li>';
+echo '<li class="mt-2"><a class="sidebar-nav '.($sub == "customize" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=customize">'.$icon['database'].' '.$lang['customize_database'].'</a></li>';
 echo '</ul>';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "update" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=update">'.$icon['arrow_right_short'].' '.$lang['system_update'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "update" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=update">'.$icon['arrow_repeat'].' '.$lang['system_update'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '</li>';
