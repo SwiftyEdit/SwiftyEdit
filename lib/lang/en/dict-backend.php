@@ -37,7 +37,9 @@ $lang += [
     'nav_mailbox' => 'E-Mails',
     /* categories */
     'categories_select_show' => 'Show categories',
-    'categories_select_hide' => 'Hide categories'
+    'categories_select_hide' => 'Hide categories',
+
+    'missing_title' => 'no title ...'
 ];
 
 $lang += [

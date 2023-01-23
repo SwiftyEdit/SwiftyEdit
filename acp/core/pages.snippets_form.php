@@ -284,7 +284,7 @@ echo '<input class="form-control" type="text" name="snippet_groups" value="'.$sn
 echo '</div>';
 
 echo '<div class="alert alert-dark" style="padding:2px 3px;">';
-echo '<strong>'.$lang['label_notes'].':</strong>';
+echo '<strong>'.$icon['info_circle'].' '.$lang['label_notes'].':</strong>';
 echo '<textarea class="masked-textarea" name="snippet_notes" rows="5">'.html_entity_decode($snippet_notes).'</textarea>';
 echo '</div>';
 

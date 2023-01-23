@@ -386,8 +386,8 @@ if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_s
 		$get_snip_id = $snippets_list[$i]['snippet_id'];
 		$get_snip_name = $snippets_list[$i]['snippet_name'];
 		$get_snip_lang = $snippets_list[$i]['snippet_lang'];
-		$get_snip_title = $snippets_list[$i]['snippet_title'];
-		$get_snip_content = $snippets_list[$i]['snippet_content'];
+		$get_snip_title = strip_tags($snippets_list[$i]['snippet_title']);
+		$get_snip_content = strip_tags($snippets_list[$i]['snippet_content']);
 		$get_snip_lastedit = (int) $snippets_list[$i]['snippet_lastedit'];
 		$get_snip_lastedit_from = $snippets_list[$i]['snippet_lastedit_from'];
 		$get_snip_keywords = $snippets_list[$i]['snippet_keywords'];	
@@ -397,11 +397,23 @@ if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_s
 		$get_snip_url_name = $snippets_list[$i]['snippet_permalink_name'];
 		$get_snip_url_classes = $snippets_list[$i]['snippet_permalink_classes'];
 		$get_snip_images = $snippets_list[$i]['snippet_images'];
+        $get_snip_notes = strip_tags($snippets_list[$i]['snippet_notes']);
 		
-		$get_snip_content = strip_tags($get_snip_content);
+
 		if(strlen($get_snip_content) > 150) {
 			$get_snip_content = substr($get_snip_content, 0, 100) . ' <small><i>(...)</i></small>';
 		}
+
+        if($get_snip_title == '') {
+            $get_snip_title = '<em class="opacity-50">'.$lang['missing_title'].'</em>';
+        }
+
+        if($get_snip_notes != '') {
+            $info_tooltip = '<span title="'.$get_snip_notes.'">'.$icon['info_circle'].'</span> ';
+
+            $get_snip_title = $info_tooltip.$get_snip_title;
+        }
+
 		
 		$label = '';
 		if($snippets_list[$i]['snippet_labels'] != '') {
@@ -453,7 +465,7 @@ if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_s
 		echo '<tr>';
 		echo '<td>'.$lang_thumb.'</td>';
 		echo '<td nowrap>'.$show_snip_name.'</td>';
-		echo '<td><strong>'.$get_snip_title.'</strong><br><small>'.$get_snip_content.'</small><br>'.$kw_string.'</td>';
+		echo '<td>'.$get_snip_title.'<br><small>'.$get_snip_content.'</small><br>'.$kw_string.'</td>';
 		echo '<td>'.$class_badge.'</td>';
 		echo '<td>'.$label.'</td>';
 		echo '<td>';
