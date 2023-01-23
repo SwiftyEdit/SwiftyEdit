@@ -269,9 +269,8 @@ echo '<td>'.$lang['label_language'].'</td>';
 echo '<td>'.$lang['label_text'].'</td>';
 echo '<td></td>';
 echo '</tr>';
+
 for($i=0;$i<$cnt_data;$i++) {
-
-
 
     if($_SESSION['switch_product_features'] == 'show_options') {
         $get_show_values = json_decode($show_data[$i]['snippet_content']);
@@ -283,10 +282,12 @@ for($i=0;$i<$cnt_data;$i++) {
         $show_values = $show_data[$i]['snippet_content'];
     }
 
+    $flag = '<img src="/lib/lang/' . $show_data[$i]['snippet_lang'] . '/flag.png" width="15">';
+
 	echo '<tr>';
     echo '<td>'.$show_data[$i]['snippet_id'].'</td>';
 	echo '<td>'.$show_data[$i]['snippet_priority'].'</td>';
-	echo '<td>'.$show_data[$i]['snippet_lang'].'</td>';
+	echo '<td>'.$flag.'</td>';
 	echo '<td><strong>'.$show_data[$i]['snippet_title'].'</strong><br>'.$show_values.'</td>';
 	echo '<td class="text-end" style="width:120px;">';
 	echo '<form action="?tn=shop&sub=shop-features" method="POST">';
