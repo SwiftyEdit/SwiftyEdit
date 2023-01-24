@@ -1,8 +1,7 @@
 <?php
 session_start();
 error_reporting(0);
-
-require '../../lib/Medoo.php';
+require '../../lib/vendor/autoload.php';
 use Medoo\Medoo;
 
 if($_SESSION['user_class'] != "administrator"){
