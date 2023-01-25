@@ -227,17 +227,6 @@ function text_parser($text) {
     if(function_exists('theme_text_parser')) {
         $text = theme_text_parser($text);
     }
-	
-	/* replace all shortcodes */
-	if(is_array($shortcodes)) {
-		foreach($shortcodes as $k => $v) {
-			
-			$text = str_replace($v['snippet_shortcode'], $v['snippet_content'], $text,$count);
-			if($count > 0) {
-				se_store_admin_helper('sc',$v['snippet_shortcode']);
-			}
-		}
-	}
 
     $text = preg_replace_callback(
         '/\[snippet\](.*?)\[\/snippet\]/si',
@@ -271,6 +260,17 @@ function text_parser($text) {
         },
         $text
     );
+
+    /* replace all shortcodes */
+    if(is_array($shortcodes)) {
+        foreach($shortcodes as $k => $v) {
+
+            $text = str_replace($v['snippet_shortcode'], $v['snippet_content'], $text,$count);
+            if($count > 0) {
+                se_store_admin_helper('sc',$v['snippet_shortcode']);
+            }
+        }
+    }
 	
 	$text = preg_replace_callback(
 	    '/\[include\](.*?)\[\/include\]/s',
