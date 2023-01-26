@@ -38,6 +38,20 @@ $lang += [
     /* categories */
     'categories_select_show' => 'Show categories',
     'categories_select_hide' => 'Hide categories',
+    /* inbox */
+    'label_new_email' => 'New E-Mail',
+    'label_time_created' => 'Created',
+    'label_time_lastedit' => 'Edit',
+    'recipients' => 'Recipients',
+    'label_all_users' => 'Send to all users',
+    'label_marketing_users' => 'Newsletter recipients ',
+    'label_admins' => 'Admins only',
+    'label_form_status_new' => 'Create new E-Mail',
+    'label_form_status_edit' => 'Edit E-Mail',
+    'label_subject' => 'Subject',
+    'label_text' => 'Text',
+    'btn_send_email' => 'Send E-Mail',
+    'btn_close' => 'Close',
 
     'missing_title' => 'no title ...'
 ];
