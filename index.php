@@ -425,13 +425,6 @@ if($se_template_stylesheet != '') {
 	$smarty->assign('se_template_stylesheet', basename($se_template_stylesheet));
 }
 
-include 'core/definitions.php';
-
-/* custom theme definitions and functions */
-if(is_file('styles/'.$se_template.'/php/definitions.php')) {
-	include 'styles/'.$se_template.'/php/definitions.php';
-}
-
 if(is_file("styles/$se_template/php/index.php")) {
 	include 'styles/'.$se_template.'/php/index.php';
 }
