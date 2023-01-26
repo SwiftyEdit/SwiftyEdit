@@ -580,13 +580,20 @@ function se_get_textlib($name,$lang,$type) {
 		$lang = $languagePack;
 	}
 
-	
+	/* get snippet by name and lang */
 	$textlibData = $db_content->get("se_snippets", "*", [
 		"AND" => [
 			"snippet_name" => "$name",
 			"snippet_lang" => "$lang"
 		]
 	]);
+
+    /* no snippet found - try without language */
+    if(!is_array($textlibData)) {
+        $textlibData = $db_content->get("se_snippets", "*", [
+            "snippet_name" => "$name"
+        ]);
+    }
 
 	if($type == 'all') {
 		return $textlibData;

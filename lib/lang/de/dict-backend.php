@@ -41,6 +41,20 @@ $lang += [
     /* categories */
     'categories_select_show' => 'Rubriken anzeigen',
     'categories_select_hide' => 'Rubriken verbergen',
+    /* inbox */
+    'label_new_email' => 'Neue E-Mail erstellen',
+    'label_time_created' => 'Erstellt',
+    'label_time_lastedit' => 'Aktualisiert',
+    'recipients' => 'Empfänger',
+    'label_all_users' => 'An alle Benutzer',
+    'label_marketing_users' => 'Newsletter Empfänger',
+    'label_admins' => 'An Administratoren',
+    'label_form_status_new' => 'Neue E-Mail erstellen',
+    'label_form_status_edit' => 'E-Mail bearbeiten',
+    'label_subject' => 'Betreff',
+    'label_text' => 'Text',
+    'btn_send_email' => 'E-Mail senden',
+    'btn_close' => 'zurück',
 
     'missing_title' => 'Kein Titel ...'
 ];
