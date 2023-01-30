@@ -214,7 +214,7 @@ $dbh_content->insert("se_pages", [
 	"page_lastedit_from" => "$username",
 	"page_template" => "default",
 	"page_template_layout" => "layout_default.tpl",
-    "page_template_stylesheet" => "../styles/default/css/theme_light.css",
+    "page_template_stylesheet" => "../styles/default/css/default.css",
 	"page_sort" => "portal",
 	"page_meta_author" => "$username",
 	"page_meta_date" => "$page_lastedit",
@@ -272,7 +272,7 @@ $dbh_content->insert("se_options", [
 		"option_module" => "se"
 	], [
 		"option_key" => "prefs_template_stylesheet",
-		"option_value" => "../styles/default/css/theme_light.css",
+		"option_value" => "../styles/default/css/default.css",
 		"option_module" => "se"
 	], [
 		"option_key" => "prefs_rss_time_offset",

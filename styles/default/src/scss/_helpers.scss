@@ -1,0 +1,40 @@
+hr.hr-shadow {
+  padding: 0;
+  border: 0;
+  outline: 0;
+  overflow: hidden;
+  height: 25px;
+  margin: 15px 0 0 0;
+  box-shadow: none;
+  background: transparent;
+}
+hr.hr-shadow::after {
+  content: "";
+  margin: 0 auto;
+  position: relative;
+  top: -35px;
+  display: block;
+  width: 75%;
+  height: 20px;
+  box-shadow: 0px 20px 10px $border-color;
+  border-radius: 50%;
+}
+
+[data-bs-theme=dark] hr.hr-shadow::after {
+  box-shadow: 0px 20px 10px $black;
+}
+
+hr {
+  border-top: 1px solid $border-color;
+}
+
+[data-bs-theme="dark"] hr {
+  border-top: 1px solid $border-color-dark;
+}
+
+.scrollBox {
+  max-height: 250px;
+  overflow: auto;
+  background: rgba(0,0,0,0.10);
+  padding: 15px;
+}

@@ -1,0 +1,50 @@
+#page_comments {
+  margin-top: 15px;
+  ul, li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  ul > li {
+    padding-left: 10px;
+  }
+}
+
+[data-bs-theme=dark] .comment-entry {
+  background: $widget-bg-dark;
+  border: 1px solid darken($widget-bg-dark,5);
+  .entry-nbr {
+    background: darken($widget-bg-dark,5);
+    color: lighten($widget-bg-dark,5);
+  }
+
+  .card-footer {
+    border-top: 1px solid lighten($widget-bg-dark,5);
+  }
+
+}
+
+.comment-entry {
+  border: 1px solid darken($widget-bg,5);
+  background: $widget-bg;
+  margin: 5px 0;
+  border-radius: 0;
+  padding: 5px;
+
+  .h5 {
+    margin-bottom: 0;
+  }
+
+  .entry-nbr {
+    font-size: 18px;
+    font-weight: bold;
+    display: inline-block;
+    width: auto;
+    float: right;
+    background: darken($widget-bg,5);
+    color: lighten($widget-bg,5);
+    padding: 5px 10px;
+    border-bottom-left-radius: 5px;
+    margin: -5px -5px 0 0;
+  }
+}

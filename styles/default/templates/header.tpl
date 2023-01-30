@@ -2,11 +2,46 @@
 
     <div class="container pt-3 mb-3">
 
+        <div class="styleswitch-container">
+            <div class="dropdown">
+                <button class="btn btn-link btn-sm dropdown-toggle" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+                    <i class="bi theme-icon-active"></i>
+                    <span class="d-lg-none ms-2">Toggle theme</span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="bd-theme">
+                    <li>
+                        <button type="button" class="dropdown-item active" data-bs-theme-value="light">
+                            <i class="bi bi-sun-fill"></i>
+                            Light
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item" data-bs-theme-value="dark">
+                            <i class="bi bi-moon-stars-fill"></i>
+                            Dark
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item" data-bs-theme-value="auto">
+                            <i class="bi bi-circle-half"></i>
+                            Auto
+                        </button>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
         {if $cnt_shopping_cart_items != ''}
             <div class="shopping-cart-container">
-                <a href="{$shopping_cart_uri}" title="{$lang_label_shopping_cart}"><i
-                            class="bi bi-cart-fill"></i> {$cnt_shopping_cart_items}</a>
+                <a href="{$shopping_cart_uri}" title="{$lang_label_shopping_cart}">
+                    <i class="bi bi-basket-fill"></i> {$cnt_shopping_cart_items}
+                </a>
             </div>
+        {/if}
+
+        {if $social_media_block != ''}
+            {include file='socialmedia.tpl'}
         {/if}
 
         {if is_array($legal_pages) }
@@ -20,9 +55,6 @@
             </div>
         {/if}
 
-        {if $social_media_block != ''}
-            {include file='socialmedia.tpl'}
-        {/if}
 
         <div class="row">
 

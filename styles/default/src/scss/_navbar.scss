@@ -1,0 +1,23 @@
+.navbar-se {
+  background: $navbar-bg;
+  color: $navbar-color;
+  ul {
+    li.nav-item {
+      a.nav-link {
+        color: $navbar-color;
+
+        &.active {
+          color: $navbar-color-active;
+        }
+      }
+    }
+  }
+
+  .searchbox {
+    background: darken($navbar-bg,5);
+    border-color: lighten($navbar-bg,10);;
+    border-radius: 50px;
+    color: $light;
+  }
+
+}
