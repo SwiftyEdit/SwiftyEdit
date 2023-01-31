@@ -18986,6 +18986,24 @@ input.form-control[readonly] {
   border-color: #e6e6e6;
 }
 
+/* image picker */
+div.image-checkbox {
+  cursor: pointer;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  margin-bottom: 0;
+  outline: 0;
+}
+div.image-checkbox.image-checkbox-checked {
+  border-color: #9fb633;
+}
+div.image-checkbox input[type=checkbox] {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  display: none;
+}
+
 #toggleNav {
   display: inline-block;
   height: 40px;
@@ -20104,6 +20122,14 @@ span.categories-list input[type=checkbox] {
 
 .tempus-dominus-widget.show {
   display: block;
+}
+
+.tempus-dominus-widget.show.date-container {
+  min-height: 315px;
+}
+
+.tempus-dominus-widget.show.time-container {
+  min-height: 217px;
 }
 
 .tempus-dominus-widget .td-collapse:not(.show) {
@@ -21717,97 +21743,6 @@ form.dropzone-theme .dz-default.dz-message {
   background: transparent url(../../images/filedrop-theme.png) no-repeat center center;
   height: 100%;
   margin: 0;
-}
-
-/* image-picker */
-.images-name {
-  font-size: 10px;
-  background: #cbc0d3;
-  overflow: hidden;
-  margin: -3px -3px 3px -3px;
-  padding: 3px 1px;
-}
-
-.file-thumb,
-.image_picker_image {
-  max-width: 100%;
-  height: auto;
-}
-
-ul.image_picker_selector {
-  overflow: auto;
-  list-style-image: none;
-  list-style-position: outside;
-  list-style-type: none;
-  padding: 0px;
-  margin: 0px;
-}
-
-ul.image_picker_selector ul {
-  overflow: auto;
-  list-style-image: none;
-  list-style-position: outside;
-  list-style-type: none;
-  padding: 0px;
-  margin: 0px;
-  display: block;
-  width: 100%;
-}
-
-ul.image_picker_selector li p {
-  font-size: 10px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background: #d8cfde;
-  border: 1px solid #8e759f;
-  color: #222;
-  width: 100%;
-  padding: 2px 0;
-  margin: 0;
-  text-align: center;
-  overflow: hidden;
-}
-
-ul.image_picker_selector li {
-  margin: 0px 3px 3px 0px;
-  float: left;
-  position: relative;
-}
-
-ul.image_picker_selector li.has-child {
-  clear: both;
-  display: block;
-  float: none;
-  width: 100%;
-  margin-top: 5px;
-}
-
-ul.image_picker_selector li.group_title {
-  width: 100%;
-  background: #d8cfde;
-  padding: 3px 5px;
-}
-
-ul.image_picker_selector li .thumbnail {
-  border: 1px solid #8e759f;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  margin: 0;
-  width: 135px;
-  height: 100px;
-  overflow: hidden;
-}
-
-ul.image_picker_selector li .thumbnail.selected {
-  background: #a793b4;
-  border: 1px solid #884DB3;
-}
-
-ul.image_picker_selector li .thumbnail.selected > p {
-  background: #884DB3;
-  border: 1px solid #884DB3;
 }
 
 /* choose page position */

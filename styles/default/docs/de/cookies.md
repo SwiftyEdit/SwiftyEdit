@@ -1,2 +1,0 @@
-### Cookies
-Wenn du einen Hinweis zu Verwendung von Cookies auf deiner Website anzeigen möchtest, musst du nur eine Textvorlage erstellen und diese `privacy_policy` benennen. Der Hinweis wird dann automatisch erzeugt.

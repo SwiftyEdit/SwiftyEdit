@@ -997,81 +997,102 @@ function se_get_labels() {
 }
 
 
-
 /**
- * generate an select-image widget
- * $images array()
- * $selected array()
- * return html string
- * post name => picker$id_images[]
+ * generate an select image widget
+ * we use input type checkbox
+ *
+ * @param array $images
+ * @param array $seleced_img
+ * @param string $prefix
+ * @param integer $id
+ * @return string
  */
 
 function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
-	
-	global $lang;
-	
-	if(!array($seleced_img)) {
-		$seleced_img = array();
-	}
-	
-	$choose_images  = '<div class="scroll-container">';
-	$choose_images .= '<select multiple="multiple" class="image-picker show-html" name="picker'.$id.'_images[]">';
-	
-	/* if we have selected images, show them first */
-	if(count($seleced_img)>0) {
-		$choose_images .= '<optgroup label="'.$lang['label_image_selected'].'">';
-		foreach($seleced_img as $sel_images) {
-			if(is_file("$sel_images")) {
-				$choose_images .= '<option data-img-src="'.$sel_images.'" value="'.$sel_images.'" selected>'.basename($sel_images).'</option>'."\r\n";
-			}
-		}
-		$choose_images .= '</optgroup>'."\r\n";
-	}
-	
-	$cnt_images = count($images);
-	
-	for($i=0;$i<$cnt_images;$i++) {
-		
-		$img_filename = basename($images[$i]['media_file']);
-		$image_name = $images[$i]['media_file'];
-		$image_tmb_name = $images[$i]['media_thumb'];
-		$lastedit = (int) $images[$i]['media_lastedit'];
-		$lastedit_year = date('Y',$lastedit);
-		$filemtime = $lastedit_year;
-		
-		if($prefix != '') {
-			if((strpos($image_name, $prefix)) === false) {
-				continue;
-			}
-		}
-		
-		if(file_exists($image_tmb_name)) {
-			$preview = $image_tmb_name;
-		} else {
-			$preview = $image_name;
-		}
-		
-		/* new label for each year */
+
+    global $lang;
+
+    if(!array($seleced_img)) {
+        $cnt_selected_img = 0;
+    } else {
+        $seleced_img = array_filter($seleced_img);
+        $cnt_selected_img = count($seleced_img);
+    }
+
+
+    $images_container  = '<div class="scroll-container p-1">';
+
+
+    /* if we have selected images, show them first */
+    if($cnt_selected_img > 0) {
+        $images_container .= '<h6>'.$lang['label_image_selected'].' ('.$cnt_seleced_img.')</h6>';
+        $images_container .= '<div class="row g-1">';
+        foreach($seleced_img as $sel_images) {
+            if(is_file("$sel_images")) {
+                $images_container .= '<div class="col-4">';
+                $images_container .= '<div class="image-checkbox image-checkbox-checked">';
+                $images_container .= '<div class="card h-100">';
+                $images_container .= '<img src="'.$sel_images.'" class="img-fluid">';
+                $images_container .= '<input name="picker'.$id.'_images[]" value="'.$sel_images.'" type="checkbox" checked>';
+                $images_container .= '<div class="card-footer small">'.basename($sel_images).'</div>';
+                $images_container .= '</div>';
+                $images_container .= '</div>';
+                $images_container .= '</div>';
+            }
+        }
+        $images_container .= '</div><hr>'; // row
+    }
+
+    $images_container .= '<div class="row g-1">';
+
+    $cnt_images = count($images);
+
+    for($i=0;$i<$cnt_images;$i++) {
+
+        $img_filename = basename($images[$i]['media_file']);
+        $image_name = $images[$i]['media_file'];
+        $image_tmb_name = $images[$i]['media_thumb'];
+        $lastedit = (int) $images[$i]['media_lastedit'];
+        $lastedit_year = date('Y',$lastedit);
+        $filemtime = $lastedit_year;
+
+        if($prefix != '') {
+            if((strpos($image_name, $prefix)) === false) {
+                continue;
+            }
+        }
+
+        if(file_exists($image_tmb_name)) {
+            $preview = $image_tmb_name;
+        } else {
+            $preview = $image_name;
+        }
+
+        /* new label for each year */
         $prev_image_ts = (int) $images[$i-1]['media_lastedit'];
-		if(date('Y',$prev_image_ts) != $lastedit_year) {
-			if($i == 0) {
-				$choose_images .= '<optgroup label="'.$filemtime.'">'."\r\n";
-			} else {
-				$choose_images .= '</optgroup><optgroup label="'.$filemtime.'">'."\r\n";
-			}
-		}
-		
-		if(!in_array($image_name, $seleced_img)) {
-			$choose_images .= '<option data-img-src="'.$preview.'" value="'.$image_name.'">'.$img_filename.'</option>'."\r\n";
-		}
-		
-	}
-	$choose_images .= '</optgroup>'."\r\n";
-	$choose_images .= '</select>'."\r\n";
-	$choose_images .= '</div>';
-	
-	return $choose_images;
-	
+        if(date('Y',$prev_image_ts) != $lastedit_year) {
+            $images_container .= '<div class="col-12 mt-2"><div class="card p-1"><h6 class="m-0">'.$filemtime.'</h6></div></div>';
+        }
+
+        if(!in_array($image_name, $seleced_img)) {
+            $images_container .= '<div class="col-4">';
+            $images_container .= '<div class="image-checkbox h-100">';
+            $images_container .= '<div class="card h-100">';
+            $images_container .= '<img src="'.$preview.'" class="img-fluid" loading="lazy">';
+            $images_container .= '<input name="picker'.$id.'_images[]" value="'.$image_name.'" type="checkbox">';
+            $images_container .= '<div class="card-footer small">'.$img_filename.'</div>';
+            $images_container .= '</div>';
+            $images_container .= '</div>';
+            $images_container .= '</div>';
+        }
+
+    }
+
+    $images_container .= '</div>';
+    $images_container .= '</div>';
+
+    return $images_container;
+
 }
 
 

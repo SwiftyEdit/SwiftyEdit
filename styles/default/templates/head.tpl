@@ -38,11 +38,7 @@
 <meta property="twitter:image" content="{$page_thumbnail}">
 
 <!-- CSS -->
-{if $se_template_stylesheet != ''}
-	<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/{$se_template_stylesheet}?v=310" />
-{else}
-	<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/theme_light.css?v=310" />
-{/if}
+<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/default.css?v=310" />
 
 <!-- JavaScript -->
 <script type="text/javascript" src="{$se_inc_dir}/styles/{$se_template}/js/main.min.js"></script>

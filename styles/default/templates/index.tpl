@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{$languagePack}">
+<html lang="{$languagePack}" id="swiftyedit" data-bs-theme="auto">
 	<head>
 		{$prepend_head_code}
 		{include file='head.tpl'}

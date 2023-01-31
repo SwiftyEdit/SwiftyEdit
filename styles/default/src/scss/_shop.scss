@@ -25,7 +25,10 @@
   }
 }
 
-
+[data-bs-theme=dark] .price-tag {
+  background: $price-tag-bg-dark;
+  color: $price-tag-color-dark;
+}
 
 .price-tag {
   background: $price-tag-bg;
@@ -84,5 +87,15 @@
 
   span {
     color: $success;
+  }
+}
+
+// shopping cart
+
+.table-sc {
+  .sc-items-options {
+    span {
+      padding-right: 5px;
+    }
   }
 }
