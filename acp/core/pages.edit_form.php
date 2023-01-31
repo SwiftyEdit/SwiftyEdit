@@ -426,7 +426,7 @@ $images = se_unique_multi_array($images,'media_file');
 $page_thumbnail_array = explode("&lt;-&gt;", $page_thumbnail);
 $array_images = explode("<->", $post_data['post_images']);
 
-$choose_images = se_select_img_widget($images,$page_thumbnail_array,$prefs_pagethumbnail_prefix,1);
+$choose_images = se_select_img_widget($images,$page_thumbnail_array,$se_prefs['prefs_pagethumbnail_prefix'],1);
 // picker1_images[]
 echo $choose_images;
 
