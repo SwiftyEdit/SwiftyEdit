@@ -69,22 +69,25 @@ $(function() {
 	 * image picker for choosing thumbnails
 	 * we use this f.e. for pages thumbnails
 	 */
-	
-	$("select.image-picker").imagepicker({
-		hide_select : true,
-		show_label  : true
+
+	$(".image-checkbox").each(function () {
+		if ($(this).find('input[type="checkbox"]').first().attr("checked")) {
+			$(this).addClass('image-checkbox-checked');
+		} else {
+			$(this).removeClass('image-checkbox-checked');
+		}
 	});
-				
-	$('.filter-images').keyup(function() {
-		var value = $(this).val();
-		var exp = new RegExp('^' + value, 'i');
-				
-		$('.thumbnail').not('.selected').each(function() {
-			var isMatch = exp.test($('p:first', this).text());
-			$(this).toggle(isMatch);
-		});
+
+	// sync the state to the input
+	$(".image-checkbox").on("click", function (e) {
+		$(this).toggleClass('image-checkbox-checked');
+		var $checkbox = $(this).find('input[type="checkbox"]');
+		$checkbox.prop("checked", !$checkbox.prop("checked"))
+
+		e.preventDefault();
 	});
-	
+
+
 	
 	Dropzone.options.myDropzone = {
 		init: function() {

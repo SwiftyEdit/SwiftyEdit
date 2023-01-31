@@ -97,3 +97,22 @@ input.form-control[readonly] {
 	border-color: darken($input_background,10);
 }
 
+
+/* image picker */
+
+div.image-checkbox {
+	cursor: pointer;
+	box-sizing: border-box;
+	border: 1px solid transparent;
+	margin-bottom: 0;
+	outline: 0;
+	&.image-checkbox-checked {
+		border-color: $success;
+	}
+	input[type="checkbox"] {
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		display: none;
+	}
+}
