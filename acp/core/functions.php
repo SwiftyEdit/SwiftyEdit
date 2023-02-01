@@ -1029,7 +1029,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
         $images_container .= '<div class="row g-1">';
         foreach($seleced_img as $sel_images) {
             if(is_file("$sel_images")) {
-                $images_container .= '<div class="col-4">';
+                $images_container .= '<div class="col">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
                 $images_container .= '<div class="card h-100">';
                 $images_container .= '<img src="'.$sel_images.'" class="img-fluid">';
@@ -1075,7 +1075,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
         }
 
         if(!in_array($image_name, $seleced_img)) {
-            $images_container .= '<div class="col-4">';
+            $images_container .= '<div class="col">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
             $images_container .= '<img src="'.$preview.'" class="img-fluid" loading="lazy">';
