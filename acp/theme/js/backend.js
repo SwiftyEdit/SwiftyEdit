@@ -87,6 +87,15 @@ $(function() {
 		e.preventDefault();
 	});
 
+	$('.filter-images').keyup(function() {
+		var value = $(this).val();
+		var exp = new RegExp('^' + value, 'i');
+
+		$('.image-checkbox').not('.image-checkbox-checked').each(function() {
+			var isMatch = exp.test($('.card-footer', this).text());
+			$(this).toggle(isMatch);
+		});
+	});
 
 	
 	Dropzone.options.myDropzone = {
