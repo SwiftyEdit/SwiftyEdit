@@ -1025,7 +1025,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
 
     /* if we have selected images, show them first */
     if($cnt_selected_img > 0) {
-        $images_container .= '<h6>'.$lang['label_image_selected'].' ('.$cnt_seleced_img.')</h6>';
+        $images_container .= '<h6>'.$lang['label_image_selected'].' ('.$cnt_selected_img.')</h6>';
         $images_container .= '<div class="row g-1">';
         foreach($seleced_img as $sel_images) {
             if(is_file("$sel_images")) {
