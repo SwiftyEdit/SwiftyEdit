@@ -5,8 +5,8 @@ $post_data = se_get_post_data($get_post_id);
 $hits = (int) $post_data['hits'];
 se_increase_posts_hits($get_product_id);
 
-$post_teaser = htmlspecialchars_decode($post_data['post_teaser']);
-$post_text = htmlspecialchars_decode($post_data['post_text']);
+$post_teaser = text_parser(htmlspecialchars_decode($post_data['post_teaser']));
+$post_text = text_parser(htmlspecialchars_decode($post_data['post_text']));
 
 $post_images = explode("<->", $post_data['post_images']);
 
@@ -138,8 +138,6 @@ $redirect = '?goto='.$post_data['post_id'];
 $smarty->assign('post_external_link', $post_data['post_link']);
 $smarty->assign('post_external_redirect', $redirect);
 
-$post_teaser = htmlspecialchars_decode($post_data['post_teaser']);
-$post_text = htmlspecialchars_decode($post_data['post_text']);
 
 if($post_data['post_meta_title'] == '') {
 	$post_data['post_meta_title'] = $post_data['post_title'];

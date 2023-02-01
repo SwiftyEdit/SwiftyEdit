@@ -33,9 +33,8 @@ if ($target_page[0] == '') {
 }
 
 
-$teaser = htmlspecialchars_decode($product_data['teaser']);
-$text = htmlspecialchars_decode($product_data['text']);
-
+$teaser = text_parser(htmlspecialchars_decode($product_data['teaser']));
+$text = text_parser(htmlspecialchars_decode($product_data['text']));
 
 
 $product_images = explode("<->", $product_data['images']);
