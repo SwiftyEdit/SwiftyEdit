@@ -36,6 +36,26 @@ if ($target_page[0] == '') {
 $teaser = text_parser(htmlspecialchars_decode($product_data['teaser']));
 $text = text_parser(htmlspecialchars_decode($product_data['text']));
 
+if($product_data['text_label'] != '') {
+    $text_label = text_parser(htmlspecialchars_decode($product_data['text_label']));
+} else {
+    $text_label = $lang['label_product_description'];
+}
+/* additional text sections 1-5 */
+
+for($i=1;$i<6;$i++) {
+    $key_text = 'text_additional'.$i;
+    $key_label = 'text_additional'.$i.'_label';
+    $var_text = 'text_additional'.$i;
+    $var_label = 'text_additional'.$i.'_label';
+
+    $$var_text = text_parser(htmlspecialchars_decode($product_data[$key_text]));
+    $$var_label = text_parser(htmlspecialchars_decode($product_data[$key_label]));
+
+    $smarty->assign($var_label, $$var_label);
+    $smarty->assign($var_text, $$var_text);
+
+}
 
 $product_images = explode("<->", $product_data['images']);
 $product_images = array_filter($product_images); /* remove empty elements */
@@ -331,6 +351,7 @@ $smarty->assign('product_id', $product_data['id']);
 $smarty->assign('product_title', $product_data['title']);
 $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
+$smarty->assign('product_text_label', $text_label);
 
 $smarty->assign('product_pricetag_mode', $product_data['product_pricetag_mode']);
 $smarty->assign('product_cart_mode', $product_data['product_cart_mode']);

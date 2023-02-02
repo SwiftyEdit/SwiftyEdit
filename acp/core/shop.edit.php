@@ -620,7 +620,7 @@ $snippet_select_pricelist .= '</select>';
 
 /* add text snippet to text */
 
-$snippet_select_text = '<select class="form-control custom-select" name="product_textlib_content">';
+$snippet_select_text = '<select class="form-control custom-select" name="product_textlib_content" id="snippet_tex">';
 $snippet_select_text .= '<option value="no_snippet">'.$lang['product_no_snippet'].'</option>';
 $snippets_text_list = $db_content->select("se_snippets", "*", [
     "snippet_name[~]" => "%post_text%"
@@ -764,7 +764,21 @@ $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
 
 $form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
 $form_tpl = str_replace('{teaser}', $product_data['teaser'], $form_tpl);
+
 $form_tpl = str_replace('{text}', $product_data['text'], $form_tpl);
+$form_tpl = str_replace('{text_label}', $product_data['text_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_1}', $product_data['text_additional1'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_1}', $product_data['text_additional1_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_2}', $product_data['text_additional2'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_2}', $product_data['text_additional2_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_3}', $product_data['text_additional3'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_3}', $product_data['text_additional3_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_4}', $product_data['text_additional4'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_4}', $product_data['text_additional4_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_5}', $product_data['text_additional5'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_5}', $product_data['text_additional5_label'], $form_tpl);
+
+
 $form_tpl = str_replace('{author}', $product_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $product_data['slug'], $form_tpl);
 $form_tpl = str_replace('{tags}', $product_data['tags'], $form_tpl);

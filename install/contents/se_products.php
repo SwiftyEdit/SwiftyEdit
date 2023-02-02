@@ -37,7 +37,22 @@ $cols = array(
     "lastedit_from"  => "VARCHAR(50) NOT NULL DEFAULT ''",
     "title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "teaser" => "LONGTEXT NOT NULL DEFAULT ''",
+
     "text" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+
+    /* additional sections for content */
+    "text_additional1" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional1_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional2" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional2_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional3" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional3_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional4" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional4_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional5" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional5_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+
     "images" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "tags" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "categories" => "VARCHAR(100) NOT NULL DEFAULT ''",

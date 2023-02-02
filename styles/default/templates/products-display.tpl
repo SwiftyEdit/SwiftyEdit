@@ -86,24 +86,87 @@
     </div>
 
     <div class="post-text mt-3">
-        {$product_text}
+
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                {if $product_text_label != ""}
+                    <a class="nav-link active" aria-selected="true" data-bs-toggle="tab" href="#main">{$product_text_label}</a>
+                {/if}
+                {if is_array($product_features)}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab-features">{$label_product_features}</a>
+                {/if}
+                {if $text_additional1_label != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional1">{$text_additional1_label}</a>
+                {/if}
+                {if $text_additional2_label != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional2">{$text_additional2_label}</a>
+                {/if}
+                {if $text_additional3_label != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional3">{$text_additional3_label}</a>
+                {/if}
+                {if $text_additional4_label != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional4">{$text_additional4_label}</a>
+                {/if}
+                {if $text_additional5_label != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional5">{$text_additional5_label}</a>
+                {/if}
+            </div>
+        </nav>
+        <div class="tab-content my-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="main" role="tabpanel">
+                {$product_text}
+            </div>
+            {if is_array($product_features)}
+            <div class="tab-pane fade" id="tab-features" role="tabpanel">
+                <div class="card mb-3">
+                    <div class="card-header">{$label_product_features}</div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            {foreach $product_features as $feature => $value}
+                                <tr>
+                                    <td>{$value.snippet_title}</td>
+                                    <td>{$value.snippet_content}</td>
+                                </tr>
+                            {/foreach}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {/if}
+            {if $text_additional1_label != ""}
+            <div class="tab-pane fade" id="tab_additional1" role="tabpanel">
+                {$text_additional1}
+            </div>
+            {/if}
+            {if $text_additional2_label != ""}
+                <div class="tab-pane fade" id="tab_additional2" role="tabpanel">
+                    {$text_additional2}
+                </div>
+            {/if}
+            {if $text_additional3_label != ""}
+                <div class="tab-pane fade" id="tab_additional3" role="tabpanel">
+                    {$text_additional3}
+                </div>
+            {/if}
+            {if $text_additional4_label != ""}
+                <div class="tab-pane fade" id="tab_additional4" role="tabpanel">
+                    {$text_additional4}
+                </div>
+            {/if}
+            {if $text_additional5_label != ""}
+                <div class="tab-pane fade" id="tab_additional5" role="tabpanel">
+                    {$text_additional5}
+                </div>
+            {/if}
+        </div>
+
+
+
+
+
     </div>
 
-    {if is_array($product_features)}
-        <div class="card">
-            <div class="card-header">{$label_product_features}</div>
-            <div class="card-body">
-                <table class="table table-sm">
-                    {foreach $product_features as $feature => $value}
-                        <tr>
-                            <td>{$value.snippet_title}</td>
-                            <td>{$value.snippet_content}</td>
-                        </tr>
-                    {/foreach}
-                </table>
-            </div>
-        </div>
-    {/if}
+
 
     {if is_array($show_variants)}
         <div class="card mb-3">

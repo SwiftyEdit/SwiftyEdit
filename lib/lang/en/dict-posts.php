@@ -20,6 +20,7 @@ $lang['post_type_file'] = 'Download';
 
 $lang['post_tab_intro'] = 'Teaser';
 $lang['post_tab_content'] = 'Content';
+$lang['post_tab_descriptions'] = 'Descriptions';
 $lang['post_tab_meta'] = 'Meta Data';
 $lang['post_tab_preferences'] = 'Preferences';
 $lang['post_tab_product'] = 'Product';
@@ -28,7 +29,10 @@ $lang['post_tab_prices'] = 'Price';
 $lang['post_tab_file'] = 'File';
 $lang['post_tab_features'] = 'Features';
 $lang['post_tab_options'] = 'Options';
-$lang['post_tab_prices_delivery'] = 'Preise';
+$lang['post_tab_prices_delivery'] = 'Prices';
+
+$lang['prod_tab_main_description'] = 'Description';
+$lang['prod_tab_additional_description'] = 'Additional Description';
 
 $lang['msg_post_deleted'] = 'The entry has been deleted';
 $lang['msg_no_posts_to_show'] = 'There are no entries here at the moment';

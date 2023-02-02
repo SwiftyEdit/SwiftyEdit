@@ -51,6 +51,7 @@ $lang['label_entries_total'] = 'Gesamt';
 $lang['label_product_variants'] = 'Varianten des Artikels';
 $lang['label_nbr_of_product_variants'] = 'Dieser Artikel ist in %s Varianten erhältlich';
 $lang['label_product_features'] = 'Features';
+$lang['label_product_description'] = 'Beschreibung';
 
 $lang['label_prices_discount'] = 'Staffelpreise';
 $lang['label_prices_snippet'] = 'Hinweise zu den Preisen';
