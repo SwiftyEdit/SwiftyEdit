@@ -21,11 +21,13 @@
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#product">{post_tab_product}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                href="#downloads">{post_tab_downloads}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#prices_delivery">{post_tab_prices_delivery}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#options">{post_tab_options}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#variants">{post_tab_variants}</a></li>
+                                                href="#links">{post_tab_links}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#features">{post_tab_features}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a>
@@ -192,20 +194,7 @@
 
                             <div class="row">
 
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>{label_product_currency}</label>
-                                        <input class='form-control' name="product_currency" type="text"
-                                               value="{product_currency}">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>{label_product_price_label}</label>
-                                        <input class='form-control' name="product_price_label" type="text"
-                                               value="{product_price_label}">
-                                    </div>
-                                </div>
+
                                 <div class="col-md-8">
                                     <div class="form-group">
                                         <label>{label_url}</label>
@@ -215,39 +204,6 @@
 
 
                             </div>
-
-                            <hr>
-
-                            <!-- files -->
-
-                            <fieldset class="my-4">
-                                <legend>{label_product_attachments}</legend>
-                                <p class="fw-bold">{msg_aftersale_files}</p>
-                                <div class="form-group">
-                                    <label>{label_file_as_select}</label>
-                                    {select_file_as}
-                                    <div class="form-text">Downloads: {cnt_attachment_as_hits}</div>
-                                </div>
-                                <p class="fw-bold">{msg_presale_files}</p>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>{label_file_select}</label>
-                                            {select_file}
-                                            <div class="form-text">Downloads: {cnt_attachment_hits}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>{label_external_file}</label>
-                                            <input class='form-control' name="file_attachment_external" type="text"
-                                                   value="{file_attachment_external}">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                            </fieldset>
 
                             <hr>
 
@@ -289,6 +245,33 @@
 
                         </div> <!-- #product -->
 
+                        <!-- downloads -->
+                        <div class="tab-pane fade" id="downloads">
+
+
+                            <h4>{label_product_attachments}</h4>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="fw-bold">{msg_aftersale_files}</p>
+                                    <label>{label_file_as_select}</label>
+                                    {select_file_as}
+                                    <div class="form-text">Downloads: {cnt_attachment_as_hits}</div>
+                                </div>
+                                <div class="col-6">
+                                    <p class="fw-bold">{msg_presale_files}</p>
+                                    <label>{label_file_select}</label>
+                                    {select_file}
+                                    <div class="form-text">Downloads: {cnt_attachment_hits}</div>
+                                    <hr>
+                                    <label>{label_external_file}</label>
+                                    <input class='form-control' name="file_attachment_external" type="text"
+                                           value="{file_attachment_external}">
+                                </div>
+                            </div>
+
+                        </div> <!-- #downloads -->
+
                         <div class="tab-pane fade" id="prices_delivery">
 
                             <div class="row">
@@ -299,14 +282,33 @@
                                                value="{product_amount}">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>{label_product_unit}</label>
                                         <input class='form-control' name="product_unit" type="text"
                                                value="{product_unit}">
                                     </div>
                                 </div>
+                                <div class="col">
+
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>{label_product_currency}</label>
+                                        <input class='form-control' name="product_currency" type="text"
+                                               value="{product_currency}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{label_product_price_label}</label>
+                                        <input class='form-control' name="product_price_label" type="text"
+                                               value="{product_price_label}">
+                                    </div>
+                                </div>
                             </div>
+
+                            <hr>
 
                             <div class="row">
                                 <div class="col-md-4">
@@ -394,18 +396,50 @@
                             {options_input}
                         </div> <!-- #options -->
 
-                        <div class="tab-pane fade" id="variants">
-                            <div class="form-group">
-                                <label>{label_title}</label>
-                                <input class='form-control' name="product_variant_title" type="text"
-                                       value="{product_variant_title}">
+                        <div class="tab-pane fade" id="links">
+
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="content_Sections" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-bs-toggle="tab" href="#variants">{post_tab_variants}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#accessories">{post_tab_accessories}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#related">{post_tab_related}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content my-2">
+                                        <div class="tab-pane fade show active" id="variants">
+                                            <div class="form-group">
+                                                <label>{label_title}</label>
+                                                <input class='form-control' name="product_variant_title" type="text"
+                                                       value="{product_variant_title}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{label_description}</label>
+                                                <textarea class='form-control' rows="4"
+                                                          name="product_variant_description">{product_variant_description}</textarea>
+                                            </div>
+                                            {variants_list}
+                                        </div>
+                                        <div class="tab-pane fade" id="related">
+                                            {product_list_related}
+                                        </div>
+                                        <div class="tab-pane fade" id="accessories">
+                                            {product_list_accessories}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>{label_description}</label>
-                                <textarea class='form-control' rows="4"
-                                          name="product_variant_description">{product_variant_description}</textarea>
-                            </div>
-                            {variants_list}
+
+
+
                         </div> <!-- #variants -->
 
                         <div class="tab-pane fade" id="features">

@@ -103,6 +103,8 @@ $cols = array(
     "product_currency" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_unit" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_amount" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "product_related" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_accessories" => "VARCHAR(255) NOT NULL DEFAULT ''",
     /* files */
     "file_attachment" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "file_attachment_hits" => 'INTEGER(12)',

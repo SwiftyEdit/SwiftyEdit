@@ -24,10 +24,16 @@ $lang['post_tab_descriptions'] = 'Descriptions';
 $lang['post_tab_meta'] = 'Meta Data';
 $lang['post_tab_preferences'] = 'Preferences';
 $lang['post_tab_product'] = 'Product';
+$lang['post_tab_downloads'] = 'Downloads';
+$lang['post_tab_links'] = 'Links';
 $lang['post_tab_info'] = 'Informations';
 $lang['post_tab_prices'] = 'Price';
 $lang['post_tab_file'] = 'File';
 $lang['post_tab_features'] = 'Features';
+$lang['post_tab_SEO'] = 'SEO/URL';
+$lang['post_tab_variants'] = 'Variants';
+$lang['post_tab_accessories'] = 'Accessories';
+$lang['post_tab_related'] = 'Related products';
 $lang['post_tab_options'] = 'Options';
 $lang['post_tab_prices_delivery'] = 'Prices';
 

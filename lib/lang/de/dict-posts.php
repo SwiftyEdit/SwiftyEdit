@@ -24,12 +24,16 @@ $lang['post_tab_descriptions'] = 'Beschreibungen';
 $lang['post_tab_meta'] = 'Meta Data';
 $lang['post_tab_preferences'] = 'Einstellungen';
 $lang['post_tab_product'] = 'Produkt';
+$lang['post_tab_downloads'] = 'Downloads';
+$lang['post_tab_links'] = 'Verknüpfungen';
 $lang['post_tab_info'] = 'Informationen';
 $lang['post_tab_prices'] = 'Preise';
 $lang['post_tab_file'] = 'Datei';
 $lang['post_tab_features'] = 'Features';
 $lang['post_tab_SEO'] = 'SEO/URL';
 $lang['post_tab_variants'] = 'Varianten';
+$lang['post_tab_accessories'] = 'Zubehör';
+$lang['post_tab_related'] = 'Ähnliche Artikel';
 $lang['post_tab_options'] = 'Optionen';
 $lang['post_tab_prices_delivery'] = 'Preise & Versand';
 

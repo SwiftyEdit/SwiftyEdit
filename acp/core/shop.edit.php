@@ -76,6 +76,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
     }
 
     $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
+    $product_accessories = json_encode($_POST['product_accessories'],JSON_FORCE_OBJECT);
+    $product_related = json_encode($_POST['product_related'],JSON_FORCE_OBJECT);
 
     if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
         $file_attachment_user = 2;
@@ -144,13 +146,21 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $meta_title = $_POST['meta_title'];
     }
     if($_POST['meta_description'] == '') {
-        $meta_description = strip_tags($_POST['post_teaser']);
+        $meta_description = strip_tags($_POST['teaser']);
     } else {
         $meta_description = $_POST['meta_description'];
     }
 
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);
+
+    /* variants title and description */
+    if($_POST['product_variant_title'] == '') {
+        $product_variant_title = $_POST['title'];
+    }
+    if($_POST['product_variant_description'] == '') {
+        $product_variant_description = $meta_description;
+    }
 
     $product_features = '';
     if(isset($_POST['product_features'])) {
@@ -506,6 +516,50 @@ foreach($all_posts_features as $feature) {
 }
 
 
+/* related products and accessories */
+
+$all_products = se_get_all_products();
+
+$get_prod_related = json_decode($product_data['product_related'],true);
+$checkbox_related_prod = '';
+
+foreach($all_products as $prod) {
+
+    $prod_id = $prod['id'];
+    $prod_title = $prod['title'];
+    $checked_prod = '';
+    if(is_array($get_prod_related)) {
+        if(array_search("$prod_id", $get_prod_related) !== false) {
+            $checked_prod = 'checked';
+        }
+    }
+
+    $checkbox_related_prod .= '<div class="form-check">';
+    $checkbox_related_prod .= '<input class="form-check-input" id="related_'.$prod_id.'" type="checkbox" name="product_related[]" value="'.$prod_id.'" '.$checked_prod.'>';
+    $checkbox_related_prod .= '<label class="form-check-label" for="related_'.$prod_id.'">'.$prod_title.' <small class="text-muted">('.$prod_id.')</small></label>';
+    $checkbox_related_prod .= '</div>';
+}
+
+$get_prod_accessories = json_decode($product_data['product_accessories'],true);
+$checkbox_accessories_prod = '';
+
+foreach($all_products as $prod) {
+
+    $prod_id = $prod['id'];
+    $prod_title = $prod['title'];
+    $checked_accessory = '';
+    if(is_array($get_prod_accessories)) {
+        if(array_search("$prod_id", $get_prod_accessories) !== false) {
+            $checked_accessory = 'checked';
+        }
+    }
+
+    $checkbox_accessories_prod .= '<div class="form-check">';
+    $checkbox_accessories_prod .= '<input class="form-check-input" id="accessories_'.$prod_id.'" type="checkbox" name="product_accessories[]" value="'.$prod_id.'" '.$checked_accessory.'>';
+    $checkbox_accessories_prod .= '<label class="form-check-label" for="accessories_'.$prod_id.'">'.$prod_title.' <small class="text-muted">'.$prod_id.'</small></label>';
+    $checkbox_accessories_prod .= '</div>';
+}
+
 /* product options */
 
 if($product_data['product_options'] != '' OR $product_data['product_options'] != null) {
@@ -802,10 +856,13 @@ $form_tpl = str_replace('{select_comments}', $select_comments, $form_tpl);
 $form_tpl = str_replace('{select_votings}', $select_votings, $form_tpl);
 
 $form_tpl = str_replace('{variants_list}', $variants_list, $form_tpl);
-$form_tpl = str_replace('{product_variant_title}', $product_variant_title, $form_tpl);
-$form_tpl = str_replace('{product_variant_description}', $product_variant_description, $form_tpl);
+$form_tpl = str_replace('{product_variant_title}', $product_data['product_variant_title'], $form_tpl);
+$form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);
 $form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
 $form_tpl = str_replace('{product_options_comment_label}', $product_data['product_options_comment_label'], $form_tpl);
+
+$form_tpl = str_replace('{product_list_related}', $checkbox_related_prod, $form_tpl);
+$form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod, $form_tpl);
 
 
 /* links */
