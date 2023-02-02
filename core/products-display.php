@@ -41,6 +41,13 @@ if($product_data['text_label'] != '') {
 } else {
     $text_label = $lang['label_product_description'];
 }
+
+if($product_data['product_features_label'] != '') {
+    $label_product_features = text_parser(htmlspecialchars_decode($product_data['product_features_label']));
+} else {
+    $label_product_features = $lang['label_product_features'];
+}
+
 /* additional text sections 1-5 */
 
 for($i=1;$i<6;$i++) {
@@ -225,7 +232,7 @@ $product_features = json_decode($product_data['product_features'],JSON_FORCE_OBJ
 if(is_array($product_features)) {
     $get_features = se_get_posts_features($product_features);
     $smarty->assign('product_features', $get_features);
-    $smarty->assign('label_product_features', $lang['label_product_features']);
+    $smarty->assign('label_product_features', $label_product_features);
 }
 
 /* check for variants  */

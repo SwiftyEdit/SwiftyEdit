@@ -409,6 +409,13 @@
                         </div> <!-- #variants -->
 
                         <div class="tab-pane fade" id="features">
+
+                            <div class="mb-3">
+                                <label class="form-label">Label</label>
+                                <input class='form-control' name="product_features_label" type="text"
+                                       value="{product_features_label}">
+                            </div>
+
                             {checkboxes_features}
                         </div> <!-- #features -->
 

@@ -843,6 +843,7 @@ $form_tpl = str_replace('{snippet_select_text}', $snippet_select_text, $form_tpl
 $form_tpl = str_replace('{product_price_net_purchasing}', $product_price_net_purchasing, $form_tpl);
 $form_tpl = str_replace('{product_price_addition}', $product_data['product_price_addition'], $form_tpl);
 
+$form_tpl = str_replace('{product_features_label}', $product_data['product_features_label'], $form_tpl);
 $form_tpl = str_replace('{checkboxes_features}', $checkbox_features, $form_tpl);
 
 $form_tpl = str_replace('{select_product_cart_mode}', $select_cart_mode, $form_tpl);

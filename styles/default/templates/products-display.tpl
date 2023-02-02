@@ -119,7 +119,6 @@
             {if is_array($product_features)}
             <div class="tab-pane fade" id="tab-features" role="tabpanel">
                 <div class="card mb-3">
-                    <div class="card-header">{$label_product_features}</div>
                     <div class="card-body">
                         <table class="table table-sm">
                             {foreach $product_features as $feature => $value}

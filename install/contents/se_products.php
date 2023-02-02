@@ -83,6 +83,7 @@ $cols = array(
     "product_price_addition" => 'INTEGER(12)',
     "product_price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_price_volume_discount" => "LONGTEXT NOT NULL DEFAULT ''",
+    "product_features_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_features" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options_comment_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
