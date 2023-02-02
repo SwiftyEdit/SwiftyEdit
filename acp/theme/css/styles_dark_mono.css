@@ -19021,7 +19021,6 @@ div#page-sidebar {
   color: #e5e5e5;
   background: #2A2030;
   height: 100%;
-  border-right: 1px solid transparent;
   overflow: hidden;
   overflow-y: auto;
 }
@@ -19202,6 +19201,12 @@ a.sidebar-nav-disabled .nav-badge {
   border-radius: 50px;
   margin-left: 5px;
   margin-top: -3px;
+}
+
+a.sidebar-nav i {
+  opacity: 0.5;
+  margin-left: -10px;
+  margin-right: 5px;
 }
 
 .sidebar-nav-disabled,

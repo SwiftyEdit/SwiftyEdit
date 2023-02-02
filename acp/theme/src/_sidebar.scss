@@ -16,8 +16,7 @@ div#page-sidebar {
 	color: $sidebar_color;
 	background: $sidebar_background;
 	height: 100%;
-	border-right: 1px solid transparent;
-	
+
 	overflow: hidden;
 	overflow-y: auto;
 
@@ -216,6 +215,8 @@ a.sidebar-nav-disabled {
 		color: lighten($sidebar_color,5);
 	}
 
+
+
 	.nav-badge {
 		position: absolute;
 
@@ -230,6 +231,14 @@ a.sidebar-nav-disabled {
 		margin-top: -3px;
 	}
 
+}
+
+a.sidebar-nav {
+	i {
+		opacity: 0.5;
+		margin-left: -10px;
+		margin-right: 5px;
+	}
 }
 
 
