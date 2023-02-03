@@ -47,7 +47,7 @@
 									</td>
 									<td>
 										<strong>{$product.title}</strong> <small>{$product.product_nbr}</small><br>
-										{$product.options}<br>{$product.options_comment_label}: <span>{$product.options_comment}</span>
+										{$product.options}<br>{$product.options_comment_label} <span>{$product.options_comment}</span>
 										{* user can upload a file for this item *}
 										{if $product.need_upload != ''}
 										<form action="{$order_page_uri}" method="post" enctype="multipart/form-data">
