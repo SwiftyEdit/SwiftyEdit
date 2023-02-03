@@ -429,10 +429,14 @@
                                             {variants_list}
                                         </div>
                                         <div class="tab-pane fade" id="related">
-                                            {product_list_related}
+                                            <div class="scroll-container">
+                                                {product_list_related}
+                                            </div>
                                         </div>
                                         <div class="tab-pane fade" id="accessories">
-                                            {product_list_accessories}
+                                            <div class="scroll-container">
+                                                {product_list_accessories}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
