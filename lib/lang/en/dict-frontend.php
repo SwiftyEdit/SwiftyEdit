@@ -59,6 +59,8 @@ $lang['label_product_variants'] = 'Variants of this product';
 $lang['label_nbr_of_product_variants'] = 'This product is available in %s variants';
 $lang['label_product_features'] = 'Features';
 $lang['label_product_description'] = 'Description';
+$lang['label_related_products'] = 'Related products';
+$lang['label_products_accessories'] = 'Accessories';
 
 $lang['label_prices_discount'] = 'Quantity discount';
 $lang['label_prices_snippet'] = 'Notes on the prices';

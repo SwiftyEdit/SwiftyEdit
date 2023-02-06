@@ -272,6 +272,56 @@ if($cnt_variants > 1) {
     $smarty->assign('show_variants', $var);
 }
 
+/* check for related products */
+if($product_data['product_related'] != '') {
+
+    $related_products_array = json_decode($product_data['product_related'],true);
+    $cnt_related_products = count((array) $related_products_array);
+    for($i=0;$i<$cnt_related_products;$i++) {
+
+        $related_product = se_get_product_data($related_products_array[$i]);
+
+        $rp[$i]['title'] = $related_product['title'];
+        $rp[$i]['teaser'] = se_return_words_str(html_entity_decode($related_product['teaser']),10);
+        $product_slug = basename($related_product['slug']);
+        $product_images = explode("<->",$related_product['images']);
+        if ($product_images[1] != "") {
+            $rp[$i]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+            $rp[$i]['image'] = '';
+        } else {
+            $rp[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        }
+        $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $related_product['id'] . ".html";
+    }
+    $smarty->assign('show_related', $rp);
+}
+
+/* check for accessories */
+if($product_data['product_accessories'] != '') {
+
+    $products_accessories_array = json_decode($product_data['product_accessories'],true);
+    $cnt_products_accessories = count((array) $products_accessories_array);
+    for($i=0;$i<$cnt_products_accessories;$i++) {
+        $accessories_product = se_get_product_data($products_accessories_array[$i]);
+
+        $ap[$i]['title'] = $accessories_product['title'];
+        $ap[$i]['teaser'] = se_return_words_str(html_entity_decode($accessories_product['teaser']),10);
+        $product_slug = basename($accessories_product['slug']);
+        $product_images = explode("<->",$accessories_product['images']);
+        if ($product_images[1] != "") {
+            $ap[$i]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+            $ap[$i]['image'] = '';
+        } else {
+            $ap[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        }
+        $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $accessories_product['id'] . ".html";
+    }
+    $smarty->assign('show_accessories', $ap);
+}
+
+
 
 if($product_data['meta_title'] == '') {
     $product_data['meta_title'] = $product_data['title'];

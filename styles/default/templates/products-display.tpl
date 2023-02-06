@@ -173,11 +173,66 @@
             <div class="card-body">
                 <div class="row row-cols-4 mb-3">
                     {foreach $show_variants as $product => $value}
-                        <div class="col">
+                        <div class="col mb-2">
                             <div class="card h-100">
+                                {if $value.image != ""}
                                 <img src="{$value.image}" class="card-img-top" alt="{$value.title}"
                                      title="{$value.title}">
+                                {/if}
+                                <div class="card-body fs-6 lh-sm">
+                                    <h6 class="card-title mb-0">{$value.title}</h6>
+                                    <small>{$value.teaser}</small>
+                                    {if $value.class != 'active'}
+                                        <a href="{$value.product_href}" class="stretched-link" title="{$value.title}"> </a>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+    {/if}
 
+    {if is_array($show_accessories)}
+        <div class="card mb-3">
+            <div class="card-header">{$lang_label_products_accessories}</div>
+            <div class="card-body">
+                <div class="row row-cols-4 mb-3">
+                    {foreach $show_accessories as $product => $value}
+                        <div class="col">
+                            <div class="card h-100 mb-2">
+                                {if $value.image != ""}
+                                <img src="{$value.image}" class="card-img-top" alt="{$value.title}"
+                                     title="{$value.title}">
+                                {/if}
+                                <div class="card-body fs-6 lh-sm">
+                                    <h6 class="card-title mb-0">{$value.title}</h6>
+                                    <small>{$value.teaser}</small>
+                                    {if $value.class != 'active'}
+                                        <a href="{$value.product_href}" class="stretched-link" title="{$value.title}"> </a>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {if is_array($show_related)}
+        <div class="card mb-3">
+            <div class="card-header">{$lang_label_related_products}</div>
+            <div class="card-body">
+                <div class="row row-cols-4 mb-3">
+                    {foreach $show_related as $product => $value}
+                        <div class="col">
+                            <div class="card h-100 mb-2">
+                                {if $value.image != ""}
+                                <img src="{$value.image}" class="card-img-top" alt="{$value.title}"
+                                     title="{$value.title}">
+                                {/if}
                                 <div class="card-body fs-6 lh-sm">
                                     <h6 class="card-title mb-0">{$value.title}</h6>
                                     <small>{$value.teaser}</small>
