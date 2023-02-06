@@ -1,14 +1,7 @@
 <?php
 
 //prohibit unauthorized access
-require("core/access.php");
-
-/*
-foreach($_POST as $key => $val) {
-	$$key = @htmlspecialchars($val, ENT_QUOTES);
-}
-*/
-
+require "core/access.php";
 
 /* save upload preferences */
 if(isset($_POST['update_shop'])) {
