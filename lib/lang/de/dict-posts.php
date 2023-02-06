@@ -35,6 +35,7 @@ $lang['post_tab_variants'] = 'Varianten';
 $lang['post_tab_accessories'] = 'Zubehör';
 $lang['post_tab_related'] = 'Ähnliche Artikel';
 $lang['post_tab_options'] = 'Optionen';
+$lang['post_tab_features'] = 'Merkmale';
 $lang['post_tab_prices_delivery'] = 'Preise & Versand';
 
 $lang['prod_tab_main_description'] = 'Beschreibung';
@@ -119,6 +120,8 @@ $lang['label_product_cnt_sales'] = 'Bereits verkauft';
 $lang['label_product_snippet_price'] = 'Snippet zu den Preisen hinzufügen (post_price*)';
 $lang['label_product_snippet_text'] = 'Snippet zum Inhalt hinzufügen (post_text*)';
 $lang['product_no_snippet'] = 'Kein Snippet';
+$lang['label_product_options'] = 'Optionen';
+$lang['label_product_features'] = 'Features';
 
 $lang['label_product_delivery_time'] = 'Lieferzeit';
 $lang['product_no_delivery_time'] = 'Keine Angabe';

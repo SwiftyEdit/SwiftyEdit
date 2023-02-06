@@ -35,6 +35,7 @@ $lang['post_tab_variants'] = 'Variants';
 $lang['post_tab_accessories'] = 'Accessories';
 $lang['post_tab_related'] = 'Related products';
 $lang['post_tab_options'] = 'Options';
+$lang['post_tab_features'] = 'Features';
 $lang['post_tab_prices_delivery'] = 'Prices';
 
 $lang['prod_tab_main_description'] = 'Description';
@@ -119,6 +120,8 @@ $lang['label_product_cnt_sales'] = 'Sales';
 $lang['label_product_snippet_price'] = 'Add a Snippet to the Prices (post_price*)';
 $lang['label_product_snippet_text'] = 'Add a Snippet to the Content (post_text*)';
 $lang['product_no_snippet'] = 'No Snippet';
+$lang['label_product_options'] = 'Options';
+$lang['label_product_features'] = 'Features';
 
 $lang['label_product_delivery_time'] = 'Delivery time';
 $lang['product_no_delivery_time'] = 'Not specified';

@@ -25,13 +25,10 @@
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#prices_delivery">{post_tab_prices_delivery}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#options">{post_tab_options}</a></li>
+                                                href="#features">{post_tab_features}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#links">{post_tab_links}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#features">{post_tab_features}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a></li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -39,9 +36,11 @@
                         <div class="tab-pane fade show active" id="intro">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label>{label_title}</label> <input class="form-control" name="title" type="text"
-                                                                        value="{title}">
-                                    <label>{label_description}</label>
+                                    <div class="mb-3">
+                                    <label class="form-label">{label_title}</label>
+                                    <input class="form-control" name="title" type="text" value="{title}">
+                                    </div>
+                                    <label class="form-label">{label_description}</label>
                                     <textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
                                 </div>
                                 <div class="col-md-6">
@@ -257,16 +256,16 @@
                                     <label>{label_file_as_select}</label>
                                     {select_file_as}
                                     <div class="form-text">Downloads: {cnt_attachment_as_hits}</div>
+                                    <hr>
+                                    <label>{label_external_file}</label>
+                                    <input class='form-control' name="file_attachment_external" type="text"
+                                           value="{file_attachment_external}">
                                 </div>
                                 <div class="col-6">
                                     <p class="fw-bold">{msg_presale_files}</p>
                                     <label>{label_file_select}</label>
                                     {select_file}
                                     <div class="form-text">Downloads: {cnt_attachment_hits}</div>
-                                    <hr>
-                                    <label>{label_external_file}</label>
-                                    <input class='form-control' name="file_attachment_external" type="text"
-                                           value="{file_attachment_external}">
                                 </div>
                             </div>
 
@@ -378,23 +377,7 @@
 
                         </div> <!-- #prices_delivery -->
 
-                        <div class="tab-pane fade" id="options">
-                            <div class="mb-3">
-                                <label>{label_product_customer_feedback}</label>
-                                <input type="text" class="form-control" name="product_options_comment_label"
-                                       value="{product_options_comment_label}">
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="file_attachment_user"
-                                           value="2" id="file_attachment_user" {checked_user_uploads}>
-                                    <label class="form-check-label"
-                                           for="file_attachment_user">{label_product_customer_upload}</label>
-                                </div>
-                            </div>
-                            <hr>
-                            {options_input}
-                        </div> <!-- #options -->
+
 
                         <div class="tab-pane fade" id="links">
 
@@ -447,14 +430,45 @@
                         </div> <!-- #variants -->
 
                         <div class="tab-pane fade" id="features">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-header">{label_product_features}</div>
+                                        <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Label</label>
+                                        <input class='form-control' name="product_features_label" type="text"
+                                               value="{product_features_label}" placeholder="{label_product_features}">
+                                    </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Label</label>
-                                <input class='form-control' name="product_features_label" type="text"
-                                       value="{product_features_label}">
+                                    {checkboxes_features}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-header">{label_product_options}</div>
+                                        <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">{label_product_customer_feedback}</label>
+                                        <input type="text" class="form-control" name="product_options_comment_label"
+                                               value="{product_options_comment_label}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="file_attachment_user"
+                                                   value="2" id="file_attachment_user" {checked_user_uploads}>
+                                            <label class="form-check-label"
+                                                   for="file_attachment_user">{label_product_customer_upload}</label>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    {options_input}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            {checkboxes_features}
                         </div> <!-- #features -->
 
                         <div class="tab-pane fade" id="seo">
