@@ -161,6 +161,11 @@ if($product_data['votings'] == 2 || $product_data['votings'] == 3) {
 $form_action = '/'.$swifty_slug.$mod_slug;
 $this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
+if($se_prefs['prefs_posts_products_cart'] == 1) {
+    // all shopping carts are disabled - overwrite products settings
+    $product_data['product_cart_mode'] = 2;
+}
+
 if($product_data['product_tax'] == '1') {
     $tax = $se_prefs['prefs_posts_products_default_tax'];
 } else if($product_data['product_tax'] == '2') {
