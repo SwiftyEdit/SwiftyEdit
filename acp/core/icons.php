@@ -104,6 +104,8 @@ $icon = [
     "plus" => '<i class="bi bi-plus"></i>',
 
     "question" => '<i class="bi bi-question"></i>',
+    "question_circle" => '<i class="bi bi-question-circle"></i>',
+    "question_circle_fill" => '<i class="bi bi-question-circle-fill"></i>',
 
     "rss" => '<i class="bi bi-rss"></i>',
 
