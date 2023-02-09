@@ -88,7 +88,7 @@ echo '<div class="'.$class_col_left.'">';
 
 
 echo '<div class="card">';
-echo '<div class="card-header">' . $lang['legend_structured_pages'] . '</div>';
+echo '<div class="card-header">' . $lang['legend_structured_pages'] . ' '.se_print_docs_link('tip-ordered-pages.md').'</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
@@ -114,7 +114,7 @@ echo '<div class="'.$class_col_right.'">';
  */
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['legend_unstructured_pages'].'</div>';
+echo '<div class="card-header">'.$lang['legend_unstructured_pages'].' '.se_print_docs_link('tip-single-pages.md').'</div>';
 echo '<div class="card-body">';
 
 echo '<div class="scroll-box">';
