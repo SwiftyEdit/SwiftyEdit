@@ -1314,7 +1314,12 @@ function se_parse_docs_file($file) {
                 global $file;
                 $inc_file = "../../docs/$languagePack/$m[1]";
                 if(is_file($inc_file)) {
-                    return file_get_contents("$inc_file");
+                    $inc_file_content = file_get_contents("$inc_file");
+                    $inc_file_content_array = explode('---',$inc_file_content);
+                    $inc_content = substr($inc_file_content, strlen($inc_file_content_array[1])+6);
+                    return $inc_content;
+                } else {
+                    return '';
                 }
             },
             $content
@@ -1324,11 +1329,8 @@ function se_parse_docs_file($file) {
             '/\{link=(.*?)\}/si',
             function ($m) {
                 global $languagePack;
-                //$inc_file = "../../docs/$languagePack/$m[1]";
-                //if(is_file($inc_file)) {
                     $link = '<a class="jump-doc btn" data-bs-target="#showDocs" data-token="'.$_SESSION['token'].'" data-file="'.$m[1].'">'.$m[1].'</a>';
                     return $link;
-                //}
             },
             $content
         );
@@ -1350,7 +1352,16 @@ function se_parse_docs_file($file) {
     return $parsed;
 }
 
-function se_print_docs_link($file) {
+function se_print_docs_link($file,$text=null,$type=null) {
     global $icon;
-    echo '<a class="show-doc" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$icon['question'].'</a>';
+
+    if($text == null OR $text == 'icon') {
+        $text = $icon['question'];
+    }
+
+    if($type == null OR $type == 'modal') {
+        return '<a class="show-doc" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$text.'</a>';
+    }
+
+
 }
