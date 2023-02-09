@@ -7,10 +7,16 @@ description: Dokumentation des Backends
 
 <kbd>Backend</kbd> <kbd>Inhalte</kbd> <kbd>Alle Seiten</kbd>
 
+Hier findest Du alle Seiten welche bereits gespeichert wurden. Du kannst die Liste durchsuchen
+oder nach Status, Sprache oder Labels filtern.
+
 ## Geordnete Seiten
-Als geordnete Seiten werden die Seiten aufgeführt, welche eine Sortierungsnummer enthalten. Diese Seiten werden automatisch in der (Haupt)Navigation aufgeführt. Auf der Übersicht sind diese in der linken Spalte aufgelistet.
+{inc=tip-ordered-pages.md}
 
 ## Ungeordnete Seiten
-Die ungeordneten Seiten sind nicht in die Navigation eingegliedert - werden aber dennoch in der Sitemap bzw. den Suchergebnissen berücksichtigt. Die ungeordneten Seiten sind in der rechten Spalte aufgelistet.
+{inc=tip-single-pages.md}
 
-Über die Filterfunktion kann die Liste nach Status (Öffentlich, Unsichtbar, Privat, Entwurf), nach Labels und nach Sprachen gefiltert werden. Zusätzlich kannst Du die Liste über das Suchfeld filtern.
+---
+Weitere Informationen:
+
+* Labels {link=tip-labels.md}
