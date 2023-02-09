@@ -35,22 +35,21 @@ if($show_open_source_docs == true) {
     echo '<div class="card">';
     echo '<div class="card-body">';
 
-    /**
-     * @var array $docs_list from .../docs-list.php
-     */
-    $doc_list_file = '../lib/lang/'.$languagePack.'/docs-list.php';
-    if(is_file($doc_list_file)) {
-        include $doc_list_file;
-        echo '<div class="list-group">';
-        foreach($docs_list as $k => $v) {
-            echo '<a href="'.$v['url'].'" title="'.$v['url'].'" 
-            class="list-group-item list-group-item-action"
-            target="_blank">'.$v['title'].' <i class="bi bi-arrow-right-short"></i></a>';
-        }
-        echo '</div>';
-        echo '<hr>';
-    }
+    $Parsedown = new Parsedown();
+    $docsfiles = glob('./docs/'.$languagePack.'/*.md');
+    echo '<div class="list-group">';
+    foreach($docsfiles as $doc) {
 
+
+        if (str_starts_with(basename($doc), 'tip-')) {
+            continue;
+        }
+
+        $parsed_file = se_parse_docs_file($doc);
+        echo '<button type="button" data-file="'.$doc.'" data-token="'.$_SESSION['token'].'" 
+        class="show-doc list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#infoModal">'.$parsed_file['header']['title'].'</button>';
+    }
+    echo '</div>';
 
     echo $lang['msg_community_edition'];
 

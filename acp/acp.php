@@ -239,7 +239,7 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <script src="theme/js/backend.min.js?v=2023-01-31"></script>
+    <script src="theme/js/backend.min.js?v=2023-02-08"></script>
     <script src="theme/js/tinymce/tinymce.min.js"></script>
     <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
     <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>
@@ -389,6 +389,23 @@ if (isset($set_acptheme)) {
             </div>
             <div class="modal-body">
                 <?php include 'core/files.upload.php'; ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Docs</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>

@@ -426,6 +426,9 @@ a:focus {
 
 .modal-content {
 	background: rgba($widget_background,1);
+	a {
+		color: $link-color;
+	}
 	.modal-header {
 		border-bottom: 1px solid darken($widget_background,10);
 		.close {

@@ -21038,6 +21038,9 @@ a:focus {
 .modal-content {
   background: #e4dee8;
 }
+.modal-content a {
+  color: #884DB3;
+}
 .modal-content .modal-header {
   border-bottom: 1px solid #cbc0d3;
 }

@@ -1293,3 +1293,64 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 		imagedestroy($new_image);
 	}
 }
+
+
+function se_parse_docs_file($file) {
+
+    global $Parsedown;
+    global $languagePack;
+
+    if(is_file($file)) {
+        $src = file_get_contents($file);
+        $src_content = explode('---',$src);
+        $header_length = strlen($src_content[1])+6;
+        $content = substr($src, $header_length);
+
+        // look for included .md files
+        $content = preg_replace_callback(
+            '/\{inc=(.*?)\}/si',
+            function ($m) {
+                global $languagePack;
+                global $file;
+                $inc_file = "../../docs/$languagePack/$m[1]";
+                if(is_file($inc_file)) {
+                    return file_get_contents("$inc_file");
+                }
+            },
+            $content
+        );
+
+        $content = preg_replace_callback(
+            '/\{link=(.*?)\}/si',
+            function ($m) {
+                global $languagePack;
+                //$inc_file = "../../docs/$languagePack/$m[1]";
+                //if(is_file($inc_file)) {
+                    $link = '<a class="jump-doc btn" data-bs-target="#showDocs" data-token="'.$_SESSION['token'].'" data-file="'.$m[1].'">'.$m[1].'</a>';
+                    return $link;
+                //}
+            },
+            $content
+        );
+
+
+        $parsed_header = Spyc::YAMLLoadString($src_content[1]);
+        $parsed_content = $Parsedown->text($content);
+        $filemtime = filemtime($file);
+    } else {
+        $parsed_header = 'FILE NOT FOUND ('.$file.')';
+    }
+
+    $parsed['header'] = $parsed_header;
+    $parsed['content'] = $parsed_content;
+    $parsed['filemtime'] = $filemtime;
+    $parsed['filename_orig'] = basename($file);
+    $parsed['filepath_orig'] = $file;
+
+    return $parsed;
+}
+
+function se_print_docs_link($file) {
+    global $icon;
+    echo '<a class="show-doc" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$icon['question'].'</a>';
+}

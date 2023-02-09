@@ -323,22 +323,51 @@ $(function() {
 
 	   // AJAX request
 		$.ajax({
-			url: 'core/pages.info.php',
+			url: 'core/ajax/show-page-info.php',
 			type: 'post',
 			data: {pageid: pageid, csrf_token: csrf_token},
 			success: function(response){ 
 				 // Add response in Modal body
-				$('#pageInfoModal .modal-body').html(response);
-				
-				// Display Modal
-				$('#pageInfoModal').modal('show'); 
+				$('#infoModal .modal-body').html(response);
+
 			}
 		});
 	});
-				 
-				 
-				 
-				 
+
+
+	$('.show-doc').click(function(){
+		var docfile = $(this).data('file');
+		var csrf_token = $(this).data('token');
+		var contents = load_modal_content(docfile,csrf_token);
+		$('#infoModal .modal-header .modal-title').html(contents.header.title);
+		$('#infoModal .modal-body').html(contents.content);
+	});
+
+	$('#infoModal').on('shown.bs.modal', function () {
+		$('#infoModal .jump-doc').click(function(){
+			var docfile = $(this).data('file');
+			var csrf_token = $(this).data('token');
+			var contents = load_modal_content(docfile,csrf_token);
+			$('#infoModal .modal-header .modal-title').html(contents.header.title);
+			$('#infoModal .modal-body').html(contents.content);
+		});
+	});
+
+	function load_modal_content(file,token) {
+		response = null;
+		$.ajax({
+			url: 'core/ajax/show-docs.php',
+			type: 'post',
+			async: false,
+			data: {file: file, csrf_token: token},
+			success: function(content){
+				response = $.parseJSON(content);
+
+			}
+		});
+		return response;
+	}
+
 				 
   $(window).resize(function () {
   	stretchAppContainer();
