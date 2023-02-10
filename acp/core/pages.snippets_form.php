@@ -57,16 +57,16 @@ echo '<div class="tab-pane fade show active" id="content">';
 echo '<div class="row">';
 echo '<div class="col-md-4">';
 
-echo '<div class="form-group">';
-echo '<label>'.$lang['filename'].' <small>(a-z,0-9)</small></label>';
+echo '<div class="mb-3">';
+echo '<label class="form-label">'.$lang['filename'].' <small>(a-z,0-9)</small></label>';
 echo '<input class="form-control" type="text" name="snippet_name" value="'.$snippet_name.'">';
 echo '</div>';
 
 echo '</div>';
 echo '<div class="col-md-8">';
 
-echo '<div class="form-group">';
-echo '<label>'.$lang['label_title'].'</label>';
+echo '<div class="mb-3">';
+echo '<label class="form-label">'.$lang['label_title'].'</label>';
 echo '<input class="form-control" type="text" name="snippet_title" value="'.html_entity_decode($snippet_title).'">';
 echo '</div>';
 
@@ -75,15 +75,21 @@ echo '</div>';
 
 
 
-
+echo '<div class="form-group">';
+echo '<div class="btn-group float-end pb-1" role="group">';
+echo '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE1"> WYSIWYG</label>';
+echo '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE2"> Text</label>';
+echo '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE3"> Code</label>';
+echo '</div>';
+echo '</div>';
 
 echo '<textarea class="form-control mceEditor switchEditor" id="textEditor" name="snippet_content">'.$snippet_content.'</textarea>';
 echo '<input type="hidden" name="text" value="'.$text.'">';
 
 
 
-echo '<div class="row">';
-echo '<div class="col-md-6">';
+echo '<div class="row mt-3">';
+echo '<div class="col-md-4">';
 
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_keywords'].'</label>';
@@ -91,11 +97,19 @@ echo '<input class="form-control" type="text" name="snippet_keywords" value="'.h
 echo '</div>';
 
 echo '</div>';
-echo '<div class="col-md-6">';
+echo '<div class="col-md-4">';
 
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_classes'].'</label>';
 echo '<input class="form-control" type="text" name="snippet_classes" value="'.$snippet_classes.'" />';
+echo '</div>';
+
+echo '</div>';
+echo '<div class="col-md-4">';
+
+echo '<div class="form-group">';
+echo '<label>Label</label>';
+echo '<input class="form-control" type="text" name="snippet_label" value="'.html_entity_decode($snippet_label).'" />';
 echo '</div>';
 
 echo '</div>';
@@ -169,17 +183,7 @@ echo '<div class="col-md-3">';
 
 echo '<div class="card">';
 echo '<div class="card-header">'.$lang['tab_page_preferences'].'</div>';
-echo '<div class="card-body" style="padding-left:20px;padding-right:20px;">';
-
-
-
-echo '<div class="form-group">';
-echo '<div class="btn-group btn-group-toggle d-flex" data-bs-toggle="buttons" role="flex">';
-echo '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE1"> WYSIWYG</label>';
-echo '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE2"> Text</label>';
-echo '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE3"> Code</label>';
-echo '</div>';
-echo '</div>';
+echo '<div class="card-body">';
 
 if($snippet_lang == '' && $default_lang_code != '') {
 	$snippet_lang = $default_lang_code;
@@ -246,9 +250,14 @@ foreach($arr_Styles as $template) {
 
 $select_select_template .= '</select>';
 
-echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_template'].'</label>';
+echo '<div class="mb-3">';
+echo '<label class="form-label">'.$lang['f_page_template'].'</label>';
 echo $select_select_template;
+echo '</div>';
+
+echo '<div class="mb-3">';
+echo '<label class="form-label">'.$lang['label_groups'].'</label>';
+echo '<input class="form-control" type="text" name="snippet_groups" value="'.$snippet_groups.'" />';
 echo '</div>';
 
 
@@ -277,11 +286,6 @@ echo '<p>'.$lang['labels'].'</p>';
 echo $checkbox_set_labels;
 echo '</div>';
 
-
-echo '<div class="form-group">';
-echo '<label>'.$lang['label_groups'].'</label>';
-echo '<input class="form-control" type="text" name="snippet_groups" value="'.$snippet_groups.'" />';
-echo '</div>';
 
 echo '<div class="alert alert-dark" style="padding:2px 3px;">';
 echo '<strong>'.$icon['info_circle'].' '.$lang['label_notes'].':</strong>';
