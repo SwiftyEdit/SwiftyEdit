@@ -21054,6 +21054,10 @@ a:focus {
   border-top: 1px solid #251e27;
 }
 
+a.show-doc:hover {
+  cursor: pointer;
+}
+
 .list-group-item-ghost {
   color: #ccc;
   background-color: #222;

@@ -442,6 +442,12 @@ a:focus {
 	}
 }
 
+a.show-doc {
+	&:hover {
+		cursor: pointer;
+	}
+}
+
 
 
 .list-group-item-ghost {
