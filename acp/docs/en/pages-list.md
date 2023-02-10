@@ -1,6 +1,9 @@
 ---
 title: Pages overview
 description: Show and manage all created pages
+btn: Pages overview
+group: backend
+priority: 190
 ---
 
 # Pages-Overview

@@ -1,6 +1,9 @@
 ---
 title: SwiftyEdit - Seiten Übersicht
 description: Dokumentation des Backends
+btn: Seiten Übersicht
+group: backend
+priority: 190
 ---
 
 # Seiten-Übersicht

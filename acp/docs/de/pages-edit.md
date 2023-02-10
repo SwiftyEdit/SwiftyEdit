@@ -1,6 +1,9 @@
 ---
 title: Seiten erstellen und/oder bearbeiten
 description: Neue Seiten erstellen oder bestehende Seiten bearbeiten
+btn: Seiten erstellen/bearbeiten
+group: backend
+priority: 200
 ---
 
 # Seiten erstellen oder bearbeiten

@@ -1,6 +1,8 @@
 ---
 title: Labels
 description: Labels
+group: tips
+priority: 0
 ---
 
 ### Labels

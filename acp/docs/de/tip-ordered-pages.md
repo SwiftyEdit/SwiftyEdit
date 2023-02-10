@@ -1,6 +1,8 @@
 ---
 title: Geordnete Seiten
 description: Was sind geordnete Seiten
+group: tips
+priority: 0
 ---
 Als geordnete Seiten werden die Seiten aufgeführt, 
 welche eine Sortierungsnummer enthalten. 

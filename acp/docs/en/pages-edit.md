@@ -1,6 +1,9 @@
 ---
 title: Create new or edit pages
 description: Create new pages or edit existing ones
+btn: Create/edit Pages
+group: backend
+priority: 200
 ---
 
 # Edit pages

@@ -1,6 +1,8 @@
 ---
 title: Einzelne Seiten
 description: Was sind einzelne Seiten
+group: tips
+priority: 0
 ---
 
 Einzelne Seiten (manchmal auch ungeordnete Seiten genannt) sind nicht in die Navigation eingegliedert - 

@@ -1,6 +1,9 @@
 ---
 title: SwiftyEdit Dokumentation
 description: Dokumentation des Backends
+btn: Übersicht
+group: backend
+priority: 0
 ---
 
 # SwiftyEdit Dokumentation
