@@ -142,16 +142,16 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	}
 
 	$post_prices = se_posts_calc_price($this_item['product_price_net'],$post_product_price_addition,$tax,$cart_item[$i]['amount']);
-	$cart_item[$i]['price_net_format'] = $post_prices['net'];
+    $cart_item[$i]['price_net_single_format'] = $post_prices['net_single'];
+    $cart_item[$i]['price_gross_single_format'] = $post_prices['gross_single'];
+    $cart_item[$i]['price_net_format'] = $post_prices['net'];
 	$cart_item[$i]['price_gross_format'] = $post_prices['gross'];
 	$cart_item[$i]['price_net_raw'] = $post_prices['net_raw'];
 	$cart_item[$i]['price_gross_raw'] = $post_prices['gross_raw'];
-	$cart_item[$i]['price_net'] = $this_item['post_product_price_net'];
+	$cart_item[$i]['price_net'] = $this_item['product_price_net'];
 	
 	$price_all_net = $price_all_net+round($post_prices['net_raw'],2);
-	$post_price_gross = $post_prices['net_raw']*($tax+100)/100;
-	$price_all_gross = $price_all_gross+round($post_price_gross,2);
-
+    $all_items_subtotal = $all_items_subtotal+$cart_item[$i]['price_gross_raw'];
 }
 
 
@@ -191,7 +191,7 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 
 
 /* calculate subtotal and total */
-$cart_price_subtotal = $price_all_gross;
+$cart_price_subtotal = $all_items_subtotal;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs;
 
 
@@ -259,14 +259,12 @@ if($checkout_error == 'missing_mandatory_informations') {
 
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
-$smarty->assign('cart_price_net', se_post_print_currency($price_all_net), true);
-$smarty->assign('cart_price_gross', se_post_print_currency($price_all_gross), true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);
 $smarty->assign('cart_payment_costs', se_post_print_currency($payment_costs), true);
 $smarty->assign('cart_price_subtotal', se_post_print_currency($cart_price_subtotal), true);
 $smarty->assign('cart_price_total', se_post_print_currency($cart_price_total), true);
 $smarty->assign('currency', $se_prefs['prefs_posts_products_default_currency'], true);
-
+$smarty->assign('price_mode', $se_prefs['prefs_posts_price_mode'], true);
 
 $cart_table = $smarty->fetch("shopping_cart.tpl",$cache_id);
 

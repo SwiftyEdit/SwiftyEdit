@@ -135,6 +135,14 @@ $lang['label_product_cart_mode'] = 'Warenkorb';
 $lang['product_cart_mode_on'] = 'Warenkorbfunktion aktivieren';
 $lang['product_cart_mode_off'] = 'Warenkorbfunktion deaktivieren';
 
+$lang['order_mode_active'] = 'Bestellungen aktivieren';
+$lang['order_mode_request'] = 'Nur Anfrage-Formular anzeigen';
+$lang['order_mode_both'] = 'Bestellungen und Anfrage-Formular aktivieren';
+
+$lang['show_price_in_net'] = 'Preise in Netto anzeigen';
+$lang['show_price_in_gross'] = 'Preise in Brutto anzeigen';
+$lang['show_price_both'] = 'Netto und Brutto anzeigen';
+
 $lang['label_product_pricetag_mode'] = 'Preisschild';
 $lang['product_pricetag_mode_on'] = 'Preise anzeigen';
 $lang['product_pricetag_mode_off'] = 'Preise verbergen';

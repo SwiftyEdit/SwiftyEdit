@@ -16,6 +16,18 @@ if($prefs_posts_products_cart == 1 OR $prefs_posts_products_cart == '') {
     $sel_carts3 = 'selected';
 }
 
+$sel_order_mode1 = '';
+$sel_order_mode2 = '';
+$sel_order_mode3 = '';
+
+if($prefs_posts_order_mode == 1 OR $prefs_posts_order_mode == '') {
+    $sel_order_mode1 = 'selected';
+} else if($prefs_posts_order_mode == 2) {
+    $sel_order_mode2 = 'selected';
+} else if($prefs_posts_order_mode == 3) {
+    $sel_order_mode3 = 'selected';
+}
+
 echo '<form action="?tn=system&sub=shop&file=general" method="POST">';
 
 echo '<h3>' . $lang['label_carts'] . '</h3>';
@@ -26,6 +38,15 @@ echo '<select class="form-control custom-select" name="prefs_posts_products_cart
 echo '<option value="1" '.$sel_carts1.'>'.$lang['carts_deactivated'].'</option>';
 echo '<option value="2" '.$sel_carts2.'>'.$lang['carts_for_registered'].'</option>';
 echo '<option value="3" '.$sel_carts3.'>'.$lang['carts_for_all'].'</option>';
+echo '</select>';
+echo '</div>';
+
+echo '<div class="mb-3">';
+echo '<label>' . $lang['label_orders'] . '</label>';
+echo '<select class="form-control custom-select" name="prefs_posts_order_mode">';
+echo '<option value="1" '.$sel_order_mode1.'>'.$lang['order_mode_active'].'</option>';
+echo '<option value="2" '.$sel_order_mode2.'>'.$lang['order_mode_request'].'</option>';
+echo '<option value="3" '.$sel_order_mode3.'>'.$lang['order_mode_both'].'</option>';
 echo '</select>';
 echo '</div>';
 
@@ -53,13 +74,40 @@ echo '<div class="form-group">
 echo '</div>';
 echo '</div>';
 
+$sel_price_mode1 = '';
+$sel_price_mode2 = '';
+$sel_price_mode3 = '';
+
+if($prefs_posts_price_mode == 1 OR $prefs_posts_price_mode == '') {
+    $sel_price_mode1 = 'selected';
+} else if($prefs_posts_price_mode == 2) {
+    $sel_price_mode2 = 'selected';
+} else if($prefs_posts_price_mode == 3) {
+    $sel_price_mode3 = 'selected';
+}
+
+echo '<div class="row">';
+echo '<div class="col">';
 
 echo '<div class="form-group">
 				<label>' . $lang['products_default_currency'] . '</label>
 				<input type="text" class="form-control" name="prefs_posts_products_default_currency" value="'.$prefs_posts_products_default_currency.'">
 			</div>';
 
+echo '</div>';
+echo '<div class="col">';
 
+echo '<div class="mb-3">';
+echo '<label>' . $lang['label_product_price'] . '</label>';
+echo '<select class="form-control custom-select" name="prefs_posts_price_mode">';
+echo '<option value="1" '.$sel_price_mode1.'>'.$lang['show_price_in_gross'].'</option>';
+echo '<option value="2" '.$sel_price_mode2.'>'.$lang['show_price_both'].'</option>';
+echo '<option value="3" '.$sel_price_mode3.'>'.$lang['show_price_in_net'].'</option>';
+echo '</select>';
+echo '</div>';
+
+echo '</div>';
+echo '</div>';
 
 echo '<hr><h3>'.$lang['label_images'].'</h3>';
 

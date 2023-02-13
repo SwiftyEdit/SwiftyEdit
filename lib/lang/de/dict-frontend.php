@@ -175,6 +175,7 @@ $lang['label_product_info'] = 'Produkt';
 $lang['label_tax'] = 'Steuer';
 $lang['label_net'] = 'Netto';
 $lang['label_gross'] = 'Brutto';
+$lang['price_single'] = 'Einzelpreis';
 $lang['shipping_costs'] = 'Versandkosten';
 $lang['price_subtotal'] = 'Zwischensumme';
 $lang['price_total'] = 'Gesamtpreis';

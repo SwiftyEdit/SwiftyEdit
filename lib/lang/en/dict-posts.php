@@ -133,6 +133,14 @@ $lang['label_product_cart_mode'] = 'Shopping cart';
 $lang['product_cart_mode_on'] = 'Activate shopping cart';
 $lang['product_cart_mode_off'] = 'Deactivate shopping cart';
 
+$lang['order_mode_active'] = 'Activate Orders';
+$lang['order_mode_request'] = 'Show request form only';
+$lang['order_mode_both'] = 'Activate orders and request form';
+
+$lang['show_price_in_net'] = 'Show prices in net';
+$lang['show_price_in_gross'] = 'Show prices in gross';
+$lang['show_price_both'] = 'Show both prices';
+
 $lang['label_product_pricetag_mode'] = 'Pricetag';
 $lang['product_pricetag_mode_on'] = 'Show pricetag';
 $lang['product_pricetag_mode_off'] = 'Hide pricetag';

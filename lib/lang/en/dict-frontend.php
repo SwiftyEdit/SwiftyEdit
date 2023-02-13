@@ -194,6 +194,7 @@ $lang['label_product_info'] = 'Product';
 $lang['label_tax'] = 'Tax';
 $lang['label_net'] = 'Net';
 $lang['label_gross'] = 'Gross';
+$lang['price_single'] = 'Single price';
 $lang['price_subtotal'] = 'Subtotal';
 $lang['price_total'] = 'Total price';
 $lang['label_pm_bank_transfer'] = 'Bank transfer';

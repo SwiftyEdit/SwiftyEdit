@@ -2,10 +2,7 @@
 	<tr>
 		<td>#</td>
 		<td>{$lang_label_product_info}</td>
-		<td>{$lang_label_product_amount}</td>
-		<td class="text-end">{$lang_label_price} <small class="text-muted">{$lang_label_net}</small></td>
-		<td class="text-center">{$lang_label_tax}</td>
-		<td class="text-end">{$lang_label_price} <small class="text-muted">{$lang_label_gross}</small></td>
+		<td class="text-end">{$lang_label_price}</td>
 		<td></td>
 	</tr>
 	
@@ -19,16 +16,45 @@
 			{if $item.options_comment != ""}
 			<div class="sc-items-options-comment">{$item.options_comment_label}:<br>{$item.options_comment}</div>
 			{/if}
+
+			<div class="row">
+				<div class="col-6">
+					<div class="p-1">
+						<p class="h6">{$lang_price_single}</p>
+						<p>{$currency} {$item.price_gross_single_format}</p>
+						{if $price_mode == 2 || $price_mode == 3}
+						<p>{$currency} {$item.price_net_single_format}</p>
+						{/if}
+					</div>
+				</div>
+				<div class="col-2">
+					{$lang_label_tax}
+					<p>{$item.tax} %</p>
+				</div>
+				<div class="col-2">
+					{$lang_label_product_amount}
+					<form action="{$shopping_cart_uri}" method="POST">
+						<input type="number" name="cart_product_amount" value="{$item.amount}" class="form-control" onchange="this.form.submit()">
+						<input type="hidden" name="cart_item_key" value="{$item.cart_id}">
+					</form>
+				</div>
+			</div>
+
 		</td>
-		<td>
-			<form action="{$shopping_cart_uri}" method="POST">
-				<input type="number" name="cart_product_amount" value="{$item.amount}" class="form-control" onchange="this.form.submit()">
-				<input type="hidden" name="cart_item_key" value="{$item.cart_id}">
-			</form>
+
+		<td class="text-end">
+			{if $price_mode == 1}
+				<p>{$currency} {$item.price_gross_format}</p>
+			{/if}
+			{if $price_mode == 2}
+				<p><small class="text-muted">{$lang_label_net}</small> {$currency} {$item.price_net_format}</p>
+				<p><small class="text-muted">{$lang_label_gross}</small> {$currency} {$item.price_gross_format}</p>
+			{/if}
+			{if $price_mode == 3}
+				<p>{$currency} {$item.price_net_format}</p>
+			{/if}
 		</td>
-		<td class="text-end">{$currency} {$item.price_net_format}</td>
-		<td class="text-center">{$item.tax} %</td>
-		<td class="text-end">{$currency} {$item.price_gross_format}</td>
+
 		<td class="text-center">
 			<form action="{$shopping_cart_uri}" method="POST">
 				<button type="submit" class="btn btn-link link-danger" name="remove_from_cart" value="{$item.cart_id}"><i class="bi bi-trash"></i></button>
@@ -38,19 +64,19 @@
 	{/foreach}
 
 	<tr>
-		<td colspan="5" class="text-end">{$lang_price_subtotal}</td>
+		<td colspan="2" class="text-end">{$lang_price_subtotal}</td>
 		<td class="text-end">{$currency} {$cart_price_subtotal}</td>
 		<td></td>
 	</tr>	
 	
 	<tr>
-		<td colspan="5" class="text-end">{$lang_shipping_costs}</td>
+		<td colspan="2" class="text-end">{$lang_shipping_costs}</td>
 		<td class="text-end">{$currency} {$cart_shipping_costs}</td>
 		<td></td>
 	</tr>
 	
 	<tr>
-		<td colspan="5" class="">
+		<td colspan="2" class="">
 			<form action="{$shopping_cart_uri}" method="POST" id="set_payment">
 				{foreach $payment_methods as $pm}
 					<div class="form-check">
@@ -65,7 +91,7 @@
 	</tr>
 	
 	<tr>
-		<td colspan="5" class="text-end">{$lang_price_total}</td>
+		<td colspan="2" class="text-end">{$lang_price_total}</td>
 		<td class="text-end">{$currency} {$cart_price_total}</td>
 		<td></td>
 	</tr>
