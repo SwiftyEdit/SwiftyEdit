@@ -475,6 +475,7 @@ $lang['label_shipping_mode_cats'] = 'Die teuerste Kategorie im Warenkorb bestimm
 $lang['label_shipping_mode_digital'] = 'Dieser Artikel wird nicht ausgeliefert';
 $lang['label_shipping_mode_deliver'] = 'Dieser Artikel wird ausgeliefert';
 
+$lang['label_tax_currency'] = 'Steuern und Währung';
 $lang['label_payment_methods'] = 'Bezahlarten';
 $lang['label_payment_bank_transfer'] = 'Überweisung';
 $lang['label_payment_invoice'] = 'Rechnung';

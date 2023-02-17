@@ -6,8 +6,8 @@ require 'core/access.php';
 
 echo '<form action="?tn=system&sub=shop&file=payment-shipping" method="POST">';
 
-echo '<fieldset>';
-echo '<legend>'.$lang['label_shipping'].'</legend>';
+
+echo '<h5 class="heading-line">'.$lang['label_shipping'].'</h5>';
 
 
 if($prefs_shipping_costs_mode == 1 OR $prefs_shipping_costs_mode == '') {
@@ -51,10 +51,7 @@ echo '</div>';
 echo '</div>';
 
 
-echo'</fieldset>';
-
-
-echo '<h3>'.$lang['label_payment_methods'].'</h3>';
+echo '<h5 class="heading-line">'.$lang['label_payment_methods'].'</h5>';
 
 echo '<table class="table">';
 echo '<tr>';

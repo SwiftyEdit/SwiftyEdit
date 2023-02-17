@@ -30,7 +30,7 @@ if($prefs_posts_order_mode == 1 OR $prefs_posts_order_mode == '') {
 
 echo '<form action="?tn=system&sub=shop&file=general" method="POST">';
 
-echo '<h3>' . $lang['label_carts'] . '</h3>';
+echo '<h5 class="heading-line">' . $lang['label_carts'] . '</h5>';
 
 echo '<div class="mb-3">';
 echo '<label>' . $lang['label_carts'] . '</label>';
@@ -50,13 +50,13 @@ echo '<option value="3" '.$sel_order_mode3.'>'.$lang['order_mode_both'].'</optio
 echo '</select>';
 echo '</div>';
 
-echo '<hr><h3>Taxes and Currency</h3>';
+echo '<h5 class="heading-line">'.$lang['label_tax_currency'].'</h5>';
 
 
 echo '<div class="row">';
 echo '<div class="col">';
 echo '<div class="form-group">
-				<label>' . $lang['products_default_tax'] . '</label>
+				<label>'.$lang['products_default_tax'].'</label>
 				<input type="text" class="form-control" name="prefs_posts_products_default_tax" value="'.$prefs_posts_products_default_tax.'">
 			</div>';
 echo '</div>';
@@ -109,7 +109,7 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
-echo '<hr><h3>'.$lang['label_images'].'</h3>';
+echo '<h5 class="heading-line">'.$lang['label_images'].'</h5>';
 
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_images_prefix'].'</label>
