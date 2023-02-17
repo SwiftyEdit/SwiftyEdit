@@ -102,7 +102,8 @@
 
 </table>
 
-<div class="row">
+{if $show_submit_order_form == 1}
+<div class="row mb-3">
     <div class="col-lg-6">
 
         <div class="card h-100">
@@ -117,8 +118,8 @@
         </div>
     </div>
 </div>
+{/if}
 
-<hr>
 
 {if $show_request_form == 1}
     {include file='shopping_cart_form.tpl'}
