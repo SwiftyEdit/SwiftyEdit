@@ -125,13 +125,15 @@
     {include file='shopping_cart_form.tpl'}
 {/if}
 
-{if $checkout_error_msg != ''}
-    <div class="alert alert-info">
-        {$checkout_error_msg}
-    </div>
-{else}
 
-    {if $show_submit_order_form == 1}
+
+{if $show_submit_order_form == 1}
+
+    {if $checkout_error_msg != ''}
+        <div class="alert alert-info">
+            {$checkout_error_msg}
+        </div>
+    {else}
         <form action="{$shopping_cart_uri}" method="POST">
             <div class="card p-2 mb-4">
 
