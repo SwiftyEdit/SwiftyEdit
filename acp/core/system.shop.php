@@ -10,13 +10,13 @@ if(isset($_POST['update_shop'])) {
 		$data[htmlentities($key)] = htmlentities($val);
 	}
 	
-	if($_POST['prefs_pm_bank_transfer'] != 1) {
+	if(isset($_POST['prefs_pm_bank_transfer']) && $_POST['prefs_pm_bank_transfer'] != 1) {
 		$data['prefs_pm_bank_transfer'] = 0;
 	}
-	if($_POST['prefs_pm_invoice'] != 1) {
+	if(isset($_POST['prefs_pm_invoice']) && $_POST['prefs_pm_invoice'] != 1) {
 		$data['prefs_pm_invoice'] = 0;
 	}
-    if($_POST['prefs_pm_cash'] != 1) {
+    if(isset($_POST['prefs_pm_cash']) && $_POST['prefs_pm_cash'] != 1) {
         $data['prefs_pm_cash'] = 0;
     }
 	
