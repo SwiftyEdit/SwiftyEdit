@@ -9,18 +9,26 @@ if(isset($_POST['update_shop'])) {
 	foreach($_POST as $key => $val) {
 		$data[htmlentities($key)] = htmlentities($val);
 	}
-	
-	if(isset($_POST['prefs_pm_bank_transfer']) && $_POST['prefs_pm_bank_transfer'] != 1) {
-		$data['prefs_pm_bank_transfer'] = 0;
-	}
-	if(isset($_POST['prefs_pm_invoice']) && $_POST['prefs_pm_invoice'] != 1) {
-		$data['prefs_pm_invoice'] = 0;
-	}
-    if(isset($_POST['prefs_pm_cash']) && $_POST['prefs_pm_cash'] != 1) {
+
+	se_write_option($data,'se');
+}
+
+if(isset($_POST['update_pm_shipping'])) {
+    foreach($_POST as $key => $val) {
+        $data[htmlentities($key)] = htmlentities($val);
+    }
+
+    if($_POST['prefs_pm_bank_transfer'] != 1) {
+        $data['prefs_pm_bank_transfer'] = 0;
+    }
+    if($_POST['prefs_pm_invoice'] != 1) {
+        $data['prefs_pm_invoice'] = 0;
+    }
+    if($_POST['prefs_pm_cash'] != 1) {
         $data['prefs_pm_cash'] = 0;
     }
-	
-	se_write_option($data,'se');
+
+    se_write_option($data,'se');
 }
 
 if(isset($_POST)) {
