@@ -2009,7 +2009,7 @@ progress {
   color: #6F2F7E;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  border: 1px solid #301d35;
   appearance: none;
   border-radius: 0.375rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -2155,7 +2155,7 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 16px 12px;
-  border: 1px solid #ced4da;
+  border: 1px solid #301d35;
   border-radius: 0.375rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   appearance: none;
@@ -2509,7 +2509,7 @@ textarea.form-control-lg {
   text-align: center;
   white-space: nowrap;
   background-color: #e9ecef;
-  border: 1px solid #ced4da;
+  border: 1px solid #301d35;
   border-radius: 0.375rem;
 }
 
@@ -18942,9 +18942,9 @@ input.form-control[readonly],
 select.form-control,
 select.form-select,
 .bootstrap-tagsinput {
-  background: #111;
+  background: #151515;
   color: #6F2F7E;
-  border-color: black;
+  border-color: #301d35;
 }
 textarea.form-control:focus,
 input.form-control:focus,
@@ -18952,14 +18952,14 @@ input.form-control[readonly]:focus,
 select.form-control:focus,
 select.form-select:focus,
 .bootstrap-tagsinput:focus {
-  background: #111;
+  background: #151515;
   color: #6F2F7E;
 }
 
 select.cutom-select,
 select.form-control {
-  background: #111 !important;
-  background: #111 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px !important;
+  background: #151515 !important;
+  background: #151515 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px !important;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -18970,17 +18970,15 @@ input.form-control[readonly] {
 }
 
 .input-group-text {
-  border: 1px solid #222;
-  background: #1e1e1e;
+  background: #222222;
   color: #b3b3b3;
-  border-color: black;
 }
 
 #CSSeditor,
 #HTMLeditor,
 .form-control {
-  border: 1px solid black !important;
-  background: #111;
+  border: 1px solid #301d35 !important;
+  background: #151515;
 }
 
 .mce-panel {

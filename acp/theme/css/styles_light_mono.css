@@ -2008,7 +2008,7 @@ progress {
   color: #010001;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  border: 1px solid #dbcae8;
   appearance: none;
   border-radius: 0.375rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -2154,7 +2154,7 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 16px 12px;
-  border: 1px solid #ced4da;
+  border: 1px solid #dbcae8;
   border-radius: 0.375rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   appearance: none;
@@ -2508,7 +2508,7 @@ textarea.form-control-lg {
   text-align: center;
   white-space: nowrap;
   background-color: #e9ecef;
-  border: 1px solid #ced4da;
+  border: 1px solid #dbcae8;
   border-radius: 0.375rem;
 }
 
@@ -18943,7 +18943,7 @@ select.form-select,
 .bootstrap-tagsinput {
   background: #fff;
   color: #010001;
-  border-color: #e6e6e6;
+  border-color: #dbcae8;
 }
 textarea.form-control:focus,
 input.form-control:focus,
@@ -18969,16 +18969,14 @@ input.form-control[readonly] {
 }
 
 .input-group-text {
-  border: 1px solid #222;
   background: white;
   color: #090909;
-  border-color: #cccccc;
 }
 
 #CSSeditor,
 #HTMLeditor,
 .form-control {
-  border: 1px solid #e6e6e6 !important;
+  border: 1px solid #dbcae8 !important;
   background: #fff;
 }
 
