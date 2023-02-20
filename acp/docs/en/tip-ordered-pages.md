@@ -1,10 +1,9 @@
 ---
-title: Geordnete Seiten
-description: Was sind geordnete Seiten
+title: Ordered pages
+description: What are ordered pages
 group: tips
 priority: 0
 ---
-Als geordnete Seiten werden die Seiten aufgeführt, 
-welche eine Sortierungsnummer enthalten. 
-Diese Seiten werden automatisch in der (Haupt)Navigation aufgeführt. 
-Auf der Übersicht sind diese in der linken Spalte aufgelistet.
+Pages are listed as sorted pages, which contain a sorting number.
+These pages are automatically listed in the (main) navigation.
+On the overview they are listed in the left column.

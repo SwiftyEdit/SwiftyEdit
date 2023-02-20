@@ -7,10 +7,10 @@ priority: 0
 
 ### Status
 
-| Status        | Beschreibung                                                                                         |
-|---------------|------------------------------------------------------------------------------------------------------|
-| Öffentlich    | Die Seiten sind für alle sichtbar                                                                    |
-| Unsichtbar    | Die Seite ist sichtbar für alle wird aber nicht in Navigationen, der Sitemap oder der Suche gelistet |
-| Privat        | Nur Administratoren oder freigegebene Benutzergruppen können die Seite einsehen                      |
-| Entwurf       | Nur Administratoren können die Seite einsehen                                                        |
-| Weiterleitung | Die Seite kann nicht aufgerufen werden, da sie sofort auf eine andere Adresse weiterleitet           |
+| Status      | Beschreibung                                                                       |
+|-------------|------------------------------------------------------------------------------------|
+| Public      | The pages are visible for all                                                      |
+| Ghost       | The page is visible to all but is not listed in navigations, the sitemap or search |
+| Private     | Only administrators or approved user groups can view the page                      |
+| Draft       | Only administrators can view the page                                              |
+| Redirection | The page cannot be accessed because it immediately redirects to another address    |

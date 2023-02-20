@@ -1,13 +1,13 @@
 ---
-title: Einzelne Seiten
-description: Was sind einzelne Seiten
+title: Single Pages
+description: What are single pages
 group: tips
 priority: 0
 ---
 
-Einzelne Seiten (manchmal auch ungeordnete Seiten genannt) sind nicht in die Navigation eingegliedert - 
-werden aber dennoch in der Sitemap bzw. den Suchergebnissen berücksichtigt. 
-Die ungeordneten Seiten sind in der rechten Spalte aufgelistet.
+Single pages (sometimes called unordered pages) are not included in the navigation - 
+but are still included in the sitemap or search results.
+The unordered pages are listed in the right column.
 
-Über die Filterfunktion kann die Liste nach Status (Öffentlich, Unsichtbar, Privat, Entwurf), 
-nach Labels und nach Sprachen gefiltert werden. Zusätzlich kannst Du die Liste über das Suchfeld filtern.
+Using the filter function, the list can be filtered by status (Public, Invisible, Private, Draft),
+by labels and by languages. Additionally, you can filter the list via the search field.

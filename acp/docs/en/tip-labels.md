@@ -7,6 +7,6 @@ priority: 0
 
 ### Labels
 
-Labels helfen Dir dabei, wenn Du eine große Zahl an Datensätzen organisieren musst.
+Labels help you when you need to organize a large number of records.
 
-Du kannst in den Einstellungen beliebig viele Labels anlegen.
+You can create as many labels as you want in the settings.
