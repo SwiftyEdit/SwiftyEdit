@@ -206,12 +206,12 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         ]
     ]);
 
-    // if we have no target page - find a blog page
+    // if we have no target page - find a shop page
     if($target_page[0] == '') {
         $target_page = $db_content->select("se_pages", "page_permalink", [
             "AND" => [
-                "page_posts_categories[!]" => "",
-                "page_language" => $post_lang
+                "page_posts_types[~]" => "p",
+                "page_language" => $product_lang
             ]
         ]);
     }
