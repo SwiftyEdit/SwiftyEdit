@@ -549,10 +549,12 @@
                 <input type="hidden" name="csrf_token" value="{token}">
                 <input type="hidden" name="date" value="{date}">
 
-                {submit_delete_button}
+
 
                 {submit_variant_button}
                 {submit_button}
+                
+                {submit_delete_button}
 
             </div>
         </div>
