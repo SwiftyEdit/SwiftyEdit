@@ -10,6 +10,7 @@ use PHPMailer\PHPMailer\Exception;
  * 
  */
 
+include_once 'functions.helpers.php';
 include_once 'functions.sanitizer.php';
 include_once 'functions.posts.php';
 include_once 'functions.shop.php';
