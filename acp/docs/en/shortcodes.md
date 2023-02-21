@@ -3,7 +3,7 @@ title: Shortcodes
 description: Manage and use Shortcodes
 btn: Shortcodes
 group: backend
-priority: 200
+priority: 220
 ---
 
 # Manage Shortcodes
