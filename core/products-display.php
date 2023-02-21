@@ -33,10 +33,36 @@ if ($target_page[0] == '') {
 }
 
 
-$teaser = htmlspecialchars_decode($product_data['teaser']);
-$text = htmlspecialchars_decode($product_data['text']);
+$teaser = text_parser(htmlspecialchars_decode($product_data['teaser']));
+$text = text_parser(htmlspecialchars_decode($product_data['text']));
 
+if($product_data['text_label'] != '') {
+    $text_label = text_parser(htmlspecialchars_decode($product_data['text_label']));
+} else {
+    $text_label = $lang['label_product_description'];
+}
 
+if($product_data['product_features_label'] != '') {
+    $label_product_features = text_parser(htmlspecialchars_decode($product_data['product_features_label']));
+} else {
+    $label_product_features = $lang['label_product_features'];
+}
+
+/* additional text sections 1-5 */
+
+for($i=1;$i<6;$i++) {
+    $key_text = 'text_additional'.$i;
+    $key_label = 'text_additional'.$i.'_label';
+    $var_text = 'text_additional'.$i;
+    $var_label = 'text_additional'.$i.'_label';
+
+    $$var_text = text_parser(htmlspecialchars_decode($product_data[$key_text]));
+    $$var_label = text_parser(htmlspecialchars_decode($product_data[$key_label]));
+
+    $smarty->assign($var_label, $$var_label);
+    $smarty->assign($var_text, $$var_text);
+
+}
 
 $product_images = explode("<->", $product_data['images']);
 $product_images = array_filter($product_images); /* remove empty elements */
@@ -135,6 +161,11 @@ if($product_data['votings'] == 2 || $product_data['votings'] == 3) {
 $form_action = '/'.$swifty_slug.$mod_slug;
 $this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
+if($se_prefs['prefs_posts_products_cart'] == 1) {
+    // all shopping carts are disabled - overwrite products settings
+    $product_data['product_cart_mode'] = 2;
+}
+
 if($product_data['product_tax'] == '1') {
     $tax = $se_prefs['prefs_posts_products_default_tax'];
 } else if($product_data['product_tax'] == '2') {
@@ -206,7 +237,7 @@ $product_features = json_decode($product_data['product_features'],JSON_FORCE_OBJ
 if(is_array($product_features)) {
     $get_features = se_get_posts_features($product_features);
     $smarty->assign('product_features', $get_features);
-    $smarty->assign('label_product_features', $lang['label_product_features']);
+    $smarty->assign('label_product_features', $label_product_features);
 }
 
 /* check for variants  */
@@ -245,6 +276,56 @@ if($cnt_variants > 1) {
     }
     $smarty->assign('show_variants', $var);
 }
+
+/* check for related products */
+if($product_data['product_related'] != '') {
+
+    $related_products_array = json_decode($product_data['product_related'],true);
+    $cnt_related_products = count((array) $related_products_array);
+    for($i=0;$i<$cnt_related_products;$i++) {
+
+        $related_product = se_get_product_data($related_products_array[$i]);
+
+        $rp[$i]['title'] = $related_product['title'];
+        $rp[$i]['teaser'] = se_return_words_str(html_entity_decode($related_product['teaser']),10);
+        $product_slug = basename($related_product['slug']);
+        $product_images = explode("<->",$related_product['images']);
+        if ($product_images[1] != "") {
+            $rp[$i]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+            $rp[$i]['image'] = '';
+        } else {
+            $rp[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        }
+        $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $related_product['id'] . ".html";
+    }
+    $smarty->assign('show_related', $rp);
+}
+
+/* check for accessories */
+if($product_data['product_accessories'] != '') {
+
+    $products_accessories_array = json_decode($product_data['product_accessories'],true);
+    $cnt_products_accessories = count((array) $products_accessories_array);
+    for($i=0;$i<$cnt_products_accessories;$i++) {
+        $accessories_product = se_get_product_data($products_accessories_array[$i]);
+
+        $ap[$i]['title'] = $accessories_product['title'];
+        $ap[$i]['teaser'] = se_return_words_str(html_entity_decode($accessories_product['teaser']),10);
+        $product_slug = basename($accessories_product['slug']);
+        $product_images = explode("<->",$accessories_product['images']);
+        if ($product_images[1] != "") {
+            $ap[$i]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+            $ap[$i]['image'] = '';
+        } else {
+            $ap[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        }
+        $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $accessories_product['id'] . ".html";
+    }
+    $smarty->assign('show_accessories', $ap);
+}
+
 
 
 if($product_data['meta_title'] == '') {
@@ -332,6 +413,7 @@ $smarty->assign('product_id', $product_data['id']);
 $smarty->assign('product_title', $product_data['title']);
 $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
+$smarty->assign('product_text_label', $text_label);
 
 $smarty->assign('product_pricetag_mode', $product_data['product_pricetag_mode']);
 $smarty->assign('product_cart_mode', $product_data['product_cart_mode']);

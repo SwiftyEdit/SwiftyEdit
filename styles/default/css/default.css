@@ -17325,6 +17325,13 @@ a.post-headline-link {
 .table-sc .sc-items-options span {
   padding-right: 5px;
 }
+.table-sc td span.price-predecimal,
+.table-sc td span.price-decimal {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: normal;
+  vertical-align: initial;
+}
 
 /**
  * styles for events

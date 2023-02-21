@@ -76,6 +76,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
     }
 
     $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
+    $product_accessories = json_encode($_POST['product_accessories'],JSON_FORCE_OBJECT);
+    $product_related = json_encode($_POST['product_related'],JSON_FORCE_OBJECT);
 
     if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
         $file_attachment_user = 2;
@@ -144,13 +146,21 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $meta_title = $_POST['meta_title'];
     }
     if($_POST['meta_description'] == '') {
-        $meta_description = strip_tags($_POST['post_teaser']);
+        $meta_description = strip_tags($_POST['teaser']);
     } else {
         $meta_description = $_POST['meta_description'];
     }
 
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);
+
+    /* variants title and description */
+    if($_POST['product_variant_title'] == '') {
+        $product_variant_title = $_POST['title'];
+    }
+    if($_POST['product_variant_description'] == '') {
+        $product_variant_description = $meta_description;
+    }
 
     $product_features = '';
     if(isset($_POST['product_features'])) {
@@ -196,12 +206,12 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         ]
     ]);
 
-    // if we have no target page - find a blog page
+    // if we have no target page - find a shop page
     if($target_page[0] == '') {
         $target_page = $db_content->select("se_pages", "page_permalink", [
             "AND" => [
-                "page_posts_categories[!]" => "",
-                "page_language" => $post_lang
+                "page_posts_types[~]" => "p",
+                "page_language" => $product_lang
             ]
         ]);
     }
@@ -506,6 +516,50 @@ foreach($all_posts_features as $feature) {
 }
 
 
+/* related products and accessories */
+
+$all_products = se_get_all_products();
+
+$get_prod_related = json_decode($product_data['product_related'],true);
+$checkbox_related_prod = '';
+
+foreach($all_products as $prod) {
+
+    $prod_id = $prod['id'];
+    $prod_title = $prod['title'];
+    $checked_prod = '';
+    if(is_array($get_prod_related)) {
+        if(array_search("$prod_id", $get_prod_related) !== false) {
+            $checked_prod = 'checked';
+        }
+    }
+
+    $checkbox_related_prod .= '<div class="form-check">';
+    $checkbox_related_prod .= '<input class="form-check-input" id="related_'.$prod_id.'" type="checkbox" name="product_related[]" value="'.$prod_id.'" '.$checked_prod.'>';
+    $checkbox_related_prod .= '<label class="form-check-label" for="related_'.$prod_id.'">'.$prod_title.' <small class="text-muted">('.$prod_id.')</small></label>';
+    $checkbox_related_prod .= '</div>';
+}
+
+$get_prod_accessories = json_decode($product_data['product_accessories'],true);
+$checkbox_accessories_prod = '';
+
+foreach($all_products as $prod) {
+
+    $prod_id = $prod['id'];
+    $prod_title = $prod['title'];
+    $checked_accessory = '';
+    if(is_array($get_prod_accessories)) {
+        if(array_search("$prod_id", $get_prod_accessories) !== false) {
+            $checked_accessory = 'checked';
+        }
+    }
+
+    $checkbox_accessories_prod .= '<div class="form-check">';
+    $checkbox_accessories_prod .= '<input class="form-check-input" id="accessories_'.$prod_id.'" type="checkbox" name="product_accessories[]" value="'.$prod_id.'" '.$checked_accessory.'>';
+    $checkbox_accessories_prod .= '<label class="form-check-label" for="accessories_'.$prod_id.'">'.$prod_title.' <small class="text-muted">'.$prod_id.'</small></label>';
+    $checkbox_accessories_prod .= '</div>';
+}
+
 /* product options */
 
 if($product_data['product_options'] != '' OR $product_data['product_options'] != null) {
@@ -620,7 +674,7 @@ $snippet_select_pricelist .= '</select>';
 
 /* add text snippet to text */
 
-$snippet_select_text = '<select class="form-control custom-select" name="product_textlib_content">';
+$snippet_select_text = '<select class="form-control custom-select" name="product_textlib_content" id="snippet_tex">';
 $snippet_select_text .= '<option value="no_snippet">'.$lang['product_no_snippet'].'</option>';
 $snippets_text_list = $db_content->select("se_snippets", "*", [
     "snippet_name[~]" => "%post_text%"
@@ -764,7 +818,21 @@ $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
 
 $form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
 $form_tpl = str_replace('{teaser}', $product_data['teaser'], $form_tpl);
+
 $form_tpl = str_replace('{text}', $product_data['text'], $form_tpl);
+$form_tpl = str_replace('{text_label}', $product_data['text_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_1}', $product_data['text_additional1'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_1}', $product_data['text_additional1_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_2}', $product_data['text_additional2'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_2}', $product_data['text_additional2_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_3}', $product_data['text_additional3'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_3}', $product_data['text_additional3_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_4}', $product_data['text_additional4'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_4}', $product_data['text_additional4_label'], $form_tpl);
+$form_tpl = str_replace('{text_additional_5}', $product_data['text_additional5'], $form_tpl);
+$form_tpl = str_replace('{text_label_additional_5}', $product_data['text_additional5_label'], $form_tpl);
+
+
 $form_tpl = str_replace('{author}', $product_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $product_data['slug'], $form_tpl);
 $form_tpl = str_replace('{tags}', $product_data['tags'], $form_tpl);
@@ -788,10 +856,13 @@ $form_tpl = str_replace('{select_comments}', $select_comments, $form_tpl);
 $form_tpl = str_replace('{select_votings}', $select_votings, $form_tpl);
 
 $form_tpl = str_replace('{variants_list}', $variants_list, $form_tpl);
-$form_tpl = str_replace('{product_variant_title}', $product_variant_title, $form_tpl);
-$form_tpl = str_replace('{product_variant_description}', $product_variant_description, $form_tpl);
+$form_tpl = str_replace('{product_variant_title}', $product_data['product_variant_title'], $form_tpl);
+$form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);
 $form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
 $form_tpl = str_replace('{product_options_comment_label}', $product_data['product_options_comment_label'], $form_tpl);
+
+$form_tpl = str_replace('{product_list_related}', $checkbox_related_prod, $form_tpl);
+$form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod, $form_tpl);
 
 
 /* links */
@@ -829,6 +900,7 @@ $form_tpl = str_replace('{snippet_select_text}', $snippet_select_text, $form_tpl
 $form_tpl = str_replace('{product_price_net_purchasing}', $product_price_net_purchasing, $form_tpl);
 $form_tpl = str_replace('{product_price_addition}', $product_data['product_price_addition'], $form_tpl);
 
+$form_tpl = str_replace('{product_features_label}', $product_data['product_features_label'], $form_tpl);
 $form_tpl = str_replace('{checkboxes_features}', $checkbox_features, $form_tpl);
 
 $form_tpl = str_replace('{select_product_cart_mode}', $select_cart_mode, $form_tpl);

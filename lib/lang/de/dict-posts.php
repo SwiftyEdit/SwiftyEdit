@@ -20,17 +20,26 @@ $lang['post_type_file'] = 'Download';
 
 $lang['post_tab_intro'] = 'Teaser';
 $lang['post_tab_content'] = 'Inhalt';
+$lang['post_tab_descriptions'] = 'Beschreibungen';
 $lang['post_tab_meta'] = 'Meta Data';
 $lang['post_tab_preferences'] = 'Einstellungen';
 $lang['post_tab_product'] = 'Produkt';
+$lang['post_tab_downloads'] = 'Downloads';
+$lang['post_tab_links'] = 'Verknüpfungen';
 $lang['post_tab_info'] = 'Informationen';
 $lang['post_tab_prices'] = 'Preise';
 $lang['post_tab_file'] = 'Datei';
 $lang['post_tab_features'] = 'Features';
 $lang['post_tab_SEO'] = 'SEO/URL';
 $lang['post_tab_variants'] = 'Varianten';
+$lang['post_tab_accessories'] = 'Zubehör';
+$lang['post_tab_related'] = 'Ähnliche Artikel';
 $lang['post_tab_options'] = 'Optionen';
+$lang['post_tab_features'] = 'Merkmale';
 $lang['post_tab_prices_delivery'] = 'Preise & Versand';
+
+$lang['prod_tab_main_description'] = 'Beschreibung';
+$lang['prod_tab_additional_description'] = 'zusätzliche Beschreibung';
 
 $lang['msg_post_deleted'] = 'Der Eintrag wurde gelöscht';
 $lang['msg_no_posts_to_show'] = 'Es gibt hier im Moment keine Einträge.';
@@ -111,6 +120,8 @@ $lang['label_product_cnt_sales'] = 'Bereits verkauft';
 $lang['label_product_snippet_price'] = 'Snippet zu den Preisen hinzufügen (post_price*)';
 $lang['label_product_snippet_text'] = 'Snippet zum Inhalt hinzufügen (post_text*)';
 $lang['product_no_snippet'] = 'Kein Snippet';
+$lang['label_product_options'] = 'Optionen';
+$lang['label_product_features'] = 'Features';
 
 $lang['label_product_delivery_time'] = 'Lieferzeit';
 $lang['product_no_delivery_time'] = 'Keine Angabe';
@@ -123,6 +134,14 @@ $lang['label_product_customer_upload'] = 'Diesem Artikel eine Upload-Option hinz
 $lang['label_product_cart_mode'] = 'Warenkorb';
 $lang['product_cart_mode_on'] = 'Warenkorbfunktion aktivieren';
 $lang['product_cart_mode_off'] = 'Warenkorbfunktion deaktivieren';
+
+$lang['order_mode_active'] = 'Bestellungen aktivieren';
+$lang['order_mode_request'] = 'Nur Anfrage-Formular anzeigen';
+$lang['order_mode_both'] = 'Bestellungen und Anfrage-Formular aktivieren';
+
+$lang['show_price_in_net'] = 'Preise in Netto anzeigen';
+$lang['show_price_in_gross'] = 'Preise in Brutto anzeigen';
+$lang['show_price_both'] = 'Netto und Brutto anzeigen';
 
 $lang['label_product_pricetag_mode'] = 'Preisschild';
 $lang['product_pricetag_mode_on'] = 'Preise anzeigen';

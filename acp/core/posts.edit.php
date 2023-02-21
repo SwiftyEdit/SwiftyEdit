@@ -158,7 +158,7 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 	if($target_page[0] == '') {
 		$target_page = $db_content->select("se_pages", "page_permalink", [
 			"AND" => [
-				"page_posts_categories[!]" => "",
+				"page_posts_types[!]" => ["","p","e"],
 				"page_language" => $post_lang
 			]
 		]);		

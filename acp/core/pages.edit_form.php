@@ -426,7 +426,7 @@ $images = se_unique_multi_array($images,'media_file');
 $page_thumbnail_array = explode("&lt;-&gt;", $page_thumbnail);
 $array_images = explode("<->", $post_data['post_images']);
 
-$choose_images = se_select_img_widget($images,$page_thumbnail_array,$prefs_pagethumbnail_prefix,1);
+$choose_images = se_select_img_widget($images,$page_thumbnail_array,$se_prefs['prefs_pagethumbnail_prefix'],1);
 // picker1_images[]
 echo $choose_images;
 
@@ -737,7 +737,7 @@ $shortcodes = se_get_shortcodes();
 
 echo '<div class="scroll-container" style="height:50vh">';
 foreach($shortcodes as $sc) {
-	echo '<div class="input-group">';
+	echo '<div class="input-group mb-1">';
 	echo '<input type="text" class="form-control" id="copy_sc_'.md5($sc['snippet_shortcode']).'" value="'.$sc['snippet_shortcode'].'" readonly>';
 	echo '<button type="button" class="btn btn-primary copy-btn" data-clipboard-target="#copy_sc_'.md5($sc['snippet_shortcode']).'">'.$icon['clipboard'].'</button>';
 	echo '</div>';
@@ -751,13 +751,15 @@ echo '<h5>'.$lang['snippets'].'</h5>';
 $snippets = $db_content->select("se_snippets","snippet_name", [
 	"OR" => [
 		"snippet_type" => "",
-		"snippet_type[!]" => ["shortcode","post_feature"]
+		"snippet_type[!]" => ["shortcode","post_feature","post_option"]
 	]
 ]);
 
+$snippets = array_unique($snippets);
+
 echo '<div class="scroll-container" style="height:50vh">';
 foreach($snippets as $snip) {
-	echo '<div class="input-group">';
+	echo '<div class="input-group mb-1">';
 	echo '<input type="text" class="form-control" id="copy_sc_'.md5($snip).'" value="[snippet='.basename($snip).']" readonly>';
 	echo '<button type="button" class="btn btn-primary copy-btn" data-clipboard-target="#copy_sc_'.md5($snip).'">'.$icon['clipboard'].'</button>';
 	echo '</div>';

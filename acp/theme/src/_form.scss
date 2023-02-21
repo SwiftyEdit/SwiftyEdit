@@ -53,7 +53,7 @@ select.form-select,
 .bootstrap-tagsinput {
 	background: $input_background;
 	color: $input_color;
-	border-color: darken($input_background,10);
+	border-color: $input_border_color;
 	&:focus {
 		background: $input_background;
 		color: $input_color;
@@ -79,17 +79,15 @@ input.form-control[readonly] {
 }
 
 .input-group-text {
-	border: 1px solid #222;
 	background: lighten($input_background,5);
 	color: darken($font_color,10);
-	border-color: darken($input_background,20);
 }
 
 
 #CSSeditor,
 #HTMLeditor,
 .form-control {
-	border: 1px solid darken($input_background,10) !important;
+	border: 1px solid $input_border_color !important;
 	background: $input_background;
 }
 

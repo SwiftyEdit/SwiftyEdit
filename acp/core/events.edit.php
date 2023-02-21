@@ -144,7 +144,7 @@ if(isset($_POST['save_event']) OR isset($_POST['del_tmb']) OR isset($_POST['sort
     if($target_page[0] == '') {
         $target_page = $db_content->select("se_pages", "page_permalink", [
             "AND" => [
-                "page_posts_categories[!]" => "",
+                "page_posts_types[~]" => "e",
                 "page_language" => $event_lang
             ]
         ]);

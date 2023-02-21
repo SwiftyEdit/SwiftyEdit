@@ -142,16 +142,16 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	}
 
 	$post_prices = se_posts_calc_price($this_item['product_price_net'],$post_product_price_addition,$tax,$cart_item[$i]['amount']);
-	$cart_item[$i]['price_net_format'] = $post_prices['net'];
+    $cart_item[$i]['price_net_single_format'] = $post_prices['net_single'];
+    $cart_item[$i]['price_gross_single_format'] = $post_prices['gross_single'];
+    $cart_item[$i]['price_net_format'] = $post_prices['net'];
 	$cart_item[$i]['price_gross_format'] = $post_prices['gross'];
 	$cart_item[$i]['price_net_raw'] = $post_prices['net_raw'];
 	$cart_item[$i]['price_gross_raw'] = $post_prices['gross_raw'];
-	$cart_item[$i]['price_net'] = $this_item['post_product_price_net'];
+	$cart_item[$i]['price_net'] = $this_item['product_price_net'];
 	
 	$price_all_net = $price_all_net+round($post_prices['net_raw'],2);
-	$post_price_gross = $post_prices['net_raw']*($tax+100)/100;
-	$price_all_gross = $price_all_gross+round($post_price_gross,2);
-
+    $all_items_subtotal = $all_items_subtotal+$cart_item[$i]['price_gross_raw'];
 }
 
 
@@ -191,12 +191,96 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 
 
 /* calculate subtotal and total */
-$cart_price_subtotal = $price_all_gross;
+$cart_price_subtotal = $all_items_subtotal;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs;
 
+/**
+ * check prefs_posts_order_mode
+ * 1 - order mode is active
+ * 2 - buyer can only send a request
+ * 3 - buyer can order or send a request
+ * */
+
+if($se_prefs['prefs_posts_order_mode'] == 2 OR $se_prefs['prefs_posts_order_mode'] == 3) {
+    $smarty->assign('show_request_form', 1);
+
+    // if this is a registered user, fill in form details
+    if(isset($_SESSION['user_nick'])) {
+        $smarty->assign('buyer_mail', $_SESSION['user_mail']);
+        $smarty->assign('buyer_name', $_SESSION['user_nick']);
+        $smarty->assign('readonly', "readonly");
+    }
+
+} else {
+    $smarty->assign('show_request_form', 0);
+}
+
+if($se_prefs['prefs_posts_order_mode'] == 1 OR $se_prefs['prefs_posts_order_mode'] == 3) {
+    $smarty->assign('show_submit_order_form', 1);
+} else {
+    $smarty->assign('show_submit_order_form', 0);
+}
 
 /**
- * client has send the order
+ * client has sent a request
+ * send vial mail to admin
+ * reset shopping cart if data is sent
+ */
+
+if($_POST['send_request'] == 'send') {
+
+    $send_request = false;
+
+    /* build table from cart items */
+    $table = '<table cellpadding="5">';
+    for($i=0;$i<$cnt_cart_items;$i++) {
+        $table .= '<tr>';
+        $table .= '<td valign="top">'.$lang['label_product_info'].'</td>';
+        $table .= '<td valign="top"><h5>'.$cart_item[$i]['title'].'</h5>'.$cart_item[$i]['options'].'</td>';
+        $table .= '</tr>';
+        $table .= '<tr>';
+        $table .= '<td valign="top">'.$lang['label_price'].'</td>';
+        $table .= '<td valign="top">'.$cart_item[$i]['amount'].' x '.$cart_item[$i]['price_gross_single_format'].' ('.$lang['label_gross'].')</td>';
+        $table .= '</tr>';
+    }
+    $table .= '</table>';
+
+    $recipient['name'] = sanitizeUserInputs($_POST['buyer_name']);
+    $recipient['mail'] = sanitizeUserInputs($_POST['buyer_mail']);
+    $comment = sanitizeUserInputs($_POST['buyer_comment']);
+    $subject = 'Order request';
+
+    $mail_content = '<p>'.$subject.'</p>';
+    $mail_content .= '<p>'.$recipient['name'].' '.$recipient['mail'].'</p>';
+    $mail_content .= '<hr>';
+    $mail_content .= $table;
+    $mail_content .= '<hr>';
+    $mail_content .= $comment;
+
+    if($recipient['name'] != '' AND $recipient['mail'] != '') {
+        $send_request = true;
+    } else {
+        $send_request = false;
+        $send_request_msg = 'Name and E-Mail';
+        $smarty->assign('send_request_msg', $send_request_msg);
+        $smarty->assign('request_msg_class', 'danger');
+    }
+
+    if($send_request === true) {
+        $send = se_send_mail($recipient,$subject,$mail_content);
+        if($send == 1) {
+            $send_request_msg = $lang['msg_request_send'];
+            $smarty->assign('send_request_msg', $send_request_msg);
+            $smarty->assign('request_msg_class', 'success');
+            /* remove items from se_carts */
+            se_clear_cart($get_cd['user_id']);
+            $cnt_cart_items = 0;
+        }
+    }
+}
+
+/**
+ * client has sent the order
  * store data in se_orders
  * reset shopping cart if data is saved
  */
@@ -259,14 +343,12 @@ if($checkout_error == 'missing_mandatory_informations') {
 
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
-$smarty->assign('cart_price_net', se_post_print_currency($price_all_net), true);
-$smarty->assign('cart_price_gross', se_post_print_currency($price_all_gross), true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);
 $smarty->assign('cart_payment_costs', se_post_print_currency($payment_costs), true);
 $smarty->assign('cart_price_subtotal', se_post_print_currency($cart_price_subtotal), true);
 $smarty->assign('cart_price_total', se_post_print_currency($cart_price_total), true);
 $smarty->assign('currency', $se_prefs['prefs_posts_products_default_currency'], true);
-
+$smarty->assign('price_mode', $se_prefs['prefs_posts_price_mode'], true);
 
 $cart_table = $smarty->fetch("shopping_cart.tpl",$cache_id);
 

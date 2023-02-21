@@ -37,7 +37,22 @@ $cols = array(
     "lastedit_from"  => "VARCHAR(50) NOT NULL DEFAULT ''",
     "title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "teaser" => "LONGTEXT NOT NULL DEFAULT ''",
+
     "text" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+
+    /* additional sections for content */
+    "text_additional1" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional1_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional2" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional2_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional3" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional3_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional4" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional4_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_additional5" => "LONGTEXT NOT NULL DEFAULT ''",
+    "text_additional5_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+
     "images" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "tags" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "categories" => "VARCHAR(100) NOT NULL DEFAULT ''",
@@ -68,6 +83,7 @@ $cols = array(
     "product_price_addition" => 'INTEGER(12)',
     "product_price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_price_volume_discount" => "LONGTEXT NOT NULL DEFAULT ''",
+    "product_features_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_features" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options_comment_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
@@ -87,6 +103,10 @@ $cols = array(
     "product_currency" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_unit" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_amount" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "product_related_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_related" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_accessories_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_accessories" => "VARCHAR(255) NOT NULL DEFAULT ''",
     /* files */
     "file_attachment" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "file_attachment_hits" => 'INTEGER(12)',

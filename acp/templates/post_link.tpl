@@ -12,15 +12,26 @@
 			<div class="card-body">
 			<div class="tab-content">
 				<div class="tab-pane fade show active" id="content">
+
+					<div class="mb-3">
+						<label for="inputUrl" class="form-label">{label_url}</label>
+						<input id="inputUrl" class="form-control" name="post_link" type="text" value="{post_link}">
+					</div>
+
 					<div class="row">
 						<div class="col-md-6">
-							<label>{label_title}</label> <input class="form-control" name="post_title" type="text" value="{post_title}"><br>
-							<label>{label_url}</label> <input class="form-control" name="post_link" type="text" value="{post_link}"><br>
-							<label>{label_description}</label> 
-							<textarea class='mceEditor_small' name='post_teaser'>{post_teaser}</textarea>
+							<div class="mb-3">
+								<label for="inputTitle" class="form-label">{label_title}</label>
+								<input id="inputTitle" class="form-control" name="post_title" type="text" value="{post_title}">
+							</div>
+							<div class="mb-3">
+								<label for="inputTeaser" class="form-label">{label_description}</label>
+								<textarea id="inputTeaser" class='mceEditor_small' name='post_teaser'>{post_teaser}</textarea>
+							</div>
 						</div>
 						<div class="col-md-6">
-							<label>{label_image}</label> <input class="filter-images form-control" name="filter-images" placeholder="Filter ..." type="text">
+							<label class="form-label">{label_image}</label>
+							<input class="filter-images form-control" name="filter-images" placeholder="Filter ..." type="text">
 							<div class="images-list scroll-container">
 								{widget_images}
 							</div>
@@ -29,41 +40,41 @@
 				</div>
 				
 				<div class="tab-pane fade" id="meta">
-					<div class="form-group">
-						<label>{label_title}</label>
-						<input class='form-control' name="post_meta_title" type="text" value="{post_meta_title}">
+					<div class="mb-3">
+						<label for="inputMetaTitle" class="form-label">{label_title}</label>
+						<input id="inputMetaTitle" class='form-control' name="post_meta_title" type="text" value="{post_meta_title}">
 					</div>
-					<div class="form-group">
-						<label>{label_description}</label>
-						<textarea class='form-control' rows="4" name="post_meta_description">{post_meta_description}</textarea>
+					<div class="mb-3">
+						<label for="inputMetaDescription" class="form-label">{label_description}</label>
+						<textarea id="inputMetaDescription" class='form-control' rows="4" name="post_meta_description">{post_meta_description}</textarea>
 					</div>
-					<div class="form-group">
-						<label>{label_keywords}</label>
+					<div class="mb-3">
+						<label class="form-label">{label_keywords}</label>
 						<input type="text" class='form-control' name="post_tags" data-role="tagsinput" value="{post_tags}">
 					</div>		
 				</div>
 				
 				<div class="tab-pane fade" id="prefs">
-					<div class="form-group">
-						<label>{label_author}</label>
-						<input class='form-control' name="post_author" type="text" value="{post_author}">
+					<div class="mb-3">
+						<label for="inputAuthor" class="form-label">{label_author}</label>
+						<input id="inputAuthor" class='form-control' name="post_author" type="text" value="{post_author}">
 					</div>
-					<div class="form-group">
-						<label>{label_slug}</label>
-						<input class='form-control' name="post_slug" type="text" value="{post_slug}">
+					<div class="mb-3">
+						<label for="inputSlug" class="form-label">{label_slug}</label>
+						<input id="inputSlug" class='form-control' name="post_slug" type="text" value="{post_slug}">
 					</div>
 
-					<fieldset>
-						<legend>RSS</legend>
-						<div class="form-group">
-							<label>{label_rss}</label>
+
+						<h5 class="heading-line">RSS</h5>
+						<div class="mb-3">
+							<label class="form-label">{label_rss}</label>
 							{select_rss}
 						</div>
-						<div class="form-group">
-							<label>{label_rss_url}</label>
-							<input class='form-control' name="post_rss_url" type="text" value="{post_rss_url}">
+						<div class="mb-3">
+							<label for="inputRssUrl" class="form-label">{label_rss_url}</label>
+							<input id="inputRssUrl" class='form-control' name="post_rss_url" type="text" value="{post_rss_url}">
 						</div>
-					</fieldset>
+
 
 				</div>
 			</div>

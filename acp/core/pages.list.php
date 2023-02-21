@@ -88,7 +88,7 @@ echo '<div class="'.$class_col_left.'">';
 
 
 echo '<div class="card">';
-echo '<div class="card-header">' . $lang['legend_structured_pages'] . '</div>';
+echo '<div class="card-header">' . $lang['legend_structured_pages'] . ' '.se_print_docs_link('tip-ordered-pages.md').'</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
@@ -114,7 +114,7 @@ echo '<div class="'.$class_col_right.'">';
  */
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['legend_unstructured_pages'].'</div>';
+echo '<div class="card-header">'.$lang['legend_unstructured_pages'].' '.se_print_docs_link('tip-single-pages.md').'</div>';
 echo '<div class="card-body">';
 
 echo '<div class="scroll-box">';
@@ -294,7 +294,7 @@ function se_list_pages($data,$type="sorted") {
             $duplicate_button = '';
         }
 
-        $info_button = '<a href="#" class="dropdown-item page-info-btn" data-bs-target="pageInfoModal" data-id="'.$page_id.'" data-token="'.$_SESSION['token'].'" title="info">'.$icon['info_circle'].' Info</a>';
+        $info_button = '<a class="dropdown-item page-info-btn" data-bs-toggle="modal" data-bs-target="#infoModal" data-id="'.$page_id.'" data-token="'.$_SESSION['token'].'" title="info">'.$icon['info_circle'].' Info</a>';
 
         $arr_checked_admins = explode(",",$page_authorized_users);
         if(in_array("$_SESSION[user_nick]", $arr_checked_admins)) {
@@ -354,21 +354,3 @@ function se_list_pages($data,$type="sorted") {
 
     return $listing;
 }
-
-
-/* modal for page-info */
-echo '<div class="modal fade" id="pageInfoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
- 
-     <!-- Modal content-->
-     <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">'.$icon['info_circle'].'</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-      
-      </div>
-     </div>
-    </div>
-   </div>';

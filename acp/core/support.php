@@ -35,22 +35,40 @@ if($show_open_source_docs == true) {
     echo '<div class="card">';
     echo '<div class="card-body">';
 
-    /**
-     * @var array $docs_list from .../docs-list.php
-     */
-    $doc_list_file = '../lib/lang/'.$languagePack.'/docs-list.php';
-    if(is_file($doc_list_file)) {
-        include $doc_list_file;
-        echo '<div class="list-group">';
-        foreach($docs_list as $k => $v) {
-            echo '<a href="'.$v['url'].'" title="'.$v['url'].'" 
-            class="list-group-item list-group-item-action"
-            target="_blank">'.$v['title'].' <i class="bi bi-arrow-right-short"></i></a>';
+    $Parsedown = new Parsedown();
+    $docsfiles = glob('./docs/'.$languagePack.'/*.md');
+    echo '<div class="list-group mb-3">';
+    foreach($docsfiles as $doc) {
+
+        if (str_starts_with(basename($doc), 'tip-')) {
+            continue;
         }
-        echo '</div>';
-        echo '<hr>';
+
+        $parsed_file = se_parse_docs_file($doc);
+        $parsed_files[] = [
+            "title" => $parsed_file['header']['title'],
+            "priority" => $parsed_file['header']['priority'],
+            "btn" => $parsed_file['header']['btn'],
+            "file" => $doc
+            ];
     }
 
+
+    $sorted_parsed_files = se_array_multisort($parsed_files, 'priority', SORT_ASC);
+
+    foreach($sorted_parsed_files as $k => $v) {
+        echo '<button 
+        type="button"
+        class="show-doc list-group-item list-group-item-action"
+        data-bs-toggle="modal" 
+        data-bs-target="#infoModal"
+        data-file="'.$sorted_parsed_files[$k]['file'].'" 
+        data-token="'.$_SESSION['token'].'">';
+        echo $sorted_parsed_files[$k]['btn'];
+        echo '</button>';
+    }
+
+    echo '</div>';
 
     echo $lang['msg_community_edition'];
 

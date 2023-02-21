@@ -1025,11 +1025,11 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
 
     /* if we have selected images, show them first */
     if($cnt_selected_img > 0) {
-        $images_container .= '<h6>'.$lang['label_image_selected'].' ('.$cnt_seleced_img.')</h6>';
+        $images_container .= '<h6>'.$lang['label_image_selected'].' ('.$cnt_selected_img.')</h6>';
         $images_container .= '<div class="row g-1">';
         foreach($seleced_img as $sel_images) {
             if(is_file("$sel_images")) {
-                $images_container .= '<div class="col-4">';
+                $images_container .= '<div class="col">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
                 $images_container .= '<div class="card h-100">';
                 $images_container .= '<img src="'.$sel_images.'" class="img-fluid">';
@@ -1075,7 +1075,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
         }
 
         if(!in_array($image_name, $seleced_img)) {
-            $images_container .= '<div class="col-4">';
+            $images_container .= '<div class="col">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
             $images_container .= '<img src="'.$preview.'" class="img-fluid" loading="lazy">';
@@ -1292,4 +1292,76 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 		imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
 		imagedestroy($new_image);
 	}
+}
+
+
+function se_parse_docs_file($file) {
+
+    global $Parsedown;
+    global $languagePack;
+
+    if(is_file($file)) {
+        $src = file_get_contents($file);
+        $src_content = explode('---',$src);
+        $header_length = strlen($src_content[1])+6;
+        $content = substr($src, $header_length);
+
+        // look for included .md files
+        $content = preg_replace_callback(
+            '/\{inc=(.*?)\}/si',
+            function ($m) {
+                global $languagePack;
+                global $file;
+                $inc_file = "../../docs/$languagePack/$m[1]";
+                if(is_file($inc_file)) {
+                    $inc_file_content = file_get_contents("$inc_file");
+                    $inc_file_content_array = explode('---',$inc_file_content);
+                    $inc_content = substr($inc_file_content, strlen($inc_file_content_array[1])+6);
+                    return $inc_content;
+                } else {
+                    return '';
+                }
+            },
+            $content
+        );
+
+        $content = preg_replace_callback(
+            '/\{link=(.*?)\}/si',
+            function ($m) {
+                global $languagePack;
+                    $link = '<a class="jump-doc btn" data-bs-target="#showDocs" data-token="'.$_SESSION['token'].'" data-file="'.$m[1].'">'.$m[1].'</a>';
+                    return $link;
+            },
+            $content
+        );
+
+
+        $parsed_header = Spyc::YAMLLoadString($src_content[1]);
+        $parsed_content = $Parsedown->text($content);
+        $filemtime = filemtime($file);
+    } else {
+        $parsed_header = 'FILE NOT FOUND ('.$file.')';
+    }
+
+    $parsed['header'] = $parsed_header;
+    $parsed['content'] = $parsed_content;
+    $parsed['filemtime'] = $filemtime;
+    $parsed['filename_orig'] = basename($file);
+    $parsed['filepath_orig'] = $file;
+
+    return $parsed;
+}
+
+function se_print_docs_link($file,$text=null,$type=null) {
+    global $icon;
+
+    if($text == null OR $text == 'icon') {
+        $text = $icon['question'];
+    }
+
+    if($type == null OR $type == 'modal') {
+        return '<a class="show-doc" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$text.'</a>';
+    }
+
+
 }

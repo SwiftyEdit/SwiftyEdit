@@ -5,68 +5,21 @@ require 'core/access.php';
 
 $arr_lang = get_all_languages();
 
-foreach($_POST as $key => $val) {
-    if(is_string($val)) {
-        $$key = @htmlspecialchars($val, ENT_QUOTES);
-    }
-}
-
-
-
-$submit_button = '<input type="submit" class="btn btn-success" name="new_category" value="'.$lang['save'].'">';
-$delete_button = "";
 $show_form = false;
 
 if(isset( $_GET['cat'] ) && ( $_GET['cat'] == 'n') ) {
+    $mode = 'new';
+    $cat_id = '';
     $show_form = true;
+    $btn_submit_text = $lang['save'];
 }
 
-/* update category */
-
-if(isset($_POST['update_category'])) {
-
-    $cat_name_clean = clean_filename($cat_name);
-
-    $data = $db_content->update("se_categories", [
-        "cat_name" =>  $cat_name,
-        "cat_lang" =>  $cat_lang,
-        "cat_name_clean" =>  $cat_name_clean,
-        "cat_sort" =>  $cat_sort,
-        "cat_description" =>  $cat_description,
-        "cat_thumbnail" =>  $cat_thumbnail
-    ], [
-        "cat_id" => $editcat
-    ]);
-
-    $show_form = true;
-
-}
-
-if(isset($_POST['new_category'])) {
-
-    $cat_name_clean = clean_filename($cat_name);
-
-    $data = $db_content->insert("se_categories", [
-        "cat_name" =>  $cat_name,
-        "cat_lang" =>  $cat_lang,
-        "cat_name_clean" =>  $cat_name_clean,
-        "cat_sort" =>  $cat_sort,
-        "cat_description" =>  $cat_description,
-        "cat_thumbnail" =>  $cat_thumbnail,
-    ]);
-
-    $editcat = $db_content->id();
-
-    $show_form = true;
-    $submit_button = '<input type="submit" class="btn btn-success order-2 mx-1" name="update_category" value="'.$lang['update'].'">';
-    $hidden_field = "<input type='hidden' name='editcat' value='$editcat'>";
-}
 
 /* delete category */
 
 if(isset($_POST['delete_category'])) {
 
-    $delete_id = (int) $_POST['editcat'];
+    $delete_id = (int) $_POST['delete_category'];
 
     $data = $db_content->delete("se_categories", [
         "cat_id" => $delete_id
@@ -80,15 +33,13 @@ if(isset($_POST['cat']) && ($_POST['cat'] != '')) {
 
     // open category
 
-    $editcat = (int) $_POST['cat'];
-
-    $submit_button = '<input type="submit" class="btn btn-success order-2 mx-1" name="update_category" value="'.$lang['update'].'">';
-    $delete_button = "<input type='submit' class='btn btn-danger order-1' name='delete_category' value='$lang[delete]' onclick=\"return confirm('$lang[confirm_delete_data]')\">";
-    $hidden_field = "<input type='hidden' name='editcat' value='$editcat'>";
+    $cat_id = (int) $_POST['cat'];
+    $mode = 'update';
+    $btn_submit_text = $lang['update'];
 
     $get_category = $db_content->get("se_categories","*",[
         "AND" => [
-            "cat_id" => "$editcat"
+            "cat_id" => "$cat_id"
         ]
     ]);
 
@@ -110,29 +61,12 @@ echo '</div>';
 if($show_form == true)  {
  /* print the form */
 
-    echo '<div class="card p-3">';
+    $form_tpl = file_get_contents('templates/form-edit-categories.tpl');
 
-    echo '<form action="?tn=categories" method="POST">';
-
-    echo '<div class="row">';
-    echo '<div class="col-md-9">';
-
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['category_name'].'</label>';
-    echo '<input type="text" class="form-control" name="cat_name" value="'.$cat_name.'">';
-    echo '</div>';
-
-    echo '</div>';
-    echo '<div class="col-md-3">';
-
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['category_priority'].'</label>';
-    echo '<input type="text" class="form-control" name="cat_sort" value="'.$cat_sort.'">';
-    echo '</div>';
-
-    echo '</div>';
-    echo '</div>';
-
+    foreach($lang as $k => $v) {
+        $s = '{'.$k.'}';
+        $form_tpl = str_replace("$s",$v,$form_tpl);
+    }
 
     $images = se_scandir_rec('../content/images');
 
@@ -146,17 +80,6 @@ if($show_form == true)  {
     }
     $choose_tmb .= '</select>';
 
-    echo '<div class="row">';
-    echo '<div class="col-md-9">';
-
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['category_thumbnail'].'</label>';
-    echo $choose_tmb;
-    echo '</div>';
-
-    echo '</div>';
-    echo '<div class="col-md-3">';
-
     if($cat_lang == '' && $default_lang_code != '') {
         $cat_lang = $default_lang_code;
     }
@@ -167,45 +90,27 @@ if($show_form == true)  {
     }
     $select_cat_language .= '</select>';
 
+    $form_tpl = str_replace('{csrf_token}',$_SESSION['token'],$form_tpl);
+    $form_tpl = str_replace('{btn_submit_text}',$btn_submit_text,$form_tpl);
+    $form_tpl = str_replace('{mode}',$mode,$form_tpl);
+    $form_tpl = str_replace('{val_cat_name}',$cat_name,$form_tpl);
+    $form_tpl = str_replace('{val_cat_priority}',$cat_sort,$form_tpl);
+    $form_tpl = str_replace('{val_cat_description}',$cat_description,$form_tpl);
+    $form_tpl = str_replace('{select_thumbnail}',$choose_tmb,$form_tpl);
+    $form_tpl = str_replace('{select_language}',$select_cat_language,$form_tpl);
+    $form_tpl = str_replace('{id}',$cat_id,$form_tpl);
 
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['f_page_language'].'</label>';
-    echo $select_cat_language;
-    echo '</div>';
-
-    echo '</div>';
-    echo '</div>';
-
-
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['category_description'].'</label>';
-    echo "<textarea class='form-control' rows='8' name='cat_description'>$cat_description</textarea>";
-    echo '</div>';
-
-
-
-    echo '<div class="formfooter d-flex">';
-    echo '<a href="?tn=categories" class="btn btn-default me-auto">'.$lang['nav_overview'].'</a>';
-    echo $submit_button;
-    echo $delete_button;
-    echo $hidden_field;
-    echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-    echo '</div>';
-
-    echo '</form>';
-    echo '</div>';
+    echo $form_tpl;
 
 
 } else {
 
 
     /* list categories */
-
-    echo '<div class="card p-3">';
-
     $all_categories = se_get_categories();
     $cnt_categories = count($all_categories);
 
+    echo '<div class="card p-3">';
     echo '<table class="table">';
 
     foreach ($all_categories as $cats) {
@@ -222,28 +127,22 @@ if($show_form == true)  {
             $show_thumb .= '<div class="show-thumb" style="background-image: url(\'images/no-image.png\');">';
         }
 
-
         echo '<tr>';
-
         echo '<td width="50">' . $show_thumb . '</td>';
         echo '<td>';
         echo '<h5 class="card-title">' . $flag . ' ' . $cats['cat_name'] . '</h5>';
         echo $cats['cat_description'];
         echo '</td>';
-
         echo '<td class="text-end">';
         echo '<form action="?tn=categories" method="POST">';
-        echo '<button name="cat" value=' . $cats['cat_id'] . '" class="btn btn-sm btn-default">' . $icon['edit'] . ' ' . $lang['edit'] . '</button>';
+        echo '<button type="submit" class="btn btn-sm btn-default text-danger me-1" name="delete_category" value="'.$cats['cat_id'].'" onclick="return confirm(\''.$lang['confirm_delete_data'].'\')">'.$icon['trash'].'</button>';
+        echo '<button name="cat" value='.$cats['cat_id'].'" class="btn btn-sm btn-default">'.$icon['edit'].' '.$lang['edit'].'</button>';
         echo $hidden_csrf_token;
         echo '</form>';
-
-
         echo '</td>';
         echo '</tr>';
-
     }
 
     echo '</table>';
-
     echo '</div>';
 }

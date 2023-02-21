@@ -1,72 +1,20 @@
 <?php
-	
-session_start();
-error_reporting(0);
 
-require '../../lib/Medoo.php';
-use Medoo\Medoo;
-
-require '../../config.php';
-
-
-if(is_file('../../config_database.php')) {
-	include '../../config_database.php';
-	$db_type = 'mysql';
-	
-	$database = new Medoo([
-		'type' => 'mysql',
-		'database' => "$database_name",
-		'host' => "$database_host",
-		'username' => "$database_user",
-		'password' => "$database_psw",
-		'charset' => 'utf8',
-		'port' => $database_port,
-		'prefix' => DB_PREFIX
-	]);
-	
-	$db_content = $database;
-	$db_user = $database;
-	
-	
-	
-} else {
-	$db_type = 'sqlite';
-	
-	if(isset($se_content_files) && is_array($se_content_files)) {
-		/* switch database file $se_db_content */
-		include 'core/contentSwitch.php';
-	}
-	
-	
-	define("CONTENT_DB", "$se_db_content");
-	define("STATS_DB", "$se_db_stats");
-
-	$db_content = new Medoo([
-		'type' => 'sqlite',
-		'database' => CONTENT_DB
-	]);
-	
-	
-}
-
-require_once 'access.php';
-require_once 'functions.php';
-require_once '../../global/functions.php';
-require '../../lib/lang/'.$_SESSION['lang'].'/dict-backend.php';
+require '_include.php';
 
 $set_lang = $_SESSION['lang'];
 if(isset($_REQUEST['set_lang'])) {
-	$set_lang = $_REQUEST['set_lang'];
+    $set_lang = $_REQUEST['set_lang'];
 }
 
 
 if(isset($_POST['pageid'])){
-   $page_id = (int) $_POST['pageid'];
+    $page_id = (int) $_POST['pageid'];
 }
 
 $page_data = $db_content->get("se_pages", "*", [
-		"page_id" => "$page_id"
-	]);
+    "page_id" => "$page_id"
+]);
 
 
 echo '<div class="row">';
@@ -127,16 +75,12 @@ echo '</div>';
 echo '<hr>';
 echo '<div class="btn-group d-flex justify-content-end">';
 if($_SESSION['acp_editpages'] == "allowed"){
-	echo '<form action="?tn=pages&sub=edit" method="POST">';
-	echo '<button class="btn btn-sm btn-default ms-auto me-1" name="editpage" value="'.$page_data['page_id'].'" title="'.$lang['edit'].'">'.$lang['edit'].'</button>';
-	echo '<button type="button" class="btn btn-sm btn-default" data-bs-dismiss="modal">Close</button>';
-	echo $hidden_csrf_token;
-	echo '</form>';
+    echo '<form action="?tn=pages&sub=edit" method="POST">';
+    echo '<button class="btn btn-sm btn-default ms-auto me-1" name="editpage" value="'.$page_data['page_id'].'" title="'.$lang['edit'].'">'.$lang['edit'].'</button>';
+    echo '<button type="button" class="btn btn-sm btn-default" data-bs-dismiss="modal">Close</button>';
+    echo $hidden_csrf_token;
+    echo '</form>';
 } else {
-	echo '<button type="button" class="btn btn-sm btn-default" data-bs-dismiss="modal">Close</button>';
+    echo '<button type="button" class="btn btn-sm btn-default" data-bs-dismiss="modal">Close</button>';
 }
 echo '</div>';
-
-
-exit;
-?>

@@ -35,3 +35,15 @@ function se_update_order($data) {
 
 	return $update->rowCount();
 }
+
+/**
+ * get all products
+ * @return mixed
+ */
+function se_get_all_products() {
+
+    global $db_posts;
+
+    $products = $db_posts->select("se_products",["id","title"]);
+    return $products;
+}

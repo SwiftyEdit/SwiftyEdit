@@ -5,8 +5,8 @@ $hits = (int) $event_data['hits'];
 se_increase_posts_hits($get_event_id);
 
 
-$event_teaser = htmlspecialchars_decode($event_data['teaser']);
-$event_text = htmlspecialchars_decode($event_data['text']);
+$event_teaser = text_parser(htmlspecialchars_decode($event_data['teaser']));
+$event_text = text_parser(htmlspecialchars_decode($event_data['text']));
 
 $event_images = explode("<->", $event_data['images']);
 

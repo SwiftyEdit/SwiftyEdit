@@ -279,6 +279,7 @@ $lang['label_comment'] = "Comment ...";
 $lang['files'] = "Files";
 $lang['images'] = "Images";
 $lang['thumbnails'] = "Thumbnails";
+$lang['thumbnail'] = "Thumbnail";
 $lang['browse_files'] = "Browse Files";
 $lang['browse_images'] = "Browse images only";
 $lang['clear_list'] = "Delete List";
@@ -468,6 +469,7 @@ $lang['label_shipping_mode'] = 'Shipping costs calculation';
 $lang['label_shipping_mode_flat'] = 'Only charge the flat rate for shipping';
 $lang['label_shipping_mode_cats'] = 'The most expensive category in the shopping cart determines the shipping costs';
 
+$lang['label_tax_currency'] = 'Tax and Currency';
 $lang['label_payment_methods'] = 'Payment methods';
 $lang['label_payment_bank_transfer'] = 'Bank transfer';
 $lang['label_payment_invoice'] = 'Invoice';

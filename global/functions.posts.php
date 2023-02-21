@@ -366,9 +366,13 @@ function se_post_print_currency($number) {
 
 
 /**
- * add tax and addion to net prices
+ * add tax and addition to net prices
+ * @param float $price price net (stored in the database)
+ * @param integer $addition
+ * @param integer $tax
+ * @param integer $amount
+ * @return array
  */
-
 function se_posts_calc_price($price,$addition,$tax,$amount=1) {
 	
 	if(empty($price)) {
@@ -379,14 +383,25 @@ function se_posts_calc_price($price,$addition,$tax,$amount=1) {
 	$price = str_replace(',', '.', $price);
     $price = number_format($price, 8, '.', '');
 
-    $price_sum = $price*$amount;
-	$price_net = $price_sum * ($addition+100)/100;
-	$price_gross = $price_net * ($tax+100)/100;
+    if($addition != 0) {
+        $price_single_net = $price * ($addition+100)/100;
+    } else {
+        $price_single_net = $price;
+    }
 
-	$prices['gross'] = se_post_print_currency($price_gross);
-	$prices['net'] = se_post_print_currency($price_net);
-	$prices['gross_raw'] = $price_gross;
-	$prices['net_raw'] = $price_net;
+    $price_single_net = round($price_single_net,8);
+    $price_sum_net = $price_single_net*$amount;
+
+    $price_single_gross = $price_single_net * ($tax+100)/100;
+    $price_single_gross = round($price_single_gross,2);
+    $price_sum_gross = $price_single_gross*$amount;
+
+	$prices['gross'] = se_post_print_currency($price_sum_gross);
+	$prices['net'] = se_post_print_currency($price_sum_net);
+    $prices['net_single'] = se_post_print_currency($price_single_net);
+    $prices['gross_single'] = se_post_print_currency($price_single_gross);
+	$prices['gross_raw'] = $price_sum_gross;
+	$prices['net_raw'] = $price_sum_net;
 	
 	return $prices;
 }

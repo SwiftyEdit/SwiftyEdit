@@ -21,6 +21,7 @@ $icon = [
 
     "calendar_check" => '<i class="bi bi-calendar-check"></i>',
     "calendar_event" => '<i class="bi bi-calendar-event"></i>',
+    "card_heading" => '<i class="bi bi-card-heading"></i>',
     "caret_down" => '<i class="bi bi-caret-down"></i>',
     "caret_left" => '<i class="bi bi-caret-left"></i>',
     "caret_right" => '<i class="bi bi-caret-right"></i>',
@@ -45,7 +46,7 @@ $icon = [
     "compress" => '<i class="bi bi-file-earmark-zip"></i>',
     "copy" => '<i class="bi bi-clipboard-plus"></i>',
 
-    "database" => '<i class="bi bi-hdd-network"></i>',
+    "database" => '<i class="bi bi-database"></i>',
     "diagram_3" => '<i class="bi bi-diagram-3"></i>',
     "dot_circle" => '<i class="bi bi-circle"></i>',
     "download" => '<i class="bi bi-download"></i>',
@@ -103,6 +104,8 @@ $icon = [
     "plus" => '<i class="bi bi-plus"></i>',
 
     "question" => '<i class="bi bi-question"></i>',
+    "question_circle" => '<i class="bi bi-question-circle"></i>',
+    "question_circle_fill" => '<i class="bi bi-question-circle-fill"></i>',
 
     "rss" => '<i class="bi bi-rss"></i>',
 

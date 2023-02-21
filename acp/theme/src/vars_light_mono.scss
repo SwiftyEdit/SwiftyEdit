@@ -39,6 +39,9 @@ $sidebar_help_background: #111;
 $sidebar_help_color: #ccc;
 
 $input_background: #fff;
+$input_border_color: mix($input_background,$primary,70%);
+$input-border-color: $input_border_color;
+$input-group-addon-border-color: $input-border-color;
 $input_color: darken($brand_primary,50%);
 $input_fill: 'black';
 

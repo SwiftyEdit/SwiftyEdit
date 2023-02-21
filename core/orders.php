@@ -172,7 +172,7 @@ for($i=0;$i<$cnt_orders;$i++) {
 	for($x=0;$x<$cnt_order_products;$x++) {
 		unset($this_item);
 		$post_id = $order_products[$x]['post_id'];
-		$this_item = se_get_post_data($post_id);
+		$this_item = se_get_product_data($post_id);
 		
 		
 		$this_item_price_gross = se_post_print_currency($order_products[$x]['price_gross_raw']);
@@ -204,8 +204,8 @@ for($i=0;$i<$cnt_orders;$i++) {
         }
 				
 		// check if this item has an attachment
-		$items_download = $this_item['post_file_attachment'];
-		$items_download_external = $this_item['post_file_attachment_external'];
+		$items_download = $this_item['file_attachment'];
+		$items_download_external = $this_item['file_attachment_external'];
 		
 		if($items_download != '') {
 			$products[$x]['dl_file'] = $items_download;

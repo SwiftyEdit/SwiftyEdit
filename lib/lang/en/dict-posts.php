@@ -20,15 +20,26 @@ $lang['post_type_file'] = 'Download';
 
 $lang['post_tab_intro'] = 'Teaser';
 $lang['post_tab_content'] = 'Content';
+$lang['post_tab_descriptions'] = 'Descriptions';
 $lang['post_tab_meta'] = 'Meta Data';
 $lang['post_tab_preferences'] = 'Preferences';
 $lang['post_tab_product'] = 'Product';
+$lang['post_tab_downloads'] = 'Downloads';
+$lang['post_tab_links'] = 'Links';
 $lang['post_tab_info'] = 'Informations';
 $lang['post_tab_prices'] = 'Price';
 $lang['post_tab_file'] = 'File';
 $lang['post_tab_features'] = 'Features';
+$lang['post_tab_SEO'] = 'SEO/URL';
+$lang['post_tab_variants'] = 'Variants';
+$lang['post_tab_accessories'] = 'Accessories';
+$lang['post_tab_related'] = 'Related products';
 $lang['post_tab_options'] = 'Options';
-$lang['post_tab_prices_delivery'] = 'Preise';
+$lang['post_tab_features'] = 'Features';
+$lang['post_tab_prices_delivery'] = 'Prices';
+
+$lang['prod_tab_main_description'] = 'Description';
+$lang['prod_tab_additional_description'] = 'Additional Description';
 
 $lang['msg_post_deleted'] = 'The entry has been deleted';
 $lang['msg_no_posts_to_show'] = 'There are no entries here at the moment';
@@ -109,6 +120,8 @@ $lang['label_product_cnt_sales'] = 'Sales';
 $lang['label_product_snippet_price'] = 'Add a Snippet to the Prices (post_price*)';
 $lang['label_product_snippet_text'] = 'Add a Snippet to the Content (post_text*)';
 $lang['product_no_snippet'] = 'No Snippet';
+$lang['label_product_options'] = 'Options';
+$lang['label_product_features'] = 'Features';
 
 $lang['label_product_delivery_time'] = 'Delivery time';
 $lang['product_no_delivery_time'] = 'Not specified';
@@ -119,6 +132,14 @@ $lang['label_product_customer_upload'] = 'Add an upload option to this item';
 $lang['label_product_cart_mode'] = 'Shopping cart';
 $lang['product_cart_mode_on'] = 'Activate shopping cart';
 $lang['product_cart_mode_off'] = 'Deactivate shopping cart';
+
+$lang['order_mode_active'] = 'Activate Orders';
+$lang['order_mode_request'] = 'Show request form only';
+$lang['order_mode_both'] = 'Activate orders and request form';
+
+$lang['show_price_in_net'] = 'Show prices in net';
+$lang['show_price_in_gross'] = 'Show prices in gross';
+$lang['show_price_both'] = 'Show both prices';
 
 $lang['label_product_pricetag_mode'] = 'Pricetag';
 $lang['product_pricetag_mode_on'] = 'Show pricetag';

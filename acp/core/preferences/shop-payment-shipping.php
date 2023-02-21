@@ -6,8 +6,8 @@ require 'core/access.php';
 
 echo '<form action="?tn=system&sub=shop&file=payment-shipping" method="POST">';
 
-echo '<fieldset>';
-echo '<legend>'.$lang['label_shipping'].'</legend>';
+
+echo '<h5 class="heading-line">'.$lang['label_shipping'].'</h5>';
 
 
 if($prefs_shipping_costs_mode == 1 OR $prefs_shipping_costs_mode == '') {
@@ -51,10 +51,7 @@ echo '</div>';
 echo '</div>';
 
 
-echo'</fieldset>';
-
-
-echo '<h3>'.$lang['label_payment_methods'].'</h3>';
+echo '<h5 class="heading-line">'.$lang['label_payment_methods'].'</h5>';
 
 echo '<table class="table">';
 echo '<tr>';
@@ -102,30 +99,10 @@ echo '<input type="text" class="form-control" name="prefs_payment_costs_cash" va
 echo '</td>';
 echo '</tr>';
 
-echo '<tr>';
-echo '<td>';
-$check_mollie = ($prefs_pm_mollie == 1) ? 'checked' : '';
-echo '<input class="form-check-input" type="checkbox" name="prefs_pm_mollie" value="1" id="checkMollie" '.$check_mollie.'>';
-echo '</td>';
-echo '<td>';
-echo '<label class="form-check-label" for="checkMollie">mollie.com</label>';
-echo '</td>';
-echo '<td>';
-echo '<div class="mb-3">';
-echo '<label>Live API Key</label>';
-echo '<input type="text" class="form-control" name="prefs_payment_mollie_live_api_key" value="'.$prefs_payment_mollie_live_api_key.'">';
-echo '</div>';
-echo '<div class="mb-3">';
-echo '<label>Test API Key</label>';
-echo '<input type="text" class="form-control" name="prefs_payment_mollie_test_api_key" value="'.$prefs_payment_mollie_test_api_key.'">';
-echo '</div>';
-echo '</td>';
-echo '</tr>';
-
 echo '</table>';
 
 
-echo '<input type="submit" class="btn btn-success" name="update_shop" value="'.$lang['update'].'">';
+echo '<input type="submit" class="btn btn-success" name="update_pm_shipping" value="'.$lang['update'].'">';
 echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 
 echo '</form>';
