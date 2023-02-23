@@ -234,8 +234,20 @@ if($product_data['file_attachment_user'] == 2 && $_SESSION['user_nick'] != "") {
 
 /* product features */
 $product_features = json_decode($product_data['product_features'],JSON_FORCE_OBJECT);
+$product_features_values = json_decode($product_data['product_features_values'],JSON_FORCE_OBJECT);
+
 if(is_array($product_features)) {
     $get_features = se_get_posts_features($product_features);
+    foreach($get_features as $k => $v) {
+        $array_key = $v['snippet_id'];
+        if(array_key_exists($array_key, $product_features_values)) {
+            /* overwrite value */
+            if($product_features_values[$array_key] == '') {
+                continue;
+            }
+            $get_features[$k]['snippet_content'] = $product_features_values[$array_key];
+        }
+    }
     $smarty->assign('product_features', $get_features);
     $smarty->assign('label_product_features', $label_product_features);
 }

@@ -166,6 +166,10 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
     if(isset($_POST['product_features'])) {
         $product_features = json_encode($_POST['product_features'],JSON_FORCE_OBJECT);
     }
+    $product_features_values = '';
+    if(isset($_POST['product_features_values'])) {
+        $product_features_values = json_encode($_POST['product_features_values'],JSON_FORCE_OBJECT);
+    }
 
 
     /* save or update data */
@@ -495,6 +499,7 @@ $select_shipping_category .= '</select>';
 /* features */
 $all_posts_features = se_get_posts_features();
 $get_post_features = json_decode($product_data['product_features'],true);
+$get_post_features_values = json_decode($product_data['product_features_values'],true);
 $checkbox_features = '';
 foreach($all_posts_features as $feature) {
 
@@ -512,6 +517,13 @@ foreach($all_posts_features as $feature) {
     $checkbox_features .= '<div class="form-check">';
     $checkbox_features .= '<input class="form-check-input" id="feature_'.$feature_id.'" type="checkbox" name="product_features[]" value="'.$feature_id.'" '.$checked_feature.'>';
     $checkbox_features .= '<label class="form-check-label" for="feature_'.$feature_id.'">'.$feature_title.' <small class="text-muted">'.$feature_text.'</small></label>';
+    $checkbox_features .= '</div>';
+    $checkbox_features .= '<div class="mb-3">';
+    $this_value = '';
+    if($get_post_features_values[$feature_id] != '') {
+        $this_value = $get_post_features_values[$feature_id];
+    }
+    $checkbox_features .= '<input type="text" class="form-control" name="product_features_values['.$feature_id.']" value="'.$this_value.'">';
     $checkbox_features .= '</div>';
 }
 
