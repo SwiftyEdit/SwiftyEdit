@@ -85,6 +85,7 @@ $cols = array(
     "product_price_volume_discount" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_features_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_features" => "LONGTEXT NOT NULL DEFAULT ''",
+    "product_features_values" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options" => "LONGTEXT NOT NULL DEFAULT ''",
     "product_options_comment_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_variant_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
