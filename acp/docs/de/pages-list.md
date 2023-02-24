@@ -14,10 +14,10 @@ Hier findest Du alle Seiten welche bereits gespeichert wurden. Du kannst die Lis
 oder nach Status, Sprache oder Labels filtern.
 
 ## Geordnete Seiten
-{inc=tip-ordered-pages.md}
+{inc=tooltips/tip-ordered-pages.md}
 
 ## Ungeordnete Seiten
-{inc=tip-single-pages.md}
+{inc=tooltips/tip-single-pages.md}
 
 ---
 Weitere Informationen:

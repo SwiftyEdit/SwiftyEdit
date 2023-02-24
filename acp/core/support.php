@@ -57,12 +57,15 @@ if($show_open_source_docs == true) {
     $sorted_parsed_files = se_array_multisort($parsed_files, 'priority', SORT_ASC);
 
     foreach($sorted_parsed_files as $k => $v) {
+
+        $data_file = str_replace("./docs/$languagePack/",'',$sorted_parsed_files[$k]['file']);
+
         echo '<button 
         type="button"
         class="show-doc list-group-item list-group-item-action"
         data-bs-toggle="modal" 
         data-bs-target="#infoModal"
-        data-file="'.$sorted_parsed_files[$k]['file'].'" 
+        data-file="'.$data_file.'" 
         data-token="'.$_SESSION['token'].'">';
         echo $sorted_parsed_files[$k]['btn'];
         echo '</button>';

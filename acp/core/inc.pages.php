@@ -294,7 +294,7 @@ if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	
 
 	$label_filter_box  = '<div class="card mt-2">';
-	$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].' '.se_print_docs_link('tip-labels.md').'</div>';
+	$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].' '.se_print_docs_link('tooltips/tip-labels.md').'</div>';
 	$label_filter_box .= '<div class="card-body">';
 	$this_btn_status = '';
 	foreach($se_labels as $label) {
@@ -337,7 +337,7 @@ if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	
 	
 	$nav_btn_group  = '<div class="card my-3">';
-	$nav_btn_group .= '<div class="card-header p-1 px-2">Status '.se_print_docs_link('tip-page-status.md').'</div>';
+	$nav_btn_group .= '<div class="card-header p-1 px-2">Status '.se_print_docs_link('tooltips/tip-page-status.md').'</div>';
 	
 	$nav_btn_group .= '<div class="list-group list-group-flush">';
 	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPuplic" class="list-group-item list-group-item-ghost p-1 px-2 text-public '.$btn_status_public.'">'.$dot_public.' '.$lang['f_page_status_puplic'].' ('.$count_pages['public'].')</a>';
