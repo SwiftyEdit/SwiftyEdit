@@ -6,6 +6,8 @@ $table_name = "se_pages";
 $cols = array(
 	"page_id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
 	"page_parent_id" => 'INTEGER(12)',
+    "page_custom_id" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "page_custom_classes" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "page_hits" => 'INTEGER(12)',
 	"page_priority" => 'INTEGER(12)',
 	"page_language"  => "VARCHAR(20) NOT NULL DEFAULT ''",
@@ -52,5 +54,3 @@ $cols = array(
     "page_categories_mode" => 'INTEGER(12)',
 	"page_comments" => 'INTEGER(12)'
   );
-
-?>

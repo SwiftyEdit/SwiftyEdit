@@ -15,6 +15,8 @@ $cols = array(
 	"page_cache_type" => "VARCHAR(20) NOT NULL DEFAULT ''",
 
 	"page_parent_id" => 'INTEGER(12)',
+    "page_custom_id" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "page_custom_classes" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "page_hits" => 'INTEGER(12)',
 	"page_priority" => 'INTEGER(12)',
 	"page_language"  => "VARCHAR(20) NOT NULL DEFAULT ''",
@@ -62,5 +64,3 @@ $cols = array(
   "page_comments" => 'INTEGER(12)'
 	
   );
-
-?>
