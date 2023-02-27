@@ -405,6 +405,9 @@ $lang['label_portal_page'] = "... Startseite";
 $lang['label_mainnav_page'] = "... Teil der Hauptnavigation";
 $lang['label_position_sub'] = "Diese Seite ist eine Unterseite von ...";
 
+$lang['label_custom_id'] = "Eigene ID";
+$lang['label_custom_classes'] = "Klassen";
+
 $lang['label_title'] = "Titel";
 $lang['label_description'] = "Beschreibung";
 $lang['label_keywords'] = "Schlüsselwörter";

@@ -247,7 +247,10 @@ $sel_target .= '<option '.$sel_blank.' value="_blank">_blank</option>';
 $sel_target .= '<option '.$sel_parent.' value="_parent">_parent</option>';
 $sel_target .= '<option '.$sel_top.' value="_top">_top</option>';
 $sel_target .= '</select>';
-	
+
+echo '<fieldset>';
+echo '<legend>Navigation</legend>';
+
 echo '<div class="row">';
 echo '<div class="col-md-4">';
 echo tpl_form_control_group('',$lang['f_page_linkname'],'<input class="form-control" type="text" name="page_linkname" value="'.html_entity_decode($page_linkname).'">');
@@ -289,9 +292,32 @@ $(function() {
 });
 </script>
 <?php
+
+echo '</fieldset>';
+
+echo '<div class="row">';
+echo '<div class="col-md-4">';
+echo '<div class="mb-3">';
+if($page_custom_id == '') {
+    $page_custom_id = uniqid();
+}
+echo tpl_form_control_group('',$lang['label_custom_id'],"<input class='form-control' type='text' name='page_custom_id' value='$page_custom_id'>");
+echo '</div>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="mb-3">';
+echo tpl_form_control_group('',$lang['label_custom_classes'],"<input class='form-control' type='text' name='page_custom_classes' value='$page_custom_classes'>");
+echo '</div>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="mb-3">';
+echo tpl_form_control_group('',$lang['label_priority'],"<input class='form-control' type='text' name='page_priority' value='$page_priority'>");
+echo '</div>';
+echo '</div>';
+echo '</div>';
 	
 
-echo '<div class="form-group">';
+echo '<div class="mb-3">';
 echo '<label>'.$lang['f_page_type_of_use'].'</label>';
 $select_page_type_of_use  = '<select name="page_type_of_use" class="custom-select form-control">';
 
@@ -314,7 +340,6 @@ echo $select_page_type_of_use;
 echo '</div>';
 	
 
-echo '<hr>';
 
 /* redirect */
 
