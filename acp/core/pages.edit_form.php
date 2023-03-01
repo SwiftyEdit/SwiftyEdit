@@ -895,26 +895,16 @@ if($get_stylesheets != '0') {
 
 unset($checked_status);
 
-if($page_status == "") {
+if(!isset($page_status) OR $page_status == "") {
 	$page_status = "public";
 }
 
-
-$select_page_status = '<div class="btn-group btn-group-vertical btn-group-toggle d-flex" data-bs-toggle="buttons" role="group">';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-public' name='page_status' value='public'".($page_status == "public" ? 'checked' :'').">";
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-public" for="toggle-btn-public">'.$lang['f_page_status_puplic'].'</label>';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-ghost' name='page_status' value='ghost'".($page_status == "ghost" ? 'checked' :'').">";
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-ghost" for="toggle-btn-ghost">'.$lang['f_page_status_ghost'].'</label>';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-private' name='page_status' value='private'".($page_status == "private" ? 'checked' :'').">";
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-private" for="toggle-btn-private">'.$lang['f_page_status_private'].'</label>';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-draft' name='page_status' value='draft'".($page_status == "draft" ? 'checked' :'').">";	
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-draft" for="toggle-btn-draft">'.$lang['f_page_status_draft'].'</label>';
-
-$select_page_status .= '</div>';
+$select_page_status = '<select name="page_status" class="form-control">';
+$select_page_status .= '<option value="public" '.($page_status == "public" ? 'selected' :'').'>'.$lang['f_page_status_puplic'].'</option>';
+$select_page_status .= '<option value="ghost" '.($page_status == "ghost" ? 'selected' :'').'>'.$lang['f_page_status_ghost'].'</option>';
+$select_page_status .= '<option value="private" '.($page_status == "private" ? 'selected' :'').'>'.$lang['f_page_status_private'].'</option>';
+$select_page_status .= '<option value="draft" '.($page_status == "draft" ? 'selected' :'').'>'.$lang['f_page_status_draft'].'</option>';
+$select_page_status .= '</select>';
 
 
 echo '<div class="form-group">';

@@ -6,9 +6,9 @@ require 'core/access.php';
 unset($result);
 /* $_SESSION[filter_string] was defined in inc.pages.php */
 $sql = "SELECT page_id, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
-		FROM se_pages
-		$_SESSION[filter_string]
-		ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, page_linkname ASC";
+		FROM se_pages ".
+		$_SESSION['filter_string'].
+		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, page_linkname ASC";
 
 $result = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 

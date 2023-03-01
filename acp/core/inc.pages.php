@@ -11,6 +11,7 @@
  * @var object $db_content medoo database object
  * @var array $icon icons set in acp/core/icons.php
  * @var array $lang language
+ * @var string $languagePack
  * @var string $hidden_csrf_token
  * @var array $se_labels
  */
@@ -189,7 +190,7 @@ if($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == 'checked') 
 	$_SESSION['checked_ghost'] = "checked";
 }
 
-$set_status_filter = "page_status = 'foobar' "; // reset -> result = 0
+$set_status_filter = "page_status IS NOT NULL ";
 
 $dot_draft = $icon['circle_alt'];
 $dot_private = $icon['circle_alt'];
@@ -268,7 +269,7 @@ $set_keyword_filter = substr("$set_keyword_filter", 0, -4); // cut the last ' AN
 
 
 
-$filter_string = "WHERE page_status != 'foobar' "; // -> result = match all pages
+$filter_string = "WHERE page_status IS NOT NULL"; // -> result = match all pages
 
 if($set_status_filter != "") {
 	$filter_string .= " AND ($set_status_filter) ";
