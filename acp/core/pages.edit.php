@@ -154,6 +154,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 	$page_version = $_POST['page_version'];
 	$page_title = se_return_clean_value($_POST['page_title']);
 	$page_linkname = se_return_clean_value($_POST['page_linkname']);
+    $page_priority = (int) $_POST['page_priority'];
 	
 	if($page_position == "portal") {
 		$page_sort = "portal";
@@ -177,6 +178,8 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 
 	
 	$page_hash = clean_filename($_POST['page_hash']);
+    $page_custom_id = se_return_clean_value($_POST['page_custom_id']);
+    $page_custom_classes = se_return_clean_value($_POST['page_custom_classes']);
 
 
 	//usergroups
@@ -299,6 +302,9 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_target" => "$page_target",
 			"page_classes" => "$page_classes",
 			"page_hash" => "$page_hash",
+            "page_priority" => "$page_priority",
+            "page_custom_id" => "$page_custom_id",
+            "page_custom_classes" => "$page_custom_classes",
 			"page_type_of_use" => "$page_type_of_use",
 			"page_redirect" => "$page_redirect",
 			"page_redirect_code" => "$page_redirect_code",
@@ -369,6 +375,9 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_target" => "$page_target",
 			"page_classes" => "$page_classes",
 			"page_hash" => "$page_hash",
+            "page_priority" => "$page_priority",
+            "page_custom_id" => "$page_custom_id",
+            "page_custom_classes" => "$page_custom_classes",
 			"page_type_of_use" => "$page_type_of_use",
 			"page_redirect" => "$page_redirect",
 			"page_redirect_code" => "$page_redirect_code",
@@ -429,6 +438,9 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_target" => "$page_target",
 			"page_classes" => "$page_classes",
 			"page_hash" => "$page_hash",
+            "page_priority" => "$page_priority",
+            "page_custom_id" => "$page_custom_id",
+            "page_custom_classes" => "$page_custom_classes",
 			"page_type_of_use" => "$page_type_of_use",
 			"page_redirect" => "$page_redirect",
 			"page_redirect_code" => "$page_redirect_code",
@@ -500,6 +512,9 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_target" => "$page_target",
 			"page_classes" => "$page_classes",
 			"page_hash" => "$page_hash",
+            "page_priority" => "$page_priority",
+            "page_custom_id" => "$page_custom_id",
+            "page_custom_classes" => "$page_custom_classes",
 			"page_type_of_use" => "$page_type_of_use",
 			"page_redirect" => "$page_redirect",
 			"page_redirect_code" => "$page_redirect_code",
@@ -565,6 +580,8 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 			"page_target" => "$page_target",
 			"page_classes" => "$page_classes",
 			"page_hash" => "$page_hash",
+            "page_custom_id" => "$page_custom_id",
+            "page_custom_classes" => "$page_custom_classes",
 			"page_type_of_use" => "$page_type_of_use",
 			"page_redirect" => "$page_redirect",
 			"page_redirect_code" => "$page_redirect_code",

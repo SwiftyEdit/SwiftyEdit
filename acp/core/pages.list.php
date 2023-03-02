@@ -6,9 +6,9 @@ require 'core/access.php';
 unset($result);
 /* $_SESSION[filter_string] was defined in inc.pages.php */
 $sql = "SELECT page_id, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
-		FROM se_pages
-		$_SESSION[filter_string]
-		ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, page_linkname ASC";
+		FROM se_pages ".
+		$_SESSION['filter_string'].
+		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, page_linkname ASC";
 
 $result = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -88,7 +88,7 @@ echo '<div class="'.$class_col_left.'">';
 
 
 echo '<div class="card">';
-echo '<div class="card-header">' . $lang['legend_structured_pages'] . ' '.se_print_docs_link('tip-ordered-pages.md').'</div>';
+echo '<div class="card-header">' . $lang['legend_structured_pages'] . ' '.se_print_docs_link('tooltips/tip-ordered-pages.md').'</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
@@ -114,7 +114,7 @@ echo '<div class="'.$class_col_right.'">';
  */
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['legend_unstructured_pages'].' '.se_print_docs_link('tip-single-pages.md').'</div>';
+echo '<div class="card-header">'.$lang['legend_unstructured_pages'].' '.se_print_docs_link('tooltips/tip-single-pages.md').'</div>';
 echo '<div class="card-body">';
 
 echo '<div class="scroll-box">';

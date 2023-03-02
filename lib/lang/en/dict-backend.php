@@ -398,11 +398,16 @@ $lang['f_user_select_paused'] = "Locked temporarily";
 $lang['f_user_select_deleted'] = "Deleted";
 $lang['f_administrators'] = "Administrators";
 
+$lang['label_activate_posts'] = "Activate the Blog, Events or Shop module ...";
+
 $lang['label_position_top'] = "This Page is a ...";
 $lang['label_single_page'] = "... single Page";
 $lang['label_portal_page'] = "... the Home Page";
 $lang['label_mainnav_page'] = "... Part of the main navigation";
 $lang['label_position_sub'] = "This Page is a Subpage of ...";
+
+$lang['label_custom_id'] = "Custom ID";
+$lang['label_custom_classes'] = "Custom Classes";
 
 $lang['label_title'] = "Title";
 $lang['label_description'] = "Description";

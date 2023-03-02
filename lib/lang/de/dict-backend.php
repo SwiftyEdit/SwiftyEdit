@@ -399,11 +399,16 @@ $lang['f_user_select_paused'] = "Vorübergehend gesperrt";
 $lang['f_user_select_deleted'] = "Gelöscht";
 $lang['f_administrators'] = "Administratoren";
 
+$lang['label_activate_posts'] = "Blog, Events oder Shop Modul aktivieren ...";
+
 $lang['label_position_top'] = "Diese Seite ist eine ...";
 $lang['label_single_page'] = "... einzelne Seite";
 $lang['label_portal_page'] = "... Startseite";
 $lang['label_mainnav_page'] = "... Teil der Hauptnavigation";
 $lang['label_position_sub'] = "Diese Seite ist eine Unterseite von ...";
+
+$lang['label_custom_id'] = "Eigene ID";
+$lang['label_custom_classes'] = "Klassen";
 
 $lang['label_title'] = "Titel";
 $lang['label_description'] = "Beschreibung";

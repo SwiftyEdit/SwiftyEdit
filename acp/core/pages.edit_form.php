@@ -247,7 +247,10 @@ $sel_target .= '<option '.$sel_blank.' value="_blank">_blank</option>';
 $sel_target .= '<option '.$sel_parent.' value="_parent">_parent</option>';
 $sel_target .= '<option '.$sel_top.' value="_top">_top</option>';
 $sel_target .= '</select>';
-	
+
+echo '<fieldset>';
+echo '<legend>Navigation</legend>';
+
 echo '<div class="row">';
 echo '<div class="col-md-4">';
 echo tpl_form_control_group('',$lang['f_page_linkname'],'<input class="form-control" type="text" name="page_linkname" value="'.html_entity_decode($page_linkname).'">');
@@ -289,9 +292,32 @@ $(function() {
 });
 </script>
 <?php
+
+echo '</fieldset>';
+
+echo '<div class="row">';
+echo '<div class="col-md-4">';
+echo '<div class="mb-3">';
+if($page_custom_id == '') {
+    $page_custom_id = uniqid();
+}
+echo tpl_form_control_group('',$lang['label_custom_id'],"<input class='form-control' type='text' name='page_custom_id' value='$page_custom_id'>");
+echo '</div>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="mb-3">';
+echo tpl_form_control_group('',$lang['label_custom_classes'],"<input class='form-control' type='text' name='page_custom_classes' value='$page_custom_classes'>");
+echo '</div>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="mb-3">';
+echo tpl_form_control_group('',$lang['label_priority'],"<input class='form-control' type='text' name='page_priority' value='$page_priority'>");
+echo '</div>';
+echo '</div>';
+echo '</div>';
 	
 
-echo '<div class="form-group">';
+echo '<div class="mb-3">';
 echo '<label>'.$lang['f_page_type_of_use'].'</label>';
 $select_page_type_of_use  = '<select name="page_type_of_use" class="custom-select form-control">';
 
@@ -314,7 +340,6 @@ echo $select_page_type_of_use;
 echo '</div>';
 	
 
-echo '<hr>';
 
 /* redirect */
 
@@ -514,6 +539,7 @@ echo '</div>'; /* EOL tab addons */
 
 echo '<div class="tab-pane fade" id="posts">';
 
+echo '<p class="mb-3">'.se_print_docs_link('tooltips/tip-activate-posts.md',$lang['label_activate_posts']).'</p>';
 
 echo '<div class="row">';
 echo '<div class="col-6">';
@@ -870,26 +896,16 @@ if($get_stylesheets != '0') {
 
 unset($checked_status);
 
-if($page_status == "") {
+if(!isset($page_status) OR $page_status == "") {
 	$page_status = "public";
 }
 
-
-$select_page_status = '<div class="btn-group btn-group-vertical btn-group-toggle d-flex" data-bs-toggle="buttons" role="group">';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-public' name='page_status' value='public'".($page_status == "public" ? 'checked' :'').">";
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-public" for="toggle-btn-public">'.$lang['f_page_status_puplic'].'</label>';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-ghost' name='page_status' value='ghost'".($page_status == "ghost" ? 'checked' :'').">";
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-ghost" for="toggle-btn-ghost">'.$lang['f_page_status_ghost'].'</label>';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-private' name='page_status' value='private'".($page_status == "private" ? 'checked' :'').">";
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-private" for="toggle-btn-private">'.$lang['f_page_status_private'].'</label>';
-
-$select_page_status .= "<input type='radio' class='btn-check' id='toggle-btn-draft' name='page_status' value='draft'".($page_status == "draft" ? 'checked' :'').">";	
-$select_page_status .= '<label class="btn btn-sm btn-default w-100 btn-draft" for="toggle-btn-draft">'.$lang['f_page_status_draft'].'</label>';
-
-$select_page_status .= '</div>';
+$select_page_status = '<select name="page_status" class="form-control">';
+$select_page_status .= '<option value="public" '.($page_status == "public" ? 'selected' :'').'>'.$lang['f_page_status_puplic'].'</option>';
+$select_page_status .= '<option value="ghost" '.($page_status == "ghost" ? 'selected' :'').'>'.$lang['f_page_status_ghost'].'</option>';
+$select_page_status .= '<option value="private" '.($page_status == "private" ? 'selected' :'').'>'.$lang['f_page_status_private'].'</option>';
+$select_page_status .= '<option value="draft" '.($page_status == "draft" ? 'selected' :'').'>'.$lang['f_page_status_draft'].'</option>';
+$select_page_status .= '</select>';
 
 
 echo '<div class="form-group">';
@@ -905,15 +921,17 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_password'].'</label>';
 $placeholder = '';
+$reset_psw = '';
 if($page_psw != '') {
 	echo '<input type="hidden" name="page_psw_relay" value="'.$page_psw.'">';
 	$placeholder = '*****';
+
+    $reset_psw  = '<div class="checkbox"><label>';
+    $reset_psw .= '<input type="checkbox" name="page_psw_reset" value="reset"> '.$lang['label_password_reset'].'</label></div>';
+
 }
 echo '<input class="form-control" type="text" name="page_psw" value="" placeholder="'.$placeholder.'">';
-
-echo '<div class="checkbox"><label>';
-echo '<input type="checkbox" name="page_psw_reset" value="reset"> '.$lang['label_password_reset'];
-echo '</label></div>';
+echo $reset_psw;
 
 echo '</div>';
 
@@ -993,8 +1011,10 @@ for($i=0;$i<$cnt_admins;$i++) {
 echo '<div class="well well-sm">';
 echo '<a href="#" data-bs-toggle="collapse" data-bs-target="#admins">'.$lang['f_page_authorized_admins'].'</a>';
 echo '<div id="admins" class="collapse">';
+echo '<div class="scroll-box">';
 echo '<div class="p-3">';
 echo $checkbox_set_authorized_admins;
+echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';

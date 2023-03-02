@@ -1353,14 +1353,18 @@ function se_parse_docs_file($file) {
 }
 
 function se_print_docs_link($file,$text=null,$type=null) {
-    global $icon;
+    global $icon,$lang;
+
+    $title = $lang['show_help'];
 
     if($text == null OR $text == 'icon') {
-        $text = $icon['question'];
+        $text = $icon['question_circle'];
+    } else {
+        $text = $icon['question_circle']. ' '.$text;
     }
 
     if($type == null OR $type == 'modal') {
-        return '<a class="show-doc" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$text.'</a>';
+        return '<a class="show-doc" title="'.$title.'" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$text.'</a>';
     }
 
 

@@ -11,6 +11,7 @@
  * @var object $db_content medoo database object
  * @var array $icon icons set in acp/core/icons.php
  * @var array $lang language
+ * @var string $languagePack
  * @var string $hidden_csrf_token
  * @var array $se_labels
  */
@@ -189,7 +190,7 @@ if($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == 'checked') 
 	$_SESSION['checked_ghost'] = "checked";
 }
 
-$set_status_filter = "page_status = 'foobar' "; // reset -> result = 0
+$set_status_filter = "page_status IS NOT NULL ";
 
 $dot_draft = $icon['circle_alt'];
 $dot_private = $icon['circle_alt'];
@@ -268,7 +269,7 @@ $set_keyword_filter = substr("$set_keyword_filter", 0, -4); // cut the last ' AN
 
 
 
-$filter_string = "WHERE page_status != 'foobar' "; // -> result = match all pages
+$filter_string = "WHERE page_status IS NOT NULL"; // -> result = match all pages
 
 if($set_status_filter != "") {
 	$filter_string .= " AND ($set_status_filter) ";
@@ -294,7 +295,7 @@ if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	
 
 	$label_filter_box  = '<div class="card mt-2">';
-	$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].' '.se_print_docs_link('tip-labels.md').'</div>';
+	$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].' '.se_print_docs_link('tooltips/tip-labels.md').'</div>';
 	$label_filter_box .= '<div class="card-body">';
 	$this_btn_status = '';
 	foreach($se_labels as $label) {
@@ -337,7 +338,7 @@ if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	
 	
 	$nav_btn_group  = '<div class="card my-3">';
-	$nav_btn_group .= '<div class="card-header p-1 px-2">Status '.se_print_docs_link('tip-page-status.md').'</div>';
+	$nav_btn_group .= '<div class="card-header p-1 px-2">Status '.se_print_docs_link('tooltips/tip-page-status.md').'</div>';
 	
 	$nav_btn_group .= '<div class="list-group list-group-flush">';
 	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPuplic" class="list-group-item list-group-item-ghost p-1 px-2 text-public '.$btn_status_public.'">'.$dot_public.' '.$lang['f_page_status_puplic'].' ('.$count_pages['public'].')</a>';
