@@ -920,15 +920,17 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_password'].'</label>';
 $placeholder = '';
+$reset_psw = '';
 if($page_psw != '') {
 	echo '<input type="hidden" name="page_psw_relay" value="'.$page_psw.'">';
 	$placeholder = '*****';
+
+    $reset_psw  = '<div class="checkbox"><label>';
+    $reset_psw .= '<input type="checkbox" name="page_psw_reset" value="reset"> '.$lang['label_password_reset'].'</label></div>';
+
 }
 echo '<input class="form-control" type="text" name="page_psw" value="" placeholder="'.$placeholder.'">';
-
-echo '<div class="checkbox"><label>';
-echo '<input type="checkbox" name="page_psw_reset" value="reset"> '.$lang['label_password_reset'];
-echo '</label></div>';
+echo $reset_psw;
 
 echo '</div>';
 
@@ -1008,8 +1010,10 @@ for($i=0;$i<$cnt_admins;$i++) {
 echo '<div class="well well-sm">';
 echo '<a href="#" data-bs-toggle="collapse" data-bs-target="#admins">'.$lang['f_page_authorized_admins'].'</a>';
 echo '<div id="admins" class="collapse">';
+echo '<div class="scroll-box">';
 echo '<div class="p-3">';
 echo $checkbox_set_authorized_admins;
+echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
