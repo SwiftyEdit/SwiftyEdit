@@ -97,6 +97,10 @@ if($_POST['deleteGroup']) {
 }
 
 
+echo '<div class="subHeader">';
+echo $lang['nav_usergroups'];
+echo '</div>';
+
 
 //print message
 
@@ -123,7 +127,7 @@ $editgroup = (int) $_POST['editgroup'];
 
 echo '<fieldset>';
 echo '<legend>'.$lang['legend_choose_group'].'</legend>';
-echo '<form action="acp.php?tn=user&sub=groups" method="POST">';
+echo '<form action="acp.php?tn=user&sub=user-groups" method="POST">';
 
 echo '<div class="row">';
 echo '<div class="col-md-5">';
@@ -168,8 +172,8 @@ if(($editgroup) && ($show_data !== false)) {
 
 	$array_group_user = explode(" ", $group_user);
 
-	$submit_button = '<input type="submit" class="btn btn-primary text-success" name="updateGroup" value="'.$lang['update'].'">';
-	$delete_button = '<input type="submit" class="btn btn-primary text-danger" name="deleteGroup" value="'.$lang['delete'].'" onclick="return confirm(\''.$lang['confirm_delete_file'].'\')">';
+	$submit_button = '<input type="submit" class="btn btn-default text-success" name="updateGroup" value="'.$lang['update'].'">';
+	$delete_button = '<input type="submit" class="btn btn-default text-danger" name="deleteGroup" value="'.$lang['delete'].'" onclick="return confirm(\''.$lang['confirm_delete_file'].'\')">';
 	$hidden_field = '<input type="hidden" name="editgroup" value="'.$editgroup.'">';
 
 } else {
@@ -187,7 +191,7 @@ if(($editgroup) && ($show_data !== false)) {
 echo '<fieldset>';
 echo '<legend>'.$lang['legend_groups_data'].'</legend>';
 
-echo '<form action="acp.php?tn=user&sub=groups" method="POST">';
+echo '<form action="acp.php?tn=user&sub=user-groups" method="POST">';
 
 echo '<div class="row">';
 echo '<div class="col-md-8">';
