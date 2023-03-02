@@ -399,6 +399,8 @@ $lang['f_user_select_paused'] = "Vorübergehend gesperrt";
 $lang['f_user_select_deleted'] = "Gelöscht";
 $lang['f_administrators'] = "Administratoren";
 
+$lang['label_activate_posts'] = "Blog, Events oder Shop Modul aktivieren ...";
+
 $lang['label_position_top'] = "Diese Seite ist eine ...";
 $lang['label_single_page'] = "... einzelne Seite";
 $lang['label_portal_page'] = "... Startseite";

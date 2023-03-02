@@ -539,6 +539,7 @@ echo '</div>'; /* EOL tab addons */
 
 echo '<div class="tab-pane fade" id="posts">';
 
+echo '<p class="mb-3">'.se_print_docs_link('tooltips/tip-activate-posts.md',$lang['label_activate_posts']).'</p>';
 
 echo '<div class="row">';
 echo '<div class="col-6">';

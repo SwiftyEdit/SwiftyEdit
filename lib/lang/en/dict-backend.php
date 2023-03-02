@@ -398,6 +398,8 @@ $lang['f_user_select_paused'] = "Locked temporarily";
 $lang['f_user_select_deleted'] = "Deleted";
 $lang['f_administrators'] = "Administrators";
 
+$lang['label_activate_posts'] = "Activate the Blog, Events or Shop module ...";
+
 $lang['label_position_top'] = "This Page is a ...";
 $lang['label_single_page'] = "... single Page";
 $lang['label_portal_page'] = "... the Home Page";
