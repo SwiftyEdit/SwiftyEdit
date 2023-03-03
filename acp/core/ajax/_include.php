@@ -55,7 +55,7 @@ if($_POST['csrf_token'] !== $_SESSION['token']) {
 }
 
 require '../functions.php';
-require '../../../global/functions.php';
+require '../../../core/functions/functions.php';
 
 $se_get_preferences = se_get_preferences();
 

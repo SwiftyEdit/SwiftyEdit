@@ -6,7 +6,7 @@ define('SE_SECTION', 'frontend');
 require '../core/vendor/autoload.php';
 include_once '../config.php';
 include_once '../database.php';
-include_once '../global/functions.posts.php';
+include_once '../core/functions/functions.posts.php';
 
 $time = time();
 

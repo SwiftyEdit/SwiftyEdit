@@ -115,7 +115,7 @@ if ($_SESSION['editor_class'] == "wysiwyg") {
 
 
 require 'core/functions.php';
-require '../global/functions.php';
+require '../core/functions/functions.php';
 require 'core/switch.php';
 
 
