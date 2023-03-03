@@ -308,7 +308,7 @@ if($cnt_filter_posts > 0) {
 			$draft_class = 'item_is_draft';
 		}
 
-        $post_lang_thumb = '<img src="/lib/lang/'.$get_posts[$i]['post_lang'].'/flag.png" width="15" title="'.$get_posts[$i]['post_lang'].'" alt="'.$get_posts[$i]['post_lang'].'">';
+        $post_lang_thumb = '<img src="/core/lang/'.$get_posts[$i]['post_lang'].'/flag.png" width="15" title="'.$get_posts[$i]['post_lang'].'" alt="'.$get_posts[$i]['post_lang'].'">';
 		
 		/* trim teaser to $trim chars */
 		$trim = 150;

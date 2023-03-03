@@ -68,7 +68,7 @@ if(is_file('../config_database.php')) {
 
 
 require '../core/functions/func_userdata.php';
-require '../lib/lang/'.$languagePack.'/dict-backend.php';
+require '../core/lang/'.$languagePack.'/dict-backend.php';
 
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 

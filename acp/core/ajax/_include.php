@@ -86,7 +86,7 @@ if (!isset($_SESSION['lang'])) {
 
 if (isset($_GET['set_lang'])) {
     $set_lang = strip_tags($_GET['set_lang']);
-    if (is_dir("../lib/lang/$set_lang/")) {
+    if (is_dir("../core/lang/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
@@ -95,4 +95,4 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
-require '../../../lib/lang/index.php';
+require '../../../core/lang/index.php';

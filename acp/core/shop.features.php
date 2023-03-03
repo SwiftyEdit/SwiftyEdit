@@ -282,7 +282,7 @@ for($i=0;$i<$cnt_data;$i++) {
         $show_values = $show_data[$i]['snippet_content'];
     }
 
-    $flag = '<img src="/lib/lang/' . $show_data[$i]['snippet_lang'] . '/flag.png" width="15">';
+    $flag = '<img src="/core/lang/' . $show_data[$i]['snippet_lang'] . '/flag.png" width="15">';
 
 	echo '<tr>';
     echo '<td>'.$show_data[$i]['snippet_id'].'</td>';

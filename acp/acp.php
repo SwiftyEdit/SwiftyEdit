@@ -163,7 +163,7 @@ if (!isset($_SESSION['lang'])) {
 
 if (isset($_GET['set_lang'])) {
     $set_lang = strip_tags($_GET['set_lang']);
-    if (is_dir("../lib/lang/$set_lang/")) {
+    if (is_dir("../core/lang/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
@@ -172,7 +172,7 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
-require '../lib/lang/index.php';
+require '../core/lang/index.php';
 
 
 /**
@@ -180,7 +180,7 @@ require '../lib/lang/index.php';
  */
 
 if ($se_prefs['prefs_default_language'] != '') {
-    include '../lib/lang/' . $se_prefs['prefs_default_language'] . '/index.php';
+    include '../core/lang/' . $se_prefs['prefs_default_language'] . '/index.php';
     $default_lang_code = $lang_sign; // de|en|es ...
 }
 
@@ -341,7 +341,7 @@ if (isset($set_acptheme)) {
             <?php
             $arr_lang = get_all_languages();
             for ($i = 0; $i < count($arr_lang); $i++) {
-                $lang_icon = '<img src="../lib/lang/' . $arr_lang[$i]['lang_folder'] . '/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
+                $lang_icon = '<img src="../core/lang/' . $arr_lang[$i]['lang_folder'] . '/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
                 echo '<a class="btn btn-sm btn-default" href="acp.php?set_lang=' . $arr_lang[$i]['lang_folder'] . '">' . $lang_icon . ' ' . $arr_lang[$i]['lang_desc'] . '</a> ';
             }
             ?>

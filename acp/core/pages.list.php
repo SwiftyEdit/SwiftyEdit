@@ -226,7 +226,7 @@ function se_list_pages($data,$type="sorted") {
             $page_thumb_src = $page_thumbs[0];
         }
 
-        $page_lang_thumb = '<img src="/lib/lang/'.$page_language.'/flag.png" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
+        $page_lang_thumb = '<img src="/core/lang/'.$page_language.'/flag.png" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
 
         if($page_template == "use_standard") {
             $show_template_name =  "$lang[use_standard]";

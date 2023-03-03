@@ -106,7 +106,7 @@ if($se_prefs['prefs_timeformat'] == '') {
  * @var string $lang_desc english or deutsch ...
  */
 $lang_dir = $se_prefs['prefs_default_language'];
-include 'lib/lang/'.$lang_dir.'/index.php';
+include 'core/lang/'.$lang_dir.'/index.php';
 $languagePack = $lang_sign;
 
 if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator") {
@@ -292,12 +292,12 @@ if($page_contents['page_redirect'] != '') {
 
 
 /* default $languagePack is defined in config.php */
-if(is_dir("lib/lang/$page_contents[page_language]") AND ($page_contents['page_language'] != '')) {
+if(is_dir("core/lang/$page_contents[page_language]") AND ($page_contents['page_language'] != '')) {
 	$languagePack = $page_contents['page_language'];
 }
 
 /* include language */
-require SE_ROOT . "/lib/lang/index.php";
+require SE_ROOT . "/core/lang/index.php";
 
 
 

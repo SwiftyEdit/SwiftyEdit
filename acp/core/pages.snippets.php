@@ -460,7 +460,7 @@ if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_s
 			$data_groups = '';
 		}
 		
-		$lang_thumb = '<img src="/lib/lang/'.$get_snip_lang.'/flag.png" width="20">';
+		$lang_thumb = '<img src="/core/lang/'.$get_snip_lang.'/flag.png" width="20">';
 		
 		$snippet_images = explode('<->',$get_snip_images);
 		

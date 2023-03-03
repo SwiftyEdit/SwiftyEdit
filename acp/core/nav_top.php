@@ -14,13 +14,13 @@ echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="
 
 $lang_key = array_search($_SESSION['lang'],$all_langs);
 $selected_lang = '';
-$selected_lang_flag = '<img src="../lib/lang/'.$_SESSION['lang'].'/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
+$selected_lang_flag = '<img src="../core/lang/'.$_SESSION['lang'].'/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
 
 echo '<div class="dropstart me-1">';
 echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$selected_lang_flag.'</a>';
 echo '<ul class="dropdown-menu">';
 for($i=0;$i<count($all_langs);$i++) {
-    $lang_flag = '<img src="../lib/lang/'.$all_langs[$i]['lang_folder'].'/flag.png" style="vertical-align: baseline; width:24px; height:auto;">';
+    $lang_flag = '<img src="../core/lang/'.$all_langs[$i]['lang_folder'].'/flag.png" style="vertical-align: baseline; width:24px; height:auto;">';
     echo '<li><a class="dropdown-item" href="acp.php?set_lang='.$all_langs[$i]['lang_folder'].'">'.$lang_flag.' '.$all_langs[$i]['lang_desc'].'</a></li>';
 }
 

@@ -252,7 +252,7 @@ if($cnt_filter_events > 0) {
         $icon_fixed = '';
         $draft_class = '';
 
-        $event_lang_thumb = '<img src="/lib/lang/'.$get_events[$i]['event_lang'].'/flag.png" width="15" title="'.$get_events[$i]['event_lang'].'" alt="'.$get_events[$i]['event_lang'].'">';
+        $event_lang_thumb = '<img src="/core/lang/'.$get_events[$i]['event_lang'].'/flag.png" width="15" title="'.$get_events[$i]['event_lang'].'" alt="'.$get_events[$i]['event_lang'].'">';
 
         $icon_fixed_form = '<form action="?tn=events" method="POST" class="form-inline">';
         if($get_events[$i]['post_fixed'] == '1') {
