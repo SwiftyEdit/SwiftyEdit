@@ -6,7 +6,7 @@ group: backend
 priority: 900
 ---
 
-# Einstellungen
+# Preferences
 
 The settings are divided into the following categories
 
