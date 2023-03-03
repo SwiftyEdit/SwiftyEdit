@@ -7,7 +7,7 @@
 
 session_start();
 error_reporting(0);
-require '../lib/vendor/autoload.php';
+require '../core/vendor/autoload.php';
 require '../config.php';
 
 $modus = 'install';

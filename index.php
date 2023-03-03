@@ -15,7 +15,7 @@ header("X-Frame-Options: SAMEORIGIN");
 
 $se_start_time = microtime(true);
 
-require 'lib/vendor/autoload.php';
+require 'core/vendor/autoload.php';
 
 /**
  * include the default config file

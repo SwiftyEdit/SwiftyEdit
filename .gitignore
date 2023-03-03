@@ -11,6 +11,7 @@ Thumbs.db
 .idea/*
 composer.phar
 /lib/vendor
+/core/vendor
 
 # Database files and generated content #
 *.sqlite
