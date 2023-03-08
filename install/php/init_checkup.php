@@ -75,7 +75,6 @@ $check_this[] = SE_CONTENT . "/galleries";
 $check_this[] = SE_CONTENT . "/modules";
 sort($check_this,SORT_NATURAL | SORT_FLAG_CASE);
 
-$check_is_dir[] = "../lib/";
 $check_is_dir[] = "../styles/";
 $check_is_dir[] = "../core/";
 $check_is_dir[] = "../acp/";
