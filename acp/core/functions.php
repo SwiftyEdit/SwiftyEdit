@@ -20,7 +20,7 @@ include_once 'functions_pages.php';
  * return as array
  */
 
-function get_all_languages($d='../lib/lang') {
+function get_all_languages($d='../core/lang') {
 
 	$cntLangs = 0;
 	$scanned_directory = array_diff(scandir($d), array('..', '.','.DS_Store'));

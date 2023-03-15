@@ -246,7 +246,7 @@ if($cnt_filter_posts > 0) {
             $add_label = '<span class="badge badge-se">'.$lang['status_ghost'].'</span>';
         }
 
-        $product_lang_thumb = '<img src="/lib/lang/'.$get_products[$i]['product_lang'].'/flag.png" width="15" title="'.$get_products[$i]['product_lang'].'" alt="'.$get_products[$i]['product_lang'].'">';
+        $product_lang_thumb = '<img src="/core/lang/'.$get_products[$i]['product_lang'].'/flag.png" width="15" title="'.$get_products[$i]['product_lang'].'" alt="'.$get_products[$i]['product_lang'].'">';
 
         /* trim teaser to $trim chars */
         $trim = 150;

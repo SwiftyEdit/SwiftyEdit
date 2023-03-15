@@ -2,7 +2,7 @@
 session_start();
 //error_reporting(0);
 error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
-require '../lib/vendor/autoload.php';
+require '../core/vendor/autoload.php';
 use Medoo\Medoo;
 
 require '../config.php';
@@ -68,7 +68,7 @@ if(is_file('../config_database.php')) {
 
 
 require '../core/functions/func_userdata.php';
-require '../lib/lang/'.$languagePack.'/dict-backend.php';
+require '../core/lang/'.$languagePack.'/dict-backend.php';
 
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 

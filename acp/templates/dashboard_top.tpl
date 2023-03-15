@@ -7,6 +7,7 @@
 			<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
 					<li class="nav-item"><a class="nav-link active" href="#" data-bs-target="#pages_list" data-bs-toggle="tab">{tab_pages}</a></li>
+					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#snippets_list" data-bs-toggle="tab">{tab_snippets}</a></li>
 					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#post_list" data-bs-toggle="tab">{tab_blog}</a></li>
 					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#products_list" data-bs-toggle="tab">{tab_products}</a></li>
 					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#events_list" data-bs-toggle="tab">{tab_events}</a></li>
@@ -29,6 +30,9 @@
 
 
 
+					</div>
+					<div class="tab-pane fade" id="snippets_list">
+						{snippets_list}
 					</div>
 					<div class="tab-pane fade" id="post_list">
 						{posts_list}

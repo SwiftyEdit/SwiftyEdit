@@ -7,13 +7,13 @@
 
 session_start();
 error_reporting(0);
-require '../lib/vendor/autoload.php';
+require '../core/vendor/autoload.php';
 require '../config.php';
 
 $modus = 'install';
 define('INSTALLER', TRUE);
 
-if(isset($_GET['l']) && is_dir('../lib/lang/'.basename($_GET['l']).'/')) {
+if(isset($_GET['l']) && is_dir('../core/lang/'.basename($_GET['l']).'/')) {
 	$_SESSION['lang'] = basename($_GET['l']);
 }
 
@@ -26,7 +26,7 @@ if(!isset($_SESSION['lang']) || $_SESSION['lang'] == '') {
 
 
 include 'php/functions.php';
-include '../lib/lang/'.$l.'/dict-install.php';
+include '../core/lang/'.$l.'/dict-install.php';
 include '../acp/core/icons.php';
 
 if(is_file("$se_db_content")) {
@@ -82,10 +82,10 @@ if($modus == "update") {
 				echo '<h3 class="text-center">Choose your Language ...</h3><hr>';
 				echo '<div class="row">';
 				echo '<div class="col-md-6">';
-				echo '<p class="text-center"><a href="index.php?l=de"><img src="../lib/lang/de/flag.png" class="img-rounded"><br>DE</a></p>';
+				echo '<p class="text-center"><a href="index.php?l=de"><img src="../core/lang/de/flag.png" class="img-rounded"><br>DE</a></p>';
 				echo '</div>';
 				echo '<div class="col-md-6">';
-				echo '<p class="text-center"><a href="index.php?l=en"><img src="../lib/lang/en/flag.png" class="img-rounded"><br>EN</a></p>';
+				echo '<p class="text-center"><a href="index.php?l=en"><img src="../core/lang/en/flag.png" class="img-rounded"><br>EN</a></p>';
 				echo '</div>';
 				echo '</div>';
 			}

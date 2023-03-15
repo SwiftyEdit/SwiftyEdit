@@ -1,5 +1,14 @@
 <?php
 //error_reporting(E_ALL ^E_NOTICE);
+
+/**
+ * global variables
+ * @var array $lang from language files
+ * @var array $icon
+ * @var object $db_content
+ * @var string $hidden_csrf_token
+ */
+
 //prohibit unauthorized access
 require 'core/access.php';
 
@@ -129,7 +138,11 @@ if(strpos("$_SESSION[checked_order_filter]", "-canceled-") !== false) {
 
 
 $orders = se_get_orders('all', $order_filter, $order_sort, $start, $limit);
-$cnt_orders = count($orders);
+if(is_array($orders)) {
+    $cnt_orders = count($orders);
+} else {
+    $cnt_orders = 0;
+}
 
 echo '<div class="subHeader">';
 echo $lang['nav_orders'] .' '. $cnt_orders;

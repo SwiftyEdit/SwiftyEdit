@@ -31,7 +31,7 @@ for ($i = 0; $i < 5; $i++) {
 
     $user_latest5 .= '<tr>';
     $user_latest5 .= '<td>' . $user_registerdate . '</td>';
-    $user_latest5 .= '<td>';
+    $user_latest5 .= '<td class="w-100">';
     $user_latest5 .= '<h6 class="mb-0">' . $user_nick . ' ('.$user_result[$i]['user_mail'].')</h6>';
     $user_latest5 .= '<small>' . $user_name . '</small> ';
     $user_latest5 .= '</td>';
@@ -68,7 +68,7 @@ for ($i = 0; $i < 5; $i++) {
     $page_teaser = first_words(strip_tags(html_entity_decode($allPages[$i]['page_meta_description'])), 10);
     $top5pages .= '<tr>';
     $top5pages .= '<td>'.$last_edit.'</td>';
-    $top5pages .= '<td><h6 class="mb-0">' . $page_linkname . ' <small>'.$page_title.'</small></h6>'.$page_teaser.'</td>';
+    $top5pages .= '<td class="w-100"><h6 class="mb-0">' . $page_linkname . ' <small>'.$page_title.'</small></h6>'.$page_teaser.'</td>';
     $top5pages .= '<td class="text-end">';
     $top5pages .= '<form class="inline" action="?tn=pages&sub=edit" method="POST">';
     $top5pages .= '<button class="btn btn-default btn-sm" name="editpage" value="' . $allPages[$i]['page_id'] . '">' . $icon['edit'] . '</button>';
@@ -82,6 +82,32 @@ for ($i = 0; $i < 5; $i++) {
 
 $top5pages .= '</table>';
 
+/* snippets */
+
+$get_snippets = $db_content->select("se_snippets", ["snippet_id", "snippet_type", "snippet_name", "snippet_title", "snippet_lastedit"], [
+    "OR" => [
+        "snippet_type[~]" => ["snippet","snippet_core"]
+    ],
+    "ORDER" => ["snippet_lastedit" => "DESC"],
+    "LIMIT" => 5
+]);
+
+$snippets_list = '<table class="table">';
+
+foreach($get_snippets as $snippet) {
+    $snippets_list .= '<tr>';
+    $snippets_list .= '<td>'.date("d.m.Y",$snippet['snippet_lastedit']).'</td>';
+    $snippets_list .= '<td class="w-100"><kbd>'.$snippet['snippet_name'].'</kbd> '.$snippet['snippet_name'].'</td>';
+    $snippets_list .= '<td class="text-end">';
+    $snippets_list .= '<form class="inline" action="?tn=pages&sub=snippets" method="POST">';
+    $snippets_list .= '<button class="btn btn-default btn-sm" name="snip_id" value="' . $snippet['snippet_id'] . '">' . $icon['edit'] . '</button>';
+    $snippets_list .= $hidden_csrf_token;
+    $snippets_list .= '</form>';
+    $snippets_list .= '</td>';
+    $snippets_list .= '</tr>';
+}
+
+$snippets_list .= '</table>';
 
 /* posts */
 
@@ -109,7 +135,7 @@ for ($i = 0; $i < 5; $i++) {
 
     $top5posts .= '<tr>';
     $top5posts .= '<td>'.$last_edit.'</td>';
-    $top5posts .= '<td><h6 class="mb-0">' . $allPosts[$i]['post_title'] . '</h6>'.$post_teaser.'</td>';
+    $top5posts .= '<td class="w-100"><h6 class="mb-0">' . $allPosts[$i]['post_title'] . '</h6>'.$post_teaser.'</td>';
     $top5posts .= '<td class="text-end">';
     $top5posts .= '<form class="inline" action="?tn=posts&sub=edit" method="POST">';
     $top5posts .= '<button class="btn btn-default btn-sm" name="post_id" value="' . $allPosts[$i]['post_id'] . '">' . $icon['edit'] . '</button>';
@@ -148,7 +174,7 @@ for ($i = 0; $i < 5; $i++) {
 
     $list_product .= '<tr>';
     $list_product .= '<td>'.$last_edit.'</td>';
-    $list_product .= '<td><h6 class="mb-0">' . $allProducts[$i]['title'] . '</h6>'.$product_teaser.'</td>';
+    $list_product .= '<td class="w-100"><h6 class="mb-0">' . $allProducts[$i]['title'] . '</h6>'.$product_teaser.'</td>';
     $list_product .= '<td class="text-end">';
     $list_product .= '<form class="inline" action="?tn=shop&sub=edit" method="POST">';
     $list_product .= '<button class="btn btn-default btn-sm" name="edit_id" value="' . $allProducts[$i]['id'] . '">' . $icon['edit'] . '</button>';
@@ -190,7 +216,7 @@ for ($i = 0; $i < 5; $i++) {
 
     $list_events .= '<tr>';
     $list_events .= '<td>'.$last_edit.'</td>';
-    $list_events .= '<td><h6 class="mb-0">' . $allEvents[$i]['title'] . '</h6>'.$event_teaser.'</td>';
+    $list_events .= '<td class="w-100"><h6 class="mb-0">' . $allEvents[$i]['title'] . '</h6>'.$event_teaser.'</td>';
     $list_events .= '<td class="text-end">';
     $list_events .= '<form class="inline" action="?tn=events&sub=edit" method="POST">';
     $list_events .= '<button class="btn btn-default btn-sm" name="id" value="' . $allEvents[$i]['id'] . '">' . $icon['edit'] . '</button>';
@@ -231,7 +257,7 @@ for ($i = 0; $i < 5; $i++) {
 
         $top5comments .= '<tr>';
         $top5comments .= '<td>'.$comment_time.'</td>';
-        $top5comments .= '<td>';
+        $top5comments .= '<td class="w-100">';
         $top5comments .= '<h6 class="mb-0">' . $allComments[$i]['comment_author'] . ' '.$allComments[$i]['comment_type'].'</h6>';
         $top5comments .= '<small>' . $comment_text . '</small>';
         $top5comments .= '</td>';
@@ -275,6 +301,7 @@ if($cnt_dashboard_messages < 1) {
 $tpl_file = str_replace('{dashboard_alerts}', $dashboard_alerts, $tpl_file);
 
 $tpl_file = str_replace('{pages_list}', $top5pages, $tpl_file);
+$tpl_file = str_replace('{snippets_list}', $snippets_list, $tpl_file);
 $tpl_file = str_replace('{posts_list}', $top5posts, $tpl_file);
 $tpl_file = str_replace('{comments_list}', $top5comments, $tpl_file);
 $tpl_file = str_replace('{user_list}', $user_latest5, $tpl_file);
@@ -283,6 +310,7 @@ $tpl_file = str_replace('{user_stats}', $user_stats, $tpl_file);
 
 /* tabs */
 $tpl_file = str_replace('{tab_pages}', $lang['nav_pages'], $tpl_file);
+$tpl_file = str_replace('{tab_snippets}', $lang['nav_snippets'], $tpl_file);
 $tpl_file = str_replace('{tab_products}', $lang['nav_products'], $tpl_file);
 $tpl_file = str_replace('{tab_events}', $lang['nav_events'], $tpl_file);
 $tpl_file = str_replace('{tab_orders}', $lang['nav_orders'], $tpl_file);
@@ -339,6 +367,3 @@ $tpl_file = str_replace('{btn_user_overview}', $btn_user_overview, $tpl_file);
 $tpl_file = str_replace('{btn_new_user}', $btn_new_user, $tpl_file);
 
 echo $tpl_file;
-
-
-?>

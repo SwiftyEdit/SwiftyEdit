@@ -2,7 +2,7 @@
 
 /*
 # content:		language file | English
-# package:		lib/lang/de/frontend/
+# package:		core/lang/de/frontend/
 # author:		Patrick Konstandin <support@flatfiler.de>
 # last edit:	18.08.2010 | Patrick Konstandin
 

@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Installiere SwiftyEdit in weniger als 5 Minuten
+description: Install SwiftyEdit in less than 5 minutes
 btn: Installation
 group: developer
 priority: 100
@@ -8,27 +8,27 @@ priority: 100
 
 # Technische Voraussetzungen
 
-Das System benötigt keine ausergewöhnichen Komponenten.
+Technical requirements
 
-* PHP 7.3+ (8.1+ empfohlen)
-* aktiviertes PDO/SQLite Modul - PDO/SQLite ist normalerweise standardmäßig aktiviert. Falls nicht musst Du bei Deinem Webhoster nachfragen.
-* MySQL (empfohlen) falls Du nicht die komplette Installation auf SQLite betreiben möchtest.
+* PHP 7.3+ (8.1+ recommended)
+* enabled PDO/SQLite module - PDO/SQLite is usually enabled by default. If not you have to ask your web host.
+* MySQL (recommended) if you don't want to run the whole installation on SQLite.
 
-## SwiftyEdit installieren
+## Installing SwiftyEdit
 
-Die Installation dauert nur wenige Minuten.
+The installation takes only a few minutes.
 
-Installation vie Composer:
+Installation via Composer:
 
-```composer create-project swiftyedit/swiftyedit```
+`composer create-project swiftyedit/swiftyedit`
 
-Oder lade die Dateien von der Webseite: https://swiftyedit.org/de/download/
+Or download the files from the website: https://swiftyedit.org/de/download/
 
-### Die Installation
+### The installation
 
-1. Alle Dateien auf den Server kopieren.
-2. Im Webbrowser das Verzeichnis /install/ aufrufen und den Anweisungen folgen ...
+1. Copy all files to the server.
+2. In the web browser, go to the `/install/` directory and follow the instructions ...
 
-War die Installation erfolgreich, führt der nächste Weg in das ACP.
-Einfach auf <kbd>Administration</kbd> klicken.
-Das Backend erreichst Du übrigens immer über die URL `example.com/acp/`.
+If the installation was successful, the next step is to go to the ACP.
+Just click on <kbd>Administration</kbd>.
+By the way, you can always reach the backend via the URL `example.com/acp/`.

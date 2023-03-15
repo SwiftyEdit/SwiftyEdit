@@ -8,7 +8,8 @@
  */
 error_reporting(0);
 session_start();
-require '../../lib/Medoo.php';
+
+require '../../core/vendor/autoload.php';
 use Medoo\Medoo;
 
 include '../../config.php';

@@ -2,7 +2,7 @@
 session_start();
 error_reporting(0);
 
-require '../../../lib/vendor/autoload.php';
+require '../../../core/vendor/autoload.php';
 use Medoo\Medoo;
 
 define("SE_SECTION", "backend");
@@ -55,7 +55,7 @@ if($_POST['csrf_token'] !== $_SESSION['token']) {
 }
 
 require '../functions.php';
-require '../../../global/functions.php';
+require '../../../core/functions/functions.php';
 
 $se_get_preferences = se_get_preferences();
 
@@ -86,7 +86,7 @@ if (!isset($_SESSION['lang'])) {
 
 if (isset($_GET['set_lang'])) {
     $set_lang = strip_tags($_GET['set_lang']);
-    if (is_dir("../lib/lang/$set_lang/")) {
+    if (is_dir("../core/lang/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
@@ -95,4 +95,4 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
-require '../../../lib/lang/index.php';
+require '../../../core/lang/index.php';

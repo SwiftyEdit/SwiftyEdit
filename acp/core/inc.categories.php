@@ -116,7 +116,7 @@ if($show_form == true)  {
     foreach ($all_categories as $cats) {
 
         $show_thumb = '';
-        $flag = '<img src="/lib/lang/' . $cats['cat_lang'] . '/flag.png" width="15">';
+        $flag = '<img src="/core/lang/' . $cats['cat_lang'] . '/flag.png" width="15">';
 
         if ($cats['cat_thumbnail'] != '') {
             $cat_thumb = $cats['cat_thumbnail'];

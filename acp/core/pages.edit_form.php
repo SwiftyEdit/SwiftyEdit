@@ -113,7 +113,7 @@ for($i=0;$i<$cnt_all_pages;$i++) {
 	$sm_page_permalink = $all_pages[$i]['page_permalink'];
 	$sm_page_lang = $all_pages[$i]['page_language'];
 	
-	$flag = '<img src="../../lib/lang/'.$sm_page_lang.'/flag.png" alt="'.$sm_page_lang.'" width="15">';
+	$flag = '<img src="../../core/lang/'.$sm_page_lang.'/flag.png" alt="'.$sm_page_lang.'" width="15">';
 	$short_title = first_words($all_pages[$i]['page_title'], 6);
 	
 	if($sm_page_sort == '') { continue; }
