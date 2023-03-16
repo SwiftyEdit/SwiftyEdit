@@ -653,23 +653,6 @@ function se_get_all_snippets() {
 }
 
 
-/**
- * @param integer $id
- * @return array
- */
-
-function se_get_userdata_by_id($id) {
-
-    global $db_user;
-
-    $user_data = $db_user->get("se_user", "*", [
-        "user_id" => $id
-    ]);
-
-    return $user_data;
-}
-
-
 
 /**
  * get all shortcodes or filter by label

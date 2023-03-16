@@ -22,11 +22,8 @@
                         {label_all_users}
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="mail_recipients" value="marketing" id="checkMarketing" {checked_marketing}>
-                    <label class="form-check-label" for="checkMarketing">
-                        {label_marketing_users}
-                    </label>
+                <div class="mt-2">
+                    {list_usergroups}
                 </div>
             </div>
 

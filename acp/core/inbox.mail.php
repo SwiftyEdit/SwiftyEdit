@@ -4,8 +4,7 @@
 
 /**
  * this is not ready for productive use
- * @todo    add newsletter subscription to user
- *          add salutation to se_mailbox
+ * @todo    add salutation to se_mailbox
  *          encode mail content correct
  *          delete old/unused messages
  */
@@ -42,24 +41,33 @@ if(isset($_POST['send_mail'])) {
     $content = $get_message_data['content'];
 
     if($get_message_data['recipients'] == 'all') {
-        $recipients = $db_user->select("se_user","*");
-
-        foreach($recipients as $recipient) {
-
-            $send_to['mail'] = $recipient['user_mail'];
-            $send_to['name'] = $recipient['user_nick'];
-
-            $mail_data['subject'] = $subject;
-            $mail_data['preheader'] = $subject;
-            $mail_data['title'] = $subject;
-            $mail_data['body'] = $content;
-            $mail_tpl = se_build_html_file($mail_data);
-
-            $send_mail = se_send_mail($send_to,$subject,$mail_tpl);
-
+        // get all active users
+        $recipients = $db_user->select("se_user","*",[
+            "user_verified" => "verified"
+        ]);
+    } else {
+        // get users from user group
+        $user_group_id = (int) $get_message_data['recipients'];
+        $user_group_users = se_get_usergroup_by_id($user_group_id);
+        $user_id = explode(" ", $user_group_users['group_user']);
+        foreach($user_id as $id) {
+            $recipients[] = se_get_userdata_by_id($id);
         }
-
     }
+    /* loop through recipients and send the mail */
+    foreach($recipients as $recipient) {
+
+        $send_to['mail'] = $recipient['user_mail'];
+        $send_to['name'] = $recipient['user_nick'];
+
+        $mail_data['subject'] = $subject;
+        $mail_data['preheader'] = $subject;
+        $mail_data['title'] = $subject;
+        $mail_data['body'] = $content;
+        $mail_tpl = se_build_html_file($mail_data);
+        $send_mail = se_send_mail($send_to,$subject,$mail_tpl);
+    }
+
 
 }
 
@@ -124,6 +132,23 @@ if($show_form == true) {
         $mail_form_tpl = str_replace('{mail_form_status}',$lang['label_form_status_edit'],$mail_form_tpl);
     }
 
+    $user_groups = se_get_usergroups();
+    if(is_array($user_groups) && count($user_groups) > 0) {
+        foreach($user_groups as $group) {
+
+            $sel = '';
+            if($edit_message_data['recipients'] == $group['group_id']) {
+                $sel = 'checked';
+            }
+
+            $list_usergroup .= '<div class="form-check">';
+            $list_usergroup .= '<input class="form-check-input" type="radio" name="mail_recipients" value="'.$group['group_id'].'" id="'.md5($group['group_name']).'" '.$sel.'>';
+            $list_usergroup .= '<label class="form-check-label" for="'.md5($group['group_name']).'">'.$group['group_name'].'</label>';
+            $list_usergroup .= '</div>';
+        }
+    }
+
+
     $mail_form_tpl = str_replace('{mail_form_status}',$lang['label_form_status_new'],$mail_form_tpl);
 
     $mail_form_tpl = str_replace('{mail_subject}',$mail_subject,$mail_form_tpl);
@@ -137,6 +162,7 @@ if($show_form == true) {
     $mail_form_tpl = str_replace('{formaction}',$section_url,$mail_form_tpl);
     $mail_form_tpl = str_replace('{checked_all}',$checked_all,$mail_form_tpl);
     $mail_form_tpl = str_replace('{checked_marketing}',$checked_marketing,$mail_form_tpl);
+    $mail_form_tpl = str_replace('{list_usergroups}',$list_usergroup,$mail_form_tpl);
 
     $mail_form_tpl = str_replace('{lang_subject}',$lang['label_subject'],$mail_form_tpl);
     $mail_form_tpl = str_replace('{lang_text}',$lang['label_text'],$mail_form_tpl);
@@ -172,12 +198,22 @@ if($show_form == true) {
         $edit_btn .= $hidden_csrf_token;
         $edit_btn .= '</form>';
 
+        // recipients
+        if(is_numeric($all_messages[$i]['recipients'])) {
+            $get_group = se_get_usergroup_by_id($all_messages[$i]['recipients']);
+            $show_recipient = $icon['user_friends'].' '.$get_group['group_name'];
+        } else {
+            $show_recipient = $lang['label_all_users'];
+        }
+
+
+
         echo '<tr>';
         echo '<td>'.$time_created.'</td>';
         echo '<td>'.$time_lastedit.'</td>';
         echo '<td>'.$all_messages[$i]['autor'].'</td>';
         echo '<td>'.$all_messages[$i]['subject'].'</td>';
-        echo '<td>'.$all_messages[$i]['recipients'].'</td>';
+        echo '<td>'.$show_recipient.'</td>';
         echo '<td class="text-end">'.$edit_btn.'</td>';
         echo '</tr>';
     }
