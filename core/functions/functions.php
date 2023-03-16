@@ -14,6 +14,7 @@ include_once 'functions.helpers.php';
 include_once 'functions.sanitizer.php';
 include_once 'functions.posts.php';
 include_once 'functions.shop.php';
+include_once 'functions.user.php';
 
 /**
  * get active preferences

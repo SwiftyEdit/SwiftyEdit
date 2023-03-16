@@ -14,15 +14,19 @@ $delete_button = '';
  */
 
 if($_POST['updateGroup']) {
-	
+    $update_incUser = '';
 	$arr_update_incUser = $_POST['incUser'];
-	@sort($arr_update_incUser);
-	$update_incUser = implode(" ", $arr_update_incUser);
+    if(is_array($arr_update_incUser)) {
+        sort($arr_update_incUser);
+        $update_incUser = implode(" ", $arr_update_incUser);
+    }
 	
-	$group_name = filter_var($_POST['group_name'], FILTER_SANITIZE_STRING);
-	
+	$group_name = sanitizeUserInputs($_POST['group_name']);
+    $group_type = sanitizeUserInputs($_POST['group_type']);
+
 	$update_group = $db_user->update("se_groups", [
 		"group_name" => $group_name,
+        "group_type" => $group_type,
 		"group_description" => $_POST['group_description'],
 		"group_user" => $update_incUser
 	],[
@@ -119,7 +123,7 @@ if($error_message != ""){
  * <select>
  */
 
-$user_groups = $db_user->select("se_groups","*");
+$user_groups = se_get_usergroups();
 $cnt_user_groups = count($user_groups);
 
 $editgroup = (int) $_POST['editgroup'];
@@ -204,6 +208,23 @@ echo '<textarea class="mceEditor_small" rows="4" name="group_description">'.$gro
 
 echo '</div>';
 echo '<div class="col-md-4">';
+
+$sel_public = '';
+$sel_hidden = '';
+
+if($group_type == 'p') {
+    $sel_public = 'selected';
+} else {
+    $sel_hidden = 'selected';
+}
+
+echo '<div class="mb-3">';
+echo '<label class="">'.$lang['label_type'].'</label>';
+echo '<select class="form-control" name="group_type">';
+echo '<option '.$sel_public.' value="p">'.$lang['label_public_group'].'</option>';
+echo '<option '.$sel_hidden.' value="h">'.$lang['label_hidden_group'].'</option>';
+echo '</select>';
+echo '</div>';
 
 echo '<label>'.$lang['label_group_add_user'].'</label>';
 

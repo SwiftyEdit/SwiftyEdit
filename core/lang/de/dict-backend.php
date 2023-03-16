@@ -126,6 +126,8 @@ $lang['legend_groups_data'] = "Daten der Benutzergruppe";
 $lang['label_group_name'] = "Gruppenname";
 $lang['label_group_description'] = "Beschreibung";
 $lang['label_group_add_user'] = "Benutzer hinzufügen/entfernen";
+$lang['label_public_group'] = "Öffentliche Gruppe";
+$lang['label_hidden_group'] = "Versteckte Gruppe";
 
 $lang['manage_files'] = "Dateien verwalten";
 $lang['go_to_upload'] = "Dateien hochladen";

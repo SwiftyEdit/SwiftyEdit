@@ -122,6 +122,8 @@ $lang['legend_groups_data'] = "Group's Data";
 $lang['label_group_name'] = "Name";
 $lang['label_group_description'] = "Description";
 $lang['label_group_add_user'] = "Add/Remove User";
+$lang['label_public_group'] = "Public group";
+$lang['label_hidden_group'] = "Hidden group";
 
 $lang['manage_files'] = "Manage Files";
 $lang['go_to_upload'] = "Upload Files";
