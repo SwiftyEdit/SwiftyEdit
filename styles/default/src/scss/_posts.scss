@@ -27,6 +27,10 @@
   }
 }
 
+[data-bs-theme="dark"] .post-list-entry {
+  border-bottom: 1px solid $border-color-dark;
+}
+
 a.post-headline-link {
   text-decoration: none;
 }

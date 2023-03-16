@@ -11,18 +11,12 @@ $widget-bg-dark: darken($body-bg-dark,5) !default;
 $price-tag-bg-dark: darken($body-bg-dark,5) !default;
 $price-tag-color-dark: #438555 !default;
 
-/**/
-
 $headings-color-dark: desaturate(lighten($primary,15%),10) !default;
 $link-color-dark: lighten($primary,25%) !default;
 
-$card-border-color-dark: mix($primary,$dark,85) !default;
-
-$border-color-dark: mix($primary,$dark,65) !default;
-
-$border-color-dark: lighten($body-bg-dark,35%) !default;
+$card-border-color-dark: mix($primary,$dark,25) !default;
+$border-color-dark: lighten($body-bg-dark,15%) !default;
 $input-border-color-dark: mix($primary,$dark,65) !default;
-
 
 $list-group-color-dark: desaturate($link-color,15) !default;
 $list-group-bg-dark: $widget-bg !default;

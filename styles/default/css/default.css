@@ -1,5 +1,4 @@
 @charset "UTF-8";
-/**/
 /*!
  * Bootstrap  v5.3.0-alpha1 (https://getbootstrap.com/)
  * Copyright 2011-2022 The Bootstrap Authors
@@ -174,7 +173,7 @@
   --bs-link-color-rgb: 106, 131, 194;
   --bs-link-hover-color-rgb: 158, 197, 254;
   --bs-code-color: #e685b5;
-  --bs-border-color: #263455;
+  --bs-border-color: #202b47;
   --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
 }
 
@@ -17210,6 +17209,10 @@ html.with-featherlight {
   color: #9bc4dc;
 }
 
+[data-bs-theme=dark] .post-list-entry {
+  border-bottom: 1px solid #202b47;
+}
+
 a.post-headline-link {
   text-decoration: none;
 }
@@ -17261,6 +17264,10 @@ a.post-headline-link {
   padding: 5px 15px;
   background: #ddd;
   color: #9bc4dc;
+}
+
+[data-bs-theme=dark] .product-list-entry {
+  border-bottom: 1px solid #202b47;
 }
 
 [data-bs-theme=dark] .price-tag {
@@ -17412,7 +17419,7 @@ hr {
 }
 
 [data-bs-theme=dark] hr {
-  border-top: 1px solid #263455;
+  border-top: 1px solid #202b47;
 }
 
 .scrollBox {
@@ -17563,10 +17570,13 @@ hr {
 }
 
 [data-bs-theme=dark] .card {
-  border-color: #2d3f6a;
+  border-color: #191f2b;
 }
 [data-bs-theme=dark] .card .card-header {
-  border-bottom-color: #2d3f6a;
+  border-bottom-color: #191f2b;
+}
+[data-bs-theme=dark] .card .card-footer {
+  border-top-color: #191f2b;
 }
 
 [data-bs-theme=dark] .form-control,
