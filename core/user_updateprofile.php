@@ -23,7 +23,8 @@ if($_SESSION['user_nick'] == "") {
             "ba_street" => "$ba_street",
             "ba_street_nbr" => "$ba_street_nbr",
             "ba_zip" => "$ba_zip",
-            "ba_city" => "$ba_city"
+            "ba_city" => "$ba_city",
+            "ba_country" => "$ba_country"
         ], [
             "user_id" => (int) $_SESSION['user_id']
         ]);
@@ -223,8 +224,27 @@ if($_SESSION['user_nick'] == "") {
 	
 	
 	$get_my_userdata = get_my_userdata();
-	//example: $get_my_userdata['user_nick']
-	
+
+    /**
+     * billing and delivery address - countries
+     * show as select if there are predefined countries or as text input if not
+     */
+    $prefs_delivery_countries = json_decode($se_prefs['prefs_delivery_countries'],true);
+
+    if(is_array($prefs_delivery_countries) && count($prefs_delivery_countries) > 0) {
+        // show select
+        $smarty->assign("show_ba_country_input","select");
+        $smarty->assign("ba_countries",$prefs_delivery_countries);
+        if($get_my_userdata['ba_country'] != '') {
+            // select the country
+            $selected_country = 'selected_'.strtolower($get_my_userdata['ba_country']);
+            $smarty->assign("$selected_country","selected");
+        }
+    } else {
+        // show input type text
+        $smarty->assign("show_ba_country_input","input");
+    }
+
 	$smarty->assign("user_nick",$_SESSION['user_nick'],true);
 
     $smarty->assign("ba_company",$get_my_userdata['ba_company'],true);
@@ -234,6 +254,7 @@ if($_SESSION['user_nick'] == "") {
     $smarty->assign("ba_street_nbr",$get_my_userdata['ba_street_nbr'],true);
     $smarty->assign("ba_zip",$get_my_userdata['ba_zip'],true);
     $smarty->assign("ba_city",$get_my_userdata['ba_city'],true);
+    $smarty->assign("ba_country",$get_my_userdata['ba_country'],true);
 
     $smarty->assign("get_mail_address",$get_my_userdata['user_mail'],true);
 	$smarty->assign("get_firstname",$get_my_userdata['user_firstname'],true);
@@ -248,5 +269,3 @@ if($_SESSION['user_nick'] == "") {
 	$smarty->assign('page_content', $output, true);
 
 }
-
-?>
