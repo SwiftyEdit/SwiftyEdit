@@ -37,7 +37,7 @@
 		<tr>
 			<td colspan="4">
 				<div class="collapse" id="show{$order.nbr}">
-					<div class="card bg-light p-3">
+					<div class="card p-3">
 						<table class="table table-sm">
 							{* loop through ordered items *}
 							{foreach $order.products as $product}

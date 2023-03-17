@@ -14,6 +14,7 @@ include_once 'functions.helpers.php';
 include_once 'functions.sanitizer.php';
 include_once 'functions.posts.php';
 include_once 'functions.shop.php';
+include_once 'functions.user.php';
 
 /**
  * get active preferences
@@ -649,23 +650,6 @@ function se_get_all_snippets() {
     global $db_content;
     $snippets = $db_content->select("se_snippets", ["snippet_name", "snippet_content","snippet_lang"]);
     return $snippets;
-}
-
-
-/**
- * @param integer $id
- * @return array
- */
-
-function se_get_userdata_by_id($id) {
-
-    global $db_user;
-
-    $user_data = $db_user->get("se_user", "*", [
-        "user_id" => $id
-    ]);
-
-    return $user_data;
 }
 
 

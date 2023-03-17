@@ -42,6 +42,7 @@ $lang += [
     'label_new_email' => 'New E-Mail',
     'label_time_created' => 'Created',
     'label_time_lastedit' => 'Edit',
+    'label_time_sent' => 'Sent',
     'recipients' => 'Recipients',
     'label_all_users' => 'Send to all users',
     'label_marketing_users' => 'Newsletter recipients ',
@@ -122,6 +123,8 @@ $lang['legend_groups_data'] = "Group's Data";
 $lang['label_group_name'] = "Name";
 $lang['label_group_description'] = "Description";
 $lang['label_group_add_user'] = "Add/Remove User";
+$lang['label_public_group'] = "Public group";
+$lang['label_hidden_group'] = "Hidden group";
 
 $lang['manage_files'] = "Manage Files";
 $lang['go_to_upload'] = "Upload Files";

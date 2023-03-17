@@ -102,6 +102,21 @@
 					<input type="text" class="form-control" id="ba_city" value="{$ba_city}" name="ba_city">
 				</div>
 			</div>
+			<div class="row mb-3">
+				<div class="col">
+				<label for="ba_country">{$lang_label_country}</label>
+				{if $show_ba_country_input == "input"}
+					<input type="text" class="form-control" id="ba_country" value="{$ba_country}" name="ba_country">
+				{else}
+					<select class="form-control" name="ba_country" id="ba_country">
+						<option value="">{$lang_label_please_select}</option>
+					{foreach $ba_countries as $country}
+						<option value="{$country}" {$selected_{$country|strtolower}}>{$country}</option>
+					{/foreach}
+					</select>
+				{/if}
+				</div>
+			</div>
 
 		</div>
 		<div class="card-footer">

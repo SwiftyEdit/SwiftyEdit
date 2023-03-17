@@ -25,6 +25,10 @@
   }
 }
 
+[data-bs-theme="dark"] .product-list-entry {
+  border-bottom: 1px solid $border-color-dark;
+}
+
 [data-bs-theme=dark] .price-tag {
   background: $price-tag-bg-dark;
   color: $price-tag-color-dark;

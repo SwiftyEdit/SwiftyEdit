@@ -106,6 +106,9 @@ $enable-dark-mode: true;
   .card-header {
     border-bottom-color: $card-border-color-dark;
   }
+  .card-footer {
+    border-top-color: $card-border-color-dark;
+  }
 }
 
 [data-bs-theme="dark"] .form-control,

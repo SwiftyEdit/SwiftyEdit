@@ -45,6 +45,7 @@ $lang += [
     'label_new_email' => 'Neue E-Mail erstellen',
     'label_time_created' => 'Erstellt',
     'label_time_lastedit' => 'Aktualisiert',
+    'label_time_sent' => 'Gesendet',
     'recipients' => 'Empfänger',
     'label_all_users' => 'An alle Benutzer',
     'label_marketing_users' => 'Newsletter Empfänger',
@@ -126,6 +127,8 @@ $lang['legend_groups_data'] = "Daten der Benutzergruppe";
 $lang['label_group_name'] = "Gruppenname";
 $lang['label_group_description'] = "Beschreibung";
 $lang['label_group_add_user'] = "Benutzer hinzufügen/entfernen";
+$lang['label_public_group'] = "Öffentliche Gruppe";
+$lang['label_hidden_group'] = "Versteckte Gruppe";
 
 $lang['manage_files'] = "Dateien verwalten";
 $lang['go_to_upload'] = "Dateien hochladen";
