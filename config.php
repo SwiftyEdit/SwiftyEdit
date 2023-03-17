@@ -66,6 +66,34 @@ if($se_include_path != "") {
 
 define('SE_INCLUDE_PATH',  $se_include_path);
 
+/**
+ * $se_mode 0 = self hosting
+ *          1 = self hosting multisite
+ *          2 = multisite hosting provided
+ */
+$se_mode = 0;
+
+/**
+ * limits
+ * only relevant if you offer multisite hosting
+ * limit the number of pages, snippets, posts ... that can be created
+ * empty or integer values
+ */
+$se_limit_pages = '';
+$se_limit_snippets = '';
+$se_limit_shortcodes = '';
+$se_limit_posts = '';
+$se_limit_products = '';
+$se_limit_features = '';
+$se_limit_events = '';
+$se_limit_uploads = '';
+$se_limit_uploads_dir = ''; // filesize in MB
+$se_limit_inbox = '';
+$se_limit_users = '';
+$se_limit_groups = '';
+$se_limit_categories = '';
+$se_limit_labels = '';
+
 
 if(is_file(SE_CONTENT . '/config.php')){
 	include SE_CONTENT . '/config.php';
