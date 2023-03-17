@@ -42,6 +42,7 @@ $lang += [
     'label_new_email' => 'New E-Mail',
     'label_time_created' => 'Created',
     'label_time_lastedit' => 'Edit',
+    'label_time_sent' => 'Sent',
     'recipients' => 'Recipients',
     'label_all_users' => 'Send to all users',
     'label_marketing_users' => 'Newsletter recipients ',
