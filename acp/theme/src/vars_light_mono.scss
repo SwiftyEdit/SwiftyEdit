@@ -115,4 +115,9 @@ $list-group-action-active-color: $brand_primary;
 $list-group-action-active-bg: lighten($widget_background,20);
 $list-group-action-hover-color: $brand_primary;
 
+/* toast */
+$toast-background-color: darken($widget_background,10);
+$toast-border-color: darken($widget_background,15);
+$toast-header-background-color: darken($widget_background,15);
+
 @import "styles";

@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 //prohibit unauthorized access
 require 'core/access.php';
 $system_snippets_str = "'footer_text','extra_content_text','agreement_text','account_confirm','account_confirm_mail','no_access'";
@@ -139,12 +139,19 @@ if(isset($_POST['save_snippet'])) {
 			"snippet_permalink_name" => $snippet_permalink_name,
 			"snippet_permalink_classes" => $snippet_permalink_classes
 		], [
-		"snippet_id" => $snip_id
+		    "snippet_id" => $snip_id
 		]);
+
+        if($data->rowCount() > 0) {
+            show_toast($lang['db_changed'],'success');
+            record_log("$_SESSION[user_nick]","edit textlib <strong>$snippet_name</strong>","2");
+        } else {
+            show_toast($lang['db_not_changed'],'danger');
+        }
 	
 	} else {
 		
-		$data = $db_content->insert("se_snippets", [
+		$db_content->insert("se_snippets", [
 			"snippet_content" =>  $_POST['snippet_content'],
 			"snippet_name" => $snippet_name,
 			"snippet_type" => 'snippet',
@@ -167,19 +174,18 @@ if(isset($_POST['save_snippet'])) {
 			"snippet_permalink_name" => $snippet_permalink_name,
 			"snippet_permalink_classes" => $snippet_permalink_classes
 		]);
+
+        $snip_id = $db_content->id();
+        if($snip_id > 0) {
+            $modus = 'update';
+            show_toast($lang['db_changed'],'success');
+            record_log("$_SESSION[user_nick]","insert textlib <strong>$snippet_name</strong>","2");
+        } else {
+            show_toast($lang['db_not_changed'],'danger');
+        }
+
 		
 	}
-	
-	
-	if($data->rowCount() > 0) {
-		$sys_message = '{OKAY} '.$lang['db_changed'];
-		record_log("$_SESSION[user_nick]","edit textlib <strong>$snippet_name</strong>","2");
-	} else {
-		$sys_message = '{ERROR} '.$lang['db_not_changed'];
-	}
-	
-	print_sysmsg($sys_message);
-
 } // eol save text
 
 
@@ -343,9 +349,29 @@ for($x=0;$x<$cnt_pages;$x++) {
 
 /**
  * open snippet
+ * show or hide the form
  */
 
-if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_snip_id)))  {
+$show_snippet_form = false;
+
+if(isset($_POST['snip_id'])) {
+    $show_snippet_form = true;
+}
+
+if(isset($_POST['snip_id_duplicate'])) {
+    $show_snippet_form = true;
+}
+
+if($modus == 'update' OR $_POST['modus'] == 'update') {
+    $show_snippet_form = true;
+}
+
+if(isset($delete_snip_id)) {
+    $show_snippet_form = false;
+}
+
+
+if($show_snippet_form == true)  {
 
 	include 'pages.snippets_form.php';
 	
@@ -355,7 +381,10 @@ if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_s
 
     echo '<div class="subHeader d-flex align-items-center">';
     echo '<h3>'.$lang['nav_snippets'].'</h3>';
-    echo '<a href="?tn=pages&sub=snippets&snip_id=n" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
+    echo '<form action="?tn=pages&sub=snippets" method="post" class="d-inline ms-auto">';
+    echo '<button class="btn btn-default text-success ms-auto" name="snip_id" value="n">'.$icon['plus'].' '.$lang['new'].'</button>';
+    echo $hidden_csrf_token;
+    echo '</form>';
     echo '</div>';
 
 	
@@ -492,10 +521,20 @@ if(((isset($_REQUEST['snip_id'])) OR ($modus == 'update')) AND (!isset($delete_s
 		echo '</td>';
 		echo '<td nowrap><small>'.$icon['clock']. ' '.date('Y.m.d H:i:s',$get_snip_lastedit).'<br>'.$icon['user'].' '.$get_snip_lastedit_from.'</small></td>';
 		echo '<td class="text-right">';
+
+        echo '<form action="?tn=pages&sub=snippets" method="POST">';
+        echo '<div class="btn-group" role="group">';
+        echo '<button class="btn btn-default text-success" name="snip_id" value="'.$get_snip_id.'" title="'.$lang['edit'].'">'.$icon['edit'].'</button>';
+        echo '<button class="btn btn-default" name="snip_id_duplicate" value="'.$get_snip_id.'" title="'.$lang['duplicate'].'">'.$icon['copy'].'</button>';
+        echo '</div>';
+        echo $hidden_csrf_token;
+        echo '</form>';
+        /*
 		echo '<div class="btn-group" role="group">';
 		echo '<a href="acp.php?tn=pages&sub=snippets&snip_id='.$get_snip_id.'" class="btn btn-default btn-sm text-success">'.$lang['edit'].'</a>';
 		echo '<a href="acp.php?tn=pages&sub=snippets&snip_id='.$get_snip_id.'&duplicate=1" class="btn btn-default btn-sm" title="'.$lang['duplicate'].'">'.$icon['copy'].'</a>';
 		echo '</div>';
+        */
 		echo '</td>';	
 		echo '</tr>';
 		
