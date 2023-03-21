@@ -54,6 +54,8 @@ $lang += [
     'btn_send_email' => 'Send E-Mail',
     'btn_close' => 'Close',
 
+    'pagination_page' => 'Page',
+
     'missing_title' => 'no title ...'
 ];
 
