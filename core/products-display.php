@@ -92,6 +92,11 @@ if(is_array($product_images) && count($product_images) > 0) {
         $show_images[] = se_get_images_data($image,'data=array');
     }
 
+    if($show_images[0]['media_file'] == "") {
+        /* fallback if there are no informations in database - maybe if we have more than one langusage */
+        $show_images[0]['media_file'] = reset($product_images);
+    }
+
     /* replace img src with absolute path */
     $cnt_images = count($show_images);
     for($i=0;$i<$cnt_images;$i++) {
