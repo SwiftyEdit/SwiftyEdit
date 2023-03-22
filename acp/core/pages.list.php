@@ -3,12 +3,37 @@
 //prohibit unauthorized access
 require 'core/access.php';
 
+$sort_single_pages = 'page_lastedit';
+$sort_single_pages_direction = 'DESC';
+
+if(isset($_POST['sorting_single_pages_dir'])) {
+    if($_POST['sorting_single_pages_dir'] == 'desc') {
+        $_SESSION['sorting_single_pages_dir'] = 'DESC';
+    } else {
+        $_SESSION['sorting_single_pages_dir'] = 'ASC';
+    }
+}
+
+if(isset($_POST['sorting_single_pages'])) {
+    if($_POST['sorting_single_pages'] == 'linkname') {
+        $_SESSION['sorting_single_pages'] = 'page_linkname';
+    } else {
+        $_SESSION['sorting_single_pages'] = 'page_lastedit';
+    }
+}
+if(!isset($_SESSION['sorting_single_pages'])) {
+    $_SESSION['sorting_single_pages'] = $sort_single_pages;
+}
+if(!isset($_SESSION['sorting_single_pages_dir'])) {
+    $_SESSION['sorting_single_pages_dir'] = $sort_single_pages_direction;
+}
+
 unset($result);
 /* $_SESSION[filter_string] was defined in inc.pages.php */
 $sql = "SELECT page_id, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
 		FROM se_pages ".
 		$_SESSION['filter_string'].
-		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, page_linkname ASC";
+		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, ".$_SESSION['sorting_single_pages']." ".$_SESSION['sorting_single_pages_dir']." ";
 
 $result = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -114,7 +139,9 @@ echo '<div class="'.$class_col_right.'">';
  */
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['legend_unstructured_pages'].' '.se_print_docs_link('tooltips/tip-single-pages.md').'</div>';
+echo '<div class="card-header">';
+echo $lang['legend_unstructured_pages'].' '.se_print_docs_link('tooltips/tip-single-pages.md');
+echo '</div>';
 echo '<div class="card-body">';
 
 echo '<div class="scroll-box">';
@@ -152,6 +179,42 @@ if(isset($btn_remove_keyword)) {
 }
 
 echo $nav_btn_group;
+
+$sel_value = [
+    'lastedit' => '',
+    'linkname' => '',
+    'sort_asc' => '',
+    'sort_desc' => ''
+];
+if($_SESSION['sorting_single_pages'] == 'page_lastedit') {
+    $sel_value['lastedit'] = 'selected';
+} else {
+    $sel_value['linkname'] = 'selected';
+}
+if($_SESSION['sorting_single_pages_dir'] == 'ASC') {
+    $sel_value['sort_asc'] = 'selected';
+} else {
+    $sel_value['sort_desc'] = 'selected';
+}
+
+echo '<div class="card mt-2">';
+echo '<div class="card-header">'.$lang['h_page_sort'].'</div>';
+echo '<div class="card-body">';
+echo '<form action="?tn=pages&sub=pages-list" method="post" class="d-inline ms-auto">';
+echo '<select class="form-control" name="sorting_single_pages" onchange="this.form.submit()">';
+echo '<option value="linkname" '.$sel_value['linkname'].'>'.$lang['btn_sort_linkname'].'</option>';
+echo '<option value="lastedit" '.$sel_value['lastedit'].'>'.$lang['btn_sort_edit'].'</option>';
+echo '</select>';
+
+echo '<select class="form-control" name="sorting_single_pages_dir" onchange="this.form.submit()">';
+echo '<option value="asc" '.$sel_value['sort_asc'].'>'.$lang['btn_sort_asc'].'</option>';
+echo '<option value="desc" '.$sel_value['sort_desc'].'>'.$lang['btn_sort_desc'].'</option>';
+echo '</select>';
+
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>'; // card-body
+echo '</div>'; // card
 
 
 echo '</div>'; // card-body

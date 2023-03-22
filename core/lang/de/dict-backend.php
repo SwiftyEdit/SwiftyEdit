@@ -57,6 +57,11 @@ $lang += [
     'btn_send_email' => 'E-Mail senden',
     'btn_close' => 'zurück',
 
+    'btn_sort_asc' => 'Aufsteigend',
+    'btn_sort_desc' => 'Absteigend',
+    'btn_sort_linkname' => 'Linkname',
+    'btn_sort_edit' => 'Zuletzt bearbeitet',
+
     'pagination_page' => 'Seite',
 
     'missing_title' => 'Kein Titel ...'
