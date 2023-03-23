@@ -374,10 +374,9 @@ function se_list_pages($data,$type="sorted") {
                     if($page_label == $l['label_id']) {
                         $label_color = $l['label_color'];
                         $label_title = $l['label_title']. ' '.$l['label_description'];
+                        $label .= '<span class="label-dot" style="background-color:'.$label_color.';" data-bs-toggle="tooltip" data-bs-title="'.$label_title.'"></span>';
                     }
                 }
-
-                $label .= '<span class="label-dot" style="background-color:'.$label_color.';" data-bs-toggle="tooltip" data-bs-title="'.$label_title.'"></span>';
             }
         }
 
