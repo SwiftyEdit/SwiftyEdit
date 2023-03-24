@@ -8,10 +8,10 @@
   "author": "",
   "optionalDependencies": {},
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
-    "bootstrap": "5.3.0-alpha1",
+    "@popperjs/core": "^2.11.7",
+    "bootstrap": "^5.3.0-alpha2",
     "featherlight": "^1.7.14",
-    "jquery": "^3.6.3",
+    "jquery": "^3.6.4",
     "js-cookie": "^3.0.1"
   },
   "description": "The default SwiftyEdit CMS Theme",
