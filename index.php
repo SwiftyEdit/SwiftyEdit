@@ -202,12 +202,19 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
 	list($page_contents,$se_nav) = se_get_content($swifty_slug,'permalink');
 }
 
-/* include modul index.php if exists */
-
+/* include (once) modules index.php if exists */
 foreach($active_mods as $mods) {
-	if(is_file(SE_CONTENT.'/modules/'.$mods['page_modul'].'/global/index.php')) {
-		include SE_CONTENT.'/modules/'.$mods['page_modul'].'/global/index.php';
-	}
+    $clean_mods[] = $mods['page_modul'];
+}
+
+if(is_array($clean_mods)) {
+    $clean_mods = array_unique($clean_mods);
+
+    foreach ($clean_mods as $mod_dir) {
+        if (is_file(SE_CONTENT . '/modules/' . $mod_dir . '/global/index.php')) {
+            include_once SE_CONTENT . '/modules/' . $mod_dir . '/global/index.php';
+        }
+    }
 }
 
 $p = $page_contents['page_id'];
