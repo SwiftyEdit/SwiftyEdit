@@ -20,11 +20,10 @@
     "vendor-dir": "core/vendor"
   },
   "require": {
-    "catfan/medoo": "^2.1.7",
+    "catfan/medoo": "^2.1.8",
     "erusev/parsedown": "^1.8.0-beta-7",
-    "phpmailer/phpmailer": "^v6.7.1",
-    "smarty/smarty": "^v4.3.0",
-    "mustangostang/spyc": "^0.6.3",
-    "mollie/mollie-api-php": "^v2.50.0"
+    "phpmailer/phpmailer": "^v6.8.0",
+    "smarty/smarty": "^v4.3.1",
+    "mustangostang/spyc": "^0.6.3"
   }
 }
