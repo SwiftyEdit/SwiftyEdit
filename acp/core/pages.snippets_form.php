@@ -3,14 +3,14 @@
 //prohibit unauthorized access
 require 'core/access.php';
 
-if($_REQUEST['snip_id'] == 'n') {
+if($_POST['snip_id'] == 'n') {
 	$modus = 'new';
 } else {
 	$modus = 'update';
 }
 
-if((!empty($_REQUEST['duplicate'])) OR ($_REQUEST['modus'] == 'duplicate')) {
-	$snip_id = (int) $_REQUEST['snip_id'];
+if(!empty($_POST['snip_id_duplicate'])) {
+	$snip_id = (int) $_POST['snip_id_duplicate'];
 	$modus = "duplicate";
 }
 
@@ -19,7 +19,7 @@ if((!empty($_REQUEST['duplicate'])) OR ($_REQUEST['modus'] == 'duplicate')) {
  */
 
 if(!isset($snip_id)) {
-	$snip_id = (int) $_REQUEST['snip_id'];
+	$snip_id = (int) $_POST['snip_id'];
 }
 
 $result = $db_content->get("se_snippets", "*", [ "snippet_id" => $snip_id ]);

@@ -67,11 +67,17 @@ if($se_include_path != "") {
 define('SE_INCLUDE_PATH',  $se_include_path);
 
 /**
- * $se_mode 0 = self hosting
- *          1 = self hosting multisite
+ * $se_mode 0 = self-hosting
+ *          1 = self-hosting multisite
  *          2 = multisite hosting provided
  */
 $se_mode = 0;
+
+/**
+ * $se_environment p = production
+ *                 d = development
+ */
+$se_environment = 'p';
 
 /**
  * limits
@@ -95,10 +101,10 @@ $se_limit_categories = '';
 $se_limit_labels = '';
 
 
-if(is_file(SE_CONTENT . '/config.php')){
+if(is_file(SE_CONTENT . '/config.php')) {
 	include SE_CONTENT . '/config.php';
 }
 
-if(is_file(SE_CONTENT . '/config_smtp.php')){
+if(is_file(SE_CONTENT . '/config_smtp.php')) {
 	include SE_CONTENT . '/config_smtp.php';
 }

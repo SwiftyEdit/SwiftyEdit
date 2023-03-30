@@ -117,10 +117,12 @@ foreach($all_categories as $cats) {
 
 
 /* pagination f.e. /p/2/ or /p/3/ .... */
-if($array_mod_slug[0] == 'p') {
+if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p') {
 
     if(is_numeric($array_mod_slug[1])) {
         $products_start = $array_mod_slug[1];
+    } else if(is_numeric($array_mod_slug[2])) {
+        $products_start = $array_mod_slug[2];
     } else {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");

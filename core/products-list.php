@@ -86,6 +86,9 @@ if ($cnt_pages > 1) {
 
     $nextstart = $products_start + 1;
     $prevstart = $products_start - 1;
+    if($nextstart < 2) {
+        $nextstart = 2;
+    }
 
     $older_link_query = se_set_pagination_query($display_mode, $nextstart);
     $newer_link_query = se_set_pagination_query($display_mode, $prevstart);

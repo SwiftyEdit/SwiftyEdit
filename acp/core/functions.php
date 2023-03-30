@@ -423,6 +423,37 @@ function print_sysmsg($msg) {
 	echo '</div>';
 }
 
+/**
+ * @param string $text
+ * @param string $color success | danger | info
+ * @return void
+ */
+function show_toast($text,$color='') {
+
+    $time = se_format_datetime(time());
+    $class = '';
+
+    if($color == 'danger') {
+        $class = 'text-bg-danger';
+    } else if($color == 'success') {
+        $class = 'text-bg-success';
+    } else if($color == 'info') {
+        $class = 'text-bg-info';
+    }
+
+    echo '<div class="toast-container position-fixed top-0 end-0 p-3">';
+    echo '<div class="toast show alert-auto-close '.$class.'" role="alert" aria-live="polite" aria-atomic="true" data-bs-autohide="true" data-bs-delay="500">';
+    echo '<div class="toast-header '.$class.'">';
+    echo '<small>'.$time.'</small>';
+    echo '<button type="button" class="btn-close ms-auto" data-bs-dismiss="toast" aria-label="Close">';
+    echo '</div>';
+    echo '<div class="toast-body">';
+    echo $text;
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+}
+
 
 
 

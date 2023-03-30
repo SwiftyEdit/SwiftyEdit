@@ -441,7 +441,7 @@ echo '<a class="btn btn-success w-100" href="?tn=shop&sub=edit&new=p">'.$icon['p
 echo '<hr>';
 
 echo '<div class="row">';
-echo '<div class="col-md-2">';
+echo '<div class="col-lg-2">';
 if($prevPage < 0) {
     echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
 } else {
@@ -449,7 +449,7 @@ if($prevPage < 0) {
 }
 
 echo '</div>';
-echo '<div class="col-md-8">';
+echo '<div class="col-lg-8">';
 echo '<form action="acp.php?tn=shop" method="POST">';
 echo '<select class="form-control custom-select" name="setPage" onchange="this.form.submit()">';
 for($i=0;$i<$cnt_pages;$i++) {
@@ -459,12 +459,13 @@ for($i=0;$i<$cnt_pages;$i++) {
     if($thisPage == $posts_start) {
         $sel = 'selected';
     }
-    echo '<option value="'.$thisPage.'" '.$sel.'>'.$x.' ('.$thisPage.')</option>';
+    echo '<option value="'.$thisPage.'" '.$sel.'>'.$lang['pagination_page'].' '.$x.'/'.$cnt_pages.'</option>';
 }
 echo '</select>';
+echo $hidden_csrf_token;
 echo '</form>';
 echo '</div>';
-echo '<div class="col-md-2">';
+echo '<div class="col-lg-2">';
 if($nextPage < ($cnt_filter_posts-$posts_limit)+$posts_limit) {
     echo '<a class="btn btn-default w-100" href="acp.php?tn=shop&posts_start='.$nextPage.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
 } else {
