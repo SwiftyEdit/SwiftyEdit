@@ -38,7 +38,7 @@
 <meta property="twitter:image" content="{$page_thumbnail}">
 
 <!-- CSS -->
-<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/default.css?v=310" />
+<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/default.css?v=311" />
 
 <!-- JavaScript -->
 <script type="text/javascript" src="{$se_inc_dir}/styles/{$se_template}/js/main.min.js"></script>
