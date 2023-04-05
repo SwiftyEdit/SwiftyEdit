@@ -311,29 +311,6 @@
 
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_shipping}</label>
-                                        {select_shipping_mode}
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_shipping_costs_cat}</label>
-                                        {select_shipping_category}
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_product_delivery_time}</label>
-                                        {select_delivery_time}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <div class="row">
-                                <div class="col-md-4">
                                     <div class="">
                                         <label>{label_product_price} {label_product_net}</label>
                                         <input class='form-control' id="price" name="product_price_net" type="text"
@@ -359,12 +336,39 @@
                                 </div>
                             </div>
 
+
+
                             <hr>
 
-                            <fieldset class="mt-4">
-                                <legend>{label_product_snippet_price}</legend>
-                                {snippet_select_pricelist}
-                            </fieldset>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{label_shipping}</label>
+                                        {select_shipping_mode}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{label_shipping_costs_cat}</label>
+                                        {select_shipping_category}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{label_product_delivery_time}</label>
+                                        {select_delivery_time}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mt-4">
+                                <div class="form-group">
+                                    <label>{label_product_snippet_price}</label>
+                                    {snippet_select_pricelist}
+                                </div>
+                            </div>
 
 
                         </div> <!-- #prices_delivery -->
