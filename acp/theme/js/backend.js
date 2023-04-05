@@ -401,18 +401,14 @@ $(function() {
 
 
 
-  function addTax(price,addition,tax) {
-  		addition = parseInt(addition);
+  function addTax(price,tax) {
 		tax = parseInt(tax);
-		price = price*(addition+100)/100;
 		price = price*(tax+100)/100;
 			return price;
 		}
 		  	
-	function removeTax(price,addition,tax) {
-		addition = parseInt(addition);
-		tax = parseInt(tax);					
-		price = price*100/(addition+100);
+	function removeTax(price,tax) {
+		tax = parseInt(tax);
 		price = price*100/(tax+100);
 		return price;
 	}
@@ -423,30 +419,27 @@ $(function() {
 		var e = document.getElementById("tax");
 		var get_tax = e.options[e.selectedIndex].text;
 		get_tax = parseInt(get_tax);
-		get_price_addition = $("#price_addition").val();
 		get_net_calc = get_price_net.replace(/\./g, '');
 		get_net_calc = get_net_calc.replace(",",".");
-		current_gross = addTax(get_net_calc,get_price_addition,get_tax);
+		current_gross = addTax(get_net_calc,get_tax);
 		current_gross = accounting.formatNumber(current_gross,8,".",",");
 		$('#price_total').val(current_gross);
 		
-		calculated_net = addTax(get_net_calc,get_price_addition,0);
+		calculated_net = addTax(get_net_calc,0);
 		calculated_net = accounting.formatNumber(calculated_net,8,".",",");
 		$('#calculated_net').html(calculated_net);
 		
 		$('.show_price_tax').html(get_tax);
-		$('.show_price_addition').html(get_price_addition);
 
 		$('#price').keyup(function(){
 			get_price_net = $('#price').val();
-			get_price_addition = $("#price_addition").val();
 			get_net_calc = get_price_net.replace(/\./g, '');
 			get_net_calc = get_net_calc.replace(",",".");
-			current_gross = addTax(get_net_calc,get_price_addition,get_tax);
+			current_gross = addTax(get_net_calc,get_tax);
 			current_gross = accounting.formatNumber(current_gross,8,".",",");
 			$('#price_total').val(current_gross);
 			
-			calculated_net = addTax(get_net_calc,get_price_addition,0);
+			calculated_net = addTax(get_net_calc,0);
 			calculated_net = accounting.formatNumber(calculated_net,8,".",",");
 			$('#calculated_net').html(calculated_net);
 			
@@ -454,10 +447,9 @@ $(function() {
 					
 		$('#price_total').keyup(function(){
 			get_brutto = $('#price_total').val();
-			get_price_addition = $("#price_addition").val();
 			get_gross_calc = get_brutto.replace(/\./g, '');
 			get_gross_calc = get_gross_calc.replace(",",".");
-			current_net = removeTax(get_gross_calc,get_price_addition,get_tax);
+			current_net = removeTax(get_gross_calc,get_tax);
 			current_net = accounting.formatNumber(current_net,8,".",",");
 			$('#price').val(current_net);
 			$('#calculated_net').html(current_net);
@@ -465,11 +457,10 @@ $(function() {
 		
 		$('#price_addition').keyup(function(){
 			get_price_net = $('#price').val();
-			get_price_addition = $("#price_addition").val();
 			
 			get_net_calc = get_price_net.replace(/\./g, '');
 			get_net_calc = get_net_calc.replace(",",".");
-			current_gross = addTax(get_net_calc,get_price_addition,get_tax);
+			current_gross = addTax(get_net_calc,get_tax);
 			current_gross = accounting.formatNumber(current_gross,8,".",",");
 			$('#price_total').val(current_gross);
 		});
@@ -479,12 +470,11 @@ $(function() {
 			var e = document.getElementById("tax");
 			var get_tax = e.options[e.selectedIndex].text;
 			get_tax = parseInt(get_tax);
-			
-			get_price_addition = $('#price_addition').val();
+
 			get_price_net = $('#price').val();
 			get_net_calc = get_price_net.replace(",",".");
 
-			current_gross = addTax(get_net_calc,get_price_addition,get_tax);
+			current_gross = addTax(get_net_calc,get_tax);
 			current_gross = accounting.formatNumber(current_gross,8,".",",");
 
 			$('#price_total').val(current_gross);

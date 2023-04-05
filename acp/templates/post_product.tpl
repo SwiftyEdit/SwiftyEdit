@@ -341,15 +341,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-2">
-                                    <label>{label_product_price_addition}</label>
-                                    <div class="input-group">
-                                        <input class='form-control' id="price_addition" name="product_price_addition"
-                                               type="text" value="{product_price_addition}">
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
+                                <div class="col-md-4">
                                     <div class="">
                                         <label>{label_product_tax}</label>
                                         {select_tax}

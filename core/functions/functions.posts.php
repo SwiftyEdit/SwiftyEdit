@@ -368,12 +368,11 @@ function se_post_print_currency($number) {
 /**
  * add tax and addition to net prices
  * @param float $price price net (stored in the database)
- * @param integer $addition
  * @param integer $tax
  * @param integer $amount
  * @return array
  */
-function se_posts_calc_price($price,$addition,$tax,$amount=1) {
+function se_posts_calc_price($price,$tax,$amount=1) {
 	
 	if(empty($price)) {
 		$price = 0;
@@ -383,13 +382,7 @@ function se_posts_calc_price($price,$addition,$tax,$amount=1) {
 	$price = str_replace(',', '.', $price);
     $price = number_format($price, 8, '.', '');
 
-    if($addition != 0) {
-        $price_single_net = $price * ($addition+100)/100;
-    } else {
-        $price_single_net = $price;
-    }
-
-    $price_single_net = round($price_single_net,8);
+    $price_single_net = round($price,8);
     $price_sum_net = $price_single_net*$amount;
 
     $price_single_gross = $price_single_net * ($tax+100)/100;
