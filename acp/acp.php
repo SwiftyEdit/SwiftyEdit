@@ -126,7 +126,7 @@ $db_index = new Medoo([
 
 require 'core/access.php';
 include 'versions.php';
-//include '../lib/parsedown/Parsedown.php';
+
 
 
 if (!isset($_SESSION['editor_class'])) {
@@ -283,7 +283,7 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <script src="theme/js/backend.min.js?v=2023-04-05"></script>
+    <script src="theme/js/backend.min.js?v=2023-04-15"></script>
     <script src="theme/js/tinymce/tinymce.min.js"></script>
     <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
     <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>

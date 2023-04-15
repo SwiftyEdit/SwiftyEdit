@@ -314,7 +314,7 @@
     };
     var patchJqHtml = function (origFn) {
       return function (htmlOrNodeOrProducer) {
-        if (htmlOrNodeOrProducer === undefined) {
+        if (arguments.length === 0) {
           if (this.length >= 1) {
             return withTinymceInstance(this[0], function (ed) {
               return ed.getContent();
@@ -333,7 +333,7 @@
                   removeEditors($(htmlOrNode));
                 }
                 var elem = document.createElement('div');
-                origFn.call($(elem), htmlOrNode);
+                origFn.call($(elem), htmlOrNode !== null && htmlOrNode !== void 0 ? htmlOrNode : '');
                 return elem.innerHTML;
               }();
               ed.setContent(html);
@@ -343,7 +343,7 @@
                 var newValue = htmlOrNodeOrProducer.call(el, i, origValue);
                 origFn.call($(el), newValue);
               } else {
-                origFn.call($(elm), htmlOrNodeOrProducer);
+                origFn.call($(elm), htmlOrNodeOrProducer !== null && htmlOrNodeOrProducer !== void 0 ? htmlOrNodeOrProducer : '');
               }
             });
           });
@@ -353,7 +353,7 @@
     };
     var patchJqText = function (origFn) {
       return function (valueOrProducer) {
-        if (valueOrProducer === undefined) {
+        if (arguments.length === 0) {
           var out_1 = '';
           this.each(function (_i, el) {
             out_1 += withTinymceInstance(el, function (ed) {
@@ -377,7 +377,7 @@
                 var newValue = valueOrProducer.call(el, i, origValue);
                 origFn.call($(el), newValue);
               } else {
-                origFn.call($(elm), valueOrProducer);
+                origFn.call($(elm), valueOrProducer !== null && valueOrProducer !== void 0 ? valueOrProducer : '');
               }
             });
           });
@@ -387,7 +387,7 @@
     };
     var patchJqVal = function (origFn) {
       return function (valueOrProducer) {
-        if (valueOrProducer === undefined) {
+        if (arguments.length === 0) {
           if (this.length >= 1) {
             return withTinymceInstance(this[0], function (ed) {
               return ed.getContent();
@@ -399,7 +399,7 @@
         } else {
           this.each(function (i, el) {
             withTinymceInstance(el, function (ed) {
-              var val = isFunction(valueOrProducer) ? valueOrProducer.call(el, i, ed.getContent()) : valueOrProducer;
+              var val = isFunction(valueOrProducer) ? valueOrProducer.call(el, i, ed.getContent()) : valueOrProducer !== null && valueOrProducer !== void 0 ? valueOrProducer : '';
               var html = isArray(val) ? val.join('') : ''.concat(val);
               ed.setContent(html);
             }, function (elm) {
@@ -408,7 +408,7 @@
                 var newValue = valueOrProducer.call(el, i, origValue !== null && origValue !== void 0 ? origValue : '');
                 origFn.call($(el), newValue);
               } else {
-                origFn.call($(elm), valueOrProducer);
+                origFn.call($(elm), valueOrProducer !== null && valueOrProducer !== void 0 ? valueOrProducer : '');
               }
             });
           });
@@ -439,7 +439,10 @@
     var getEditors = function (tinymce, self) {
       var out = [];
       self.each(function (i, ele) {
-        out.push(tinymce.get(ele.id));
+        var ed = tinymce.get(ele.id);
+        if (ed != null) {
+          out.push(ed);
+        }
       });
       return out;
     };
