@@ -311,6 +311,37 @@
 
                             <div class="row">
                                 <div class="col-md-4">
+                                    <div class="">
+                                        <label>{label_product_price} {label_product_net}</label>
+                                        <input class='form-control' id="price" name="product_price_net" type="text"
+                                               value="{product_price_net}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="">
+                                        <label>{label_product_tax}</label>
+                                        {select_tax}
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="">
+                                        <label>{label_product_price} {label_product_gross} <small>({label_product_net}
+                                                <span id="calculated_net"></span>)</small></label>
+                                        <input class='form-control' id="price_total" name="product_price_gross"
+                                               type="text" value="{product_price_gross}">
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{label_shipping}</label>
                                         {select_shipping_mode}
@@ -332,47 +363,12 @@
 
                             <hr>
 
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="">
-                                        <label>{label_product_price} {label_product_net}</label>
-                                        <input class='form-control' id="price" name="product_price_net" type="text"
-                                               value="{product_price_net}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <label>{label_product_price_addition}</label>
-                                    <div class="input-group">
-                                        <input class='form-control' id="price_addition" name="product_price_addition"
-                                               type="text" value="{product_price_addition}">
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="">
-                                        <label>{label_product_tax}</label>
-                                        {select_tax}
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-4">
-                                    <div class="">
-                                        <label>{label_product_price} {label_product_gross} <small>({label_product_net}
-                                                <span id="calculated_net"></span>)</small></label>
-                                        <input class='form-control' id="price_total" name="product_price_gross"
-                                               type="text" value="{product_price_gross}">
-                                    </div>
+                            <div class="mt-4">
+                                <div class="form-group">
+                                    <label>{label_product_snippet_price}</label>
+                                    {snippet_select_pricelist}
                                 </div>
                             </div>
-
-                            <hr>
-
-                            <fieldset class="mt-4">
-                                <legend>{label_product_snippet_price}</legend>
-                                {snippet_select_pricelist}
-                            </fieldset>
 
 
                         </div> <!-- #prices_delivery -->

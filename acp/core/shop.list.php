@@ -350,11 +350,6 @@ if($cnt_filter_posts > 0) {
                 $tax = $se_prefs['prefs_posts_products_tax_alt2'];
             }
 
-            $post_product_price_addition = $get_products[$i]['product_price_addition'];
-            if($post_product_price_addition == '') {
-                $post_product_price_addition = 0;
-            }
-
             if(empty($get_products[$i]['product_price_net'])) {
                 $get_products[$i]['product_price_net'] = 0;
             }
@@ -362,16 +357,15 @@ if($cnt_filter_posts > 0) {
             $post_price_net = str_replace('.', '', $get_products[$i]['product_price_net']);
             $post_price_net = str_replace(',', '.', $post_price_net);
 
-            $post_price_net_calculated = $post_price_net*($post_product_price_addition+100)/100;
-            $post_price_gross = $post_price_net_calculated*($tax+100)/100;
+            $post_price_gross = $post_price_net*($tax+100)/100;
 
-            $post_price_net_calculated = se_post_print_currency($post_price_net_calculated);
-            $post_price_gross = se_post_print_currency($post_price_gross);
+            $post_price_net_format = se_post_print_currency($post_price_net);
+            $post_price_gross_format = se_post_print_currency($post_price_gross);
 
             $show_items_price = '<div class="card p-2 text-nowrap">';
-            $show_items_price .= '<span class="small">'.$get_products[$i]['product_currency'].' '.$post_price_net_calculated . '</span>';
-            $show_items_price .= '<span class="small">incl. '.$post_product_price_addition . '%'. ' + '.$tax.'%</span>';
-            $show_items_price .= '<span class="text-success">'.$get_products[$i]['product_currency'].' '.$post_price_gross.'</span>';
+            $show_items_price .= '<span class="small">'.$get_products[$i]['product_currency'].' '.$post_price_net_format . '</span>';
+            $show_items_price .= '<span class="small"> + '.$tax.'%</span>';
+            $show_items_price .= '<span class="text-success">'.$get_products[$i]['product_currency'].' '.$post_price_gross_format.'</span>';
             $show_items_price .= '</div>';
 
 

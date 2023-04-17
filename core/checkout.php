@@ -135,13 +135,8 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	}
 	
 	$cart_item[$i]['tax'] = $tax;
-	
-	$post_product_price_addition = $this_item['product_price_addition'];
-	if($post_product_price_addition == '') {
-		$post_product_price_addition = 0;
-	}
 
-	$post_prices = se_posts_calc_price($this_item['product_price_net'],$post_product_price_addition,$tax,$cart_item[$i]['amount']);
+	$post_prices = se_posts_calc_price($this_item['product_price_net'],$tax,$cart_item[$i]['amount']);
     $cart_item[$i]['price_net_single_format'] = $post_prices['net_single'];
     $cart_item[$i]['price_gross_single_format'] = $post_prices['gross_single'];
     $cart_item[$i]['price_net_format'] = $post_prices['net'];

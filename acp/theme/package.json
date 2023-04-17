@@ -3,13 +3,13 @@
   "name": "SwiftyEditBackendTheme",
   "private": true,
   "dependencies": {
-    "@eonasdan/tempus-dominus": "^6.2.10",
-    "@popperjs/core": "^2.11.6",
-    "@tinymce/tinymce-jquery": "^2.0.0",
+    "@eonasdan/tempus-dominus": "^6.4.4",
+    "@popperjs/core": "^2.11.7",
+    "@tinymce/tinymce-jquery": "^2.1.0",
     "accounting": "^0.4.1",
-    "ace-builds": "^1.15.0",
+    "ace-builds": "^1.17.0",
     "bootstrap": "^5.2.3",
-    "bootstrap-icons": "^1.10.3",
+    "bootstrap-icons": "^1.10.4",
     "bootstrap-tagsinput-2021": "^0.8.6",
     "clipboard": "^2.0.11",
     "dropzone": "^5.9.3",
@@ -18,7 +18,7 @@
     "jquery.dirtyforms": "^2.0.0",
     "moment": "^2.29.4",
     "tags-input": "^1.1.1",
-    "tinymce": "^6.3.1"
+    "tinymce": "^6.4.1"
   },
   "optionalDependencies": {},
   "license": "UNLICENSED",

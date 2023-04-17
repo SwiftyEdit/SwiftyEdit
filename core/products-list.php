@@ -234,12 +234,7 @@ foreach ($get_products as $k => $post) {
         $tax = $se_prefs['prefs_posts_products_tax_alt2'];
     }
 
-    $post_product_price_addition = $get_products[$k]['product_price_addition'];
-    if ($post_product_price_addition == '') {
-        $post_product_price_addition = 0;
-    }
-
-    $post_prices = se_posts_calc_price($get_products[$k]['product_price_net'], $post_product_price_addition, $tax);
+    $post_prices = se_posts_calc_price($get_products[$k]['product_price_net'], $tax);
     $post_price_net = $post_prices['net'];
     $post_price_gross = $post_prices['gross'];
 

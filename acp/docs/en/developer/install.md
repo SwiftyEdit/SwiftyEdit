@@ -6,9 +6,7 @@ group: developer
 priority: 100
 ---
 
-# Technische Voraussetzungen
-
-Technical requirements
+# Technical requirements
 
 * PHP 7.3+ (8.1+ recommended)
 * enabled PDO/SQLite module - PDO/SQLite is usually enabled by default. If not you have to ask your web host.

@@ -5,6 +5,13 @@ $enable-dark-mode: true;
 // Bootstrap Core
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
+@if $enable-dark-mode {
+  @include color-mode(dark, true) {
+    --#{$prefix}primary: #{$primary-dark};
+    --#{$prefix}primary-rgb: #{to-rgb($primary-dark)};
+  }
+}
+
 // Bootstrap Icons
 @import '../../css/fonts/bootstrap-icons/font/bootstrap-icons';
 
@@ -17,6 +24,7 @@ $enable-dark-mode: true;
 @import 'helpers';
 @import 'navbar';
 @import 'comments';
+
 
 [data-bs-theme=dark] #pageHeader {
   background: $header-bg-dark;
