@@ -12,23 +12,24 @@
 
 .btn-default {
 	@extend .btn-primary;
-	background-color: $btn_se_background;
-	color: $btn_se_color;
-	border-color: $btn_se_background;
+	background: var(--bs-btn-default-bg);
+	color: var(--bs-btn-default-color);
+	border-color: var(--bs-btn-default-bg);
 
 	&:hover {
-		background-color: $btn_se_background_hover;
-		border-color: $btn_se_background_hover;
+		color: var(--bs-btn-default-color-active);
+		background: var(--bs-btn-default-bg-hover);
+		border-color: var(--bs-btn-default-bg);
 	}
 
 	&.active {
-		color: $btn_se_color_active;
-		background-color: $btn_se_background_active;
-		border-color: $btn_se_background;
+		color: var(--bs-btn-default-color-active);
+		background: var(--bs-btn-default-bg-active);
+		border-color: var(--bs-btn-default-bg);
 	}
 	&.disabled {
 		background-color: $btn_se_background_disabled;
-		border-color: darken($btn_se_background_disabled,5);
+		border-color: var(--bs-btn-default-bg);
 	}
 }
 

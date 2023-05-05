@@ -190,7 +190,7 @@ if($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == 'checked') 
 	$_SESSION['checked_ghost'] = "checked";
 }
 
-$set_status_filter = "page_status IS NOT NULL ";
+$set_status_filter = "page_status IS NULL ";
 
 $dot_draft = $icon['circle_alt'];
 $dot_private = $icon['circle_alt'];
@@ -269,7 +269,7 @@ $set_keyword_filter = substr("$set_keyword_filter", 0, -4); // cut the last ' AN
 
 
 
-$filter_string = "WHERE page_status IS NOT NULL"; // -> result = match all pages
+$filter_string = "WHERE page_status IS NOT NULL "; // -> result = match all pages
 
 if($set_status_filter != "") {
 	$filter_string .= " AND ($set_status_filter) ";
@@ -341,11 +341,11 @@ if($subinc == "pages.list" OR $subinc == "pages.snippets") {
 	$nav_btn_group .= '<div class="card-header p-1 px-2">Status '.se_print_docs_link('tooltips/tip-page-status.md').'</div>';
 	
 	$nav_btn_group .= '<div class="list-group list-group-flush">';
-	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPuplic" class="list-group-item list-group-item-ghost p-1 px-2 text-public '.$btn_status_public.'">'.$dot_public.' '.$lang['f_page_status_puplic'].' ('.$count_pages['public'].')</a>';
-	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusGhost" class="list-group-item list-group-item-ghost p-1 px-2  text-ghost '.$btn_status_ghost.'">'.$dot_ghost.' '.$lang['f_page_status_ghost'].' ('.$count_pages['ghost'].')</a>';
-	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPrivate" class="list-group-item list-group-item-ghost p-1 px-2  text-private '.$btn_status_private.'">'.$dot_private.' '.$lang['f_page_status_private'].' ('.$count_pages['private'].')</a>';
-	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusDraft" class="list-group-item list-group-item-ghost p-1 px-2  text-draft '.$btn_status_draft.'">'.$dot_draft.' '.$lang['f_page_status_draft'].' ('.$count_pages['draft'].')</a>';
-	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusRedirect" class="list-group-item list-group-item-ghost p-1 px-2  text-redirect '.$btn_status_redirect.'">'.$dot_redirect.' '.$lang['btn_redirect'].' ('.$count_pages['redirect'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPuplic" class="list-group-item p-1 px-2 '.$btn_status_public.'">'.$dot_public.' '.$lang['f_page_status_puplic'].' ('.$count_pages['public'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusGhost" class="list-group-item p-1 px-2 '.$btn_status_ghost.'">'.$dot_ghost.' '.$lang['f_page_status_ghost'].' ('.$count_pages['ghost'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusPrivate" class="list-group-item p-1 px-2 '.$btn_status_private.'">'.$dot_private.' '.$lang['f_page_status_private'].' ('.$count_pages['private'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusDraft" class="list-group-item p-1 px-2 '.$btn_status_draft.'">'.$dot_draft.' '.$lang['f_page_status_draft'].' ('.$count_pages['draft'].')</a>';
+	$nav_btn_group .= '<a href="?tn=pages&sub=pages-list&switch=statusRedirect" class="list-group-item p-1 px-2  '.$btn_status_redirect.'">'.$dot_redirect.' '.$lang['btn_redirect'].' ('.$count_pages['redirect'].')</a>';
 	$nav_btn_group .= '</div>';
 	$nav_btn_group .= '</div>'; // card
 	

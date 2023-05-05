@@ -136,7 +136,7 @@ function randpsw($length=8) {
 function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 
 	global $db_user;
-	unset($result);
+    $result  = array();
 
 		
 	$login_hash  = md5($psw.$user);

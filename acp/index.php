@@ -82,34 +82,38 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark" class="h-100">
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Login <?php echo $_SERVER['SERVER_NAME']; ?></title>
 		<meta name="robots" content="noindex">
-		
-		<link rel="stylesheet" href="theme/css/styles_light_mono.css" type="text/css" media="screen, projection">
-		<style type="text/css">
-			body {
-				background: #ddd;
+		<link rel="stylesheet" href="theme/css/swiftyedit.css" type="text/css" media="screen, projection">
+		<style>
+			.form-center {
+				max-width: 475px;
+				padding: 25px;
+				background: var(--bs-widget-bg-300);
 			}
-			
-			#center {
-				position: absolute;
-				top:50%;
-				left: 50%;
-				width: 500px;
-				height: 250px;
-				margin-top: -125px;
-				margin-left: -250px;
+			.icon {
+				text-align: left;
+				margin-top: -65px;
+			}
+			.icon img {
+				width: 64px;
+				height: auto;
+				margin: 0 auto;
+				filter: drop-shadow(1px 1px 5px rgb(0,0,0,.4));
 			}
 		</style>
 	</head>
-	<body>
-		<div id="center">
-			<form action="index.php" method="post" class="form-horizontal">
-				<fieldset>
-					<legend>Login:</legend>	
+	<body class="d-flex h-100">
+		<div class="form-center w-100 m-auto border-info border-2 rounded shadow">
+			<div class="icon">
+				<img src="images/swiftyedit_icon.svg" class="img-fluid">
+			</div>
+
+			<form action="index.php" method="post" class="">
 					<div class="row mb-2">
 						<label class="col-sm-3 col-form-label"><?php echo $lang['f_user_nick']; ?></label>
 						<div class="col-sm-9">
@@ -133,10 +137,9 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 				  </div>
 					<div class="row">
 						<div class="offset-sm-3 col-sm-9">
-							<input type="submit" class="btn btn-success w-100" name="check" value="Login">
+							<input type="submit" class="btn btn-primary w-100" name="check" value="Login">
 						</div>
 					</div>
-					</fieldset>
 			</form>
 		</div>
 	</body>

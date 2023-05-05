@@ -20,6 +20,10 @@ div#page-sidebar {
 	overflow: hidden;
 	overflow-y: auto;
 
+	a {
+		text-decoration: none;
+	}
+
 	&:hover {
 		transition-property: width;
 		transition-duration: .35s;
@@ -193,9 +197,9 @@ a.sidebar-sub:hover {
 
 
 a.sidebar-sub-active {
-	color: desaturate(lighten($brand_primary,15),35);
+	color: desaturate(lighten($primary,15),35);
 	i {
-		color: $brand_primary;
+		color: $primary;
 	}
 }
 

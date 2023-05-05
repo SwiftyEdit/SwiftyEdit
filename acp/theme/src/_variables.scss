@@ -1,0 +1,80 @@
+/**!
+ * SwiftyEdit Backend Theme
+ * light mode
+ */
+
+
+
+$primary: #896e9b;
+$secondary: #978ba2;
+$success: #9fb633;
+$info:  #64C9E0;
+$warning: #FF9407;
+$danger: #9B1A26;
+
+$lighten: mix(#ffffff,$primary,75%);
+$darken: mix(#000000,$primary,75%);
+
+$page_header_bg: desaturate($lighten,5);
+$widget_background: mix($lighten,$primary,80%);
+$widget_border_color: darken($widget_background,15);
+
+$widget-bg-100: mix($lighten,$widget_background,40%);
+$widget-bg-200: mix($lighten,$widget_background,30%);
+$widget-bg-300: mix($lighten,$widget_background,20%);
+$widget-bg-400: mix($lighten,$widget_background,10%);
+$widget-bg-500: $widget_background;
+$widget-bg-600: mix($darken,$widget_background,10%);
+$widget-bg-700: mix($darken,$widget_background,20%);
+$widget-bg-800: mix($darken,$widget_background,30%);
+$widget-bg-900: mix($darken,$widget_background,40%);
+
+$body-color: #252525;
+$body-bg: lighten($page_header_bg,3) !default;
+$border-color: $widget_border_color !default;
+
+$headings-color: $primary;
+
+
+$sidebar_background: #2A2030;
+$sidebar_link_background: #151515;
+$sidebar_color: #eee;
+$sidebar_active_color: lighten($secondary,5);
+$sidebar_help_background: #111;
+$sidebar_help_color: #ccc;
+
+$section_color_contents: $secondary;
+$section_color_dashboard: #aaaaaa;
+$section_color_blog: #85d7f5;
+$section_color_shop: #b6e08b;
+$section_color_events: #f3be5b;
+$section_color_addons: #95efcc;
+$section_color_reactions: #bede97;
+$section_color_uploads: #c9b2f5;
+$section_color_user: #e3b981;
+
+$btn_se_background: #eee;
+$btn_se_background_active: $primary;
+$btn_se_background_disabled: desaturate($primary,15);
+$btn_se_background_hover: darken($primary,15);
+$btn_se_color: #333;
+$btn_se_color_active: #eee;
+
+/* pages - status colors */
+$color_public: #2ca62c;
+$color_ghost: #5c7156;
+$color_private: #d9534f;
+$color_draft: #989898;
+$color_redirect: #078dfe;
+
+$status-public-color: #2ca62c;
+$status-ghost-color: #5c7156;
+$status-private-color: #d9534f;
+$status-draft-color: #989898;
+$status-redirect-color: #078dfe;
+
+/* user - status colors */
+$color_verified: #5cb85c;
+$color_queue: $color_ghost;
+$color_banned: #f0ad4e;
+$color_deleted: #d9534f;
