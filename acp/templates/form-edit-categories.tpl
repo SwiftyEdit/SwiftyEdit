@@ -24,7 +24,7 @@
             <div class="col-3">
                 <div class="mb-3">
                     <label>{label_priority}</label>
-                    <input type="numer" class="form-control" name="cat_priority" value="{val_cat_priority}">
+                    <input type="numer" class="form-control" name="cat_sort" value="{val_cat_priority}">
                 </div>
                 <div class="mb-3">
                     <label>{label_language}</label>

@@ -130,7 +130,7 @@ if($show_form == true)  {
         echo '<tr>';
         echo '<td width="50">' . $show_thumb . '</td>';
         echo '<td>';
-        echo '<h5 class="card-title">' . $flag . ' ' . $cats['cat_name'] . '</h5>';
+        echo '<h5 class="card-title">' . $flag . ' <small>' . $cats['cat_sort'] . '</small> | ' . $cats['cat_name'] . '</h5>';
         echo $cats['cat_description'];
         echo '</td>';
         echo '<td class="text-end">';
