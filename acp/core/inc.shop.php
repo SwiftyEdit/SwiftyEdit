@@ -18,6 +18,10 @@ switch ($sub) {
         $subinc = "shop.features";
         break;
 
+    case "shop-filter":
+        $subinc = "shop.filter";
+        break;
+
     case "shop-orders":
         $subinc = "shop.orders";
         break;

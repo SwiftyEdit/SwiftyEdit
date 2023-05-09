@@ -128,6 +128,7 @@ $sql_categories_table = se_generate_sql_query("se_categories.php",$db_type);
 $sql_addons_table = se_generate_sql_query("se_addons.php",$db_type);
 $sql_posts_table = se_generate_sql_query("se_posts.php",$db_type);
 $sql_products_table = se_generate_sql_query("se_products.php",$db_type);
+$sql_filter_table = se_generate_sql_query("se_filter.php",$db_type);
 $sql_events_table = se_generate_sql_query("se_events.php",$db_type);
 $sql_log_table = se_generate_sql_query("se_log.php",$db_type);
 $sql_mailbox_table = se_generate_sql_query("se_mailbox.php",$db_type);
@@ -200,6 +201,7 @@ $dbh_content->query($sql_categories_table);
 $dbh_content->query($sql_addons_table);
 $dbh_content->query($sql_log_table);
 $dbh_content->query($sql_orders_table);
+$dbh_content->query($sql_filter_table);
 
 /* insert two example pages */
 

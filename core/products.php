@@ -18,10 +18,32 @@ if($_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 
+
+if(!isset($_SESSION['custom_filter'])) {
+    $_SESSION['custom_filter'] = array();
+}
+
+if(isset($_REQUEST['set_filter'])) {
+    $set_filter = (int) $_REQUEST['set_filter'];
+
+    $key = array_search($set_filter,$_SESSION['custom_filter']);
+    if($key === false) {
+        array_push($_SESSION['custom_filter'],"$set_filter");
+    } else {
+        unset($_SESSION['custom_filter'][$key]);
+    }
+
+
+}
+
+
+$custom_filter = $_SESSION['custom_filter'];
+
 $products_filter['languages'] = $page_contents['page_language'];
 $products_filter['types'] = $page_contents['page_posts_types'];
 $products_filter['status'] = $str_status;
 $products_filter['categories'] = $page_contents['page_posts_categories'];
+$products_filter['custom_filter'] = $custom_filter;
 
 if(isset($_POST['sort_by'])) {
     if($_POST['sort_by'] == 'ts') {
@@ -57,6 +79,9 @@ if(substr("$mod_slug", -5) == '.html') {
     $get_product_id = (int) basename(end(explode("-", $mod_slug)));
     $display_mode = 'show_product';
 }
+
+$product_filter = se_get_product_filter($languagePack);
+
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);

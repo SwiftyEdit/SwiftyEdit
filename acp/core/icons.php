@@ -138,6 +138,8 @@ $icon = [
     "trash" => '<i class="bi bi-trash"></i>',
     "trash_alt" => '<i class="bi bi-trash"></i>',
 
+    "ui_checks" => '<i class="bi bi-ui-checks"></i>',
+    "ui_radios" => '<i class="bi bi-ui-radios"></i>',
     "upload" => '<i class="bi bi-upload"></i>',
     "user" => '<i class="bi bi-person"></i>',
     "user_check" => '<i class="bi bi-person-check"></i>',

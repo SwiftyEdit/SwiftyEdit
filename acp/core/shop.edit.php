@@ -78,6 +78,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
     $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
     $product_accessories = json_encode($_POST['product_accessories'],JSON_FORCE_OBJECT);
     $product_related = json_encode($_POST['product_related'],JSON_FORCE_OBJECT);
+    $filter = json_encode($_POST['product_filter'],JSON_FORCE_OBJECT);
 
     if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
         $file_attachment_user = 2;
@@ -495,6 +496,32 @@ $select_shipping_category .= '<option value="2" '.$sel_shipping_cat_2.'>'.$lang[
 $select_shipping_category .= '<option value="3" '.$sel_shipping_cat_3.'>'.$lang['label_shipping_costs_cat3'].'</option>';
 $select_shipping_category .= '</select>';
 
+/* product filter */
+
+$all_filters = se_get_product_filter_groups('all');
+$get_product_filter = json_decode($product_data['filter'],true);
+
+$filter_list = '';
+foreach($all_filters as $k => $v) {
+    $filter_list .= '<h5>'.$v['filter_title'].'</h5>';
+    $get_filter_items = se_get_product_filter_values($v['filter_id']);
+    foreach($get_filter_items as $filter_item) {
+        $filter_id = $filter_item['filter_id'];
+
+        $checked_filter = '';
+        if(is_array($get_product_filter)) {
+            if(array_search("$filter_id", $get_product_filter) !== false) {
+                $checked_filter = 'checked';
+            }
+        }
+
+        $filter_list .= '<div class="form-check form-check-inline pe-3 border-end">';
+        $filter_list .= '<input class="form-check-input" id="filter_'.$filter_id.'" type="checkbox" name="product_filter[]" value="'.$filter_id.'" '.$checked_filter.'>';
+        $filter_list .= '<label class="form-check-label" for="filter_'.$filter_id.'">'.$filter_item['filter_title'].'</label>';
+        $filter_list .= '</div>';
+    }
+}
+
 
 /* features */
 $all_posts_features = se_get_posts_features();
@@ -867,6 +894,8 @@ $form_tpl = str_replace('{select_status}', $select_status, $form_tpl);
 $form_tpl = str_replace('{select_comments}', $select_comments, $form_tpl);
 $form_tpl = str_replace('{select_votings}', $select_votings, $form_tpl);
 
+
+$form_tpl = str_replace('{list_products_filter}', $filter_list, $form_tpl);
 $form_tpl = str_replace('{variants_list}', $variants_list, $form_tpl);
 $form_tpl = str_replace('{product_variant_title}', $product_data['product_variant_title'], $form_tpl);
 $form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);

@@ -56,6 +56,7 @@ $cols = array(
     "images" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "tags" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "categories" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "filter" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "author" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "status" => 'INTEGER(12)',
     "rss" => 'INTEGER(12)',

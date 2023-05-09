@@ -20,6 +20,7 @@ $lang += [
     'nav_shop' => 'Shop',
     'nav_products' => 'Produkte',
     'nav_features' => 'Merkmale',
+    'nav_filter' => 'Filter',
     'nav_orders' => 'Bestellungen',
     'nav_payment_shipping' => 'Zahlungen & Versand',
     'nav_delivery_areas' => 'Liefergebiete',

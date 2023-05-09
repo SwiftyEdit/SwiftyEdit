@@ -62,7 +62,7 @@ if($modus == "update") {
 	<meta charset="utf-8">
 	<title><?php echo"$modus"; ?> SwiftyEdit | Content Management System</title>
 	<script src="../styles/default/js/main.js"></script>
-	<link media="screen" rel="stylesheet" type="text/css" href="../acp/theme/css/styles_dark_mono.css" />
+	<link media="screen" rel="stylesheet" type="text/css" href="../acp/theme/css/swiftyedit.css" />
 	<link media="screen" rel="stylesheet" type="text/css" href="css/styles.css?v=20" />
 </head>
 <body>

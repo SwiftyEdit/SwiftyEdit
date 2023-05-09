@@ -29,6 +29,7 @@
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#links">{post_tab_links}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter">Filter</a></li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -497,6 +498,10 @@
                                     <input class='form-control' name="rss_url" type="text" value="{rss_url}">
                                 </div>
                             </fieldset>
+                        </div>
+                        <div class="tab-pane fade" id="filter">
+                            <h3>Filter</h3>
+                            {list_products_filter}
                         </div>
 
                     </div>
