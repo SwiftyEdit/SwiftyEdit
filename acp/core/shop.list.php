@@ -24,6 +24,32 @@ if(isset($_POST['priority'])) {
     ]);
 }
 
+/* remove fixed */
+
+if(is_numeric($_POST['rfixed'])) {
+
+    $change_id = (int) $_POST['rfixed'];
+    $db_posts->update("se_products", [
+        "fixed" => "2"
+    ],[
+        "id" => $change_id
+    ]);
+}
+
+/* set fixed */
+
+if(is_numeric($_POST['sfixed'])) {
+
+    $change_id = (int) $_POST['sfixed'];
+    $db_posts->update("se_products", [
+        "fixed" => "1"
+    ],[
+        "id" => $change_id
+    ]);
+
+}
+
+
 // defaults
 $posts_start = 0;
 $posts_limit = 25;
@@ -228,8 +254,8 @@ if($cnt_filter_posts > 0) {
             }
         }
 
-        $icon_fixed_form = '<form action="?tn=posts" method="POST" class="form-inline">';
-        if($get_products[$i]['post_fixed'] == '1') {
+        $icon_fixed_form = '<form action="?tn=shop" method="POST" class="form-inline">';
+        if($get_products[$i]['fixed'] == '1') {
             $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="rfixed" value="'.$get_products[$i]['id'].'">'.$icon['star'].'</button>';
         } else {
             $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="sfixed" value="'.$get_products[$i]['id'].'">'.$icon['star_outline'].'</button>';
