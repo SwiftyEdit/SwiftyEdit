@@ -515,6 +515,13 @@ $lang['label_status_shipping'] = 'Versand';
 $lang['status_shipping_prepared'] = 'Vorbereitet';
 $lang['status_shipping_shipped'] = 'Versendet';
 
+$lang['label_default_sorting'] = 'Standard-Sortierung';
+$lang['set_sorting_default'] = 'Standard';
+$lang['set_sorting_topseller'] = 'Topseller';
+$lang['set_sorting_name'] = 'Name';
+$lang['set_sorting_price_asc'] = 'Preis - niedrigster zuerst';
+$lang['set_sorting_price_desc'] = 'Preis - höchster zuerst';
+
 $lang['btn_send_mail_to_admin'] = 'Per E-Mail an mich senden';
 
 /* delivery areas */

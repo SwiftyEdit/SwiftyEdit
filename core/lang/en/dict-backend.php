@@ -509,6 +509,13 @@ $lang['label_status_shipping'] = 'Shipping';
 $lang['status_shipping_prepared'] = 'Prepared';
 $lang['status_shipping_shipped'] = 'Shipped';
 
+$lang['label_default_sorting'] = 'Default Sorting';
+$lang['set_sorting_default'] = 'Default';
+$lang['set_sorting_topseller'] = 'Topseller';
+$lang['set_sorting_name'] = 'Name';
+$lang['set_sorting_price_asc'] = 'Price - ascending';
+$lang['set_sorting_price_desc'] = 'Price - descending';
+
 $lang['nav_orders'] = 'Orders';
 $lang['btn_send_mail_to_admin'] = 'Send me a copy';
 

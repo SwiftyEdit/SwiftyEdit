@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * SwiftyEdit - shop and products main file
+ *
+ * global variables
+ * @var $db_content object database
+ * @var $smarty
+ * @var $languagePack
+ * @var $se_prefs array
+ * @var $page_contents array
+ * @var $swifty_slug string
+ * @var $mod_slug
+ *
+ */
+
 $time_string_now = time();
 $display_mode = 'list_products';
 
@@ -59,6 +73,22 @@ if(isset($_POST['sort_by'])) {
     }
 }
 
+/* get the default sorting */
+
+if(!isset($_SESSION['products_sort_by'])) {
+    if($se_prefs['prefs_product_sorting'] == 1) {
+        $_SESSION['products_sort_by'] = '';
+    } else if($se_prefs['prefs_product_sorting'] == 2) {
+        $_SESSION['products_sort_by'] = 'ts';
+    } else if($se_prefs['prefs_product_sorting'] == 3) {
+        $_SESSION['products_sort_by'] = 'name';
+    } else if($se_prefs['prefs_product_sorting'] == 4) {
+        $_SESSION['products_sort_by'] = 'pasc';
+    } else if($se_prefs['prefs_product_sorting'] == 5) {
+        $_SESSION['products_sort_by'] = 'pdesc';
+    }
+}
+
 if($_SESSION['products_sort_by'] == 'name') {
     $smarty->assign('class_sort_name', "active");
 } else if($_SESSION['products_sort_by'] == 'ts') {
@@ -68,8 +98,7 @@ if($_SESSION['products_sort_by'] == 'name') {
 } else if($_SESSION['products_sort_by'] == 'pdesc') {
     $smarty->assign('class_sort_price_desc', "active");
 } else {
-    $_SESSION['products_sort_by'] = 'name';
-    $smarty->assign('class_sort_name', "active");
+    $_SESSION['products_sort_by'] = '';
 }
 
 $products_filter['sort_by'] = $_SESSION['products_sort_by'];
