@@ -5,7 +5,7 @@ $display_mode = 'list_products';
 
 /* defaults */
 $products_start = 0;
-$products_limit = (int) $se_prefs['prefs_posts_entries_per_page'];
+$products_limit = (int) $se_prefs['prefs_products_per_page'];
 if($products_limit == '') {
     $products_limit = 10;
 }

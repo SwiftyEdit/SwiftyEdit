@@ -30,6 +30,11 @@ if($prefs_posts_order_mode == 1 OR $prefs_posts_order_mode == '') {
 
 echo '<form action="?tn=system&sub=shop&file=general" method="POST">';
 
+echo '<div class="mb-3">';
+echo '<label>' . $lang['label_entries_per_page'] . '</label>';
+echo '<input type="text" class="form-control" name="prefs_products_per_page" value="'.$prefs_products_per_page.'">';
+echo '</div>';
+
 echo '<h5 class="heading-line">' . $lang['label_carts'] . '</h5>';
 
 echo '<div class="mb-3">';
