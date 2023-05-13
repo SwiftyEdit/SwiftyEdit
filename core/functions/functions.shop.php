@@ -85,6 +85,12 @@ function se_get_products($start,$limit,$filter) {
     /* custom product filter - stored in $_SESSION['custom_filter'] */
     $nbr_of_filter = is_array($_SESSION['custom_filter']) ? count($_SESSION['custom_filter']) : 0;
 
+    if(SE_SECTION == 'backend') {
+        // reset the custom filter
+        // we do not use the filter in the backend
+        $nbr_of_filter = 0;
+    }
+
     if ($nbr_of_filter > 0) {
         $sql_product_filter = "filter IS NULL OR ";
         foreach ($_SESSION['custom_filter'] as $custom_filter) {
