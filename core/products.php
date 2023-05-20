@@ -37,19 +37,29 @@ if(!isset($_SESSION['custom_filter'])) {
     $_SESSION['custom_filter'] = array();
 }
 
-if(isset($_REQUEST['set_filter'])) {
-    $set_filter = (int) $_REQUEST['set_filter'];
-
-    $key = array_search($set_filter,$_SESSION['custom_filter']);
-    if($key === false) {
-        array_push($_SESSION['custom_filter'],"$set_filter");
-    } else {
-        unset($_SESSION['custom_filter'][$key]);
+/* add filter to SESSION['custom_filter'] */
+if(isset($_REQUEST['add_filter'])) {
+    $get_filters = explode("-",$_REQUEST['add_filter']);
+    foreach($get_filters as $filter) {
+        $set_filter = (int) $filter;
+        $key = array_search($set_filter,$_SESSION['custom_filter']);
+        if($key === false) {
+            array_push($_SESSION['custom_filter'],"$set_filter");
+        }
     }
-
-
 }
 
+/* remove filter to SESSION['custom_filter'] */
+if(isset($_REQUEST['remove_filter'])) {
+    $get_filters = explode("-",$_REQUEST['remove_filter']);
+    foreach($get_filters as $filter) {
+        $remove_filter = (int) $filter;
+        $key = array_search($remove_filter,$_SESSION['custom_filter']);
+        if($key !== false) {
+            unset($_SESSION['custom_filter'][$key]);
+        }
+    }
+}
 
 $custom_filter = $_SESSION['custom_filter'];
 
@@ -103,9 +113,10 @@ if($_SESSION['products_sort_by'] == 'name') {
 
 $products_filter['sort_by'] = $_SESSION['products_sort_by'];
 
-
+/* get the product id from url */
 if(substr("$mod_slug", -5) == '.html') {
-    $get_product_id = (int) basename(end(explode("-", $mod_slug)));
+    $file_parts = explode("-", $mod_slug);
+    $get_product_id = (int) basename(end($file_parts));
     $display_mode = 'show_product';
 }
 
