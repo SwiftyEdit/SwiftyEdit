@@ -86,10 +86,10 @@ $cnt_all_indexed_entries = se_get_nbr_of_indexed_pages();
 $indexed_entries = se_get_indexed_pages();
 $cnt_get_indexed_entries = count($indexed_entries);
 
-echo '<fieldset>';
-echo '<legend>' . $lang['page_index'] . ' ('.$cnt_all_indexed_entries.')</legend>';
+echo '<div class="card">';
+echo '<div class="card-header">' . $lang['page_index'] . ' ('.$cnt_all_indexed_entries.')</div>';
 
-echo '<div class="well well-sm">';
+echo '<div class="p-3">';
 echo '<form action="?tn=pages&sub=pages-index" method="POST">';
 echo '<div class="btn-group" role="group">';
 echo '<button class="btn btn-default '.$active_btn10.'" name="limit_index_items" value="10">10</button>';
@@ -371,7 +371,7 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 
 echo '</div>';
 echo '</div>';
-echo '</fieldset>';
+echo '</div>';
 
 echo '</div>';
 echo '<div class="col-sm-4">';
@@ -382,8 +382,8 @@ echo '<div class="col-sm-4">';
  * preferences for page index
  */
 
-echo '<fieldset>';
-echo '<legend>' . $lang['tab_page_preferences'] . '</legend>';
+echo '<div class="card">';
+echo '<div class="card-header">' . $lang['tab_page_preferences'] . '</div>';
 echo '<div class="scroll-box">';
 echo '<div class="p-3">';
 
@@ -544,7 +544,7 @@ echo '</form>';
 
 echo '</div>';
 echo '</div>';
-echo '</fieldset>';
+echo '</div>';
 
 
 echo '</div>';

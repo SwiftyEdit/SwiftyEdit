@@ -228,7 +228,7 @@ echo '</div>'; // card
 echo '</div>';
 echo '<div class="col-md-3">';
 
-echo '<div class="well">';
+echo '<div class="card p-3">';
 
 echo '<fieldset>';
 echo '<legend>Avatar</legend>';
