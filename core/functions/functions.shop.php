@@ -95,7 +95,7 @@ function se_get_products($start,$limit,$filter) {
         $sql_product_filter = "filter IS NULL OR ";
         foreach ($_SESSION['custom_filter'] as $custom_filter) {
             if ($custom_filter != '') {
-                $sql_product_filter .= "(filter LIKE '%$custom_filter%') AND ";
+                $sql_product_filter .= "(filter LIKE '%:\"$custom_filter\"%') AND ";
             }
         }
         $sql_product_filter = substr("$sql_product_filter", 0, -4); // cut the last ' AND'
