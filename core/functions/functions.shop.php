@@ -103,6 +103,21 @@ function se_get_products($start,$limit,$filter) {
         $sql_product_filter = '';
     }
 
+    /* text search */
+    if($filter['text_search'] == '') {
+        $sql_text_filter = '';
+    } else {
+        $tf = $filter['text_search'];
+        $sql_text_filter = "(title LIKE '%$tf%') OR 
+        (teaser LIKE '%$tf%') OR 
+        (text LIKE '%$tf%') OR 
+        (product_number LIKE '%$tf%') OR
+        (text_additional1 LIKE '%$tf%') OR 
+        (text_additional2 LIKE '%$tf%') OR 
+        (text_additional3 LIKE '%$tf%') OR 
+        (text_additional4 LIKE '%$tf%') OR 
+        (text_additional5 LIKE '%$tf%')";
+    }
 
     /* status filter */
     $sql_status_filter = "status IS NULL OR ";
@@ -161,6 +176,9 @@ function se_get_products($start,$limit,$filter) {
     }
     if($sql_label_filter != "") {
         $sql_filter .= " AND ($sql_label_filter) ";
+    }
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
     }
 
     if(SE_SECTION == 'frontend') {

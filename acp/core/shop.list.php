@@ -50,6 +50,20 @@ if(is_numeric($_POST['sfixed'])) {
 }
 
 
+// search
+if(isset($_POST['product_text_search'])) {
+    $_SESSION['product_text_search'] = sanitizeUserInputs($_POST['product_text_search']);
+}
+
+if(isset($_POST['search_reset'])) {
+    $_SESSION['product_text_search'] = '';
+}
+
+if(!isset($_SESSION['product_text_search'])) {
+    $_SESSION['product_text_search'] = '';
+}
+
+
 // defaults
 $posts_start = 0;
 $posts_limit = 25;
@@ -202,6 +216,7 @@ $products_filter['types'] = 'p';
 $products_filter['status'] = $_SESSION['checked_status_string'];
 $products_filter['categories'] = $_SESSION['checked_cat_string'];
 $products_filter['labels'] = $_SESSION['checked_label_str'];
+$products_filter['text_search'] = $_SESSION['product_text_search'];
 
 
 $get_products = se_get_products($posts_start,$posts_limit,$products_filter);
@@ -459,6 +474,20 @@ echo '<div class="card p-2">';
 echo '<a class="btn btn-success w-100" href="?tn=shop&sub=edit&new=p">'.$icon['plus'].' '.$lang['post_type_product'].'</a>';
 
 echo '<hr>';
+
+
+echo '<form action="acp.php?tn=shop" method="POST">';
+echo '<label for="text_search">'.$lang['label_search'].'</label>';
+echo '<div class="input-group mb-2">';
+echo '<input type="text" id="text_search" value="'.$_SESSION['product_text_search'].'" name="product_text_search" class="form-control">';
+if($_SESSION['product_text_search'] != '') {
+    echo '<button type="submit" name="submit_search" class="btn btn-default visually-hidden">SUBMIT</button>';
+    echo '<button class="btn btn-default" name="search_reset">'.$lang['label_reset'].'</button>';
+}
+echo '</div>';
+echo $hidden_csrf_token;
+echo '</form>';
+
 
 echo '<div class="row">';
 echo '<div class="col-lg-2">';
