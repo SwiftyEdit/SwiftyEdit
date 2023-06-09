@@ -55,6 +55,8 @@ $lang += [
     'btn_send_email' => 'Send E-Mail',
     'btn_close' => 'Close',
 
+    'items_per_page' => 'Items per page',
+
     'btn_sort_asc' => 'Ascending',
     'btn_sort_desc' => 'Descending',
     'btn_sort_linkname' => 'Linkname',

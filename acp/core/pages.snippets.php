@@ -277,75 +277,36 @@ FROM se_snippets";
 
 $cnt = $db_content->query($sql_cnt)->fetch(PDO::FETCH_ASSOC);
 
-$files_per_page = 50;
-$show_numbers = 6;
-$start = 0;
-$disable_next_start = '';
-$disable_prev_start = '';
+$sql_start_nbr = 0;
+$sql_items_limit = 10;
 
-if(isset($_GET['start'])) {
-	$start = (int) $_GET['start'];
+/* items per page */
+if(!isset($_SESSION['items_per_page'])) {
+    $_SESSION['items_per_page'] = $sql_items_limit;
+}
+if(isset($_POST['items_per_page'])) {
+    $_SESSION['items_per_page'] = (int) $_POST['items_per_page'];
 }
 
-if($start<0) {
-	$start = 0;
-}
+$items_per_page = $_SESSION['items_per_page'];
 
-$next_start = $start+$files_per_page;
-$prev_start = $start-$files_per_page;
-
-if($start>($cnt['cnt_filter_snippets']-$files_per_page)) {
-	$next_start = $start;
-	$disable_next_start = 'disabled';
-}
-
-if($start < 1) {
-	$disable_prev_start = 'disabled';
+if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
+    $sql_start_nbr = (int) $_GET['sql_start_nbr'];
 }
 
 
-$sql = "SELECT * FROM se_snippets $filter_string ORDER BY snippet_name ASC LIMIT $start,$files_per_page";
+$sql = "SELECT * FROM se_snippets $filter_string ORDER BY snippet_name ASC LIMIT $sql_start_nbr, $items_per_page";
 
 foreach($system_snippets as $snippet) {
 	$snippet_exception[] = " snippet_name != '$snippet' ";
 }
 
 $snippets_list = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-$cnt_pages = ceil($cnt['cnt_filter_snippets']/$files_per_page);
 
 $cnt_snippets = count($snippets_list);
 
-$pag_backlink = '<li class="page-item '.$disable_prev_start.'"><a class="page-link" href="acp.php?tn=pages&sub=snippets&start='.$prev_start.'">'.$icon['caret_left'].'</a></li>';
-$pag_forwardlink = '<li class="page-item '.$disable_next_start.'"><a class="page-link" href="acp.php?tn=pages&sub=snippets&start='.$next_start.'">'.$icon['caret_right'].'</a></li>';
-
-unset($pag_string);
-for($x=0;$x<$cnt_pages;$x++) {
-
-	$aclass = "page-link";
-	$page_start = $x*$files_per_page;
-	$page_nbr = $x+1;
-	
-	if($page_start == $start) {
-		
-		$aclass = "page-link active";
-		$pag_start = 	$x-($show_numbers/2);
-		
-		if($pag_start < 0) {
-			$pag_start = 0;
-		}
-		
-		$pag_end = $pag_start+$show_numbers;
-		if($pag_end > $cnt_pages) {
-			$pag_end = $cnt_pages;
-		}
-		
-		$a_pag_string[] = '<li class="page-item active"><span class="page-link">'.$page_nbr.'</span></li>';	
-	} else {
-		$a_pag_string[] = '<li class="page-item"><a class="page-link" href="acp.php?tn=pages&sub=snippets&start='.$page_start.'">'.$page_nbr.'</a></li>';
-	}
-	
-	
-}
+$pagination_query = '?tn=pages&sub=snippets&sql_start_nbr={page}';
+$pagination = se_return_pagination($pagination_query,$cnt['cnt_filter_snippets'],$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
 /**
  * open snippet
@@ -371,7 +332,7 @@ if(isset($delete_snip_id)) {
 }
 
 
-if($show_snippet_form == true)  {
+if($show_snippet_form)  {
 
 	include 'pages.snippets_form.php';
 	
@@ -395,6 +356,18 @@ if($show_snippet_form == true)  {
 	echo '<div class="col-md-9">';
 	
 	echo '<div class="card p-3">';
+
+    echo '<div class="d-flex flex-row-reverse">';
+    echo '<div class="ps-3">';
+    echo '<form action="?tn=pages&sub=snippets" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+    echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
+    echo $hidden_csrf_token;
+    echo '</form>';
+    echo '</div>';
+    echo '<div class="p-0">';
+    echo $pagination;
+    echo '</div>';
+    echo '</div>';
 	
 	echo '<div class="scroll-box">';
 	
@@ -529,12 +502,7 @@ if($show_snippet_form == true)  {
         echo '</div>';
         echo $hidden_csrf_token;
         echo '</form>';
-        /*
-		echo '<div class="btn-group" role="group">';
-		echo '<a href="acp.php?tn=pages&sub=snippets&snip_id='.$get_snip_id.'" class="btn btn-default btn-sm text-success">'.$lang['edit'].'</a>';
-		echo '<a href="acp.php?tn=pages&sub=snippets&snip_id='.$get_snip_id.'&duplicate=1" class="btn btn-default btn-sm" title="'.$lang['duplicate'].'">'.$icon['copy'].'</a>';
-		echo '</div>';
-        */
+
 		echo '</td>';	
 		echo '</tr>';
 		
@@ -542,18 +510,11 @@ if($show_snippet_form == true)  {
 	
 	
 	echo '</table>';
+
+
+    echo $pagination;
 	
-	echo '<div class="pt-3">';
-	echo '<ul class="pagination justify-content-center">';
-	echo $pag_backlink;
-	foreach(range($pag_start, $pag_end) as $number) {
-    echo $a_pag_string[$number];
-	}
-	echo $pag_forwardlink;
-	echo '</ul>';
-	echo '</div>';
-	
-	echo '</div>';
+	echo '</div>'; // scroll-box
 	
 	echo '</div>'; // card
 	

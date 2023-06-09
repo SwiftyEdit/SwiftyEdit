@@ -75,8 +75,8 @@ if(isset($_POST['post_priority'])) {
 
 
 // defaults
-$posts_start = 0;
-$posts_limit = 25;
+$sql_start_nbr = 0;
+$sql_items_limit = 10;
 $posts_order = 'id';
 $posts_direction = 'DESC';
 $posts_filter = array();
@@ -86,6 +86,13 @@ $arr_types = array('m','i','v','l','g','f');
 $arr_lang = get_all_languages();
 $arr_categories = se_get_categories();
 
+/* items per page */
+if(!isset($_SESSION['items_per_page'])) {
+    $_SESSION['items_per_page'] = $sql_items_limit;
+}
+if(isset($_POST['items_per_page'])) {
+    $_SESSION['items_per_page'] = (int) $_POST['items_per_page'];
+}
 
 
 /* default: check all languages */
@@ -241,12 +248,12 @@ $label_filter_box .= '</div>'; // card
 
 
 
-if((isset($_GET['posts_start'])) && is_numeric($_GET['posts_start'])) {
-	$posts_start = (int) $_GET['posts_start'];
+if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
+    $sql_start_nbr = (int) $_GET['sql_start_nbr'];
 }
 
 if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
-	$posts_start = (int) $_POST['setPage'];
+    $sql_start_nbr = (int) $_POST['setPage'];
 }
 
 
@@ -257,23 +264,52 @@ $posts_filter['categories'] = $_SESSION['checked_cat_string'];
 $posts_filter['labels'] = $_SESSION['checked_label_str'];
 
 
-$get_posts = se_get_post_entries($posts_start,$posts_limit,$posts_filter);
+$get_posts = se_get_post_entries($sql_start_nbr,$_SESSION['items_per_page'],$posts_filter);
 $cnt_filter_posts = $get_posts[0]['cnt_posts'];
 $cnt_all_posts = $get_posts[0]['cnt_all_posts'];
 $cnt_get_posts = count($get_posts);
 
-$nextPage = $posts_start+$posts_limit;
-$prevPage = $posts_start-$posts_limit;
-$cnt_pages = ceil($cnt_filter_posts / $posts_limit);
+$pagination_query = '?tn=posts&sql_start_nbr={page}';
+$pagination = se_return_pagination($pagination_query,$cnt_filter_posts,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
-echo '<div class="subHeader">';
-echo '<h3>' . sprintf($lang['label_show_entries'], $cnt_filter_posts, $cnt_all_posts) .'</h3>';
+$dropdown_new_post = '<div class="dropdown">
+  <button class="btn btn-deafult text-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['label_new_post'].'</button>
+  <ul class="dropdown-menu">
+  
+<li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=m"><span class="color-message">'.$icon['plus'].'</span> '.$lang['post_type_message'].'</a></li>
+<li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=i"><span class="color-image">'.$icon['plus'].'</span> '.$lang['post_type_image'].'</a></li>
+<li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=g"><span class="color-gallery">'.$icon['plus'].'</span> '.$lang['post_type_gallery'].'</a></li>
+<li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=v"><span class="color-video">'.$icon['plus'].'</span> '.$lang['post_type_video'].'</a></li>
+<li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=l"><span class="color-link">'.$icon['plus'].'</span> '.$lang['post_type_link'].'</a></li>
+<li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=f"><span class="color-file">'.$icon['plus'].'</span> '.$lang['post_type_file'].'</a></li>
+  </ul>
+</div>';
+
+echo '<div class="subHeader d-flex flex-row align-items-center">';
+echo '<h3 class="align-middle">' . sprintf($lang['label_show_entries'], $cnt_filter_posts, $cnt_all_posts) .'</h3>';
+
+echo '<div class="ms-auto ps-3">';
+echo $dropdown_new_post;
+echo '</div>';
+
 echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
 echo '<div class="card p-3">';
+
+echo '<div class="d-flex flex-row-reverse">';
+echo '<div class="ps-3">';
+echo '<form action="?tn=posts&sub=blog-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+echo '<div class="p-0">';
+echo $pagination;
+echo '</div>';
+echo '</div>';
 
 if($cnt_filter_posts > 0) {
 
@@ -453,6 +489,8 @@ if($cnt_filter_posts > 0) {
 	echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
 }
 
+echo $pagination;
+
 echo '</div>'; // card
 
 
@@ -462,55 +500,6 @@ echo '<div class="col-md-3">';
 
 /* sidebar */
 echo '<div class="card p-2">';
-
-echo '<button class="btn w-100 btn-success dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNew">'.$lang['label_new_post'].'</button>';
-
-echo '<div class="collapse" id="collapseNew">';
-
-echo '<div class="list-group list-group-flush">';
-echo '<a class="list-group-item list-group-item-ghost" href="?tn=posts&sub=edit&new=m"><span class="color-message">'.$icon['plus'].'</span> '.$lang['post_type_message'].'</a>';
-echo '<a class="list-group-item list-group-item-ghost" href="?tn=posts&sub=edit&new=i"><span class="color-image">'.$icon['plus'].'</span> '.$lang['post_type_image'].'</a>';
-echo '<a class="list-group-item list-group-item-ghost" href="?tn=posts&sub=edit&new=g"><span class="color-gallery">'.$icon['plus'].'</span> '.$lang['post_type_gallery'].'</a>';
-echo '<a class="list-group-item list-group-item-ghost" href="?tn=posts&sub=edit&new=v"><span class="color-video">'.$icon['plus'].'</span> '.$lang['post_type_video'].'</a>';
-echo '<a class="list-group-item list-group-item-ghost" href="?tn=posts&sub=edit&new=l"><span class="color-link">'.$icon['plus'].'</span> '.$lang['post_type_link'].'</a>';
-echo '<a class="list-group-item list-group-item-ghost" href="?tn=posts&sub=edit&new=f"><span class="color-file">'.$icon['plus'].'</span> '.$lang['post_type_file'].'</a>';
-echo '</div>';
-echo '</div>';
-
-echo '<hr>';
-
-echo '<div class="row">';
-echo '<div class="col-md-2">';
-if($prevPage < 0) {
-	echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-} else {
-	echo '<a class="btn btn-default w-100" href="acp.php?tn=posts&posts_start='.$prevPage.'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-}
-
-echo '</div>';
-echo '<div class="col-md-8">';
-echo '<form action="acp.php?tn=posts" method="POST">';
-echo '<select class="form-control custom-select" name="setPage" onchange="this.form.submit()">';
-for($i=0;$i<$cnt_pages;$i++) {
-	$x = $i+1;
-	$thisPage = ($x*$posts_limit)-$posts_limit;
-	$sel = '';
-	if($thisPage == $posts_start) {
-		$sel = 'selected';
-	}
-	echo '<option value="'.$thisPage.'" '.$sel.'>'.$x.' ('.$thisPage.')</option>';
-}
-echo '</select>';
-echo '</form>';
-echo '</div>';
-echo '<div class="col-md-2">';
-if($nextPage < ($cnt_filter_posts-$posts_limit)+$posts_limit) {
-	echo '<a class="btn btn-default w-100" href="acp.php?tn=posts&posts_start='.$nextPage.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
-} else {
-	echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
-}
-echo '</div>';
-echo '</div>';
 
 echo '<fieldset class="mt-4">';
 echo '<legend>'.$icon['filter'].' Filter</legend>';

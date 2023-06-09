@@ -56,8 +56,8 @@ if(is_numeric($_POST['sfixed'])) {
 
 
 // defaults
-$events_start = 0;
-$events_limit = 25;
+$sql_start_nbr = 0;
+$sql_items_limit = 10;
 $events_order = 'id';
 $events_direction = 'DESC';
 $events_filter = array();
@@ -65,6 +65,14 @@ $events_filter = array();
 $arr_status = array('2','1');
 $arr_lang = get_all_languages();
 $arr_categories = se_get_categories();
+
+/* items per page */
+if(!isset($_SESSION['items_per_page'])) {
+    $_SESSION['items_per_page'] = $sql_items_limit;
+}
+if(isset($_POST['items_per_page'])) {
+    $_SESSION['items_per_page'] = (int) $_POST['items_per_page'];
+}
 
 /* default: check all languages */
 if(!isset($_SESSION['checked_lang_string'])) {
@@ -199,8 +207,8 @@ $label_filter_box .= '</div>'; // card
 
 
 
-if((isset($_GET['events_start'])) && is_numeric($_GET['events_start'])) {
-    $events_start = (int) $_GET['events_start'];
+if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
+    $sql_start_nbr = (int) $_GET['sql_start_nbr'];
 }
 
 if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
@@ -212,25 +220,39 @@ $events_filter['status'] = $_SESSION['checked_status_string'];
 $events_filter['categories'] = $_SESSION['checked_cat_string'];
 $events_filter['labels'] = $_SESSION['checked_label_str'];
 
-$get_events = se_get_event_entries($events_start,$events_limit,$events_filter);
+$get_events = se_get_event_entries($sql_start_nbr,$_SESSION['items_per_page'],$events_filter);
 
 $cnt_filter_events = $get_events[0]['cnt_events'];
 $cnt_all_events = $get_events[0]['cnt_all_events'];
 $cnt_get_events = count($get_events);
 
-$nextPage = $events_start+$events_limit;
-$prevPage = $events_start-$events_limit;
-$cnt_pages = ceil($cnt_filter_events / $events_limit);
+$pagination_query = '?tn=events&sub=events-list&sql_start_nbr={page}';
+$pagination = se_return_pagination($pagination_query,$cnt_filter_events,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
-echo '<div class="subHeader">';
-echo '<h3>' . sprintf($lang['label_show_events'], $cnt_filter_events, $cnt_all_events) .'</h3>';
+echo '<div class="subHeader d-flex flex-row align-items-center">';
+echo '<h3 class="align-middle">' . sprintf($lang['label_show_events'], $cnt_filter_events, $cnt_all_events) .'</h3>';
+echo '<div class="ms-auto ps-3">';
+echo '<a class="btn btn-default text-success" href="?tn=events&sub=edit&new=e">'.$icon['plus'].' '.$lang['label_new_post'].'</a>';
 echo '</div>';
-
+echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
 echo '<div class="card p-3">';
+
+
+echo '<div class="d-flex flex-row-reverse">';
+echo '<div class="ps-3">';
+echo '<form action="?tn=events&sub=events-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+echo '<div class="p-0">';
+echo $pagination;
+echo '</div>';
+echo '</div>';
 
 
 if($cnt_filter_events > 0) {
@@ -382,6 +404,7 @@ if($cnt_filter_events > 0) {
     echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
 }
 
+echo $pagination;
 
 echo '</div>'; // card
 
@@ -393,43 +416,6 @@ echo '<div class="col-md-3">';
 /* sidebar */
 echo '<div class="card p-2">';
 
-echo '<a class="btn w-100 btn-success" href="?tn=events&sub=edit&new=e">'.$icon['plus'].' '.$lang['label_new_post'].'</a>';
-
-
-echo '<hr>';
-
-echo '<div class="row">';
-echo '<div class="col-md-2">';
-if($prevPage < 0) {
-    echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-} else {
-    echo '<a class="btn btn-default w-100" href="acp.php?tn=events&events_start='.$prevPage.'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-}
-
-echo '</div>';
-echo '<div class="col-md-8">';
-echo '<form action="acp.php?tn=events" method="POST">';
-echo '<select class="form-control custom-select" name="setPage" onchange="this.form.submit()">';
-for($i=0;$i<$cnt_pages;$i++) {
-    $x = $i+1;
-    $thisPage = ($x*$posts_limit)-$posts_limit;
-    $sel = '';
-    if($thisPage == $posts_start) {
-        $sel = 'selected';
-    }
-    echo '<option value="'.$thisPage.'" '.$sel.'>'.$x.' ('.$thisPage.')</option>';
-}
-echo '</select>';
-echo '</form>';
-echo '</div>';
-echo '<div class="col-md-2">';
-if($nextPage < ($cnt_filter_posts-$posts_limit)+$posts_limit) {
-    echo '<a class="btn btn-default w-100" href="acp.php?tn=events&events_start='.$nextPage.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
-} else {
-    echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
-}
-echo '</div>';
-echo '</div>';
 
 echo '<fieldset class="mt-4">';
 echo '<legend>'.$icon['filter'].' Filter</legend>';

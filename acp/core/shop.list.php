@@ -65,16 +65,25 @@ if(!isset($_SESSION['product_text_search'])) {
 
 
 // defaults
-$posts_start = 0;
-$posts_limit = 25;
-$posts_order = 'id';
-$posts_direction = 'DESC';
+$sql_start_nbr = 0;
+$sql_items_limit = 10;
+$sql_default_order = 'id';
+$sql_default_direction = 'DESC';
 $products_filter = array();
 
 $arr_status = array('2','1');
 $arr_types = array('p');
 $arr_lang = get_all_languages();
 $arr_categories = se_get_categories();
+
+/* items per page */
+if(!isset($_SESSION['items_per_page'])) {
+    $_SESSION['items_per_page'] = $sql_items_limit;
+}
+if(isset($_POST['items_per_page'])) {
+    $_SESSION['items_per_page'] = (int) $_POST['items_per_page'];
+}
+
 
 /* default: check all languages */
 if(!isset($_SESSION['checked_lang_string'])) {
@@ -202,12 +211,12 @@ $label_filter_box .= '</div>';
 $label_filter_box .= '</div>'; // card
 
 
-if((isset($_GET['posts_start'])) && is_numeric($_GET['posts_start'])) {
-    $posts_start = (int) $_GET['posts_start'];
+if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
+    $sql_start_nbr = (int) $_GET['sql_start_nbr'];
 }
 
 if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
-    $posts_start = (int) $_POST['setPage'];
+    $sql_start_nbr = (int) $_POST['setPage'];
 }
 
 
@@ -219,23 +228,40 @@ $products_filter['labels'] = $_SESSION['checked_label_str'];
 $products_filter['text_search'] = $_SESSION['product_text_search'];
 
 
-$get_products = se_get_products($posts_start,$posts_limit,$products_filter);
+$get_products = se_get_products($sql_start_nbr,$_SESSION['items_per_page'],$products_filter);
 $cnt_filter_posts = $get_products[0]['cnt_products_match'];
 $cnt_get_posts = count($get_products);
 $cnt_posts = $get_products[0]['cnt_products_all'];
 
-$nextPage = $posts_start+$posts_limit;
-$prevPage = $posts_start-$posts_limit;
-$cnt_pages = ceil($cnt_filter_posts / $posts_limit);
 
-echo '<div class="subHeader">';
-echo '<h3>' . sprintf($lang['label_show_products'], $cnt_filter_posts, $cnt_filter_posts) .'</h3>';
+$pagination_query = '?tn=shop&sql_start_nbr={page}';
+$pagination = se_return_pagination($pagination_query,$cnt_filter_posts,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
+
+echo '<div class="subHeader d-flex flex-row align-items-center">';
+
+echo '<h3 class="align-middle">' . sprintf($lang['label_show_products'], $cnt_filter_posts, $cnt_filter_posts) .'</h3>';
+
+echo '<div class="ms-auto ps-3">';
+echo '<a class="btn btn-default text-success w-100" href="?tn=shop&sub=edit&new=p">'.$icon['plus'].' '.$lang['post_type_product'].'</a>';
+echo '</div>';
 echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
 echo '<div class="card p-3">';
+
+echo '<div class="d-flex flex-row-reverse">';
+echo '<div class="ps-3">';
+echo '<form action="?tn=shop&sub=shop-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+echo '<div class="p-0">';
+echo $pagination;
+echo '</div>';
+echo '</div>';
 
 if($cnt_filter_posts > 0) {
 
@@ -462,6 +488,8 @@ if($cnt_filter_posts > 0) {
     echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
 }
 
+echo $pagination;
+
 echo '</div>'; // card
 
 
@@ -470,16 +498,13 @@ echo '<div class="col-md-3">';
 
 
 /* sidebar */
-echo '<div class="card p-2">';
-echo '<a class="btn btn-success w-100" href="?tn=shop&sub=edit&new=p">'.$icon['plus'].' '.$lang['post_type_product'].'</a>';
-
-echo '<hr>';
+echo '<div class="card py-3 px-2">';
 
 
-echo '<form action="acp.php?tn=shop" method="POST">';
-echo '<label for="text_search">'.$lang['label_search'].'</label>';
+echo '<form action="acp.php?tn=shop" method="POST" class="mb-3">';
+
 echo '<div class="input-group mb-2">';
-echo '<input type="text" id="text_search" value="'.$_SESSION['product_text_search'].'" name="product_text_search" class="form-control">';
+echo '<input type="text" id="text_search" placeholder="'.$lang['label_search'].'" value="'.$_SESSION['product_text_search'].'" name="product_text_search" class="form-control rounded-pill">';
 if($_SESSION['product_text_search'] != '') {
     echo '<button type="submit" name="submit_search" class="btn btn-default visually-hidden">SUBMIT</button>';
     echo '<button class="btn btn-default" name="search_reset">'.$lang['label_reset'].'</button>';
@@ -488,40 +513,6 @@ echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
 
-
-echo '<div class="row">';
-echo '<div class="col-lg-2">';
-if($prevPage < 0) {
-    echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-} else {
-    echo '<a class="btn btn-default w-100" href="acp.php?tn=shop&posts_start='.$prevPage.'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
-}
-
-echo '</div>';
-echo '<div class="col-lg-8">';
-echo '<form action="acp.php?tn=shop" method="POST">';
-echo '<select class="form-control custom-select" name="setPage" onchange="this.form.submit()">';
-for($i=0;$i<$cnt_pages;$i++) {
-    $x = $i+1;
-    $thisPage = ($x*$posts_limit)-$posts_limit;
-    $sel = '';
-    if($thisPage == $posts_start) {
-        $sel = 'selected';
-    }
-    echo '<option value="'.$thisPage.'" '.$sel.'>'.$lang['pagination_page'].' '.$x.'/'.$cnt_pages.'</option>';
-}
-echo '</select>';
-echo $hidden_csrf_token;
-echo '</form>';
-echo '</div>';
-echo '<div class="col-lg-2">';
-if($nextPage < ($cnt_filter_posts-$posts_limit)+$posts_limit) {
-    echo '<a class="btn btn-default w-100" href="acp.php?tn=shop&posts_start='.$nextPage.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
-} else {
-    echo '<a class="btn btn-default w-100 disabled" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
-}
-echo '</div>';
-echo '</div>';
 
 echo '<fieldset class="mt-4">';
 echo '<legend>'.$icon['filter'].' Filter</legend>';

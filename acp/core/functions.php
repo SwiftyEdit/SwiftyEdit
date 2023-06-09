@@ -1400,3 +1400,106 @@ function se_print_docs_link($file,$text=null,$type=null) {
 
 
 }
+
+/**
+ * display pagination
+ *
+ * @param string $query will be set as href="$query" - {page} will be replaced
+ * @param integer $pages_limit how many numbers should be displayed (max)
+ * @param integer $align 1 = left, 2 = center, 3 = right
+ * @param integer $size 1 = sm, 2 = default, 3 = lg
+ * @param integer $items_cnt number of items
+ * @param integer $sql_start_nbr start from the sql query
+ * @param integer $items_per_page how many items per page
+ * @return string
+ */
+
+function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr, int $items_per_page, int $pages_limit=10, int $align=1, int $size=2): string
+{
+
+    $cnt_pages = ceil($items_cnt / $items_per_page);
+    if($cnt_pages < 2) {
+        // no pages, no pagination
+        return '';
+    }
+
+    $nextPage = $sql_start_nbr+$items_per_page;
+    $lastPage = ($cnt_pages*$items_per_page)-$items_per_page;
+    if($nextPage >= $lastPage) {
+        $nextPage = $lastPage;
+    }
+    $prevPage = max(0,$sql_start_nbr-$items_per_page);
+
+    $next_query = str_replace("{page}","$nextPage",$query);
+    $prev_query = str_replace("{page}","$prevPage",$query);
+
+    if($align == 1) {
+        $align_class = '';
+    } else if($align == 2) {
+        $align_class = 'justify-content-center';
+    } else if($align == 3) {
+        $align_class = 'justify-content-end';
+    }
+
+    if($size == 1) {
+        $size_class = 'pagination-sm';
+    } else if($size == 2) {
+        $size_class = '';
+    } else if($size == 3) {
+        $size_class = 'pagination-lg';
+    }
+
+    $pagination = '<nav aria-label="Pagination">';
+    $pagination .= '<ul class="pagination '.$align_class.' '.$size_class.'">';
+    $pagination .= '<li class="page-item">
+                    <a class="page-link" href="'.$prev_query.'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                  </li>';
+
+    $activePage = ceil(($sql_start_nbr*$items_per_page)/$cnt_pages);
+    $activePage = ceil(($sql_start_nbr/$items_per_page)+1);
+
+    if($activePage < 2) {
+        $activePage = 1;
+    }
+
+    $pagination_start = $activePage-($pages_limit/2);
+    if($pagination_start < 1) {
+        $pagination_start = 1;
+    }
+    $pagination_end = $activePage+($pages_limit/2);
+    if($pagination_end > $cnt_pages) {
+        $pagination_end = $cnt_pages;
+    }
+    
+    for($i=1;$i<=$cnt_pages;$i++) {
+
+        $active_class = '';
+        //$page_nbr = $i+1;
+        $thisPage = ($i*$items_per_page)-$items_per_page;
+
+        if($activePage == $i) {
+            $active_class = 'active';
+        }
+
+        if($i > $pagination_end) {
+            continue;
+        }
+        if($i < $pagination_start) {
+            continue;
+        }
+
+        $href = str_replace("{page}","$thisPage",$query);
+
+        $pagination .= '<li class="page-item '.$active_class.'">
+                        <a class="page-link" href="'.$href.'">'.$i.'</a>
+                    </li>';
+    }
+
+    $pagination .= '<li class="page-item">
+                    <a class="page-link" href="'.$next_query.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                </li>';
+    $pagination .= '</ul>';
+    $pagination .= '</nav>';
+
+    return $pagination;
+}
