@@ -27,6 +27,8 @@ $widget-bg-dark-700: mix($darken,$widget_background_dark,40%);
 $widget-bg-dark-800: mix($darken,$widget_background_dark,60%);
 $widget-bg-dark-900: mix($darken,$widget_background_dark,80%);
 
+$subHeader_bg_dark: desaturate($darken,5);
+
 $body-color-dark: #e5e5e5;
 $body-bg-dark: darken($page_header_bg_dark,3);
 $border-color-dark: $widget_border_color_dark !default;

@@ -22147,6 +22147,7 @@ form.dropzone-theme .dz-default.dz-message {
   --status-draft-color: #989898;
   --status-private-color: #d9534f;
   --status-redirect-color: #078dfe;
+  --subheader-bg: #cfc7d5;
 }
 
 [data-bs-theme=dark] {
@@ -22174,6 +22175,7 @@ form.dropzone-theme .dz-default.dz-message {
   --status-draft-color: #989898;
   --status-private-color: #d9534f;
   --status-redirect-color: #078dfe;
+  --subheader-bg: #221e25;
 }
 
 ::selection {
@@ -22254,10 +22256,11 @@ a#dashboard {
 .subHeader {
   margin-bottom: 10px;
   padding: 10px;
-  background: var(--bs-widget-bg-500);
+  background: var(--subheader-bg);
   border-bottom: 1px solid var(--bs-widget-bg-400);
 }
 .subHeader h3, .subHeader .h3 {
+  color: #896e9b;
   font-size: 18px;
   margin-bottom: 0;
   font-weight: 300;

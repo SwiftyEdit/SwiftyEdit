@@ -43,6 +43,8 @@ $sidebar_active_color: lighten($secondary,5);
 $sidebar_help_background: #111;
 $sidebar_help_color: #ccc;
 
+$subHeader_bg: desaturate($widget_background,5);
+
 $section_color_contents: $secondary;
 $section_color_dashboard: #aaaaaa;
 $section_color_blog: #85d7f5;
