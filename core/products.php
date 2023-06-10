@@ -61,6 +61,51 @@ if(isset($_REQUEST['remove_filter'])) {
     }
 }
 
+if(isset($_POST['set_custom_filters'])) {
+
+    $sf_radios = $_POST['sf_radio'];
+    // loop through all radios and unset them from session
+    if(is_array($_POST['all_radios'])) {
+        foreach($_POST['all_radios'] as $radios) {
+            if (($key = array_search($radios, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+        }
+    }
+
+    if(is_array($sf_radios)) {
+        foreach ($sf_radios as $radio) {
+            if(is_numeric($radio[0])) {
+                $_SESSION['custom_filter'][] = $radio[0];
+            }
+        }
+    }
+
+    foreach($_POST['all_checks'] as $checkboxes) {
+
+        $sf_checkboxes = $_POST['sf_checkbox'];
+        if(!is_array($sf_checkboxes)) {
+            // no checkboxes are checked
+            if (($key = array_search($checkboxes, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+            continue;
+        }
+        $key = array_search($checkboxes,$sf_checkboxes);
+        if($key !== false) {
+            $_SESSION['custom_filter'][] = $checkboxes;
+        } else {
+            if (($key = array_search($checkboxes, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+        }
+    }
+
+}
+
+$_SESSION['custom_filter'] = array_unique($_SESSION['custom_filter']);
+$_SESSION['custom_filter'] = array_values($_SESSION['custom_filter']);
+
 $custom_filter = $_SESSION['custom_filter'];
 
 $products_filter['languages'] = $page_contents['page_language'];

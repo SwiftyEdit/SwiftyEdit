@@ -866,7 +866,8 @@ function se_get_product_filter($lang) {
 
         $filter[$k] = [
             "title" => $v['filter_title'],
-            "id" => $v['filter_id']
+            "id" => $v['filter_id'],
+            "input_type" => $v['filter_input_type']
         ];
 
         $get_filter_items = se_get_product_filter_values($v['filter_id']);
@@ -875,14 +876,17 @@ function se_get_product_filter($lang) {
 
             if(in_array($filter_item['filter_id'],$_SESSION['custom_filter'])) {
                 $class = 'active';
+                $checked = 'checked';
             } else {
                 $class = '';
+                $checked = '';
             }
 
             $filter[$k]['items'][] = [
                 "id" => $filter_item['filter_id'],
                 "title" => $filter_item['filter_title'],
-                "class" => $class
+                "class" => $class,
+                "checked" => $checked
             ];
 
         }
