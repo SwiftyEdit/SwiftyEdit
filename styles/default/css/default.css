@@ -17647,17 +17647,20 @@ a.post-headline-link {
 /**
  * styles for events
  */
-.event-list-entry {
+.event-list-entry,
+.event-entry {
   border-bottom: 1px solid #adb5bd;
   margin-bottom: 15px;
   padding-bottom: 15px;
 }
-.event-list-entry.draft {
+.event-list-entry.draft,
+.event-entry.draft {
   opacity: 0.8;
   border: 1px solid #9bc4dc;
   padding: 15px;
 }
-.event-list-entry.draft .alert-draft {
+.event-list-entry.draft .alert-draft,
+.event-entry.draft .alert-draft {
   margin-top: -15px;
   margin-left: -15px;
   margin-right: -15px;
@@ -17666,26 +17669,30 @@ a.post-headline-link {
   background: #ddd;
   color: #9bc4dc;
 }
-.event-list-entry .event-date {
+.event-list-entry .event-date,
+.event-entry .event-date {
   background: #e9ecef;
   padding: 2px;
   text-align: center;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
 }
-.event-list-entry .event-date .event-date-header {
+.event-list-entry .event-date .event-date-header,
+.event-entry .event-date .event-date-header {
   background: #dee2e6;
   padding: 3px;
   margin: -2px -2px 0 -2px;
   font-size: 14px;
 }
-.event-list-entry .event-date .event-start-year {
+.event-list-entry .event-date .event-start-year,
+.event-entry .event-date .event-start-year {
   display: block;
   font-size: 35px;
   line-height: 35px;
   opacity: 0.5;
 }
-.event-list-entry .event-date .event-end-date {
+.event-list-entry .event-date .event-end-date,
+.event-entry .event-date .event-end-date {
   font-size: 12px;
   line-height: 14px;
   opacity: 0.3;
