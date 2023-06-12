@@ -276,37 +276,33 @@ if (isset($set_acptheme)) {
 
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $languagePack; ?>">
+<html lang="<?php echo $languagePack; ?>" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
     <title>ACP | <?php echo $se_base_url . ' | ' . $tn; ?></title>
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <script src="theme/js/backend.min.js?v=2023-04-15"></script>
+    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-05-30" type="text/css" media="screen, projection">
+
+    <script src="theme/js/backend.min.js?v=2023-05-30"></script>
     <script src="theme/js/tinymce/tinymce.min.js"></script>
     <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
     <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>
 
-    <?php
-    if ($acptheme == 'dark_mono') {
-        $style_file = 'theme/css/styles_dark_mono.css?v=' . time();
-    } else {
-        $style_file = 'theme/css/styles_light_mono.css?v=' . time();
-    }
-    echo '<link rel="stylesheet" href="' . $style_file . '" type="text/css" media="screen, projection">';
-    ?>
-
-
 
     <script type="text/javascript">
-        var languagePack = "<?php echo $languagePack; ?>";
-        var ace_theme = 'chrome';
-        var tinymce_skin = 'oxide';
-        var acptheme = "<?php echo $acptheme; ?>";
-        if (acptheme === 'dark' || acptheme === 'dark_mono') {
-            var ace_theme = 'twilight';
-            var tinymce_skin = 'oxide-dark';
+        const languagePack = "<?php echo $languagePack; ?>";
+        let ace_theme;
+        let tinymce_skin;
+        ace_theme = 'chrome';
+        tinymce_skin = 'oxide';
+
+        const storedTheme = localStorage.getItem('backend-theme');
+
+        if (storedTheme === 'dark') {
+            ace_theme = 'twilight';
+            tinymce_skin = 'oxide';
         }
     </script>
 
@@ -403,23 +399,6 @@ if (isset($set_acptheme)) {
 </div>
 
 <div class="bottom-bar">
-    <?php
-    $active_light_mono = '';
-    $active_dark_mono = '';
-    if ($acptheme == 'dark') {
-        $active_dark = 'active';
-    } else if ($acptheme == 'dark_mono') {
-        $active_dark_mono = 'active';
-    } else if ($acptheme == 'light') {
-        $active_light = 'active';
-    } else {
-        $active_light_mono = 'active';
-    }
-
-    echo '<a title="Light Mono" class="styleswitch styleswitch-light-mono ' . $active_light_mono . '" href="acp.php?tn=' . $tn . '&theme=light_mono">' . $icon['circle'] . '</a>';
-    echo '<a title="Dark Mono" class="styleswitch styleswitch-dark-mono ' . $active_dark_mono . '" href="acp.php?tn=' . $tn . '&theme=dark_mono">' . $icon['circle'] . '</a>';
-    ?>
-    <div class="divider"></div>
     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
             data-bs-target="#uploadModal"><?php echo $icon['upload']; ?> Upload
     </button>

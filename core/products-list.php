@@ -300,8 +300,9 @@ $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
 $smarty->assign('product_cnt', $cnt_filter_products);
 $smarty->assign('products', $get_products);
-
 $smarty->assign('show_products_list', $show_products_list);
+
+$smarty->assign('product_filter', $product_filter);
 
 $smarty->assign('show_pagination', $show_pagination);
 $smarty->assign('pagination', $pagination);

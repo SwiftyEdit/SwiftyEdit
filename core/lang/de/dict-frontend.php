@@ -49,6 +49,8 @@ $lang['label_remember_me'] = 'Angemeldet bleiben';
 
 $lang['label_entries'] = 'Einträge';
 $lang['label_entries_total'] = 'Gesamt';
+$lang['label_search'] = 'Suche';
+$lang['label_reset'] = 'Zurücksetzen';
 
 $lang['label_product_variants'] = 'Varianten des Artikels';
 $lang['label_nbr_of_product_variants'] = 'Dieser Artikel ist in %s Varianten erhältlich';

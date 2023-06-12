@@ -1,12 +1,26 @@
 <?php
 
+/**
+ * SwiftyEdit - shop and products main file
+ *
+ * global variables
+ * @var $db_content object database
+ * @var $smarty
+ * @var $languagePack
+ * @var $se_prefs array
+ * @var $page_contents array
+ * @var $swifty_slug string
+ * @var $mod_slug
+ *
+ */
+
 $time_string_now = time();
 $display_mode = 'list_products';
 
 /* defaults */
 $products_start = 0;
-$products_limit = (int) $se_prefs['prefs_posts_entries_per_page'];
-if($products_limit == '') {
+$products_limit = (int) $se_prefs['prefs_products_per_page'];
+if($products_limit == '' || $products_limit < 1) {
     $products_limit = 10;
 }
 $products_order = 'id';
@@ -18,10 +32,87 @@ if($_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 
+
+if(!isset($_SESSION['custom_filter'])) {
+    $_SESSION['custom_filter'] = array();
+}
+
+/* add filter to SESSION['custom_filter'] */
+if(isset($_REQUEST['add_filter'])) {
+    $get_filters = explode("-",$_REQUEST['add_filter']);
+    foreach($get_filters as $filter) {
+        $set_filter = (int) $filter;
+        $key = array_search($set_filter,$_SESSION['custom_filter']);
+        if($key === false) {
+            array_push($_SESSION['custom_filter'],"$set_filter");
+        }
+    }
+}
+
+/* remove filter to SESSION['custom_filter'] */
+if(isset($_REQUEST['remove_filter'])) {
+    $get_filters = explode("-",$_REQUEST['remove_filter']);
+    foreach($get_filters as $filter) {
+        $remove_filter = (int) $filter;
+        $key = array_search($remove_filter,$_SESSION['custom_filter']);
+        if($key !== false) {
+            unset($_SESSION['custom_filter'][$key]);
+        }
+    }
+}
+
+if(isset($_POST['set_custom_filters'])) {
+
+    $sf_radios = $_POST['sf_radio'];
+    // loop through all radios and unset them from session
+    if(is_array($_POST['all_radios'])) {
+        foreach($_POST['all_radios'] as $radios) {
+            if (($key = array_search($radios, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+        }
+    }
+
+    if(is_array($sf_radios)) {
+        foreach ($sf_radios as $radio) {
+            if(is_numeric($radio[0])) {
+                $_SESSION['custom_filter'][] = $radio[0];
+            }
+        }
+    }
+
+    foreach($_POST['all_checks'] as $checkboxes) {
+
+        $sf_checkboxes = $_POST['sf_checkbox'];
+        if(!is_array($sf_checkboxes)) {
+            // no checkboxes are checked
+            if (($key = array_search($checkboxes, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+            continue;
+        }
+        $key = array_search($checkboxes,$sf_checkboxes);
+        if($key !== false) {
+            $_SESSION['custom_filter'][] = $checkboxes;
+        } else {
+            if (($key = array_search($checkboxes, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+        }
+    }
+
+}
+
+$_SESSION['custom_filter'] = array_unique($_SESSION['custom_filter']);
+$_SESSION['custom_filter'] = array_values($_SESSION['custom_filter']);
+
+$custom_filter = $_SESSION['custom_filter'];
+
 $products_filter['languages'] = $page_contents['page_language'];
 $products_filter['types'] = $page_contents['page_posts_types'];
 $products_filter['status'] = $str_status;
 $products_filter['categories'] = $page_contents['page_posts_categories'];
+$products_filter['custom_filter'] = $custom_filter;
 
 if(isset($_POST['sort_by'])) {
     if($_POST['sort_by'] == 'ts') {
@@ -37,6 +128,22 @@ if(isset($_POST['sort_by'])) {
     }
 }
 
+/* get the default sorting */
+
+if(!isset($_SESSION['products_sort_by'])) {
+    if($se_prefs['prefs_product_sorting'] == 1) {
+        $_SESSION['products_sort_by'] = '';
+    } else if($se_prefs['prefs_product_sorting'] == 2) {
+        $_SESSION['products_sort_by'] = 'ts';
+    } else if($se_prefs['prefs_product_sorting'] == 3) {
+        $_SESSION['products_sort_by'] = 'name';
+    } else if($se_prefs['prefs_product_sorting'] == 4) {
+        $_SESSION['products_sort_by'] = 'pasc';
+    } else if($se_prefs['prefs_product_sorting'] == 5) {
+        $_SESSION['products_sort_by'] = 'pdesc';
+    }
+}
+
 if($_SESSION['products_sort_by'] == 'name') {
     $smarty->assign('class_sort_name', "active");
 } else if($_SESSION['products_sort_by'] == 'ts') {
@@ -46,17 +153,20 @@ if($_SESSION['products_sort_by'] == 'name') {
 } else if($_SESSION['products_sort_by'] == 'pdesc') {
     $smarty->assign('class_sort_price_desc', "active");
 } else {
-    $_SESSION['products_sort_by'] = 'name';
-    $smarty->assign('class_sort_name', "active");
+    $_SESSION['products_sort_by'] = '';
 }
 
 $products_filter['sort_by'] = $_SESSION['products_sort_by'];
 
-
+/* get the product id from url */
 if(substr("$mod_slug", -5) == '.html') {
-    $get_product_id = (int) basename(end(explode("-", $mod_slug)));
+    $file_parts = explode("-", $mod_slug);
+    $get_product_id = (int) basename(end($file_parts));
     $display_mode = 'show_product';
 }
+
+$product_filter = se_get_product_filter($languagePack);
+
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);

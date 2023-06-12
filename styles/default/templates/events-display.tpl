@@ -1,4 +1,4 @@
-<div class="post-product">
+<div class="event-entry">
     <h1>{$event_title}</h1>
 
     <div class="row mb-3">

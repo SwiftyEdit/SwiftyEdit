@@ -28,7 +28,40 @@ if($prefs_posts_order_mode == 1 OR $prefs_posts_order_mode == '') {
     $sel_order_mode3 = 'selected';
 }
 
+if($prefs_product_sorting == 1 OR $prefs_product_sorting == '') {
+    $sel_sorting1 = 'selected';
+} else if($prefs_product_sorting == 2) {
+    $sel_sorting2 = 'selected';
+} else if($prefs_product_sorting == 3) {
+    $sel_sorting3 = 'selected';
+} else if($prefs_product_sorting == 4) {
+    $sel_sorting4 = 'selected';
+} else if($prefs_product_sorting == 5) {
+    $sel_sorting5 = 'selected';
+}
+
 echo '<form action="?tn=system&sub=shop&file=general" method="POST">';
+
+echo '<div class="row">';
+echo '<div class="col-md-4">';
+
+echo '<div class="mb-3">';
+echo '<label>' . $lang['label_entries_per_page'] . '</label>';
+echo '<input type="text" class="form-control" name="prefs_products_per_page" value="'.$prefs_products_per_page.'">';
+echo '</div>';
+
+echo '</div>';
+echo '<div class="col-md-8">';
+echo '<label>' . $lang['label_default_sorting'] . '</label>';
+echo '<select class="form-control custom-select" name="prefs_product_sorting">';
+echo '<option value="1" '.$sel_sorting1.'>'.$lang['set_sorting_default'].'</option>';
+echo '<option value="2" '.$sel_sorting2.'>'.$lang['set_sorting_topseller'].'</option>';
+echo '<option value="3" '.$sel_sorting3.'>'.$lang['set_sorting_name'].'</option>';
+echo '<option value="4" '.$sel_sorting4.'>'.$lang['set_sorting_price_asc'].'</option>';
+echo '<option value="5" '.$sel_sorting5.'>'.$lang['set_sorting_price_desc'].'</option>';
+echo '</select>';
+echo '</div>';
+echo '</div>';
 
 echo '<h5 class="heading-line">' . $lang['label_carts'] . '</h5>';
 

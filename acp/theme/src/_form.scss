@@ -13,9 +13,8 @@
 fieldset {
 	padding: 15px 10px 10px 10px;
 	margin: 18px 0 25px 0;
-	border: 1px solid darken($widget_background,10);
-	background: $widget_background;
-	background: linear-gradient(90deg, rgba($widget_background,1) 0%, $widget_background 100%);
+	border: 1px solid var(--bs-widget-border);
+	background: var(--bs-widget-bg);
 	border-radius: 4px;
 	position: relative;
 }
@@ -27,13 +26,13 @@ fieldset legend {
 	width: auto;
 	padding: 7px 15px;
 	margin: -25px 10px 0 10px;
-	background: rgba($widget_background,1);
-	color: $font_color;
+	background: var(--bs-widget-bg);
+	color: $secondary;
 	font-size: 15px;
 	line-height: 14px;
 	border-radius: 3px;
-	border-left: 1px solid darken($widget_background,10);
-	border-right: 1px solid darken($widget_background,10);
+	border-left: 1px solid var(--bs-widget-border);
+	border-right: 1px solid var(--bs-widget-border);
 }
 
 fieldset.fieldset-danger {
@@ -51,12 +50,12 @@ input.form-control[readonly],
 select.form-control,
 select.form-select,
 .bootstrap-tagsinput {
-	background: $input_background;
-	color: $input_color;
+	background: $input-bg;
+	color: $input-color;
 	border-color: $input_border_color;
 	&:focus {
-		background: $input_background;
-		color: $input_color;
+		background: $input-bg;
+		color: $input-color;
 	}
 
 
@@ -65,8 +64,8 @@ select.form-select,
 
 select.cutom-select,
 select.form-control {
-	background: $input_background !important;
-	background: $input_background url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px !important;
+	background: $input-bg !important;
+	background: $input-bg url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px !important;
 	
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -74,25 +73,13 @@ select.form-control {
 }
 
 
-input.form-control[readonly] {
-	color: lighten($input_color,10);
-}
-
-.input-group-text {
-	background: lighten($input_background,5);
-	color: darken($font_color,10);
-}
 
 
 #CSSeditor,
 #HTMLeditor,
 .form-control {
 	border: 1px solid $input_border_color !important;
-	background: $input_background;
-}
-
-.mce-panel {
-	border-color: darken($input_background,10);
+	background: $input-bg;
 }
 
 

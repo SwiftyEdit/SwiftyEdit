@@ -17,6 +17,7 @@ $lang += [
     'nav_shop' => 'Shop',
     'nav_products' => 'Products',
     'nav_features' => 'Features',
+    'nav_filter' => 'Filter',
     'nav_orders' => 'Orders',
     'nav_payment_shipping' => 'Payment & Shipping',
     'nav_delivery_areas' => 'Delivery areas',
@@ -53,6 +54,8 @@ $lang += [
     'label_text' => 'Text',
     'btn_send_email' => 'Send E-Mail',
     'btn_close' => 'Close',
+
+    'items_per_page' => 'Items per page',
 
     'btn_sort_asc' => 'Ascending',
     'btn_sort_desc' => 'Descending',
@@ -507,6 +510,13 @@ $lang['status_payment_paid'] = 'Paid';
 $lang['label_status_shipping'] = 'Shipping';
 $lang['status_shipping_prepared'] = 'Prepared';
 $lang['status_shipping_shipped'] = 'Shipped';
+
+$lang['label_default_sorting'] = 'Default Sorting';
+$lang['set_sorting_default'] = 'Default';
+$lang['set_sorting_topseller'] = 'Topseller';
+$lang['set_sorting_name'] = 'Name';
+$lang['set_sorting_price_asc'] = 'Price - ascending';
+$lang['set_sorting_price_desc'] = 'Price - descending';
 
 $lang['nav_orders'] = 'Orders';
 $lang['btn_send_mail_to_admin'] = 'Send me a copy';

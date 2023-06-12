@@ -56,6 +56,7 @@ echo '<div class="collapse '.($tn == "shop" ? 'show' :'').'" id="sidebarShop">';
 echo '<ul>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-list" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-list">'.$icon['files'].' '.$lang['nav_products'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-features" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-features">'.$icon['star_outline'].' '.$lang['nav_features'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "shop-filter" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-filter">'.$icon['filter'].' '.$lang['nav_filter'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-orders" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-orders">'.$icon['cart'].' '.$lang['nav_orders'].'</a></li>';
 echo '<li><a class="sidebar-nav" href="?tn=system&sub=shop">'.$icon['gear'].' '.$lang['nav_preferences'].'</a></li>';
 echo '</ul>';

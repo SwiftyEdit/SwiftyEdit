@@ -1,3 +1,4 @@
 .badge-default {
-  background-color: $btn_se_background;
+  background-color: var(--bs-btn-default-bg);
+  color: var(--bs-btn-default-color);
 }

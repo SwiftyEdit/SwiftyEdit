@@ -110,7 +110,7 @@
 			</div>
 		</div>
 		<div class="col-md-3">
-			<div class="well well-sm">
+			<div class="card p-3">
 				<fieldset>
 					<legend>{label_language}</legend>
 					<div class="">

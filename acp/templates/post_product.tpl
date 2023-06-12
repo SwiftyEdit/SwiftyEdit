@@ -29,6 +29,7 @@
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#links">{post_tab_links}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter">Filter</a></li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -498,13 +499,17 @@
                                 </div>
                             </fieldset>
                         </div>
+                        <div class="tab-pane fade" id="filter">
+                            <h3>Filter</h3>
+                            {list_products_filter}
+                        </div>
 
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="well well-sm">
+            <div class="card p-3">
                 <fieldset>
                     <legend>{label_language}</legend>
                     <div class="">

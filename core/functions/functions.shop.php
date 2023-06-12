@@ -82,6 +82,42 @@ function se_get_products($start,$limit,$filter) {
     }
     $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
 
+    /* custom product filter - stored in $_SESSION['custom_filter'] */
+    $nbr_of_filter = is_array($_SESSION['custom_filter']) ? count($_SESSION['custom_filter']) : 0;
+
+    if(SE_SECTION == 'backend') {
+        // reset the custom filter
+        // we do not use the filter in the backend
+        $nbr_of_filter = 0;
+    }
+
+    if ($nbr_of_filter > 0) {
+        $sql_product_filter = "filter IS NULL OR ";
+        foreach ($_SESSION['custom_filter'] as $custom_filter) {
+            if ($custom_filter != '') {
+                $sql_product_filter .= "(filter LIKE '%:\"$custom_filter\"%') AND ";
+            }
+        }
+        $sql_product_filter = substr("$sql_product_filter", 0, -4); // cut the last ' AND'
+    } else {
+        $sql_product_filter = '';
+    }
+
+    /* text search */
+    if($filter['text_search'] == '') {
+        $sql_text_filter = '';
+    } else {
+        $tf = $filter['text_search'];
+        $sql_text_filter = "(title LIKE '%$tf%') OR 
+        (teaser LIKE '%$tf%') OR 
+        (text LIKE '%$tf%') OR 
+        (product_number LIKE '%$tf%') OR
+        (text_additional1 LIKE '%$tf%') OR 
+        (text_additional2 LIKE '%$tf%') OR 
+        (text_additional3 LIKE '%$tf%') OR 
+        (text_additional4 LIKE '%$tf%') OR 
+        (text_additional5 LIKE '%$tf%')";
+    }
 
     /* status filter */
     $sql_status_filter = "status IS NULL OR ";
@@ -129,7 +165,9 @@ function se_get_products($start,$limit,$filter) {
     if($sql_lang_filter != "") {
         $sql_filter .= " AND ($sql_lang_filter) ";
     }
-
+    if($sql_product_filter != "") {
+        $sql_filter .= " AND ($sql_product_filter) ";
+    }
     if($sql_status_filter != "") {
         $sql_filter .= " AND ($sql_status_filter) ";
     }
@@ -138,6 +176,9 @@ function se_get_products($start,$limit,$filter) {
     }
     if($sql_label_filter != "") {
         $sql_filter .= " AND ($sql_label_filter) ";
+    }
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
     }
 
     if(SE_SECTION == 'frontend') {
@@ -761,4 +802,98 @@ function se_get_order_details($id) {
 	]);
 	
 	return $order;
+}
+
+/**
+ * @param int $type 1 or 2
+ * @param string $lang en, de ...
+ * @return array
+ */
+function se_get_product_filter_groups($lang) {
+
+    global $db_content, $languagePack, $lang_codes;
+    if($lang == 'all' OR $lang == '') {
+        $lang_filter = $lang_codes;
+    } else {
+        $lang_filter = [$lang];
+    }
+
+    $filters = $db_content->select("se_filter", "*",[
+        "AND" => [
+            "filter_lang" => $lang_filter,
+            "filter_type" => 1
+        ],
+        "ORDER" => [
+                "filter_priority" => "DESC"
+        ]
+    ]);
+
+
+    return $filters;
+}
+
+function se_get_product_filter_values($pid) {
+
+    global $db_content;
+    $pid = (int) $pid;
+
+    $items = $db_content->select("se_filter", "*",[
+        "AND" => [
+            "filter_parent_id" => $pid,
+            "filter_type" => 2
+        ],
+        "ORDER" => [
+            "filter_priority" => "DESC"
+        ]
+    ]);
+
+    return $items;
+}
+
+
+function se_get_product_filter($lang) {
+
+    global $languagePack;
+
+    if($lang == '') {
+        $lang = $languagePack;
+    }
+
+    $filter_groups = se_get_product_filter_groups($lang);
+
+    // loop through groups
+    foreach($filter_groups as $k => $v) {
+
+        $filter[$k] = [
+            "title" => $v['filter_title'],
+            "id" => $v['filter_id'],
+            "input_type" => $v['filter_input_type']
+        ];
+
+        $get_filter_items = se_get_product_filter_values($v['filter_id']);
+        // loop through items
+        foreach($get_filter_items as $filter_item) {
+
+            if(in_array($filter_item['filter_id'],$_SESSION['custom_filter'])) {
+                $class = 'active';
+                $checked = 'checked';
+            } else {
+                $class = '';
+                $checked = '';
+            }
+
+            $filter[$k]['items'][] = [
+                "id" => $filter_item['filter_id'],
+                "title" => $filter_item['filter_title'],
+                "class" => $class,
+                "checked" => $checked
+            ];
+
+        }
+
+
+    }
+
+
+    return $filter;
 }

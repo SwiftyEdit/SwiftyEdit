@@ -113,6 +113,7 @@ if($show_images[0]['media_file'] != "") {
     $first_product_img_alt = $show_images[0]['media_alt'];
     $first_product_img_title = $show_images[0]['media_title'];
     $first_product_img_caption = $show_images[0]['media_text'];
+    $first_product_image = $first_product_img_src;
 } else if($se_prefs['prefs_shop_default_banner'] == "without_image") {
     $first_product_image = '';
 } else {
