@@ -20,7 +20,7 @@ $display_mode = 'list_posts';
 /* defaults */
 $posts_start = 0;
 $posts_limit = (int) $se_prefs['prefs_posts_entries_per_page'];
-if($posts_limit == '') {
+if($posts_limit == '' || $posts_limit < 1) {
 	$posts_limit = 10;
 }
 $posts_order = 'id';
