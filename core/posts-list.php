@@ -118,6 +118,8 @@ foreach($get_posts as $k => $post) {
 	$post_releasedate_day = date('d',$get_posts[$k]['post_releasedate']);
 	$post_releasedate_time = date($se_prefs['prefs_timeformat'],$get_posts[$k]['post_releasedate']);
 
+    $get_posts[$k]['btn_open_post'] = $lang['btn_read_more'];
+    $form_action = '/'.$swifty_slug.$mod_slug;
 
 	
 	/* entry date */
@@ -163,6 +165,8 @@ foreach($get_posts as $k => $post) {
 			}
 		}
         $get_posts[$k]['post_thumbnails'] = $gallery_thumbs;
+        $btn_show_gallery = str_replace("{cnt_images}", $cnt_thumbs_array, $lang['btn_show_gallery']);
+        $get_posts[$k]['btn_open_post'] = $btn_show_gallery;
 	}
 
 	if($get_posts[$k]['post_type'] == 'v') {
@@ -239,30 +243,6 @@ foreach($get_posts as $k => $post) {
 	$redirect = '?goto='.$get_posts[$k]['post_id'];
     $get_posts[$k]['post_external_link'] = $get_posts[$k]['post_link'];
     $get_posts[$k]['post_external_redirect'] = $redirect;
-
-
-    $get_posts[$k]['btn_open_post'] = $lang['btn_read_more'];
-
-	/* gallery */
-	if($get_posts[$k]['post_type'] == 'g') {
-        $lang['btn_show_gallery'] = str_replace("{cnt_images}", $cnt_thumbs_array, $lang['btn_show_gallery']);
-        $get_posts[$k]['btn_open_post'] = $lang['btn_show_gallery'];
-	}
-
-
-	//$this_entry = str_replace('{post_href}', $post_href, $this_entry);
-
-
-	/* file */
-	//$this_entry = str_replace("{lang_download}", $lang['btn_download'], $this_entry);
-	//$this_entry = str_replace("{post_file_version}", $get_posts[$k]['post_file_version'], $this_entry);
-	//$this_entry = str_replace("{post_file_license}", $get_posts[$k]['post_file_license'], $this_entry);
-	//$filepath = str_replace('../','/',$get_posts[$k]['post_file_attachment']);
-	//$this_entry = str_replace("{post_file_attachment}", $filepath, $this_entry);
-	//$this_entry = str_replace("{post_file_attachment_external}", $get_posts[$k]['post_file_attachment_external'], $this_entry);
-	
-	$form_action = '/'.$swifty_slug.$mod_slug;
-	//$this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
 
     if ($get_posts[$k]['post_status'] == '2') {
