@@ -91,7 +91,7 @@ if($get_cd['user_firstname'] == '' ||
 
 $client_data .= $get_cd['user_firstname']. ' '.$get_cd['user_lastname'].'<br>';
 $client_data .= $get_cd['user_street']. ' '.$get_cd['user_street_nbr'].'<br>';
-$client_data .= $get_cd['user_zipcode']. ' '.$get_cd['user_city'].'<br>';
+$client_data .= $get_cd['user_zip']. ' '.$get_cd['user_city'].'<br>';
 
 
 for($i=0;$i<$cnt_cart_items;$i++) {
