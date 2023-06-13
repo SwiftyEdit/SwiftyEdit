@@ -283,9 +283,9 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-05-30" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-06-13" type="text/css" media="screen, projection">
 
-    <script src="theme/js/backend.min.js?v=2023-05-30"></script>
+    <script src="theme/js/backend.min.js?v=2023-06-13"></script>
     <script src="theme/js/tinymce/tinymce.min.js"></script>
     <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
     <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>
