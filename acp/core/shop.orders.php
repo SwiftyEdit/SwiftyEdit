@@ -91,10 +91,22 @@ $order_filter = array();
 $order_filter['status_payment'] = [];
 $order_filter['status_shipping'] = [];
 $order_filter['status_order'] = [];
-$start = 0;
-$limit = 100;
+$sql_start_nbr = 0;
+$sql_items_limit = 5;
 $order_sort['key'] = '';
 $order_sort['direction'] = '';
+
+/* items per page */
+if(!isset($_SESSION['items_per_page'])) {
+    $_SESSION['items_per_page'] = $sql_items_limit;
+}
+if(isset($_POST['items_per_page'])) {
+    $_SESSION['items_per_page'] = (int) $_POST['items_per_page'];
+}
+
+if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
+    $sql_start_nbr = (int) $_GET['sql_start_nbr'];
+}
 
 /* default: check all orders */
 if(!isset($_SESSION['checked_order_filter'])) {
@@ -137,12 +149,16 @@ if(strpos("$_SESSION[checked_order_filter]", "-canceled-") !== false) {
 
 
 
-$orders = se_get_orders('all', $order_filter, $order_sort, $start, $limit);
+$orders = se_get_orders('all', $order_filter, $order_sort, $sql_start_nbr, $_SESSION['items_per_page']);
 if(is_array($orders)) {
     $cnt_orders = count($orders);
+    $cnt_matching_orders = $orders[0]['cnt_matching_orders'];
 } else {
     $cnt_orders = 0;
 }
+
+$pagination_query = '?tn=shop&sub=shop-orders&sql_start_nbr={page}';
+$pagination = se_return_pagination($pagination_query,$cnt_matching_orders,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
 echo '<div class="subHeader">';
 echo $lang['nav_orders'] .' '. $cnt_orders;
@@ -245,6 +261,18 @@ if(is_numeric($_POST['open_order'])) {
     echo $order_form_tpl;
 
 }
+
+echo '<div class="d-flex flex-row-reverse">';
+echo '<div class="ps-3">';
+echo '<form action="?tn=shop&sub=shop-orders" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+echo '<div class="p-0">';
+echo $pagination;
+echo '</div>';
+echo '</div>';
 
 
 /* list orders */

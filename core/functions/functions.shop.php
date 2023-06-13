@@ -777,8 +777,20 @@ function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
 			],
 			"ORDER" => [
                 $sort['key'] => $sort['direction']
-			]
+			],
+            "LIMIT" => [$start,$limit]
 		]);
+
+        $orders_cnt = $db_content->count("se_orders",[
+            "AND" => [
+                "order_status" => $set_filter_status_order,
+                "order_status_shipping" => $set_filter_status_shipping,
+                "order_status_payment" => $set_filter_status_payment
+            ]
+        ]);
+
+        // number of orders matching the filter
+        $orders[0]['cnt_matching_orders'] = $orders_cnt;
 
 	} else {
 		return;
