@@ -89,6 +89,7 @@ $lang['btn_download'] = "Download";
 $lang['btn_show_gallery'] = "Alle {cnt_images} Bilder anzeigen";
 $lang['btn_open_product'] = "Weitere Informationen";
 $lang['btn_add_to_cart'] = "In den Warenkorb";
+$lang['btn_all'] = "Alle";
 
 /* Messages */
 $lang['msg_missingfield'] = "Alle Felder müssen ausgefüllt werden";

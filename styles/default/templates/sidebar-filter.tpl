@@ -20,7 +20,7 @@ example for links:
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="sf_radio[{$groups.id}][]" value="all"
                                        id="sf_id_all{$groups.id}" checked onchange="this.form.submit()">
-                                <label class="form-check-label" for="sf_id_all{$groups.id}">ALL</label>
+                                <label class="form-check-label" for="sf_id_all{$groups.id}">{$lang_btn_all}</label>
                             </div>
 
                             {foreach $groups.items as $item}
