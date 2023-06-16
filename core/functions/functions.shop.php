@@ -880,7 +880,8 @@ function se_get_product_filter($lang) {
             "title" => $v['filter_title'],
             "id" => $v['filter_id'],
             "input_type" => $v['filter_input_type'],
-            "categories" => $v['filter_categories']
+            "categories" => $v['filter_categories'],
+            "description" => $v['filter_description']
         ];
 
         $get_filter_items = se_get_product_filter_values($v['filter_id']);
@@ -898,6 +899,7 @@ function se_get_product_filter($lang) {
             $filter[$k]['items'][] = [
                 "id" => $filter_item['filter_id'],
                 "title" => $filter_item['filter_title'],
+                "description" => $filter_item['filter_description'],
                 "class" => $class,
                 "checked" => $checked
             ];
