@@ -108,29 +108,64 @@ if($show_form !== false)  {
     $select_input_type .= '<option value="1" '.$sel_radio.'>Radio</option>';
     $select_input_type .= '</select>';
 
+    /* select categories */
+    $categories = se_get_categories();
+    if(isset($group_data['filter_categories'])) {
+        $get_categories = explode(",",$group_data['filter_categories']);
+        $checked_all = '';
+        if($get_categories[0] == 'all') {
+            $checked_all = 'checked';
+        }
+    }
+
+    $cats = '<div class="form-check">';
+    $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="all" id="cat_id_all" '.$checked_all.'>';
+    $cats .= '<label class="form-check-label" for="cat_id_all">'.$lang['label_all_categories'].'</label>';
+    $cats .= '</div><hr>';
+    foreach($categories as $k => $v) {
+
+        $check_this = '';
+        if(is_array($get_categories)) {
+            if (in_array($v['cat_id'], $get_categories)) {
+                $check_this = 'checked';
+            }
+        }
+
+        $cats .= '<div class="form-check">';
+        $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="'.$v['cat_id'].'" id="cat_id'.$k.'" '.$check_this.'>';
+        $cats .= '<label class="form-check-label" for="cat_id'.$k.'">'.$v['cat_id'].' '.$v['cat_name'].'</label>';
+        $cats .= '</div>';
+    }
+
 
     if($mode == 'new_group') {
         $form_tpl = str_replace('{val_group_name}','',$form_tpl);
+        $form_tpl = str_replace('{val_group_description}','',$form_tpl);
         $form_tpl = str_replace('{val_group_priority}','',$form_tpl);
         $form_tpl = str_replace('{select_language}',"$select_group_language",$form_tpl);
         $form_tpl = str_replace('{select_input_type}',"$select_input_type",$form_tpl);
+        $form_tpl = str_replace('{select_categories}',"$cats",$form_tpl);
         $form_tpl = str_replace('{id}',"",$form_tpl);
     }
     if($mode == 'edit_group') {
         $form_tpl = str_replace('{val_group_name}',$group_data['filter_title'],$form_tpl);
+        $form_tpl = str_replace('{val_group_description}',$group_data['filter_description'],$form_tpl);
         $form_tpl = str_replace('{val_group_priority}',$group_data['filter_priority'],$form_tpl);
         $form_tpl = str_replace('{select_language}',"$select_group_language",$form_tpl);
         $form_tpl = str_replace('{select_input_type}',"$select_input_type",$form_tpl);
+        $form_tpl = str_replace('{select_categories}',"$cats",$form_tpl);
         $form_tpl = str_replace('{id}',$get_data_id,$form_tpl);
     }
     if($mode == 'new_value') {
         $form_tpl = str_replace('{select_parent_group}',"$select_parent_id",$form_tpl);
         $form_tpl = str_replace('{value_priority}','',$form_tpl);
         $form_tpl = str_replace('{value_name}','',$form_tpl);
+        $form_tpl = str_replace('{value_description}','',$form_tpl);
         $form_tpl = str_replace('{id}',"",$form_tpl);
     }
     if($mode == 'edit_value') {
         $form_tpl = str_replace('{value_name}',$value_data['filter_title'],$form_tpl);
+        $form_tpl = str_replace('{value_description}',$value_data['filter_description'],$form_tpl);
         $form_tpl = str_replace('{value_priority}',$value_data['filter_priority'],$form_tpl);
         $form_tpl = str_replace('{select_parent_group}',"$select_parent_id",$form_tpl);
         $form_tpl = str_replace('{id}',$get_data_id,$form_tpl);

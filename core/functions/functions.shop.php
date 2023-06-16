@@ -879,7 +879,8 @@ function se_get_product_filter($lang) {
         $filter[$k] = [
             "title" => $v['filter_title'],
             "id" => $v['filter_id'],
-            "input_type" => $v['filter_input_type']
+            "input_type" => $v['filter_input_type'],
+            "categories" => $v['filter_categories']
         ];
 
         $get_filter_items = se_get_product_filter_values($v['filter_id']);
