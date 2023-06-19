@@ -155,13 +155,14 @@ if(is_array($orders)) {
     $cnt_matching_orders = $orders[0]['cnt_matching_orders'];
 } else {
     $cnt_orders = 0;
+    $cnt_matching_orders = 0;
 }
 
 $pagination_query = '?tn=shop&sub=shop-orders&sql_start_nbr={page}';
 $pagination = se_return_pagination($pagination_query,$cnt_matching_orders,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
 echo '<div class="subHeader">';
-echo $lang['nav_orders'] .' '. $cnt_orders;
+echo $lang['nav_orders'] .' '. $cnt_matching_orders;
 echo '</div>';
 
 // reset message
@@ -360,6 +361,8 @@ for($i=0;$i<$cnt_orders;$i++) {
     $btn_open_order .= $hidden_csrf_token;
     $btn_open_order .= '</form>';
 
+    $order_invoice_address_Str = str_replace("<br>"," ",$orders[$i]['order_invoice_address']);
+
     echo '<tr>';
     echo '<td>'.$orders[$i]['id'].'</td>';
     echo '<td>'.$orders[$i]['order_nbr'].'</td>';
@@ -369,6 +372,10 @@ for($i=0;$i<$cnt_orders;$i++) {
     echo '<td class="'.$class_shipping.'">'.$select_status_shipping.'</td>';
     echo '<td class="'.$class_status_order.'">'.$select_status_order.'</td>';
     echo '<td>'.$btn_open_order.'</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td colspan="8" class="text-opacity-50"><small>'.$order_invoice_address_Str.'</small></td>';
     echo '</tr>';
 
 }
