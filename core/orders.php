@@ -15,20 +15,21 @@ $smarty->assign('order_page_uri_uri', $order_page_uri);
 if(isset($_POST['dl_p_file']) OR isset($_POST['dl_p_file_ext'])) {
 	
 	if(is_numeric($_POST['dl_p_file'])) {
-		$post_id = (int) $_POST['dl_p_file'];
+		$product_id = (int) $_POST['dl_p_file'];
 		$mode = 'internal_file';
 	}
 	if(is_numeric($_POST['dl_p_file_ext'])) {
-		$post_id = (int) $_POST['dl_p_file_ext'];
+        $product_id = (int) $_POST['dl_p_file_ext'];
 		$mode = 'external_file_file';
 	}
 	
-	$this_item = se_get_post_data($post_id);
-	
+	$this_item = se_get_product_data($product_id);
+
 	if($mode == 'internal_file') {
-		$download_file = str_replace('../content/','./content/',$this_item['post_file_attachment']);
+		//$download_file = str_replace('../content/','./content/',$this_item['file_attachment_as']);
+        $download_file = SE_CONTENT.'/files'.$this_item['file_attachment_as'];
 		$pathinfo = pathinfo($download_file);
-		
+		//print_r($pathinfo);
 		$set_filename = $_POST['order_id'];
 
 		if(is_file($download_file)) {
@@ -41,10 +42,12 @@ if(isset($_POST['dl_p_file']) OR isset($_POST['dl_p_file_ext'])) {
 			header('Content-Length: ' . filesize($download_file));
 			readfile($download_file);
 			exit;
-		}	
+		} else {
+            echo '<div class="alert alert-warning">DOWNLOAD - FILE NOT FOUND</div>';
+        }
 		
 	} else {
-		$download = $this_item['post_file_attachment_external'];
+		$download = $this_item['file_attachment_external'];
 		header("Location: $download");
 		exit;
 	}
