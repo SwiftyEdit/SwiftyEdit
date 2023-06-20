@@ -19,17 +19,17 @@
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#content">{post_tab_descriptions}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#product">{post_tab_product}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#downloads">{post_tab_downloads}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#prices_delivery">{post_tab_prices_delivery}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#features">{post_tab_features}</a></li>
+                                                href="#product">{post_tab_product}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#links">{post_tab_links}</a></li>
+                                                href="#features">{post_tab_features}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter">Filter</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                href="#links" title="{post_tab_links}"><i class="bi bi-link"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                href="#downloads" title="{post_tab_downloads}"><i class="bi bi-download"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter" title="Filter"><i class="bi bi-filter"></i></a></li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -205,43 +205,9 @@
 
                             </div>
 
-                            <hr>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>{label_product_nbr_stock}</label>
-                                        <input class='form-control' id="nbr_stock" name="product_nbr_stock" type="text"
-                                               value="{product_nbr_stock}">
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="product_ignore_stock"
-                                               value="1" id="ignoreStock" {checkIgnoreStock}>
-                                        <label class="form-check-label"
-                                               for="ignoreStock">{label_product_ignore_stock}</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>{label_product_cnt_sales}</label>
-                                        <input class='form-control' id="cnt_sales" name="product_cnt_sales" type="text"
-                                               value="{product_cnt_sales}">
-                                    </div>
-                                </div>
-                            </div>
 
-                            <hr>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label>{label_product_cart_mode}</label>
-                                    {select_product_cart_mode}
-                                </div>
-                                <div class="col-md-6">
-                                    <label>{label_product_pricetag_mode}</label>
-                                    {select_product_pricetag_mode}
-                                </div>
-                            </div>
 
                         </div> <!-- #product -->
 
@@ -277,23 +243,6 @@
                             <div class="row">
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <label>{label_product_amount}</label>
-                                        <input class='form-control' name="product_amount" type="text"
-                                               value="{product_amount}">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>{label_product_unit}</label>
-                                        <input class='form-control' name="product_unit" type="text"
-                                               value="{product_unit}">
-                                    </div>
-                                </div>
-                                <div class="col">
-
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
                                         <label>{label_product_currency}</label>
                                         <input class='form-control' name="product_currency" type="text"
                                                value="{product_currency}">
@@ -311,7 +260,24 @@
                             <hr>
 
                             <div class="row">
-                                <div class="col-md-4">
+
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>{label_product_amount}</label>
+                                        <input class='form-control' name="product_amount" type="number"
+                                               value="{product_amount}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>{label_product_unit}</label>
+                                        <input class='form-control' name="product_unit" type="text"
+                                               value="{product_unit}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
                                     <div class="">
                                         <label>{label_product_price} {label_product_net}</label>
                                         <input class='form-control' id="price" name="product_price_net" type="text"
@@ -319,7 +285,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-2">
                                     <div class="">
                                         <label>{label_product_tax}</label>
                                         {select_tax}
@@ -327,12 +293,37 @@
                                 </div>
 
 
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="">
                                         <label>{label_product_price} {label_product_gross} <small>({label_product_net}
                                                 <span id="calculated_net"></span>)</small></label>
                                         <input class='form-control' id="price_total" name="product_price_gross"
                                                type="text" value="{product_price_gross}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{label_product_nbr_stock}</label>
+                                        <input class='form-control' id="nbr_stock" name="product_nbr_stock" type="text"
+                                               value="{product_nbr_stock}">
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="product_ignore_stock"
+                                               value="1" id="ignoreStock" {checkIgnoreStock}>
+                                        <label class="form-check-label"
+                                               for="ignoreStock">{label_product_ignore_stock}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{label_product_cnt_sales}</label>
+                                        <input class='form-control' id="cnt_sales" name="product_cnt_sales" type="text"
+                                               value="{product_cnt_sales}">
                                     </div>
                                 </div>
                             </div>
@@ -359,6 +350,19 @@
                                         <label>{label_product_delivery_time}</label>
                                         {select_delivery_time}
                                     </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>{label_product_cart_mode}</label>
+                                    {select_product_cart_mode}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{label_product_pricetag_mode}</label>
+                                    {select_product_pricetag_mode}
                                 </div>
                             </div>
 
@@ -487,17 +491,17 @@
                                 <label>{label_slug}</label>
                                 <input class='form-control' name="post_slug" type="text" value="{slug}">
                             </div>
-                            <fieldset>
-                                <legend>RSS</legend>
+
+                                <h5 class="heading-line">RSS</h5>
                                 <div class="form-group">
-                                    <label>{rss}</label>
+                                    <label>{label_activate_rss}</label>
                                     {select_rss}
                                 </div>
                                 <div class="form-group">
                                     <label>{label_rss_url}</label>
                                     <input class='form-control' name="rss_url" type="text" value="{rss_url}">
                                 </div>
-                            </fieldset>
+
                         </div>
                         <div class="tab-pane fade" id="filter">
                             <h3>Filter</h3>

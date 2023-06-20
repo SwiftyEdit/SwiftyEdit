@@ -503,7 +503,9 @@ $get_product_filter = json_decode($product_data['filter'],true);
 
 $filter_list = '';
 foreach($all_filters as $k => $v) {
-    $filter_list .= '<h5>'.$v['filter_title'].'</h5>';
+    $filter_list .= '<div class="card mb-1">';
+    $filter_list .= '<div class="card-header">'.$v['filter_title'].'</div>';
+    $filter_list .= '<div class="card-body">';
     $get_filter_items = se_get_product_filter_values($v['filter_id']);
     foreach($get_filter_items as $filter_item) {
         $filter_id = $filter_item['filter_id'];
@@ -520,6 +522,8 @@ foreach($all_filters as $k => $v) {
         $filter_list .= '<label class="form-check-label" for="filter_'.$filter_id.'">'.$filter_item['filter_title'].'</label>';
         $filter_list .= '</div>';
     }
+    $filter_list .= '</div>';
+    $filter_list .= '</div>';
 }
 
 
