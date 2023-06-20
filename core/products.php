@@ -180,6 +180,7 @@ if($this_page_categories[0] == 'all') {
 $get_product_filter = se_get_product_filter($languagePack);
 
 /* check which filters should be displayed on this page */
+$product_filter = array();
 foreach($get_product_filter as $k => $v) {
 
     $this_filters_array = explode(",",$v['categories']);
