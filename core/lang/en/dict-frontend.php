@@ -95,6 +95,7 @@ $lang['btn_download'] = "Download";
 $lang['btn_show_gallery'] = "Show {cnt_images} Images";
 $lang['btn_open_product'] = "More Informations";
 $lang['btn_add_to_cart'] = "Add to shopping cart";
+$lang['btn_all'] = "Alle";
 
 /* Messages */
 $lang['msg_missingfield'] 		= "All fields are required";

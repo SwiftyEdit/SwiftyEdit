@@ -33,7 +33,7 @@ if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == 'administrator'
 }
 
 $posts_filter['languages'] = $page_contents['page_language'];
-$posts_filter['types'] = $page_contents['page_posts_types'];
+$posts_filter['types'] = str_replace(",","-",$page_contents['page_posts_types']);
 $posts_filter['status'] = $str_status;
 $posts_filter['categories'] = $page_contents['page_posts_categories'];
 

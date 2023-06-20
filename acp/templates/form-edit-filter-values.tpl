@@ -16,6 +16,10 @@
                     <label>{label_title}</label>
                     <input type="text" class="form-control" name="filter_name" value="{value_name}">
                 </div>
+                <div class="mb-3">
+                    <label>{label_description}</label>
+                    <textarea class="form-control" name="filter_description">{value_description}</textarea>
+                </div>
             </div>
             <div class="col-3">
                 <div class="mb-3">

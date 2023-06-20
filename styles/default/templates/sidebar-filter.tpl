@@ -15,12 +15,17 @@ example for links:
                 <div class="card mb-1">
 
                     {if $groups.input_type == 1}
-                        <div class="card-header fw-bold">{$groups.title}</div>
+                        <div class="card-header fw-bold">
+                            {$groups.title}
+                            {if $groups.description != ""}
+                            <span title="{$groups.description}"><i class="bi-info-circle"></i></span>
+                            {/if}
+                        </div>
                         <div class="card-body">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="sf_radio[{$groups.id}][]" value="all"
                                        id="sf_id_all{$groups.id}" checked onchange="this.form.submit()">
-                                <label class="form-check-label" for="sf_id_all{$groups.id}">ALL</label>
+                                <label class="form-check-label" for="sf_id_all{$groups.id}">{$lang_btn_all}</label>
                             </div>
 
                             {foreach $groups.items as $item}
@@ -29,7 +34,7 @@ example for links:
                                     <input class="form-check-input" type="radio" name="sf_radio[{$groups.id}][]"
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
-                                    <label class="form-check-label" for="sf_id_{$item.id}">{$item.title}</label>
+                                    <label class="form-check-label" for="sf_id_{$item.id}"><span title="{$item.description}">{$item.title}</span></label>
                                 </div>
                             {/foreach}
                         </div>
@@ -42,7 +47,7 @@ example for links:
                                     <input class="form-check-input" type="checkbox" name="sf_checkbox[]"
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
-                                    <label class="form-check-label" for="sf_id_{$item.id}">{$item.title}</label>
+                                    <label class="form-check-label" for="sf_id_{$item.id}"><span title="{$item.description}">{$item.title}</span></label>
                                 </div>
                             {/foreach}
                         </div>

@@ -165,13 +165,37 @@ if(substr("$mod_slug", -5) == '.html') {
     $display_mode = 'show_product';
 }
 
-$product_filter = se_get_product_filter($languagePack);
-
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
 
 $this_page_categories = explode(',',$page_contents['page_posts_categories']);
+if($this_page_categories[0] == 'all') {
+    foreach($all_categories as $cat) {
+        $this_page_categories[] = $cat['cat_id'];
+    }
+}
+
+/* get all filters */
+$get_product_filter = se_get_product_filter($languagePack);
+
+/* check which filters should be displayed on this page */
+$product_filter = array();
+foreach($get_product_filter as $k => $v) {
+
+    $this_filters_array = explode(",",$v['categories']);
+
+    foreach($this_page_categories as $c) {
+        if(in_array("$c",$this_filters_array)) {
+            $product_filter[] = $get_product_filter[$k];
+            continue;
+        }
+        if(in_array("all",$this_filters_array)) {
+            $product_filter[] = $get_product_filter[$k];
+        }
+    }
+}
+$product_filter = array_values(array_column($product_filter, null, 'title'));
 
 foreach($all_categories as $cats) {
 

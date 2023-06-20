@@ -16,6 +16,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'new_group') {
 
     $data = $db_content->insert("se_filter", [
         "filter_title" =>  $filter_group_name,
+        "filter_description" =>  $filter_group_description,
         "filter_lang" =>  $filter_group_lang,
         "filter_priority" =>  $filter_priority,
         "filter_type" =>  $filter_type,
@@ -35,11 +36,15 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'edit_group') {
     $filter_parent_id = (int) $_POST['filter_parent_id'];
     $filter_priority = (int) $_POST['filter_group_priority'];
 
+    $filter_cats = implode(",",$_POST['filter_cats']);
+
     $data = $db_content->update("se_filter", [
         "filter_title" =>  $filter_group_name,
+        "filter_description" =>  $filter_group_description,
         "filter_lang" =>  $filter_group_lang,
         "filter_priority" =>  $filter_priority,
-        "filter_input_type" =>  $filter_input_type
+        "filter_input_type" =>  $filter_input_type,
+        "filter_categories" =>  $filter_cats
         ],[
             "filter_id" => (int) $_POST['group_id']
     ]);
@@ -57,6 +62,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'new_value') {
 
     $data = $db_content->insert("se_filter", [
         "filter_title" =>  $filter_name,
+        "filter_description" =>  $filter_description,
         "filter_priority" =>  $filter_priority,
         "filter_parent_id" =>  $filter_parent_id,
         "filter_type" =>  2
@@ -76,6 +82,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'edit_value') {
 
     $data = $db_content->update("se_filter", [
         "filter_title" =>  $filter_name,
+        "filter_description" =>  $filter_description,
         "filter_priority" =>  $filter_priority,
         "filter_parent_id" =>  $filter_parent_id
     ],[

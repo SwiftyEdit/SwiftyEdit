@@ -777,8 +777,20 @@ function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
 			],
 			"ORDER" => [
                 $sort['key'] => $sort['direction']
-			]
+			],
+            "LIMIT" => [$start,$limit]
 		]);
+
+        $orders_cnt = $db_content->count("se_orders",[
+            "AND" => [
+                "order_status" => $set_filter_status_order,
+                "order_status_shipping" => $set_filter_status_shipping,
+                "order_status_payment" => $set_filter_status_payment
+            ]
+        ]);
+
+        // number of orders matching the filter
+        $orders[0]['cnt_matching_orders'] = $orders_cnt;
 
 	} else {
 		return;
@@ -867,7 +879,9 @@ function se_get_product_filter($lang) {
         $filter[$k] = [
             "title" => $v['filter_title'],
             "id" => $v['filter_id'],
-            "input_type" => $v['filter_input_type']
+            "input_type" => $v['filter_input_type'],
+            "categories" => $v['filter_categories'],
+            "description" => $v['filter_description']
         ];
 
         $get_filter_items = se_get_product_filter_values($v['filter_id']);
@@ -885,6 +899,7 @@ function se_get_product_filter($lang) {
             $filter[$k]['items'][] = [
                 "id" => $filter_item['filter_id'],
                 "title" => $filter_item['filter_title'],
+                "description" => $filter_item['filter_description'],
                 "class" => $class,
                 "checked" => $checked
             ];
