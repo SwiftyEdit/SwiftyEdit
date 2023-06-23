@@ -31,6 +31,7 @@ if(isset($_POST)) {
 
 echo '<div class="subHeader">'.$icon['file_earmark_post'].' '.$lang['nav_blog'].'</div>';
 
+echo '<div class="card card-body">';
 
 echo '<form action="?tn=system&sub=posts" method="POST">';
 
@@ -71,30 +72,6 @@ echo '</select>';
 echo '</div>';
 echo '</fieldset>';
 
-
-
-
-/* URL and Permalinks */
-
-echo '<fieldset>';
-echo '<legend>URL</legend>';
-
-if($prefs_posts_url_pattern == "by_date") {
-	$select_modus_date = "checked";
-} else {
-	$select_modus_title = "checked";
-}
-
-echo '<div class="form-check">
-				<input class="form-check-input" type="radio" name="prefs_posts_url_pattern" value="by_date" id="pattern_date" '.$select_modus_date.'>
-				<label for="pattern_date">' . $lang['url_by_date'] . '</label>
-	 		</div>';
-echo '<div class="form-check">
-				<input class="form-check-input" type="radio" name="prefs_posts_url_pattern" value="by_filename" id="pattern_title" '.$select_modus_title.'>
-				<label for="pattern_title">' . $lang['url_by_title'] . '</label>
-	 		</div>';
-
-echo '</fieldset>';
 
 
 
@@ -161,6 +138,4 @@ echo '<input type="submit" class="btn btn-success" name="update_posts" value="'.
 echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 
 echo '</form>';
-
-
-?>
+echo '</div>';
