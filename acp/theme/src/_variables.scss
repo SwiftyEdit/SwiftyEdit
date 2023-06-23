@@ -3,14 +3,37 @@
  * light mode
  */
 
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
 
+$blue: #2777ee !default;
+$indigo: #6100ff !default;
+$purple:  #6f42c1 !default;
+$pink: #ff1083 !default;
+$red:     #dc3545 !default;
+$orange:  #fd7e14 !default;
+$yellow:  #ffc107 !default;
+$green:   #198754 !default;
+$teal: #25d99a !default;
+$cyan: #03d1fa !default;
 
 $primary: #896e9b;
 $secondary: #978ba2;
-$success: #9fb633;
+$success: #9cb642;
 $info:  #64C9E0;
 $warning: #FF9407;
-$danger: #9B1A26;
+$danger: #b7212f;
+
+$code-color: #ad2d6b;
 
 $lighten: mix(#ffffff,$primary,75%);
 $darken: mix(#000000,$primary,75%);
