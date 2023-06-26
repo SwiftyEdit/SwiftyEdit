@@ -58,8 +58,8 @@ if(isset($_GET['edit_value'])) {
 echo '<div class="subHeader d-flex">';
 echo $icon['filter'] .' Filter';
 echo '<div class="btn-group ms-auto">';
-echo '<a href="?tn=shop&sub=shop-filter&new=group" class="btn btn-default">'.$icon['plus'].' New Group</a>';
-echo '<a href="?tn=shop&sub=shop-filter&new=value" class="btn btn-default">'.$icon['plus'].' New Value</a>';
+echo '<a href="?tn=shop&sub=shop-filter&new=group" class="btn btn-default">'.$icon['plus'].' '.$lang['btn_new_group'].'</a>';
+echo '<a href="?tn=shop&sub=shop-filter&new=value" class="btn btn-default">'.$icon['plus'].' '.$lang['btn_new_value'].'</a>';
 echo '</div>';
 echo '</div>';
 

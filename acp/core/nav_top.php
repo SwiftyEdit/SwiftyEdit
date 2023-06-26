@@ -40,7 +40,7 @@ if(is_file("$my_avatar_path")) {
     $user_avatar = '<img src="'.$my_avatar_path.'" class="rounded-circle border img-responsive align-top me-1" width="22" height="22">';
 }
 
-echo '<div class="dropstart">';
+echo '<div class="dropstart me-1">';
 echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$user_avatar.$_SESSION['user_nick'].'</a>';
 echo '<ul class="dropdown-menu">';
 echo '<li><a class="dropdown-item" href="/profile/">Profil</a></li>';

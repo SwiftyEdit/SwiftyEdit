@@ -50,6 +50,12 @@ $color-mode-type: data;
   --status-private-color: #{$status-private-color};
   --status-redirect-color: #{$status-redirect-color};
   --subheader-bg: #{$subHeader_bg};
+
+  --#{$prefix}danger: #{$danger};
+  --#{$prefix}danger-rgb: #{to-rgb($danger)};
+  --#{$prefix}success: #{$success};
+  --#{$prefix}success-rgb: #{to-rgb($success)};
+
 }
 
 [data-bs-theme="dark"] {
@@ -81,6 +87,11 @@ $color-mode-type: data;
     --status-private-color: #{$status-private-color-dark};
     --status-redirect-color: #{$status-redirect-color-dark};
     --subheader-bg: #{$subHeader_bg_dark};
+
+    --#{$prefix}danger: #{$danger-dark};
+    --#{$prefix}danger-rgb: #{to-rgb($danger-dark)};
+    --#{$prefix}success: #{$success-dark};
+    --#{$prefix}success-rgb: #{to-rgb($success-dark)};
 }
 
 
@@ -523,6 +534,14 @@ div.tox {
 
   .tox-statusbar {
     background: var(--bs-widget-bg-400) !important;
+    button, a, div {
+      color: var(--bs-link-color);
+    }
+    .tox-statusbar__branding {
+      padding: 1px 5px;
+      background: var(--bs-link-color);
+      border-radius: 3px;
+    }
   }
 
   .tox-tbtn, button.tox-tbtn, .tox-mbtn {
