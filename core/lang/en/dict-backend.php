@@ -62,6 +62,9 @@ $lang += [
     'btn_sort_linkname' => 'Linkname',
     'btn_sort_edit' => 'Last edit',
 
+    'btn_new_group' => 'New Group',
+    'btn_new_value' => 'New Value',
+
     'pagination_page' => 'Page',
 
     'missing_title' => 'no title ...'
