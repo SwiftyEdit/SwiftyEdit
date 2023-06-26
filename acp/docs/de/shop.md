@@ -21,4 +21,4 @@ In der folgenden Eingabemaske kannst Du alle nötigen Details zu Deinem Produkt 
 
 Du kannst auch digitale Produkte (z.B. eBooks) anbieten. 
 Lade dazu Dein Dokument über die Dateiverwaltung hoch und wähle diese Datei dann hier aus. 
-Natürlich kannst DU auch kostenlose Dateien an ein Produkt anhängen.
+Natürlich kannst Du auch kostenlose Dateien an ein Produkt anhängen.
