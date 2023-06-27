@@ -6,6 +6,8 @@ group: backend
 priority: 700
 ---
 
+# Inbox
+
 <kbd>Backend</kbd> <kbd>Inbox</kbd>
 
 In der Inbox findest Du die drei Bereiche E-Mails, Kommentare und Bewertungen.
