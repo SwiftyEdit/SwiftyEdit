@@ -329,7 +329,7 @@ $(function() {
 			success: function(response){ 
 				 // Add response in Modal body
 				$('#infoModal .modal-body').html(response);
-
+				$('#infoModal .modal-header .modal-title').html('Page ID #' + pageid);
 			}
 		});
 	});
