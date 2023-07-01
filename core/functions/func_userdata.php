@@ -136,9 +136,7 @@ function randpsw($length=8) {
 function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 
 	global $db_user;
-    $result  = array();
 
-		
 	$login_hash  = md5($psw.$user);
 	
 	$hash = $db_user->get("se_user", ["user_psw_hash"], [
@@ -170,10 +168,10 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 		
 	}
 	
-	$cnt_result = count($result);
+	//$cnt_result = count($result);
 	
-	if($cnt_result>1) {
-		
+	//if($cnt_result>1) {
+    if(is_array($result)) {
 
 		se_start_user_session($result);
 
@@ -225,6 +223,7 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 		
 	} else {
 		session_destroy();
+        return 'failed';
 	}
 
 }

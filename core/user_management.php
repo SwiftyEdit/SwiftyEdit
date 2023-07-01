@@ -14,7 +14,12 @@ if(isset($_POST['login'])) {
 		$remember = true;
 	}
 	
-	se_user_login($_POST['login_name'],$_POST['login_psw'],$acp=FALSE,$remember);
+	$login = se_user_login($_POST['login_name'],$_POST['login_psw'],$acp=FALSE,$remember);
+
+    if($login == 'failed') {
+        $smarty->assign('failed_login', $lang['msg_login_false']);
+    }
+
 }
 
 
