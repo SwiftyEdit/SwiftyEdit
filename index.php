@@ -168,7 +168,7 @@ $cnt_active_mods = count($active_mods);
 if(is_file(SE_CONTENT . '/cache/active_urls.php')) {
     include SE_CONTENT . '/cache/active_urls.php';
 }
-
+$query_is_cached = false;
 if(in_array("$query", (array) $existing_url)) {
     $query_is_cached = true;
 }
@@ -188,7 +188,7 @@ for($i=0;$i<$cnt_active_mods;$i++) {
 		if(strncmp($mod_permalink, $query, $permalink_length) == 0) {
 			$mod_slug = substr($query, $permalink_length);
 			$swifty_slug = substr("$query",0,$permalink_length);
-			if($query_is_cached == true) {
+			if($query_is_cached) {
   				$swifty_slug = $query;
 			}
 		}

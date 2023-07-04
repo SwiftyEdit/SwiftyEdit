@@ -133,6 +133,7 @@ function se_get_products($start,$limit,$filter) {
 
 
     /* category filter */
+    $sql_cat_filter = '';
     if($filter['categories'] == 'all' OR $filter['categories'] == '') {
         $sql_cat_filter = '';
     } else {
@@ -573,25 +574,25 @@ function se_get_payment_methods() {
 	global $lang;
 	$payment_methods = array();
 	
-	if($se_prefs['prefs_pm_bank_transfer'] == 1) {
+	if(isset($se_prefs['prefs_pm_bank_transfer']) AND $se_prefs['prefs_pm_bank_transfer'] == 1) {
 		$payment_methods[0]['key'] = 'prefs_pm_bank_transfer';
 		$payment_methods[0]['cost'] = $se_prefs['prefs_payment_costs_bt'];
 		$payment_methods[0]['title'] = $lang['label_pm_bank_transfer'];
 		$payment_methods[0]['checked'] = '';
 	}
-	if($se_prefs['prefs_pm_invoice'] == 1) {
+	if(isset($se_prefs['prefs_pm_invoice']) AND $se_prefs['prefs_pm_invoice'] == 1) {
 		$payment_methods[1]['key'] = 'prefs_pm_invoice';
 		$payment_methods[1]['cost'] = $se_prefs['prefs_payment_costs_invoice'];
 		$payment_methods[1]['title'] = $lang['label_pm_invoice'];
 		$payment_methods[1]['checked'] = '';
 	}
-	if($se_prefs['prefs_pm_cash'] == 1) {
+	if(isset($se_prefs['prefs_pm_cash']) AND $se_prefs['prefs_pm_cash'] == 1) {
 		$payment_methods[2]['key'] = 'prefs_pm_cash';
 		$payment_methods[2]['cost'] = $se_prefs['prefs_payment_costs_cash'];
 		$payment_methods[2]['title'] = $lang['label_pm_cash'];
 		$payment_methods[2]['checked'] = '';
 	}
-	if($se_prefs['prefs_pm_paypal'] == 1) {
+	if(isset($se_prefs['prefs_pm_paypal']) AND $se_prefs['prefs_pm_paypal'] == 1) {
 		$payment_methods[3]['key'] = 'prefs_pm_paypal';
 		$payment_methods[3]['cost'] = $se_prefs['prefs_payment_costs_paypal'];
 		$payment_methods[3]['title'] = $lang['label_pm_paypal'];

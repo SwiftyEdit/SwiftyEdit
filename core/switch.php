@@ -32,12 +32,20 @@ if (is_array($page_contents)) {
 
 $current_page_sort = $page_sort;
 
-if($page_title == "") {
+if(!isset($page_title) OR $page_title == "") {
 	$page_title = $se_prefs['prefs_pagetitle'];
 }
 
 if(!isset($page_favicon) OR $page_favicon == "") {
 	$page_favicon = $se_prefs['prefs_pagefavicon'];
+}
+
+if(!isset($page_meta_keywords)) {
+    $page_meta_keywords = '';
+}
+
+if(!isset($page_meta_description)) {
+    $page_meta_description = '';
 }
 
 

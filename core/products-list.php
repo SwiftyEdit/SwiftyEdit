@@ -24,7 +24,7 @@ $target_page = $db_content->select("se_pages", "page_permalink", [
     ]
 ]);
 
-if ($target_page[0] == '') {
+if (!isset($target_page[0]) OR $target_page[0] == '') {
     $target_page[0] = $swifty_slug;
 }
 
@@ -153,7 +153,7 @@ foreach ($get_products as $k => $post) {
     /* post images */
     $first_post_image = '';
     $post_images = explode("<->", $get_products[$k]['images']);
-    if ($post_images[1] != "") {
+    if (isset($post_images[1]) AND $post_images[1] != "") {
         $get_products[$k]['product_img_src'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $post_images[1]);
     } else if ($se_prefs['prefs_shop_default_banner'] == "without_image") {
         $get_products[$k]['product_img_src'] = '';
@@ -313,7 +313,10 @@ $smarty->assign('show_products_list', $show_products_list);
 $smarty->assign('product_filter', $product_filter);
 
 $smarty->assign('show_pagination', $show_pagination);
-$smarty->assign('pagination', $pagination);
+if(isset($pagination)) {
+    $smarty->assign('pagination', $pagination);
+}
+
 
 $smarty->assign('show_shopping_cart', $show_shopping_cart);
 $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);

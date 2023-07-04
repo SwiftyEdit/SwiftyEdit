@@ -169,6 +169,13 @@ if(substr("$mod_slug", -5) == '.html') {
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
 
+if(!isset($array_mod_slug[0])) {
+    $array_mod_slug[0] = '';
+}
+if(!isset($array_mod_slug[1])) {
+    $array_mod_slug[1] = '';
+}
+
 $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 if($this_page_categories[0] == 'all') {
     foreach($all_categories as $cat) {
@@ -243,11 +250,6 @@ foreach($all_categories as $cats) {
         }
     }
 }
-
-
-
-
-
 
 
 /* pagination f.e. /p/2/ or /p/3/ .... */
