@@ -35,6 +35,7 @@ function se_save_page($data) {
     $new_page_id = $db_content->id();
 
     if($cnt_changes->rowCount() > 0) {
+        $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>","5");
         generate_xml_sitemap();
         show_toast($lang['msg_page_saved'],'success');
@@ -79,7 +80,8 @@ function se_update_page($data,$id) {
     ]);
 
     if($cnt_changes->rowCount() > 0) {
-        record_log("$_SESSION[user_nick]","page update <b>$page_linkname</b> &raquo;$page_title&laquo;","5");
+        $page_title = $sanitized_data['page_title'];
+        record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;","5");
         generate_xml_sitemap();
         show_toast($lang['msg_page_updated'],'success');
     } else {
@@ -149,7 +151,7 @@ function se_snapshot_page($id) {
 
     /* add the custom fields */
     foreach($custom_fields as $f) {
-        $columns_cache[$f] = "${$f}";
+        $columns_cache[$f] = "{${$f}}";
     }
 
     /* reset id */

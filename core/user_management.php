@@ -54,7 +54,6 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 	$smarty->assign('lang_button_logout', $lang['button_logout']);	
 	$smarty->assign("link_acp","$link_acp");
 	$smarty->assign('lang_button_acp', $lang['button_acp']);
-	$smarty->assign("link_edit_page","$link_edit_page");
 	$smarty->assign('lang_button_edit_page', $lang['button_acp_edit_page']);
 	
 	if(!isset($preview)) {

@@ -7,17 +7,23 @@
  *
  * global variables
  * @var array $page_contents if there is a page to show, it is an array
+ * @var array $se_prefs
+ * @var object $smarty
  */
 
 if (is_array($page_contents)) {
 
     foreach ($page_contents as $k => $v) {
-        $$k = stripslashes($v);
+        if($v != '') {
+            $$k = stripslashes($v);
+        }
 
         /* if we have custom fields, assign the values to smarty */
         if (preg_match("/custom_/i", $k)) {
             $v = text_parser($v);
-            $smarty->assign("$k", stripslashes($v));
+            if($v != '') {
+                $smarty->assign("$k", stripslashes($v));
+            }
         }
     }
 } else {
@@ -30,7 +36,7 @@ if($page_title == "") {
 	$page_title = $se_prefs['prefs_pagetitle'];
 }
 
-if($page_favicon == "") {
+if(!isset($page_favicon) OR $page_favicon == "") {
 	$page_favicon = $se_prefs['prefs_pagefavicon'];
 }
 
@@ -111,6 +117,9 @@ $matched_snippets = array();
 
 for($i=0;$i<$cnt_snippets;$i++) {
 	$snippet_lang = $all_snippets[$i]['snippet_lang'];
+    if($all_snippets[$i]['snippet_name'] == '') {
+        continue;
+    }
 	$snippet_key = "se_snippet_" . str_replace("-","_",$all_snippets[$i]['snippet_name']);
 	/* assign the correct snippet by $languagePack */
 	if($snippet_lang == $languagePack) {
@@ -124,7 +133,7 @@ for($i=0;$i<$cnt_snippets;$i++) {
 }
 
 /* include modul */
-if($page_modul != "") {
+if(isset($page_modul) AND $page_modul != "") {
 	$smarty->assign('modul_head_enhanced', $modul_head_enhanced, true);
 	
 	/* overwrite page's values by module */
@@ -154,6 +163,10 @@ if(!isset($modul_content)) {
     $modul_content = '';
 }
 
+if(!isset($page_content)) {
+    $page_content = '';
+}
+
 $parsed_content = text_parser($page_content.$modul_content);
 
 if($parsed_content != $page_content) {
@@ -178,7 +191,7 @@ if(isset($_GET['reset_page_psw'])) {
 	unset($_SESSION['page_psw']);
 }
 
-if($page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) {
+if(isset($page_psw) && $page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) {
 	$formaction = SE_INCLUDE_PATH . '/'.$swifty_slug;
 	$page_title = 'Password Protected Page';
 	$page_meta_robots = 'noindex';
@@ -217,6 +230,9 @@ if(!isset($page_logo)) {
     $page_logo = $se_prefs['prefs_pagelogo'];
 }
 
+if(!isset($page_hash)) {
+    $page_hash = '';
+}
 
 /* fix path to thumbnails and favicon */
 $page_thumbnail = str_replace('../content/', $se_base_url.'content/', $page_thumbnail);
@@ -243,13 +259,15 @@ if($page_status == 'draft') {
 }
 
 $smarty->assign('page_meta_robots', $page_meta_robots);
-$smarty->assign('page_meta_enhanced', $page_meta_enhanced);
+//$smarty->assign('page_meta_enhanced', $page_meta_enhanced);
 
-if($page_head_styles != "") {
+if(isset($page_head_styles) AND $page_head_styles != "") {
 	$smarty->assign('page_head_styles', "<style> $page_head_styles </style>\n");
 }
 
-$smarty->assign('page_head_enhanced', $page_head_enhanced);
+if(isset($page_head_enhanced) AND $page_head_enhanced != "") {
+    $smarty->assign('page_head_enhanced', $page_head_enhanced);
+}
 
 $snippet_footer = text_parser($snippet_footer);
 $smarty->assign("snippet_footer","$snippet_footer");
@@ -268,7 +286,7 @@ if(($page_status == "private") AND ($_SESSION['user_class'] != "administrator"))
  * -> access if $_SESSION[user_id] is in selected usergroups
  * -> access for administrators
  */
-if($page_usergroup != "") {
+if(isset($page_usergroup) AND $page_usergroup != "") {
 
 	$arr_checked_groups = explode("<|-|>",$page_usergroup);
 
@@ -375,7 +393,10 @@ if(($page_comments == 1 OR $post_comments == 1) && $se_prefs['prefs_comments_mod
 		$smarty->assign("label_mail",$lang['label_mail']);
 		$smarty->assign("label_mail_helptext",$lang['label_mail_helptext']);
 		$smarty->assign("btn_send_comment",$lang['btn_send_comment']);
-		$smarty->assign("post_id",$post_data['post_id']);
+        if(isset($post_data)) {
+            $smarty->assign("post_id",$post_data['post_id']);
+        }
+
 		
 		$form_action = '/'.$swifty_slug.$mod_slug;
         $form_action = str_replace("//","/",$form_action);
@@ -390,10 +411,16 @@ if(($page_comments == 1 OR $post_comments == 1) && $se_prefs['prefs_comments_mod
 		}
 	
 		$smarty->assign("comment_form_title",$lang['comment_form_title']);
-		$smarty->assign("comment_form_intro",$comment_form_intro);
+        if(isset($comment_form_intro)) {
+            $smarty->assign("comment_form_intro",$comment_form_intro);
+        }
+
 		$comments_form = $smarty->fetch("comment_form.tpl",$cache_id);
 		$smarty->assign('comment_form', $comments_form, true);
-		$smarty->assign('comment_send_success', $se_snippet_comment_send_success, true);
+        if(isset($se_snippet_comment_send_success)) {
+            $smarty->assign('comment_send_success', $se_snippet_comment_send_success, true);
+        }
+
 		
 	}
 	
@@ -504,7 +531,7 @@ if(($p == "profile" OR $page_contents['page_type_of_use'] == 'profile') AND ($go
 
 
 /* include search */
-if($p == 'search' OR $page_permalink == 'suche/' OR $page_permalink == 'search/' OR $page_contents['page_type_of_use'] == 'search') {
+if($p == 'search' OR $page_contents['page_permalink'] == 'suche/' OR $page_contents['page_permalink'] == 'search/' OR $page_contents['page_type_of_use'] == 'search') {
 	include 'search.php';
 }
 

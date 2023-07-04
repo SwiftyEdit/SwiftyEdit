@@ -14,7 +14,7 @@ if($events_limit == '' || $events_limit < 1) {
 $events_filter = array();
 
 $str_status = '1';
-if($_SESSION['user_class'] == 'administrator') {
+if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 
@@ -34,7 +34,7 @@ $array_mod_slug = explode("/", $mod_slug);
 
 foreach($all_categories as $cats) {
 
-    $this_nav_cat_item = $tpl_nav_cats_item;
+    //$this_nav_cat_item = $tpl_nav_cats_item;
     $show_category_title = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
     $cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';

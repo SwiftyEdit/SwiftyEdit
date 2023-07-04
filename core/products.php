@@ -28,7 +28,7 @@ $products_direction = 'DESC';
 $products_filter = array();
 
 $str_status = '1';
-if($_SESSION['user_class'] == 'administrator') {
+if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 

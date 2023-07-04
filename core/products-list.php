@@ -136,6 +136,14 @@ if($se_prefs['prefs_posts_products_cart'] == 2 OR $se_prefs['prefs_posts_product
 $posts_list = '';
 foreach ($get_products as $k => $post) {
 
+    if(!isset($get_products[$k]['id'])) {
+        continue;
+    }
+
+    if(!isset($get_products[$k]['author'])) {
+        $get_products[$k]['author'] = '';
+    }
+
     /* build data for template */
 
     $get_products[$k]['product_title'] = $get_products[$k]['title'];
@@ -157,11 +165,11 @@ foreach ($get_products as $k => $post) {
     $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$post_filename-" . $get_products[$k]['id'] . ".html";
 
 
-    $post_releasedate = date($prefs_dateformat, $get_products[$k]['releasedate']);
+    $post_releasedate = date($se_prefs['prefs_dateformat'], $get_products[$k]['releasedate']);
     $post_releasedate_year = date('Y', $get_products[$k]['releasedate']);
     $post_releasedate_month = date('m', $get_products[$k]['releasedate']);
     $post_releasedate_day = date('d', $get_products[$k]['releasedate']);
-    $post_releasedate_time = date($prefs_timeformat, $get_products[$k]['releasedate']);
+    $post_releasedate_time = date($se_prefs['prefs_timeformat'], $get_products[$k]['releasedate']);
 
     $get_products[$k]['releasedate'] = $post_releasedate;
 
@@ -197,7 +205,7 @@ foreach ($get_products as $k => $post) {
         }
 
         if ($get_products[$k]['votings'] == 3) {
-            if ($_SESSION['user_nick'] == '') {
+            if (!isset($_SESSION['user_nick']) OR $_SESSION['user_nick'] == '') {
                 $voter_name = se_generate_anonymous_voter();
                 $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $voter_name, $voting_type);
             } else {
@@ -255,7 +263,7 @@ foreach ($get_products as $k => $post) {
     }
 
     /* item status */
-    if ($get_products[$k]['post_status'] == '2') {
+    if (isset($get_products[$k]['post_status']) AND $get_products[$k]['post_status'] == '2') {
         $get_products[$k]['draft_message'] = '<div class="alert alert-draft"><small>' . $lang['post_is_draft'] . '</small></div>';
         $get_products[$k]['product_css_classes'] = 'draft';
     }

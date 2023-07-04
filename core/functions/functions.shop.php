@@ -45,11 +45,6 @@ function se_get_products($start,$limit,$filter) {
 
     $order = "ORDER BY fixed ASC, priority DESC, id DESC";
 
-    if($direction == 'ASC') {
-        $direction = 'ASC';
-    } else {
-        $direction = 'DESC';
-    }
 
     /* we have a custom order rule */
     if($filter['sort_by'] != '') {
@@ -65,7 +60,14 @@ function se_get_products($start,$limit,$filter) {
         if($filter['sort_by'] == 'ts') {
             $order = "ORDER BY fixed ASC, product_cnt_sales DESC, priority DESC";
         }
+    }
 
+    if(!isset($filter['labels'])) {
+        $filter['labels'] = '';
+    }
+
+    if(!isset($filter['text_search'])) {
+        $filter['text_search'] = '';
     }
 
 
@@ -442,7 +444,7 @@ function se_return_cart_amount() {
 	global $db_content;
 	
 	/* check if user or visitor */
-	if(is_numeric($_SESSION['user_id'])) {
+	if(isset($_SESSION['user_id']) AND is_numeric($_SESSION['user_id'])) {
 		$cart_user_id = $_SESSION['user_id'];
 		
 		$items = $db_content->select("se_carts", ["cart_id"], [

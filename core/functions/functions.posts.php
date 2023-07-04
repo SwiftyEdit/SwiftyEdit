@@ -179,6 +179,10 @@ function se_get_event_entries($start,$limit,$filter) {
         $limit_str .= ', '. (int) $limit;
     }
 
+    if(!isset($filter['labels'])) {
+        $filter['labels'] = '';
+    }
+
 
     /**
      * order and direction
