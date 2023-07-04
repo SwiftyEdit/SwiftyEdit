@@ -32,6 +32,11 @@ function se_filter_filepath($str) {
 }
 
 function se_return_clean_value($string) {
+
+    if(!is_string($string)) {
+        return;
+    }
+
 	$string = stripslashes($string);
 	$remove_chars = array('$','`','{','}');
 	$string = htmlentities($string, ENT_QUOTES, "UTF-8");
