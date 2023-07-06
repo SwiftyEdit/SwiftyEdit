@@ -30,7 +30,7 @@ if(!isset($_SESSION['sorting_single_pages_dir'])) {
 
 unset($result);
 /* $_SESSION[filter_string] was defined in inc.pages.php */
-$sql = "SELECT page_id, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
+$sql = "SELECT page_id, page_hits, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
 		FROM se_pages ".
 		$_SESSION['filter_string'].
 		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, ".$_SESSION['sorting_single_pages']." ".$_SESSION['sorting_single_pages_dir']." ";
@@ -280,12 +280,17 @@ function se_list_pages($data,$type="sorted") {
         $page_redirect = $data[$i]['page_redirect'];
         $page_modul = $data[$i]['page_modul'];
         $page_cnt_comments = $data[$i]['cnt_comments'];
-        $page_labels = explode(',',$data[$i]['page_labels']);
-        $page_thumbs = explode('<->',$data[$i]['page_thumbnail']);
         $pi = $data[$i]['page_hits'];
+        if($data[$i]['page_labels'] != '') {
+            $page_labels = explode(',',$data[$i]['page_labels']);
+        }
+
+        if($data[$i]['page_thumbnail'] != '') {
+            $page_thumbs = explode('<->',$data[$i]['page_thumbnail']);
+        }
 
         $page_thumb_src = 'images/swiftyedit-page-icon.png';
-        if($page_thumbs[0] != '') {
+        if(isset($page_thumbs) AND $page_thumbs[0] != '') {
             $page_thumb_src = $page_thumbs[0];
         }
 

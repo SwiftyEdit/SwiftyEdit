@@ -252,22 +252,25 @@ for ($i = 0; $i < 5; $i++) {
         continue;
     }
 
-        $comment_time = @date("d.m.Y", intval($allComments[$i]['comment_time']));
+    $comment_time = @date("d.m.Y", intval($allComments[$i]['comment_time']));
+    if ($allComments[$i]['comment_text'] != '') {
         $comment_text = first_words(strip_tags(html_entity_decode($allComments[$i]['comment_text'])), 4);
-
-        $top5comments .= '<tr>';
-        $top5comments .= '<td>'.$comment_time.'</td>';
-        $top5comments .= '<td class="w-100">';
-        $top5comments .= '<h6 class="mb-0">' . $allComments[$i]['comment_author'] . ' '.$allComments[$i]['comment_type'].'</h6>';
-        $top5comments .= '<small>' . $comment_text . '</small>';
-        $top5comments .= '</td>';
-        $top5comments .= '<td class="text-end">';
-        $top5comments .= '<form class="inline" action="?tn=comments&sub=list#comid' . $allComments[$i]['comment_id'] . '" method="POST">';
-        $top5comments .= '<button class="btn btn-default btn-sm" name="editid" value="' . $allComments[$i]['comment_id'] . '">' . $icon['edit'] . '</button>';
-        $top5comments .= $hidden_csrf_token;
-        $top5comments .= '</form>';
-        $top5comments .= '</td>';
-        $top5comments .= '</tr>';
+    } else {
+        $comment_text = '';
+    }
+    $top5comments .= '<tr>';
+    $top5comments .= '<td>' . $comment_time . '</td>';
+    $top5comments .= '<td class="w-100">';
+    $top5comments .= '<h6 class="mb-0">' . $allComments[$i]['comment_author'] . ' ' . $allComments[$i]['comment_type'] . '</h6>';
+    $top5comments .= '<small>' . $comment_text . '</small>';
+    $top5comments .= '</td>';
+    $top5comments .= '<td class="text-end">';
+    $top5comments .= '<form class="inline" action="?tn=comments&sub=list#comid' . $allComments[$i]['comment_id'] . '" method="POST">';
+    $top5comments .= '<button class="btn btn-default btn-sm" name="editid" value="' . $allComments[$i]['comment_id'] . '">' . $icon['edit'] . '</button>';
+    $top5comments .= $hidden_csrf_token;
+    $top5comments .= '</form>';
+    $top5comments .= '</td>';
+    $top5comments .= '</tr>';
 }
 $top5comments .= '</table>';
 
@@ -305,8 +308,6 @@ $tpl_file = str_replace('{snippets_list}', $snippets_list, $tpl_file);
 $tpl_file = str_replace('{posts_list}', $top5posts, $tpl_file);
 $tpl_file = str_replace('{comments_list}', $top5comments, $tpl_file);
 $tpl_file = str_replace('{user_list}', $user_latest5, $tpl_file);
-$tpl_file = str_replace('{pages_stats}', $pages_stats, $tpl_file);
-$tpl_file = str_replace('{user_stats}', $user_stats, $tpl_file);
 
 /* tabs */
 $tpl_file = str_replace('{tab_pages}', $lang['nav_pages'], $tpl_file);

@@ -155,39 +155,56 @@ if(isset($_GET['switch'])) {
 	$_SESSION['set_status'] = true;
 }
 
+if(!isset($_SESSION['checked_draft'])) {
+    $_SESSION['checked_draft'] = '';
+}
+if(!isset($_SESSION['checked_private'])) {
+    $_SESSION['checked_private'] = '';
+}
+if(!isset($_SESSION['checked_public'])) {
+    $_SESSION['checked_public'] = '';
+}
+if(!isset($_SESSION['checked_ghost'])) {
+    $_SESSION['checked_ghost'] = '';
+}
+if(!isset($_SESSION['checked_redirect'])) {
+    $_SESSION['checked_redirect'] = '';
+}
+
 if($_SESSION['checked_draft'] == '' AND $_SESSION['checked_private'] == '' AND $_SESSION['checked_public'] == '' AND $_SESSION['checked_ghost'] == '' AND $_SESSION['set_status'] == false) {
 	$_SESSION['checked_public'] = 'checked';
 }
 
+if(isset($_GET['switch'])) {
+    if ($_GET['switch'] == 'statusDraft' and $_SESSION['checked_draft'] == '') {
+        $_SESSION['checked_draft'] = "checked";
+    } elseif ($_GET['switch'] == 'statusDraft' and $_SESSION['checked_draft'] == 'checked') {
+        $_SESSION['checked_draft'] = "";
+    }
 
-if($_GET['switch'] == 'statusDraft' AND $_SESSION['checked_draft'] == '') {
-	$_SESSION['checked_draft'] = "checked";
-} elseif($_GET['switch'] == 'statusDraft' AND $_SESSION['checked_draft'] == 'checked') {
-	$_SESSION['checked_draft'] = "";
-}
+    if ($_GET['switch'] == 'statusPrivate' && $_SESSION['checked_private'] == 'checked') {
+        $_SESSION['checked_private'] = "";
+    } elseif ($_GET['switch'] == 'statusPrivate' && $_SESSION['checked_private'] == '') {
+        $_SESSION['checked_private'] = "checked";
+    }
 
-if($_GET['switch'] == 'statusPrivate' && $_SESSION['checked_private'] == 'checked') {
-	$_SESSION['checked_private'] = "";
-} elseif($_GET['switch'] == 'statusPrivate' && $_SESSION['checked_private'] == '') {
-	$_SESSION['checked_private'] = "checked";
-}
+    if ($_GET['switch'] == 'statusPuplic' && $_SESSION['checked_public'] == 'checked') {
+        $_SESSION['checked_public'] = "";
+    } elseif ($_GET['switch'] == 'statusPuplic' && $_SESSION['checked_public'] == '') {
+        $_SESSION['checked_public'] = "checked";
+    }
 
-if($_GET['switch'] == 'statusPuplic' && $_SESSION['checked_public'] == 'checked') {
-	$_SESSION['checked_public'] = "";
-} elseif($_GET['switch'] == 'statusPuplic' && $_SESSION['checked_public'] == '') {
-	$_SESSION['checked_public'] = "checked";
-}
+    if ($_GET['switch'] == 'statusRedirect' && $_SESSION['checked_redirect'] == 'checked') {
+        $_SESSION['checked_redirect'] = "";
+    } elseif ($_GET['switch'] == 'statusRedirect' && $_SESSION['checked_redirect'] == '') {
+        $_SESSION['checked_redirect'] = "checked";
+    }
 
-if($_GET['switch'] == 'statusRedirect' && $_SESSION['checked_redirect'] == 'checked') {
-	$_SESSION['checked_redirect'] = "";
-} elseif($_GET['switch'] == 'statusRedirect' && $_SESSION['checked_redirect'] == '') {
-	$_SESSION['checked_redirect'] = "checked";
-}
-
-if($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == 'checked') {
-	$_SESSION['checked_ghost'] = "";
-} elseif($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == '') {
-	$_SESSION['checked_ghost'] = "checked";
+    if ($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == 'checked') {
+        $_SESSION['checked_ghost'] = "";
+    } elseif ($_GET['switch'] == 'statusGhost' && $_SESSION['checked_ghost'] == '') {
+        $_SESSION['checked_ghost'] = "checked";
+    }
 }
 
 $set_status_filter = "page_status IS NULL ";
@@ -197,6 +214,12 @@ $dot_private = $icon['circle_alt'];
 $dot_public = $icon['circle_alt'];
 $dot_ghost = $icon['circle_alt'];
 $dot_redirect = $icon['circle_alt'];
+
+$btn_status_draft = '';
+$btn_status_private = '';
+$btn_status_public = '';
+$btn_status_ghost = '';
+$btn_status_redirect = '';
 
 if($_SESSION['checked_draft'] == "checked") {
 	$set_status_filter .= "OR page_status = 'draft' ";
@@ -242,7 +265,7 @@ $set_keyword_filter = '';
 /* remove keyword from filter list */
 if(isset($_REQUEST['rm_keyword'])) {
 	$all_filter = explode(" ", $_SESSION['kw_filter']);
-	unset($_SESSION['kw_filter'],$f);
+    $_SESSION['kw_filter'] = '';
 	foreach($all_filter as $f) {
 		if($_REQUEST['rm_keyword'] == "$f") { continue; }
 		if($f == "") { continue; }
@@ -250,7 +273,7 @@ if(isset($_REQUEST['rm_keyword'])) {
 	}
 }
 
-if($_SESSION['kw_filter'] != "") {
+if(isset($_SESSION['kw_filter']) AND $_SESSION['kw_filter'] != "") {
 	unset($all_filter);
 	$all_filter = explode(" ", $_SESSION['kw_filter']);
 	
