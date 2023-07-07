@@ -133,7 +133,7 @@ if(isset($_POST['delete_the_page'])) {
  * Save, update or show preview
  */
 
-if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
+if(!empty($_POST['save_the_page']) OR (!empty($_POST['preview_the_page']))) {
 
 	/**
 	 * modus update
@@ -203,7 +203,7 @@ if($_POST['save_the_page'] OR $_POST['preview_the_page']) {
 
 
 /* get the data to fill the form (again) */
-if(is_numeric($editpage)) {
+if(isset($editpage) AND is_numeric($editpage)) {
 
 	if($modus == "preview") {		
 		$page_data = $db_content->get("se_pages_cache","*",[
