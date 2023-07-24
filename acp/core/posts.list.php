@@ -1,4 +1,19 @@
 <?php
+
+/**
+ * SwiftyEdit backend
+ *
+ * global variables
+ * @var object $db_posts medoo database object
+ * @var array $icon icons set in acp/core/icons.php
+ * @var array $lang language
+ * @var array $lang_codes language
+ * @var string $languagePack
+ * @var string $hidden_csrf_token
+ * @var array $se_labels
+ * @var array $se_prefs
+ */
+
 //error_reporting(E_ALL ^E_NOTICE);
 //prohibit unauthorized access
 require __DIR__.'/access.php';
@@ -183,7 +198,7 @@ if($_SESSION['checked_cat_string'] == 'all') {
 }
 
 $cat_btn_group = '<div class="card">';
-$cat_btn_group .= '<div class="list-group list-group-flush">';
+$cat_btn_group .= '<div class="list-group list-group-flush scroll-container">';
 $cat_btn_group .= '<a href="acp.php?tn=posts&cat=all" class="list-group-item list-group-item-ghost p-1 px-2 '.$cat_all_active.'">'.$icon_all_toggle.' '.$lang['btn_all_categories'].'</a>';
 foreach($arr_categories as $c) {
 	$cat_active = '';
