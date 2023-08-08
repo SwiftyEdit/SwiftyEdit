@@ -202,24 +202,32 @@ function se_get_event_entries($start,$limit,$filter) {
     $sql_filter_start = "WHERE id IS NOT NULL ";
 
     /* language filter */
-    $sql_lang_filter = "event_lang IS NULL OR ";
-    $lang = explode('-', $filter['languages']);
-    foreach($lang as $l) {
-        if($l != '') {
-            $sql_lang_filter .= "(event_lang LIKE '%$l%') OR ";
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "event_lang IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(event_lang LIKE '%$l%') OR ";
+            }
         }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
     }
-    $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
 
     /* status filter */
-    $sql_status_filter = "status IS NULL OR ";
-    $status = explode('-', $filter['status']);
-    foreach($status as $s) {
-        if($s != '') {
-            $sql_status_filter .= "(status LIKE '%$s%') OR ";
+    if($filter['status'] != '') {
+        $sql_status_filter = "status IS NULL OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(status LIKE '%$s%') OR ";
+            }
         }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
     }
-    $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
 
 
     /* category filter */

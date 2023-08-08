@@ -46,15 +46,19 @@ function se_get_pages($filter) {
     $filter_string = "WHERE page_status IS NOT NULL "; // -> result = match all pages
 
     /* language filter */
-    $sql_lang_filter = "page_language IS NULL OR ";
-    $lang = explode('-', $filter['languages']);
-    foreach($lang as $l) {
-        if($l != '') {
-            $sql_lang_filter .= "(page_language LIKE '%$l%') OR ";
-        }
-    }
-    $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
 
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "page_language IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(page_language LIKE '%$l%') OR ";
+            }
+        }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
+    }
 
     /* status filter */
     if($filter['status'] != '') {

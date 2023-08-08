@@ -75,14 +75,18 @@ function se_get_products($start,$limit,$filter) {
     $sql_filter_start = "WHERE type LIKE '%p%' ";
 
     /* language filter */
-    $sql_lang_filter = "product_lang IS NULL OR ";
-    $lang = explode('-', $filter['languages']);
-    foreach($lang as $l) {
-        if($l != '') {
-            $sql_lang_filter .= "(product_lang LIKE '%$l%') OR ";
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "product_lang IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(product_lang LIKE '%$l%') OR ";
+            }
         }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
     }
-    $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
 
     /* custom product filter - stored in $_SESSION['custom_filter'] */
     $nbr_of_filter = is_array($_SESSION['custom_filter']) ? count($_SESSION['custom_filter']) : 0;
@@ -122,20 +126,23 @@ function se_get_products($start,$limit,$filter) {
     }
 
     /* status filter */
-    $sql_status_filter = "status IS NULL OR ";
+    if($filter['status'] != '') {
+        $sql_status_filter = "status IS NULL OR ";
 
-    // global filters do not matching the product status numbers
-    // we have to replace 4 (global invisible) with 3 (product invisible)
-    $filter['status'] = str_replace("4","3",$filter['status']);
+        // global filters do not matching the product status numbers
+        // we have to replace 4 (global invisible) with 3 (product invisible)
+        $filter['status'] = str_replace("4", "3", $filter['status']);
 
-    $status = explode('-', $filter['status']);
-    foreach($status as $s) {
-        if($s != '') {
-            $sql_status_filter .= "(status LIKE '%$s%') OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(status LIKE '%$s%') OR ";
+            }
         }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
     }
-    $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
-
 
     /* category filter */
     $sql_cat_filter = '';
