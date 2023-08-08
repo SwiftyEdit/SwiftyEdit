@@ -45,17 +45,20 @@ function se_get_post_entries($start,$limit,$filter) {
 
 	/* set filters */
 	$sql_filter_start = 'WHERE post_id IS NOT NULL ';
-	
+
 	/* language filter */
-	$sql_lang_filter = "post_lang IS NULL OR ";
-	$lang = explode('-', $filter['languages']);
-	foreach($lang as $l) {
-		if($l != '') {
-			$sql_lang_filter .= "(post_lang LIKE '%$l%') OR ";
-		}		
-	}
-	$sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
-	
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "post_lang IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(post_lang LIKE '%$l%') OR ";
+            }
+        }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
+    }
 	
 	/* type filter */
 	$sql_types_filter = "post_type IS NULL OR ";
@@ -67,16 +70,20 @@ function se_get_post_entries($start,$limit,$filter) {
 	}
 	$sql_types_filter = substr("$sql_types_filter", 0, -3); // cut the last ' OR'
 
+
 	/* status filter */
-	$sql_status_filter = "post_status IS NULL OR ";
-	$status = explode('-', $filter['status']);
-	foreach($status as $s) {
-		if($s != '') {
-			$sql_status_filter .= "(post_status LIKE '%$s%') OR ";
-		}		
-	}
-	$sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
-	
+    if($filter['status'] != '') {
+        $sql_status_filter = "post_status IS NULL OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(post_status LIKE '%$s%') OR ";
+            }
+        }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
+    }
 	
 	/* category filter */
 	if($filter['categories'] == 'all' OR $filter['categories'] == '') {

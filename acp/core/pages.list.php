@@ -1,5 +1,8 @@
 <?php
-//error_reporting(E_ALL ^E_NOTICE);
+/**
+ * SwiftyEdit backend
+ * list pages
+ */
 //prohibit unauthorized access
 require 'core/access.php';
 
@@ -28,24 +31,23 @@ if(!isset($_SESSION['sorting_single_pages_dir'])) {
     $_SESSION['sorting_single_pages_dir'] = $sort_single_pages_direction;
 }
 
-unset($result);
-/* $_SESSION[filter_string] was defined in inc.pages.php */
-$sql = "SELECT page_id, page_hits, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
-		FROM se_pages ".
-		$_SESSION['filter_string'].
-		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, ".$_SESSION['sorting_single_pages']." ".$_SESSION['sorting_single_pages_dir']." ";
+$pages_filter['languages'] = implode("-",$global_filter_languages);
+$pages_filter['types'] = $_SESSION['checked_type_string'];
+$pages_filter['status'] = implode("-",$global_filter_status);
+$pages_filter['labels'] = implode("-",$global_filter_label);
+$pages_filter['text'] = $_SESSION['pages_text_filter'];
 
-$result = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+$pages = se_get_pages($pages_filter);
 
 $x=0;
-foreach($result as $p) {
+foreach($pages as $p) {
 	$this_page_id = 'p'.$p['page_id'];
 	$count_comments = $db_content->query("Select Count(*) FROM se_comments WHERE comment_parent_id LIKE '$this_page_id' ")->fetch();
-	$result[$x]['cnt_comments'] = $count_comments[0];
+    $pages[$x]['cnt_comments'] = $count_comments[0];
 	$x++;
 }
 
-$cnt_result = count($result);
+$cnt_pages = count($pages);
 
 if(!isset($_SESSION['switchPageList']) OR $_SESSION['switchPageList'] == '') {
 	$_SESSION['switchPageList'] = 'both';
@@ -118,7 +120,7 @@ echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
 
-$sorted_pages = se_list_pages($result,"sorted");
+$sorted_pages = se_list_pages($pages,"sorted");
 echo $sorted_pages;
 
 
@@ -147,7 +149,7 @@ echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
 
-$single_pages = se_list_pages($result,"single");
+$single_pages = se_list_pages($pages,"single");
 echo $single_pages;
 
 echo '</div>';
@@ -170,15 +172,22 @@ echo '<div class="card">';
 echo '<div class="card-header">FILTER</div>';
 echo '<div class="card-body">';
 
-echo $kw_form;
+
+
+echo '<form action="?tn=pages&sub=list" method="POST" class="ms-auto">';
+echo '<div class="input-group">';
+echo '<span class="input-group-text">'.$icon['search'].'</span>';
+echo '<input class="form-control" type="text" name="pages_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo $hidden_csrf_token;
+echo '</div>';
+echo '</form>';
+
 
 if(isset($btn_remove_keyword)) {
 	echo '<div class="d-inline">';
 	echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
 	echo '</div><hr>';
 }
-
-echo $nav_btn_group;
 
 $sel_value = [
     'lastedit' => '',
@@ -237,7 +246,7 @@ echo '</div>'; // .app-container
 
 function se_list_pages($data,$type="sorted") {
 
-    global $item_template;
+    global $item_template, $global_filter_status;
     global $lang;
     global $icon;
     global $hidden_csrf_token;
@@ -394,7 +403,7 @@ function se_list_pages($data,$type="sorted") {
         }
 
         if($page_redirect != '') {
-            if($_SESSION['checked_redirect'] != "checked") {
+            if(!in_array("5",$global_filter_status)) {
                 continue;
             }
         }

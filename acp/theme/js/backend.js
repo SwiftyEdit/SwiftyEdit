@@ -314,7 +314,28 @@ $(function() {
     })
 
 
+	// globalFilterForm
+	$("#globalFilterForm").submit(function(e){
+		e.preventDefault();
+		submitFilterForm();
+		return false;
+	});
 
+
+	function submitFilterForm(){
+		$.ajax({
+			type: "POST",
+			url: "core/ajax/global-filter.php",
+			data: $('form#globalFilterForm').serialize(),
+			success: function(response){
+				$("#response").html(response)
+			}
+		});
+	}
+
+	$('#globalFilter').on('hide.bs.offcanvas', function () {
+		location.reload();
+	});
 
 	$('.page-info-btn').click(function(){
 				   

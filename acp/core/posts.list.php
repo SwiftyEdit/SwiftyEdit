@@ -85,10 +85,6 @@ if(isset($_POST['post_priority'])) {
 }
 
 
-
-
-
-
 // defaults
 $sql_start_nbr = 0;
 $sql_items_limit = 10;
@@ -110,40 +106,6 @@ if(isset($_POST['items_per_page'])) {
 }
 
 
-/* default: check all languages */
-if(!isset($_SESSION['checked_lang_string'])) {	
-	foreach($arr_lang as $langstring) {
-		$checked_lang_string .= "$langstring[lang_folder]-";
-	}
-	$_SESSION['checked_lang_string'] = "$checked_lang_string";
-}
-
-/* change status of $_GET['switchLang'] */
-if($_GET['switchLang']) {
-	if(strpos("$_SESSION[checked_lang_string]", "$_GET[switchLang]") !== false) {
-		$checked_lang_string = str_replace("$_GET[switchLang]-", '', $_SESSION['checked_lang_string']);
-	} else {
-		$checked_lang_string = $_SESSION['checked_lang_string'] . "$_GET[switchLang]-";
-	}
-	$_SESSION['checked_lang_string'] = "$checked_lang_string";
-}
-
-/* filter buttons for languages */
-$lang_btn_group = '<div class="btn-group">';
-foreach($lang_codes as $lang_code) {
-	$this_btn_status = '';
-	if(strpos("$_SESSION[checked_lang_string]", "$lang_code") !== false) {
-		$this_btn_status = 'active';
-	}
-	$lang_btn_group .= '<a href="acp.php?tn=posts&switchLang='.$lang_code.'" class="btn btn-sm btn-default '.$this_btn_status.'">'.$lang_code.'</a>';
-}
-$lang_btn_group .= '</div>';
-
-
-
-
-
-
 /* default: check all types */
 if(!isset($_SESSION['checked_type_string'])) {		
 	$_SESSION['checked_type_string'] = 'm-i-v-l-g-f';
@@ -158,23 +120,6 @@ if($_GET['type']) {
 	$checked_type_string = str_replace('--', '-', $checked_type_string);
 	$_SESSION['checked_type_string'] = "$checked_type_string";
 }
-/* default: check all status types */
-if(!isset($_SESSION['checked_status_string'])) {		
-	$_SESSION['checked_status_string'] = '1-2';
-}
-/* change status types */
-if($_GET['status']) {
-	if(strpos("$_SESSION[checked_status_string]", "$_GET[status]") !== false) {
-		$checked_status_string = str_replace("$_GET[status]", '', $_SESSION['checked_status_string']);
-	} else {
-		$checked_status_string = $_SESSION['checked_status_string'] . '-' . $_GET['status'];
-	}
-	$checked_status_string = str_replace('--', '-', $checked_status_string);
-	$_SESSION['checked_status_string'] = "$checked_status_string";
-}
-
-
-
 
 
 /* default: check all categories */
@@ -215,53 +160,6 @@ $cat_btn_group .= '</div>';
 $cat_btn_group .= '</div>';
 
 
-/* filter buttons for labels */
-
-if(!isset($_SESSION['checked_label_str'])) {
-	$_SESSION['checked_label_str'] = '';
-}
-
-$a_checked_labels = explode('-', $_SESSION['checked_label_str']);
-
-if(isset($_GET['switchLabel'])) {
-	
-		if(in_array($_GET['switchLabel'], $a_checked_labels)) {
-			/* remove label*/
-			if(($key = array_search($_GET['switchLabel'], $a_checked_labels)) !== false) {
-				unset($a_checked_labels[$key]);
-			}
-		} else {
-			/* add label */
-			$a_checked_labels[] = $_GET['switchLabel'];
-		}
-
-		$_SESSION['checked_label_str'] = implode('-', $a_checked_labels);
-}
-
-$a_checked_labels = explode('-', $_SESSION['checked_label_str']);
-
-$label_filter_box  = '<div class="card mt-2">';
-$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].'</div>';
-$label_filter_box .= '<div class="card-body">';
-$this_btn_status = '';
-foreach($se_labels as $label) {
-	
-	if(in_array($label['label_id'], $a_checked_labels)) {
-		$this_btn_status = 'active';
-	} else {
-		$this_btn_status = '';
-	}		
-
-	$label_title = '<span class="label-dot" style="background-color:'.$label['label_color'].';"></span> '.$label['label_title'];
-	$label_filter_box .= '<a href="acp.php?tn=posts&sub=list&switchLabel='.$label['label_id'].'" class="btn btn-default btn-sm m-1 '.$this_btn_status.'">'.$label_title.'</a>';
-	
-}
-$label_filter_box .= '</div>';
-$label_filter_box .= '</div>'; // card
-
-
-
-
 
 if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
     $sql_start_nbr = (int) $_GET['sql_start_nbr'];
@@ -272,12 +170,11 @@ if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
 }
 
 
-$posts_filter['languages'] = $_SESSION['checked_lang_string'];
+$posts_filter['languages'] = implode("-",$global_filter_languages);
 $posts_filter['types'] = $_SESSION['checked_type_string'];
-$posts_filter['status'] = $_SESSION['checked_status_string'];
+$posts_filter['status'] = implode("-",$global_filter_status);
 $posts_filter['categories'] = $_SESSION['checked_cat_string'];
-$posts_filter['labels'] = $_SESSION['checked_label_str'];
-
+$posts_filter['labels'] = implode("-",$global_filter_label);
 
 $get_posts = se_get_post_entries($sql_start_nbr,$_SESSION['items_per_page'],$posts_filter);
 $cnt_filter_posts = $get_posts[0]['cnt_posts'];
@@ -519,13 +416,6 @@ echo '<div class="card p-2">';
 echo '<fieldset class="mt-4">';
 echo '<legend>'.$icon['filter'].' Filter</legend>';
 
-/* Filter Options */
-echo '<div class="card mt-1">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_language'].'</div>';
-echo '<div class="list-group list-group-flush">';
-echo $lang_btn_group;
-echo '</div>';
-echo '</div>';
 
 echo '<div class="card mt-2">';
 echo '<div class="card-header p-1 px-2">'.$lang['label_post_type'].'</div>';
@@ -598,37 +488,11 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_status'].'</div>';
-
-/* status filter */
-echo '<div class="btn-group d-flex">';
-if(strpos("$_SESSION[checked_status_string]", "2") !== false) {
-	$icon_toggle = $icon['check_circle'];
-	echo '<a href="acp.php?tn=posts&status=2" class="btn btn-sm btn-default active w-100">'.$icon_toggle.' '.$lang['status_draft'].'</a>';
-} else {
-	$icon_toggle = $icon['circle_alt'];
-	echo '<a href="acp.php?tn=posts&status=2" class="btn btn-sm btn-default w-100">'.$icon_toggle.' '.$lang['status_draft'].'</a>';
-}
-if(strpos("$_SESSION[checked_status_string]", "1") !== false) {
-	$icon_toggle = $icon['check_circle'];
-	echo '<a href="acp.php?tn=posts&status=1" class="btn btn-sm btn-default active w-100">'.$icon_toggle.' '.$lang['status_public'].'</a>';
-} else {
-	$icon_toggle = $icon['circle_alt'];
-	echo '<a href="acp.php?tn=posts&status=1" class="btn btn-sm btn-default w-100">'.$icon_toggle.' '.$lang['status_public'].'</a>';
-}
-echo '</div>';
-
-
-echo '</div>';
-
-echo '<div class="card mt-2">';
 echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
 
 echo $cat_btn_group;
 
 echo '</div>';
-
-echo $label_filter_box;
 
 echo '</fieldset>';
 

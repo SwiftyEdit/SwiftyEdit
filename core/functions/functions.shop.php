@@ -123,6 +123,11 @@ function se_get_products($start,$limit,$filter) {
 
     /* status filter */
     $sql_status_filter = "status IS NULL OR ";
+
+    // global filters do not matching the product status numbers
+    // we have to replace 4 (global invisible) with 3 (product invisible)
+    $filter['status'] = str_replace("4","3",$filter['status']);
+
     $status = explode('-', $filter['status']);
     foreach($status as $s) {
         if($s != '') {

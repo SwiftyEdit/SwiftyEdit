@@ -1,9 +1,120 @@
 <?php
 
 /**
- * write and update pages
+ * get, write and update pages
  * do snapshots from pages
  */
+
+/**
+ * @param array $filter
+ * @return mixed
+ */
+function se_get_pages($filter) {
+
+    global $db_content, $se_labels;
+
+    $order = "ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC";
+
+    /* we have a custom order rule */
+    if($filter['sort_by'] != '') {
+
+    }
+
+    if(!isset($filter['labels'])) {
+        $filter['labels'] = '';
+    }
+
+
+    /* text search */
+
+    if($filter['text'] != '') {
+        $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(page_meta_keywords like '%$f%' OR page_title like '%$f%' OR page_linkname like '%$f%' OR page_content like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
+    } else {
+        $sql_text_filter = '';
+    }
+
+
+
+    $filter_string = "WHERE page_status IS NOT NULL "; // -> result = match all pages
+
+    /* language filter */
+    $sql_lang_filter = "page_language IS NULL OR ";
+    $lang = explode('-', $filter['languages']);
+    foreach($lang as $l) {
+        if($l != '') {
+            $sql_lang_filter .= "(page_language LIKE '%$l%') OR ";
+        }
+    }
+    $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+
+
+    /* status filter */
+    if($filter['status'] != '') {
+
+        $filter['status'] = str_replace("1","public",$filter['status']);
+        $filter['status'] = str_replace("2","draft",$filter['status']);
+        $filter['status'] = str_replace("3","private",$filter['status']);
+        $filter['status'] = str_replace("4","ghost",$filter['status']);
+
+        $sql_status_filter = "page_status IS NULL OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(page_status LIKE '%$s%') OR ";
+            }
+        }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
+    }
+
+    /* label filter */
+    if($filter['labels'] == 'all' OR $filter['labels'] == '') {
+        $sql_label_filter = '';
+    } else {
+
+        $checked_labels_array = explode('-', $filter['labels']);
+
+        for($i=0;$i<count($se_labels);$i++) {
+            $label = $se_labels[$i]['label_id'];
+            if(in_array($label, $checked_labels_array)) {
+                $sql_label_filter .= "page_labels LIKE '%,$label,%' OR page_labels LIKE '%,$label' OR page_labels LIKE '$label,%' OR page_labels = '$label' OR ";
+            }
+        }
+        $sql_label_filter = substr("$sql_label_filter", 0, -3); // cut the last ' OR'
+    }
+
+
+    $sql_filter = $filter_string;
+
+    if($sql_lang_filter != "") {
+        $sql_filter .= " AND ($sql_lang_filter) ";
+    }
+    if($sql_status_filter != "") {
+        $sql_filter .= " AND ($sql_status_filter) ";
+    }
+    if($sql_label_filter != "") {
+        $sql_filter .= " AND ($sql_label_filter) ";
+    }
+
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
+    }
+
+    $sql = "SELECT * FROM se_pages $sql_filter $order";
+    $pages = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    return $pages;
+}
+
 
 /**
  * @param array $data $_POST data

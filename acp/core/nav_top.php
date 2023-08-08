@@ -9,6 +9,16 @@ echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="
 
 
 /**
+ * Filter modal
+ */
+
+echo '<button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">';
+echo 'Filter ';
+echo '<span class="badge bg-secondary">'.$cnt_global_filters.'</span>';
+echo '</button>';
+
+
+/**
  * choose language
  */
 

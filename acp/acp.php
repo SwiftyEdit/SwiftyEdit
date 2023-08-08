@@ -58,7 +58,6 @@ if (is_file(SE_CONTENT . '/config_smtp.php')) {
  * @var string $database_user
  * @var string $database_psw
  * @var string $database_port
- * @const DB_PREFIX database prefix
  */
 
 if (is_file('../config_database.php')) {
@@ -282,9 +281,9 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-06-26" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-08-08" type="text/css" media="screen, projection">
 
-    <script src="theme/js/backend.min.js?v=2023-06-26"></script>
+    <script src="theme/js/backend.min.js?v=2023-08-08"></script>
     <script src="theme/js/tinymce/tinymce.min.js"></script>
     <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
     <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>
@@ -355,6 +354,7 @@ if (isset($set_acptheme)) {
     if($tn == 'addons') { $page_header_class = 'ph-addons'; }
     if($tn == 'user') { $page_header_class = 'ph-user'; }
     echo '<div class="'.$page_header_class.' page-header">';
+    require 'core/nav_top_filter.php';
     require 'core/nav_top.php';
     echo '</div>';
     ?>

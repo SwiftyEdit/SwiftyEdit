@@ -55,6 +55,13 @@ $lang += [
     'label_form_status_edit' => 'E-Mail bearbeiten',
     'label_subject' => 'Betreff',
     'label_text' => 'Text',
+    'label_status_public' => 'Öffentlich',
+    'label_status_ghost' => 'Unsichtbar',
+    'label_status_private' => 'Privat',
+    'label_status_draft' => 'Entwurf',
+    'label_status_redirect' => 'Weiterleitung',
+    'label_search' => 'Suche',
+
     'btn_send_email' => 'E-Mail senden',
     'btn_close' => 'zurück',
 
