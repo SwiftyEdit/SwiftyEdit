@@ -102,7 +102,9 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
 
 
     if($_POST['slug'] == "") {
-        $slug = "$date_year/$date_month/$date_day/$clean_title/";
+        $slug = $clean_title.'/';
+    } else {
+        $slug = se_clean_permalink($_POST['slug']);
     }
 
     $categories = '';

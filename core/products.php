@@ -165,6 +165,12 @@ if(substr("$mod_slug", -5) == '.html') {
     $display_mode = 'show_product';
 }
 
+/* check if $mod_slug is a product slug */
+$get_data_from_slug = se_get_product_data_by_slug($mod_slug);
+if(is_array($get_data_from_slug)) {
+    $get_product_id = (int) $get_data_from_slug['id'];
+    $display_mode = 'show_product';
+}
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);

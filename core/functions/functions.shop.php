@@ -233,6 +233,20 @@ function se_get_product_data($id) {
 }
 
 /**
+ * @param $slug
+ * @return mixed
+ */
+function se_get_product_data_by_slug($slug) {
+    global $db_posts;
+
+    $data = $db_posts->get("se_products","*", [
+        "slug" => $slug
+    ]);
+
+    return $data;
+}
+
+/**
  * @param $id integer id of the main product
  * @return array
  */

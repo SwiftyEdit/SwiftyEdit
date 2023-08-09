@@ -489,7 +489,7 @@
                             </div>
                             <div class="form-group">
                                 <label>{label_slug}</label>
-                                <input class='form-control' name="post_slug" type="text" value="{slug}">
+                                <input class='form-control' name="slug" type="text" value="{slug}">
                             </div>
 
                                 <h5 class="heading-line">RSS</h5>
