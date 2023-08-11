@@ -36,6 +36,8 @@ $pages_filter['types'] = $_SESSION['checked_type_string'];
 $pages_filter['status'] = implode("-",$global_filter_status);
 $pages_filter['labels'] = implode("-",$global_filter_label);
 $pages_filter['text'] = $_SESSION['pages_text_filter'];
+$pages_filter['sort_by'] = $_SESSION['sorting_single_pages'];
+$pages_filter['sort_direction'] = $_SESSION['sorting_single_pages_dir'];
 
 $pages = se_get_pages($pages_filter);
 

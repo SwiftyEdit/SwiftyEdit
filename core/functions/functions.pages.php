@@ -15,10 +15,8 @@ function se_get_pages($filter) {
 
     $order = "ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC";
 
-    /* we have a custom order rule */
-    if($filter['sort_by'] != '') {
-
-    }
+    /* add sorting for single pages */
+    $order .= ' ,'.$filter['sort_by'].' '.$filter['sort_direction'];
 
     if(!isset($filter['labels'])) {
         $filter['labels'] = '';
