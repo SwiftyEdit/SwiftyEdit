@@ -29,7 +29,8 @@ if(isset($_POST)) {
         $_SESSION['global_filter_status'] = '';
     }
 
-    echo '<div class="alert alert-info fade show alert-auto-close">';
-    echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+    echo '<div class="alert alert-info show alert-auto-close">';
+    echo '<button type="button" class="btn-close me-2" data-bs-dismiss="alert" aria-label="Close"></button>';
+    echo $lang['alert_filter_updated'];
     echo '</div>';
 }

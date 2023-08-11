@@ -88,7 +88,8 @@ $lang += [
     'msg_no_update_available' => 'Die installierte Version ist auf dem neusten Stand.',
     'msg_update_modus_activated' => '<b>Der Update-Modus ist aktiv</b><br>Das Frontend kann im Moment nicht aufgerufen werden.',
     'msg_after_update' => 'Bitte rufe das <a href="/install/">install</a> Verzeichnis auf und prüfe, ob die Datenbank korrekt aktualisiert wurde.',
-    'btn_choose_this_update' => 'Dieses Update auswählen'
+    'btn_choose_this_update' => 'Dieses Update auswählen',
+    'alert_filter_updated' => 'Die Filter wurden aktualisiert'
 ];
 
 /* tn_ = topNav */
