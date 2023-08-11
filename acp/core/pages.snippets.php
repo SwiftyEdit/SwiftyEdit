@@ -534,7 +534,7 @@ if($show_snippet_form)  {
 	echo '<div class="input-group">';
 	echo '<span class="input-group-text">'.$icon['search'].'</span>';
 	echo '<input class="form-control" type="text" name="snippet_text_filter" value="" placeholder="'.$lang['button_search'].'">';
-	echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+    echo $hidden_csrf_token;
 	echo '</div>';
 	echo '</form>';
 	
@@ -552,6 +552,22 @@ if($show_snippet_form)  {
 	
 	echo '</div>'; // card-body
 	echo '</div>'; // card
+
+
+
+    echo '<div class="card mt-1">';
+    echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
+    echo '<div class="card-body">';
+    $get_keywords = se_get_snippet_keywords();
+    echo '<form action="acp.php?tn=pages&sub=snippets" method="POST" class="form-inline ms-auto dirtyignore">';
+    foreach($get_keywords as $k => $v) {
+        echo '<button name="snippet_text_filter" value="'.$k.'" class="btn btn-default btn-sm mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+    }
+    echo $hidden_csrf_token;
+    echo '</form>';
+
+    echo '</div>'; // card-body
+    echo '</div>'; // card
 	
 	/* end of sidebar */
 
