@@ -20,6 +20,8 @@ if(isset($_POST['sorting_single_pages_dir'])) {
 if(isset($_POST['sorting_single_pages'])) {
     if($_POST['sorting_single_pages'] == 'linkname') {
         $_SESSION['sorting_single_pages'] = 'page_linkname';
+    } else if($_POST['sorting_single_pages'] == 'priority') {
+        $_SESSION['sorting_single_pages'] = 'page_priority';
     } else {
         $_SESSION['sorting_single_pages'] = 'page_lastedit';
     }
@@ -194,11 +196,14 @@ if(isset($btn_remove_keyword)) {
 $sel_value = [
     'lastedit' => '',
     'linkname' => '',
+    'priority' => '',
     'sort_asc' => '',
     'sort_desc' => ''
 ];
 if($_SESSION['sorting_single_pages'] == 'page_lastedit') {
     $sel_value['lastedit'] = 'selected';
+} else if ($_SESSION['sorting_single_pages'] == 'page_priority') {
+    $sel_value['priority'] = 'selected';
 } else {
     $sel_value['linkname'] = 'selected';
 }
@@ -214,6 +219,7 @@ echo '<div class="card-body">';
 echo '<form action="?tn=pages&sub=pages-list" method="post" class="d-inline ms-auto">';
 echo '<select class="form-control" name="sorting_single_pages" onchange="this.form.submit()">';
 echo '<option value="linkname" '.$sel_value['linkname'].'>'.$lang['btn_sort_linkname'].'</option>';
+echo '<option value="priority" '.$sel_value['priority'].'>'.$lang['label_priority'].'</option>';
 echo '<option value="lastedit" '.$sel_value['lastedit'].'>'.$lang['btn_sort_edit'].'</option>';
 echo '</select>';
 
@@ -224,6 +230,21 @@ echo '</select>';
 
 echo $hidden_csrf_token;
 echo '</form>';
+echo '</div>'; // card-body
+echo '</div>'; // card
+
+
+echo '<div class="card mt-1">';
+echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
+echo '<div class="card-body">';
+$get_keywords = se_get_pages_keywords();
+echo '<form action="?tn=pages&sub=pages-list" method="POST" class="form-inline ms-auto dirtyignore">';
+foreach($get_keywords as $k => $v) {
+    echo '<button name="pages_text_filter" value="'.$k.'" class="btn btn-default btn-sm mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+}
+echo $hidden_csrf_token;
+echo '</form>';
+
 echo '</div>'; // card-body
 echo '</div>'; // card
 
