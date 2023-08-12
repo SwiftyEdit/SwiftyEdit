@@ -150,5 +150,6 @@ $icon = [
     "user_slash" => '<i class="bi bi-person-dash"></i>',
     "users" => '<i class="bi bi-people"></i>',
     
-    "wrench" => '<i class="bi bi-wrench"></i>'
+    "wrench" => '<i class="bi bi-wrench"></i>',
+    "x" => '<i class="bi bi-x"></i>'
 ];

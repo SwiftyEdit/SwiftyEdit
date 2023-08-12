@@ -82,7 +82,7 @@ if(isset($_SESSION['pages_text_filter']) AND $_SESSION['pages_text_filter'] != "
 	foreach($all_filter as $f) {
 		if($_REQUEST['rm_keyword'] == "$f") { continue; }
 		if($f == "") { continue; }
-		$btn_remove_keyword .= '<a class="btn btn-sm btn-default" href="acp.php?tn=pages&sub='.$sub.'&rm_keyword='.$f.'">'.$icon['times_circle'].' '.$f.'</a> ';
+		$btn_remove_keyword .= '<a class="btn btn-sm btn-default" href="acp.php?tn=pages&sub='.$sub.'&rm_keyword='.$f.'">'.$icon['x'].' '.$f.'</a> ';
 	}
 }
 
