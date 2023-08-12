@@ -442,10 +442,6 @@ echo '</form>';
 echo '<fieldset class="mt-4">';
 echo '<legend>'.$icon['filter'].' Filter</legend>';
 
-echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_status'].'</div>';
-
-echo '</div>';
 
 echo '<div class="card mt-2">';
 echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
