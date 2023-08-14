@@ -181,26 +181,7 @@ if($show_form == 'true') {
 
 
 
-$label_filter_box  = '<div class="card mt-2">';
-$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].'</div>';
-$label_filter_box .= '<div class="card-body">';
-$this_btn_status = '';
-foreach($se_labels as $label) {
-
-	if(in_array($label['label_id'], $a_checked_labels)) {
-		$this_btn_status = 'active';
-	} else {
-		$this_btn_status = '';
-	}
-
-	$label_title = '<span class="label-dot" style="background-color:'.$label['label_color'].';"></span> '.$label['label_title'];
-	$label_filter_box .= '<a href="acp.php?tn=pages&sub='.$sub.'&switchLabel='.$label['label_id'].'" class="btn btn-default btn-sm m-1 '.$this_btn_status.'">'.$label_title.'</a>';
-
-}
-$label_filter_box .= '</div>';
-$label_filter_box .= '</div>'; // card
-
-$label_filter['labels'] = $_SESSION['checked_label_str'];
+$label_filter['labels'] = implode("-",$global_filter_label);
 
 
 /* get all shortcodes */
@@ -208,8 +189,7 @@ $label_filter['labels'] = $_SESSION['checked_label_str'];
 $shortcodes = se_get_shortcodes($label_filter);
 $cnt_shortcodes = count($shortcodes);
 
-echo '<div class="row">';
-echo '<div class="col-md-9">';
+
 
 echo '<div class="card p-3">';
 
@@ -269,27 +249,5 @@ for($i=0;$i<$cnt_shortcodes;$i++) {
 	echo '</tr>';	
 }
 
-
 echo '</table>';
-
 echo '</div>'; // card
-
-
-
-
-
-
-echo '</div>';
-echo '<div class="col-md-3">';
-
-/* sidebar */
-
-echo $label_filter_box;
-
-/* sidebar end */
-
-echo '</div>';
-echo '</div>';
-
-
-?>
