@@ -558,14 +558,20 @@ if($show_snippet_form)  {
     echo '<div class="card mt-1">';
     echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
     echo '<div class="card-body">';
+    echo '<div class="scroll-container">';
     $get_keywords = se_get_snippet_keywords();
     echo '<form action="acp.php?tn=pages&sub=snippets" method="POST" class="form-inline ms-auto dirtyignore">';
     foreach($get_keywords as $k => $v) {
-        echo '<button name="snippet_text_filter" value="'.$k.'" class="btn btn-default btn-sm mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+        if((is_array($all_snippet_filter) && in_array("$k",$all_snippet_filter))) {
+            echo '<button name="snippet_text_filter" value="" class="btn disabled btn-default btn-xs mb-1">' . $k . ' <span class="badge bg-secondary">' . $v . '</span></button> ';
+        }else {
+            echo '<button name="snippet_text_filter" value="' . $k . '" class="btn btn-default btn-xs mb-1">' . $k . ' <span class="badge bg-secondary">' . $v . '</span></button> ';
+
+        }
     }
     echo $hidden_csrf_token;
     echo '</form>';
-
+    echo '</div>';
     echo '</div>'; // card-body
     echo '</div>'; // card
 	
