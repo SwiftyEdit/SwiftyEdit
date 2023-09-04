@@ -128,6 +128,7 @@ if($show_form == true)  {
         }
 
         echo '<tr>';
+        echo '<td>#'.$cats['cat_id'].'</td>';
         echo '<td width="50">' . $show_thumb . '</td>';
         echo '<td>';
         echo '<h5 class="card-title">' . $flag . ' <small>' . $cats['cat_sort'] . '</small> | ' . $cats['cat_name'] . '</h5>';
