@@ -138,7 +138,8 @@ function se_sanitize_page_inputs($data) {
             || $key == 'page_meta_keywords' || $key == 'page_meta_author'
             || $key == 'page_meta_description' || $key == 'page_modul'
             || $key == 'page_language' || $key == 'page_status' || $key == 'page_type_of_use'
-            || $key == 'page_funnel_uri' || $key == 'page_target' || $key == 'page_template_stylesheet') {
+            || $key == 'page_funnel_uri' || $key == 'page_target' || $key == 'page_template_stylesheet'
+            || $key == 'page_canonical_url') {
             $sanitized[$key] = se_return_clean_value($val);
         }
 

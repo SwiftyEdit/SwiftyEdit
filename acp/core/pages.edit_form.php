@@ -277,6 +277,13 @@ echo '<input class="form-control" type="text" autocomplete="off" name="page_perm
 echo '</div>';
 echo '</div>';
 
+echo '<label for="set_canonical_url">Canonical URL</label>';
+echo '<div class="input-group mb-3">';
+echo '<input class="form-control" type="text" autocomplete="off" name="page_canonical_url" id="set_canonical_url" value="'.$page_canonical_url.'">';
+echo ' <button class="btn btn-default" type="button" id="addCanonical"><i class="bi bi-arrow-clockwise"></i></button>';
+echo '</div>';
+
+
 ?>
 <script>
 $(function() {
@@ -289,6 +296,13 @@ $(function() {
             title: check_url
         });
 	});
+
+    $("#addCanonical").click(function(){
+        var permalink = $("#set_permalink").val();
+        var canonical_url = se_base_url+permalink;
+        $('#set_canonical_url').val(canonical_url);
+    });
+
 });
 </script>
 <?php
