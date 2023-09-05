@@ -267,7 +267,7 @@ if($page_status == 'draft') {
 }
 
 $smarty->assign('page_meta_robots', $page_meta_robots);
-//$smarty->assign('page_meta_enhanced', $page_meta_enhanced);
+$smarty->assign('page_canonical_url', $page_canonical_url);
 
 if(isset($page_head_styles) AND $page_head_styles != "") {
 	$smarty->assign('page_head_styles', "<style> $page_head_styles </style>\n");
