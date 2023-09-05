@@ -283,6 +283,20 @@ echo '<input class="form-control" type="text" autocomplete="off" name="page_cano
 echo ' <button class="btn btn-default" type="button" id="addCanonical"><i class="bi bi-arrow-clockwise"></i></button>';
 echo '</div>';
 
+if($page_translation_urls != '') {
+    $page_translation_urls = html_entity_decode($page_translation_urls);
+    $translation_urls_array = json_decode($page_translation_urls,true);
+}
+
+foreach($all_langs as $l) {
+
+    $ls = $l['lang_sign'];
+
+    echo '<div class="input-group mb-3">';
+    echo '<span class="input-group-text"><i class="bi bi-translate me-1"></i> '.$ls.'</span>';
+    echo '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url" value="'.$translation_urls_array[$ls].'">';
+    echo '</div>';
+}
 
 ?>
 <script>

@@ -153,6 +153,16 @@ function se_sanitize_page_inputs($data) {
             $sanitized[$key] = se_clean_permalink($val);
         }
 
+        // translation urls
+        if($key == 'translation_url') {
+            if(is_array($val)) {
+                foreach($val as $k => $v) {
+                    $urls[$k] = se_clean_permalink($v);
+                }
+                $sanitized['page_translation_urls'] = json_encode($urls,JSON_UNESCAPED_UNICODE);
+            }
+        }
+
         // integers
         if($key == 'page_priority' || $key == 'page_categories_mode' || $key == 'page_comments' || $key == 'editpage'
             || $key == 'page_redirect_code') {
