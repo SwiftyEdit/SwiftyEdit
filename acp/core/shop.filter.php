@@ -82,7 +82,7 @@ if($show_form !== false)  {
     /* select for group language */
     $select_group_language  = '<select name="filter_group_lang" class="custom-select form-control">';
     foreach($lang_codes as $lang_code) {
-        $select_group_language .= "<option value='$lang_code'".($filter_lang == "$lang_code" ? 'selected="selected"' :'').">$lang_code</option>";
+        $select_group_language .= "<option value='$lang_code'".($group_data['filter_lang'] == "$lang_code" ? 'selected="selected"' :'').">$lang_code</option>";
     }
     $select_group_language .= '</select>';
 
