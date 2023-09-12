@@ -109,34 +109,6 @@ function se_write_option($data,$module) {
 }
 
 
-/**
- * hook in
- * inject code from addons
- * $position (string)	-> where should the code be injected
- * $data (array)			-> data which will be passed to the hook-script
- *
- * example: se_get_hook('page_updated',$_POST);
- *
- * Hooks (will be expanded soon):
- * - page_updated
- * - dashboard_listed_all_addons
- */
-
-function se_get_hook($position,$data) {
-	
-	global $all_mods;	
-	$hook = basename($position);
-	
-	foreach($all_mods as $mod) {
-		
-		$hook_file = SE_CONTENT.'/modules/'.$mod['folder'].'/hooks/'.$hook.'.php';
-		if(is_file($hook_file)) {
-			include $hook_file;
-		}
-		
-	}
-}
-
 
 /**
  * get all user groups

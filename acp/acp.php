@@ -167,7 +167,7 @@ $all_plugins = get_all_plugins();
 $se_labels = se_get_labels();
 $cnt_labels = count($se_labels);
 $all_langs = get_all_languages();
-
+$all_hooks = se_get_all_hooks();
 
 
 /**

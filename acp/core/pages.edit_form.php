@@ -521,6 +521,9 @@ echo '</div>'; /* EOL tab_meta */
 /* tab addons */
 echo '<div class="tab-pane fade" id="addons">';
 
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+
 /* Select Modul */
 
 $select_page_modul = '<select name="page_modul" class="custom-select form-control" id="selMod">';
@@ -560,6 +563,25 @@ for($i=0;$i<$cnt_mods;$i++) {
         echo '</fieldset>';
     }
 }
+
+echo '</div>';
+echo '<div class="col-md-6">';
+// show hooks, if available
+
+$page_update_hooks = se_get_hook('page_updated');
+if (count($page_update_hooks) > 0) {
+
+    echo '<div class="card p-3">';
+
+    foreach ($page_update_hooks as $hook) {
+        echo $hook;
+    }
+
+    echo '</div>';
+}
+
+echo '</div>';
+echo '</div>';
 
 
 echo '</div>'; /* EOL tab addons */

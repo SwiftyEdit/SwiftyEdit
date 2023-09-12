@@ -191,7 +191,14 @@ if(!empty($_POST['save_the_page']) OR (!empty($_POST['preview_the_page']))) {
 	mods_check_in();
 	cache_url_paths();
 	
-	se_get_hook('page_updated',$_POST);	
+
+    if (isset($_POST['send_hook'])) {
+        if (is_array($_POST['send_hook'])) {
+            se_run_hooks($_POST['send_hook'],$_POST);
+        }
+    }
+
+
 	se_delete_smarty_cache(md5($_POST['page_permalink']));
 	
 	if($_POST['page_status'] == 'ghost' OR $_POST['page_status'] == 'public') {
