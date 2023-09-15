@@ -8,6 +8,47 @@ foreach($_POST as $key => $val) {
     }
 }
 
+
+/**
+ * delete group from se_filter
+ * delete all entries where parent_id ist group's id
+ * or delete value
+ */
+
+if((isset($_POST['action'])) && $_POST['action'] == 'delete') {
+
+    if(isset($_POST['group_id'])) {
+        $delete_id = (int) $_POST['group_id'];
+
+        $delete_entries = $db_content->delete("se_filter", [
+            "filter_parent_id" => $delete_id
+        ]);
+        $delete_entries_cnt = $delete_entries->rowCount();
+
+        $delete_group = $db_content->delete("se_filter", [
+            "filter_id" => $delete_id
+        ]);
+
+        $delete_group_cnt = $delete_group->rowCount();
+
+        echo '<div class="alert alert-info">' . $lang['msg_entry_delete'] . ' (Group: ' . $delete_group_cnt . ' Entries: ' . $delete_entries_cnt . ')</div>';
+        exit;
+    }
+
+    if(isset($_POST['value_id'])) {
+        $delete_id = (int) $_POST['value_id'];
+        $delete_value = $db_content->delete("se_filter", [
+            "filter_id" => $delete_id
+        ]);
+        $delete_cnt = $delete_value->rowCount();
+        if($delete_cnt > 0) {
+            echo '<div class="alert alert-info">' . $lang['msg_entry_delete'] . '</div>';
+        }
+    }
+
+
+}
+
 if((isset($_POST['mode'])) && $_POST['mode'] == 'new_group') {
 
     $filter_type = 1;

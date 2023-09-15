@@ -8,7 +8,7 @@
         <div class="ms-auto"><a href="?tn=shop&sub=shop-filter" class="btn btn-default"><i class="bi bi-x-lg"></i> {btn_close}</a></div>
     </div>
     <div class="card-body">
-    <form id="edit_cat">
+    <form id="edit_filter_value">
 
         <div class="row">
             <div class="col-6">
@@ -35,7 +35,8 @@
             </div>
         </div>
 
-        <button class="btn btn-success" id="btnSubmitCategory" type="submit" name="submit_cat" value="{mode}">{btn_submit_text}</button>
+        <button class="btn btn-success" id="btnSubmitValue" type="submit" name="submit_value" value="{mode}">{btn_submit_text}</button>
+        <button class="btn btn-danger {btn_delete_class}" id="btnDeleteValue" type="submit" name="delete_value" value="{mode}">{btn_delete_text}</button>
 
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="value_id" value="{id}">
@@ -47,21 +48,37 @@
 
 <script>
     $(document).ready(function() {
-        $('#edit_cat').submit(function(e) {
+
+
+        $("#edit_filter_value button").click(function (e) {
             e.preventDefault();
 
-            var form = $(this);
-            var serializedData = form.serialize();
+            if ($(this).attr("name") == "submit_value") {
+                let action = 'submit';
+                form_submit(action);
+            }
+            if ($(this).attr("name") == "delete_value") {
+                let action = 'delete';
+                form_submit(action);
+                $("#edit_filter_value").hide();
+            }
 
-            $.ajax({
-                url: 'core/ajax/write-filter.php',
-                type: 'POST',
-                data: serializedData,
+            function form_submit(action) {
 
-                success: function(response){
-                    $("#form_response").html(response);
-                }
-            });
+                var form = $('#edit_filter_value');
+                var serializedData = form.serialize() + '&action=' + action;
+
+                $.ajax({
+                    url: 'core/ajax/write-filter.php',
+                    type: 'POST',
+                    data: serializedData,
+
+                    success: function(response){
+                        $("#form_response").html(response);
+                        $('#form_response > div').delay(3000).fadeOut('slow');
+                    }
+                });
+            }
         });
     });
 </script>

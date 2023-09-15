@@ -8,7 +8,7 @@
         <div class="ms-auto"><a href="?tn=shop&sub=shop-filter" class="btn btn-default"><i class="bi bi-x-lg"></i> {btn_close}</a></div>
     </div>
     <div class="card-body">
-    <form id="edit_cat">
+    <form id="edit_group" class="dirtyignore">
 
         <div class="row">
             <div class="col-5">
@@ -37,11 +37,14 @@
             </div>
             <div class="col-4">
                 <label>{label_categories}</label>
-                {select_categories}
+                <div class="scroll-container">
+                    {select_categories}
+                </div>
             </div>
         </div>
 
         <button class="btn btn-success" id="btnSubmitCategory" type="submit" name="submit_group" value="{mode}">{btn_submit_text}</button>
+        <button class="btn btn-danger {btn_delete_class}" id="btnDeleteCategory" type="submit" name="delete_group" value="{mode}">{btn_delete_text}</button>
 
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="group_id" value="{id}">
@@ -52,22 +55,40 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#edit_cat').submit(function(e) {
+
+
+    $(document).ready(function(){
+
+
+        $("#edit_group button").click(function (e) {
             e.preventDefault();
 
-            var form = $(this);
-            var serializedData = form.serialize();
+            if ($(this).attr("name") == "submit_group") {
+                let action = 'submit';
+                form_submit(action);
+            }
+            if ($(this).attr("name") == "delete_group") {
+                let action = 'delete';
+                form_submit(action);
+                $("#edit_group").hide();
+            }
 
-            $.ajax({
-                url: 'core/ajax/write-filter.php',
-                type: 'POST',
-                data: serializedData,
+            function form_submit(action) {
 
-                success: function(response){
-                    $("#form_response").html(response);
-                }
-            });
+                var form = $('#edit_group');
+                var serializedData = form.serialize() + '&action=' + action;
+
+                $.ajax({
+                    url: 'core/ajax/write-filter.php',
+                    type: 'POST',
+                    data: serializedData,
+
+                    success: function(response){
+                        $("#form_response").html(response);
+                        $('#form_response > div').delay(3000).fadeOut('slow');
+                    }
+                });
+            }
         });
     });
 </script>

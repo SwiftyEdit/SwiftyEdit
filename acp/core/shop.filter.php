@@ -91,6 +91,9 @@ if($show_form !== false)  {
     foreach($all_filters as $k => $v) {
         $title = $v['filter_title'];
         $id = $v['filter_id'];
+        if(isset($_GET['parent'])) {
+            $value_data['filter_parent_id'] = (int) $_GET['parent'];
+        }
         $select_parent_id .= "<option value='$id'".($value_data['filter_parent_id'] == "$id" ? 'selected="selected"' :'').">$title</option>";
     }
     $select_parent_id .= '</select>';
@@ -146,6 +149,7 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{select_input_type}',"$select_input_type",$form_tpl);
         $form_tpl = str_replace('{select_categories}',"$cats",$form_tpl);
         $form_tpl = str_replace('{id}',"",$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"d-none",$form_tpl);
     }
     if($mode == 'edit_group') {
         $form_tpl = str_replace('{val_group_name}',$group_data['filter_title'],$form_tpl);
@@ -155,6 +159,7 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{select_input_type}',"$select_input_type",$form_tpl);
         $form_tpl = str_replace('{select_categories}',"$cats",$form_tpl);
         $form_tpl = str_replace('{id}',$get_data_id,$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"",$form_tpl);
     }
     if($mode == 'new_value') {
         $form_tpl = str_replace('{select_parent_group}',"$select_parent_id",$form_tpl);
@@ -162,6 +167,7 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{value_name}','',$form_tpl);
         $form_tpl = str_replace('{value_description}','',$form_tpl);
         $form_tpl = str_replace('{id}',"",$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"d-none",$form_tpl);
     }
     if($mode == 'edit_value') {
         $form_tpl = str_replace('{value_name}',$value_data['filter_title'],$form_tpl);
@@ -169,11 +175,13 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{value_priority}',$value_data['filter_priority'],$form_tpl);
         $form_tpl = str_replace('{select_parent_group}',"$select_parent_id",$form_tpl);
         $form_tpl = str_replace('{id}',$get_data_id,$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"",$form_tpl);
     }
 
     $form_tpl = str_replace('{mode}',"$mode",$form_tpl);
     $form_tpl = str_replace('{csrf_token}',$_SESSION['token'],$form_tpl);
     $form_tpl = str_replace('{btn_submit_text}',"$btn_submit_text",$form_tpl);
+    $form_tpl = str_replace('{btn_delete_text}',$lang['button_delete'],$form_tpl);
     $form_tpl = str_replace('{btn_close}',$lang['btn_close'],$form_tpl);
 
     echo $form_tpl;
@@ -220,6 +228,7 @@ if($show_form !== false)  {
             echo '<span class="badge">'.$item['filter_priority'].'</span> '.$item['filter_title'];
             echo '</a> ';
         }
+        echo '<a href="?tn=shop&sub=shop-filter&new=value&parent='.$group_id.'" class="btn btn-sm btn-default text-success">+</a>';
         echo '</td>';
         echo '</tr>';
 
