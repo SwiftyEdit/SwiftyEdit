@@ -324,7 +324,9 @@ echo '<form action="?tn=system&sub=general&file=general-system" method="POST" cl
 
 echo '<table class="table table-sm table-hover">';
 
-$hidden_langs = json_decode($se_prefs['prefs_deactivated_languages']);
+if($se_prefs['prefs_deactivated_languages'] != '') {
+    $hidden_langs = json_decode($se_prefs['prefs_deactivated_languages']);
+}
 
 foreach($get_all_languages as $langs) {
 
