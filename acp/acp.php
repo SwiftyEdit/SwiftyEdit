@@ -395,6 +395,43 @@ if (isset($set_acptheme)) {
         <p class="d-none"><?php echo microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']; ?></p>
     </div>
 
+    <?php
+    if($se_environment == 'd') {
+        $debug_tpl = file_get_contents('templates/debug.tpl');
+
+        $debug_post_str = '<table class="table">';
+        foreach($_POST as $k => $v) {
+            $debug_post_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_post_str .= '</table>';
+
+        $debug_get_str = '<table class="table">';
+        foreach($_GET as $k => $v) {
+            $debug_get_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_get_str .= '</table>';
+
+        $debug_session_str = '<table class="table">';
+        foreach($_SESSION as $k => $v) {
+            $debug_session_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_session_str .= '</table>';
+
+        $debug_prefs_str = '<table class="table">';
+        foreach($se_prefs as $k => $v) {
+            $debug_prefs_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_prefs_str .= '</table>';
+
+        $debug_tpl = str_replace("{post}","$debug_post_str",$debug_tpl);
+        $debug_tpl = str_replace("{get}","$debug_get_str",$debug_tpl);
+        $debug_tpl = str_replace("{session}","$debug_session_str",$debug_tpl);
+        $debug_tpl = str_replace("{prefs}","$debug_prefs_str",$debug_tpl);
+        echo $debug_tpl;
+        echo '<p class="text-center">'.microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'].'</p>';
+    }
+    ?>
+
 </div>
 
 <div class="bottom-bar">
