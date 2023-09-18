@@ -2,57 +2,55 @@
 	
 include 'dict-backend.php';
 
-$lang['progress'] = 'Fortschritt';
-$lang['step'] = 'Stufe';
-$lang['next_step'] = 'nächster Schritt';
-$lang['prev_step'] = 'zurück';
-$lang['btn_check_system'] = 'System-Check';
-$lang['btn_enter_user'] = 'Benutzer anlegen';
-$lang['btn_enter_page_infos'] = 'Seiten Infos';
-$lang['btn_enter_database'] = 'Datenbank';
+$lang['progress'] = 'progreso';
+$lang['step'] = 'grada';
+$lang['next_step'] = 'Próximo paso';
+$lang['prev_step'] = 'atrás';
+$lang['btn_check_system'] = 'Chequeo del sistema';
+$lang['btn_enter_user'] = 'Crear usuario';
+$lang['btn_enter_page_infos'] = 'Paginas de informacion';
+$lang['btn_enter_database'] = 'base de datos';
 
-$lang['label_add_user'] = 'Benutzerdaten angeben';
-$lang['description_add_user'] = 'Gib die gewünschten Daten für einen ersten Benutzeraccount ein. Merke Dir diese Daten gut - mit diesen Daten kannst Du Dich später im ACP anmelden.';
+$lang['label_add_user'] = 'Especificar datos de usuario';
+$lang['description_add_user'] = 'Introduzca los datos deseados para una primera cuenta de usuario. Recuerde estos datos con atención: puede utilizarlos para iniciar sesión en el ACP más adelante.';
 
-$lang['label_add_page_data'] = 'Informationen zu Deiner neuen Seite';
-$lang['description_add_page_data'] = 'Hier kannst Du die ersten Informationen zu Deiner Seite angeben. Alle Angaben kannst Du natürlich später im ACP ändern oder ergänzen.';
+$lang['label_add_page_data'] = 'Información sobre su nuevo sitio';
+$lang['description_add_page_data'] = 'Aquí puede proporcionar la información inicial sobre su sitio. Por supuesto, puede cambiar o agregar toda la información más adelante en el ACP.';
 
-$lang['permission_false'] = 'Datei/Verzeichnis benötigt Schreibrechte!';
-$lang['permission_true'] = 'Datei/Verzeichnis ist beschreibbar';
-$lang['missing_folder'] = 'Das Verzeichnis fehlt';
-$lang['files_and_folders'] = 'Dateien und Verzeichnisse';
-$lang['system_requirements'] = 'Systemvoraussetzungen';
-$lang['php_false'] = 'SwiftyEdit benötigt mindestens PHP';
-$lang['php_true'] = 'PHP Version ausreichend';
-$lang['pdo_true'] = 'PDO/SQLite ist installiert';
-$lang['pdo_false'] = 'PDO/SQLite muss installiert/aktiviert werden';
-$lang['username'] = 'Username';
+$lang['permission_false'] = '¡El archivo/directorio requiere permisos de escritura!';
+$lang['permission_true'] = 'Se puede escribir en el archivo/directorio';
+$lang['missing_folder'] = 'Falta el directorio';
+$lang['files_and_folders'] = 'Archivos y directorios';
+$lang['system_requirements'] = 'Requisitos del sistema';
+$lang['php_false'] = 'SwiftyEdit requiere al menos PHP';
+$lang['php_true'] = 'Versión PHP suficiente';
+$lang['pdo_true'] = 'PDO/SQLite está instalado';
+$lang['pdo_false'] = 'PDO/SQLite debe estar instalado/activado';
+$lang['username'] = 'Nombre de usuario';
 $lang['email'] = 'E-Mail';
-$lang['password'] = 'Passwort';
-$lang['password_help_text'] = 'Das Passwort muss mind. 8 Zeichen enthalten';
-$lang['msg_form'] = 'Um die Installation zu starten benötigt SwiftyEdit die Zugangsdaten für einen Administrator.<br><strong>WICHTIG!</strong> Auf die Korrektheit der Eingaben achten!<br>Alle Angaben können später noch ergänzt bzw. geändert werden.';
-$lang['start_install'] = 'Installation starten';
-$lang['installed'] = 'Installation erfolgt';
-$lang['link_home'] = 'Zur Startseite';
-$lang['link_admin'] = 'Zur Administration';
+$lang['password'] = 'consigna';
+$lang['password_help_text'] = 'La contraseña debe contener al menos 8 caracteres.';
+$lang['msg_form'] = 'Para iniciar la instalación, SwiftyEdit requiere datos de acceso de administrador.<br><strong>importante</strong> ¡Asegúrese de que las entradas sean correctas!<br>Toda la información se puede agregar o cambiar más tarde.';
+$lang['start_install'] = 'Iniciar instalación';
+$lang['installed'] = 'La instalación está hecha';
+$lang['link_home'] = 'A la página de inicio';
+$lang['link_admin'] = 'Para la administración';
 
-$lang['db_host'] = 'Datenbank Host';
-$lang['db_host_help'] = 'In den meisten Fällen ist das localhost. Falls nicht, frage bei Deinem Webhoster nach.';
-$lang['db_port'] = 'Datenbank Port';
-$lang['db_port_help'] = '3306 ist der Standardport für das klassische MySQL-Protokoll';
-$lang['db_name'] = 'Datenbank Name';
+$lang['db_host'] = 'Host de base de datos';
+$lang['db_host_help'] = 'En la mayoría de los casos se trata de localhost. Si no, pregúntele a su proveedor de alojamiento web.';
+$lang['db_port'] = 'Puerto de base de datos';
+$lang['db_port_help'] = '3306 es el puerto predeterminado para el protocolo MySQL clásico';
+$lang['db_name'] = 'Nombre de la base de datos';
 $lang['db_name_help'] = '';
-$lang['db_username'] = 'Benutzername';
-$lang['db_username_help'] = 'Eventuell ist das <i>root</i>. Oder ein Benutzername welcher Dir von Deinem Webhoster zugeteilt wurde.';
-$lang['db_psw'] = 'Passwort';
-$lang['db_psw_help'] = 'Das Passwort für Deine Datenbank';
+$lang['db_username'] = 'Nombre de usuario';
+$lang['db_username_help'] = 'Eventuell ist das <i>root</i>. O un nombre de usuario que le asignó su proveedor de alojamiento web.';
+$lang['db_psw'] = 'consigna';
+$lang['db_psw_help'] = 'La contraseña de tu base de datos';
 $lang['db_prefix'] = 'Prefix';
-$lang['db_prefix_help'] = 'Falls Du noch weitere Installationen in dieser Datenbank installieren möchtest - oder hast. <strong>Achte darauf, dass Du ein Prefix nur einmal vergeben kannst.</strong>';
+$lang['db_prefix_help'] = 'Si desea instalar (o tener) instalaciones adicionales en esta base de datos. <strong>Asegúrese de poder asignar un prefijo solo una vez.</strong>';
 
-$lang['label_database'] = 'Datenbank';
+$lang['label_database'] = 'base de datos';
 
-$lang['db_sqlite_help'] = 'Falls Du SQLite als Datenbank nutzen möchtest, brauchst Du keine weiteren Angaben mehr machen.';
+$lang['db_sqlite_help'] = 'Si desea utilizar SQLite como base de datos, no necesita proporcionar más información.';
 
-$lang['check_connection'] = 'Verbindung prüfen';
-
-?>
+$lang['check_connection'] = 'Verifica la conexión';
