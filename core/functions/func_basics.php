@@ -157,22 +157,23 @@ function se_get_files_data($file,$parameters=NULL) {
 
 /**
  * @param string $mod name of addon
- * @param mixed $params
+ * @param mixed|null $params
  * @return mixed
  */
 
-function se_global_mod_snippets($mod,$params=NULL) {
+function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
+
+    $mod_str = '';
 
 	if($params !== NULL) {
-		$parameter = parse_str(html_entity_decode($params));
+		$parameter = parse_str(html_entity_decode($params),$output);
 	}
 	
-  if(is_file(SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php')) {
-		include SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php';
-  }
+    if(is_file(SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php')) {
+        include SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php';
+    }
 	
 	return $mod_str;
-	
 }
 
 
