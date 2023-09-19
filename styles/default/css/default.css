@@ -17646,7 +17646,7 @@ a.post-headline-link {
  */
 .event-list-entry,
 .event-entry {
-  border-bottom: 1px solid #adb5bd;
+  border-bottom: 1px solid #e9ecef;
   margin-bottom: 15px;
   padding-bottom: 15px;
 }
@@ -17671,11 +17671,12 @@ a.post-headline-link {
   background: #e9ecef;
   padding: 2px;
   text-align: center;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-radius: 5px;
 }
 .event-list-entry .event-date .event-date-header,
 .event-entry .event-date .event-date-header {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   background: #dee2e6;
   padding: 3px;
   margin: -2px -2px 0 -2px;
@@ -17693,6 +17694,16 @@ a.post-headline-link {
   font-size: 12px;
   line-height: 14px;
   opacity: 0.3;
+}
+
+[data-bs-theme=dark] .event-entry, .event-list-entry {
+  border-bottom: 1px solid #343a40;
+}
+[data-bs-theme=dark] .event-entry .event-date, .event-list-entry .event-date {
+  background: #1d2332;
+}
+[data-bs-theme=dark] .event-entry .event-date .event-date-header, .event-list-entry .event-date .event-date-header {
+  background: #262e42;
 }
 
 hr.hr-shadow {

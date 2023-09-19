@@ -4,7 +4,7 @@
 
 .event-list-entry,
 .event-entry {
-  border-bottom: 1px solid $gray-500;
+  border-bottom: 1px solid $gray-200;
   margin-bottom: 15px;
   padding-bottom: 15px;
   &.draft {
@@ -28,11 +28,11 @@
     background: $gray-200;
     padding: 2px;
     text-align: center;
-
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-radius: 5px;
 
     .event-date-header {
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
       background: $gray-300;
       padding: 3px;
       margin: -2px -2px 0 -2px;
@@ -56,7 +56,15 @@
 
 }
 
-
+[data-bs-theme=dark] .event-entry, .event-list-entry {
+  border-bottom: 1px solid $gray-800;
+  .event-date {
+    background: $card-border-color-dark;
+    .event-date-header {
+      background: lighten($card-border-color-dark,5);
+    }
+  }
+}
 
 
 
