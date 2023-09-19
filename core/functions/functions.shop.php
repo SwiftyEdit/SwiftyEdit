@@ -109,20 +109,20 @@ function se_get_products($start,$limit,$filter) {
         $sql_product_filter = '';
     }
 
+
     /* text search */
-    if($filter['text_search'] == '') {
+    if($filter['text_search'] != '') {
         $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text_search']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(tags like '%$f%' OR title like '%$f%' OR teaser like '%$f%' OR text like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
     } else {
-        $tf = $filter['text_search'];
-        $sql_text_filter = "(title LIKE '%$tf%') OR 
-        (teaser LIKE '%$tf%') OR 
-        (text LIKE '%$tf%') OR 
-        (product_number LIKE '%$tf%') OR
-        (text_additional1 LIKE '%$tf%') OR 
-        (text_additional2 LIKE '%$tf%') OR 
-        (text_additional3 LIKE '%$tf%') OR 
-        (text_additional4 LIKE '%$tf%') OR 
-        (text_additional5 LIKE '%$tf%')";
+        $sql_text_filter = '';
     }
 
     /* status filter */

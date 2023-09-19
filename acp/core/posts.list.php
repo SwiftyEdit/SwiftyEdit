@@ -169,12 +169,40 @@ if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
     $sql_start_nbr = (int) $_POST['setPage'];
 }
 
+/* text filter */
+if(isset($_POST['posts_text_filter'])) {
+    $_SESSION['posts_text_filter'] = $_SESSION['posts_text_filter'] . ' ' . clean_filename($_POST['posts_text_filter']);
+}
+
+/* remove keyword from filter list */
+if(isset($_REQUEST['rm_keyword'])) {
+    $all_posts_text_filter = explode(" ", $_SESSION['posts_text_filter']);
+    $_SESSION['posts_text_filter'] = '';
+    foreach($all_posts_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['posts_text_filter'] .= "$f ";
+    }
+}
+
+if(isset($_SESSION['posts_text_filter']) AND $_SESSION['posts_text_filter'] != "") {
+    unset($all_posts_text_filter);
+    $all_posts_text_filter = explode(" ", $_SESSION['posts_text_filter']);
+    $btn_remove_keyword = '';
+    foreach($all_posts_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $btn_remove_keyword .= '<a class="btn btn-sm btn-default" href="acp.php?tn=posts&sub='.$sub.'&rm_keyword='.$f.'">'.$icon['x'].' '.$f.'</a> ';
+    }
+}
+
 
 $posts_filter['languages'] = implode("-",$global_filter_languages);
 $posts_filter['types'] = $_SESSION['checked_type_string'];
 $posts_filter['status'] = implode("-",$global_filter_status);
 $posts_filter['categories'] = $_SESSION['checked_cat_string'];
 $posts_filter['labels'] = implode("-",$global_filter_label);
+$posts_filter['text'] = $_SESSION['posts_text_filter'];
 
 $get_posts = se_get_post_entries($sql_start_nbr,$_SESSION['items_per_page'],$posts_filter);
 $cnt_filter_posts = $get_posts[0]['cnt_posts'];
@@ -411,10 +439,23 @@ echo '<div class="col-md-3">';
 
 
 /* sidebar */
-echo '<div class="card p-2">';
+echo '<div class="card">';
+echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
+echo '<div class="card-body">';
 
-echo '<fieldset class="mt-4">';
-echo '<legend>'.$icon['filter'].' Filter</legend>';
+echo '<form action="?tn=posts&sub=blog-list" method="POST" class="ms-auto">';
+echo '<div class="input-group">';
+echo '<span class="input-group-text">'.$icon['search'].'</span>';
+echo '<input class="form-control" type="text" name="posts_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo $hidden_csrf_token;
+echo '</div>';
+echo '</form>';
+
+if(isset($btn_remove_keyword)) {
+    echo '<div class="d-inline">';
+    echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+    echo '</div><hr>';
+}
 
 
 echo '<div class="card mt-2">';
@@ -494,8 +535,7 @@ echo $cat_btn_group;
 
 echo '</div>';
 
-echo '</fieldset>';
-
+echo '</div>'; // card-body
 echo '</div>'; // card
 
 

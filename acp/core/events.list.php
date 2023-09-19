@@ -132,6 +132,32 @@ foreach($arr_categories as $c) {
 $cat_btn_group .= '</div>';
 $cat_btn_group .= '</div>';
 
+/* text filter */
+if(isset($_POST['events_text_filter'])) {
+    $_SESSION['events_text_filter'] = $_SESSION['events_text_filter'] . ' ' . clean_filename($_POST['events_text_filter']);
+}
+
+/* remove keyword from filter list */
+if(isset($_REQUEST['rm_keyword'])) {
+    $all_events_text_filter = explode(" ", $_SESSION['events_text_filter']);
+    $_SESSION['events_text_filter'] = '';
+    foreach($all_events_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['events_text_filter'] .= "$f ";
+    }
+}
+
+if(isset($_SESSION['events_text_filter']) AND $_SESSION['events_text_filter'] != "") {
+    unset($all_events_text_filter);
+    $all_events_text_filter = explode(" ", $_SESSION['events_text_filter']);
+    $btn_remove_keyword = '';
+    foreach($all_events_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $btn_remove_keyword .= '<a class="btn btn-sm btn-default" href="acp.php?tn=events&sub='.$sub.'&rm_keyword='.$f.'">'.$icon['x'].' '.$f.'</a> ';
+    }
+}
 
 
 if((isset($_GET['sql_start_nbr'])) && is_numeric($_GET['sql_start_nbr'])) {
@@ -146,6 +172,7 @@ $events_filter['languages'] = implode("-",$global_filter_languages);
 $events_filter['status'] = implode("-",$global_filter_status);
 $events_filter['categories'] = $_SESSION['checked_cat_string'];
 $events_filter['labels'] = implode("-",$global_filter_label);
+$events_filter['text_search'] = $_SESSION['events_text_filter'];
 
 $get_events = se_get_event_entries($sql_start_nbr,$_SESSION['items_per_page'],$events_filter);
 
@@ -341,11 +368,24 @@ echo '<div class="col-md-3">';
 
 
 /* sidebar */
-echo '<div class="card p-2">';
+echo '<div class="card">';
+echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
+echo '<div class="card-body">';
 
 
-echo '<fieldset class="mt-4">';
-echo '<legend>'.$icon['filter'].' Filter</legend>';
+echo '<form action="?tn=events&sub=events-list" method="POST" class="ms-auto">';
+echo '<div class="input-group">';
+echo '<span class="input-group-text">'.$icon['search'].'</span>';
+echo '<input class="form-control" type="text" name="events_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo $hidden_csrf_token;
+echo '</div>';
+echo '</form>';
+
+if(isset($btn_remove_keyword)) {
+    echo '<div class="d-inline">';
+    echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+    echo '</div><hr>';
+}
 
 
 echo '<div class="card mt-2">';
@@ -371,7 +411,7 @@ echo $cat_btn_group;
 echo '</div>';
 
 
-echo '</fieldset>';
+echo '</div>'; // card-body
 echo '</div>'; // card
 
 

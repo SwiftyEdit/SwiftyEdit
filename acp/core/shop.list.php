@@ -66,16 +66,31 @@ if(is_numeric($_POST['sfixed'])) {
 
 // search
 if(isset($_POST['product_text_search'])) {
-    $_SESSION['product_text_search'] = sanitizeUserInputs($_POST['product_text_search']);
+    $_SESSION['product_text_search'] = $_SESSION['product_text_search'] . ' ' . clean_filename($_POST['product_text_search']);
 }
 
-if(isset($_POST['search_reset'])) {
+/* remove keyword from filter list */
+if(isset($_REQUEST['rm_keyword'])) {
+    $all_products_text_filter = explode(" ", $_SESSION['product_text_search']);
     $_SESSION['product_text_search'] = '';
+    foreach($all_products_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['product_text_search'] .= "$f ";
+    }
 }
 
-if(!isset($_SESSION['product_text_search'])) {
-    $_SESSION['product_text_search'] = '';
+if(isset($_SESSION['product_text_search']) AND $_SESSION['product_text_search'] != "") {
+    unset($all_products_text_filter);
+    $all_products_text_filter = explode(" ", $_SESSION['product_text_search']);
+    $btn_remove_keyword = '';
+    foreach($all_products_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $btn_remove_keyword .= '<a class="btn btn-sm btn-default" href="acp.php?tn=shop&sub='.$sub.'&rm_keyword='.$f.'">'.$icon['x'].' '.$f.'</a> ';
+    }
 }
+
 
 
 // defaults
@@ -423,24 +438,24 @@ echo '<div class="col-md-3">';
 
 
 /* sidebar */
-echo '<div class="card py-3 px-2">';
+echo '<div class="card">';
+echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
+echo '<div class="card-body">';
 
-
-echo '<form action="acp.php?tn=shop" method="POST" class="mb-3">';
-
-echo '<div class="input-group mb-2">';
-echo '<input type="text" id="text_search" placeholder="'.$lang['label_search'].'" value="'.$_SESSION['product_text_search'].'" name="product_text_search" class="form-control rounded-pill">';
-if($_SESSION['product_text_search'] != '') {
-    echo '<button type="submit" name="submit_search" class="btn btn-default visually-hidden">SUBMIT</button>';
-    echo '<button class="btn btn-default" name="search_reset">'.$lang['label_reset'].'</button>';
-}
-echo '</div>';
+echo '<form action="?tn=shop&sub=shop-list" method="POST" class="ms-auto">';
+echo '<div class="input-group">';
+echo '<span class="input-group-text">'.$icon['search'].'</span>';
+echo '<input class="form-control" type="text" name="product_text_search" value="" placeholder="'.$lang['button_search'].'">';
 echo $hidden_csrf_token;
+echo '</div>';
 echo '</form>';
 
 
-echo '<fieldset class="mt-4">';
-echo '<legend>'.$icon['filter'].' Filter</legend>';
+if(isset($btn_remove_keyword)) {
+    echo '<div class="d-inline">';
+    echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+    echo '</div><hr>';
+}
 
 
 echo '<div class="card mt-2">';
@@ -449,10 +464,7 @@ echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
 echo $cat_btn_group;
 
 echo '</div>';
-
-echo '</fieldset>';
-
-
+echo '</div>'; // card-body
 echo '</div>'; // card
 
 

@@ -66,7 +66,6 @@ if(isset($_POST['pages_text_filter'])) {
 
 /* remove keyword from filter list */
 if(isset($_REQUEST['rm_keyword'])) {
-    unset($all_filter,$_SESSION['pages_text_filter']);
 	$all_filter = explode(" ", $_SESSION['pages_text_filter']);
     $_SESSION['pages_text_filter'] = '';
 	foreach($all_filter as $f) {

@@ -1,10 +1,14 @@
 <?php
 	
 /**
- * get posts
+ * get entries from se_posts
+ * @param integer $start
+ * @param mixed $limit all or number
+ * @param array $filter
+ * @return array
  */
-	
-function se_get_post_entries($start,$limit,$filter) {
+
+function se_get_post_entries($start,$limit,$filter): array {
 	
 	global $db_posts;
 	global $db_type;
@@ -45,6 +49,21 @@ function se_get_post_entries($start,$limit,$filter) {
 
 	/* set filters */
 	$sql_filter_start = 'WHERE post_id IS NOT NULL ';
+
+    /* text search */
+    if($filter['text'] != '') {
+        $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(post_tags like '%$f%' OR post_title like '%$f%' OR post_teaser like '%$f%' OR post_text like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
+    } else {
+        $sql_text_filter = '';
+    }
 
 	/* language filter */
     if($filter['languages'] != '') {
@@ -132,6 +151,9 @@ function se_get_post_entries($start,$limit,$filter) {
 	if($sql_label_filter != "") {
 		$sql_filter .= " AND ($sql_label_filter) ";
 	}
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
+    }
 	
 	if(SE_SECTION == 'frontend') {
 		$sql_filter .= "AND post_releasedate <= '$time_string_now' ";
@@ -215,6 +237,21 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql_lang_filter = '';
     }
 
+    /* text search */
+    if($filter['text_search'] != '') {
+        $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text_search']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(tags like '%$f%' OR title like '%$f%' OR teaser like '%$f%' OR text like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
+    } else {
+        $sql_text_filter = '';
+    }
+
     /* status filter */
     if($filter['status'] != '') {
         $sql_status_filter = "status IS NULL OR ";
@@ -274,6 +311,10 @@ function se_get_event_entries($start,$limit,$filter) {
     }
     if($sql_label_filter != "") {
         $sql_filter .= " AND ($sql_label_filter) ";
+    }
+
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
     }
 
     /* we hide past events in frontend */
