@@ -38,11 +38,25 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                    <label class="form-label">{label_title}</label>
-                                    <input class="form-control" name="title" type="text" value="{title}">
+                                        <label class="form-label">{label_title}</label>
+                                        <input class="form-control" name="title" type="text" value="{title}">
                                     </div>
-                                    <label class="form-label">{label_description}</label>
-                                    <textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
+                                    <div class="mb-3">
+                                        <label class="form-label">{label_description}</label>
+                                        <textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">{label_link_name}</label>
+                                                <input class="form-control" name="link_name" type="text" value="{link_name}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">{label_classes}</label>
+                                                <input class="form-control" name="link_classes" type="text" value="{link_classes}">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="well well-sm">

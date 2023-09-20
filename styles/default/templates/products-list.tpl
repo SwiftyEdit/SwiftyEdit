@@ -88,7 +88,7 @@
                         {/if}
                     </div>
                     <div class="col-md-4">
-                        <a class="btn btn-link w-100 {$read_more_class}" href="{$value.product_href}">{$btn_read_more}</a>
+                        <a class="btn btn-link w-100 {$link_classes}" href="{$value.product_href}">{$btn_read_more}</a>
                         {if $value.show_shopping_cart == true}
                             <form action="{$form_action}" method="POST" class="pt-1">
                                 <button class="btn btn-outline-success w-100" name="add_to_cart" value="{$value.product_id}">{$btn_add_to_cart}</button>

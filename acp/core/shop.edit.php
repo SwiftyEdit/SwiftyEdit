@@ -864,6 +864,9 @@ $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
 $form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
 $form_tpl = str_replace('{teaser}', $product_data['teaser'], $form_tpl);
 
+$form_tpl = str_replace('{link_name}', $product_data['link_name'], $form_tpl);
+$form_tpl = str_replace('{link_classes}', $product_data['link_classes'], $form_tpl);
+
 $form_tpl = str_replace('{text}', $product_data['text'], $form_tpl);
 $form_tpl = str_replace('{text_label}', $product_data['text_label'], $form_tpl);
 $form_tpl = str_replace('{text_additional_1}', $product_data['text_additional1'], $form_tpl);
