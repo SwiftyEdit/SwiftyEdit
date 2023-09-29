@@ -288,9 +288,9 @@ if($page_translation_urls != '') {
     $translation_urls_array = json_decode($page_translation_urls,true);
 }
 
-foreach($all_langs as $l) {
+foreach($active_lang as $k => $v) {
 
-    $ls = $l['lang_sign'];
+    $ls = $v['sign'];
 
     echo '<div class="input-group mb-3">';
     echo '<span class="input-group-text"><i class="bi bi-translate me-1"></i> '.$ls.'</span>';

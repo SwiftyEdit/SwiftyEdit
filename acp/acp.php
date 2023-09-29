@@ -229,6 +229,7 @@ if ($se_prefs['prefs_default_language'] != '') {
 /**
  * $lang_codes (array) all available lang codes
  * hide languages from $prefs_deactivated_languages
+ * all active languages are stored in $active_lang
  */
 if (isset($se_prefs['prefs_deactivated_languages']) AND $se_prefs['prefs_deactivated_languages'] != '') {
     $arr_lang_deactivated = json_decode($se_prefs['prefs_deactivated_languages']);
@@ -241,7 +242,17 @@ foreach ($all_langs as $l) {
 
     $langs[] = $l['lang_sign'];
 }
+
 $lang_codes = array_values(array_unique($langs));
+
+foreach($lang_codes as $l) {
+     if(is_file('../core/lang/'.$l.'/index.php')) {
+        include '../core/lang/'.$l.'/index.php';
+        $active_lang[$l]['sign'] = $lang_sign;
+        $active_lang[$l]['name'] = $lang_desc;
+        $active_lang[$l]['flag'] = '../core/lang/'.$l.'/flag.png';
+     }
+}
 
 /* build absolute URL */
 if ($se_prefs['prefs_cms_ssl_domain'] != '') {
@@ -378,10 +389,9 @@ if (isset($set_acptheme)) {
     <div id="footer">
         <p class="text-center">
             <?php
-            $arr_lang = get_all_languages();
-            for ($i = 0; $i < count($arr_lang); $i++) {
-                $lang_icon = '<img src="../core/lang/' . $arr_lang[$i]['lang_folder'] . '/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
-                echo '<a class="btn btn-sm btn-default" href="acp.php?set_lang=' . $arr_lang[$i]['lang_folder'] . '">' . $lang_icon . ' ' . $arr_lang[$i]['lang_desc'] . '</a> ';
+            foreach($active_lang as $k => $v) {
+                $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
+                echo '<a class="btn btn-sm btn-default" href="acp.php?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a> ';
             }
             ?>
         </p>
