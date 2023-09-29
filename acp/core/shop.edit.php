@@ -503,10 +503,20 @@ $select_shipping_category .= '</select>';
 $all_filters = se_get_product_filter_groups('all');
 $get_product_filter = json_decode($product_data['filter'],true);
 
+
 $filter_list = '';
 foreach($all_filters as $k => $v) {
+
+    $group_categories = explode(",",$v['filter_categories']);
+    $filter_cats = '';
+    foreach($cats as $key => $value) {
+        if (in_array($value['cat_id'], $group_categories)) {
+            $filter_cats .= '<span class="badge badge-se text-opacity-50">'.$value['cat_name'].'</span>';
+        }
+    }
+
     $filter_list .= '<div class="card mb-1">';
-    $filter_list .= '<div class="card-header">'.$v['filter_title'].'</div>';
+    $filter_list .= '<div class="card-header">'.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
     $filter_list .= '<div class="card-body">';
     $get_filter_items = se_get_product_filter_values($v['filter_id']);
     foreach($get_filter_items as $filter_item) {
