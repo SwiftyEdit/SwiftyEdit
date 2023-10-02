@@ -135,7 +135,7 @@ if($_SESSION['checked_cat_string'] == 'all') {
 
 $cat_btn_group = '<div class="card">';
 $cat_btn_group .= '<div class="list-group list-group-flush scroll-container">';
-$cat_btn_group .= '<a href="acp.php?tn=shop&cat=all" class="list-group-item list-group-item-ghost p-1 px-2 '.$cat_all_active.'">'.$icon_all_toggle.' '.$lang['btn_all_categories'].'</a>';
+$cat_btn_group .= '<a href="acp.php?tn=shop&cat=all" class="list-group-item p-1 px-2 '.$cat_all_active.'">'.$icon_all_toggle.' '.$lang['btn_all_categories'].'</a>';
 foreach($arr_categories as $c) {
     $cat_active = '';
     $icon_toggle = $icon['circle_alt'];
@@ -144,7 +144,11 @@ foreach($arr_categories as $c) {
         $cat_active = 'active';
     }
 
-    $cat_btn_group .= '<a href="acp.php?tn=shop&cat='.$c['cat_id'].'" class="list-group-item list-group-item-ghost p-1 px-2 '.$cat_active.'">'.$icon_toggle.' '.$c['cat_name'].'</a>';
+    $cat_lang_thumb = '<img src="/core/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
+
+    $cat_btn_group .= '<a href="acp.php?tn=shop&cat='.$c['cat_id'].'" class="list-group-item p-1 px-2 '.$cat_active.'">';
+    $cat_btn_group .= $icon_toggle.' '.$c['cat_name'].' <span class="float-end">'.$cat_lang_thumb.'</span>';
+    $cat_btn_group .= '</a>';
 }
 
 $cat_btn_group .= '</div>';
