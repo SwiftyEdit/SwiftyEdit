@@ -287,22 +287,8 @@ if($cnt_filter_posts > 0) {
         $post_lang_thumb = '<img src="/core/lang/'.$get_posts[$i]['post_lang'].'/flag.png" width="15" title="'.$get_posts[$i]['post_lang'].'" alt="'.$get_posts[$i]['post_lang'].'">';
 		
 		/* trim teaser to $trim chars */
-		$trim = 150;
-		$teaser = strip_tags(htmlspecialchars_decode($get_posts[$i]['post_teaser']));
-		if(strlen($teaser) > $trim) {
-			$ellipses = ' <small><i>(...)</i></small>';
-		  $last_space = strrpos(substr($teaser, 0, $trim), ' ');
-		  if($last_space !== false) {
-			  $trimmed_teaser = substr($teaser, 0, $last_space);
-			} else {
-				$trimmed_teaser = substr($teaser, 0, $trim);
-			}
-			$trimmed_teaser = $trimmed_teaser.$ellipses;
-		} else {
-			$trimmed_teaser = $teaser;
-		}
-		
-		
+        $trimmed_teaser = se_return_first_chars($get_posts[$i]['post_teaser'],100);
+
 		$post_image = explode("<->", $get_posts[$i]['post_images']);
 		$show_thumb = '';
 		if($post_image[1] != "") {

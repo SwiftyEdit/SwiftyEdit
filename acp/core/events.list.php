@@ -244,21 +244,7 @@ if($cnt_filter_events > 0) {
         }
 
         /* trim teaser to $trim chars */
-        $trim = 150;
-        $teaser = strip_tags(htmlspecialchars_decode($get_events[$i]['teaser']));
-        if(strlen($teaser) > $trim) {
-            $ellipses = ' <small><i>(...)</i></small>';
-            $last_space = strrpos(substr($teaser, 0, $trim), ' ');
-            if($last_space !== false) {
-                $trimmed_teaser = substr($teaser, 0, $last_space);
-            } else {
-                $trimmed_teaser = substr($teaser, 0, $trim);
-            }
-            $trimmed_teaser = $trimmed_teaser.$ellipses;
-        } else {
-            $trimmed_teaser = $teaser;
-        }
-
+        $trimmed_teaser = se_return_first_chars($get_events[$i]['teaser'],100);
 
         $post_image = explode("<->", $get_events[$i]['images']);
         $show_thumb = '';

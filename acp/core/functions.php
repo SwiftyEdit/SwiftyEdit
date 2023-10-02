@@ -724,7 +724,30 @@ function first_words($string,$nbr=5) {
 }
 
 
+/**
+ * Return the first n chars of a string (without tags).
+ *
+ * @param string $str
+ * @param integer $length
+ * @return string
+ */
+function se_return_first_chars($str,$length=200) {
 
+    $str = strip_tags(htmlspecialchars_decode($str));
+    if(strlen($str) > $length) {
+        $ellipses = ' <small><i>(...)</i></small>';
+        $last_blank_pos = strrpos(substr($str, 0, $length), ' ');
+        if($last_blank_pos !== false) {
+            $trimmed_string = substr($str, 0, $last_blank_pos);
+        } else {
+            $trimmed_string = substr($str, 0, $length);
+        }
+        $trimmed_string .= $ellipses;
+        return $trimmed_string;
+    } else {
+        return $str;
+    }
+}
 
 
 

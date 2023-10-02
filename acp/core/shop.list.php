@@ -256,21 +256,7 @@ if($cnt_filter_posts > 0) {
         $product_lang_thumb = '<img src="/core/lang/'.$get_products[$i]['product_lang'].'/flag.png" width="15" title="'.$get_products[$i]['product_lang'].'" alt="'.$get_products[$i]['product_lang'].'">';
 
         /* trim teaser to $trim chars */
-        $trim = 150;
-        $teaser = strip_tags(htmlspecialchars_decode($get_products[$i]['teaser']));
-        if(strlen($teaser) > $trim) {
-            $ellipses = ' <small><i>(...)</i></small>';
-            $last_space = strrpos(substr($teaser, 0, $trim), ' ');
-            if($last_space !== false) {
-                $trimmed_teaser = substr($teaser, 0, $last_space);
-            } else {
-                $trimmed_teaser = substr($teaser, 0, $trim);
-            }
-            $trimmed_teaser = $trimmed_teaser.$ellipses;
-        } else {
-            $trimmed_teaser = $teaser;
-        }
-
+        $trimmed_teaser = se_return_first_chars($get_products[$i]['teaser'],100);
 
         $post_image = explode("<->", $get_products[$i]['images']);
         $show_thumb = '';
