@@ -230,9 +230,16 @@ if($cnt_filter_posts > 0) {
 
         $edit_variant_select = '';
         if($cnt_variants > 1) {
+            $edit_variant_select = '<form class="mt-2" action="?tn=shop&sub=edit" method="POST">';
+            $edit_variant_select .= '<div class="dropdown">';
+            $edit_variant_select .= '<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['label_product_variants'].' ('.$cnt_variants.')</button>';
+            $edit_variant_select .= '<ul class="dropdown-menu">';
             foreach($variants as $variant) {
-                $edit_variant_select .= '<option value="'.$variant['id'].'">'.$variant['id'].' '.$variant['title'].'</option>';
+                $edit_variant_select .= '<li><button class="dropdown-item" name="edit_id" value="'.$variant['id'].'" type="submit">'.$variant['id'].' '.$variant['title'].'</button></li>';
             }
+            $edit_variant_select .= '</ul>';
+            $edit_variant_select .= $hidden_csrf_token;
+            $edit_variant_select .= '</form>';
         }
 
         $icon_fixed_form = '<form action="?tn=shop" method="POST" class="form-inline">';
@@ -373,20 +380,8 @@ if($cnt_filter_posts > 0) {
         echo '<h5 class="mb-0">'.$product_lang_thumb.' '.$get_products[$i]['title'].$add_label.'</h5><small>'.$trimmed_teaser.'</small>';
         echo '<div>'.$show_items_dates.'</div>';
         echo '<div>'.$categories.'</div>';
-        echo $label;
         if($edit_variant_select != '') {
-            echo '<form class="p-0" action="?tn=shop&sub=edit" method="POST">';
-            echo '<fieldset>';
-            echo '<legend>'.$lang['label_product_variants'].'</legend>';
-            echo '<div class="input-group">';
-            echo '<select name="edit_id" class="form-select">';
             echo $edit_variant_select;
-            echo '</select>';
-            echo '<button type="submit" class="btn btn-default">'.$icon['edit'].'</button>';
-            echo $hidden_csrf_token;
-            echo '</div>';
-            echo '</fieldset>';
-            echo '</form> ';
         }
         echo '</td>';
         echo '<td>'.$show_items_price.'</td>';
