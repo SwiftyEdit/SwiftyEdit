@@ -38,14 +38,13 @@ if(isset($_POST['cat']) && ($_POST['cat'] != '')) {
     $btn_submit_text = $lang['update'];
 
     $get_category = $db_content->get("se_categories","*",[
-        "AND" => [
-            "cat_id" => "$cat_id"
-        ]
+        "cat_id" => "$cat_id"
     ]);
 
     $cat_name = $get_category['cat_name'];
     $cat_sort = $get_category['cat_sort'];
     $cat_lang = $get_category['cat_lang'];
+    $cat_hash = $get_category['cat_hash'];
     $cat_thumbnail = $get_category['cat_thumbnail'];
     $cat_description = $get_category['cat_description'];
 
@@ -114,6 +113,17 @@ if($show_form == true)  {
     echo '<table class="table">';
 
     foreach ($all_categories as $cats) {
+
+        if($cats['cat_hash'] == '') {
+            // we have no hash for this category
+            // generate one, save it
+            $cat_hash = md5(microtime());
+            $data = $db_content->update("se_categories", [
+                "cat_hash" => $cat_hash
+            ], [
+                "cat_id" => $cats['cat_id']
+            ]);
+        }
 
         $show_thumb = '';
         $flag = '<img src="/core/lang/' . $cats['cat_lang'] . '/flag.png" width="15">';
