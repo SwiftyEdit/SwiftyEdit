@@ -129,14 +129,14 @@ if($show_form !== false)  {
 
         $check_this = '';
         if(is_array($get_categories)) {
-            if (in_array($v['cat_id'], $get_categories)) {
+            if (in_array($v['cat_hash'], $get_categories)) {
                 $check_this = 'checked';
             }
         }
 
         $cats .= '<div class="form-check">';
-        $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="'.$v['cat_id'].'" id="cat_id'.$k.'" '.$check_this.'>';
-        $cats .= '<label class="form-check-label" for="cat_id'.$k.'">'.$v['cat_id'].' '.$v['cat_name'].'</label>';
+        $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="'.$v['cat_hash'].'" id="cat_id'.$k.'" '.$check_this.'>';
+        $cats .= '<label class="form-check-label" for="cat_id'.$k.'">'.$v['cat_name'].'</label>';
         $cats .= '</div>';
     }
 
@@ -227,7 +227,7 @@ if($show_form !== false)  {
         // show categories
         echo '<br>';
         foreach($get_all_categories as $k => $v) {
-            if (in_array($v['cat_id'], $group_categories)) {
+            if (in_array($v['cat_hash'], $group_categories)) {
                 echo '<span class="badge badge-se text-opacity-50">'.$v['cat_name'].'</span>';
             }
         }

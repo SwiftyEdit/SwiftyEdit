@@ -278,11 +278,11 @@ for($i=0;$i<$cnt_cats;$i++) {
     }
 
     $checked = "";
-    if(in_array($cats[$i]['cat_id'], $array_categories)) {
+    if(in_array($cats[$i]['cat_hash'], $array_categories)) {
         $checked = "checked";
     }
     $checkboxes_cat .= '<div class="form-check">';
-    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_id'].'" '.$checked.'>';
+    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
     $checkboxes_cat .= '<label class="form-check-label" for="cat'.$i.'">'.$category.' <small>('.$cats[$i]['cat_lang'].')</small></label>';
     $checkboxes_cat .= '</div>';
 }
@@ -510,7 +510,7 @@ foreach($all_filters as $k => $v) {
     $group_categories = explode(",",$v['filter_categories']);
     $filter_cats = '';
     foreach($cats as $key => $value) {
-        if (in_array($value['cat_id'], $group_categories)) {
+        if (in_array($value['cat_hash'], $group_categories)) {
             $filter_cats .= '<span class="badge badge-se text-opacity-50">'.$value['cat_name'].'</span>';
         }
     }

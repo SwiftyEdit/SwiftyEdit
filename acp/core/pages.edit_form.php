@@ -738,12 +738,12 @@ echo '</div><hr>';
 for($i=0;$i<count($categories);$i++) {
 
     $checked_cat = '';
-    if(in_array($categories[$i]['cat_id'], $page_cats_array)) {
+    if(in_array($categories[$i]['cat_hash'], $page_cats_array)) {
         $checked_cat = 'checked';
     }
 
     echo '<div class="form-check">';
-    echo '<input type="checkbox" class="form-check-input checkbox-categories" id="cat'.$i.'" name="page_post_categories[]" value="'.$categories[$i]['cat_id'].'" '.$checked_cat.'>';
+    echo '<input type="checkbox" class="form-check-input checkbox-categories" id="cat'.$i.'" name="page_post_categories[]" value="'.$categories[$i]['cat_hash'].'" '.$checked_cat.'>';
     echo '<label class="form-check-label" for="cat'.$i.'">'.$categories[$i]['cat_name'].' <small>('.$categories[$i]['cat_lang'].')</small></label>';
     echo '</div>';
 }
@@ -1115,14 +1115,14 @@ $arr_checked_categories = explode(",", $page_categories);
 foreach($all_categories as $cats) {
 
 	$checked_cat = '';
-  if(in_array($cats['cat_id'], $arr_checked_categories)) {
+  if(in_array($cats['cat_hash'], $arr_checked_categories)) {
 		$checked_cat = "checked";
 	} else {
 		$checked_cat = "";
 	}
 
 	$checkbox_set_cat .= '<div class="checkbox"><label>';
- 	$checkbox_set_cat .= '<input type="checkbox" '.$checked_cat.' name="set_page_categories[]" value="'.$cats['cat_id'].'"> '. $cats['cat_name'];
+ 	$checkbox_set_cat .= '<input type="checkbox" '.$checked_cat.' name="set_page_categories[]" value="'.$cats['cat_hash'].'"> '. $cats['cat_name'];
  	$checkbox_set_cat .= '</label></div>';	
 	
 }

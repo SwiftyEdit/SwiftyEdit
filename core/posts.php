@@ -52,7 +52,7 @@ $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 foreach($all_categories as $cats) {
 
     if($page_contents['page_posts_categories'] != 'all') {
-        if (!in_array($cats['cat_id'], $this_page_categories)) {
+        if (!in_array($cats['cat_hash'], $this_page_categories)) {
             // skip this category
             continue;
         }
@@ -82,7 +82,7 @@ foreach($all_categories as $cats) {
 
 	if($cats['cat_name_clean'] == $array_mod_slug[0]) {
 		// show only posts from this category
-		$posts_filter['categories'] = $cats['cat_id'];
+		$posts_filter['categories'] = $cats['cat_hash'];
 		$display_mode = 'list_posts_category';
 		
 		if($array_mod_slug[1] == 'p') {

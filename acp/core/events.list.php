@@ -102,7 +102,7 @@ if(!isset($_SESSION['checked_cat_string'])) {
 /* filter by categories */
 if(isset($_GET['cat'])) {
     if($_GET['cat'] !== 'all') {
-        $_SESSION['checked_cat_string'] = (int)$_GET['cat'];
+        $_SESSION['checked_cat_string'] = se_return_clean_value($_GET['cat']);
     } else {
         $_SESSION['checked_cat_string'] = 'all';
     }
@@ -121,13 +121,13 @@ $cat_btn_group .= '<a href="acp.php?tn=events&cat=all" class="list-group-item p-
 foreach($arr_categories as $c) {
     $cat_active = '';
     $icon_toggle = $icon['circle_alt'];
-    if($_SESSION['checked_cat_string'] == $c['cat_id']) {
+    if($_SESSION['checked_cat_string'] == $c['cat_hash']) {
         $icon_toggle = $icon['check_circle'];
         $cat_active = 'active';
     }
     $cat_lang_thumb = '<img src="/core/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
 
-    $cat_btn_group .= '<a href="acp.php?tn=events&cat='.$c['cat_id'].'" class="list-group-item p-1 px-2 '.$cat_active.'">';
+    $cat_btn_group .= '<a href="acp.php?tn=events&cat='.$c['cat_hash'].'" class="list-group-item p-1 px-2 '.$cat_active.'">';
     $cat_btn_group .= $icon_toggle.' '.$c['cat_name'].' <span class="float-end">'.$cat_lang_thumb.'</span>';
     $cat_btn_group .= '</a>';
 }
@@ -280,11 +280,11 @@ if($cnt_filter_events > 0) {
         /* categories */
         $get_post_categories = explode('<->',$get_events[$i]['categories']);
         $categories = '';
-        if($get_events[$i]['post_categories'] != '') {
+        if($get_events[$i]['categories'] != '') {
             foreach($get_post_categories as $cats) {
 
                 foreach($arr_categories as $cat) {
-                    if($cats == $cat['cat_id']) {
+                    if($cats == $cat['cat_hash']) {
                         $cat_title = $cat['cat_name'];
                         $cat_description = $cat['cat_description'];
                     }

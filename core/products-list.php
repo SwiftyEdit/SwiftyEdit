@@ -181,7 +181,7 @@ foreach ($get_products as $k => $post) {
     $post_categories = explode('<->', $get_products[$k]['categories']);
     $category = array();
     foreach ($all_categories as $cats) {
-        if (in_array($cats['cat_id'], $post_categories)) {
+        if (in_array($cats['cat_hash'], $post_categories)) {
             $cat_href = '/' . $swifty_slug . $cats['cat_name_clean'] . '/';
             $category[] = array(
                 "cat_href" => $cat_href,

@@ -192,11 +192,11 @@ for($i=0;$i<count($cats);$i++) {
     $category = $cats[$i]['cat_name'];
     $array_categories = explode("<->", $event_data['categories']);
     $checked = "";
-    if(in_array($cats[$i]['cat_id'], $array_categories)) {
+    if(in_array($cats[$i]['cat_hash'], $array_categories)) {
         $checked = "checked";
     }
     $checkboxes_cat .= '<div class="form-check">';
-    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_id'].'" '.$checked.'>';
+    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
     $checkboxes_cat .= '<label class="form-check-label" for="cat'.$i.'">'.$category.' <small>('.$cats[$i]['cat_lang'].')</small></label>';
     $checkboxes_cat .= '</div>';
 }

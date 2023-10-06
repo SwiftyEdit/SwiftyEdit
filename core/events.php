@@ -52,13 +52,14 @@ foreach($all_categories as $cats) {
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
         "cat_name" => $show_category_name,
-        "cat_class" => $cat_class
+        "cat_class" => $cat_class,
+        "cat_hash" => $cats['cat_hash']
     );
 
 
     if($cats['cat_name_clean'] == $array_mod_slug[0]) {
         // show only posts from this category
-        $posts_filter['categories'] = $cats['cat_id'];
+        $events_filter['categories'] = $cats['cat_hash'];
         $display_mode = 'list_posts_category';
 
         if($array_mod_slug[1] == 'p') {
@@ -81,7 +82,8 @@ if($array_mod_slug[0] == 'p') {
     } else {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");
-        header("Connection: close");	}
+        header("Connection: close");
+    }
 }
 
 /* we are on the event display page, but we have no post id
