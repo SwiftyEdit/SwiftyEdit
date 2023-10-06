@@ -528,39 +528,44 @@
         </div>
         <div class="col-md-3">
             <div class="card p-3">
-                <fieldset>
-                    <legend>{label_language}</legend>
-                    <div class="">
-                        {checkboxes_lang}
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>{label_categories}</legend>
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_language}</label>
+                    {checkboxes_lang}
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_categories}</label>
                     <div class="scroll-container" style="max-height: 150px;">
                         {checkbox_categories}
                     </div>
-                </fieldset>
-                <fieldset>
-                    <legend>{label_releasedate}</legend>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_releasedate}</label>
                     <input class='dp form-control' name="releasedate" type="text" value="{releasedate}">
-                </fieldset>
-                <fieldset>
-                    <legend>{label_priority}</legend>
+                </div>
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_priority}</label>
                     <input type="number" name="priority" value="{input_priority}" class="form-control">
                     {checkbox_fixed}
-                </fieldset>
-                <fieldset>
-                    <legend>{label_status}</legend> {select_status}
-                </fieldset>
-                <fieldset>
-                    <legend>{label_comments}</legend> {select_comments}
-                </fieldset>
-                <fieldset>
-                    <legend>{label_votings}</legend> {select_votings}
-                </fieldset>
-                <fieldset>
-                    <legend>{labels}</legend> {product_labels}
-                </fieldset>
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_status}</label>
+                    {select_status}
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_comments}</label>
+                    {select_comments}
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_votings}</label>
+                    {select_votings}
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{labels}</label>
+                    <div>{post_labels}</div>
+                </div>
+
                 <input name="type" type="hidden" value="{type}">
                 <input name="parent_id" type="hidden" value="{parent_id}">
                 <input name="modus" type="hidden" value="{modus}">

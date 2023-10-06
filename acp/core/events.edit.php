@@ -373,7 +373,7 @@ for($i=0;$i<$cnt_labels;$i++) {
     $checkbox_set_labels .= '</div>';
 }
 
-$form_tpl = str_replace('{labels}', $checkbox_set_labels, $form_tpl);
+$form_tpl = str_replace('{event_labels}', $checkbox_set_labels, $form_tpl);
 
 
 /* user inputs */

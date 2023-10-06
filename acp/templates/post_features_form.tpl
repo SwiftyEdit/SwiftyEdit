@@ -15,18 +15,16 @@
   
 		</div>
 		<div class="col-md-4">
-			
-			
-				<fieldset>
-					<legend>{label_language}</legend>
-					<div class="">
-						{select_lang}
-					</div>
-				</fieldset>
-			
-			<div class="form-group">
+
+
+			<div class="mb-3 pb-3">
+				<label>{label_language}</label>
+				{select_lang}
+			</div>
+
+			<div class="mb-3 pb-3">
 				<label>{label_priority}</label>
-				<input type="text" name="feature_priority" value="{feature_priority}" class="form-control">
+				<input type="number" name="feature_priority" value="{feature_priority}" class="form-control">
 			</div>			
 			<hr>
 			{btn_send_form}
