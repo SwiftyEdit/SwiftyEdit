@@ -62,6 +62,33 @@ function se_get_products($start,$limit,$filter) {
         }
     }
 
+    if(SE_SECTION == 'backend') {
+        $direction = 'ASC';
+
+        if($filter['sort_direction'] == 'DESC') {
+            $direction = 'DESC';
+        }
+
+        if($filter['sort_by'] == 'time_edit') {
+            $order_col = 'lastedit';
+            $order = "ORDER BY fixed ASC, $order_col $direction";
+        }
+        if($filter['sort_by'] == 'time_submited') {
+            $order_col = 'date';
+            $order = "ORDER BY fixed ASC, $order_col $direction";
+        }
+        if($filter['sort_by'] == 'priority') {
+            $order_col = 'priority';
+            $order = "ORDER BY fixed ASC, $order_col $direction";
+        }
+        if($filter['sort_by'] == 'price') {
+            $order_col = 'product_price_net*1';
+            $order = "ORDER BY fixed ASC, $order_col $direction";
+        }
+
+    }
+
+
     if(!isset($filter['labels'])) {
         $filter['labels'] = '';
     }

@@ -164,12 +164,49 @@ if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
 }
 
 
+// sorting
+
+$sort_products = 'priority';
+$sort_products_direction = 'DESC';
+
+if(isset($_POST['sorting_products_dir'])) {
+    if($_POST['sorting_products_dir'] == 'desc') {
+        $_SESSION['sorting_products_dir'] = 'DESC';
+    } else {
+        $_SESSION['sorting_products_dir'] = 'ASC';
+    }
+}
+
+if(!isset($_SESSION['sorting_products_dir'])) {
+    $_SESSION['sorting_products_dir'] = $sort_products_direction;
+}
+
+if(isset($_POST['sorting_products'])) {
+    if($_POST['sorting_products'] == 'priority') {
+        $_SESSION['sorting_products'] = 'priority';
+    } else if($_POST['sorting_products'] == 'time_edit') {
+        $_SESSION['sorting_products'] = 'time_edit';
+    } else if($_POST['sorting_products'] == 'time_submited') {
+        $_SESSION['sorting_products'] = 'time_submited';
+    } else {
+        $_SESSION['sorting_products'] = 'price';
+    }
+}
+
+if(!isset($_SESSION['sorting_products'])) {
+    $_SESSION['sorting_products'] = $sort_products;
+}
+
+
+
 $products_filter['languages'] = implode("-",$global_filter_languages);
 $products_filter['status'] = implode("-",$global_filter_status);
 $products_filter['labels'] = implode("-",$global_filter_label);
 $products_filter['types'] = 'p';
 $products_filter['categories'] = $_SESSION['checked_cat_string'];
 $products_filter['text_search'] = $_SESSION['product_text_search'];
+$products_filter['sort_by'] = $_SESSION['sorting_products'];
+$products_filter['sort_direction'] = $_SESSION['sorting_products_dir'];
 
 
 $get_products = se_get_products($sql_start_nbr,$_SESSION['items_per_page'],$products_filter);
@@ -441,6 +478,50 @@ if(isset($btn_remove_keyword)) {
     echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
     echo '</div><hr>';
 }
+
+
+if($_SESSION['sorting_products'] == 'priority') {
+    $sel_sort_value['priority'] = 'selected';
+} else if ($_SESSION['sorting_products'] == 'time_submited') {
+    $sel_sort_value['time_submited'] = 'selected';
+} else if ($_SESSION['sorting_products'] == 'time_edit') {
+    $sel_sort_value['time_edit'] = 'selected';
+} else {
+    $sel_sort_value['price'] = 'selected';
+}
+
+if($_SESSION['sorting_products_dir'] == 'ASC') {
+    $sel_sort_value['sort_asc'] = 'active';
+} else {
+    $sel_sort_value['sort_desc'] = 'active';
+}
+
+echo '<div class="my-3">';
+echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
+echo '<form action="?tn=shop&sub=shop-list" method="post" class="dirtyignore">';
+
+echo '<div class="row g-1">';
+echo '<div class="col-md-8">';
+
+echo '<select class="form-control form-select-sm" name="sorting_products" onchange="this.form.submit()">';
+echo '<option value="priority" '.$sel_sort_value['priority'].'>'.$lang['label_priority'].'</option>';
+echo '<option value="time_submited" '.$sel_sort_value['time_submited'].'>'.$lang['label_data_submited'].'</option>';
+echo '<option value="time_edit" '.$sel_sort_value['time_edit'].'>'.$lang['btn_sort_edit'].'</option>';
+echo '<option value="price" '.$sel_sort_value['price'].'>'.$lang['label_price'].'</option>';
+echo '</select>';
+
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="btn-group d-flex">';
+echo '<button name="sorting_products_dir" value="asc" title="'.$lang['btn_sort_asc'].'" class="btn btn-sm btn-default w-100 '.$sel_sort_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
+echo '<button name="sorting_products_dir" value="desc" title="'.$lang['btn_sort_desc'].'" class="btn btn-sm btn-default w-100 '.$sel_sort_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
 
 
 echo '<div class="card mt-2">';
