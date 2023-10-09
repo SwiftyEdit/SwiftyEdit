@@ -66,7 +66,7 @@ if(is_file('../config_database.php')) {
 
 
 
-
+require 'core/functions.php';
 require '../core/functions/func_userdata.php';
 require '../core/lang/'.$languagePack.'/dict-backend.php';
 $login = '';

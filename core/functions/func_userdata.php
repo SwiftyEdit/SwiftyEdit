@@ -135,6 +135,10 @@ function randpsw($length=8) {
  
 function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 
+    if($user == '') {
+        return 'failed';
+    }
+
 	global $db_user;
 
 	$login_hash  = md5($psw.$user);
@@ -214,6 +218,11 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 			setcookie("identifier",$identifier,time()+(3600*24*365));
 			setcookie("securitytoken",$securitytoken,time()+(3600*24*365));		
 		}
+
+        if($_SESSION['user_class'] == 'administrator') {
+            $message = 'logged into acp ' . date("Y-m-d H:i",time());
+            record_log("$user","$message",1);
+        }
 		
 		
 		if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {

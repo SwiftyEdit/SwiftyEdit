@@ -549,12 +549,13 @@ function record_log($log_trigger, $log_entry, $log_priority = '0') {
 
     $db_content->insert("se_logs", [
 		"time" => "$log_time",
-		"trigger" => "$log_trigger",
+		"source" => "$log_trigger",
 		"entry" => "$log_entry",
 		"priority" => $log_priority
 	]);
 
 }
+
 
 
 
