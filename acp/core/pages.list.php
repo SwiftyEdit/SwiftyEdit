@@ -208,30 +208,37 @@ if($_SESSION['sorting_single_pages'] == 'page_lastedit') {
     $sel_value['linkname'] = 'selected';
 }
 if($_SESSION['sorting_single_pages_dir'] == 'ASC') {
-    $sel_value['sort_asc'] = 'selected';
+    $sel_value['sort_asc'] = 'active';
 } else {
-    $sel_value['sort_desc'] = 'selected';
+    $sel_value['sort_desc'] = 'active';
 }
 
-echo '<div class="card mt-2">';
-echo '<div class="card-header">'.$lang['h_page_sort'].'</div>';
-echo '<div class="card-body">';
-echo '<form action="?tn=pages&sub=pages-list" method="post" class="d-inline ms-auto">';
-echo '<select class="form-control" name="sorting_single_pages" onchange="this.form.submit()">';
+
+echo '<div class="my-3">';
+echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
+echo '<form action="?tn=pages&sub=pages-list" method="post" class="dirtyignore">';
+
+echo '<div class="row g-1">';
+echo '<div class="col-md-8">';
+
+echo '<select class="form-control form-select-sm" name="sorting_single_pages" onchange="this.form.submit()">';
 echo '<option value="linkname" '.$sel_value['linkname'].'>'.$lang['btn_sort_linkname'].'</option>';
 echo '<option value="priority" '.$sel_value['priority'].'>'.$lang['label_priority'].'</option>';
 echo '<option value="lastedit" '.$sel_value['lastedit'].'>'.$lang['btn_sort_edit'].'</option>';
 echo '</select>';
 
-echo '<select class="form-control" name="sorting_single_pages_dir" onchange="this.form.submit()">';
-echo '<option value="asc" '.$sel_value['sort_asc'].'>'.$lang['btn_sort_asc'].'</option>';
-echo '<option value="desc" '.$sel_value['sort_desc'].'>'.$lang['btn_sort_desc'].'</option>';
-echo '</select>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="btn-group d-flex">';
+echo '<button name="sorting_single_pages_dir" value="asc" title="'.$lang['btn_sort_asc'].'" class="btn btn-sm btn-default w-100 '.$sel_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
+echo '<button name="sorting_single_pages_dir" value="desc" title="'.$lang['btn_sort_desc'].'" class="btn btn-sm btn-default w-100 '.$sel_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
+echo '</div>';
+echo '</div>';
+echo '</div>';
 
 echo $hidden_csrf_token;
 echo '</form>';
-echo '</div>'; // card-body
-echo '</div>'; // card
+echo '</div>';
 
 
 echo '<div class="card mt-1">';
