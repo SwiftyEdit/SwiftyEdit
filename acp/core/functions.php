@@ -11,7 +11,6 @@ include_once 'functions_database.php';
 include_once 'functions_cache.php';
 include_once 'functions_index.php';
 include_once 'functions_shop.php';
-include_once 'functions_pages.php';
 
 
 
