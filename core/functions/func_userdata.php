@@ -220,8 +220,7 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 		}
 
         if($_SESSION['user_class'] == 'administrator') {
-            $message = 'logged into acp ' . date("Y-m-d H:i",time());
-            record_log("$user","$message",1);
+            record_log("$user","admin logged in",1);
         }
 		
 		
