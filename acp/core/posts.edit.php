@@ -137,11 +137,13 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 		$db_posts->update("se_posts", $inputs, [
 			"post_id" => $post_id
 		]);
+        record_log($_SESSION['user_nick'],"updated post id: $post_id","3");
 	} else {
 		$db_posts->insert("se_posts", $inputs);
 		$post_id = $db_posts->id();
 		$modus = 'update';
 		$submit_btn = '<input type="submit" class="btn btn-success w-100" name="save_post" value="'.$lang['update'].'">';
+        record_log($_SESSION['user_nick'],"new post id: $post_id","6");
 	}
 	
 	/* update the rss url */

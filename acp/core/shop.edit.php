@@ -4,10 +4,11 @@ error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 require __DIR__.'/access.php';
 
 if((isset($_POST['delete_product'])) && is_numeric($_POST['delete_product'])) {
-
-    $cnt_delete_product = se_delete_product($_POST['delete_product']);
+    $delete_product_id = (int) $_POST['delete_product'];
+    $cnt_delete_product = se_delete_product($delete_product_id);
     if($cnt_delete_product > 0) {
         echo '<div class="alert alert-success">'.$lang['msg_post_deleted'].' ('.$cnt_delete_product.')</div>';
+        record_log($_SESSION['user_nick'],"delete product id: $delete_product_id","6");
     }
 }
 
@@ -191,16 +192,19 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
             "id" => $id
         ]);
         $form_header_message = $lang['db_record_changed'];
+        record_log($_SESSION['user_nick'],"updated product id: $id","6");
     } else if($modus == "save_variant") {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
+        record_log($_SESSION['user_nick'],"new product variant id: $id","6");
     } else {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
+        record_log($_SESSION['user_nick'],"new product id: $id","6");
     }
 
     /* update the rss url */

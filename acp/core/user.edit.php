@@ -68,7 +68,7 @@ if(isset($_POST['delete_the_user'])) {
 	if($cnt_changes->rowCount() > 0) {
 		$success_message = $lang['msg_user_deleted'].'<br />';
 		$show_form = "false";
-		record_log($_SESSION['user_nick'],"deleted user id: $edituser","0");
+		record_log($_SESSION['user_nick'],"deleted user id: $edituser","9");
 	}
 	
 	unset($edituser);

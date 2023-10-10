@@ -24,7 +24,7 @@ if(isset($_POST['delete_category'])) {
     $data = $db_content->delete("se_categories", [
         "cat_id" => $delete_id
     ]);
-
+    record_log($_SESSION['user_nick'],"delete category id: $delete_id","8");
     unset($_REQUEST['editcat'],$cat_name,$cat_sort,$cat_description,$cat_thumbnail);
 }
 

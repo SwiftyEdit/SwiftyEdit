@@ -21,10 +21,11 @@ require __DIR__.'/access.php';
 /* delete product */
 
 if((isset($_POST['delete_id'])) && is_numeric($_POST['delete_id'])) {
-
-    $cnt_delete_product = se_delete_product($_POST['delete_id']);
+    $delete_product_id = (int) $_POST['delete_id'];
+    $cnt_delete_product = se_delete_product($delete_product_id);
     if($cnt_delete_product > 0) {
         echo '<div class="alert alert-success">'.$lang['msg_post_deleted'].' ('.$cnt_delete_product.')</div>';
+        record_log($_SESSION['user_nick'],"delete product id: $delete_product_id","8");
     }
 }
 

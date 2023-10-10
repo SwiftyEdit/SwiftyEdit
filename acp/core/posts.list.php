@@ -40,6 +40,7 @@ if((isset($_POST['delete_id'])) && is_numeric($_POST['delete_id'])) {
 	
 	if($delete->rowCount() > 0) {
 		echo '<div class="alert alert-success">'.$lang['msg_post_deleted'].'</div>';
+        record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
 	}
 }
 
