@@ -626,53 +626,76 @@ function se_get_payment_methods() {
 	global $se_prefs;
 	global $lang;
 	$payment_methods = array();
-	
-	if(isset($se_prefs['prefs_pm_bank_transfer']) AND $se_prefs['prefs_pm_bank_transfer'] == 1) {
-		$payment_methods[0]['key'] = 'prefs_pm_bank_transfer';
-		$payment_methods[0]['cost'] = $se_prefs['prefs_payment_costs_bt'];
-		$payment_methods[0]['title'] = $lang['label_pm_bank_transfer'];
-		$payment_methods[0]['checked'] = '';
-	}
-	if(isset($se_prefs['prefs_pm_invoice']) AND $se_prefs['prefs_pm_invoice'] == 1) {
-		$payment_methods[1]['key'] = 'prefs_pm_invoice';
-		$payment_methods[1]['cost'] = $se_prefs['prefs_payment_costs_invoice'];
-		$payment_methods[1]['title'] = $lang['label_pm_invoice'];
-		$payment_methods[1]['checked'] = '';
-	}
-	if(isset($se_prefs['prefs_pm_cash']) AND $se_prefs['prefs_pm_cash'] == 1) {
-		$payment_methods[2]['key'] = 'prefs_pm_cash';
-		$payment_methods[2]['cost'] = $se_prefs['prefs_payment_costs_cash'];
-		$payment_methods[2]['title'] = $lang['label_pm_cash'];
-		$payment_methods[2]['checked'] = '';
-	}
-	if(isset($se_prefs['prefs_pm_paypal']) AND $se_prefs['prefs_pm_paypal'] == 1) {
-		$payment_methods[3]['key'] = 'prefs_pm_paypal';
-		$payment_methods[3]['cost'] = $se_prefs['prefs_payment_costs_paypal'];
-		$payment_methods[3]['title'] = $lang['label_pm_paypal'];
-		$payment_methods[3]['checked'] = '';
-	}
+
+    // get payment addons
+    $active_payment_addons = json_decode($se_prefs['prefs_payment_addons'],true);
+    if(!is_array($active_payment_addons)) {
+        $active_payment_addons = array();
+    }
+
+    if(count($active_payment_addons) > 0) {
+        foreach ($active_payment_addons as $payment_addon) {
+
+            $key = clean_filename($payment_addon);
+            $addon_data = se_get_payment_method_data($payment_addon);
+            $costs = se_reformat_payment_costs($addon_data['addon_additional_costs']);
+            $snippet_data = se_get_textlib($addon_data['addon_snippet_cart'],$languagePack,'all');
+
+            $payment_methods[$key] = [
+                "addon" => $payment_addon,
+                "key" => $key,
+                "cost" => $costs,
+                "title" => $snippet_data['snippet_title'],
+                "snippet" => $snippet_data['snippet_content'],
+                "checked" => ""
+            ];
+
+        }
+    }
+
+
 	
 	return $payment_methods;
 }
 
 /**
- * get payment costs from array
- * key (string)
+ * find addons from /content/modules/
+ * payment addons has the suffix .pay
+ * @return array basename of addons
  */
- 
-function se_get_payment_costs($key) {
-	
-	$payment_methods = se_get_payment_methods();
-	
-	$id = array_search($key, array_column($payment_methods, 'key'));
-	$pm_costs = $payment_methods[$id]['cost'];
-	$pm_costs = str_replace(',', '.', $pm_costs);
+function se_get_payment_addons() {
+    $addons = array();
+    $get_addons = glob(SE_CONTENT.'/modules/*.pay');
 
-    if($pm_costs == '') {
-        $pm_costs = '0.00';
+    if(is_array($get_addons)) {
+        foreach($get_addons as $addon) {
+            $addons[] = basename($addon);
+        }
     }
 
-	return $pm_costs;
+    return $addons;
+}
+
+function se_get_payment_method_data($addon) {
+
+    $addon_payment_prefs = array();
+
+    $addon_config = SE_CONTENT.'/modules/'.$addon.'/pm_config.php';
+    if(is_file($addon_config)) {
+        require $addon_config;
+    }
+
+    return $addon_payment_prefs;
+}
+
+
+function se_reformat_payment_costs($amount) {
+
+    $format = str_replace(',', '.', $amount);
+    if($format == '') {
+        $format = '0.00';
+    }
+    return $format;
 }
 
 

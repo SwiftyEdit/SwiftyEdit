@@ -156,6 +156,10 @@ function move_new_files() {
     /* at first, the install folder */
     copy_recursive("update/extract/$get_file/install","../install");
 
+    /* payment addons */
+    copy_recursive("update/extract/$get_file/content/modules/se_invoice.pay","../content/modules/");
+    copy_recursive("update/extract/$get_file/content/modules/se_cash.pay","../content/modules/");
+
     /* now copy the other files and directories */
     foreach($new_files as $value) {
 
