@@ -563,7 +563,7 @@
                 </div>
                 <div class="mb-3 pb-3 border-bottom">
                     <label>{labels}</label>
-                    <div>{post_labels}</div>
+                    <div>{product_labels}</div>
                 </div>
 
                 <input name="type" type="hidden" value="{type}">
