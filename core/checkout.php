@@ -39,7 +39,7 @@ $payment_methods = se_get_payment_methods();
 $payment_costs = '0.00';
 
 if($_SESSION['set_payment'] == '') {
-	$_SESSION['set_payment'] = $payment_methods[0]['key'];
+	$_SESSION['set_payment'] = array_key_first($payment_methods);
 }
 
 if(isset($_POST['set_payment'])) {
