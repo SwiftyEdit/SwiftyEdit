@@ -4,7 +4,7 @@
  */
 
 $mod = [
-    'name' => 'Invoice',
+    'name' => 'Invoice Payment',
     'version' => '0.1',
     'author' => "SwiftyEdit Developer Team",
     "description" => "Payment addon for SwiftyEdit"
