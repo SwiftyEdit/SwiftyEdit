@@ -1,4 +1,4 @@
-<div class="well well-sm clearfix">
+<div class="card py-2 border-bottom">
 	<p class="mb-0">
 		<span class="float-end">{indexed_time}</span>
 		<strong>{title}</strong>
