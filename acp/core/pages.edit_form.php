@@ -535,6 +535,11 @@ for($i=0;$i<$cnt_mods;$i++) {
 	$mod_name = $all_mods[$i]['name'];
 	$mod_folder = $all_mods[$i]['folder'];
 
+    if(str_ends_with($mod_folder, '.pay')) {
+        // skip payment addons
+        continue;
+    }
+
 	if($mod_folder == $page_modul) {
 		$selected = 'selected';
 	}
