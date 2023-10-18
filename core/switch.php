@@ -262,6 +262,11 @@ if($page_meta_robots == "") {
 	$page_meta_robots = "all";
 }
 
+if(isset($_GET['s'])) {
+    // do not index search results
+    $page_meta_robots = 'noindex';
+}
+
 if($page_status == 'draft') {
 	$page_meta_robots = 'noindex, nofollow';
 }
