@@ -332,6 +332,7 @@ function se_list_pages($data,$type="sorted") {
             $page_labels = explode(',',$data[$i]['page_labels']);
         }
 
+        $page_thumbs = array();
         if($data[$i]['page_thumbnail'] != '') {
             $page_thumbs = explode('<->',$data[$i]['page_thumbnail']);
         }
@@ -373,19 +374,15 @@ function se_list_pages($data,$type="sorted") {
         $indent = ($points_of_page)*10 . 'px';
 
         if($page_status == "public") {
-            //$btn = 'ghost-btn-public';
             $item_class = 'page-list-item-public';
             $status_label = $lang['f_page_status_puplic'];
         } elseif($page_status == "ghost") {
-            //$btn = 'ghost-btn-ghost';
             $item_class = 'page-list-item-ghost';
             $status_label = $lang['f_page_status_ghost'];
         } elseif($page_status == "private") {
-            //$btn = 'ghost-btn-private';
             $item_class = 'page-list-item-private';
             $status_label = $lang['f_page_status_private'];
         } elseif($page_status == "draft") {
-            //$btn = 'ghost-btn-draft';
             $item_class = 'page-list-item-draft';
             $status_label = $lang['f_page_status_draft'];
         }
