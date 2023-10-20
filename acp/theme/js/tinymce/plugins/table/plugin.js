@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.6.0 (2023-07-12)
+ * TinyMCE version 6.7.1 (2023-10-19)
  */
 
 (function () {
@@ -2620,7 +2620,7 @@
         styles['border-color'] = advData.bordercolor;
         styles['border-style'] = advData.borderstyle;
       }
-      attrs.style = dom.serializeStyle({
+      dom.setStyles(tableElm, {
         ...getDefaultStyles(editor),
         ...styles
       });

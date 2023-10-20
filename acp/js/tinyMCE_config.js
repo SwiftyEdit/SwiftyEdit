@@ -7,11 +7,11 @@ $(function() {
 	  toolbar_items_size: 'small',
 	  plugins: [
 	    "advlist autolink lists link image charmap preview anchor",
-	    "searchreplace visualblocks code fullscreen wordcount template",
+	    "searchreplace visualblocks code fullscreen wordcount",
 	    "media table paste"
 	  ],
 	  toolbar1: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link unlink anchor image media",
-	  toolbar2: "forecolor backcolor fontsizeselect | table | hr removeformat | subscript superscript | fullscreen visualchars visualchars visualblocks | template ",
+	  toolbar2: "forecolor backcolor fontsizeselect | table | hr removeformat | subscript superscript | fullscreen visualchars visualchars visualblocks ",
 	  image_list : "core/imagelist.php",
 	  image_advtab: true,
 	  image_title: true,
@@ -83,7 +83,7 @@ $(function() {
 	  ],
 	  menubar: "edit insert table tools view",
 	  toolbar1: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link unlink anchor image media",
-	  toolbar2: "forecolor backcolor fontsizeselect | table | hr removeformat | subscript superscript | fullscreen visualchars visualchars visualblocks | template",
+	  toolbar2: "forecolor backcolor fontsizeselect | table | hr removeformat | subscript superscript | fullscreen visualchars visualchars visualblocks",
 	  image_list : "core/imagelist.php",
 	  image_advtab: true,
 	  image_title: true,

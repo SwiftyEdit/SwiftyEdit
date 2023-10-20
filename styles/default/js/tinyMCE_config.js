@@ -16,7 +16,7 @@ $(function () {
         body_class: 'mce-content-body',
         plugins: [
             'lists', 'advlist', 'autolink', 'link', 'image', 'charmap', 'preview', 'anchor',
-            'searchreplace', 'visualblocks', 'code', 'fullscreen', 'wordcount', 'template',
+            'searchreplace', 'visualblocks', 'code', 'fullscreen', 'wordcount',
             'media', 'table'
         ],
         toolbar1: "styles | bold italic underline subscript superscript removeformat | alignleft aligncenter alignright | bullist numlist | table | link unlink anchor image | fullscreen visualblocks  code",

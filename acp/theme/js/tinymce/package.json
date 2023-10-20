@@ -1,27 +1,27 @@
 {
-  "_from": "tinymce@6.6.0",
-  "_id": "tinymce@6.6.0",
+  "_from": "tinymce@6.7.1",
+  "_id": "tinymce@6.7.1",
   "_inBundle": false,
-  "_integrity": "sha512-b9Mb7z8ryFOwLm8WCmlpwzdgOt1xD1u5Jjdh68B4QjkIyTLyHRBsfsrbiCUGonnVTymDlkexPkaP8sj24zexKQ==",
+  "_integrity": "sha512-SIGJgWk2d/X59VbO+i81QfNx2EP1P5t+sza2/1So3OLGtmMBhEJMag7sN/Mo8sq4s0niwb65Z51yLju32jP11g==",
   "_location": "/tinymce",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "tinymce@6.6.0",
+    "raw": "tinymce@6.7.1",
     "name": "tinymce",
     "escapedName": "tinymce",
-    "rawSpec": "6.6.0",
+    "rawSpec": "6.7.1",
     "saveSpec": null,
-    "fetchSpec": "6.6.0"
+    "fetchSpec": "6.7.1"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/tinymce/-/tinymce-6.6.0.tgz",
-  "_shasum": "daf0e8c04c6834c03b64efb4bda024e7f5bcf614",
-  "_spec": "tinymce@6.6.0",
+  "_resolved": "https://registry.npmjs.org/tinymce/-/tinymce-6.7.1.tgz",
+  "_shasum": "62038eb298cfaeb4ffc7aae4d90401fc0bf9d7d7",
+  "_spec": "tinymce@6.7.1",
   "_where": "/Users/patrick/CloudStation/CloudStation/Server/SwiftyEdit/acp/theme",
   "author": {
     "name": "Ephox Corporation DBA Tiny Technologies, Inc"
@@ -56,5 +56,5 @@
     "directory": "modules/tinymce"
   },
   "types": "tinymce.d.ts",
-  "version": "6.6.0"
+  "version": "6.7.1"
 }
