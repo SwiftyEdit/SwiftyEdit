@@ -27,23 +27,6 @@ $(function () {
         link_list: "core/linklist.php",
         convert_urls: false,
 
-        templates: [
-            {
-                title: 'row [6|6]',
-                description: 'Zwei Spalten (Bootsrap)',
-                url: '../styles/default/templates-editor/bs_2cols.html'
-            },
-            {
-                title: 'row [4|4|4]',
-                description: 'Drei Spalten (Bootsrap)',
-                url: '../styles/default/templates-editor/bs_3cols.html'
-            },
-            {
-                title: 'row [3|3|3|3]',
-                description: 'Vier Spalten (Bootsrap)',
-                url: '../styles/default/templates-editor/bs_4cols.html'
-            }
-        ],
         style_formats: [
             {
                 title: 'Headlines', items: [
