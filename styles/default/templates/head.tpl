@@ -1,6 +1,8 @@
 <title>{$page_title|htmlentities}</title>
 <meta charset="utf-8">
 
+<base href="{$se_base_href}">
+
 <meta name="robots" content="{$page_meta_robots}" />
 <meta name="author" content="{$page_meta_author}" />
 {if $page_meta_description != ''}
