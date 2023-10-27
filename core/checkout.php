@@ -306,7 +306,13 @@ if($_POST['order'] == 'send') {
         se_recalculate_stock_sales($cart_items);
 		
 		if($order_id > 0) {
-			$smarty->assign("cart_alert_success",$lang['msg_order_send'],true);
+
+            $cart_alert = se_get_textlib('cart_order_sent',$languagePack,'content');
+            if($cart_alert == '') {
+                $cart_alert = $lang['msg_order_send'];
+            }
+
+
             /* remove items from se_carts */
             se_clear_cart($order_data['user_id']);
             $cnt_cart_items = 0;
@@ -322,6 +328,8 @@ if($_POST['order'] == 'send') {
             if(is_file($aftersale_script)) {
                 include $aftersale_script;
             }
+
+            $smarty->assign("cart_alert_success",$cart_alert,true);
 
 		}
 	}
