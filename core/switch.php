@@ -483,7 +483,7 @@ if($p == "register") {
 		$smarty->assign("form_url","$form_url");
 	}
 
-	if($prefs_userregistration != "yes") {
+	if($se_prefs['prefs_userregistration'] != "yes") {
 
 		$smarty->assign("msg_title",$lang['legend_register']);
 		$smarty->assign("msg_text",$lang['msg_register_intro_disabled']);
@@ -493,7 +493,7 @@ if($p == "register") {
 	} else {
 
 		// INCLUDE/SHOW AGREEMENT TEXT
-		$agreement_txt = se_get_textlib("agreement_text", $languagePack,'all');
+		$agreement_txt = se_get_textlib("agreement_text", $languagePack,'content');
 		$smarty->assign("agreement_text",$agreement_txt);
 
 		if($_POST['send_registerform']) {
@@ -513,7 +513,7 @@ if($p == "account") {
 	$user = se_return_clean_value($_GET['user']);
 	$al = se_return_clean_value($_GET['al']);
 	
-	$verify = $db_content->update("se_user", [
+	$verify = $db_user->update("se_user", [
 		"user_verified" => 'verified'
 		], [
 			"AND" => [
@@ -526,7 +526,7 @@ if($p == "account") {
 	
 	
 	if($cnt_changes > 0){
-		$account_msg = se_get_textlib("account_confirm", $languagePack,'all');
+		$account_msg = se_get_textlib("account_confirm", $languagePack,'content');
 		$account_msg = str_replace("{USERNAME}","$user",$account_msg);
 		record_log("switch","user activated via mail - $user","5");
 	} else {

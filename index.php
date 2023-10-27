@@ -474,7 +474,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders') {
+    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account') {
         $show_posts = false;
     }
 
@@ -573,13 +573,14 @@ $smarty->assign("p","$p");
 $smarty->assign("se_include_path", SE_INCLUDE_PATH);
 
 $se_page_url = $se_base_url;
+$se_base_href = $se_base_url;
 if($swifty_slug != '' AND $swifty_slug != '/') {
 	$se_page_url .= $swifty_slug;
 }
 if($mod_slug != '') {
 	$se_page_url .= $mod_slug;
 }
-
+$smarty->assign('se_base_href', $se_base_href,true);
 $smarty->assign('se_page_url', $se_page_url,true);
 
 $se_end_time = microtime(true);
