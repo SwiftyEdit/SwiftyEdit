@@ -265,3 +265,107 @@ function se_write_theme_options($data) {
 	}
 
 }
+
+/**
+ * include script(s) from addons
+ * example: se_get_hook('page_updated',$_POST);
+ *
+ * @param array $hooks the addon/hook data
+ * @param array $data $_POST data
+ * @return void
+ *
+ */
+
+function se_run_hooks(array $hooks, array $data) {
+
+    foreach ($hooks as $hook) {
+
+        $get_hook_info = explode("<->", $hook);
+        $addon = $get_hook_info[0];
+        $action = $get_hook_info[1];
+        $command = $get_hook_info[2];
+
+        $hook_file = SE_CONTENT.'/modules/'.$addon.'/hooks/'.$action.'.php';
+        if(is_file($hook_file)) {
+            include $hook_file;
+        }
+    }
+}
+
+/**
+ * get all hooks from addons
+ * @return array
+ */
+
+function se_get_all_hooks() {
+
+    global $all_mods;
+    $get_hook = array();
+
+    /*
+    $hooks = [
+        "page_updated" => [],
+        "product_updated" => [],
+        "dashboard_listed_all_addons" => []
+    ];
+    */
+
+    $all_hook_commands = array();
+
+    // loop through addons
+    foreach($all_mods as $mod) {
+        // loop through available hooks
+
+        $hook_commands_file = SE_CONTENT.'/modules/'.$mod['folder'].'/hooks/index.php';
+
+        /**
+         * get $hook_commands from /hooks/index.php file
+         * @var $hook_commands
+         * */
+
+        if(is_file($hook_commands_file)) {
+            include($hook_commands_file);
+            $this_hook_commands[$mod['folder']] = $hook_commands;
+            if(is_array($hook_commands)) {
+                $all_hook_commands = array_merge($this_hook_commands,$all_hook_commands);
+            }
+        }
+    }
+    return $all_hook_commands;
+}
+
+/**
+ * @param string $command
+ * @return array
+ */
+function se_get_hook($command) {
+
+    global $all_hooks;
+    $hooks = array();
+    $x = 0;
+
+    foreach($all_hooks as $key => $value) {
+
+        // $key is the addon
+        // $value the commands
+
+        foreach($value as $commands => $actions) {
+
+            if($commands == $command) {
+                $hook_str = '';
+                foreach($actions as $action => $v) {
+
+                    $send_value = $key.'<->'.$commands.'<->'.$action;
+                    $hook_str .= '<div class="mb-1 form-check">';
+                    $hook_str .= '<input type="checkbox" name="send_hook[]" value="'.$send_value.'" id="id'.$x.'"> ';
+                    $hook_str .= '<label for="id'.$x.'"><span class="badge">'.$key.'</span> '.$v.'</label>';
+                    $hook_str .= '</div>';
+                    $x++;
+                }
+
+                $hooks[] = $hook_str;
+            }
+        }
+    }
+    return $hooks;
+}

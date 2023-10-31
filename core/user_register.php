@@ -3,11 +3,14 @@
 /**
  * prohibit unauthorized access
  */
+
+error_reporting(E_ALL ^E_NOTICE ^E_DEPRECATED);
+
 if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
 	die ('<h2>Direct File Access Prohibited</h2>');
 }
 
-if($prefs_userregistration != 'yes') {
+if($se_prefs['prefs_userregistration'] != 'yes') {
 	die("unauthorized access");
 }
 
@@ -102,17 +105,16 @@ if($send_data == 'true') {
 		"user_company" => "$user_company",
 		"user_street" => "$street",
 		"user_street_nbr" => "$nr",
-		"user_zipcode" => "$zip",
+		"user_zip" => "$zip",
 		"user_city" => "$city",
 		"user_public_profile" => "$about_you",
 		"user_mail" => "$mail",
-		"user_newsletter" => "$user_newsletter",
 		"user_psw_hash" => "$user_psw_hash",
 		"user_activationkey" => "$user_activationkey"
 	]);	
 	
 	/* generate the message */
-	$email_msg = se_get_textlib("account_confirm_mail","$languagePack",'all');
+	$email_msg = se_get_textlib("account_confirm_mail","$languagePack",'content');
 	$email_msg = str_replace("{USERNAME}","$username",$email_msg);
 	$email_msg = str_replace("{SITENAME}","$prefs_pagetitle",$email_msg);
 	$email_msg = str_replace("{ACTIVATIONLINK}","$user_activationlink",$email_msg);
@@ -121,7 +123,7 @@ if($send_data == 'true') {
 
     /* build mail content 'subject','preheader','title','salutation','body','footer','tpl' */
     $mail_data['tpl'] = 'mail.tpl';
-    $mail_data['subject'] = "Account | $prefs_pagetitle";
+    $mail_data['subject'] = "Account | ".$se_prefs['prefs_pagetitle'];
     $mail_data['preheader'] = "Welcome | $username $mail";
     $mail_data['title'] = "Welcome | $username $mail";
     $mail_data['salutation'] = "Welcome $username";

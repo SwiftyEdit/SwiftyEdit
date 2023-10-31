@@ -35,9 +35,10 @@ $cols = array(
     "releasedate"  => 'INTEGER(12)',
     "lastedit"  => 'INTEGER(12)',
     "lastedit_from"  => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "link_name" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "link_classes" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "teaser" => "LONGTEXT NOT NULL DEFAULT ''",
-
     "text" => "LONGTEXT NOT NULL DEFAULT ''",
     "text_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
 

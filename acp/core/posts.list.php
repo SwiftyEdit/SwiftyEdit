@@ -1,4 +1,19 @@
 <?php
+
+/**
+ * SwiftyEdit backend
+ *
+ * global variables
+ * @var object $db_posts medoo database object
+ * @var array $icon icons set in acp/core/icons.php
+ * @var array $lang language
+ * @var array $lang_codes language
+ * @var string $languagePack
+ * @var string $hidden_csrf_token
+ * @var array $se_labels
+ * @var array $se_prefs
+ */
+
 //error_reporting(E_ALL ^E_NOTICE);
 //prohibit unauthorized access
 require __DIR__.'/access.php';
@@ -25,6 +40,7 @@ if((isset($_POST['delete_id'])) && is_numeric($_POST['delete_id'])) {
 	
 	if($delete->rowCount() > 0) {
 		echo '<div class="alert alert-success">'.$lang['msg_post_deleted'].'</div>';
+        record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
 	}
 }
 
@@ -70,10 +86,6 @@ if(isset($_POST['post_priority'])) {
 }
 
 
-
-
-
-
 // defaults
 $sql_start_nbr = 0;
 $sql_items_limit = 10;
@@ -95,40 +107,6 @@ if(isset($_POST['items_per_page'])) {
 }
 
 
-/* default: check all languages */
-if(!isset($_SESSION['checked_lang_string'])) {	
-	foreach($arr_lang as $langstring) {
-		$checked_lang_string .= "$langstring[lang_folder]-";
-	}
-	$_SESSION['checked_lang_string'] = "$checked_lang_string";
-}
-
-/* change status of $_GET['switchLang'] */
-if($_GET['switchLang']) {
-	if(strpos("$_SESSION[checked_lang_string]", "$_GET[switchLang]") !== false) {
-		$checked_lang_string = str_replace("$_GET[switchLang]-", '', $_SESSION['checked_lang_string']);
-	} else {
-		$checked_lang_string = $_SESSION['checked_lang_string'] . "$_GET[switchLang]-";
-	}
-	$_SESSION['checked_lang_string'] = "$checked_lang_string";
-}
-
-/* filter buttons for languages */
-$lang_btn_group = '<div class="btn-group">';
-foreach($lang_codes as $lang_code) {
-	$this_btn_status = '';
-	if(strpos("$_SESSION[checked_lang_string]", "$lang_code") !== false) {
-		$this_btn_status = 'active';
-	}
-	$lang_btn_group .= '<a href="acp.php?tn=posts&switchLang='.$lang_code.'" class="btn btn-sm btn-default '.$this_btn_status.'">'.$lang_code.'</a>';
-}
-$lang_btn_group .= '</div>';
-
-
-
-
-
-
 /* default: check all types */
 if(!isset($_SESSION['checked_type_string'])) {		
 	$_SESSION['checked_type_string'] = 'm-i-v-l-g-f';
@@ -143,23 +121,6 @@ if($_GET['type']) {
 	$checked_type_string = str_replace('--', '-', $checked_type_string);
 	$_SESSION['checked_type_string'] = "$checked_type_string";
 }
-/* default: check all status types */
-if(!isset($_SESSION['checked_status_string'])) {		
-	$_SESSION['checked_status_string'] = '1-2';
-}
-/* change status types */
-if($_GET['status']) {
-	if(strpos("$_SESSION[checked_status_string]", "$_GET[status]") !== false) {
-		$checked_status_string = str_replace("$_GET[status]", '', $_SESSION['checked_status_string']);
-	} else {
-		$checked_status_string = $_SESSION['checked_status_string'] . '-' . $_GET['status'];
-	}
-	$checked_status_string = str_replace('--', '-', $checked_status_string);
-	$_SESSION['checked_status_string'] = "$checked_status_string";
-}
-
-
-
 
 
 /* default: check all categories */
@@ -169,7 +130,7 @@ if(!isset($_SESSION['checked_cat_string'])) {
 /* filter by categories */
 if(isset($_GET['cat'])) {
     if($_GET['cat'] !== 'all') {
-        $_SESSION['checked_cat_string'] = (int)$_GET['cat'];
+        $_SESSION['checked_cat_string'] = se_return_clean_value($_GET['cat']);
     } else {
         $_SESSION['checked_cat_string'] = 'all';
     }
@@ -183,68 +144,24 @@ if($_SESSION['checked_cat_string'] == 'all') {
 }
 
 $cat_btn_group = '<div class="card">';
-$cat_btn_group .= '<div class="list-group list-group-flush">';
-$cat_btn_group .= '<a href="acp.php?tn=posts&cat=all" class="list-group-item list-group-item-ghost p-1 px-2 '.$cat_all_active.'">'.$icon_all_toggle.' '.$lang['btn_all_categories'].'</a>';
+$cat_btn_group .= '<div class="list-group list-group-flush scroll-container">';
+$cat_btn_group .= '<a href="acp.php?tn=posts&cat=all" class="list-group-item p-1 px-2 '.$cat_all_active.'">'.$icon_all_toggle.' '.$lang['btn_all_categories'].'</a>';
 foreach($arr_categories as $c) {
 	$cat_active = '';
 	$icon_toggle = $icon['circle_alt'];
-    if($_SESSION['checked_cat_string'] == $c['cat_id']) {
+    if($_SESSION['checked_cat_string'] == $c['cat_hash']) {
 		$icon_toggle = $icon['check_circle'];
 		$cat_active = 'active';
 	}
-	
-	$cat_btn_group .= '<a href="acp.php?tn=posts&cat='.$c['cat_id'].'" class="list-group-item list-group-item-ghost p-1 px-2 '.$cat_active.'">'.$icon_toggle.' '.$c['cat_name'].'</a>';
+    $cat_lang_thumb = '<img src="/core/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
+
+    $cat_btn_group .= '<a href="acp.php?tn=posts&cat='.$c['cat_hash'].'" class="list-group-item p-1 px-2 '.$cat_active.'">';
+    $cat_btn_group .= $icon_toggle.' '.$c['cat_name'].' <span class="float-end">'.$cat_lang_thumb.'</span>';
+    $cat_btn_group .= '</a>';
 }
 
 $cat_btn_group .= '</div>';
 $cat_btn_group .= '</div>';
-
-
-/* filter buttons for labels */
-
-if(!isset($_SESSION['checked_label_str'])) {
-	$_SESSION['checked_label_str'] = '';
-}
-
-$a_checked_labels = explode('-', $_SESSION['checked_label_str']);
-
-if(isset($_GET['switchLabel'])) {
-	
-		if(in_array($_GET['switchLabel'], $a_checked_labels)) {
-			/* remove label*/
-			if(($key = array_search($_GET['switchLabel'], $a_checked_labels)) !== false) {
-				unset($a_checked_labels[$key]);
-			}
-		} else {
-			/* add label */
-			$a_checked_labels[] = $_GET['switchLabel'];
-		}
-
-		$_SESSION['checked_label_str'] = implode('-', $a_checked_labels);
-}
-
-$a_checked_labels = explode('-', $_SESSION['checked_label_str']);
-
-$label_filter_box  = '<div class="card mt-2">';
-$label_filter_box .= '<div class="card-header p-1 px-2">'.$lang['labels'].'</div>';
-$label_filter_box .= '<div class="card-body">';
-$this_btn_status = '';
-foreach($se_labels as $label) {
-	
-	if(in_array($label['label_id'], $a_checked_labels)) {
-		$this_btn_status = 'active';
-	} else {
-		$this_btn_status = '';
-	}		
-
-	$label_title = '<span class="label-dot" style="background-color:'.$label['label_color'].';"></span> '.$label['label_title'];
-	$label_filter_box .= '<a href="acp.php?tn=posts&sub=list&switchLabel='.$label['label_id'].'" class="btn btn-default btn-sm m-1 '.$this_btn_status.'">'.$label_title.'</a>';
-	
-}
-$label_filter_box .= '</div>';
-$label_filter_box .= '</div>'; // card
-
-
 
 
 
@@ -256,13 +173,40 @@ if((isset($_POST['setPage'])) && is_numeric($_POST['setPage'])) {
     $sql_start_nbr = (int) $_POST['setPage'];
 }
 
+/* text filter */
+if(isset($_POST['posts_text_filter'])) {
+    $_SESSION['posts_text_filter'] = $_SESSION['posts_text_filter'] . ' ' . clean_filename($_POST['posts_text_filter']);
+}
 
-$posts_filter['languages'] = $_SESSION['checked_lang_string'];
+/* remove keyword from filter list */
+if(isset($_REQUEST['rm_keyword'])) {
+    $all_posts_text_filter = explode(" ", $_SESSION['posts_text_filter']);
+    $_SESSION['posts_text_filter'] = '';
+    foreach($all_posts_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['posts_text_filter'] .= "$f ";
+    }
+}
+
+if(isset($_SESSION['posts_text_filter']) AND $_SESSION['posts_text_filter'] != "") {
+    unset($all_posts_text_filter);
+    $all_posts_text_filter = explode(" ", $_SESSION['posts_text_filter']);
+    $btn_remove_keyword = '';
+    foreach($all_posts_text_filter as $f) {
+        if($_REQUEST['rm_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $btn_remove_keyword .= '<a class="btn btn-sm btn-default" href="acp.php?tn=posts&sub='.$sub.'&rm_keyword='.$f.'">'.$icon['x'].' '.$f.'</a> ';
+    }
+}
+
+
+$posts_filter['languages'] = implode("-",$global_filter_languages);
 $posts_filter['types'] = $_SESSION['checked_type_string'];
-$posts_filter['status'] = $_SESSION['checked_status_string'];
+$posts_filter['status'] = implode("-",$global_filter_status);
 $posts_filter['categories'] = $_SESSION['checked_cat_string'];
-$posts_filter['labels'] = $_SESSION['checked_label_str'];
-
+$posts_filter['labels'] = implode("-",$global_filter_label);
+$posts_filter['text'] = $_SESSION['posts_text_filter'];
 
 $get_posts = se_get_post_entries($sql_start_nbr,$_SESSION['items_per_page'],$posts_filter);
 $cnt_filter_posts = $get_posts[0]['cnt_posts'];
@@ -347,22 +291,8 @@ if($cnt_filter_posts > 0) {
         $post_lang_thumb = '<img src="/core/lang/'.$get_posts[$i]['post_lang'].'/flag.png" width="15" title="'.$get_posts[$i]['post_lang'].'" alt="'.$get_posts[$i]['post_lang'].'">';
 		
 		/* trim teaser to $trim chars */
-		$trim = 150;
-		$teaser = strip_tags(htmlspecialchars_decode($get_posts[$i]['post_teaser']));
-		if(strlen($teaser) > $trim) {
-			$ellipses = ' <small><i>(...)</i></small>';
-		  $last_space = strrpos(substr($teaser, 0, $trim), ' ');
-		  if($last_space !== false) {
-			  $trimmed_teaser = substr($teaser, 0, $last_space);
-			} else {
-				$trimmed_teaser = substr($teaser, 0, $trim);
-			}
-			$trimmed_teaser = $trimmed_teaser.$ellipses;
-		} else {
-			$trimmed_teaser = $teaser;
-		}
-		
-		
+        $trimmed_teaser = se_return_first_chars($get_posts[$i]['post_teaser'],100);
+
 		$post_image = explode("<->", $get_posts[$i]['post_images']);
 		$show_thumb = '';
 		if($post_image[1] != "") {
@@ -398,7 +328,7 @@ if($cnt_filter_posts > 0) {
 			foreach($get_post_categories as $cats) {
 				
 				foreach($arr_categories as $cat) {
-					if($cats == $cat['cat_id']) {
+					if($cats == $cat['cat_hash']) {
 						$cat_title = $cat['cat_name'];
 						$cat_description = $cat['cat_description'];
 					}
@@ -499,18 +429,24 @@ echo '<div class="col-md-3">';
 
 
 /* sidebar */
-echo '<div class="card p-2">';
+echo '<div class="card">';
+echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
+echo '<div class="card-body">';
 
-echo '<fieldset class="mt-4">';
-echo '<legend>'.$icon['filter'].' Filter</legend>';
+echo '<form action="?tn=posts&sub=blog-list" method="POST" class="ms-auto">';
+echo '<div class="input-group">';
+echo '<span class="input-group-text">'.$icon['search'].'</span>';
+echo '<input class="form-control" type="text" name="posts_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo $hidden_csrf_token;
+echo '</div>';
+echo '</form>';
 
-/* Filter Options */
-echo '<div class="card mt-1">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_language'].'</div>';
-echo '<div class="list-group list-group-flush">';
-echo $lang_btn_group;
-echo '</div>';
-echo '</div>';
+if(isset($btn_remove_keyword)) {
+    echo '<div class="d-inline">';
+    echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+    echo '</div><hr>';
+}
+
 
 echo '<div class="card mt-2">';
 echo '<div class="card-header p-1 px-2">'.$lang['label_post_type'].'</div>';
@@ -583,40 +519,13 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_status'].'</div>';
-
-/* status filter */
-echo '<div class="btn-group d-flex">';
-if(strpos("$_SESSION[checked_status_string]", "2") !== false) {
-	$icon_toggle = $icon['check_circle'];
-	echo '<a href="acp.php?tn=posts&status=2" class="btn btn-sm btn-default active w-100">'.$icon_toggle.' '.$lang['status_draft'].'</a>';
-} else {
-	$icon_toggle = $icon['circle_alt'];
-	echo '<a href="acp.php?tn=posts&status=2" class="btn btn-sm btn-default w-100">'.$icon_toggle.' '.$lang['status_draft'].'</a>';
-}
-if(strpos("$_SESSION[checked_status_string]", "1") !== false) {
-	$icon_toggle = $icon['check_circle'];
-	echo '<a href="acp.php?tn=posts&status=1" class="btn btn-sm btn-default active w-100">'.$icon_toggle.' '.$lang['status_public'].'</a>';
-} else {
-	$icon_toggle = $icon['circle_alt'];
-	echo '<a href="acp.php?tn=posts&status=1" class="btn btn-sm btn-default w-100">'.$icon_toggle.' '.$lang['status_public'].'</a>';
-}
-echo '</div>';
-
-
-echo '</div>';
-
-echo '<div class="card mt-2">';
 echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
 
 echo $cat_btn_group;
 
 echo '</div>';
 
-echo $label_filter_box;
-
-echo '</fieldset>';
-
+echo '</div>'; // card-body
 echo '</div>'; // card
 
 

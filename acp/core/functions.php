@@ -11,7 +11,6 @@ include_once 'functions_database.php';
 include_once 'functions_cache.php';
 include_once 'functions_index.php';
 include_once 'functions_shop.php';
-include_once 'functions_pages.php';
 
 
 
@@ -108,34 +107,6 @@ function se_write_option($data,$module) {
 	
 }
 
-
-/**
- * hook in
- * inject code from addons
- * $position (string)	-> where should the code be injected
- * $data (array)			-> data which will be passed to the hook-script
- *
- * example: se_get_hook('page_updated',$_POST);
- *
- * Hooks (will be expanded soon):
- * - page_updated
- * - dashboard_listed_all_addons
- */
-
-function se_get_hook($position,$data) {
-	
-	global $all_mods;	
-	$hook = basename($position);
-	
-	foreach($all_mods as $mod) {
-		
-		$hook_file = SE_CONTENT.'/modules/'.$mod['folder'].'/hooks/'.$hook.'.php';
-		if(is_file($hook_file)) {
-			include $hook_file;
-		}
-		
-	}
-}
 
 
 /**
@@ -752,7 +723,30 @@ function first_words($string,$nbr=5) {
 }
 
 
+/**
+ * Return the first n chars of a string (without tags).
+ *
+ * @param string $str
+ * @param integer $length
+ * @return string
+ */
+function se_return_first_chars($str,$length=200) {
 
+    $str = strip_tags(htmlspecialchars_decode($str));
+    if(strlen($str) > $length) {
+        $ellipses = ' <small><i>(...)</i></small>';
+        $last_blank_pos = strrpos(substr($str, 0, $length), ' ');
+        if($last_blank_pos !== false) {
+            $trimmed_string = substr($str, 0, $last_blank_pos);
+        } else {
+            $trimmed_string = substr($str, 0, $length);
+        }
+        $trimmed_string .= $ellipses;
+        return $trimmed_string;
+    } else {
+        return $str;
+    }
+}
 
 
 
@@ -994,21 +988,21 @@ function se_unique_multi_array($array, $key) {
  *
  */
 
-function se_array_multisort(){
-	$args = func_get_args();
-  $data = array_shift($args);
-  foreach($args as $n => $field) {
-  	if(is_string($field)) {
-			$tmp = array();
-      foreach ($data as $key => $row){
-      	$tmp[$key] = $row[$field];
-        $args[$n] = $tmp;
-			}
+function se_array_multisort() {
+    $args = func_get_args();
+    $data = array_shift($args);
+    foreach ($args as $n => $field) {
+        if (is_string($field)) {
+            $tmp = array();
+            foreach ($data as $key => $row) {
+                $tmp[$key] = $row[$field];
+                $args[$n] = $tmp;
+            }
+        }
     }
-  }
-  $args[] = &$data;
-  call_user_func_array('array_multisort', $args);
-  return array_pop($args);
+    $args[] = &$data;
+    call_user_func_array('array_multisort', $args);
+    return array_pop($args);
 }
 
 

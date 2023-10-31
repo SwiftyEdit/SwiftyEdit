@@ -36,7 +36,14 @@ if($show_open_source_docs == true) {
     echo '<div class="card-body">';
 
     $Parsedown = new Parsedown();
-    $docsfiles = glob('./docs/'.$languagePack.'/*.md');
+
+    if(is_dir('./docs/'.$languagePack)) {
+        $docsfiles = glob('./docs/'.$languagePack.'/*.md');
+    } else {
+        $docsfiles = glob('./docs/en/*.md');
+    }
+
+
     echo '<div class="list-group mb-3">';
     foreach($docsfiles as $doc) {
 

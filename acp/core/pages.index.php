@@ -251,8 +251,9 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 					$img_str .= '<td><strong><a href="'.$this_img[0].'" data-fancybox="images">'.basename($this_img[0]).'</a></strong></td>';
 				}
 			} else {
-				if(!is_file('../'.SE_ROOT.$this_img[0])) {
-					$img_str .= '<td>'.SE_ROOT.$this_img[0].' <span class="text-danger">(file not found)</span></td>';
+				$check_image = SE_ROOT.ltrim($this_img[0], '/');
+				if(!is_file($check_image)) {
+					$img_str .= '<td>'.$check_image.' <span class="text-danger">(file not found)</span></td>';
 					$missing_img = true;
 					$ce_page_img_file_not_found++;
 				} else {

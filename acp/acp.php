@@ -58,7 +58,6 @@ if (is_file(SE_CONTENT . '/config_smtp.php')) {
  * @var string $database_user
  * @var string $database_psw
  * @var string $database_port
- * @const DB_PREFIX database prefix
  */
 
 if (is_file('../config_database.php')) {
@@ -112,7 +111,6 @@ if (is_file('../config_database.php')) {
 }
 
 define("INDEX_DB", "$se_db_index");
-define("SE_ROOT", str_replace("/acp", "", SE_INCLUDE_PATH));
 define("IMAGES_FOLDER", "$img_path");
 define("FILES_FOLDER", "$files_path");
 const SE_SECTION = "backend";
@@ -169,7 +167,7 @@ $all_plugins = get_all_plugins();
 $se_labels = se_get_labels();
 $cnt_labels = count($se_labels);
 $all_langs = get_all_languages();
-
+$all_hooks = se_get_all_hooks();
 
 
 /**
@@ -231,19 +229,30 @@ if ($se_prefs['prefs_default_language'] != '') {
 /**
  * $lang_codes (array) all available lang codes
  * hide languages from $prefs_deactivated_languages
+ * all active languages are stored in $active_lang
  */
-if ($se_prefs['prefs_deactivated_languages'] != '') {
+if (isset($se_prefs['prefs_deactivated_languages']) AND $se_prefs['prefs_deactivated_languages'] != '') {
     $arr_lang_deactivated = json_decode($se_prefs['prefs_deactivated_languages']);
 }
 
 foreach ($all_langs as $l) {
-    if (is_array($arr_lang_deactivated) && (in_array($l['lang_folder'], $arr_lang_deactivated))) {
+    if (isset($arr_lang_deactivated) && (in_array($l['lang_folder'], $arr_lang_deactivated))) {
         continue;
     }
 
     $langs[] = $l['lang_sign'];
 }
+
 $lang_codes = array_values(array_unique($langs));
+
+foreach($lang_codes as $l) {
+     if(is_file('../core/lang/'.$l.'/index.php')) {
+        include '../core/lang/'.$l.'/index.php';
+        $active_lang[$l]['sign'] = $lang_sign;
+        $active_lang[$l]['name'] = $lang_desc;
+        $active_lang[$l]['flag'] = '../core/lang/'.$l.'/flag.png';
+     }
+}
 
 /* build absolute URL */
 if ($se_prefs['prefs_cms_ssl_domain'] != '') {
@@ -283,9 +292,9 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-06-13" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-08-08" type="text/css" media="screen, projection">
 
-    <script src="theme/js/backend.min.js?v=2023-06-13"></script>
+    <script src="theme/js/backend.min.js?v=2023-08-08"></script>
     <script src="theme/js/tinymce/tinymce.min.js"></script>
     <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
     <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>
@@ -356,6 +365,7 @@ if (isset($set_acptheme)) {
     if($tn == 'addons') { $page_header_class = 'ph-addons'; }
     if($tn == 'user') { $page_header_class = 'ph-user'; }
     echo '<div class="'.$page_header_class.' page-header">';
+    require 'core/nav_top_filter.php';
     require 'core/nav_top.php';
     echo '</div>';
     ?>
@@ -379,10 +389,9 @@ if (isset($set_acptheme)) {
     <div id="footer">
         <p class="text-center">
             <?php
-            $arr_lang = get_all_languages();
-            for ($i = 0; $i < count($arr_lang); $i++) {
-                $lang_icon = '<img src="../core/lang/' . $arr_lang[$i]['lang_folder'] . '/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
-                echo '<a class="btn btn-sm btn-default" href="acp.php?set_lang=' . $arr_lang[$i]['lang_folder'] . '">' . $lang_icon . ' ' . $arr_lang[$i]['lang_desc'] . '</a> ';
+            foreach($active_lang as $k => $v) {
+                $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
+                echo '<a class="btn btn-sm btn-default" href="acp.php?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a> ';
             }
             ?>
         </p>
@@ -395,6 +404,43 @@ if (isset($set_acptheme)) {
         </p>
         <p class="d-none"><?php echo microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']; ?></p>
     </div>
+
+    <?php
+    if($se_environment == 'd') {
+        $debug_tpl = file_get_contents('templates/debug.tpl');
+
+        $debug_post_str = '<table class="table">';
+        foreach($_POST as $k => $v) {
+            $debug_post_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_post_str .= '</table>';
+
+        $debug_get_str = '<table class="table">';
+        foreach($_GET as $k => $v) {
+            $debug_get_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_get_str .= '</table>';
+
+        $debug_session_str = '<table class="table">';
+        foreach($_SESSION as $k => $v) {
+            $debug_session_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_session_str .= '</table>';
+
+        $debug_prefs_str = '<table class="table">';
+        foreach($se_prefs as $k => $v) {
+            $debug_prefs_str .= '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+        }
+        $debug_prefs_str .= '</table>';
+
+        $debug_tpl = str_replace("{post}","$debug_post_str",$debug_tpl);
+        $debug_tpl = str_replace("{get}","$debug_get_str",$debug_tpl);
+        $debug_tpl = str_replace("{session}","$debug_session_str",$debug_tpl);
+        $debug_tpl = str_replace("{prefs}","$debug_prefs_str",$debug_tpl);
+        echo $debug_tpl;
+        echo '<p class="text-center">'.microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'].'</p>';
+    }
+    ?>
 
 </div>
 

@@ -305,7 +305,11 @@ $dbh_content->insert("se_options", [
 		"option_value" => 86400,
 		"option_module" => "se"
 	], [
-		"option_key" => "prefs_posts_entries_per_page",
+        "option_key" => "prefs_posts_entries_per_page",
+        "option_value" => 10,
+        "option_module" => "se"
+    ],[
+		"option_key" => "prefs_products_per_page",
 		"option_value" => 10,
 		"option_module" => "se"
 	], [
@@ -321,8 +325,12 @@ $dbh_content->insert("se_options", [
 		"option_value" => 1,
 		"option_module" => "se"
 	], [
-		"option_key" => "prefs_comments_max_entries",
-		"option_value" => 100,
+        "option_key" => "prefs_comments_max_entries",
+        "option_value" => 100,
+        "option_module" => "se"
+    ], [
+		"option_key" => "prefs_comments_autoclose",
+		"option_value" => 604800,
 		"option_module" => "se"
 	], [
 		"option_key" => "prefs_comments_max_level",

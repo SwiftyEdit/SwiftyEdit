@@ -32,6 +32,11 @@ function se_filter_filepath($str) {
 }
 
 function se_return_clean_value($string) {
+
+    if(!is_string($string)) {
+        return;
+    }
+
 	$string = stripslashes($string);
 	$remove_chars = array('$','`','{','}');
 	$string = htmlentities($string, ENT_QUOTES, "UTF-8");
@@ -133,7 +138,8 @@ function se_sanitize_page_inputs($data) {
             || $key == 'page_meta_keywords' || $key == 'page_meta_author'
             || $key == 'page_meta_description' || $key == 'page_modul'
             || $key == 'page_language' || $key == 'page_status' || $key == 'page_type_of_use'
-            || $key == 'page_funnel_uri' || $key == 'page_target' || $key == 'page_template_stylesheet') {
+            || $key == 'page_funnel_uri' || $key == 'page_target' || $key == 'page_template_stylesheet'
+            || $key == 'page_canonical_url') {
             $sanitized[$key] = se_return_clean_value($val);
         }
 
@@ -145,6 +151,16 @@ function se_sanitize_page_inputs($data) {
         // urls
         if($key == 'page_permalink' || $key == 'page_permalink_short' || $key == 'page_redirect') {
             $sanitized[$key] = se_clean_permalink($val);
+        }
+
+        // translation urls
+        if($key == 'translation_url') {
+            if(is_array($val)) {
+                foreach($val as $k => $v) {
+                    $urls[$k] = se_clean_permalink($v);
+                }
+                $sanitized['page_translation_urls'] = json_encode($urls,JSON_UNESCAPED_UNICODE);
+            }
         }
 
         // integers

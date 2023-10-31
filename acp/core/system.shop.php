@@ -7,15 +7,20 @@ require "core/access.php";
 if(isset($_POST['update_shop'])) {
 
 	foreach($_POST as $key => $val) {
-		$data[htmlentities($key)] = htmlentities($val);
+        if(is_string($key)) {
+            $data[htmlentities($key)] = htmlentities((string) $val);
+        }
 	}
 
 	se_write_option($data,'se');
 }
 
 if(isset($_POST['update_pm_shipping'])) {
+
     foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
+        if(is_string($key)) {
+            $data[htmlentities($key)] = htmlentities((string) $val);
+        }
     }
 
     if($_POST['prefs_pm_bank_transfer'] != 1) {
@@ -27,6 +32,13 @@ if(isset($_POST['update_pm_shipping'])) {
     if($_POST['prefs_pm_cash'] != 1) {
         $data['prefs_pm_cash'] = 0;
     }
+
+    $data['prefs_payment_addons'] = '';
+    if(isset($_POST['payment_addons'])) {
+        $addon_str = json_encode($_POST['payment_addons'],JSON_FORCE_OBJECT);
+        $data['prefs_payment_addons'] = $addon_str;
+    }
+
 
     se_write_option($data,'se');
 }

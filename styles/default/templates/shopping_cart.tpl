@@ -12,6 +12,14 @@
     </div>
 {/if}
 
+{if $cart_alert_payment != ''}
+    <div class="alert alert-info">
+        {$cart_alert_payment}
+    </div>
+{/if}
+
+
+
 {if $cnt_items > 0}
     {include file='shopping_cart_table.tpl'}
 {/if}

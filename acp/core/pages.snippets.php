@@ -1,5 +1,10 @@
 <?php
-//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+
+/**
+ * SwiftyEdit backend
+ * list and edit snippets
+ */
+
 //prohibit unauthorized access
 require 'core/access.php';
 $system_snippets_str = "'footer_text','extra_content_text','agreement_text','account_confirm','account_confirm_mail','no_access'";
@@ -110,9 +115,7 @@ if(isset($_POST['save_snippet'])) {
 	
 	$snippet_priority = (int) $_POST['snippet_priority'];
 	
-	
 
-	
 	if($_POST['modus'] == 'update') {
 		
 		$snip_id = (int) $_POST['snip_id'];
@@ -196,50 +199,50 @@ if(isset($_POST['save_snippet'])) {
 
 
 /* expand filter */
-if(isset($_POST['snippet_filter']) && (trim($_POST['snippet_filter']) != '')) {
-	$_SESSION['snippet_filter'] = $_SESSION['snippet_filter'] . ' ' . clean_filename($_POST['snippet_filter']);
+if(isset($_POST['snippet_text_filter']) && (trim($_POST['snippet_text_filter']) != '')) {
+	$_SESSION['snippet_text_filter'] = $_SESSION['snippet_text_filter'] . ' ' . clean_filename($_POST['snippet_text_filter']);
 }
 
 /* remove keyword from filter list */
 if($_REQUEST['rm_keyword'] != "") {
-	$all_snippet_filter = explode(" ", $_SESSION['snippet_filter']);
-	unset($_SESSION['snippet_filter'],$f);
+	$all_snippet_filter = explode(" ", $_SESSION['snippet_text_filter']);
+	unset($_SESSION['snippet_text_filter'],$f);
 	foreach($all_snippet_filter as $f) {
 		if($_REQUEST['rm_keyword'] == "$f") { continue; }
 		if($f == "") { continue; }
-		$_SESSION['snippet_filter'] .= "$f ";
+		$_SESSION['snippet_text_filter'] .= "$f ";
 	}
 	unset($all_snippet_filter);
 }
 
-if($_SESSION['snippet_filter'] != "") {
+if($_SESSION['snippet_text_filter'] != "") {
 	unset($all_snippet_filter);
 	$btn_remove_keyword = '';
-	$all_snippet_filter = explode(" ", $_SESSION['snippet_filter']);
+	$all_snippet_filter = explode(" ", $_SESSION['snippet_text_filter']);
 	foreach($all_snippet_filter as $f) {
 		if($_REQUEST['rm_keyword'] == "$f") { continue; }
 		if($f == "") { continue; }
-		$btn_remove_keyword .= '<a class="btn btn-default btn-sm" href="acp.php?tn=pages&sub=snippets&rm_keyword='.$f.'">'.$icon['times_circle'].' '.$f.'</a> ';
+		$btn_remove_keyword .= '<a class="btn btn-default btn-sm" href="acp.php?tn=pages&sub=snippets&rm_keyword='.$f.'">'.$icon['x'].' '.$f.'</a> ';
 		$set_snippet_keyword_filter .= "(snippet_name like '%$f%' OR snippet_title like '%$f%' OR snippet_content like '%$f%' OR snippet_groups like '%$f%' OR snippet_keywords like '%$f%') AND";
 	}
 }
 $set_snippet_keyword_filter = substr("$set_snippet_keyword_filter", 0, -4); // cut the last ' AND'
 
-$snippet_lang_filter = "";
-for($i=0;$i<count($arr_lang);$i++) {
-	$lang_folder = $arr_lang[$i]['lang_folder'];
-	if(strpos("$_SESSION[checked_lang_string]", "$lang_folder") !== false) {
-		$snippet_lang_filter .= "snippet_lang = '$lang_folder' OR ";
-	}
+/* language filter */
+foreach($global_filter_languages as $l) {
+    echo $l;
+    if($l != '') {
+        $snippet_lang_filter .= "snippet_lang = '$l' OR ";
+    }
 }
+
 $snippet_lang_filter = substr("$snippet_lang_filter", 0, -3); // cut the last ' OR'
 
-
+/* label filter */
 $snippet_label_filter = '';
-$checked_labels_array = explode('-', $_SESSION['checked_label_str']);
-for($i=0;$i<count($se_labels);$i++) {
+for($i=0;$i<$cnt_labels;$i++) {
 	$label = $se_labels[$i]['label_id'];
-	if(in_array($label, $checked_labels_array)) {
+	if(in_array($label, $global_filter_label)) {
 		$snippet_label_filter .= "snippet_labels LIKE '%,$label,%' OR snippet_labels LIKE '%,$label' OR snippet_labels LIKE '$label,%' OR snippet_labels = '$label' OR ";
 	}
 }
@@ -448,7 +451,7 @@ if($show_snippet_form)  {
 				if($kw == '') {
 					continue;
 				}
-				$kw_string .= ' <button type="submit" class="btn btn-default btn-xs mr-1" name="snippet_filter" value="'.$kw.'">'.$kw.'</button> ';
+				$kw_string .= ' <button type="submit" class="btn btn-default btn-xs mr-1" name="snippet_text_filter" value="'.$kw.'">'.$kw.'</button> ';
 			}
 			$kw_string .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 			$kw_string .= '</form>';
@@ -530,8 +533,8 @@ if($show_snippet_form)  {
 	echo '<form action="acp.php?tn=pages&sub=snippets" method="POST" class="form-inline ms-auto dirtyignore">';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-text">'.$icon['search'].'</span>';
-	echo '<input class="form-control" type="text" name="snippet_filter" value="" placeholder="'.$lang['button_search'].'">';
-	echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+	echo '<input class="form-control" type="text" name="snippet_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+    echo $hidden_csrf_token;
 	echo '</div>';
 	echo '</form>';
 	
@@ -545,12 +548,32 @@ if($show_snippet_form)  {
 	echo '<a class="btn btn-default w-100 '.$active_system.'" href="?tn=pages&sub=snippets&type=2">'.$lang['btn_snippets_system'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_system_snippets'].'</span></a>';
 	echo '<a class="btn btn-default w-100 '.$active_own.'" href="?tn=pages&sub=snippets&type=3">'.$lang['btn_snippets_own'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_custom_snippets'].'</span></a>';
 	echo '</div>';
-	
-	echo $lang_filter_box;
-	echo $label_filter_box;
+
 	
 	echo '</div>'; // card-body
 	echo '</div>'; // card
+
+
+
+    echo '<div class="card mt-1">';
+    echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
+    echo '<div class="card-body">';
+    echo '<div class="scroll-container">';
+    $get_keywords = se_get_snippet_keywords();
+    echo '<form action="acp.php?tn=pages&sub=snippets" method="POST" class="form-inline ms-auto dirtyignore">';
+    foreach($get_keywords as $k => $v) {
+        if((is_array($all_snippet_filter) && in_array("$k",$all_snippet_filter))) {
+            echo '<button name="snippet_text_filter" value="" class="btn disabled btn-default btn-xs mb-1">' . $k . ' <span class="badge bg-secondary">' . $v . '</span></button> ';
+        }else {
+            echo '<button name="snippet_text_filter" value="' . $k . '" class="btn btn-default btn-xs mb-1">' . $k . ' <span class="badge bg-secondary">' . $v . '</span></button> ';
+
+        }
+    }
+    echo $hidden_csrf_token;
+    echo '</form>';
+    echo '</div>';
+    echo '</div>'; // card-body
+    echo '</div>'; // card
 	
 	/* end of sidebar */
 
@@ -563,4 +586,3 @@ if($show_snippet_form)  {
 	
 	
 }
-?>

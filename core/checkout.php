@@ -36,36 +36,26 @@ $get_cart_items = se_return_my_cart();
 $cnt_cart_items = count($get_cart_items);
 
 $payment_methods = se_get_payment_methods();
+$payment_costs = '0.00';
 
 if($_SESSION['set_payment'] == '') {
-	$_SESSION['set_payment'] = $payment_methods[0]['key'];
+	$_SESSION['set_payment'] = array_key_first($payment_methods);
 }
 
 if(isset($_POST['set_payment'])) {
 	$_SESSION['set_payment'] = clean_filename($_POST['set_payment']);
 }
 
-if($_SESSION['set_payment'] == 'prefs_pm_bank_transfer') {
-	$payment_message = se_get_textlib('cart_pm_bank_transfer',$languagePack,'content');
-}
+$payment_key = $_SESSION['set_payment'];
 
-if($_SESSION['set_payment'] == 'prefs_pm_invoice') {
-	$payment_message = se_get_textlib('cart_pm_invoice',$languagePack,'content');
-}
-
-if($_SESSION['set_payment'] == 'prefs_pm_cash') {
-	$payment_message = se_get_textlib('cart_pm_cash',$languagePack,'content');
-}
-
-if($_SESSION['set_payment'] == 'prefs_pm_paypal') {
-	$payment_message = se_get_textlib('cart_pm_paypal',$languagePack,'content');
-}
+$payment_addon = $payment_methods[$payment_key]['addon'];
+$payment_costs = $payment_methods[$payment_key]['cost'];
+$payment_message = $payment_methods[$payment_key]['snippet'];
 
 
-$payment_costs = se_get_payment_costs($_SESSION['set_payment']);
 
 // check the radio for payment
-// example $checked_prefs_pm_invoice
+// example $checked_invoicepay
 $check_pm_radio = 'checked_'.$_SESSION['set_payment'];
 $smarty->assign("$check_pm_radio", 'checked');
 
@@ -307,7 +297,7 @@ if($_POST['order'] == 'send') {
 		$order_data['order_price_total'] = $cart_price_total;
 		$order_data['order_shipping_type'] = $shipping_type;
 		$order_data['order_shipping_costs'] = $shipping_costs;
-		$order_data['order_payment_type'] = $_SESSION['set_payment'];
+		$order_data['order_payment_type'] = $payment_addon;
 		$order_data['order_payment_costs'] = $payment_costs;
         $order_data['order_comment'] = $_POST['cart_comment'];
 		
@@ -316,7 +306,13 @@ if($_POST['order'] == 'send') {
         se_recalculate_stock_sales($cart_items);
 		
 		if($order_id > 0) {
-			$smarty->assign("cart_alert_success",$lang['msg_order_send'],true);
+
+            $cart_alert = se_get_textlib('cart_order_sent',$languagePack,'content');
+            if($cart_alert == '') {
+                $cart_alert = $lang['msg_order_send'];
+            }
+
+
             /* remove items from se_carts */
             se_clear_cart($order_data['user_id']);
             $cnt_cart_items = 0;
@@ -326,6 +322,14 @@ if($_POST['order'] == 'send') {
             $recipient['type'] = 'client';
             $reason = 'order_confirmation';
             $send_mail = se_send_order_status($recipient,$order_id,$reason);
+
+            // include after sale script from payment addon
+            $aftersale_script = SE_CONTENT.'/modules/'.basename($payment_addon).'/aftersale.php';
+            if(is_file($aftersale_script)) {
+                include $aftersale_script;
+            }
+
+            $smarty->assign("cart_alert_success",$cart_alert,true);
 
 		}
 	}

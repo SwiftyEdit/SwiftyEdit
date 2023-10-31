@@ -33,10 +33,41 @@ $info:  #64C9E0;
 $warning: #FF9407;
 $danger: #b7212f;
 
-$code-color: #ad2d6b;
-
 $lighten: mix(#ffffff,$primary,75%);
 $darken: mix(#000000,$primary,75%);
+
+$primary-text-emphasis:   darken($primary, 30%) !default;
+$secondary-text-emphasis: darken($secondary, 30%) !default;
+$success-text-emphasis:   darken($success, 30%) !default;
+$info-text-emphasis:      darken($info, 30%) !default;
+$warning-text-emphasis:   darken($warning, 30%) !default;
+$danger-text-emphasis:    darken($danger, 30%) !default;
+$light-text-emphasis:     $gray-700 !default;
+$dark-text-emphasis:      $gray-700 !default;
+
+$primary-bg-subtle:       rgba($primary, 0.3);
+$secondary-bg-subtle:     rgba($secondary, 0.3);
+$success-bg-subtle:       rgba($success, 0.4) !default;
+$info-bg-subtle:          rgba($info, 0.3) !default;
+$warning-bg-subtle:       rgba($warning, 0.3) !default;
+$danger-bg-subtle:        rgba($danger, 0.3) !default;
+$light-bg-subtle:         mix($gray-100, $white) !default;
+$dark-bg-subtle:          $gray-400 !default;
+
+$primary-border-subtle:   lighten($primary, 20%) !default;
+$secondary-border-subtle: lighten($secondary, 20%) !default;
+$success-border-subtle:   lighten($success, 20%) !default;
+$info-border-subtle:      lighten($info, 20%) !default;
+$warning-border-subtle:   lighten($warning, 20%) !default;
+$danger-border-subtle:    lighten($danger, 20%) !default;
+$light-border-subtle:     $gray-200 !default;
+$dark-border-subtle:      $gray-500 !default;
+
+
+
+$alert-bg-scale:                -80% !default; // Deprecated in v5.2.0, to be removed in v6
+$alert-border-scale:            -70% !default; // Deprecated in v5.2.0, to be removed in v6
+$alert-color-scale:             40% !default; // Deprecated in v5.2.0, to be removed in v6
 
 $page_header_bg: desaturate($lighten,5);
 $widget_background: mix($lighten,$primary,80%);
@@ -52,11 +83,30 @@ $widget-bg-700: mix($darken,$widget_background,20%);
 $widget-bg-800: mix($darken,$widget_background,30%);
 $widget-bg-900: mix($darken,$widget_background,40%);
 
-$body-color: #252525;
-$body-bg: lighten($page_header_bg,3) !default;
-$border-color: $widget_border_color !default;
 
+$body-color: #252525;
+$body-bg: desaturate($lighten,10) !default;
+$body-secondary-color:         rgba($body-color, .75) !default;
+$body-secondary-bg:            $gray-400 !default;
+$body-tertiary-color:          rgba($body-color, .5) !default;
+$body-tertiary-bg:             mix($gray-400, $gray-500, 50%) !default;
+$body-emphasis-color:          $black !default;
+$border-color: $widget_border_color !default;
+$border-color-translucent:     rgba($black, .15) !default;
 $headings-color: $primary;
+$link-color:                   darken($primary, 10) !default;
+$link-hover-color:             lighten($link-color, 10) !default;
+$code-color: #ad2d6b;
+
+
+
+
+
+
+
+
+
+
 
 
 $sidebar_background: #2A2030;

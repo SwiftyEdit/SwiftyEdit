@@ -1,9 +1,122 @@
 <?php
 
 /**
- * write and update pages
+ * get, write and update pages
  * do snapshots from pages
  */
+
+/**
+ * @param array $filter
+ * @return mixed
+ */
+function se_get_pages($filter) {
+
+    global $db_content, $se_labels;
+
+    $order = "ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC";
+
+    /* add sorting for single pages */
+    $order .= ' ,'.$filter['sort_by'].' '.$filter['sort_direction'];
+
+    if(!isset($filter['labels'])) {
+        $filter['labels'] = '';
+    }
+
+
+    /* text search */
+
+    if($filter['text'] != '') {
+        $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(page_meta_keywords like '%$f%' OR page_title like '%$f%' OR page_linkname like '%$f%' OR page_content like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
+    } else {
+        $sql_text_filter = '';
+    }
+
+
+
+    $filter_string = "WHERE page_status IS NOT NULL "; // -> result = match all pages
+
+    /* language filter */
+
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "page_language IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(page_language LIKE '%$l%') OR ";
+            }
+        }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
+    }
+
+    /* status filter */
+    if($filter['status'] != '') {
+
+        $filter['status'] = str_replace("1","public",$filter['status']);
+        $filter['status'] = str_replace("2","draft",$filter['status']);
+        $filter['status'] = str_replace("3","private",$filter['status']);
+        $filter['status'] = str_replace("4","ghost",$filter['status']);
+
+        $sql_status_filter = "page_status IS NULL OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(page_status LIKE '%$s%') OR ";
+            }
+        }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
+    }
+
+    /* label filter */
+    if($filter['labels'] == 'all' OR $filter['labels'] == '') {
+        $sql_label_filter = '';
+    } else {
+
+        $checked_labels_array = explode('-', $filter['labels']);
+
+        for($i=0;$i<count($se_labels);$i++) {
+            $label = $se_labels[$i]['label_id'];
+            if(in_array($label, $checked_labels_array)) {
+                $sql_label_filter .= "page_labels LIKE '%,$label,%' OR page_labels LIKE '%,$label' OR page_labels LIKE '$label,%' OR page_labels = '$label' OR ";
+            }
+        }
+        $sql_label_filter = substr("$sql_label_filter", 0, -3); // cut the last ' OR'
+    }
+
+
+    $sql_filter = $filter_string;
+
+    if($sql_lang_filter != "") {
+        $sql_filter .= " AND ($sql_lang_filter) ";
+    }
+    if($sql_status_filter != "") {
+        $sql_filter .= " AND ($sql_status_filter) ";
+    }
+    if($sql_label_filter != "") {
+        $sql_filter .= " AND ($sql_label_filter) ";
+    }
+
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
+    }
+
+    $sql = "SELECT * FROM se_pages $sql_filter $order";
+    $pages = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    return $pages;
+}
+
 
 /**
  * @param array $data $_POST data
@@ -35,6 +148,7 @@ function se_save_page($data) {
     $new_page_id = $db_content->id();
 
     if($cnt_changes->rowCount() > 0) {
+        $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>","5");
         generate_xml_sitemap();
         show_toast($lang['msg_page_saved'],'success');
@@ -79,7 +193,8 @@ function se_update_page($data,$id) {
     ]);
 
     if($cnt_changes->rowCount() > 0) {
-        record_log("$_SESSION[user_nick]","page update <b>$page_linkname</b> &raquo;$page_title&laquo;","5");
+        $page_title = $sanitized_data['page_title'];
+        record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;","5");
         generate_xml_sitemap();
         show_toast($lang['msg_page_updated'],'success');
     } else {
@@ -149,11 +264,36 @@ function se_snapshot_page($id) {
 
     /* add the custom fields */
     foreach($custom_fields as $f) {
-        $columns_cache[$f] = "${$f}";
+        $columns_cache[$f] = "{${$f}}";
     }
 
     /* reset id */
     unset($columns_cache['page_id']);
 
     $db_content->insert("se_pages_cache", $columns_cache);
+}
+
+/**
+ * @return array
+ * get all keywords
+ * key is the keyword, value the counter
+ */
+function se_get_pages_keywords() {
+
+    global $db_content;
+
+    $get_keywords = $db_content->select("se_pages", "page_meta_keywords",[
+        "page_meta_keywords[!]" => ""
+    ]);
+
+    $get_keywords = array_filter( $get_keywords );
+
+    foreach($get_keywords as $keys) {
+        $keys_string .= $keys.',';
+    }
+    $keys_array = explode(",",$keys_string);
+    $keys_array = array_filter( $keys_array );
+    $count_keywords = array_count_values($keys_array);
+
+    return $count_keywords;
 }

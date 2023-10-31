@@ -6,6 +6,8 @@ group: backend
 priority: 430
 ---
 
+# Produkt-Filter erstellen und verwalten
+
 ## Gruppen
 
 Um die Filter zu nutzen, muss zunächst eine Gruppe erstellt werden.

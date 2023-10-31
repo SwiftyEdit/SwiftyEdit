@@ -1,10 +1,14 @@
 <?php
 	
 /**
- * get posts
+ * get entries from se_posts
+ * @param integer $start
+ * @param mixed $limit all or number
+ * @param array $filter
+ * @return array
  */
-	
-function se_get_post_entries($start,$limit,$filter) {
+
+function se_get_post_entries($start,$limit,$filter): array {
 	
 	global $db_posts;
 	global $db_type;
@@ -45,17 +49,35 @@ function se_get_post_entries($start,$limit,$filter) {
 
 	/* set filters */
 	$sql_filter_start = 'WHERE post_id IS NOT NULL ';
-	
+
+    /* text search */
+    if($filter['text'] != '') {
+        $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(post_tags like '%$f%' OR post_title like '%$f%' OR post_teaser like '%$f%' OR post_text like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
+    } else {
+        $sql_text_filter = '';
+    }
+
 	/* language filter */
-	$sql_lang_filter = "post_lang IS NULL OR ";
-	$lang = explode('-', $filter['languages']);
-	foreach($lang as $l) {
-		if($l != '') {
-			$sql_lang_filter .= "(post_lang LIKE '%$l%') OR ";
-		}		
-	}
-	$sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
-	
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "post_lang IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(post_lang LIKE '%$l%') OR ";
+            }
+        }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
+    }
 	
 	/* type filter */
 	$sql_types_filter = "post_type IS NULL OR ";
@@ -67,16 +89,20 @@ function se_get_post_entries($start,$limit,$filter) {
 	}
 	$sql_types_filter = substr("$sql_types_filter", 0, -3); // cut the last ' OR'
 
+
 	/* status filter */
-	$sql_status_filter = "post_status IS NULL OR ";
-	$status = explode('-', $filter['status']);
-	foreach($status as $s) {
-		if($s != '') {
-			$sql_status_filter .= "(post_status LIKE '%$s%') OR ";
-		}		
-	}
-	$sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
-	
+    if($filter['status'] != '') {
+        $sql_status_filter = "post_status IS NULL OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(post_status LIKE '%$s%') OR ";
+            }
+        }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
+    }
 	
 	/* category filter */
 	if($filter['categories'] == 'all' OR $filter['categories'] == '') {
@@ -125,6 +151,9 @@ function se_get_post_entries($start,$limit,$filter) {
 	if($sql_label_filter != "") {
 		$sql_filter .= " AND ($sql_label_filter) ";
 	}
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
+    }
 	
 	if(SE_SECTION == 'frontend') {
 		$sql_filter .= "AND post_releasedate <= '$time_string_now' ";
@@ -179,6 +208,10 @@ function se_get_event_entries($start,$limit,$filter) {
         $limit_str .= ', '. (int) $limit;
     }
 
+    if(!isset($filter['labels'])) {
+        $filter['labels'] = '';
+    }
+
 
     /**
      * order and direction
@@ -191,24 +224,47 @@ function se_get_event_entries($start,$limit,$filter) {
     $sql_filter_start = "WHERE id IS NOT NULL ";
 
     /* language filter */
-    $sql_lang_filter = "event_lang IS NULL OR ";
-    $lang = explode('-', $filter['languages']);
-    foreach($lang as $l) {
-        if($l != '') {
-            $sql_lang_filter .= "(event_lang LIKE '%$l%') OR ";
+    if($filter['languages'] != '') {
+        $sql_lang_filter = "event_lang IS NULL OR ";
+        $lang = explode('-', $filter['languages']);
+        foreach ($lang as $l) {
+            if ($l != '') {
+                $sql_lang_filter .= "(event_lang LIKE '%$l%') OR ";
+            }
         }
+        $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_lang_filter = '';
     }
-    $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
+
+    /* text search */
+    if($filter['text_search'] != '') {
+        $sql_text_filter = '';
+        $all_filter = explode(" ",$filter['text_search']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_text_filter .= "(tags like '%$f%' OR title like '%$f%' OR teaser like '%$f%' OR text like '%$f%') AND";
+        }
+        $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
+
+    } else {
+        $sql_text_filter = '';
+    }
 
     /* status filter */
-    $sql_status_filter = "status IS NULL OR ";
-    $status = explode('-', $filter['status']);
-    foreach($status as $s) {
-        if($s != '') {
-            $sql_status_filter .= "(status LIKE '%$s%') OR ";
+    if($filter['status'] != '') {
+        $sql_status_filter = "status IS NULL OR ";
+        $status = explode('-', $filter['status']);
+        foreach ($status as $s) {
+            if ($s != '') {
+                $sql_status_filter .= "(status LIKE '%$s%') OR ";
+            }
         }
+        $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
+    } else {
+        $sql_status_filter = '';
     }
-    $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
 
 
     /* category filter */
@@ -255,6 +311,10 @@ function se_get_event_entries($start,$limit,$filter) {
     }
     if($sql_label_filter != "") {
         $sql_filter .= " AND ($sql_label_filter) ";
+    }
+
+    if($sql_text_filter != "") {
+        $sql_filter .= " AND ($sql_text_filter) ";
     }
 
     /* we hide past events in frontend */

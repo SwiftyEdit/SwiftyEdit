@@ -38,11 +38,25 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                    <label class="form-label">{label_title}</label>
-                                    <input class="form-control" name="title" type="text" value="{title}">
+                                        <label class="form-label">{label_title}</label>
+                                        <input class="form-control" name="title" type="text" value="{title}">
                                     </div>
-                                    <label class="form-label">{label_description}</label>
-                                    <textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
+                                    <div class="mb-3">
+                                        <label class="form-label">{label_description}</label>
+                                        <textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">{label_link_name}</label>
+                                                <input class="form-control" name="link_name" type="text" value="{link_name}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">{label_classes}</label>
+                                                <input class="form-control" name="link_classes" type="text" value="{link_classes}">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="well well-sm">
@@ -489,7 +503,7 @@
                             </div>
                             <div class="form-group">
                                 <label>{label_slug}</label>
-                                <input class='form-control' name="post_slug" type="text" value="{slug}">
+                                <input class='form-control' name="slug" type="text" value="{slug}">
                             </div>
 
                                 <h5 class="heading-line">RSS</h5>
@@ -514,39 +528,44 @@
         </div>
         <div class="col-md-3">
             <div class="card p-3">
-                <fieldset>
-                    <legend>{label_language}</legend>
-                    <div class="">
-                        {checkboxes_lang}
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>{label_categories}</legend>
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_language}</label>
+                    {checkboxes_lang}
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_categories}</label>
                     <div class="scroll-container" style="max-height: 150px;">
                         {checkbox_categories}
                     </div>
-                </fieldset>
-                <fieldset>
-                    <legend>{label_releasedate}</legend>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_releasedate}</label>
                     <input class='dp form-control' name="releasedate" type="text" value="{releasedate}">
-                </fieldset>
-                <fieldset>
-                    <legend>{label_priority}</legend>
+                </div>
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_priority}</label>
                     <input type="number" name="priority" value="{input_priority}" class="form-control">
                     {checkbox_fixed}
-                </fieldset>
-                <fieldset>
-                    <legend>{label_status}</legend> {select_status}
-                </fieldset>
-                <fieldset>
-                    <legend>{label_comments}</legend> {select_comments}
-                </fieldset>
-                <fieldset>
-                    <legend>{label_votings}</legend> {select_votings}
-                </fieldset>
-                <fieldset>
-                    <legend>{labels}</legend> {product_labels}
-                </fieldset>
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_status}</label>
+                    {select_status}
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_comments}</label>
+                    {select_comments}
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{label_votings}</label>
+                    {select_votings}
+                </div>
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{labels}</label>
+                    <div>{product_labels}</div>
+                </div>
+
                 <input name="type" type="hidden" value="{type}">
                 <input name="parent_id" type="hidden" value="{parent_id}">
                 <input name="modus" type="hidden" value="{modus}">

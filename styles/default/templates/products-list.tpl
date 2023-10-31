@@ -2,18 +2,18 @@
     <div class="row mb-3">
         <div class="col-md-8 col-sm-12">
             <form action="{$form_action}" method="POST" class="d-inline">
-                <div class="btn-group" role="group">
+                <div class="btn-group mb-3" role="group">
                     <button type="submit" name="sort_by" value="ts" class="btn btn-outline-primary {$class_sort_topseller}">{$lang_label_sort_topseller}</button>
                     <button type="submit" name="sort_by" value="name" class="btn btn-outline-primary {$class_sort_name}">{$lang_label_sort_name}</button>
-                    <button type="submit" name="sort_by" value="pasc" class="btn btn-outline-primary {$class_sort_price_asc}">{$lang_label_sort_price_asc}</button>
-                    <button type="submit" name="sort_by" value="pdesc" class="btn btn-outline-primary {$class_sort_price_desc}">{$lang_label_sort_price_desc}</button>
+                    <button type="submit" name="sort_by" value="pasc" class="btn btn-outline-primary {$class_sort_price_asc}" title="{$lang_label_sort_price_asc}">{$lang_label_price} <i class="bi bi-sort-numeric-down"></i></button>
+                    <button type="submit" name="sort_by" value="pdesc" class="btn btn-outline-primary {$class_sort_price_desc}" title="{$lang_label_sort_price_desc}">{$lang_label_price} <i class="bi bi-sort-numeric-down-alt"></i></button>
                 </div>
             </form>
         </div>
-        <div class="col-md-4 col-sm-12 text-right">
+        <div class="col-md-4 col-sm-12">
             {if $show_pagination == true}
             <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-end">
+                <ul class="pagination justify-content-md-end justify-content-sm-center">
                     <li class="page-item">
                         <a href="{$pag_prev_href}" aria-label="Previous" class="page-link"><span aria-hidden="true">&laquo;</span></a>
                     </li>
@@ -88,7 +88,7 @@
                         {/if}
                     </div>
                     <div class="col-md-4">
-                        <a class="btn btn-link w-100 {$read_more_class}" href="{$value.product_href}">{$btn_read_more}</a>
+                        <a class="btn btn-link w-100 {$link_classes}" href="{$value.product_href}">{$btn_read_more}</a>
                         {if $value.show_shopping_cart == true}
                             <form action="{$form_action}" method="POST" class="pt-1">
                                 <button class="btn btn-outline-success w-100" name="add_to_cart" value="{$value.product_id}">{$btn_add_to_cart}</button>

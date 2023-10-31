@@ -10,7 +10,7 @@
 ini_set("url_rewriter.tags", '');
 session_start();
 error_reporting(0);
-//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE);
 header("X-Frame-Options: SAMEORIGIN");
 
 $se_start_time = microtime(true);
@@ -168,7 +168,7 @@ $cnt_active_mods = count($active_mods);
 if(is_file(SE_CONTENT . '/cache/active_urls.php')) {
     include SE_CONTENT . '/cache/active_urls.php';
 }
-
+$query_is_cached = false;
 if(in_array("$query", (array) $existing_url)) {
     $query_is_cached = true;
 }
@@ -188,7 +188,7 @@ for($i=0;$i<$cnt_active_mods;$i++) {
 		if(strncmp($mod_permalink, $query, $permalink_length) == 0) {
 			$mod_slug = substr($query, $permalink_length);
 			$swifty_slug = substr("$query",0,$permalink_length);
-			if($query_is_cached == true) {
+			if($query_is_cached) {
   				$swifty_slug = $query;
 			}
 		}
@@ -474,7 +474,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders') {
+    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account') {
         $show_posts = false;
     }
 
@@ -573,13 +573,14 @@ $smarty->assign("p","$p");
 $smarty->assign("se_include_path", SE_INCLUDE_PATH);
 
 $se_page_url = $se_base_url;
+$se_base_href = $se_base_url;
 if($swifty_slug != '' AND $swifty_slug != '/') {
 	$se_page_url .= $swifty_slug;
 }
 if($mod_slug != '') {
 	$se_page_url .= $mod_slug;
 }
-
+$smarty->assign('se_base_href', $se_base_href,true);
 $smarty->assign('se_page_url', $se_page_url,true);
 
 $se_end_time = microtime(true);

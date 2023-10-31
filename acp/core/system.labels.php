@@ -23,6 +23,8 @@ if (isset($_POST['update_label'])) {
     ], [
         "label_id" => $label_id
     ]);
+
+    record_log($_SESSION['user_nick'],"update label","1");
 }
 
 
@@ -39,6 +41,7 @@ if (isset($_POST['new_label'])) {
         "label_description" => $label_description
     ]);
 
+    record_log($_SESSION['user_nick'],"create new label","1");
 }
 
 /* delete label */
@@ -50,7 +53,7 @@ if(isset($_POST['delete_label'])) {
 	$data = $db_content->delete("se_labels", [
 		"label_id" => $label_id
 		]);
-	
+    record_log($_SESSION['user_nick'],"deleted label","5");
 }
 
 

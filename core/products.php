@@ -28,7 +28,7 @@ $products_direction = 'DESC';
 $products_filter = array();
 
 $str_status = '1';
-if($_SESSION['user_class'] == 'administrator') {
+if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 
@@ -165,9 +165,22 @@ if(substr("$mod_slug", -5) == '.html') {
     $display_mode = 'show_product';
 }
 
+/* check if $mod_slug is a product slug */
+$get_data_from_slug = se_get_product_data_by_slug($mod_slug);
+if(is_array($get_data_from_slug)) {
+    $get_product_id = (int) $get_data_from_slug['id'];
+    $display_mode = 'show_product';
+}
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
+
+if(!isset($array_mod_slug[0])) {
+    $array_mod_slug[0] = '';
+}
+if(!isset($array_mod_slug[1])) {
+    $array_mod_slug[1] = '';
+}
 
 $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 if($this_page_categories[0] == 'all') {
@@ -200,7 +213,7 @@ $product_filter = array_values(array_column($product_filter, null, 'title'));
 foreach($all_categories as $cats) {
 
     if($page_contents['page_posts_categories'] != 'all') {
-        if (!in_array($cats['cat_id'], $this_page_categories)) {
+        if (!in_array($cats['cat_hash'], $this_page_categories)) {
             // skip this category
             continue;
         }
@@ -223,13 +236,14 @@ foreach($all_categories as $cats) {
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
         "cat_name" => $show_category_name,
-        "cat_class" => $cat_class
+        "cat_class" => $cat_class,
+        "cat_hash" => $cats['cat_hash']
     );
 
 
     if($cats['cat_name_clean'] == $array_mod_slug[0]) {
         // show only posts from this category
-        $products_filter['categories'] = $cats['cat_id'];
+        $products_filter['categories'] = $cats['cat_hash'];
         $display_mode = 'list_posts_category';
 
         if($array_mod_slug[1] == 'p') {
@@ -245,11 +259,6 @@ foreach($all_categories as $cats) {
 }
 
 
-
-
-
-
-
 /* pagination f.e. /p/2/ or /p/3/ .... */
 if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p') {
 
@@ -260,7 +269,8 @@ if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p') {
     } else {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");
-        header("Connection: close");	}
+        header("Connection: close");
+    }
 }
 
 /* we are on the product display page but we have no post id

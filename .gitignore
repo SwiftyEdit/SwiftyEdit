@@ -40,6 +40,12 @@ sitemap.xml
 /content/uploads/*
 !/content/uploads/index.html
 
+# payment addons
+!/content/modules/se_cash.pay
+/content/modules/se_cash.pay/pm_config.php
+!/content/modules/se_invoice.pay
+/content/modules/se_invoice.pay/pm_config.php
+
 !index.html
 
 # styles, except default #

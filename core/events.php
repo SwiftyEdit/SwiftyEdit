@@ -14,7 +14,7 @@ if($events_limit == '' || $events_limit < 1) {
 $events_filter = array();
 
 $str_status = '1';
-if($_SESSION['user_class'] == 'administrator') {
+if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 
@@ -34,7 +34,7 @@ $array_mod_slug = explode("/", $mod_slug);
 
 foreach($all_categories as $cats) {
 
-    $this_nav_cat_item = $tpl_nav_cats_item;
+    //$this_nav_cat_item = $tpl_nav_cats_item;
     $show_category_title = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
     $cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';
@@ -52,13 +52,14 @@ foreach($all_categories as $cats) {
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
         "cat_name" => $show_category_name,
-        "cat_class" => $cat_class
+        "cat_class" => $cat_class,
+        "cat_hash" => $cats['cat_hash']
     );
 
 
     if($cats['cat_name_clean'] == $array_mod_slug[0]) {
         // show only posts from this category
-        $posts_filter['categories'] = $cats['cat_id'];
+        $events_filter['categories'] = $cats['cat_hash'];
         $display_mode = 'list_posts_category';
 
         if($array_mod_slug[1] == 'p') {
@@ -81,7 +82,8 @@ if($array_mod_slug[0] == 'p') {
     } else {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");
-        header("Connection: close");	}
+        header("Connection: close");
+    }
 }
 
 /* we are on the event display page, but we have no post id

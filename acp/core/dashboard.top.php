@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * SwiftyEdit - backend main file
+ *
+ * global variables
+ * @var array $lang from language files
+ * @var string $languagePack
+ * @var string $lang_sign
+ * @var array $icon from icons.php
+ * @var array $se_prefs preferences
+ * @var string $hidden_csrf_token
+ * @var string $db_type
+ *
+ * @var array $se_check_messages set in dashboard.checks.php
+ *
+ * @var string $db_content
+ * @var string $db_user
+ * @var string $db_posts
+ */
+
 //prohibit unauthorized access
 require __DIR__.'/access.php';
 
@@ -252,22 +271,25 @@ for ($i = 0; $i < 5; $i++) {
         continue;
     }
 
-        $comment_time = @date("d.m.Y", intval($allComments[$i]['comment_time']));
+    $comment_time = @date("d.m.Y", intval($allComments[$i]['comment_time']));
+    if ($allComments[$i]['comment_text'] != '') {
         $comment_text = first_words(strip_tags(html_entity_decode($allComments[$i]['comment_text'])), 4);
-
-        $top5comments .= '<tr>';
-        $top5comments .= '<td>'.$comment_time.'</td>';
-        $top5comments .= '<td class="w-100">';
-        $top5comments .= '<h6 class="mb-0">' . $allComments[$i]['comment_author'] . ' '.$allComments[$i]['comment_type'].'</h6>';
-        $top5comments .= '<small>' . $comment_text . '</small>';
-        $top5comments .= '</td>';
-        $top5comments .= '<td class="text-end">';
-        $top5comments .= '<form class="inline" action="?tn=comments&sub=list#comid' . $allComments[$i]['comment_id'] . '" method="POST">';
-        $top5comments .= '<button class="btn btn-default btn-sm" name="editid" value="' . $allComments[$i]['comment_id'] . '">' . $icon['edit'] . '</button>';
-        $top5comments .= $hidden_csrf_token;
-        $top5comments .= '</form>';
-        $top5comments .= '</td>';
-        $top5comments .= '</tr>';
+    } else {
+        $comment_text = '';
+    }
+    $top5comments .= '<tr>';
+    $top5comments .= '<td>' . $comment_time . '</td>';
+    $top5comments .= '<td class="w-100">';
+    $top5comments .= '<h6 class="mb-0">' . $allComments[$i]['comment_author'] . ' ' . $allComments[$i]['comment_type'] . '</h6>';
+    $top5comments .= '<small>' . $comment_text . '</small>';
+    $top5comments .= '</td>';
+    $top5comments .= '<td class="text-end">';
+    $top5comments .= '<form class="inline" action="?tn=comments&sub=list#comid' . $allComments[$i]['comment_id'] . '" method="POST">';
+    $top5comments .= '<button class="btn btn-default btn-sm" name="editid" value="' . $allComments[$i]['comment_id'] . '">' . $icon['edit'] . '</button>';
+    $top5comments .= $hidden_csrf_token;
+    $top5comments .= '</form>';
+    $top5comments .= '</td>';
+    $top5comments .= '</tr>';
 }
 $top5comments .= '</table>';
 
@@ -305,8 +327,6 @@ $tpl_file = str_replace('{snippets_list}', $snippets_list, $tpl_file);
 $tpl_file = str_replace('{posts_list}', $top5posts, $tpl_file);
 $tpl_file = str_replace('{comments_list}', $top5comments, $tpl_file);
 $tpl_file = str_replace('{user_list}', $user_latest5, $tpl_file);
-$tpl_file = str_replace('{pages_stats}', $pages_stats, $tpl_file);
-$tpl_file = str_replace('{user_stats}', $user_stats, $tpl_file);
 
 /* tabs */
 $tpl_file = str_replace('{tab_pages}', $lang['nav_pages'], $tpl_file);
@@ -341,29 +361,50 @@ $tpl_file = str_replace('{val_cms_mail}', $se_prefs['prefs_mailer_adr'], $tpl_fi
 $tpl_file = str_replace('{val_cms_email_name}', $se_prefs['prefs_mailer_name'], $tpl_file);
 
 
-$btn_page_overview = '<a href="?tn=pages" class="btn btn-default btn-sm w-100">' . $icon['sitemap'] . '</a>';
+$btn_page_overview = '<a href="?tn=pages" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['nav_pages'] . '</a>';
 $btn_new_page = '<a href="?tn=pages&sub=new" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
 
 $btn_update_index = '<form action="?tn=dashboard" method="POST" class="d-inline"><button name="update_index" class="btn btn-default btn-sm w-100 text-nowrap">' . $icon['sync_alt'] . ' Index</button>' . $hidden_csrf_token . '</form>';
 $btn_delete_cache = '<form action="?tn=dashboard" method="POST"><button name="delete_cache" class="btn btn-default btn-sm w-100 text-nowrap">' . $icon['trash_alt'] . ' Cache</button>' . $hidden_csrf_token . '</form>';
 
-$btn_post_overview = '<a href="acp.php?tn=posts" class="btn btn-primary btn-sm w-100">' . $lang['tn_posts'] . '</a>';
-$btn_new_post = '<a href="acp.php?tn=posts&sub=edit" class="btn btn-primary btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
-$btn_comments_overview = '<a href="acp.php?tn=reactions" class="btn btn-primary btn-sm w-100">' . $lang['tn_comments'] . '</a>';
+$btn_snippets_overview = '<a href="?tn=pages&sub=snippets" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' Snippets</a>';
+$btn_snippets_new = '<form action="?tn=pages&sub=snippets" method="post" class="d-inline"><button class="btn btn-default btn-sm w-100" name="snip_id" value="n"><i class="bi bi-plus"></i> '.$lang['new'].'</button>'.$hidden_csrf_token.'</form>';
 
-$btn_user_overview = '<a href="acp.php?tn=user" class="btn btn-primary btn-sm w-100">' . $lang['list_user'] . '</a>';
-$btn_new_user = '<a href="acp.php?tn=user&sub=new" class="btn btn-primary btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new_user'] . '</a>';
+$btn_post_overview = '<a href="acp.php?tn=posts" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_posts'] . '</a>';
+$btn_new_post = '<a href="acp.php?tn=posts&sub=edit" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
+$btn_comments_overview = '<a href="?tn=inbox&sub=comments" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_comments'] . '</a>';
+
+$btn_products_overview = '<a href="?tn=shop&sub=shop-list" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_shop'] . '</a>';
+$btn_products_new = '<a href="?tn=shop&sub=edit&new=p" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
+
+$btn_events_overview = '<a href="?tn=events&sub=events-list" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_events'] . '</a>';
+$btn_events_new = '<a href="?tn=events&sub=edit&new=e" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
+
+$btn_user_overview = '<a href="acp.php?tn=user" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['list_user'] . '</a>';
+$btn_new_user = '<a href="acp.php?tn=user&sub=new" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new_user'] . '</a>';
+$btn_usergroups_overview = '<a href="?tn=user&sub=user-groups" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['nav_usergroups'] . '</a>';
 
 $tpl_file = str_replace('{btn_page_overview}', $btn_page_overview, $tpl_file);
 $tpl_file = str_replace('{btn_new_page}', $btn_new_page, $tpl_file);
 $tpl_file = str_replace('{btn_update_index}', $btn_update_index, $tpl_file);
 $tpl_file = str_replace('{btn_delete_cache}', $btn_delete_cache, $tpl_file);
 
-$tpl_file = str_replace('{btn_post_overview}', $btn_post_overview, $tpl_file);
-$tpl_file = str_replace('{btn_new_post}', $btn_new_post, $tpl_file);
+$tpl_file = str_replace('{btn_snippets_overview}', $btn_snippets_overview, $tpl_file);
+$tpl_file = str_replace('{btn_snippets_new}', $btn_snippets_new, $tpl_file);
+
+$tpl_file = str_replace('{btn_blog_overview}', $btn_post_overview, $tpl_file);
+$tpl_file = str_replace('{btn_blog_new}', $btn_new_post, $tpl_file);
+
+$tpl_file = str_replace('{btn_products_overview}', $btn_products_overview, $tpl_file);
+$tpl_file = str_replace('{btn_products_new}', $btn_products_new, $tpl_file);
+
+$tpl_file = str_replace('{btn_events_overview}', $btn_events_overview, $tpl_file);
+$tpl_file = str_replace('{btn_events_new}', $btn_events_new, $tpl_file);
+
 $tpl_file = str_replace('{btn_comments_overview}', $btn_comments_overview, $tpl_file);
 
 $tpl_file = str_replace('{btn_user_overview}', $btn_user_overview, $tpl_file);
-$tpl_file = str_replace('{btn_new_user}', $btn_new_user, $tpl_file);
+$tpl_file = str_replace('{btn_user_new}', $btn_new_user, $tpl_file);
+$tpl_file = str_replace('{btn_usergroups_overview}', $btn_usergroups_overview, $tpl_file);
 
 echo $tpl_file;

@@ -6,7 +6,7 @@ group: backend
 priority: 420
 ---
 
-# Shop
+# Produkt-Merkmale, Features und Optionen
 
 <kbd>Backend</kbd> <kbd>Shop</kbd> <kbd>Merkmale</kbd>
 

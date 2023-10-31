@@ -9,26 +9,26 @@ $secondary-dark: #978ba2;
 $success-dark: #8EA53C;
 $danger-dark: #f3362f;
 $warning-dark: #f68542;
-$info-dark: #A1A1BB;
+$info-dark: #a8a8d7;
 
 
 
-$primary-text-emphasis-dark:        tint-color($primary-dark, 40%);
-$secondary-text-emphasis-dark:      tint-color($secondary-dark, 40%);
-$success-text-emphasis-dark:        tint-color($success-dark, 40%);
-$info-text-emphasis-dark:           tint-color($info-dark, 40%);
-$warning-text-emphasis-dark:        tint-color($warning-dark, 40%);
-$danger-text-emphasis-dark:         tint-color($danger-dark, 40%);
+$primary-text-emphasis-dark:        lighten($primary-dark, 10%);
+$secondary-text-emphasis-dark:      lighten($secondary-dark, 10%);
+$success-text-emphasis-dark:        lighten($success-dark, 10%);
+$info-text-emphasis-dark:           lighten($info-dark, 15%);
+$warning-text-emphasis-dark:        lighten($warning-dark, 10%);
+$danger-text-emphasis-dark:         lighten($danger-dark, 10%);
 $light-text-emphasis-dark:          $gray-100;
 $dark-text-emphasis-dark:           $gray-300;
 
 
-$primary-bg-subtle-dark:            shade-color($primary-dark, 80%) !default;
-$secondary-bg-subtle-dark:          shade-color($secondary-dark, 80%) !default;
-$success-bg-subtle-dark:            shade-color($success-dark, 80%) !default;
-$info-bg-subtle-dark:               shade-color($info-dark, 80%) !default;
-$warning-bg-subtle-dark:            shade-color($warning-dark, 80%) !default;
-$danger-bg-subtle-dark:             shade-color($danger-dark, 80%) !default;
+$primary-bg-subtle-dark:            rgba($primary-dark, .3) !default;
+$secondary-bg-subtle-dark:          rgba($secondary-dark, .3) !default;
+$success-bg-subtle-dark:            rgba($success-dark, .3) !default;
+$info-bg-subtle-dark:               rgba($info-dark, .3) !default;
+$warning-bg-subtle-dark:            rgba($warning-dark, .3) !default;
+$danger-bg-subtle-dark:             rgba($danger-dark, .3) !default;
 $light-bg-subtle-dark:              $gray-800 !default;
 $dark-bg-subtle-dark:               mix($gray-800, $black) !default;
 
@@ -59,7 +59,7 @@ $body-tertiary-bg-dark:             mix($gray-800, $gray-900, 50%) !default;
 $body-emphasis-color-dark:          $white !default;
 $border-color-dark:                 $widget_border_color_dark !default;
 $border-color-translucent-dark:     rgba($white, .15) !default;
-$headings-color-dark:               inherit !default;
+$headings-color-dark:               $primary-dark !default;
 $link-color-dark:                   lighten($primary-dark, 20) !default;
 $link-hover-color-dark:             lighten($link-color-dark, 10) !default;
 $code-color-dark:                   lighten($code-color, 20%) !default;
@@ -79,6 +79,3 @@ $status-ghost-color-dark: #637a5c;
 $status-private-color-dark: #d9534f;
 $status-draft-color-dark: #989898;
 $status-redirect-color-dark: #078dfe;
-
-
-$font-family-sans-serif:      "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;

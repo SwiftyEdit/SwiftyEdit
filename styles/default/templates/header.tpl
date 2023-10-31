@@ -56,19 +56,17 @@
         {/if}
 
 
-        <div class="row">
+        <div class="row justify-content-center align-items-end text-center">
 
             {if {$page_logo} != ''}
-                <div class="col-lg-2 col-sm-3 text-center text-sm-start">
+                <div class="col-md-2 col-6 text-sm-start">
                     <a href="/" title="{$prefs_pagetitle}"><img src="{$page_logo}" alt="Logo" title="{$prefs_pagetitle}"
                                                                 class="img-fluid"></a>
                 </div>
             {/if}
 
-            <div class="col text-center text-sm-start">
-
-                <p class="h1 mb-0">{$prefs_pagetitle}</p>
-                <p class="h2">{$prefs_pagesubtitle}</p>
+            <div class="col-md-10 col-sm-12 text-sm-start d-none d-md-block">
+                <p class="h1 mb-0">{$prefs_pagetitle} <small>{$prefs_pagesubtitle}</small></p>
             </div>
         </div>
     </div>

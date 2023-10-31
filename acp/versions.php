@@ -1,4 +1,4 @@
 <?php
-$se_version_date = '2023-06-20';
-$se_version_title = '1.1.2';
-$se_version_build = '379';
+$se_version_date = '2023-10-27';
+$se_version_title = '1.2.0';
+$se_version_build = '395';

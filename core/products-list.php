@@ -24,7 +24,7 @@ $target_page = $db_content->select("se_pages", "page_permalink", [
     ]
 ]);
 
-if ($target_page[0] == '') {
+if (!isset($target_page[0]) OR $target_page[0] == '') {
     $target_page[0] = $swifty_slug;
 }
 
@@ -136,6 +136,14 @@ if($se_prefs['prefs_posts_products_cart'] == 2 OR $se_prefs['prefs_posts_product
 $posts_list = '';
 foreach ($get_products as $k => $post) {
 
+    if(!isset($get_products[$k]['id'])) {
+        continue;
+    }
+
+    if(!isset($get_products[$k]['author'])) {
+        $get_products[$k]['author'] = '';
+    }
+
     /* build data for template */
 
     $get_products[$k]['product_title'] = $get_products[$k]['title'];
@@ -145,7 +153,7 @@ foreach ($get_products as $k => $post) {
     /* post images */
     $first_post_image = '';
     $post_images = explode("<->", $get_products[$k]['images']);
-    if ($post_images[1] != "") {
+    if (isset($post_images[1]) AND $post_images[1] != "") {
         $get_products[$k]['product_img_src'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $post_images[1]);
     } else if ($se_prefs['prefs_shop_default_banner'] == "without_image") {
         $get_products[$k]['product_img_src'] = '';
@@ -157,11 +165,11 @@ foreach ($get_products as $k => $post) {
     $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$post_filename-" . $get_products[$k]['id'] . ".html";
 
 
-    $post_releasedate = date($prefs_dateformat, $get_products[$k]['releasedate']);
+    $post_releasedate = date($se_prefs['prefs_dateformat'], $get_products[$k]['releasedate']);
     $post_releasedate_year = date('Y', $get_products[$k]['releasedate']);
     $post_releasedate_month = date('m', $get_products[$k]['releasedate']);
     $post_releasedate_day = date('d', $get_products[$k]['releasedate']);
-    $post_releasedate_time = date($prefs_timeformat, $get_products[$k]['releasedate']);
+    $post_releasedate_time = date($se_prefs['prefs_timeformat'], $get_products[$k]['releasedate']);
 
     $get_products[$k]['releasedate'] = $post_releasedate;
 
@@ -173,7 +181,7 @@ foreach ($get_products as $k => $post) {
     $post_categories = explode('<->', $get_products[$k]['categories']);
     $category = array();
     foreach ($all_categories as $cats) {
-        if (in_array($cats['cat_id'], $post_categories)) {
+        if (in_array($cats['cat_hash'], $post_categories)) {
             $cat_href = '/' . $swifty_slug . $cats['cat_name_clean'] . '/';
             $category[] = array(
                 "cat_href" => $cat_href,
@@ -197,7 +205,7 @@ foreach ($get_products as $k => $post) {
         }
 
         if ($get_products[$k]['votings'] == 3) {
-            if ($_SESSION['user_nick'] == '') {
+            if (!isset($_SESSION['user_nick']) OR $_SESSION['user_nick'] == '') {
                 $voter_name = se_generate_anonymous_voter();
                 $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $voter_name, $voting_type);
             } else {
@@ -255,7 +263,7 @@ foreach ($get_products as $k => $post) {
     }
 
     /* item status */
-    if ($get_products[$k]['post_status'] == '2') {
+    if (isset($get_products[$k]['post_status']) AND $get_products[$k]['post_status'] == '2') {
         $get_products[$k]['draft_message'] = '<div class="alert alert-draft"><small>' . $lang['post_is_draft'] . '</small></div>';
         $get_products[$k]['product_css_classes'] = 'draft';
     }
@@ -305,7 +313,10 @@ $smarty->assign('show_products_list', $show_products_list);
 $smarty->assign('product_filter', $product_filter);
 
 $smarty->assign('show_pagination', $show_pagination);
-$smarty->assign('pagination', $pagination);
+if(isset($pagination)) {
+    $smarty->assign('pagination', $pagination);
+}
+
 
 $smarty->assign('show_shopping_cart', $show_shopping_cart);
 $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);

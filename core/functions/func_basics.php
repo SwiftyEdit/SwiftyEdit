@@ -117,11 +117,8 @@ function se_get_images_data($image,$parameters=NULL) {
 
 function se_get_files_data($file,$parameters=NULL) {
 
-	global $db_content;
-	global $se_template;
-	global $languagePack;
-    global $swifty_slug;
-	
+	global $db_content, $se_template, $languagePack, $swifty_slug;
+
 	if($parameters !== NULL) {
 		$parameter = parse_str(html_entity_decode($parameters),$output);
 	}
@@ -131,8 +128,8 @@ function se_get_files_data($file,$parameters=NULL) {
 	
 	$fileData = $db_content->get("se_media", "*", [
 			"AND" => [
-			"media_file[~]" => "%$file",
-			"media_lang" => "$languagePack"
+			    "media_file[~]" => "%$file",
+			    "media_lang" => "$languagePack"
 			]
 	]);
 
@@ -149,33 +146,34 @@ function se_get_files_data($file,$parameters=NULL) {
 	$tpl = str_replace('{$file_caption}', html_entity_decode($fileData['media_text']), $tpl);
 	$tpl = str_replace('{$file_license}', $fileData['media_license'], $tpl);
     $tpl = str_replace('{$file_version}', $fileData['media_version'], $tpl);
-	$tpl = str_replace('{$file_credits}', $fileData['media_credits'], $tpl);
+	$tpl = str_replace('{$file_credits}', $fileData['media_credit'], $tpl);
 	$tpl = str_replace('{$file_priority}', $fileData['media_priority'], $tpl);
-	$tpl = str_replace('{$file_link_class}', $aclass, $tpl);
-	$tpl = str_replace('{$file_class}', $iclass, $tpl);
-	
+    if($fileData['media_classes'] != '') {
+        $tpl = str_replace('{$file_class}', $fileData['media_classes'], $tpl);
+    }
 	return $tpl;
 	
 }
 
 /**
  * @param string $mod name of addon
- * @param mixed $params
+ * @param mixed|null $params
  * @return mixed
  */
 
-function se_global_mod_snippets($mod,$params=NULL) {
+function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
+
+    $mod_str = '';
 
 	if($params !== NULL) {
-		$parameter = parse_str(html_entity_decode($params));
+		$parameter = parse_str(html_entity_decode($params),$output);
 	}
 	
-  if(is_file(SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php')) {
-		include SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php';
-  }
+    if(is_file(SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php')) {
+        include SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php';
+    }
 	
 	return $mod_str;
-	
 }
 
 
@@ -189,7 +187,7 @@ function se_global_mod_snippets($mod,$params=NULL) {
 	 
 function text_parser($text) {
 
-	global $shortcodes;
+	global $shortcodes, $languagePack;
 
 	if(!is_string($text)) {
 		return;
@@ -231,6 +229,7 @@ function text_parser($text) {
     $text = preg_replace_callback(
         '/\[snippet\](.*?)\[\/snippet\]/si',
         function ($m) {
+            global $languagePack;
             se_store_admin_helper('s',$m[1]);
             return se_get_textlib($m[1],$languagePack,'content');
         },
@@ -240,7 +239,7 @@ function text_parser($text) {
     $text = preg_replace_callback(
         '/\[snippet=(.*?)\](.*?)\[\/snippet\]/si',
         function ($m) {
-
+            global $languagePack;
             $tpl = 'content';
 
             if($m[2] == 'tpl') {
@@ -255,6 +254,7 @@ function text_parser($text) {
     $text = preg_replace_callback(
         '/\[snippet=(.*?)\]/si',
         function ($m) {
+            global $languagePack;
             se_store_admin_helper('s',$m[1]);
             return se_get_textlib($m[1],$languagePack,'content');
         },
@@ -549,12 +549,13 @@ function record_log($log_trigger, $log_entry, $log_priority = '0') {
 
     $db_content->insert("se_logs", [
 		"time" => "$log_time",
-		"trigger" => "$log_trigger",
+		"source" => "$log_trigger",
 		"entry" => "$log_entry",
 		"priority" => $log_priority
 	]);
 
 }
+
 
 
 

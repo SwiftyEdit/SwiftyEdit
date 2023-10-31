@@ -52,6 +52,13 @@ $lang += [
     'label_form_status_edit' => 'Edit E-Mail',
     'label_subject' => 'Subject',
     'label_text' => 'Text',
+    'label_status_public' => 'Public',
+    'label_status_ghost' => 'Invisible',
+    'label_status_private' => 'Private',
+    'label_status_draft' => 'Draft',
+    'label_status_redirect' => 'Redirect',
+    'label_search' => 'Search',
+
     'btn_send_email' => 'Send E-Mail',
     'btn_close' => 'Close',
 
@@ -78,7 +85,8 @@ $lang += [
     'msg_no_update_available' => 'The installed version is up to date.',
     'msg_update_modus_activated' => '<b>The update mode is active</b><br>The frontend cannot be accessed at the moment.',
     'msg_after_update' => 'Please go to the <a href="/install/">install</a> directory and check if the database has been updated correctly.',
-    'btn_choose_this_update' => 'Select this update'
+    'btn_choose_this_update' => 'Select this update',
+    'alert_filter_updated' => 'The filters have been updated'
 ];
 
 /* tn_ = topNav */

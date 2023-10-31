@@ -64,6 +64,7 @@ echo '</div>';
 echo '</div>';
 
 $all_filters = se_get_product_filter_groups('all');
+$get_all_categories = se_get_categories();
 
 if($show_form !== false)  {
 
@@ -82,7 +83,7 @@ if($show_form !== false)  {
     /* select for group language */
     $select_group_language  = '<select name="filter_group_lang" class="custom-select form-control">';
     foreach($lang_codes as $lang_code) {
-        $select_group_language .= "<option value='$lang_code'".($filter_lang == "$lang_code" ? 'selected="selected"' :'').">$lang_code</option>";
+        $select_group_language .= "<option value='$lang_code'".($group_data['filter_lang'] == "$lang_code" ? 'selected="selected"' :'').">$lang_code</option>";
     }
     $select_group_language .= '</select>';
 
@@ -91,6 +92,9 @@ if($show_form !== false)  {
     foreach($all_filters as $k => $v) {
         $title = $v['filter_title'];
         $id = $v['filter_id'];
+        if(isset($_GET['parent'])) {
+            $value_data['filter_parent_id'] = (int) $_GET['parent'];
+        }
         $select_parent_id .= "<option value='$id'".($value_data['filter_parent_id'] == "$id" ? 'selected="selected"' :'').">$title</option>";
     }
     $select_parent_id .= '</select>';
@@ -109,7 +113,6 @@ if($show_form !== false)  {
     $select_input_type .= '</select>';
 
     /* select categories */
-    $categories = se_get_categories();
     if(isset($group_data['filter_categories'])) {
         $get_categories = explode(",",$group_data['filter_categories']);
         $checked_all = '';
@@ -122,18 +125,18 @@ if($show_form !== false)  {
     $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="all" id="cat_id_all" '.$checked_all.'>';
     $cats .= '<label class="form-check-label" for="cat_id_all">'.$lang['label_all_categories'].'</label>';
     $cats .= '</div><hr>';
-    foreach($categories as $k => $v) {
+    foreach($get_all_categories as $k => $v) {
 
         $check_this = '';
         if(is_array($get_categories)) {
-            if (in_array($v['cat_id'], $get_categories)) {
+            if (in_array($v['cat_hash'], $get_categories)) {
                 $check_this = 'checked';
             }
         }
 
         $cats .= '<div class="form-check">';
-        $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="'.$v['cat_id'].'" id="cat_id'.$k.'" '.$check_this.'>';
-        $cats .= '<label class="form-check-label" for="cat_id'.$k.'">'.$v['cat_id'].' '.$v['cat_name'].'</label>';
+        $cats .= '<input class="form-check-input" type="checkbox" name="filter_cats[]" value="'.$v['cat_hash'].'" id="cat_id'.$k.'" '.$check_this.'>';
+        $cats .= '<label class="form-check-label" for="cat_id'.$k.'">'.$v['cat_name'].'</label>';
         $cats .= '</div>';
     }
 
@@ -146,6 +149,7 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{select_input_type}',"$select_input_type",$form_tpl);
         $form_tpl = str_replace('{select_categories}',"$cats",$form_tpl);
         $form_tpl = str_replace('{id}',"",$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"d-none",$form_tpl);
     }
     if($mode == 'edit_group') {
         $form_tpl = str_replace('{val_group_name}',$group_data['filter_title'],$form_tpl);
@@ -155,6 +159,7 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{select_input_type}',"$select_input_type",$form_tpl);
         $form_tpl = str_replace('{select_categories}',"$cats",$form_tpl);
         $form_tpl = str_replace('{id}',$get_data_id,$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"",$form_tpl);
     }
     if($mode == 'new_value') {
         $form_tpl = str_replace('{select_parent_group}',"$select_parent_id",$form_tpl);
@@ -162,6 +167,7 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{value_name}','',$form_tpl);
         $form_tpl = str_replace('{value_description}','',$form_tpl);
         $form_tpl = str_replace('{id}',"",$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"d-none",$form_tpl);
     }
     if($mode == 'edit_value') {
         $form_tpl = str_replace('{value_name}',$value_data['filter_title'],$form_tpl);
@@ -169,11 +175,13 @@ if($show_form !== false)  {
         $form_tpl = str_replace('{value_priority}',$value_data['filter_priority'],$form_tpl);
         $form_tpl = str_replace('{select_parent_group}',"$select_parent_id",$form_tpl);
         $form_tpl = str_replace('{id}',$get_data_id,$form_tpl);
+        $form_tpl = str_replace('{btn_delete_class}',"",$form_tpl);
     }
 
     $form_tpl = str_replace('{mode}',"$mode",$form_tpl);
     $form_tpl = str_replace('{csrf_token}',$_SESSION['token'],$form_tpl);
     $form_tpl = str_replace('{btn_submit_text}',"$btn_submit_text",$form_tpl);
+    $form_tpl = str_replace('{btn_delete_text}',$lang['button_delete'],$form_tpl);
     $form_tpl = str_replace('{btn_close}',$lang['btn_close'],$form_tpl);
 
     echo $form_tpl;
@@ -183,18 +191,21 @@ if($show_form !== false)  {
     // list all filter
 
     echo '<table class="table">';
+    echo '<thead>';
     echo '<tr>';
-    echo '<td>Lang</td>';
-    echo '<td>Prio</td>';
-    echo '<td>Type</td>';
-    echo '<td>Group</td>';
-    echo '<td>Values</td>';
+    echo '<th>'.$icon['translate'].'</th>';
+    echo '<th>'.$icon['bars'].'</th>';
+    echo '<th>Type</th>';
+    echo '<th>Group</th>';
+    echo '<th>Values</th>';
     echo '</tr>';
+    echo '</thead>';
     foreach($all_filters as $k => $v) {
 
         $group_title = $v['filter_title'];
         $group_id = $v['filter_id'];
         $group_prio = $v['filter_priority'];
+        $group_categories = explode(",",$v['filter_categories']);
 
         $type = '';
         if($v['filter_input_type'] == '1') {
@@ -213,6 +224,13 @@ if($show_form !== false)  {
         echo '<td>'.$type.'</td>';
         echo '<td>';
         echo '<a href="?tn=shop&sub=shop-filter&edit_group='.$group_id.'" class="btn btn-default">'.$group_title.'</a>';
+        // show categories
+        echo '<br>';
+        foreach($get_all_categories as $k => $v) {
+            if (in_array($v['cat_hash'], $group_categories)) {
+                echo '<span class="badge badge-se text-opacity-50">'.$v['cat_name'].'</span>';
+            }
+        }
         echo '</td>';
         echo '<td>';
         foreach($get_filter_items as $item) {
@@ -220,6 +238,7 @@ if($show_form !== false)  {
             echo '<span class="badge">'.$item['filter_priority'].'</span> '.$item['filter_title'];
             echo '</a> ';
         }
+        echo '<a href="?tn=shop&sub=shop-filter&new=value&parent='.$group_id.'" class="btn btn-sm btn-default text-success">+</a>';
         echo '</td>';
         echo '</tr>';
 

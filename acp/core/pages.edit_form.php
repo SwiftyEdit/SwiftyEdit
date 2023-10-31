@@ -277,6 +277,27 @@ echo '<input class="form-control" type="text" autocomplete="off" name="page_perm
 echo '</div>';
 echo '</div>';
 
+echo '<label for="set_canonical_url">Canonical URL</label>';
+echo '<div class="input-group mb-3">';
+echo '<input class="form-control" type="text" autocomplete="off" name="page_canonical_url" id="set_canonical_url" value="'.$page_canonical_url.'">';
+echo ' <button class="btn btn-default" type="button" id="addCanonical"><i class="bi bi-arrow-clockwise"></i></button>';
+echo '</div>';
+
+if($page_translation_urls != '') {
+    $page_translation_urls = html_entity_decode($page_translation_urls);
+    $translation_urls_array = json_decode($page_translation_urls,true);
+}
+
+foreach($active_lang as $k => $v) {
+
+    $ls = $v['sign'];
+
+    echo '<div class="input-group mb-3">';
+    echo '<span class="input-group-text"><i class="bi bi-translate me-1"></i> '.$ls.'</span>';
+    echo '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url" value="'.$translation_urls_array[$ls].'">';
+    echo '</div>';
+}
+
 ?>
 <script>
 $(function() {
@@ -289,6 +310,13 @@ $(function() {
             title: check_url
         });
 	});
+
+    $("#addCanonical").click(function(){
+        var permalink = $("#set_permalink").val();
+        var canonical_url = se_base_url+permalink;
+        $('#set_canonical_url').val(canonical_url);
+    });
+
 });
 </script>
 <?php
@@ -493,6 +521,9 @@ echo '</div>'; /* EOL tab_meta */
 /* tab addons */
 echo '<div class="tab-pane fade" id="addons">';
 
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+
 /* Select Modul */
 
 $select_page_modul = '<select name="page_modul" class="custom-select form-control" id="selMod">';
@@ -503,6 +534,11 @@ for($i=0;$i<$cnt_mods;$i++) {
 	$selected = "";
 	$mod_name = $all_mods[$i]['name'];
 	$mod_folder = $all_mods[$i]['folder'];
+
+    if(str_ends_with($mod_folder, '.pay')) {
+        // skip payment addons
+        continue;
+    }
 
 	if($mod_folder == $page_modul) {
 		$selected = 'selected';
@@ -532,6 +568,25 @@ for($i=0;$i<$cnt_mods;$i++) {
         echo '</fieldset>';
     }
 }
+
+echo '</div>';
+echo '<div class="col-md-6">';
+// show hooks, if available
+
+$page_update_hooks = se_get_hook('page_updated');
+if (count($page_update_hooks) > 0) {
+
+    echo '<div class="card p-3">';
+
+    foreach ($page_update_hooks as $hook) {
+        echo $hook;
+    }
+
+    echo '</div>';
+}
+
+echo '</div>';
+echo '</div>';
 
 
 echo '</div>'; /* EOL tab addons */
@@ -688,12 +743,12 @@ echo '</div><hr>';
 for($i=0;$i<count($categories);$i++) {
 
     $checked_cat = '';
-    if(in_array($categories[$i]['cat_id'], $page_cats_array)) {
+    if(in_array($categories[$i]['cat_hash'], $page_cats_array)) {
         $checked_cat = 'checked';
     }
 
     echo '<div class="form-check">';
-    echo '<input type="checkbox" class="form-check-input checkbox-categories" id="cat'.$i.'" name="page_post_categories[]" value="'.$categories[$i]['cat_id'].'" '.$checked_cat.'>';
+    echo '<input type="checkbox" class="form-check-input checkbox-categories" id="cat'.$i.'" name="page_post_categories[]" value="'.$categories[$i]['cat_hash'].'" '.$checked_cat.'>';
     echo '<label class="form-check-label" for="cat'.$i.'">'.$categories[$i]['cat_name'].' <small>('.$categories[$i]['cat_lang'].')</small></label>';
     echo '</div>';
 }
@@ -1065,14 +1120,14 @@ $arr_checked_categories = explode(",", $page_categories);
 foreach($all_categories as $cats) {
 
 	$checked_cat = '';
-  if(in_array($cats['cat_id'], $arr_checked_categories)) {
+  if(in_array($cats['cat_hash'], $arr_checked_categories)) {
 		$checked_cat = "checked";
 	} else {
 		$checked_cat = "";
 	}
 
 	$checkbox_set_cat .= '<div class="checkbox"><label>';
- 	$checkbox_set_cat .= '<input type="checkbox" '.$checked_cat.' name="set_page_categories[]" value="'.$cats['cat_id'].'"> '. $cats['cat_name'];
+ 	$checkbox_set_cat .= '<input type="checkbox" '.$checked_cat.' name="set_page_categories[]" value="'.$cats['cat_hash'].'"> '. $cats['cat_name'];
  	$checkbox_set_cat .= '</label></div>';	
 	
 }

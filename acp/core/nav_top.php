@@ -9,11 +9,20 @@ echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="
 
 
 /**
+ * Filter modal
+ */
+
+echo '<button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">';
+echo 'Filter ';
+echo '<span class="badge bg-secondary">'.$cnt_global_filters.'</span>';
+echo '</button>';
+
+
+/**
  * choose language
  */
 
 $lang_key = array_search($_SESSION['lang'],$all_langs);
-$selected_lang = '';
 $selected_lang_flag = '<img src="../core/lang/'.$_SESSION['lang'].'/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
 
 echo '<div class="dropstart me-1">';
@@ -21,11 +30,10 @@ echo '<div class="dropstart me-1">';
 echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$selected_lang_flag.'</a>';
 
 echo '<ul class="dropdown-menu">';
-for($i=0;$i<count($all_langs);$i++) {
-    $lang_flag = '<img src="../core/lang/'.$all_langs[$i]['lang_folder'].'/flag.png" style="vertical-align: baseline; width:24px; height:auto;">';
-    echo '<li><a class="dropdown-item" href="acp.php?set_lang='.$all_langs[$i]['lang_folder'].'">'.$lang_flag.' '.$all_langs[$i]['lang_desc'].'</a></li>';
+foreach($active_lang as $k => $v) {
+    $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
+    echo '<li><a class="dropdown-item" href="acp.php?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a></li>';
 }
-
 echo '</ul>';
 
 echo '</div>';

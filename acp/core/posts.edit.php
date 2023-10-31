@@ -137,11 +137,13 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 		$db_posts->update("se_posts", $inputs, [
 			"post_id" => $post_id
 		]);
+        record_log($_SESSION['user_nick'],"updated post id: $post_id","3");
 	} else {
 		$db_posts->insert("se_posts", $inputs);
 		$post_id = $db_posts->id();
 		$modus = 'update';
 		$submit_btn = '<input type="submit" class="btn btn-success w-100" name="save_post" value="'.$lang['update'].'">';
+        record_log($_SESSION['user_nick'],"new post id: $post_id","6");
 	}
 	
 	/* update the rss url */
@@ -229,11 +231,11 @@ for($i=0;$i<count($cats);$i++) {
 	$category = $cats[$i]['cat_name'];
 	$array_categories = explode("<->", $post_data['post_categories']);
 	$checked = "";
-	if(in_array($cats[$i]['cat_id'], $array_categories)) {
+	if(in_array($cats[$i]['cat_hash'], $array_categories)) {
 	    $checked = "checked";
 	}
 	$checkboxes_cat .= '<div class="form-check">';
-	$checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="post_categories[]" value="'.$cats[$i]['cat_id'].'" '.$checked.'>';
+	$checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="post_categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
 	$checkboxes_cat .= '<label class="form-check-label" for="cat'.$i.'">'.$category.' <small>('.$cats[$i]['cat_lang'].')</small></label>';
 	$checkboxes_cat .= '</div>';
 }

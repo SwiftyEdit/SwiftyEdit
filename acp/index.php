@@ -66,9 +66,10 @@ if(is_file('../config_database.php')) {
 
 
 
-
+require 'core/functions.php';
 require '../core/functions/func_userdata.php';
 require '../core/lang/'.$languagePack.'/dict-backend.php';
+$login = '';
 
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 
@@ -77,7 +78,7 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 		$remember = true;
 	}
 		
-	se_user_login($_POST['login_name'],$_POST['login_psw'],$acp=TRUE,$remember);
+	$login = se_user_login($_POST['login_name'],$_POST['login_psw'],$acp=TRUE,$remember);
 }
 ?>
 
@@ -112,6 +113,14 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 			<div class="icon">
 				<img src="images/swiftyedit_icon.svg" class="img-fluid">
 			</div>
+
+			<?php
+			if($login == 'failed') {
+			 echo '<div class="alert alert-danger">';
+			 echo $lang['msg_login_false'];
+			 echo '</div>';
+			}
+			?>
 
 			<form action="index.php" method="post" class="">
 					<div class="row mb-2">

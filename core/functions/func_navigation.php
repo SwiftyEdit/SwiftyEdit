@@ -177,6 +177,10 @@ function breadcrumbs_menu($num){
 
     global $se_nav;
 
+    if($num == '') {
+        return;
+    }
+
     $points_of_num = substr_count($num, '.');
     $count_result = count($se_nav);
     $bc = array();
@@ -214,6 +218,9 @@ function breadcrumbs_menu($num){
 }
 
 function left_string($string) {
+    if($string == '') {
+        return;
+    }
   $string = explode(".", $string);
   return $string[0];
 }

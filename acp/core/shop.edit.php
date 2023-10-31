@@ -4,10 +4,11 @@ error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 require __DIR__.'/access.php';
 
 if((isset($_POST['delete_product'])) && is_numeric($_POST['delete_product'])) {
-
-    $cnt_delete_product = se_delete_product($_POST['delete_product']);
+    $delete_product_id = (int) $_POST['delete_product'];
+    $cnt_delete_product = se_delete_product($delete_product_id);
     if($cnt_delete_product > 0) {
         echo '<div class="alert alert-success">'.$lang['msg_post_deleted'].' ('.$cnt_delete_product.')</div>';
+        record_log($_SESSION['user_nick'],"delete product id: $delete_product_id","6");
     }
 }
 
@@ -102,7 +103,9 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
 
 
     if($_POST['slug'] == "") {
-        $slug = "$date_year/$date_month/$date_day/$clean_title/";
+        $slug = $clean_title.'/';
+    } else {
+        $slug = se_clean_permalink($_POST['slug']);
     }
 
     $categories = '';
@@ -189,16 +192,19 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
             "id" => $id
         ]);
         $form_header_message = $lang['db_record_changed'];
+        record_log($_SESSION['user_nick'],"updated product id: $id","6");
     } else if($modus == "save_variant") {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
+        record_log($_SESSION['user_nick'],"new product variant id: $id","6");
     } else {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
+        record_log($_SESSION['user_nick'],"new product id: $id","6");
     }
 
     /* update the rss url */
@@ -276,11 +282,11 @@ for($i=0;$i<$cnt_cats;$i++) {
     }
 
     $checked = "";
-    if(in_array($cats[$i]['cat_id'], $array_categories)) {
+    if(in_array($cats[$i]['cat_hash'], $array_categories)) {
         $checked = "checked";
     }
     $checkboxes_cat .= '<div class="form-check">';
-    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_id'].'" '.$checked.'>';
+    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
     $checkboxes_cat .= '<label class="form-check-label" for="cat'.$i.'">'.$category.' <small>('.$cats[$i]['cat_lang'].')</small></label>';
     $checkboxes_cat .= '</div>';
 }
@@ -501,10 +507,20 @@ $select_shipping_category .= '</select>';
 $all_filters = se_get_product_filter_groups('all');
 $get_product_filter = json_decode($product_data['filter'],true);
 
+
 $filter_list = '';
 foreach($all_filters as $k => $v) {
+
+    $group_categories = explode(",",$v['filter_categories']);
+    $filter_cats = '';
+    foreach($cats as $key => $value) {
+        if (in_array($value['cat_hash'], $group_categories)) {
+            $filter_cats .= '<span class="badge badge-se text-opacity-50">'.$value['cat_name'].'</span>';
+        }
+    }
+
     $filter_list .= '<div class="card mb-1">';
-    $filter_list .= '<div class="card-header">'.$v['filter_title'].'</div>';
+    $filter_list .= '<div class="card-header">'.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
     $filter_list .= '<div class="card-body">';
     $get_filter_items = se_get_product_filter_values($v['filter_id']);
     foreach($get_filter_items as $filter_item) {
@@ -861,6 +877,9 @@ $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
 
 $form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
 $form_tpl = str_replace('{teaser}', $product_data['teaser'], $form_tpl);
+
+$form_tpl = str_replace('{link_name}', $product_data['link_name'], $form_tpl);
+$form_tpl = str_replace('{link_classes}', $product_data['link_classes'], $form_tpl);
 
 $form_tpl = str_replace('{text}', $product_data['text'], $form_tpl);
 $form_tpl = str_replace('{text_label}', $product_data['text_label'], $form_tpl);

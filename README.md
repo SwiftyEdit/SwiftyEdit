@@ -1,8 +1,11 @@
-![swiftyedit](https://user-images.githubusercontent.com/5982156/211496033-fc3d3fb3-123b-46cf-b100-05a7e0372922.svg)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/5982156/211496033-fc3d3fb3-123b-46cf-b100-05a7e0372922.svg" width="350" alt="SwiftyEdit Logo">
+</p>
 
 # SwiftyEdit CMS
 
-SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or SQLite. Build websites, blogs, webshops and much more for you or your customers.
+SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite. 
+Build websites, blogs, webshops and much more for you or your customers.
 
 * License: GNU GENERAL PUBLIC LICENSE Version 3
 * Official Site: https://swiftyedit.org
@@ -10,12 +13,13 @@ SwiftyEdit is a Open Source Content Management System based on PHP and MySQL or 
 :star: give us a star, it motivates us a lot.
 
 ### Usermanual and Developer Documentation
+
 * https://swiftyedit.org/documentation/
 * https://swiftyedit.org/de/dokumentation/
 
 #### Technical requirements
 
-+ Software: PHP 7.3+ ... 8.x
++ Software: PHP 8+
 + Web Server: Apache with PDO/SQLite Module and mod_rewrite
 + Database: SQLite, MySQL 5.6+ (optional)
 

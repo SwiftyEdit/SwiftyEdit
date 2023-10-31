@@ -16,7 +16,7 @@ $(function () {
         body_class: 'mce-content-body',
         plugins: [
             'lists', 'advlist', 'autolink', 'link', 'image', 'charmap', 'preview', 'anchor',
-            'searchreplace', 'visualblocks', 'code', 'fullscreen', 'wordcount', 'template',
+            'searchreplace', 'visualblocks', 'code', 'fullscreen', 'wordcount',
             'media', 'table'
         ],
         toolbar1: "styles | bold italic underline subscript superscript removeformat | alignleft aligncenter alignright | bullist numlist | table | link unlink anchor image | fullscreen visualblocks  code",
@@ -27,23 +27,6 @@ $(function () {
         link_list: "core/linklist.php",
         convert_urls: false,
 
-        templates: [
-            {
-                title: 'row [6|6]',
-                description: 'Zwei Spalten (Bootsrap)',
-                url: '../styles/default/templates-editor/bs_2cols.html'
-            },
-            {
-                title: 'row [4|4|4]',
-                description: 'Drei Spalten (Bootsrap)',
-                url: '../styles/default/templates-editor/bs_3cols.html'
-            },
-            {
-                title: 'row [3|3|3|3]',
-                description: 'Vier Spalten (Bootsrap)',
-                url: '../styles/default/templates-editor/bs_4cols.html'
-            }
-        ],
         style_formats: [
             {
                 title: 'Headlines', items: [

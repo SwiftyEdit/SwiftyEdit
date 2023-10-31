@@ -31,23 +31,59 @@
 
 
 					</div>
-					<div class="tab-pane fade" id="snippets_list">
+					<div class="tab-pane fade h-100" id="snippets_list">
+						<div class="d-flex flex-column h-100">
 						{snippets_list}
+							<div class="row mt-auto g-1">
+								<div class="col-2">{btn_snippets_overview}</div>
+								<div class="col-2">{btn_snippets_new}</div>
+							</div>
+						</div>
 					</div>
-					<div class="tab-pane fade" id="post_list">
-						{posts_list}
+					<div class="tab-pane fade h-100" id="post_list">
+						<div class="d-flex flex-column h-100">
+							{posts_list}
+							<div class="row mt-auto g-1">
+								<div class="col-2">{btn_blog_overview}</div>
+								<div class="col-2">{btn_blog_new}</div>
+							</div>
+						</div>
 					</div>
-					<div class="tab-pane fade" id="products_list">
-						{products_list}
+					<div class="tab-pane fade h-100" id="products_list">
+						<div class="d-flex flex-column h-100">
+							{products_list}
+							<div class="row mt-auto g-1">
+								<div class="col-2">{btn_products_overview}</div>
+								<div class="col-2">{btn_products_new}</div>
+							</div>
+						</div>
 					</div>
-					<div class="tab-pane fade" id="events_list">
-						{events_list}
+					<div class="tab-pane fade h-100" id="events_list">
+						<div class="d-flex flex-column h-100">
+							{events_list}
+							<div class="row mt-auto g-1">
+								<div class="col-2">{btn_events_overview}</div>
+								<div class="col-2">{btn_events_new}</div>
+							</div>
+						</div>
 					</div>
-					<div class="tab-pane fade" id="comment_list">
-						{comments_list}
+					<div class="tab-pane fade h-100" id="comment_list">
+						<div class="d-flex flex-column h-100">
+							{comments_list}
+							<div class="row mt-auto g-1">
+								<div class="col-2">{btn_comments_overview}</div>
+							</div>
+						</div>
 					</div>
-					<div class="tab-pane fade" id="user_list">
-						{user_list}
+					<div class="tab-pane fade h-100" id="user_list">
+						<div class="d-flex flex-column h-100">
+							{user_list}
+							<div class="row mt-auto g-1">
+								<div class="col-2">{btn_user_overview}</div>
+								<div class="col-2">{btn_user_new}</div>
+								<div class="col-2">{btn_usergroups_overview}</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

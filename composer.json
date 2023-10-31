@@ -15,7 +15,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "7.3"
+      "php": "8.0"
     },
     "vendor-dir": "core/vendor"
   },
@@ -24,6 +24,7 @@
     "erusev/parsedown": "^1.8.0-beta-7",
     "phpmailer/phpmailer": "^v6.8.0",
     "smarty/smarty": "^v4.3.1",
-    "mustangostang/spyc": "^0.6.3"
+    "mustangostang/spyc": "^0.6.3",
+    "guzzlehttp/guzzle": "^7.0"
   }
 }

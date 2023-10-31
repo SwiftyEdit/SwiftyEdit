@@ -15,7 +15,7 @@ $icon = [
     "at" => '<i class="bi bi-at"></i>',
 
     "ban" => '<i class="bi bi-slash-circle"></i>',
-    "bars" => '<i class="bi bi-chart-bar"></i>',
+    "bars" => '<i class="bi bi-bar-chart"></i>',
     "bookmark" => '<i class="bi bi-bookmark"></i>',
     "bookmarks_fill" => '<i class="bi bi-bookmarks-fill"></i>',
 
@@ -150,5 +150,6 @@ $icon = [
     "user_slash" => '<i class="bi bi-person-dash"></i>',
     "users" => '<i class="bi bi-people"></i>',
     
-    "wrench" => '<i class="bi bi-wrench"></i>'
+    "wrench" => '<i class="bi bi-wrench"></i>',
+    "x" => '<i class="bi bi-x"></i>'
 ];

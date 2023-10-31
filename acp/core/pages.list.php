@@ -1,5 +1,8 @@
 <?php
-//error_reporting(E_ALL ^E_NOTICE);
+/**
+ * SwiftyEdit backend
+ * list pages
+ */
 //prohibit unauthorized access
 require 'core/access.php';
 
@@ -17,6 +20,8 @@ if(isset($_POST['sorting_single_pages_dir'])) {
 if(isset($_POST['sorting_single_pages'])) {
     if($_POST['sorting_single_pages'] == 'linkname') {
         $_SESSION['sorting_single_pages'] = 'page_linkname';
+    } else if($_POST['sorting_single_pages'] == 'priority') {
+        $_SESSION['sorting_single_pages'] = 'page_priority';
     } else {
         $_SESSION['sorting_single_pages'] = 'page_lastedit';
     }
@@ -28,24 +33,25 @@ if(!isset($_SESSION['sorting_single_pages_dir'])) {
     $_SESSION['sorting_single_pages_dir'] = $sort_single_pages_direction;
 }
 
-unset($result);
-/* $_SESSION[filter_string] was defined in inc.pages.php */
-$sql = "SELECT page_id, page_thumbnail, page_language, page_linkname, page_title, page_meta_description, page_sort, page_lastedit, page_lastedit_from, page_status, page_template, page_modul, page_authorized_users, page_permalink, page_redirect, page_redirect_code, page_labels, page_psw
-		FROM se_pages ".
-		$_SESSION['filter_string'].
-		" ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC, ".$_SESSION['sorting_single_pages']." ".$_SESSION['sorting_single_pages_dir']." ";
+$pages_filter['languages'] = implode("-",$global_filter_languages);
+$pages_filter['types'] = $_SESSION['checked_type_string'];
+$pages_filter['status'] = implode("-",$global_filter_status);
+$pages_filter['labels'] = implode("-",$global_filter_label);
+$pages_filter['text'] = $_SESSION['pages_text_filter'];
+$pages_filter['sort_by'] = $_SESSION['sorting_single_pages'];
+$pages_filter['sort_direction'] = $_SESSION['sorting_single_pages_dir'];
 
-$result = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+$pages = se_get_pages($pages_filter);
 
 $x=0;
-foreach($result as $p) {
+foreach($pages as $p) {
 	$this_page_id = 'p'.$p['page_id'];
 	$count_comments = $db_content->query("Select Count(*) FROM se_comments WHERE comment_parent_id LIKE '$this_page_id' ")->fetch();
-	$result[$x]['cnt_comments'] = $count_comments[0];
+    $pages[$x]['cnt_comments'] = $count_comments[0];
 	$x++;
 }
 
-$cnt_result = count($result);
+$cnt_pages = count($pages);
 
 if(!isset($_SESSION['switchPageList']) OR $_SESSION['switchPageList'] == '') {
 	$_SESSION['switchPageList'] = 'both';
@@ -118,7 +124,7 @@ echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
 
-$sorted_pages = se_list_pages($result,"sorted");
+$sorted_pages = se_list_pages($pages,"sorted");
 echo $sorted_pages;
 
 
@@ -147,7 +153,7 @@ echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
 
-$single_pages = se_list_pages($result,"single");
+$single_pages = se_list_pages($pages,"single");
 echo $single_pages;
 
 echo '</div>';
@@ -170,7 +176,16 @@ echo '<div class="card">';
 echo '<div class="card-header">FILTER</div>';
 echo '<div class="card-body">';
 
-echo $kw_form;
+
+
+echo '<form action="?tn=pages&sub=list" method="POST" class="ms-auto">';
+echo '<div class="input-group">';
+echo '<span class="input-group-text">'.$icon['search'].'</span>';
+echo '<input class="form-control" type="text" name="pages_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo $hidden_csrf_token;
+echo '</div>';
+echo '</form>';
+
 
 if(isset($btn_remove_keyword)) {
 	echo '<div class="d-inline">';
@@ -178,41 +193,73 @@ if(isset($btn_remove_keyword)) {
 	echo '</div><hr>';
 }
 
-echo $nav_btn_group;
-
 $sel_value = [
     'lastedit' => '',
     'linkname' => '',
+    'priority' => '',
     'sort_asc' => '',
     'sort_desc' => ''
 ];
 if($_SESSION['sorting_single_pages'] == 'page_lastedit') {
     $sel_value['lastedit'] = 'selected';
+} else if ($_SESSION['sorting_single_pages'] == 'page_priority') {
+    $sel_value['priority'] = 'selected';
 } else {
     $sel_value['linkname'] = 'selected';
 }
 if($_SESSION['sorting_single_pages_dir'] == 'ASC') {
-    $sel_value['sort_asc'] = 'selected';
+    $sel_value['sort_asc'] = 'active';
 } else {
-    $sel_value['sort_desc'] = 'selected';
+    $sel_value['sort_desc'] = 'active';
 }
 
-echo '<div class="card mt-2">';
-echo '<div class="card-header">'.$lang['h_page_sort'].'</div>';
-echo '<div class="card-body">';
-echo '<form action="?tn=pages&sub=pages-list" method="post" class="d-inline ms-auto">';
-echo '<select class="form-control" name="sorting_single_pages" onchange="this.form.submit()">';
+
+echo '<div class="my-3">';
+echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
+echo '<form action="?tn=pages&sub=pages-list" method="post" class="dirtyignore">';
+
+echo '<div class="row g-1">';
+echo '<div class="col-md-8">';
+
+echo '<select class="form-control form-select-sm" name="sorting_single_pages" onchange="this.form.submit()">';
 echo '<option value="linkname" '.$sel_value['linkname'].'>'.$lang['btn_sort_linkname'].'</option>';
+echo '<option value="priority" '.$sel_value['priority'].'>'.$lang['label_priority'].'</option>';
 echo '<option value="lastedit" '.$sel_value['lastedit'].'>'.$lang['btn_sort_edit'].'</option>';
 echo '</select>';
 
-echo '<select class="form-control" name="sorting_single_pages_dir" onchange="this.form.submit()">';
-echo '<option value="asc" '.$sel_value['sort_asc'].'>'.$lang['btn_sort_asc'].'</option>';
-echo '<option value="desc" '.$sel_value['sort_desc'].'>'.$lang['btn_sort_desc'].'</option>';
-echo '</select>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div class="btn-group d-flex">';
+echo '<button name="sorting_single_pages_dir" value="asc" title="'.$lang['btn_sort_asc'].'" class="btn btn-sm btn-default w-100 '.$sel_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
+echo '<button name="sorting_single_pages_dir" value="desc" title="'.$lang['btn_sort_desc'].'" class="btn btn-sm btn-default w-100 '.$sel_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
+echo '</div>';
+echo '</div>';
+echo '</div>';
 
 echo $hidden_csrf_token;
 echo '</form>';
+echo '</div>';
+
+
+echo '<div class="card mt-1">';
+echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
+echo '<div class="card-body">';
+echo '<div class="scroll-container">';
+$get_keywords = se_get_pages_keywords();
+echo '<form action="?tn=pages&sub=pages-list" method="POST" class="form-inline ms-auto dirtyignore">';
+foreach($get_keywords as $k => $v) {
+
+    if((is_array($all_filter) && in_array("$k",$all_filter))) {
+        echo '<button name="pages_text_filter" class="btn btn-default active btn-xs mb-1 disabled">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+    } else {
+        echo '<button name="pages_text_filter" value="'.$k.'" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+
+    }
+
+}
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
 echo '</div>'; // card-body
 echo '</div>'; // card
 
@@ -237,7 +284,7 @@ echo '</div>'; // .app-container
 
 function se_list_pages($data,$type="sorted") {
 
-    global $item_template;
+    global $item_template, $global_filter_status;
     global $lang;
     global $icon;
     global $hidden_csrf_token;
@@ -280,12 +327,18 @@ function se_list_pages($data,$type="sorted") {
         $page_redirect = $data[$i]['page_redirect'];
         $page_modul = $data[$i]['page_modul'];
         $page_cnt_comments = $data[$i]['cnt_comments'];
-        $page_labels = explode(',',$data[$i]['page_labels']);
-        $page_thumbs = explode('<->',$data[$i]['page_thumbnail']);
         $pi = $data[$i]['page_hits'];
+        if($data[$i]['page_labels'] != '') {
+            $page_labels = explode(',',$data[$i]['page_labels']);
+        }
+
+        $page_thumbs = array();
+        if($data[$i]['page_thumbnail'] != '') {
+            $page_thumbs = explode('<->',$data[$i]['page_thumbnail']);
+        }
 
         $page_thumb_src = 'images/swiftyedit-page-icon.png';
-        if($page_thumbs[0] != '') {
+        if(isset($page_thumbs) AND $page_thumbs[0] != '') {
             $page_thumb_src = $page_thumbs[0];
         }
 
@@ -321,19 +374,15 @@ function se_list_pages($data,$type="sorted") {
         $indent = ($points_of_page)*10 . 'px';
 
         if($page_status == "public") {
-            //$btn = 'ghost-btn-public';
             $item_class = 'page-list-item-public';
             $status_label = $lang['f_page_status_puplic'];
         } elseif($page_status == "ghost") {
-            //$btn = 'ghost-btn-ghost';
             $item_class = 'page-list-item-ghost';
             $status_label = $lang['f_page_status_ghost'];
         } elseif($page_status == "private") {
-            //$btn = 'ghost-btn-private';
             $item_class = 'page-list-item-private';
             $status_label = $lang['f_page_status_private'];
         } elseif($page_status == "draft") {
-            //$btn = 'ghost-btn-draft';
             $item_class = 'page-list-item-draft';
             $status_label = $lang['f_page_status_draft'];
         }
@@ -389,7 +438,7 @@ function se_list_pages($data,$type="sorted") {
         }
 
         if($page_redirect != '') {
-            if($_SESSION['checked_redirect'] != "checked") {
+            if(!in_array("5",$global_filter_status)) {
                 continue;
             }
         }

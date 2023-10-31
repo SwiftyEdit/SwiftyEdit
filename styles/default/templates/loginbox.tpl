@@ -24,6 +24,13 @@
                     <input class="btn btn-outline-secondary" type="submit" name="login" id="psw"
                            value="{$button_login}">
                 </div>
+
+                {if $failed_login != ''}
+                    <div class="alert alert-danger my-1">
+                        {$failed_login}
+                    </div>
+                {/if}
+
                 <p>{$show_forgotten_psw_link}</p>
             </form>
 

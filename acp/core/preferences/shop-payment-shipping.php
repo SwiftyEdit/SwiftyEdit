@@ -55,52 +55,52 @@ echo '<h5 class="heading-line">'.$lang['label_payment_methods'].'</h5>';
 
 echo '<table class="table">';
 echo '<tr>';
-echo '<td>Active</td>';
-echo '<td>Type</td>';
-echo '<td>'.$lang['label_payment_costs'].'</td>';
+echo '<td>'.$lang['label_status'].'</td>';
+echo '<td>'.$lang['label_type'].'</td>';
+echo '<td>'.$lang['label_description'].'</td>';
 echo '</tr>';
 
-echo '<tr>';
-echo '<td>';
-$check_bt = ($prefs_pm_bank_transfer == 1) ? 'checked' : '';
-echo '<input class="form-check-input" type="checkbox" name="prefs_pm_bank_transfer" value="1" id="checkBankTransfer" '.$check_bt.'>';
-echo '</td>';
-echo '<td>';
-echo '<label class="form-check-label" for="checkBankTransfer">'.$lang['label_payment_bank_transfer'].'</label>';
-echo '</td>';
-echo '<td>';
-echo '<input type="text" class="form-control" name="prefs_payment_costs_bt" value="'.$prefs_payment_costs_bt.'">';
-echo '</td>';
-echo '</tr>';
+// list payment addons
+$get_payment_addons = se_get_payment_addons();
+$cnt_payment_addons = count($get_payment_addons);
 
-echo '<tr>';
-echo '<td>';
-$check_invoice = ($prefs_pm_invoice == 1) ? 'checked' : '';
-echo '<input class="form-check-input" type="checkbox" name="prefs_pm_invoice" value="1" id="checkInvoice" '.$check_invoice.'>';
-echo '</td>';
-echo '<td>';
-echo '<label class="form-check-label" for="checkInvoice">'.$lang['label_payment_invoice'].'</label>';
-echo '</td>';
-echo '<td>';
-echo '<input type="text" class="form-control" name="prefs_payment_costs_invoice" value="'.$prefs_payment_costs_invoice.'">';
-echo '</td>';
-echo '</tr>';
+// get stored payment addons from $prefs_payment_addons (json)
+$active_payment_addons = json_decode($prefs_payment_addons,true);
+if(!is_array($active_payment_addons)) {
+    $active_payment_addons = array();
+}
 
-echo '<tr>';
-echo '<td>';
-$check_cash = ($prefs_pm_cash == 1) ? 'checked' : '';
-echo '<input class="form-check-input" type="checkbox" name="prefs_pm_cash" value="1" id="checkCash" '.$check_cash.'>';
-echo '</td>';
-echo '<td>';
-echo '<label class="form-check-label" for="checkCash">'.$lang['label_payment_cash'].'</label>';
-echo '</td>';
-echo '<td>';
-echo '<input type="text" class="form-control" name="prefs_payment_costs_cash" value="'.$prefs_payment_costs_cash.'">';
-echo '</td>';
-echo '</tr>';
+if($cnt_payment_addons > 0) {
+
+    foreach ($get_payment_addons as $payment_addon) {
+        echo '<tr>';
+
+        $addon_dir = SE_CONTENT . '/modules/' . $payment_addon;
+        $addon_info_file = $addon_dir . '/info.inc.php';
+        $mod = array();
+        if (is_file("$addon_info_file")) {
+            include $addon_info_file;
+        }
+
+        $addon_link = '?tn=addons&sub='.$payment_addon.'&a=start';
+        $addon_id = basename($payment_addon,".pay");
+
+        $check = '';
+        if(in_array("$payment_addon",$active_payment_addons)) {
+            $check = 'checked';
+        }
+
+        echo '<td>';
+        echo '<input class="form-check-input" type="checkbox" name="payment_addons[]" value="'.$payment_addon.'" id="payment_'.$addon_id.'" '.$check.'>';
+        echo '</td>';
+        echo '<td><a href="'.$addon_link.'">' . $addon_id . '</a></td>';
+        echo '<td>' . $mod['description'] . '</td>';
+        echo '</tr>';
+    }
+
+}
 
 echo '</table>';
-
 
 echo '<input type="submit" class="btn btn-success" name="update_pm_shipping" value="'.$lang['update'].'">';
 echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

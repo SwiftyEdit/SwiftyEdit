@@ -156,6 +156,10 @@ function move_new_files() {
     /* at first, the install folder */
     copy_recursive("update/extract/$get_file/install","../install");
 
+    /* payment addons */
+    copy_recursive("update/extract/$get_file/content/modules/se_invoice.pay","../content/modules/se_invoice.pay");
+    copy_recursive("update/extract/$get_file/content/modules/se_cash.pay","../content/modules/se_cash.pay");
+
     /* now copy the other files and directories */
     foreach($new_files as $value) {
 
@@ -230,6 +234,7 @@ function compare_versions() {
     global $remote_versions_array;
     global $se_base_url;
     global $icon;
+    global $se_environment;
 
     /**
      * from versions.php
@@ -291,6 +296,10 @@ function compare_versions() {
         echo '<a class="btn btn-danger btn-sm ml-auto" href="?tn=system&sub=update&a=start&source=alpha">'.$lang['btn_choose_this_update'].'</a>';
         $update_alpha = $lang['update_msg_alpha'];
     }
+    if($se_environment == 'd') {
+        echo '<a class="btn btn-danger btn-sm ml-auto" href="?tn=system&sub=update&a=start&source=alpha">install alpha again</a>';
+    }
+
     echo '</li>';
     echo '</ul>';
     echo '</div>';

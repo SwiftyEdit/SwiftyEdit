@@ -1,6 +1,8 @@
 <title>{$page_title|htmlentities}</title>
 <meta charset="utf-8">
 
+<base href="{$se_base_href}">
+
 <meta name="robots" content="{$page_meta_robots}" />
 <meta name="author" content="{$page_meta_author}" />
 {if $page_meta_description != ''}
@@ -13,11 +15,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-
+{if $page_canonical_url != ''}
+	<link rel=“canonical“ href="{$page_canonical_url}" />
+{/if}
 <link rel="icon" href="{$page_favicon}">
 <link rel="alternate" type="application/rss+xml" title="{$prefs_pagetitle} | RSS" href="/rss.php" />
 
-{$page_meta_enhanced}
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -38,7 +41,7 @@
 <meta property="twitter:image" content="{$page_thumbnail}">
 
 <!-- CSS -->
-<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/default.css?v=311" />
+<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/default.css" />
 
 <!-- JavaScript -->
 <script type="text/javascript" src="{$se_inc_dir}/styles/{$se_template}/js/main.min.js"></script>
