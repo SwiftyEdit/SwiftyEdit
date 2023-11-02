@@ -256,9 +256,11 @@ function se_start_user_session($ud) {
 	$_SESSION['user_hash'] = md5($ud['user_nick']);
 	
 	/* CSRF Protection */
-	$token = md5(uniqid(rand(), TRUE));
-	$_SESSION['token']      = $token;
-	$_SESSION['token_time'] = time();
+    if(empty($_SESSION['token'])) {
+        $token = md5(uniqid(rand(), TRUE));
+        $_SESSION['token'] = $token;
+        $_SESSION['token_time'] = time();
+    }
 	
 	$arr_drm = explode("|", $ud['user_drm']);
 	

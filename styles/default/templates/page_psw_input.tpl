@@ -9,5 +9,6 @@
 				<input type="submit" name="send" class="btn btn-success btn-block" value="{$button_send}">
 			</div>
 		</div>
+		{$hidden_csrf_token}
 	</form>
 </fieldset>

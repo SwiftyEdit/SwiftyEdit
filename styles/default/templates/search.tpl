@@ -6,6 +6,6 @@
             </div>
         </div>
         <hr class="shadow">
+        {$hidden_csrf_token}
     </form>
 </div>
-

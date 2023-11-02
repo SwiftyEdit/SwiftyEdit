@@ -24,6 +24,7 @@
         <textarea class="form-control" id="requestcomment" name="buyer_comment">{$buyer_comment}</textarea>
     </div>
     <button type="submit" class="btn btn-success" name="send_request" value="send">{$lang_btn_send_order_request}</button>
+    {$hidden_csrf_token}
 </form>
 
 </div>

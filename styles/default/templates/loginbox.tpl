@@ -32,6 +32,7 @@
                 {/if}
 
                 <p>{$show_forgotten_psw_link}</p>
+                {$hidden_csrf_token}
             </form>
 
 			{if $show_register_link != ''}

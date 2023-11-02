@@ -18,6 +18,6 @@
 		
 				<input class="btn btn-success" type="submit" name="ask_for_psw" value="{$button_send}">
 			</div>
-	
+		{$hidden_csrf_token}
 	</fieldset>
 </form>

@@ -55,7 +55,8 @@ example for links:
 
                 </div>
             {/foreach}
-    </div>
     <input type="hidden" name="set_custom_filters" value="send">
+    {$hidden_csrf_token}
     </form>
+    </div>
 {/if}

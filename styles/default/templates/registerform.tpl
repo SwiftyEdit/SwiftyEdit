@@ -95,7 +95,7 @@
 		
 		
 <input class="btn btn-success mt-3 mb-3" type="submit" name="send_registerform" value="{$lang_button_send_register}">
-		
+	{$hidden_csrf_token}
 
 </form>
 {/nocache}
