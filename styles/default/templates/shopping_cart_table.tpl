@@ -38,6 +38,7 @@
                             <input type="number" name="cart_product_amount" value="{$item.amount}" class="form-control"
                                    onchange="this.form.submit()">
                             <input type="hidden" name="cart_item_key" value="{$item.cart_id}">
+                            {$hidden_csrf_token}
                         </form>
                     </div>
                 </div>
@@ -61,6 +62,7 @@
                 <form action="{$shopping_cart_uri}" method="POST">
                     <button type="submit" class="btn btn-link link-danger" name="remove_from_cart"
                             value="{$item.cart_id}"><i class="bi bi-trash"></i></button>
+                    {$hidden_csrf_token}
                 </form>
             </td>
         </tr>
@@ -88,6 +90,7 @@
                         <label class="form-check-label" for="id_{$pm.key}">{$pm.title} ({$currency} {$pm.cost})</label>
                     </div>
                 {/foreach}
+                {$hidden_csrf_token}
             </form>
         </td>
         <td class="text-end">{$currency} {$cart_payment_costs}</td>
@@ -165,6 +168,7 @@
                     </div>
                 </div>
             </div>
+            {$hidden_csrf_token}
         </form>
     {/if}
 {/if}

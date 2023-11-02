@@ -92,7 +92,7 @@
                         {if $value.show_shopping_cart == true}
                             <form action="{$form_action}" method="POST" class="pt-1">
                                 <button class="btn btn-outline-success w-100" name="add_to_cart" value="{$value.product_id}">{$btn_add_to_cart}</button>
-                                <input type="hidden" name="csrf_token" value="{$csrf_token}">
+                                {$hidden_csrf_token}
                             </form>
                         {/if}
                     </div>

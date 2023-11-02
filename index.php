@@ -33,9 +33,21 @@ $mod_slug = '';
 
 const SE_SECTION = "frontend";
 
-if(empty($_SESSION['visitor_csrf_token'])) {
-	$_SESSION['visitor_csrf_token'] = md5(uniqid(rand(), TRUE));
+if(empty($_SESSION['token'])) {
+	$_SESSION['token'] = md5(uniqid(rand(), TRUE));
+    $_SESSION['token_time'] = time();
 }
+
+/* stop all $_POST actions if csrf token is empty or invalid */
+if(!empty($_POST)) {
+    if(empty($_POST['csrf_token'])) {
+        die('Error: CSRF Token is empty');
+    }
+    if($_POST['csrf_token'] !== $_SESSION['token']) {
+        die('Error: CSRF Token is invalid');
+    }
+}
+
 
 /**
  * if there is no database config we start the installer
@@ -335,6 +347,9 @@ if($se_prefs['prefs_smarty_compile_check'] == 1) {
 } else {
 	$smarty->compile_check = false;
 }
+
+$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+$smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
 
 
 /* reset of the user-defined theme */

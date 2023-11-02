@@ -61,6 +61,7 @@
 											</div>
 											<input type="hidden" name="order" value="{$order.nbr}">
 											<input type="hidden" name="pos" value="{$product.pos}">
+											{$hidden_csrf_token}
 										</form>
 										{/if}
 										{* we provide no preview, but user can download the file  *}
@@ -69,6 +70,7 @@
 												<button type="submit" class="btn btn-sm btn-primary" name="download_user_file">Download</button>
 												<input type="hidden" name="order" value="{$order.nbr}">
 												<input type="hidden" name="pos" value="{$product.pos}">
+												{$hidden_csrf_token}
 											</form>
 										{/if}
 									</td>
@@ -80,12 +82,14 @@
 											<form action="{$order_page_uri}" method="POST" class="d-inline">
 												<button class="btn btn-primary" type="submit" name="dl_p_file" value="{$product.post_id}"><i class="bi bi-download"></i> DOWNLOAD</button>
 												<input type="hidden" name="order_id" value="{$order.nbr}">
+												{$hidden_csrf_token}
 											</form>
 										{/if}
 										{if $product.dl_file_ext != '' AND $order.status_payment == '2'}
 											<form action="{$order_page_uri}" method="POST" class="d-inline">
 												<button class="btn btn-primary" type="submit" name="dl_p_file_ext" value="{$product.post_id}"><i class="bi bi-cloud-download"></i> DOWNLOAD</button>
 												<input type="hidden" name="order_id" value="{$order.nbr}">
+												{$hidden_csrf_token}
 											</form>
 										{/if}
 										

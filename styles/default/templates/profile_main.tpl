@@ -55,6 +55,7 @@
 			<input class="btn btn-primary" type="submit" name="update_address_data" value="{$lang_button_update}">
 		</div>
 	</div>
+	{$hidden_csrf_token}
 </form>
 
 <form class="form-horizontal" id="form_ba_address" action="{$form_url}" method="POST">
@@ -124,7 +125,7 @@
 		</div>
 	</div>
 
-
+	{$hidden_csrf_token}
 </form>
 
 <form class="form-horizontal" id="form_psw_data" action="{$form_url}" method="POST">
@@ -148,6 +149,7 @@
 		<input class="btn btn-primary" type="submit" name="update_psw_data" value="{$lang_button_update}">
 	</div>
 	</div>
+	{$hidden_csrf_token}
 </form>
 
 <form class="form-horizontal" id="form_email_data" action="{$form_url}" method="POST">
@@ -176,6 +178,7 @@
 		<input class="btn btn-primary" type="submit" name="update_email_data" value="{$lang_button_update}">
 	</div>
 </div>
+	{$hidden_csrf_token}
 </form>
 
 
@@ -185,7 +188,6 @@
 
 <!-- Avatar -->
 <form id="profileform" action="{$form_url}" method="post" enctype="multipart/form-data">
-
 
 	<div class="card mb-3">
 		<div class="card-header">{$lang_legend_avatar}</div>
@@ -212,7 +214,7 @@
 
 </div>
 </div>
-
+	{$hidden_csrf_token}
 </form>
 
 
@@ -229,6 +231,7 @@
 
 <input class="btn btn-danger btn-small" type="submit" onclick="return confirm('{$msg_confirm_delete_account}')" name="delete_my_account" value="{$lang_button_delete}">
 </fieldset>
+	{$hidden_csrf_token}
 </form>
 
 </div>

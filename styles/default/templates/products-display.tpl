@@ -74,7 +74,7 @@
                             <hr>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
                         </div>
-                        <input type="hidden" name="csrf_token" value="{$csrf_token}">
+                        {$hidden_csrf_token}
 
                     </form>
                 </div>
@@ -273,6 +273,7 @@
                 <input type="hidden" name="csrf_token" value="{$csrf_token}">
             </div>
         </div>
+            {$hidden_csrf_token}
         </form>
     {/if}
 
