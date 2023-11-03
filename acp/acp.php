@@ -379,7 +379,7 @@ if (isset($set_acptheme)) {
                  <?php include 'core/' . $maininc . '.php'; ?>
             </div>
             <div class="" id="collapseSupport">
-                <?php include 'core/support.php'; ?>
+                <?php include 'core/docs.php'; ?>
             </div>
         </div>
     </div>

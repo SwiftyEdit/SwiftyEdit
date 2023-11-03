@@ -22,4 +22,4 @@ oder nach Status, Sprache oder Labels filtern.
 ---
 Weitere Informationen:
 
-* Labels {link=tip-labels.md}
+* Labels {link=tooltips/tip-labels.md}
