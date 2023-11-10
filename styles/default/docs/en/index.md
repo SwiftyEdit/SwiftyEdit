@@ -14,10 +14,5 @@ This will reset all changes every time.
 You can duplicate the theme, rename it, and then make changes. The theme is under the
 __GNU General Public License 3__ and can therefore be changed as desired.
 
-### Dependencies
-
-* Bootstrap
-* popper.js
-* featherlight
-* jquery
-* js-cookie
+You can find all frameworks and tools used in the `package.json` file,
+You can find the SCSS files in the `src` folder.

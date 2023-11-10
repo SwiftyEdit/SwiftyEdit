@@ -14,11 +14,5 @@ Dadurch werden alle Änderungen jedes mal zurückgesetzt.
 Du kannst das Theme duplizieren, umbenennen und dann Änderungen vornehmen. Das Theme steht unter der 
 __GNU General Public License 3__ und darf somit beliebig verändert werden.
 
-
-### Dependencies
-
-* Bootstrap
-* popper.js
-* featherlight
-* jquery
-* js-cookie
+Alle verwendeten Frameworks und Tools findest Du in der Datei `package.json`, 
+die SCSS Dateien findest Du im Ordner `src`.
