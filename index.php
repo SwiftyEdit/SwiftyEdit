@@ -348,10 +348,6 @@ if($se_prefs['prefs_smarty_compile_check'] == 1) {
 	$smarty->compile_check = false;
 }
 
-$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-$smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
-
-
 /* reset of the user-defined theme */
 if(isset($_POST['reset_theme'])) {
 	unset($_SESSION['prefs_template'],$_SESSION['prefs_template_stylesheet']);
@@ -586,6 +582,9 @@ if(is_file('styles/'.$se_template.'/php/options.php')) {
 
 $smarty->assign("p","$p");
 $smarty->assign("se_include_path", SE_INCLUDE_PATH);
+
+$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+$smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
 
 $se_page_url = $se_base_url;
 $se_base_href = $se_base_url;

@@ -6,5 +6,4 @@
 	<button class="btn btn-success" type="submit" name="download" value="{$file_src}">
 		<i class="bi-arrow-down-circle"></i> Download
 	</button>
-	{$hidden_csrf_token}
 </form>
