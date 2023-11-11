@@ -3,7 +3,6 @@ error_reporting(E_ALL ^E_WARNING ^E_NOTICE);
 //prohibit unauthorized access
 require 'core/access.php';
 
-
 /* save default language */
 if(isset($_POST['save_prefs_language'])) {
 
@@ -79,7 +78,7 @@ if(isset($_POST['delete_smarty_cache'])) {
     se_delete_smarty_cache('all');
 }
 
-if(isset($_POST)) {
+if(!empty($_POST)) {
     /* read the preferences again */
     $se_get_preferences = se_get_preferences();
 
@@ -97,14 +96,13 @@ if(isset($_POST)) {
 
 
 
-
 /**
  * Domain
  */
 
-$prefs_cms_domain_input = "<input class='form-control' type='text' name='prefs_cms_domain' value='$prefs_cms_domain'>";
-$prefs_cms_ssl_domain_input = "<input class='form-control' type='text' name='prefs_cms_ssl_domain' value='$prefs_cms_ssl_domain'>";
-$prefs_cms_base_input = "<input class='form-control' type='text' name='prefs_cms_base' value='$prefs_cms_base'>";
+$prefs_cms_domain_input = '<input class="form-control" type="text" name="prefs_cms_domain" value="'.$se_prefs['prefs_cms_domain'].'">';
+$prefs_cms_ssl_domain_input = '<input class="form-control" type="text" name="prefs_cms_ssl_domain" value="'.$se_prefs['prefs_cms_ssl_domain'].'">';
+$prefs_cms_base_input = '<input class="form-control" type="text" name="prefs_cms_base" value="'.$se_prefs['prefs_cms_base'].'">';
 
 echo '<form action="?tn=system&sub=general&file=general-system" method="POST" class="form-horizontal">';
 echo tpl_form_control_group('',$lang['prefs_cms_domain'],$prefs_cms_domain_input);
@@ -151,7 +149,7 @@ foreach($timezones as $key => $value) {
     }
 
     $selected = '';
-    if($prefs_timezone == $value) {
+    if($se_prefs['prefs_timezone'] == $value) {
         $selected = 'selected';
     }
 
@@ -175,7 +173,7 @@ echo '<select class="form-control" name="prefs_dateformat">';
 foreach($date_formats as $dates) {
 
     $selected = '';
-    if($prefs_dateformat == $dates) {
+    if($se_prefs['prefs_dateformat'] == $dates) {
         $selected = 'selected';
     }
 
@@ -195,7 +193,7 @@ echo '<select class="form-control" name="prefs_timeformat">';
 foreach($time_formats as $times) {
 
     $selected = '';
-    if($prefs_timeformat == $times) {
+    if($se_prefs['prefs_timeformat'] == $times) {
         $selected = 'selected';
     }
 
@@ -220,37 +218,37 @@ echo '<form action="?tn=system&sub=general&file=general-system" method="POST" cl
 
 $prefs_maintenance_input = [
     "input_name" => "prefs_maintenance_code",
-    "input_value" => $prefs_maintenance_code,
+    "input_value" => $se_prefs['prefs_maintenance_code'],
     "label" => $lang['label_maintenance_code']
 ];
 echo tpl_form_input_text($prefs_maintenance_input);
 
-if($prefs_usertemplate == '') {
-    $prefs_usertemplate = 'off';
+if($se_prefs['prefs_usertemplate'] == '') {
+    $se_prefs['prefs_usertemplate'] = 'off';
 }
 echo '<div class="form-check">';
-echo '<input type="radio" class="form-check-input" id="usertpl_off" name="prefs_usertemplate" value="off" '.($prefs_usertemplate == "off" ? 'checked' :'').'>';
+echo '<input type="radio" class="form-check-input" id="usertpl_off" name="prefs_usertemplate" value="off" '.($se_prefs['prefs_usertemplate'] == "off" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="usertpl_off">'.$lang['f_prefs_userstyles_off'].'</label>';
 echo '</div>';
 echo '<div class="form-check">';
-echo '<input type="radio" class="form-check-input" id="usertpl_on" name="prefs_usertemplate" value="on" '.($prefs_usertemplate == "on" ? 'checked' :'').'>';
+echo '<input type="radio" class="form-check-input" id="usertpl_on" name="prefs_usertemplate" value="on" '.($se_prefs['prefs_usertemplate'] == "on" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="usertpl_on">'.$lang['f_prefs_userstyles_on'].'</label>';
 echo '</div>';
 echo '<div class="form-check">';
-echo '<input type="radio" class="form-check-input" id="usertpl_overwrite" name="prefs_usertemplate" value="overwrite" '.($prefs_usertemplate == "overwrite" ? 'checked' :'').'>';
+echo '<input type="radio" class="form-check-input" id="usertpl_overwrite" name="prefs_usertemplate" value="overwrite" '.($se_prefs['prefs_usertemplate'] == "overwrite" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="usertpl_overwrite">'.$lang['f_prefs_userstyles_overwrite'].'</label>';
 echo '</div>';
 
 echo '<hr>';
 
 echo '<div class="form-group form-check mt-3">';
-echo '<input type="checkbox" class="form-check-input" id="cache" name="prefs_smarty_cache" '.($prefs_smarty_cache == "1" ? 'checked' :'').'>';
+echo '<input type="checkbox" class="form-check-input" id="cache" name="prefs_smarty_cache" '.($se_prefs['prefs_smarty_cache'] == "1" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="cache">'.$lang['cache'].'</label>';
 echo '</div>';
 
 
 echo '<div class="form-group form-check">';
-echo '<input type="checkbox" class="form-check-input" id="compile" name="prefs_smarty_compile_check" '.($prefs_smarty_compile_check == "1" ? 'checked' :'').'>';
+echo '<input type="checkbox" class="form-check-input" id="compile" name="prefs_smarty_compile_check" '.($se_prefs['prefs_smarty_compile_check'] == "1" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="compile">'.$lang['compile_check'].'</label>';
 echo '</div>';
 
@@ -262,7 +260,7 @@ $complete_size = readable_filesize($cache_size+$compile_size);
 echo '<div class="input-group mb-3">';
 echo '<label class="form-label" for="cache_lifetime">'.$lang['cache_lifetime'].'</label>';
 echo '<div class="input-group mb-3">';
-echo '<input class="form-control" type="text" id="cache_lifetime" name="prefs_smarty_cache_lifetime" value="'.$prefs_smarty_cache_lifetime.'">';
+echo '<input class="form-control" type="text" id="cache_lifetime" name="prefs_smarty_cache_lifetime" value="'.$se_prefs['prefs_smarty_cache_lifetime'].'">';
 echo '<button class="btn btn-primary" type="submit" name="delete_smarty_cache">('.$complete_size.') '.$lang['delete_cache'].'</button>';
 echo '</div>';
 echo '</div>';
@@ -298,7 +296,7 @@ $select_default_language = '<select name="prefs_default_language" class="form-co
 foreach($get_all_languages as $langs) {
 
     $selected = "";
-    if($prefs_default_language == $langs['lang_folder']) {
+    if($se_prefs['prefs_default_language'] == $langs['lang_folder']) {
         $selected = "selected";
     }
 
