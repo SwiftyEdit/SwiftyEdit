@@ -59,7 +59,7 @@ if(isset($_POST['save_prefs_upload'])) {
 }
 
 
-if(isset($_POST)) {
+if(!empty($_POST)) {
     /* read the preferences again */
     $se_get_preferences = se_get_preferences();
 
@@ -80,21 +80,21 @@ echo '<form action="?tn=system&sub=general&file=general" method="POST" class="fo
 
 $input_page_name = [
     "input_name" => "prefs_pagename",
-    "input_value" => $prefs_pagename,
+    "input_value" => $se_prefs['prefs_pagename'],
     "label" => $lang['f_prefs_pagename']
 ];
 
 
 $input_page_title = [
     "input_name" => "prefs_pagetitle",
-    "input_value" => $prefs_pagetitle,
+    "input_value" => $se_prefs['prefs_pagetitle'],
     "label" => $lang['f_prefs_pagetitle']
 ];
 
 
 $input_page_subtitle = [
     "input_name" => "prefs_pagesubtitle",
-    "input_value" => $prefs_pagesubtitle,
+    "input_value" => $se_prefs['prefs_pagesubtitl'],
     "label" => $lang['f_prefs_pagesubtitle']
 ];
 
@@ -112,7 +112,7 @@ echo '</div>';
 echo '</div>';
 
 
-$prefs_pagedescription_input = "<textarea class='form-control' name='prefs_pagedescription'>$prefs_pagedescription</textarea>";
+$prefs_pagedescription_input = '<textarea class="form-control" name="prefs_pagedescription">'.$se_prefs['prefs_pagedescription'].'</textarea>';
 echo tpl_form_control_group('',$lang['f_prefs_pagedescription'],$prefs_pagedescription_input);
 
 
@@ -120,12 +120,12 @@ echo tpl_form_control_group('',$lang['f_prefs_pagedescription'],$prefs_pagedescr
 
 $toggle_btn_publisher .= '<span class="input-group-text">'.$lang['f_prefs_publisher_mode'].'</span>';
 $toggle_btn_publisher .= '<span class="input-group-text">';
-$toggle_btn_publisher .= '<input type="checkbox" name="prefs_publisher_mode" '.($prefs_publisher_mode == "overwrite" ? 'checked' :'').'>';
+$toggle_btn_publisher .= '<input type="checkbox" name="prefs_publisher_mode" '.($se_prefs['prefs_publisher_mode'] == "overwrite" ? 'checked' :'').'>';
 $toggle_btn_publisher .= '</span>';
 
 
 $prefs_publisher_input  = '<div class="input-group">';
-$prefs_publisher_input .= '<input class="form-control" type="text" name="prefs_default_publisher" value="'.$prefs_default_publisher.'">';
+$prefs_publisher_input .= '<input class="form-control" type="text" name="prefs_default_publisher" value="'.$se_prefs['prefs_default_publisher'].'">';
 $prefs_publisher_input .= $toggle_btn_publisher;
 $prefs_publisher_input .= '</div>';
 
@@ -133,9 +133,29 @@ echo tpl_form_control_group('',$lang['f_prefs_default_publisher'],$prefs_publish
 
 echo '<hr>';
 
-echo tpl_form_control_group('',$lang['rss_offset'],"<input class='form-control' type='text' name='prefs_rss_time_offset' value='$prefs_rss_time_offset'>");
-echo tpl_form_control_group('',$lang['prefs_nbr_page_versions'],"<input class='form-control' type='text' name='prefs_nbr_page_versions' value='$prefs_nbr_page_versions'>");
-echo tpl_form_control_group('',$lang['prefs_pagesort_minlength'],"<input class='form-control' type='text' name='prefs_pagesort_minlength' value='$prefs_pagesort_minlength'>");
+$input_rss_offset = [
+    "input_name" => "prefs_rss_time_offset",
+    "input_value" => $se_prefs['prefs_rss_time_offset'],
+    "label" => $lang['rss_offset']
+];
+
+echo tpl_form_input_text($input_rss_offset);
+
+$input_nbr_page_versions = [
+    "input_name" => "prefs_nbr_page_versions",
+    "input_value" => $se_prefs['prefs_nbr_page_versions'],
+    "label" => $lang['prefs_nbr_page_versions']
+];
+
+echo tpl_form_input_text($input_nbr_page_versions);
+
+$input_pagesort_minlength = [
+    "input_name" => "prefs_pagesort_minlength",
+    "input_value" => $se_prefs['prefs_pagesort_minlength'],
+    "label" => $lang['prefs_pagesort_minlength']
+];
+
+echo tpl_form_input_text($input_pagesort_minlength);
 
 echo '<input type="submit" class="btn btn-success" name="save_prefs_descriptions" value="'.$lang['save'].'">';
 echo $hidden_csrf_token;
@@ -154,7 +174,7 @@ $select_prefs_pagelogo .= '<option value="">'.$lang['option_nothing_selected'].'
 
 foreach($arr_Images as $page_logo) {
     $selected = "";
-    if($prefs_pagelogo == "$page_logo") {
+    if($se_prefs['prefs_pagelogo'] == "$page_logo") {
         $selected = "selected";
     }
     $show_page_logo_filename = str_replace('../content/','/',$page_logo);
@@ -172,7 +192,7 @@ $select_prefs_thumbnail .= '<option value="">'.$lang['option_nothing_selected'].
 
 foreach($arr_Images as $page_thumbnail) {
     $selected = "";
-    if($prefs_pagethumbnail == "$page_thumbnail") {
+    if($se_prefs['prefs_pagethumbnail'] == "$page_thumbnail") {
         $selected = "selected";
     }
     $show_page_thumbnail_filename = str_replace('../content/','/',$page_thumbnail);
@@ -186,7 +206,7 @@ echo tpl_form_control_group('',$lang['page_thumbnail'],$select_prefs_thumbnail);
 
 $input_tmb_prefix = [
     "input_name" => "prefs_pagethumbnail_prefix",
-    "input_value" => $prefs_pagethumbnail_prefix,
+    "input_value" => $se_prefs['prefs_pagethumbnail_prefix'],
     "label" => $lang['page_thumbnail_prefix']
 ];
 
@@ -203,7 +223,7 @@ foreach($arr_Images as $page_favicon) {
     }
 
     $selected = "";
-    if($prefs_pagefavicon == "$page_favicon") {
+    if($se_prefs['prefs_pagefavicon'] == "$page_favicon") {
         $selected = "selected";
     }
     $show_page_favicon_filename = str_replace('../content/','/',$page_favicon);
@@ -225,24 +245,24 @@ echo '<form action="?tn=system&sub=general&file=general" method="POST" class="fo
 
 $prefs_maximage_input  = '<div class="row"><div class="col-md-6">';
 $prefs_maximage_input .= '<div class="input-group">';
-$prefs_maximage_input .= '<input class="form-control" type="text" name="prefs_maximagewidth" value="'.$prefs_maximagewidth.'">';
+$prefs_maximage_input .= '<input class="form-control" type="text" name="prefs_maximagewidth" value="'.$se_prefs['prefs_maximagewidth'].'">';
 $prefs_maximage_input .= '<span class="input-group-text">'.$icon['arrow_left'].$icon['arrow_right'].'</span>';
 $prefs_maximage_input .= '</div>';
 $prefs_maximage_input .= '</div><div class="col-md-6">';
 $prefs_maximage_input .= '<div class="input-group">';
-$prefs_maximage_input .= '<input class="form-control" type="text" name="prefs_maximageheight" value="'.$prefs_maximageheight.'">';
+$prefs_maximage_input .= '<input class="form-control" type="text" name="prefs_maximageheight" value="'.$se_prefs['prefs_maximageheight'].'">';
 $prefs_maximage_input .= '<span class="input-group-text">'.$icon['arrow_up'].$icon['arrow_down'].'</span>';
 $prefs_maximage_input .= '</div>';
 $prefs_maximage_input .= '</div></div>';
 
 $prefs_maxtmb_input  = '<div class="row"><div class="col-md-6">';
 $prefs_maxtmb_input .= '<div class="input-group">';
-$prefs_maxtmb_input .= '<input class="form-control" type="text" name="prefs_maxtmbwidth" value="'.$prefs_maxtmbwidth.'">';
+$prefs_maxtmb_input .= '<input class="form-control" type="text" name="prefs_maxtmbwidth" value="'.$se_prefs['prefs_maxtmbwidth'].'">';
 $prefs_maxtmb_input .= '<span class="input-group-text">'.$icon['arrow_left'].$icon['arrow_right'].'</span>';
 $prefs_maxtmb_input .= '</div>';
 $prefs_maxtmb_input .= '</div><div class="col-md-6">';
 $prefs_maxtmb_input .= '<div class="input-group">';
-$prefs_maxtmb_input .= '<input class="form-control" type="text" name="prefs_maxtmbheight" value="'.$prefs_maxtmbheight.'">';
+$prefs_maxtmb_input .= '<input class="form-control" type="text" name="prefs_maxtmbheight" value="'.$se_prefs['prefs_maxtmbheight'].'">';
 $prefs_maxtmb_input .= '<span class="input-group-text">'.$icon['arrow_up'].$icon['arrow_down'].'</span>';
 $prefs_maxtmb_input .= '</div>';
 $prefs_maxtmb_input .= '</div></div>';
@@ -258,10 +278,16 @@ echo tpl_form_control_group('',$lang['f_prefs_maximage'],"$prefs_maxtmb_input");
 echo '</div>';
 echo '</div>';
 
-echo tpl_form_control_group('',$lang['f_prefs_maxfilesize'],"<input class='form-control' type='text' name='prefs_maxfilesize' value='$prefs_maxfilesize'>");
+$input_max_filesize = [
+    "input_name" => "prefs_maxfilesize",
+    "input_value" => $se_prefs['prefs_maxfilesize'],
+    "label" => $lang['f_prefs_maxfilesize']
+];
+
+echo tpl_form_input_text($input_max_filesize);
 
 $toggle_btn_upload_unchanged  = '<div class="form-group form-check">';
-$toggle_btn_upload_unchanged .= '<input type="checkbox" class="form-check-input" id="checkUpload" name="prefs_uploads_remain_unchanged" '.($prefs_uploads_remain_unchanged == "yes" ? 'checked' :'').'>';
+$toggle_btn_upload_unchanged .= '<input type="checkbox" class="form-check-input" id="checkUpload" name="prefs_uploads_remain_unchanged" '.($se_prefs['prefs_uploads_remain_unchanged'] == "yes" ? 'checked' :'').'>';
 $toggle_btn_upload_unchanged .= '<label class="form-check-label" for="checkUpload">'.$lang['f_prefs_uploads_remain_unchanged'].'</label>';
 $toggle_btn_upload_unchanged .= '</div>';
 

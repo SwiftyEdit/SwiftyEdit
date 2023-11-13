@@ -38,7 +38,7 @@ if(isset($_POST['update_comments'])) {
 }
 
 
-if(isset($_POST)) {
+if(!empty($_POST)) {
     /* read the preferences again */
     $se_get_preferences = se_get_preferences();
 
@@ -61,17 +61,23 @@ echo '<form action="?tn=system&sub=general&file=general-user" method="POST" clas
 
 
 echo '<div class="form-group form-check mt-3">';
-echo '<input type="checkbox" class="form-check-input" id="userregister" name="prefs_userregistration" '.($prefs_userregistration == "yes" ? 'checked' :'').'>';
+echo '<input type="checkbox" class="form-check-input" id="userregister" name="prefs_userregistration" '.($se_prefs['prefs_userregistration'] == "yes" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="userregister">'.$lang['f_prefs_registration'].'</label>';
 echo '</div>';
 
 
 echo '<div class="form-group form-check mt-3">';
-echo '<input type="checkbox" class="form-check-input" id="loginform" name="prefs_showloginform" '.($prefs_showloginform == "yes" ? 'checked' :'').'>';
+echo '<input type="checkbox" class="form-check-input" id="loginform" name="prefs_showloginform" '.($se_prefs['prefs_showloginform'] == "yes" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="loginform">'.$lang['f_prefs_showloginform'].'</label>';
 echo '</div>';
 
-echo tpl_form_control_group('',$lang['acp_session_lifetime'],"<input class='form-control' type='text' name='prefs_acp_session_lifetime' value='$prefs_acp_session_lifetime'>");
+$input_acp_session_lifetime = [
+    "input_name" => "prefs_acp_session_lifetime",
+    "input_value" => $se_prefs['prefs_acp_session_lifetime'],
+    "label" => $lang['acp_session_lifetime']
+];
+
+echo tpl_form_input_text($input_acp_session_lifetime);
 
 echo '<input type="submit" class="btn btn-success" name="save_prefs_user" value="'.$lang['save'].'">';
 echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
@@ -90,7 +96,7 @@ echo '<div class="col-6">';
 echo '<fieldset>';
 echo '<legend>'.$lang['label_comment_mode'].'</legend>';
 
-if($prefs_comments_mode == 1) {
+if($se_prefs['prefs_comments_mode'] == 1) {
     $select_mode_1 = "checked";
 } else if($prefs_comments_mode == 2) {
     $select_mode_2 = "checked";
@@ -122,9 +128,9 @@ echo '<div class="col-6">';
 echo '<fieldset>';
 echo '<legend>'.$lang['label_comment_auth'].'</legend>';
 
-if($prefs_comments_authorization == 1) {
+if($se_prefs['prefs_comments_authorization'] == 1) {
     $select_auth_1 = "checked";
-} else if($prefs_comments_authorization == 2) {
+} else if($se_prefs['prefs_comments_authorization'] == 2) {
     $select_auth_2 = "checked";
 } else {
     $select_auth_3 = "checked";
@@ -151,19 +157,19 @@ echo '</div>';
 
 $input_comments_autoclose = [
     "input_name" => "prefs_comments_autoclose",
-    "input_value" => $prefs_comments_autoclose,
+    "input_value" => $se_prefs['prefs_comments_autoclose'],
     "label" => $lang['prefs_comments_autoclose_time']
 ];
 
 $input_comments_max_entries = [
     "input_name" => "prefs_comments_max_entries",
-    "input_value" => $prefs_comments_max_entries,
+    "input_value" => $se_prefs['prefs_comments_max_entries'],
     "label" => $lang['label_comments_max_entries']
 ];
 
 $input_comments_max_level = [
     "input_name" => "prefs_comments_max_level",
-    "input_value" => $prefs_comments_max_level,
+    "input_value" => $se_prefs['prefs_comments_max_level'],
     "label" => $lang['label_comments_max_level']
 ];
 

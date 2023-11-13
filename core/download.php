@@ -7,10 +7,6 @@
  * @var object $db_content medoo database object
  */
 
-/* check csrf token */
-if((!isset($_POST['csrf_token'])) OR ($_POST['csrf_token'] !== $_SESSION['visitor_csrf_token'])) {
-    die('invalid token');
-}
 
 $download_file = basename($_POST['file']);
 $get_target_file = '../content/files/'.$download_file;

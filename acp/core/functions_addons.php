@@ -138,7 +138,7 @@ function se_delete_addon($addon,$type) {
 function get_all_templates() {
 
 	//templates folder
-	$sdir = "../styles";
+	$sdir = SE_ROOT."/styles";
 	$cntStyles = 0;
 	$scanned_directory = array_diff(scandir($sdir), array('..', '.','.DS_Store'));
 	

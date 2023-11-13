@@ -12,7 +12,7 @@ if(isset($_POST['save_prefs_contacts'])) {
 }
 
 
-if(isset($_POST)) {
+if(!empty($_POST)) {
     /* read the preferences again */
     $se_get_preferences = se_get_preferences();
 
@@ -30,24 +30,24 @@ if(isset($_POST)) {
 
 echo '<form action="?tn=system&sub=general&file=general-email" method="POST" class="form-horizontal">';
 
-if($prefs_mailer_type == '') {
-    $prefs_mailer_type = 'mail';
+if($se_prefs['prefs_mailer_type'] == '') {
+    $se_prefs['prefs_mailer_type'] = 'mail';
 }
 
-$prefs_mail_name_input = "<input class='form-control' type='text' name='prefs_mailer_name' value='$prefs_mailer_name'>";
-$prefs_mail_adr_input = "<input class='form-control' type='text' name='prefs_mailer_adr' value='$prefs_mailer_adr'>";
-$prefs_mail_smtp_host_input = "<input class='form-control' type='text' name='prefs_smtp_host' value='$smtp_host'>";
-$prefs_mail_smtp_port_input = "<input class='form-control' type='text' name='prefs_smtp_port' value='$smtp_port'>";
-$prefs_mail_smtp_encryption_input = "<input class='form-control' type='text' name='prefs_smtp_encryption' value='$smtp_encryption'>";
-$prefs_mail_smtp_username_input = "<input class='form-control' type='text' name='prefs_smtp_username' value='$smtp_username'>";
+$prefs_mail_name_input = '<input class="form-control" type="text" name="prefs_mailer_name" value="'.$se_prefs['prefs_mailer_name'].'">';
+$prefs_mail_adr_input = '<input class="form-control" type="text" name="prefs_mailer_adr" value="'.$se_prefs['prefs_mailer_adr'].'">';
+$prefs_mail_smtp_host_input = '<input class="form-control" type="text" name="prefs_smtp_host" value="'.$se_prefs['smtp_host'].'">';
+$prefs_mail_smtp_port_input = '<input class="form-control" type="text" name="prefs_smtp_port" value="'.$se_prefs['smtp_port'].'">';
+$prefs_mail_smtp_encryption_input = '<input class="form-control" type="text" name="prefs_smtp_encryption" value="'.$se_prefs['smtp_encryption'].'">';
+$prefs_mail_smtp_username_input = '<input class="form-control" type="text" name="prefs_smtp_username" value="'.$se_prefs['smtp_username'].'">';
 $prefs_mail_smtp_psw_input = '<pre>'.$smtp_psw.'</pre>';
 
 $prefs_mail_type_input = '<div class="form-check">';
-$prefs_mail_type_input .= '<input type="radio" class="form-check-input" id="mail" name="prefs_mailer_type" value="mail" '.($prefs_mailer_type == "mail" ? 'checked' :'').'>';
+$prefs_mail_type_input .= '<input type="radio" class="form-check-input" id="mail" name="prefs_mailer_type" value="mail" '.($se_prefs['prefs_mailer_type'] == "mail" ? 'checked' :'').'>';
 $prefs_mail_type_input .= '<label class="form-check-label" for="mail">'.$lang['prefs_mail_type_mail'].'</label>';
 $prefs_mail_type_input .= '</div>';
 $prefs_mail_type_input .= '<div class="form-check">';
-$prefs_mail_type_input .= '<input type="radio" class="form-check-input" id="smtp" name="prefs_mailer_type" value="smtp" '.($prefs_mailer_type == "smtp" ? 'checked' :'').'>';
+$prefs_mail_type_input .= '<input type="radio" class="form-check-input" id="smtp" name="prefs_mailer_type" value="smtp" '.($se_prefs['prefs_mailer_type'] == "smtp" ? 'checked' :'').'>';
 $prefs_mail_type_input .= '<label class="form-check-label" for="smtp">'.$lang['prefs_mail_type_smtp'].'</label>';
 $prefs_mail_type_input .= '</div>';
 
@@ -84,9 +84,9 @@ echo $hidden_csrf_token;
 echo '</form>';
 
 echo '<div class="mt-3">';
-if($prefs_mailer_adr != '') {
+if($se_prefs['prefs_mailer_adr'] != '') {
     echo '<form action="?tn=system&sub=general&file=general-email" method="post">';
-    echo '<button class="btn btn-primary btn-sm" name="sendtest">' .$lang['prefs_mailer_send_test'].' ('.$prefs_mailer_adr.')</button>';
+    echo '<button class="btn btn-primary btn-sm" name="sendtest">' .$lang['prefs_mailer_send_test'].' ('.$se_prefs['prefs_mailer_adr'].')</button>';
     echo $hidden_csrf_token;
     echo '</form>';
 }
@@ -95,8 +95,8 @@ if($prefs_mailer_adr != '') {
 if(isset($_POST['sendtest'])) {
 
     $subject = 'SwiftyEdit Mail Test';
-    $message = "SwiftyEdit Test (via $prefs_mailer_type)";
-    $recipient = array('name' => $prefs_mailer_name, 'mail' => $prefs_mailer_adr);
+    $message = 'SwiftyEdit Test (via '.$se_prefs['prefs_mailer_type'].')';
+    $recipient = array('name' => $se_prefs['prefs_mailer_name'], 'mail' => $se_prefs['prefs_mailer_adr']);
     $testmail = se_send_mail($recipient,$subject,$message);
 
     if($testmail == 1) {

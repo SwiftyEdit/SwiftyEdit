@@ -38,6 +38,8 @@ if(empty($_SESSION['token'])) {
     $_SESSION['token_time'] = time();
 }
 
+$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+
 /* stop all $_POST actions if csrf token is empty or invalid */
 if(!empty($_POST)) {
     if(empty($_POST['csrf_token'])) {
@@ -348,10 +350,6 @@ if($se_prefs['prefs_smarty_compile_check'] == 1) {
 	$smarty->compile_check = false;
 }
 
-$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-$smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
-
-
 /* reset of the user-defined theme */
 if(isset($_POST['reset_theme'])) {
 	unset($_SESSION['prefs_template'],$_SESSION['prefs_template_stylesheet']);
@@ -438,7 +436,7 @@ if(is_dir('styles/'.$page_contents['page_template'].'/templates/')) {
 }
 
 
-
+$smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
 
 $smarty->assign('se_template', $se_template);
 $smarty->assign('se_template_layout', $se_template_layout);

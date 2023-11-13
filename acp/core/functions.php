@@ -1320,6 +1320,10 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 }
 
 
+/**
+ * @param $file
+ * @return array
+ */
 function se_parse_docs_file($file) {
 
     global $Parsedown;
@@ -1331,13 +1335,16 @@ function se_parse_docs_file($file) {
         $header_length = strlen($src_content[1])+6;
         $content = substr($src, $header_length);
 
+        $path_info = pathinfo($file);
+        $dir = $path_info['dirname'];
+
         // look for included .md files
         $content = preg_replace_callback(
             '/\{inc=(.*?)\}/si',
-            function ($m) {
+            function ($m) use ($dir) {
                 global $languagePack;
                 global $file;
-                $inc_file = "../../docs/$languagePack/$m[1]";
+                $inc_file = "$dir/$m[1]";
                 if(is_file($inc_file)) {
                     $inc_file_content = file_get_contents("$inc_file");
                     $inc_file_content_array = explode('---',$inc_file_content);
@@ -1352,10 +1359,10 @@ function se_parse_docs_file($file) {
 
         $content = preg_replace_callback(
             '/\{link=(.*?)\}/si',
-            function ($m) {
+            function ($m) use ($dir) {
                 global $languagePack;
-                    $link = '<a class="jump-doc btn" data-bs-target="#showDocs" data-token="'.$_SESSION['token'].'" data-file="'.$m[1].'">'.$m[1].'</a>';
-                    return $link;
+                $link = '<a class="" href="?get_file='.$dir.'/'.$m[1].'">'.$m[1].'</a>';
+                return $link;
             },
             $content
         );
@@ -1392,7 +1399,7 @@ function se_print_docs_link($file,$text=null,$type=null) {
         return '<a class="show-doc" title="'.$title.'" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$text.'</a>';
     }
 
-
+    return '';
 }
 
 /**
