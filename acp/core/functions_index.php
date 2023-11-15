@@ -112,8 +112,9 @@ function se_crawler($id='') {
 
 function se_loadSourceCode($url) {
 
+
     $ch = curl_init();
-  
+
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_USERAGENT, 'SwiftyEditBot/1.0 (+https://swiftyedit.org)');
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
@@ -123,9 +124,8 @@ function se_loadSourceCode($url) {
 	curl_setopt($ch, CURLOPT_FAILONERROR, FALSE);
 	curl_setopt($ch, CURLOPT_FORBID_REUSE, TRUE);
 	curl_setopt($ch, CURLOPT_ENCODING,  "");
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER,TRUE);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS,"crawler=true");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER,TRUE);
+    curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
 
     $data = curl_exec($ch);
 
