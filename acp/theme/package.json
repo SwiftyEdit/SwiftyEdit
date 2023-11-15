@@ -13,7 +13,7 @@
     "bootstrap-tagsinput-2021": "^0.8.6",
     "clipboard": "^2.0.11",
     "dropzone": "^5.9.3",
-    "jquery": "^3.6.0",
+    "jquery": "^3.7.1",
     "jquery-text-counter": "^0.9.0",
     "jquery.dirtyforms": "^2.0.0",
     "moment": "^2.29.4",
