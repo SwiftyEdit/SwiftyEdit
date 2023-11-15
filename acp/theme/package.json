@@ -18,7 +18,7 @@
     "jquery.dirtyforms": "^2.0.0",
     "moment": "^2.29.4",
     "tags-input": "^1.1.1",
-    "tinymce": "^6.7.1"
+    "tinymce": "^6.7.2"
   },
   "optionalDependencies": {},
   "license": "UNLICENSED",
