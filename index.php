@@ -324,7 +324,7 @@ require SE_ROOT . "/core/lang/index.php";
 
 
 if(!empty($page_contents['page_modul'])) {
-	include SE_CONTENT.'/modules/'.$page_contents['page_modul'].'/index.php';
+	include SE_CONTENT.'/modules/'.basename($page_contents['page_modul']).'/index.php';
 }
 
 /* START SMARTY */
@@ -432,9 +432,11 @@ if(is_dir('styles/'.$page_contents['page_template'].'/templates/')) {
 			//$se_template_stylesheet = $se_template_stylesheet;
 		}
 	}
-	
 }
 
+$se_template = basename($se_template);
+$se_template_layout = basename($se_template_layout);
+$se_template_stylesheet = basename($se_template_stylesheet);
 
 $smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
 
@@ -442,7 +444,7 @@ $smarty->assign('se_template', $se_template);
 $smarty->assign('se_template_layout', $se_template_layout);
 
 if($se_template_stylesheet != '') {
-	$smarty->assign('se_template_stylesheet', basename($se_template_stylesheet));
+	$smarty->assign('se_template_stylesheet', $se_template_stylesheet);
 }
 
 if(is_file("styles/$se_template/php/index.php")) {
