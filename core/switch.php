@@ -267,7 +267,7 @@ if(isset($_GET['s'])) {
     $page_meta_robots = 'noindex';
 }
 
-if($page_status == 'draft') {
+if($page_status == 'draft' || $page_status == 'private') {
 	$page_meta_robots = 'noindex, nofollow';
 }
 
