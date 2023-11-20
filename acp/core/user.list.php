@@ -1,200 +1,149 @@
 <?php
 //error_reporting(E_ALL ^E_NOTICE ^E_WARNING);
+
+/**
+ * SwiftyEdit backend
+ *
+ * global variables
+ * @var object $db_user medoo database object
+ * @var array $icon icons set in acp/core/icons.php
+ * @var array $lang language
+ * @var string $hidden_csrf_token
+ */
+
 //prohibit unauthorized access
-require 'core/access.php';
+require __DIR__.'/access.php';
 
-$sort = (int) $_GET['sort'];
 
-// sort by reference
-switch ($_GET['sort']) {
-case "1":
-    $order_by = "user_nick";
-    break;
-case "2":
-    $order_by = "user_registerdate";
-    break;
-case "3":
-    $order_by = "user_lastname";
-    break;
-case "4":
-    $order_by = "user_mail";
-    break;
-case "5":
-    $order_by = "user_verified";
-    break;
-default:
-	$order_by = "user_id";
+// sorting
+// set sort direction ASC or DESC
+$_SESSION['sorting_user_dir'] = isset($_POST['sorting_user_dir']) && $_POST['sorting_user_dir'] == 'desc' ? 'DESC' : 'ASC';
+
+if(!isset($_SESSION['sorting_user_dir'])) {
+    $_SESSION['sorting_user_dir'] = 'DESC';
 }
 
-/* sort up or down */
-
-if($_GET['way'] == "up"){
-	$way = "ASC";
-	$set_way = "down";
+if($_SESSION['sorting_user_dir'] == 'ASC') {
+    $sel_sort_value['sort_asc'] = 'active';
 } else {
-	$way = "DESC";
-	$set_way = "up";
+    $sel_sort_value['sort_desc'] = 'active';
 }
 
-/* switch user status */
 
-if(isset($_GET['switch'])) {
-	$_SESSION['set_user_status'] = true;
+if(isset($_POST['sorting_user'])) {
+    if($_POST['sorting_user'] == 'username') {
+        $_SESSION['sorting_user'] = 'user_nick';
+    } else if($_POST['sorting_user'] == 'registerdate') {
+        $_SESSION['sorting_user'] = 'user_registerdate';
+    } else if($_POST['sorting_user'] == 'email') {
+        $_SESSION['sorting_user'] = 'user_mail';
+    } else {
+        $_SESSION['sorting_user'] = 'lastname';
+    }
 }
+
+if(!isset($_SESSION['sorting_user'])) {
+    $_SESSION['sorting_user'] = 'user_registerdate';
+}
+
+if($_SESSION['sorting_user'] == 'user_nick') {
+    $sel_sort_value['username'] = 'selected';
+} else if ($_SESSION['sorting_user'] == 'user_registerdate') {
+    $sel_sort_value['registerdate'] = 'selected';
+} else if ($_SESSION['sorting_user'] == 'user_mail') {
+    $sel_sort_value['email'] = 'selected';
+} else {
+    $sel_sort_value['realname'] = 'selected';
+}
+
+// switch user status
+
+$user_status = array();
 
 if($_SESSION['checked_verified'] == '' AND $_SESSION['checked_waiting'] == '' AND $_SESSION['checked_paused'] == '' AND $_SESSION['set_user_status'] == false) {
 	$_SESSION['checked_verified'] = 'checked';
 }
 
-
-if($_GET['switch'] == 'statusWaiting' AND $_SESSION['checked_waiting'] == '') {
-	$_SESSION['checked_waiting'] = "checked";
-} elseif($_GET['switch'] == 'statusWaiting' AND $_SESSION['checked_waiting'] == 'checked') {
-	$_SESSION['checked_waiting'] = "";
+if(isset($_POST['set_status_verified'])) {
+    $_SESSION['checked_verified'] = ($_SESSION['checked_verified'] == 'checked') ? '' : 'checked';
 }
 
-if($_GET['switch'] == 'statusPaused' && $_SESSION['checked_paused'] == 'checked') {
-	$_SESSION['checked_paused'] = "";
-} elseif($_GET['switch'] == 'statusPaused' && $_SESSION['checked_paused'] == '') {
-	$_SESSION['checked_paused'] = "checked";
+if(isset($_POST['set_status_waiting'])) {
+    $_SESSION['checked_waiting'] = ($_SESSION['checked_waiting'] == 'checked') ? '' : 'checked';
 }
 
-if($_GET['switch'] == 'statusVerified' && $_SESSION['checked_verified'] == 'checked') {
-	$_SESSION['checked_verified'] = "";
-} elseif($_GET['switch'] == 'statusVerified' && $_SESSION['checked_verified'] == '') {
-	$_SESSION['checked_verified'] = "checked";
+if(isset($_POST['set_status_paused'])) {
+    $_SESSION['checked_paused'] = ($_SESSION['checked_paused'] == 'checked') ? '' : 'checked';
 }
 
-if($_GET['switch'] == 'statusDeleted' && $_SESSION['checked_deleted'] == 'checked') {
-	$_SESSION['checked_deleted'] = "";
-} elseif($_GET['switch'] == 'statusDeleted' && $_SESSION['checked_deleted'] == '') {
-	$_SESSION['checked_deleted'] = "checked";
+if(isset($_POST['set_status_deleted'])) {
+    $_SESSION['checked_deleted'] = ($_SESSION['checked_deleted'] == 'checked') ? '' : 'checked';
 }
 
-$set_status_filter = "user_id != NULL ";
 
 if($_SESSION['checked_waiting'] == "checked") {
-	$set_status_filter .= "OR user_verified = 'waiting' ";
 	$btn_status_waiting = 'active';
+    $user_status[] = 'waiting';
 }
 
 if($_SESSION['checked_paused'] == "checked") {
-	$set_status_filter .= "OR user_verified = 'paused' ";
 	$btn_status_paused = 'active';
+    $user_status[] = 'paused';
 }
 
 if($_SESSION['checked_verified'] == "checked") {
-	$set_status_filter .= "OR user_verified = 'verified' ";
 	$btn_status_verified = 'active';
+    $user_status[] = 'verified';
 }
 
 if($_SESSION['checked_deleted'] == "checked") {
-	$set_status_filter .= "OR user_verified = '' ";
 	$btn_status_deleted = 'active';
+    $user_status[] = '';
 }
 
-
-
-$status_btn_group  = '<div class="btn-group d-flex">';
-$status_btn_group .= '<a href="acp.php?tn=user&sub=list&switch=statusVerified" class="btn btn-default w-100 '.$btn_status_verified.'">'.$icon['check'].'</span></a>';
-$status_btn_group .= '<a href="acp.php?tn=user&sub=list&switch=statusWaiting" class="btn btn-default w-100 '.$btn_status_waiting.'">'.$icon['clock'].'</a>';
-$status_btn_group .= '<a href="acp.php?tn=user&sub=list&switch=statusPaused" class="btn btn-default w-100 '.$btn_status_paused.'">'.$icon['lock'].'</a>';
-$status_btn_group .= '<a href="acp.php?tn=user&sub=list&switch=statusDeleted" class="btn btn-default w-100 '.$btn_status_deleted.'">'.$icon['trash'].'</a>';
-$status_btn_group .= '</div>';
-
-
-$whereString = "WHERE user_nick != '' ";
-
-if(!empty($_POST['findUser'])) {
-	$find_user = "%".sanitizeUserInputs($_POST['findUser'])."%";
-	$search_user = "user_nick LIKE '$find_user' ";
+if(isset($_POST['findUser'])) {
+    $_SESSION['user_match'] = sanitizeUserInputs($_POST['findUser']);
 }
 
-
-
-if($set_status_filter != "") {
-	$whereString .= " AND ($set_status_filter) ";
+if(!isset($_SESSION['user_match'])) {
+    $_SESSION['user_match'] = '';
 }
-
-if($search_user != "") {
-	$whereString .= " AND ($search_user) ";
-}
-
-unset($result);
-
-$sql = "SELECT user_id, user_nick, user_class, user_firstname, user_lastname, user_registerdate, user_verified, user_mail
-    		FROM se_user
-    		$whereString
-    		ORDER BY $order_by $way";
-    		
-
-$result = $db_user->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-$cnt_result = count($result);
 
 // number to show
-$loop = 20;
+$items_per_page = 15;
+$sql_start = 0;
 
-
-$start = 0;
 if(isset($_GET['start'])) {
-	$start = (int) $_GET['start'];
+    $sql_start = (int) $_GET['start'];
 }
 
-$cnt_pages = ceil($cnt_result/$loop);
+$cnt_all_users = $db_user->count("se_user", [
+	"user_id[>]" => 0
+]);
 
-if($start<0) {
-	$start = 0;
-}
-
-$end = $start+$loop;
-
-if($end > $cnt_result) {
-	$end = $cnt_result;
-}
+$cnt_filter_users = $db_user->count("se_user", [
+    "user_id[>]" => 0,
+    "user_nick[~]" => $_SESSION['user_match'],
+    "user_verified" => $user_status
+]);
 
 
-//next step
-$next_start = $end;
-$prev_start = $start-$loop;
+$get_users = $db_user->select("se_user","*",[
+	"user_id[>]" => 0,
+    "user_nick[~]" => $_SESSION['user_match'],
+    "user_verified" => $user_status,
+	"LIMIT" => [$sql_start, $items_per_page],
+    "ORDER" => [$_SESSION['sorting_user'] => $_SESSION['sorting_user_dir']]
+]);
 
+$cnt_get_users = count($get_users);
 
-
-if($start>($cnt_result-$loop)) {
-	$next_start = $start;
-}
-
-if($prev_start <= 0){
-	$prev_start = 0;
-}
-
-
-$pag_backlink = "<li class='page-item'><a class='page-link' href='acp.php?tn=user&sub=list&start=$prev_start&sort=$sort'>$lang[pagination_backward]</a></li>";
-
-
-for($x=0;$x<$cnt_pages;$x++) {
-
-	$page_start = $x*$loop;
-	$page_nbr = $x+1;
-
-	if($page_start == $start) {
-		$aclass = "page-link active";
-	} else {
-		$aclass = "page-link";
-	}
-
-	$pag_string .= "<li class='page-item'><a class='$aclass' href='acp.php?tn=user&sub=list&start=$page_start'>$page_nbr</a></li>";
-}
-
-
-$pag_forwardlink = "<li class='page-item'><a class='page-link' href='acp.php?tn=user&sub=list&start=$next_start&sort=$sort'>$lang[pagination_forward]</a></li>";
+$pagination_query = '?tn=user&sub=list&start={page}';
+$pagination = se_return_pagination($pagination_query,$cnt_filter_users,$sql_start,$items_per_page,10,3,2);
 
 echo '<div class="subHeader d-flex">';
-
-echo '<div class="me-auto"><h3>Userlist</h3></div>';
-
+echo '<div class="me-auto"><h3>Userlist ('.$cnt_filter_users.' / '.$cnt_all_users.')</h3></div>';
 echo '<div><a href="?tn=user&sub=new" class="btn btn-success align-self-end">'.$lang['new_user'].'</a></div>';
-
 echo '</div>';
 
 echo '<div class="row">';
@@ -203,38 +152,39 @@ echo '<div class="col-md-9">';
 
 echo '<div class="card p-3">';
 
+echo $pagination;
+
 echo '<table class="table table-hover table-striped table-sm">';
 echo '<thead>';
 echo '<tr>';
-echo '<th><a href="acp.php?tn=user&sub=list&sort=0&way='.$set_way.'">ID</a></th>';
-echo '<th></th>';
-echo '<th><a href="acp.php?tn=user&sub=list&sort=1&way='.$set_way.'">'.$lang['h_username'].'</a></th>';
-echo '<th><a href="acp.php?tn=user&sub=list&sort=2&way='.$set_way.'">'.$lang['h_registerdate'].'</a></th>';
-echo '<th><a href="acp.php?tn=user&sub=list&sort=3&way='.$set_way.'">'.$lang['h_realname'].'</a></th>';
-echo '<th><a href="acp.php?tn=user&sub=list&sort=4&way='.$set_way.'">'.$lang['h_email'].'</a></th>';
+echo '<th>#</th>';
+echo '<th> </th>';
+echo '<th>'.$lang['h_username'].'</th>';
+echo '<th>'.$lang['h_registerdate'].'</th>';
+echo '<th>'.$lang['h_realname'].'</th>';
+echo '<th>'.$lang['h_email'].'</th>';
 echo '<th>'.$lang['h_action'].'</th>';
 echo '</tr>';
 echo '</thead>';
 
-for($i=$start;$i<$end;$i++) {
+for($i=0;$i<$cnt_get_users;$i++) {
 
-	$user_id = $result[$i]['user_id'];
-	$user_nick = $result[$i]['user_nick'];
+	$user_id = (int) $get_users[$i]['user_id'];
+	$user_nick = sanitizeUserInputs($get_users[$i]['user_nick']);
 	$user_avatar_path = '../content/avatars/' . md5($user_nick) . '.png';
-	$user_class = $result[$i]['user_class'];
-	$user_mail = $result[$i]['user_mail'];
-	$user_registerdate = $result[$i]['user_registerdate'];
-	$user_firstname = $result[$i]['user_firstname'];
-	$user_lastname = $result[$i]['user_lastname'];
-	$user_verified = $result[$i]['user_verified'];
-	$user_groups = $result[$i]['user_groups'];
+	$user_class = $get_users[$i]['user_class'];
+	$user_mail = sanitizeUserInputs($get_users[$i]['user_mail']);
+	$user_registerdate = (int) $get_users[$i]['user_registerdate'];
+	$user_firstname = sanitizeUserInputs($get_users[$i]['user_firstname']);
+	$user_lastname = sanitizeUserInputs($get_users[$i]['user_lastname']);
+	$user_verified = sanitizeUserInputs($get_users[$i]['user_verified']);
 
 	$show_registerdate = '';
 	if($user_registerdate != '') {
-		$show_registerdate = @date("d.m.Y", $user_registerdate);
+        $show_registerdate = se_format_datetime($user_registerdate);
 	}
 
-	$user_avatar = '<img src="images/avatar.png" class="rounded-circle avatar" width="50" height="50">';
+	$user_avatar = '<img src="/acp/images/avatar.png" class="rounded-circle avatar" width="50" height="50" alt="no avatar image">';
 	if(is_file("$user_avatar_path")) {
 		$user_avatar = '<img src="'.$user_avatar_path.'" class="rounded-circle avatar" width="50" height="50">';
 	}
@@ -254,26 +204,18 @@ for($i=$start;$i<$end;$i++) {
 
 	//deleted user
 	if($user_class == "deleted"){
-		$user_nick = "<strike>$user_nick</strike>";
+		$user_nick = "<del>$user_nick</del>";
 	}
 
+	//status label
+    $labelMap = [
+        'waiting' => 'badge rounded-pill bg-info',
+        'paused' => 'badge badge-pill bg-warning',
+        'verified' => 'badge rounded-pill bg-success',
+        '' => 'badge rounded-pill bg-danger',
+    ];
+    $label = $labelMap[$user_verified] ?? '';
 
-	//status image
-	switch ($user_verified) {
-		case "waiting":
-			$label = 'badge rounded-pill bg-info';
-			break;
-		case "paused":
-			$label = 'badge badge-pill bg-warning';
-			break;
-		case "verified":
-			$label = 'badge rounded-pill bg-success';
-			break;
-		case "":
-			$label = 'badge rounded-pill bg-danger';
-			break;
-	}
-	
 	$btn_edit_user  = '<form action="?tn=user&sub=edit" method="POST">';
 	$btn_edit_user .= '<button class="btn btn-sm btn-default w-100" name="edituser" value="'.$user_id.'">'.$icon['edit'].' '.$lang['edit'].'</button>';
 	$btn_edit_user .= $hidden_csrf_token;
@@ -289,20 +231,11 @@ for($i=$start;$i<$end;$i++) {
 	echo '<td class="'.$td_class.'">'.$btn_edit_user.'</td>';
 	echo '</tr>';
 
-
-
-
-} // eol for $i
+}
 
 echo '</table>';
 
-
-echo '<nav>';
-echo '<ul class="pagination justify-content-center">';
-echo "$pag_backlink $pag_string $pag_forwardlink";
-echo '</ul>';
-echo '</nav>';
-
+echo $pagination;
 
 echo '</div>';
 
@@ -312,26 +245,62 @@ echo '<div class="col-md-3">';
 /* sidebar */
 echo '<div class="card p-2">';
 
-echo "<form action='acp.php?tn=user' class='form-inline' method='POST'>";
+echo '<form action="?tn=user" class="form-inline" method="POST">';
 echo '<div class="input-group">';
 echo '<span class="input-group-text">'.$icon['search'].'</span>';
-echo '<input type="text" name="findUser" class="form-control" placeholder="Filter">';
+echo '<input type="text" name="findUser" class="form-control" placeholder="Filter" value="'.$_SESSION['user_match'].'">';
 echo $hidden_csrf_token;
 echo '</div>';
-echo "</form>";
+echo '</form>';
 
 echo '<hr>';
 
-echo '<fieldset class="mt-4">';
-echo '<legend>'.$icon['filter'].' Filter</legend>';
-echo $status_btn_group;
-echo '</fieldset>';
+
+echo '<div class="card">';
+echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
+echo '<div class="card-body">';
+echo '<form action="?tn=user" method="POST">';
+echo '<div class="btn-group d-flex">';
+echo '<button type="submit" name="set_status_verified" class="btn btn-default w-100 '.$btn_status_verified.'">'.$icon['check'].'</button>';
+echo '<button type="submit" name="set_status_waiting" class="btn btn-default w-100 '.$btn_status_waiting.'">'.$icon['clock'].'</button>';
+echo '<button type="submit" name="set_status_paused" class="btn btn-default w-100 '.$btn_status_paused.'">'.$icon['lock'].'</button>';
+echo '<button type="submit" name="set_status_deleted" class="btn btn-default w-100 '.$btn_status_deleted.'">'.$icon['trash'].'</button>';
+echo '</div>';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+
+echo '<div class="my-3">';
+echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
+echo '<form action="?tn=user&sub=user-list" method="post" class="dirtyignore">';
+
+echo '<div class="row g-1">';
+echo '<div class="col-md-8">';
+
+echo '<select class="form-control form-select-sm" name="sorting_user" onchange="this.form.submit()">';
+echo '<option value="username" '.$sel_sort_value['username'].'>'.$lang['h_username'].'</option>';
+echo '<option value="registerdate" '.$sel_sort_value['registerdate'].'>'.$lang['h_registerdate'].'</option>';
+echo '<option value="realname" '.$sel_sort_value['realname'].'>'.$lang['h_realname'].'</option>';
+echo '<option value="email" '.$sel_sort_value['email'].'>'.$lang['h_email'].'</option>';
+echo '</select>';
+
+echo '</div>';
+echo '<div class="col-md-4">';
+
+echo '<div class="btn-group d-flex">';
+echo '<button name="sorting_user_dir" value="asc" title="'.$lang['btn_sort_asc'].'" class="btn btn-sm btn-default w-100 '.$sel_sort_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
+echo '<button name="sorting_user_dir" value="desc" title="'.$lang['btn_sort_desc'].'" class="btn btn-sm btn-default w-100 '.$sel_sort_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
+echo '</div>';
+echo '</div>';
+echo '</div>';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+
+
+echo '</div>';
 
 echo '</div>'; /* end of sidebar */
 
 echo '</div>';
 echo '</div>';
-
-
-
-?>
