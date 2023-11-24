@@ -95,10 +95,13 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 	
 	/* gallery thumbnails */
 	if($_POST['del_tmb'] != '') {
-		$del_tmb = $_POST['del_tmb'];
+		$del_tmb = se_filter_filepath($_POST['del_tmb']);
 		$del_img = str_replace('_tmb','_img',$del_tmb);
-		unlink($del_tmb);
-		unlink($del_img);
+
+        if(str_starts_with($del_tmb, '../content/galleries/')) {
+            unlink($del_tmb);
+            unlink($del_img);
+        }
 	}
 	
 	if($_POST['sort_tmb'] != '') {

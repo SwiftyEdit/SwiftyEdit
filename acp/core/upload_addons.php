@@ -99,7 +99,7 @@ if(!is_writable(SE_CONTENT.'/modules/')) {
 	echo '<p class="alert alert-danger">'.sprintf($lang['dir_must_be_writable'],SE_CONTENT.'/modules/').'</p>';
 }
 
-if(!is_writable(SE_CONTENT.'/content/plugins/')) {
+if(!is_writable(SE_CONTENT.'/plugins/')) {
 	echo '<p class="alert alert-danger">'.sprintf($lang['dir_must_be_writable'],SE_CONTENT.'/plugins/').'</p>';
 }
 
