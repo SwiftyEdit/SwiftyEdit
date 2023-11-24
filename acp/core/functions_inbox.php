@@ -84,3 +84,16 @@ function se_inbox_get_message($id) {
 
     return $message;
 }
+
+/**
+ * @param $id
+ * @return integer
+ */
+function se_inbox_delete_message($id): int {
+    global $db_posts;
+    $data = $db_posts->delete("se_mailbox", [
+        'id' => $id
+    ]);
+
+    return $data->rowCount();
+}
