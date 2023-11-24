@@ -1,14 +1,25 @@
 <?php
 //error_reporting(E_ALL ^E_NOTICE);
-//prohibit unauthorized access
 
 /**
- * this is not ready for productive use
- * @todo    add salutation to se_mailbox
- *          encode mail content correct
- *          delete old/unused messages
+ * SwiftyEdit - backend
+ * create, edit mails for users
+ *
+ * global variables
+ * @var array $lang from language files
+ * @var string $languagePack
+ * @var string $lang_sign
+ * @var array $icon from icons.php
+ * @var array $se_prefs preferences
+ *
+ * from config
+ * @var string $db_user medoo
+ * @var string $db_posts medoo
+ *
  */
 
+
+//prohibit unauthorized access
 require 'core/access.php';
 require 'core/functions_inbox.php';
 
@@ -37,8 +48,8 @@ if(isset($_POST['send_mail'])) {
     $get_id = (int) $_POST['send_mail'];
     $get_message_data = se_inbox_get_message($get_id);
 
-    $subject = $get_message_data['subject'];
-    $content = $get_message_data['content'];
+    $subject = htmlspecialchars($get_message_data['subject'],ENT_QUOTES, 'UTF-8');
+    $content = htmlspecialchars($get_message_data['content'],ENT_QUOTES, 'UTF-8');
 
     if($get_message_data['recipients'] == 'all') {
         // get all active users
@@ -112,6 +123,35 @@ if(isset($_POST['edit_message'])) {
     $show_form = true;
 }
 
+/**
+ * delete a message
+ */
+if(isset($_POST['delete_message'])) {
+
+    $message_id = (int) $_POST['delete_message'];
+    $edit_message_data = se_inbox_get_message($message_id);
+    $mail_subject = htmlspecialchars($edit_message_data['subject'],ENT_QUOTES, 'UTF-8');
+
+    if(isset($_POST['delete_confirmed'])) {
+        $del = se_inbox_delete_message($message_id);
+        if($del > 0) {
+            echo '<div class="alert alert-success">'.$lang['msg_entry_delete'].'</div>';
+        }
+    } else {
+        echo '<div class="alert alert-primary">';
+        echo '<h4>' . $lang['confirm_delete_data'] . '</h4>';
+        echo '<p>Subject: ' . $mail_subject . ' ID: ' . $message_id . '</p>';
+        echo '<form action="?tn=inbox&sub=mailbox" method="POST">';
+        echo '<button class="btn btn-sm btn-default me-1" name="delete_message" value="' . $message_id . '">' . $lang['yes'] . '</button>';
+        echo '<button class="btn btn-sm btn-default" name="" value="' . $all_messages[$i]['id'] . '">' . $lang['no'] . '</button>';
+        echo '<input type="hidden" name="delete_confirmed" value="' . $message_id . '">';
+        echo $hidden_csrf_token;
+        echo '</form>';
+        echo '</div>';
+    }
+}
+
+
 
 if(isset($_POST['new_mail'])) {
    $show_form = true;
@@ -137,9 +177,9 @@ if($show_form == true) {
 
     if(is_array($edit_message_data)) {
         // we are in edit mode
-        $mail_subject = $edit_message_data['subject'];
-        $mail_content = $edit_message_data['content'];
-        $mail_id = $edit_message_data['id'];
+        $mail_subject = htmlspecialchars($edit_message_data['subject'],ENT_QUOTES, 'UTF-8');
+        $mail_content = htmlspecialchars($edit_message_data['content'],ENT_QUOTES, 'UTF-8');
+        $mail_id = (int) $edit_message_data['id'];
         $btn_save = '<button class="btn btn-default w-100" name="save_mail" value="update">'.$lang['update'].'</button>';
         $btn_send = '<button class="btn btn-primary" name="send_mail" value="'.$mail_id.'">'.$icon['paper_plane'].' '.$lang['btn_send_email'].'</button>';
         if($edit_message_data['recipients'] == 'all') {
@@ -216,7 +256,8 @@ if($show_form == true) {
         $time_lastedit = date("$format_time",$all_messages[$i]['time_lastedit']);
 
         $edit_btn  = '<form action="'.$section_url.'" method="POST">';
-        $edit_btn .= '<button class="btn btn-sm btn-default" name="edit_message" value="'.$all_messages[$i]['id'].'">'.$lang['edit'].'</button>';
+        $edit_btn .= '<button class="btn btn-sm btn-default me-1" name="edit_message" value="'.$all_messages[$i]['id'].'">'.$lang['edit'].'</button>';
+        $edit_btn .= '<button class="btn btn-sm btn-default text-danger" name="delete_message" value="'.$all_messages[$i]['id'].'">'.$icon['trash_alt'].'</button>';
         $edit_btn .= $hidden_csrf_token;
         $edit_btn .= '</form>';
 
