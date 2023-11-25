@@ -25,6 +25,7 @@
     "phpmailer/phpmailer": "^v6.8.0",
     "smarty/smarty": "^v4.3.1",
     "mustangostang/spyc": "^0.6.3",
-    "guzzlehttp/guzzle": "^7.0"
+    "guzzlehttp/guzzle": "^7.0",
+    "ezyang/htmlpurifier": "^v4.17.0"
   }
 }
