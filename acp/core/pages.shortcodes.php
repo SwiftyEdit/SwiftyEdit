@@ -1,20 +1,40 @@
 <?php
-//error_reporting(E_ALL ^E_NOTICE);
+
+/**
+ * SwiftyEdit - backend
+ * create and edit shortcodes
+ *
+ * global variables
+ * @var array $lang from language files
+ * @var array $icon from icons.php
+ * @var array $se_prefs preferences
+ * @var array $se_labels
+ * @var integer $cnt_labels
+ * @var array $global_filter_label
+ * @var string $hidden_csrf_token
+ * @var object $db_content medoo database object
+ */
+
 //prohibit unauthorized access
-require 'core/access.php';
+require __DIR__.'/access.php';
 
 $show_form = 'false';
 
 /*save or update shortcode */
 if(isset($_POST['write_shortcode'])) {
-	
-	foreach($_POST as $key => $val) {
-		$$key = se_return_clean_value($val);
-	}
+
+    $config = HTMLPurifier_Config::createDefault();
+    $config->set('HTML.DefinitionID', 'html5');
+
+    $purifier = new HTMLPurifier($config);
+
+    $shortcode = $purifier->purify($_POST['shortcode']);
+    $longcode = $purifier->purify($_POST['longcode']);
 	
 	/* labels */
 	$arr_labels = $_POST['shortcode_labels'];
 	if(is_array($arr_labels)) {
+        $arr_labels = array_map('intval', $arr_labels);
 		sort($arr_labels);
 		$string_labels = implode(",", $arr_labels);
 	} else {
@@ -33,7 +53,7 @@ if(isset($_POST['write_shortcode'])) {
 	if($db_mode == 'update') {
 		// update shorcode
 		$data = $db_content->update("se_snippets", [
-			"snippet_content" =>  $_POST['longcode'],
+			"snippet_content" =>  $longcode,
 			"snippet_shortcode" => $shortcode,
 			"snippet_labels" => $string_labels,
 			"snippet_type" => "shortcode"
@@ -45,7 +65,7 @@ if(isset($_POST['write_shortcode'])) {
 		// new shortcode
 
 		$data = $db_content->insert("se_snippets", [
-			"snippet_content" =>  $_POST['longcode'],
+			"snippet_content" =>  $longcode,
 			"snippet_shortcode" => $shortcode,
 			"snippet_labels" => $string_labels,
 			"snippet_type" => "shortcode"
@@ -56,7 +76,6 @@ if(isset($_POST['write_shortcode'])) {
 	}
 	
 	$show_form = 'true';
-	
 }
 
 
@@ -129,10 +148,9 @@ if($show_form == 'true') {
 	echo '<label for="elements">'.$lang['shortcode_replacement'].'</label>';
 	echo '<textarea name="longcode" rows="8" class="form-control">'.$get_shortcode['snippet_content'].'</textarea>';
 	echo '</div>';
-	
-	
-	
-	$cnt_labels = count($se_labels);
+
+
+
 	$arr_checked_labels = explode(",", $get_shortcode['snippet_labels']);
 	
 	for($i=0;$i<$cnt_labels;$i++) {
