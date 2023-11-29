@@ -56,7 +56,7 @@
 
 }
 
-[data-bs-theme=dark] .event-entry, .event-list-entry {
+[data-bs-theme=dark] .event-entry, [data-bs-theme=dark] .event-list-entry {
   border-bottom: 1px solid $gray-800;
   .event-date {
     background: $card-border-color-dark;

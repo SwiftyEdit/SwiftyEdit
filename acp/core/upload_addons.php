@@ -1,7 +1,18 @@
 <?php
 
+/**
+ * SwiftyEdit - backend
+ * upload and install addons
+ *
+ * global variables
+ * @var array $lang from language files
+ * @var array $icon from icons.php
+ * @var string $hidden_csrf_token
+ *
+ */
+
 //prohibit unauthorized access
-require 'core/access.php';
+require __DIR__.'/access.php';
 
 $danger_zone_lifetime = 300;
 
@@ -150,11 +161,12 @@ if(isset($_POST['install_uploaded_plg'])) {
 		$all_files = se_scandir_rec("../upload/plugins/extract/$extracted");
 		
 	} else {
-		echo '<div class="alert alert-danger">No Source found: '. $extracted .'</div>';
+		echo '<div class="alert alert-danger">No Source found: '. htmlspecialchars($extracted,  ENT_QUOTES, 'UTF-8') .'</div>';
 	}
 
 	echo '<div class="scroll-container">';
 	if(is_array($all_files)) {
+        $i=0;
 		foreach($all_files as $f) {
 			
 			$i++;
@@ -276,14 +288,16 @@ if(isset($_POST['install_uploaded_tpl'])) {
 		
 		if(is_file("../upload/themes/extract/$extracted/contents.php")) {
 			include '../upload/themes/extract/'.$extracted.'/contents.php';
-			// themes root folder ($instRootDir) must be defined in contents.php 
+			/**
+             * @var string $instRootDir themes root folder must be defined in contents.php
+             **/
 			$all_files = se_scandir_rec("../upload/themes/extract/$extracted/$instRootDir");
 		} else {
 			echo '<div class="alert alert-danger">This is not a compatible Theme</div>';
 		}
 		
 	} else {
-		echo '<div class="alert alert-danger">No Source found: '. $extracted .'</div>';
+		echo '<div class="alert alert-danger">No Source found: '. htmlspecialchars($extracted,  ENT_QUOTES, 'UTF-8') .'</div>';
 	}
 	
 	echo '<div class="scroll-container">';

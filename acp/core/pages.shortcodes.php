@@ -81,13 +81,17 @@ if(isset($_POST['write_shortcode'])) {
 
 /* get data from shortcode by id */
 
-if(isset($_GET['edit'])) {
-	$shortcode_id = (int) $_GET['edit'];
+if(isset($_POST['edit'])) {
+	$shortcode_id = (int) $_POST['edit'];
 	$show_form = 'true';
 }
 
+if(isset($_POST['new'])) {
+    $show_form = 'true';
+}
+
 if(isset($_POST['edit_shortcode'])) {
-	$get_shortcode_by_name = filter_var($_POST['edit_shortcode'],FILTER_SANITIZE_STRING);
+	$get_shortcode_by_name = htmlspecialchars($_POST['edit_shortcode'],ENT_QUOTES);
 	if($get_shortcode_by_name != '') {
 		$get_shortcode = $db_content->get("se_snippets", "*", [
 			"snippet_shortcode" => $get_shortcode_by_name
@@ -125,7 +129,10 @@ if(isset($_POST['delete'])) {
 echo '<div class="subHeader d-flex align-items-center">';
 echo '<h3>Shortcodes</h3>';
 if($show_form !== 'true') {
-    echo '<a href="?tn=pages&sub=shortcodes&edit=new" class="btn btn-default text-success ms-auto">' . $icon['plus'] . ' ' . $lang['new'] . '</a><hr>';
+    echo '<form action="?tn=pages&sub=shortcodes" class="ms-auto" method="POST">';
+    echo '<button type="submit" name="new" class="btn btn-default text-success ms-auto">' . $icon['plus'] . ' ' . $lang['new'] . '</button>';
+    echo $hidden_csrf_token;
+    echo '</form>';
 }
 echo '</div>';
 
@@ -183,7 +190,8 @@ if($show_form == 'true') {
 	echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 	
 	if($get_shortcode['snippet_id'] != '') {
-		echo '<input type="hidden" name="shortcode_id" value="'.$get_shortcode['snippet_id'].'">';
+        $short_code_id = (int) $get_shortcode['snippet_id'];
+		echo '<input type="hidden" name="shortcode_id" value="'.$short_code_id.'">';
 		echo '<input type="submit" name="write_shortcode" value="'.$lang['update'].'" class="btn btn-success w-100">';
 	} else {
 		echo '<input type="submit" name="write_shortcode" value="'.$lang['save'].'" class="btn btn-success w-100">';
@@ -223,13 +231,12 @@ echo '</thead>';
 
 
 for($i=0;$i<$cnt_shortcodes;$i++) {
-	
-	$btn_edit = '<a href="?tn=pages&sub=shortcodes&edit='.$shortcodes[$i]['snippet_id'].'" class="btn btn-default text-success btn-sm">'.$icon['edit'].'</a>';
-	
-	$btn_delete  = '<form action="?tn=pages&sub=shortcodes" method="POST" class="d-inline">';
-	$btn_delete .= '<button type="submit" name="delete" value="'.$shortcodes[$i]['snippet_id'].'" class="btn btn-default text-danger btn-sm">'.$icon['trash_alt'].'</button>';
-	$btn_delete .= $hidden_csrf_token;
-	$btn_delete .= '</form>';
+
+    $btn_edit  = '<form action="?tn=pages&sub=shortcodes" method="POST" class="d-inline">';
+    $btn_edit .= '<button type="submit" name="edit" value="'.$shortcodes[$i]['snippet_id'].'" class="btn btn-default text-success btn-sm me-1">'.$icon['edit'].'</button>';
+    $btn_edit .= '<button type="submit" name="delete" value="'.$shortcodes[$i]['snippet_id'].'" class="btn btn-default text-danger btn-sm">'.$icon['trash_alt'].'</button>';
+    $btn_edit .= $hidden_csrf_token;
+    $btn_edit .= '</form>';
 	
 	$get_sc_labels = explode(',',$shortcodes[$i]['snippet_labels']);
 	
@@ -263,7 +270,7 @@ for($i=0;$i<$cnt_shortcodes;$i++) {
 	echo '<td>'.$copy_shortcode.'</td>';
 	echo '<td><code>'.$longcode.'</code></td>';
 	echo '<td>'.$label.'</td>';
-	echo '<td class="text-right">'.$btn_edit.' '.$btn_delete.'</td>';
+	echo '<td class="text-right">'.$btn_edit.'</td>';
 	echo '</tr>';	
 }
 

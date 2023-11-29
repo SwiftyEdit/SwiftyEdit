@@ -6,17 +6,16 @@ error_reporting(0);
 require_once 'access.php';
 
 $set_lang = $default_lang_code;
-if(isset($_REQUEST['set_lang'])) {
-	$set_lang = $_REQUEST['set_lang'];
+if(isset($_POST['set_lang'])) {
+    $set_lang = htmlspecialchars($_POST['set_lang'],  ENT_QUOTES, 'UTF-8');
 	unset($media_data);
 }
 
 $form_tpl = file_get_contents('templates/media-edit-form.tpl');
 
-
-if(isset($_REQUEST['file'])) {
-	$media_filename = strip_tags($_REQUEST['file']);
-	if(stripos($_REQUEST['file'],"$files_path") !== FALSE) {
+if(isset($_POST['file'])) {
+	$media_filename = se_filter_filepath($_POST['file']);
+	if(stripos($_POST['file'],"$files_path") !== FALSE) {
 		$preview_src = '<p>Filetype: '.substr(strrchr($media_filename, "."), 1).'</p>';
 		$realpath = $media_filename;
 		$img_dimensions = '';
@@ -72,7 +71,7 @@ if(isset($_POST['save'])) {
 
 echo '<div class="subHeader">';
 echo '<a class="btn btn-default" href="?tn=filebrowser&sub=browse">'.$icon['arrow_left'].'</a> ';
-echo '<span class="ms-3">' . $media_filename.'</span>';
+echo '<span class="ms-3">' . htmlspecialchars($media_filename,  ENT_QUOTES, 'UTF-8').'</span>';
 echo '</div>';
 
 /* language */
@@ -156,6 +155,5 @@ $form_tpl = str_replace('{shortcode}', $shortcode, $form_tpl);
 $form_tpl = str_replace('{token}',$_SESSION['token'],$form_tpl);
 
 echo $form_tpl;
-
 
 ?>

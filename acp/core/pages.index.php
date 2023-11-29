@@ -43,13 +43,15 @@ if(isset($_POST['start_index_from']) && $_POST['start_index_from'] != '') {
 
 
 if(isset($_POST['start_update_page']) && $_POST['start_update_page'] != '') {
-	$se_upi = se_update_page_index($_POST['start_update_page']);
+	$start_update_page = se_filter_filepath($_POST['start_update_page']);
+	$se_upi = se_update_page_index($start_update_page);
 	$status_msg = 'Script running '.$se_upi['duration'].' seconds';
 }
 
 
 if(isset($_POST['remove_page']) && $_POST['remove_page'] != '') {
-	$se_upi = se_remove_page_from_index($_POST['remove_page']);
+	$remove_page_id = (int) $_POST['remove_page'];
+	$se_upi = se_remove_page_from_index($remove_page_id);
 }
 
 if(isset($_POST['start_index']) && $_POST['start_index'] != '') {

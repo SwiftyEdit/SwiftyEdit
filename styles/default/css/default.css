@@ -17696,13 +17696,13 @@ a.post-headline-link {
   opacity: 0.3;
 }
 
-[data-bs-theme=dark] .event-entry, .event-list-entry {
+[data-bs-theme=dark] .event-entry, [data-bs-theme=dark] .event-list-entry {
   border-bottom: 1px solid #343a40;
 }
-[data-bs-theme=dark] .event-entry .event-date, .event-list-entry .event-date {
+[data-bs-theme=dark] .event-entry .event-date, [data-bs-theme=dark] .event-list-entry .event-date {
   background: #1d2332;
 }
-[data-bs-theme=dark] .event-entry .event-date .event-date-header, .event-list-entry .event-date .event-date-header {
+[data-bs-theme=dark] .event-entry .event-date .event-date-header, [data-bs-theme=dark] .event-list-entry .event-date .event-date-header {
   background: #262e42;
 }
 
