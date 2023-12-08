@@ -724,6 +724,7 @@ $lang['backup_description'] = "Download the databases on your local computer.";
 $lang['msg_file_delete'] = "The file was deleted.";
 $lang['msg_file_delete_error'] = "Error while deleting";
 $lang['msg_entry_delete'] = "The entry was deleted";
+$lang['msg_data_delete'] = "The data has been deleted";
 
 $lang['msg_page_saved'] = "Page has been saved";
 $lang['msg_page_saved_error'] = "An Error has occurred";
