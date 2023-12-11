@@ -79,14 +79,14 @@ echo '
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark" aria-pressed="true">
+                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="true">
                   <i class="bi bi-moon-stars-fill"></i>
                   Dark
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                  <i class="bi bi-circle-half"></i>
+                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="false">
+                  <i class="bi bi-circle-half theme-icon-active"></i>
                   Auto
                 </button>
               </li>
