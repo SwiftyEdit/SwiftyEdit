@@ -294,11 +294,7 @@ if (isset($set_acptheme)) {
 
     <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-08-08" type="text/css" media="screen, projection">
 
-    <script src="theme/js/backend.min.js?v=2023-08-08"></script>
-    <script src="theme/js/tinymce/tinymce.min.js"></script>
-    <script src="theme/js/tinymce-jquery/dist/tinymce-jquery.min.js"></script>
-    <script src="theme/js/ace/ace.js" data-ace-base="theme/js/ace" type="text/javascript" charset="utf-8"></script>
-
+    <script src="theme/js/backend.min.js?v=2023-12-08"></script>
 
     <script type="text/javascript">
         const languagePack = "<?php echo $languagePack; ?>";
@@ -536,9 +532,9 @@ if (isset($set_acptheme)) {
                     var HTMLtextarea = $('textarea[class*=aceEditor_code]').hide();
                     var aceEditor = ace.edit(editDiv[0]);
                     aceEditor.$blockScrolling = Infinity;
-                    aceEditor.getSession().setMode({path: 'ace/mode/html', inline: true});
+                    aceEditor.getSession().setMode({path: '/acp/theme/js/ace/mode/html', inline: true});
                     aceEditor.getSession().setValue(textarea.val());
-                    aceEditor.setTheme("ace/theme/" + ace_theme);
+                    aceEditor.setTheme('ace/theme/'+ace_theme);
                     aceEditor.getSession().setUseWorker(false);
                     aceEditor.setShowPrintMargin(false);
 
