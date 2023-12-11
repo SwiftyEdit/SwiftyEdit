@@ -1,19 +1,37 @@
 <?php
-//error_reporting(E_ALL ^E_NOTICE);
+
+/**
+ * SwiftyEdit backend
+ *
+ * global variables
+ * @var object $db_content medoo database object
+ * @var object $db_posts medoo database object
+ * @var array $icon icons set in acp/core/icons.php
+ * @var array $lang language
+ * @var string $hidden_csrf_token
+ */
+
 //prohibit unauthorized access
 require 'core/access.php';
 
 if($_POST['delete_reactions']) {
-	
+
+    // make sure that all values are integer
+    foreach ($_POST['bulk_delete'] as $id) {
+        $delete_ids[] = (int) $id;
+    }
+
 	$delete = $db_content->delete("se_comments", [
 		"AND" => [
-			"comment_id" => $_POST['bulk_delete'],
+			"comment_id" => $delete_ids,
 			"comment_type" => ["upv","dnv"]
 		]
 	]);
+
+    $affected_rows = (int) $delete->rowCount();
 	
 	echo '<div class="alert alert-info">';
-	echo 'Deleted Data ('.$delete->rowCount().')';
+	echo $lang['msg_data_delete']. '('.$affected_rows.')';
 	echo '</div>';
 	
 }
@@ -131,7 +149,7 @@ echo '<div class="col-md-3">';
 
 echo '<div class="card p-3">';
 
-echo '<form action="?tn=inbox&sub=votings'.$comment_id.'" method="POST">';
+echo '<form action="?tn=inbox&sub=votings" method="POST">';
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_filter'].'</label>';
 echo '<select name="filter_by_post" class="custom-select form-control" onchange="this.form.submit()">';

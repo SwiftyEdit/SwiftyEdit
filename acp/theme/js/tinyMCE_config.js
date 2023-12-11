@@ -1,6 +1,7 @@
 $(function () {
 	$('textarea.mceEditor, textarea.mceEditor_small').tinymce({
 		selector: 'textarea.mceEditor',
+		base_url: '/acp/theme/js/tinymce/',
 		language: languagePack,
 		language_url: '/acp/theme/js/tinymce-languages/' + languagePack + '.js',
 		skin: tinymce_skin,

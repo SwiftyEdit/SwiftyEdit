@@ -722,6 +722,7 @@ $lang['backup_description'] = "Hier können Sie die Datenbanken auf Ihren lokale
 $lang['msg_file_delete'] = "Die Datei wurde gelöscht.";
 $lang['msg_file_delete_error'] = "Die Datei konnte nicht gelöscht werden.";
 $lang['msg_entry_delete'] = "Der Eintrag wurde gelöscht.";
+$lang['msg_data_delete'] = "Die Daten wurden gelöscht.";
 
 $lang['msg_page_saved'] = "Die Seite wurde gespeichert";
 $lang['msg_page_saved_error'] = "Beim Speichern der Seite ist ein Fehler aufgetreten";

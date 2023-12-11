@@ -14,6 +14,10 @@
  * - dirtyforms
  * - textcounter
  * - moment
+ *
+ * Append to this File
+ * - tinymce
+ * - tinymce.jquery
  */
 
 tempusDominus.extend(tempusDominus.plugins.moment_parse, 'YYYY-MM-DD HH:mm');
@@ -129,11 +133,12 @@ $(function() {
 		type: "character",
 		stopInputAtMaximum: false,
 		counterText: '%d'
-	}); 
-			  
-		
+	});
 
-				
+	ace.config.set("basePath", "/acp/theme/js/ace");
+	ace.config.set('modePath', '/acp/theme/js/ace');
+	ace.config.set('themePath', '/acp/theme/js/ace');
+
 	/* css and html editor for page header */
 	if($('#CSSeditor').length != 0) {
 		var CSSeditor = ace.edit("CSSeditor");
@@ -154,7 +159,7 @@ $(function() {
 		var HTMLtextarea = $('textarea[class*=aceEditor_html]').hide();
 		HTMLeditor.$blockScrolling = Infinity;
 		HTMLeditor.getSession().setValue(HTMLtextarea.val());
-		HTMLeditor.setTheme("ace/theme/" + ace_theme);
+		HTMLeditor.setTheme('ace/theme/'+ace_theme);
 		HTMLeditor.getSession().setMode({ path:'ace/mode/html', inline:true });
 		HTMLeditor.getSession().setUseWorker(false);
 		HTMLeditor.setShowPrintMargin(false);

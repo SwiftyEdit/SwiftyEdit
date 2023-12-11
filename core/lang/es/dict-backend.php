@@ -722,6 +722,7 @@ $lang['backup_description'] = "Aquí puede descargar las bases de datos a su com
 $lang['msg_file_delete'] = "El archivo ha sido eliminado.";
 $lang['msg_file_delete_error'] = "El archivo no se pudo eliminar.";
 $lang['msg_entry_delete'] = "La entrada ha sido eliminada.";
+$lang['msg_data_delete'] = "Se han borrado los datos";
 
 $lang['msg_page_saved'] = "La página ha sido guardada";
 $lang['msg_page_saved_error'] = "Se produjo un error al guardar la página";
