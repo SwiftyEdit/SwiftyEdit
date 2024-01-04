@@ -61,39 +61,10 @@ echo '<a class="btn btn-default" href="#" id="toggleSupport">';
 echo $icon['question'];
 echo '</a>';
 
-
-echo '<div class="dropstart ms-1">';
-echo '            <button class="btn btn-default nav-link py-2 px-0 px-lg-2 d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (dark)">
-              <i class="bi theme-icon-active"></i>
-              <span class="d-lg-none ms-2" id="bd-theme-text">Toggle theme</span>
-            </button>';
-echo '
-
-
-
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
-              <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
-                  <i class="bi bi-sun-fill"></i>
-                  Light
-                </button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="true">
-                  <i class="bi bi-moon-stars-fill"></i>
-                  Dark
-                </button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="false">
-                  <i class="bi bi-circle-half theme-icon-active"></i>
-                  Auto
-                </button>
-              </li>
-            </ul>
-
-';
-echo '</div>';
+echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()">
+<span id="toggle-dark"><i class="bi bi-moon"></i></span>
+<span id="toggle-light"><i class="bi bi-sun"></i></span>
+</button>';
 
 echo '</div>';
 echo '</nav>';

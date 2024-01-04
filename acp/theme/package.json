@@ -24,7 +24,9 @@
   "license": "UNLICENSED",
   "version": "1.0.0",
   "description": "This Theme is used in the SwiftyEdit CMS backend",
-  "devDependencies": {},
+  "devDependencies": {
+    "htmx.org": "^1.9.9"
+  },
   "repository": {},
   "author": ""
 }

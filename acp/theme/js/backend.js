@@ -22,6 +22,15 @@
 
 tempusDominus.extend(tempusDominus.plugins.moment_parse, 'YYYY-MM-DD HH:mm');
 
+document.addEventListener('htmx:afterRequest', function(evt) {
+	// Put the JS code that you want to execute here
+	$(function() {
+		setTimeout(function() {
+			$(".alert-auto-close").slideUp('slow');
+		}, 2000);
+	});
+});
+
 $(function() {
 	
 
@@ -509,65 +518,59 @@ $(function() {
 
 });
 
-/*!
- * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
- * Copyright 2011-2023 The Bootstrap Authors
- * Licensed under the Creative Commons Attribution 3.0 Unported License.
+
+/*
+ * Color mode toggler based on Bootstrap's docs
+ * https://getbootstrap.com/docs/5.3/customize/color-modes/
+ * but we don't want a dropdown, we want a simple switch
  */
 
-(() => {
-	'use strict'
+const getStoredTheme = () => localStorage.getItem('theme')
+const setStoredTheme = theme => localStorage.setItem('theme', theme)
 
-	const storedTheme = localStorage.getItem('backend-theme')
-
-	const getPreferredTheme = () => {
-		if (storedTheme) {
-			return storedTheme
-		}
-
-		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+const getPreferredTheme = () => {
+	const storedTheme = getStoredTheme()
+	if (storedTheme) {
+		return storedTheme
 	}
 
-	const setTheme = function (theme) {
-		if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			document.documentElement.setAttribute('data-bs-theme', 'dark')
-		} else {
-			document.documentElement.setAttribute('data-bs-theme', theme)
-		}
+	return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+const setTheme = theme => {
+	if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+		document.documentElement.setAttribute('data-bs-theme', 'dark')
+	} else {
+		document.documentElement.setAttribute('data-bs-theme', theme)
+	}
+}
+
+
+setTheme(getPreferredTheme())
+
+const container = document.documentElement;
+if(localStorage.getItem("theme")){
+	container.setAttribute("data-bs-theme",getStoredTheme());
+	toggleTheme(1)
+}
+
+function toggleTheme(r) {
+
+	const activeTheme = getStoredTheme();
+	let theme_switch;
+
+	if(activeTheme === "light") {
+		theme_switch = 1
+	} else {
+		theme_switch = 0
 	}
 
-	setTheme(getPreferredTheme())
-
-	const showActiveTheme = theme => {
-		const activeThemeIcon = document.querySelector('.theme-icon-active')
-		const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
-		const iconOfActiveBtn = btnToActive.querySelector('i').getAttribute('class')
-
-		document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
-			element.classList.remove('active')
-		})
-
-		btnToActive.classList.add('active')
-		activeThemeIcon.setAttribute('class', iconOfActiveBtn)
+	if(r){theme_switch = !theme_switch}
+	if (theme_switch) {
+		setTheme("dark");
+		setStoredTheme("dark")
+	} else {
+		setTheme("light");
+		setStoredTheme("light")
 	}
-
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-		if (storedTheme !== 'light' || storedTheme !== 'dark') {
-			setTheme(getPreferredTheme())
-		}
-	})
-
-	window.addEventListener('DOMContentLoaded', () => {
-		showActiveTheme(getPreferredTheme())
-
-		document.querySelectorAll('[data-bs-theme-value]')
-			.forEach(toggle => {
-				toggle.addEventListener('click', () => {
-					const theme = toggle.getAttribute('data-bs-theme-value')
-					localStorage.setItem('backend-theme', theme)
-					setTheme(theme)
-					showActiveTheme(theme)
-				})
-			})
-	})
-})()
+}
