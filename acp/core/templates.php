@@ -19,6 +19,8 @@ $bs_form_input_textarea = file_get_contents('templates/bs-form-input-textarea.tp
  */
 function tpl_form_input_text(array $data) {
 
+    global $bs_form_input_text;
+
     if((!isset($data['container_class'])) OR $data['container_class'] == '') {
         $data['container_class'] = 'mb-3';
     }
@@ -31,14 +33,19 @@ function tpl_form_input_text(array $data) {
         $data['type'] = 'text';
     }
 
-    global $bs_form_input_text;
-
     $tpl = str_replace('{container_class}', $data['container_class'], $bs_form_input_text);
     $tpl = str_replace('{inputid}', $data['inputid'], $tpl);
     $tpl = str_replace('{label}', $data['label'], $tpl);
     $tpl = str_replace('{input_name}', $data['input_name'], $tpl);
     $tpl = str_replace('{input_value}', $data['input_value'], $tpl);
     $tpl = str_replace('{type}', $data['type'], $tpl);
+
+    if((!isset($data['form_text'])) OR $data['form_text'] == '') {
+        $tpl = str_replace('{form_text}', '', $tpl);
+    } else {
+        $form_text = '<div class="form-text">'.$data['form_text'].'</div>';
+        $tpl = str_replace('{form_text}', $form_text, $tpl);
+    }
 
     return $tpl;
 }
