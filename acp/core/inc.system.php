@@ -57,6 +57,10 @@ switch ($sub) {
 		$subinc = "system.posts";
 		break;
 
+    case "events":
+        $subinc = "system.events";
+        break;
+
 	case "shop":
 		$subinc = "system.shop";
 		break;

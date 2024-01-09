@@ -176,6 +176,7 @@ echo '<ul>';
 echo '<li><a class="sidebar-nav '.($sub == "general" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=general">'.$icon['arrow_right_short'].' '.$lang['nav_general'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "posts" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=posts">'.$icon['file_earmark_post'].' '.$lang['tn_posts'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "shop" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=shop">'.$icon['store'].' '.$lang['tn_shop'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "events" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=events">'.$icon['calendar_event'].' '.$lang['tn_events'].'</a></li>';
 echo '</ul>';
 echo '<ul>';
 echo '<li><a class="sidebar-nav '.($sub == "labels" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=system&sub=labels">'.$icon['tags_fill'].' '.$lang['labels'].'</a></li>';
