@@ -16,7 +16,7 @@
     "jquery": "^3.7.1",
     "jquery-text-counter": "^0.9.0",
     "jquery.dirtyforms": "^2.0.0",
-    "moment": "^2.29.4",
+    "moment": "^2.30.1",
     "tags-input": "^1.1.1",
     "tinymce": "^6.8.2"
   },
