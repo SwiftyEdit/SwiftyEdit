@@ -137,6 +137,18 @@ a#dashboard {
   background: $page_header_bg;
 }
 
+[data-bs-theme="dark"] {
+  #toggle-light {
+    display: none;
+  }
+}
+
+[data-bs-theme="light"] {
+  #toggle-dark {
+    display: none;
+  }
+}
+
 
 .ph-dashboard {
   border-bottom: 1px solid rgba($section_color_dashboard,.5);
@@ -280,8 +292,6 @@ hr.shadow-line:after {
   @extend .alert-primary;
   background: var(--bs-widget-bg);
 }
-
-
 
 
 .text-public, .text-public.active {

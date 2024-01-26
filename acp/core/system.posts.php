@@ -1,7 +1,7 @@
 <?php
 
 //prohibit unauthorized access
-require("core/access.php");
+require 'core/access.php';
 
 /* save upload preferences */
 if(isset($_POST['update_posts'])) {
@@ -35,23 +35,24 @@ echo '<div class="card card-body">';
 
 echo '<form action="?tn=system&sub=posts" method="POST">';
 
-echo'<fieldset>';
-echo'<legend>'.$lang['label_entries'].'</legend>';
-echo '<div class="form-group">';
+echo '<h5 class="heading-line">'.$lang['label_entries'].'</h5>';
+
+
+echo '<div class="mb-3">';
 echo '<label>'.$lang['label_entries_per_page'].'</label>';
 echo '<input type="text" class="form-control" name="prefs_posts_entries_per_page" value="'.$prefs_posts_entries_per_page.'">';
 echo '</div>';
-echo '</fieldset>';
+
+echo '<h5 class="heading-line">'.$lang['label_images'].'</h5>';
 
 
-echo'<fieldset>';
-echo'<legend>'.$lang['label_images'].'</legend>';
-echo '<div class="form-group">';
+echo '<div class="mb-3">';
 echo '<label>'.$lang['label_images_prefix'].'</label>
 			<input type="text" class="form-control" name="prefs_posts_images_prefix" value="'.$prefs_posts_images_prefix.'">
 			</div>';
+
 $all_images = se_get_all_images();
-echo '<div class="form-group">';
+echo '<div class="mb-3">';
 echo '<label>'.$lang['label_default_image'].'</label>';
 				
 echo '<select class="form-control custom-select" name="prefs_posts_default_banner">';
@@ -70,68 +71,6 @@ foreach ($all_images as $img) {
 echo '</select>';
 				
 echo '</div>';
-echo '</fieldset>';
-
-
-
-
-/* events */
-
-echo '<fieldset>';
-echo '<legend>'.$lang['post_type_event'].'</legend>';
-echo '<div class="form-group">
-				<label>' . $lang['label_event_time_offset'] . '</label>
-				<input type="text" class="form-control" name="prefs_posts_event_time_offset" value="'.$prefs_posts_event_time_offset.'">
-				<small class="form-text text-muted">'.$lang['event_time_offset_help_text'].'</small>
-			</div>';
-
-
-$sel_guestlist1 = '';
-$sel_guestlist2 = '';
-$sel_guestlist3 = '';
-
-if($prefs_posts_default_guestlist == 1 OR $prefs_posts_default_guestlist == '') {
-	$sel_guestlist1 = 'selected';
-} else if($prefs_posts_default_guestlist == 2) {
-	$sel_guestlist2 = 'selected';
-} else if($prefs_posts_default_guestlist == 3) {
-	$sel_guestlist3 = 'selected';
-}
-
-echo '<div class="form-group">';
-echo '<label>' . $lang['label_guestlist'] . '</label>';
-echo '<select class="form-control custom-select" name="prefs_posts_default_guestlist">';
-echo '<option value="1" '.$sel_guestlist1.'>'.$lang['label_guestlist_deactivate'].'</option>';
-echo '<option value="2" '.$sel_guestlist2.'>'.$lang['label_guestlist_for_registered'].'</option>';
-echo '<option value="3" '.$sel_guestlist3.'>'.$lang['label_guestlist_for_everybody'].'</option>';
-echo '</select>';
-echo '</div>';		
-	
-echo'</fieldset>';
-
-/* votings */
-$sel_votings1 = '';
-$sel_votings2 = '';
-$sel_votings3 = '';
-
-if($prefs_posts_default_votings == 1 OR $prefs_posts_default_votings == '') {
-	$sel_votings1 = 'selected';
-} else if($prefs_posts_default_votings == 2) {
-	$sel_votings2 = 'selected';
-} else if($prefs_posts_default_votings == 3) {
-	$sel_votings3 = 'selected';
-}
-
-echo '<fieldset>';
-echo '<legend>'.$lang['label_votings'].'</legend>';
-echo '<select class="form-control custom-select" name="prefs_posts_default_votings">';
-echo '<option value="1" '.$sel_votings1.'>'.$lang['label_votings_off'].'</option>';
-echo '<option value="2" '.$sel_votings2.'>'.$lang['label_votings_on_registered'].'</option>';
-echo '<option value="3" '.$sel_votings3.'>'.$lang['label_votings_on_global'].'</option>';
-echo '</select>';
-echo'</fieldset>';
-
-
 
 
 echo '<input type="submit" class="btn btn-success" name="update_posts" value="'.$lang['update'].'">';

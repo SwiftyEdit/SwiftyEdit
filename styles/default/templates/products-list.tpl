@@ -8,6 +8,7 @@
                     <button type="submit" name="sort_by" value="pasc" class="btn btn-outline-primary {$class_sort_price_asc}" title="{$lang_label_sort_price_asc}">{$lang_label_price} <i class="bi bi-sort-numeric-down"></i></button>
                     <button type="submit" name="sort_by" value="pdesc" class="btn btn-outline-primary {$class_sort_price_desc}" title="{$lang_label_sort_price_desc}">{$lang_label_price} <i class="bi bi-sort-numeric-down-alt"></i></button>
                 </div>
+                {$hidden_csrf_token}
             </form>
         </div>
         <div class="col-md-4 col-sm-12">

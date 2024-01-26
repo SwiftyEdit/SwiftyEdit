@@ -95,6 +95,9 @@
                 {if is_array($product_features)}
                     <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab-features">{$label_product_features}</a>
                 {/if}
+                {if is_array($show_volume_discounts)}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab-volume-discounts">{$label_prices_discount}</a>
+                {/if}
                 {if $text_additional1_label != ""}
                     <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional1">{$text_additional1_label}</a>
                 {/if}
@@ -130,6 +133,24 @@
                         </table>
                     </div>
                 </div>
+            </div>
+            {/if}
+            {if is_array($show_volume_discounts)}
+            <div class="tab-pane fade" id="tab-volume-discounts" role="tabpanel">
+                <table class="table table-sm">
+                    <tr>
+                        <td>Menge</td>
+                        <td>Netto</td>
+                        <td>Brutto</td>
+                    </tr>
+                    {foreach $show_volume_discounts as $discount => $value}
+                        <tr>
+                            <td># {$value.amount}</td>
+                            <td>{$value.price_net}</td>
+                            <td>{$value.price_gross}</td>
+                        </tr>
+                    {/foreach}
+                </table>
             </div>
             {/if}
             {if $text_additional1_label != ""}

@@ -22,6 +22,15 @@
 
 tempusDominus.extend(tempusDominus.plugins.moment_parse, 'YYYY-MM-DD HH:mm');
 
+document.addEventListener('htmx:afterRequest', function(evt) {
+	// Put the JS code that you want to execute here
+	$(function() {
+		setTimeout(function() {
+			$(".alert-auto-close").slideUp('slow');
+		}, 2000);
+	});
+});
+
 $(function() {
 	
 
@@ -439,135 +448,108 @@ $(function() {
 		return price;
 	}
 
-	if($("#price").val()) {
-					
-		get_price_net = $("#price").val();
-		var e = document.getElementById("tax");
-		var get_tax = e.options[e.selectedIndex].text;
-		get_tax = parseInt(get_tax);
-		get_net_calc = get_price_net.replace(/\./g, '');
-		get_net_calc = get_net_calc.replace(",",".");
-		current_gross = addTax(get_net_calc,get_tax);
+	function swap_net_to_gross(price_net) {
+		var tax = $( "#tax option:selected" ).text();
+		tax = parseInt(tax);
+		price_net_format = price_net.replace(/\./g, '');
+		price_net_format = price_net_format.replace(",",".");
+		current_gross = addTax(price_net_format,tax);
 		current_gross = accounting.formatNumber(current_gross,8,".",",");
-		$('#price_total').val(current_gross);
-		
-		calculated_net = addTax(get_net_calc,0);
-		calculated_net = accounting.formatNumber(calculated_net,8,".",",");
-		$('#calculated_net').html(calculated_net);
-		
-		$('.show_price_tax').html(get_tax);
-
-		$('#price').keyup(function(){
-			get_price_net = $('#price').val();
-			get_net_calc = get_price_net.replace(/\./g, '');
-			get_net_calc = get_net_calc.replace(",",".");
-			current_gross = addTax(get_net_calc,get_tax);
-			current_gross = accounting.formatNumber(current_gross,8,".",",");
-			$('#price_total').val(current_gross);
-			
-			calculated_net = addTax(get_net_calc,0);
-			calculated_net = accounting.formatNumber(calculated_net,8,".",",");
-			$('#calculated_net').html(calculated_net);
-			
-		});
-					
-		$('#price_total').keyup(function(){
-			get_brutto = $('#price_total').val();
-			get_gross_calc = get_brutto.replace(/\./g, '');
-			get_gross_calc = get_gross_calc.replace(",",".");
-			current_net = removeTax(get_gross_calc,get_tax);
-			current_net = accounting.formatNumber(current_net,8,".",",");
-			$('#price').val(current_net);
-			$('#calculated_net').html(current_net);
-		});
-		
-		$('#price_addition').keyup(function(){
-			get_price_net = $('#price').val();
-			
-			get_net_calc = get_price_net.replace(/\./g, '');
-			get_net_calc = get_net_calc.replace(",",".");
-			current_gross = addTax(get_net_calc,get_tax);
-			current_gross = accounting.formatNumber(current_gross,8,".",",");
-			$('#price_total').val(current_gross);
-		});
-		
-		$('#tax').bind("change keyup", function(){
-			
-			var e = document.getElementById("tax");
-			var get_tax = e.options[e.selectedIndex].text;
-			get_tax = parseInt(get_tax);
-
-			get_price_net = $('#price').val();
-			get_net_calc = get_price_net.replace(",",".");
-
-			current_gross = addTax(get_net_calc,get_tax);
-			current_gross = accounting.formatNumber(current_gross,8,".",",");
-
-			$('#price_total').val(current_gross);
-		});
+		return current_gross;
 	}
 
+	function swap_gross_to_net(price_gross) {
+		var tax = $( "#tax option:selected" ).text();
+		tax = parseInt(tax);
+		price_gross_format = price_gross.replace(/\./g, '');
+		price_gross_format = price_gross_format.replace(",",".");
+		current_net = removeTax(price_gross_format,tax);
+		current_net = accounting.formatNumber(current_net,8,".",",");
+		return current_net;
+	}
+
+
+	var inputs_price_net = $('.prod_price_net');
+	var inputs_price_gross = $('.prod_price_gross');
+
+	$('.prod_price_net').on('keyup', function() {
+		var price_net = $(this).closest('.row').find(inputs_price_net).val();
+		current_gross = swap_net_to_gross(price_net);
+		var price_gross_input = $(this).closest('.row').find(inputs_price_gross)
+		$(price_gross_input).val(current_gross);
+	});
+
+	$('.prod_price_gross').on('keyup', function() {
+		var price_gross = $(this).closest('.row').find(inputs_price_gross).val();
+		current_net = swap_gross_to_net(price_gross);
+		var price_net_input = $(this).closest('.row').find(inputs_price_net)
+		$(price_net_input).val(current_net);
+	});
+
+
+	$('.prod_price_net').each(function(i, obj) {
+		var price_net = $(this).closest('.row').find(inputs_price_net).val();
+		if(price_net) {
+			current_gross = swap_net_to_gross(price_net);
+			var price_gross_input = $(this).closest('.row').find(inputs_price_gross)
+			$(price_gross_input).val(current_gross);
+		}
+	});
 });
 
-/*!
- * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
- * Copyright 2011-2023 The Bootstrap Authors
- * Licensed under the Creative Commons Attribution 3.0 Unported License.
+
+/*
+ * Color mode toggler based on Bootstrap's docs
+ * https://getbootstrap.com/docs/5.3/customize/color-modes/
+ * but we don't want a dropdown, we want a simple switch
  */
 
-(() => {
-	'use strict'
+const getStoredTheme = () => localStorage.getItem('theme')
+const setStoredTheme = theme => localStorage.setItem('theme', theme)
 
-	const storedTheme = localStorage.getItem('backend-theme')
-
-	const getPreferredTheme = () => {
-		if (storedTheme) {
-			return storedTheme
-		}
-
-		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+const getPreferredTheme = () => {
+	const storedTheme = getStoredTheme()
+	if (storedTheme) {
+		return storedTheme
 	}
 
-	const setTheme = function (theme) {
-		if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			document.documentElement.setAttribute('data-bs-theme', 'dark')
-		} else {
-			document.documentElement.setAttribute('data-bs-theme', theme)
-		}
+	return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+const setTheme = theme => {
+	if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+		document.documentElement.setAttribute('data-bs-theme', 'dark')
+	} else {
+		document.documentElement.setAttribute('data-bs-theme', theme)
+	}
+}
+
+
+setTheme(getPreferredTheme())
+
+const container = document.documentElement;
+if(localStorage.getItem("theme")){
+	container.setAttribute("data-bs-theme",getStoredTheme());
+	toggleTheme(1)
+}
+
+function toggleTheme(r) {
+
+	const activeTheme = getStoredTheme();
+	let theme_switch;
+
+	if(activeTheme === "light") {
+		theme_switch = 1
+	} else {
+		theme_switch = 0
 	}
 
-	setTheme(getPreferredTheme())
-
-	const showActiveTheme = theme => {
-		const activeThemeIcon = document.querySelector('.theme-icon-active')
-		const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
-		const iconOfActiveBtn = btnToActive.querySelector('i').getAttribute('class')
-
-		document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
-			element.classList.remove('active')
-		})
-
-		btnToActive.classList.add('active')
-		activeThemeIcon.setAttribute('class', iconOfActiveBtn)
+	if(r){theme_switch = !theme_switch}
+	if (theme_switch) {
+		setTheme("dark");
+		setStoredTheme("dark")
+	} else {
+		setTheme("light");
+		setStoredTheme("light")
 	}
-
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-		if (storedTheme !== 'light' || storedTheme !== 'dark') {
-			setTheme(getPreferredTheme())
-		}
-	})
-
-	window.addEventListener('DOMContentLoaded', () => {
-		showActiveTheme(getPreferredTheme())
-
-		document.querySelectorAll('[data-bs-theme-value]')
-			.forEach(toggle => {
-				toggle.addEventListener('click', () => {
-					const theme = toggle.getAttribute('data-bs-theme-value')
-					localStorage.setItem('backend-theme', theme)
-					setTheme(theme)
-					showActiveTheme(theme)
-				})
-			})
-	})
-})()
+}

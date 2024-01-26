@@ -126,6 +126,28 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	
 	$cart_item[$i]['tax'] = $tax;
 
+    // check if we have to calculate volume discounts
+    if($this_item['product_price_volume_discount'] != '') {
+        $volume_discounts = json_decode($this_item['product_price_volume_discount'],true);
+        // we sort this by amount
+        $amounts = array();
+        foreach($volume_discounts as $k => $v) {
+            $amounts[$k] = $v['amount'];
+        }
+        array_multisort($amounts, SORT_ASC, $volume_discounts);
+
+        // now we loop through this amounts and check which price we can serve
+        // if $cart_item[$i]['amount'] is bigger or the same, we have a new price
+
+        foreach($volume_discounts as $k => $v) {
+            if($cart_item[$i]['amount'] >= $v['amount']) {
+                // overwrite product_price_net with volume discount
+                $this_item['product_price_net'] = $v['price'];
+            }
+        }
+    }
+
+
 	$post_prices = se_posts_calc_price($this_item['product_price_net'],$tax,$cart_item[$i]['amount']);
     $cart_item[$i]['price_net_single_format'] = $post_prices['net_single'];
     $cart_item[$i]['price_gross_single_format'] = $post_prices['gross_single'];

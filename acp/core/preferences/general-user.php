@@ -186,8 +186,28 @@ echo '</div>';
 echo '</div>';
 
 
+echo '<h5 class="heading-line">'.$lang['label_votings'].'</h5>';
 
+/* votings */
+$sel_votings1 = '';
+$sel_votings2 = '';
+$sel_votings3 = '';
 
+if($prefs_posts_default_votings == 1 OR $prefs_posts_default_votings == '') {
+    $sel_votings1 = 'selected';
+} else if($prefs_posts_default_votings == 2) {
+    $sel_votings2 = 'selected';
+} else if($prefs_posts_default_votings == 3) {
+    $sel_votings3 = 'selected';
+}
+
+echo '<div class="mb-3">';
+echo '<select class="form-control custom-select" name="prefs_posts_default_votings">';
+echo '<option value="1" '.$sel_votings1.'>'.$lang['label_votings_off'].'</option>';
+echo '<option value="2" '.$sel_votings2.'>'.$lang['label_votings_on_registered'].'</option>';
+echo '<option value="3" '.$sel_votings3.'>'.$lang['label_votings_on_global'].'</option>';
+echo '</select>';
+echo'</div>';
 
 echo '<input type="submit" class="btn btn-success" name="update_comments" value="'.$lang['update'].'">';
 echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

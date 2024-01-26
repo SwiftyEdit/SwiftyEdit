@@ -294,7 +294,7 @@
                                 <div class="col-md-3">
                                     <div class="">
                                         <label>{label_product_price} {label_product_net}</label>
-                                        <input class='form-control' id="price" name="product_price_net" type="text"
+                                        <input class='form-control prod_price_net' id="price" name="product_price_net" type="text"
                                                value="{product_price_net}">
                                     </div>
                                 </div>
@@ -309,13 +309,15 @@
 
                                 <div class="col-md-3">
                                     <div class="">
-                                        <label>{label_product_price} {label_product_gross} <small>({label_product_net}
-                                                <span id="calculated_net"></span>)</small></label>
-                                        <input class='form-control' id="price_total" name="product_price_gross"
+                                        <label>{label_product_price} {label_product_gross}</label>
+                                        <input class='form-control prod_price_gross' id="price_total" name="product_price_gross"
                                                type="text" value="{product_price_gross}">
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- show volume dicounts if we edit a existing product -->
+                            {show_price_volume_discount}
 
                             <hr>
 
