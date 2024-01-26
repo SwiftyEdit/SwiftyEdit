@@ -22,10 +22,10 @@
                     <div class="col-6">
                         <div class="p-1">
                             <p class="h6">{$lang_price_single}</p>
-                            <p>{$currency} {$item.price_gross_single_format}</p>
                             {if $price_mode == 2 || $price_mode == 3}
-                                <p>{$currency} {$item.price_net_single_format}</p>
+                                <p><small class="text-muted">{$lang_label_net}:</small> {$currency} {$item.price_net_single_format}</p>
                             {/if}
+                            <p class="mb-1"><small class="text-muted">{$lang_label_gross}:</small> {$currency} {$item.price_gross_single_format}</p>
                         </div>
                     </div>
                     <div class="col-2">

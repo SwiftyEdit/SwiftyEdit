@@ -32,6 +32,14 @@ if ($target_page[0] == '') {
     $target_page[0] = $swifty_slug;
 }
 
+if($product_data['product_tax'] == '1') {
+    $tax = $se_prefs['prefs_posts_products_default_tax'];
+} else if($product_data['product_tax'] == '2') {
+    $tax = $se_prefs['prefs_posts_products_tax_alt1'];
+} else {
+    $tax = $se_prefs['prefs_posts_products_tax_alt2'];
+}
+
 
 $teaser = text_parser(htmlspecialchars_decode($product_data['teaser']));
 $text = text_parser(htmlspecialchars_decode($product_data['text']));
@@ -62,6 +70,21 @@ for($i=1;$i<6;$i++) {
     $smarty->assign($var_label, $$var_label);
     $smarty->assign($var_text, $$var_text);
 
+}
+
+/* volume discounts */
+if($product_data['product_price_volume_discount'] != '') {
+    $product_volume_discounts = json_decode($product_data['product_price_volume_discount'],true);
+    $smarty->assign('label_prices_discount', $lang['label_prices_discount']);
+
+    // calculate gross prices
+    foreach($product_volume_discounts as $k => $v) {
+        $vd_price = se_posts_calc_price($v['price'],$tax);
+        $show_volume_discounts[$k]['amount'] = $v['amount'];
+        $show_volume_discounts[$k]['price_net'] = $vd_price['net'];
+        $show_volume_discounts[$k]['price_gross'] = $vd_price['gross'];
+    }
+    $smarty->assign('show_volume_discounts', $show_volume_discounts);
 }
 
 $product_images = explode("<->", $product_data['images']);
@@ -170,14 +193,6 @@ $this_entry = str_replace("{form_action}", $form_action, $this_entry);
 if($se_prefs['prefs_posts_products_cart'] == 1) {
     // all shopping carts are disabled - overwrite products settings
     $product_data['product_cart_mode'] = 2;
-}
-
-if($product_data['product_tax'] == '1') {
-    $tax = $se_prefs['prefs_posts_products_default_tax'];
-} else if($product_data['product_tax'] == '2') {
-    $tax = $se_prefs['prefs_posts_products_tax_alt1'];
-} else {
-    $tax = $se_prefs['prefs_posts_products_tax_alt2'];
 }
 
 $post_prices = se_posts_calc_price($product_data['product_price_net'],$tax);

@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 //prohibit unauthorized access
 require __DIR__.'/access.php';
 
@@ -173,6 +173,23 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
     $product_features_values = '';
     if(isset($_POST['product_features_values'])) {
         $product_features_values = json_encode($_POST['product_features_values'],JSON_FORCE_OBJECT);
+    }
+
+    if(isset($_POST['product_vd_amount'])) {
+        $cnt_vd_prices = count($_POST['product_vd_amount']);
+        for($i=0;$i<$cnt_vd_prices;$i++) {
+
+            if($_POST['product_vd_amount'][$i] == '') {
+                continue;
+            }
+
+            $vd_price[] = [
+                'amount' => (int) $_POST['product_vd_amount'][$i],
+                'price' => $_POST['product_vd_price'][$i]
+            ];
+
+        }
+        $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
 
@@ -692,6 +709,48 @@ if($product_price_net_purchasing == '') {
     $product_price_net_purchasing = '0,00';
 }
 
+/* volume discounts */
+
+$volume_discounts = json_decode($product_data['product_price_volume_discount'],true);
+$cnt_volume_discounts = 1;
+if(is_array($volume_discounts)) {
+    $cnt_volume_discounts = count($volume_discounts);
+}
+
+
+$show_price_volume_discount = '<div class="card my-2">';
+$show_price_volume_discount .= '<div class="card-header">';
+$show_price_volume_discount .= '<span>'.$lang['label_scaling_prices'].'</span>';
+$show_price_volume_discount .= '<button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseExample">+</button>';
+$show_price_volume_discount .= '</div>';
+$show_price_volume_discount .= '<div class="card-body collapse" id="collapseVDP">';
+
+
+for($i=0;$i<($cnt_volume_discounts+5);$i++) {
+
+    $this_ammount = $volume_discounts[$i]['amount'];
+    $price_net = $volume_discounts[$i]['price'];
+
+    $show_price_volume_discount .= '<div class="calculate_price">';
+    $show_price_volume_discount .= '<div class="row">';
+    $show_price_volume_discount .= '<div class="col-md-2">';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_amount'] . '</label>';
+    $show_price_volume_discount .= '<input class="form-control" name="product_vd_amount[]" type="number" value="'.$this_ammount.'">';
+    $show_price_volume_discount .= '</div>';
+    $show_price_volume_discount .= '<div class="col-md-3">';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_price_net'] . '</label>';
+    $show_price_volume_discount .= '<input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="'.$price_net.'">';
+    $show_price_volume_discount .= '</div>';
+    $show_price_volume_discount .= '<div class="col-md-3">';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_price_gross'] . '</label>';
+    $show_price_volume_discount .= '<input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">';
+    $show_price_volume_discount .= '</div>';
+    $show_price_volume_discount .= '</div>';
+    $show_price_volume_discount .= '</div>';
+}
+
+$show_price_volume_discount .= '</div>';
+$show_price_volume_discount .= '</div>';
 
 /* select delivery time */
 
@@ -869,6 +928,8 @@ for($i=0;$i<$cnt_labels;$i++) {
     $checkbox_set_labels .= '<label class="form-check-label" for="label'.$label_id.'">'.$label_title.'</label>';
     $checkbox_set_labels .= '</div>';
 }
+
+$form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
 
 $form_tpl = str_replace('{product_labels}', $checkbox_set_labels, $form_tpl);
 $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
