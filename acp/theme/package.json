@@ -25,7 +25,7 @@
   "version": "1.0.0",
   "description": "This Theme is used in the SwiftyEdit CMS backend",
   "devDependencies": {
-    "htmx.org": "^1.9.9"
+    "htmx.org": "^1.9.10"
   },
   "repository": {},
   "author": ""
