@@ -12,7 +12,7 @@
  */
 
 
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 //prohibit unauthorized access
 require __DIR__.'/access.php';
 
@@ -55,8 +55,8 @@ if(isset($_GET['edit_value'])) {
 }
 
 
-echo '<div class="subHeader d-flex">';
-echo $icon['filter'] .' Filter';
+echo '<div class="subHeader d-flex align-items-center">';
+echo '<h3>'.$icon['filter'] .' Filter</h3>';
 echo '<div class="btn-group ms-auto">';
 echo '<a href="?tn=shop&sub=shop-filter&new=group" class="btn btn-default">'.$icon['plus'].' '.$lang['btn_new_group'].'</a>';
 echo '<a href="?tn=shop&sub=shop-filter&new=value" class="btn btn-default">'.$icon['plus'].' '.$lang['btn_new_value'].'</a>';
@@ -190,6 +190,7 @@ if($show_form !== false)  {
 
     // list all filter
 
+    echo '<div class="card p-3">';
     echo '<table class="table">';
     echo '<thead>';
     echo '<tr>';
@@ -228,14 +229,14 @@ if($show_form !== false)  {
         echo '<br>';
         foreach($get_all_categories as $k => $v) {
             if (in_array($v['cat_hash'], $group_categories)) {
-                echo '<span class="badge badge-se text-opacity-50">'.$v['cat_name'].'</span>';
+                echo '<span class="badge text-bg-secondary opacity-50">'.$v['cat_name'].'</span> ';
             }
         }
         echo '</td>';
         echo '<td>';
         foreach($get_filter_items as $item) {
             echo '<a href="?tn=shop&sub=shop-filter&edit_value='.$item['filter_id'].'" class="btn btn-sm btn-default">';
-            echo '<span class="badge">'.$item['filter_priority'].'</span> '.$item['filter_title'];
+            echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> '.$item['filter_title'];
             echo '</a> ';
         }
         echo '<a href="?tn=shop&sub=shop-filter&new=value&parent='.$group_id.'" class="btn btn-sm btn-default text-success">+</a>';
@@ -245,5 +246,5 @@ if($show_form !== false)  {
     }
 
     echo '</table>';
-
+    echo '</div>';
 }
