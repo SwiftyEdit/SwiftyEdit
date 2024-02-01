@@ -6,12 +6,17 @@ error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
  * display product from se_products
  *
  * @var integer $get_product_id is set in core/products.php
+ * @var string $mod_slug is set in core/products.php
  *
  * global variables
  * @var object $db_content meedoo database object
+ * @var object $smarty smarty templates
  * @var string $languagePack de | en ...
+ * @var array $lang translations
  * @var string $swifty_slug query
  * @var array $se_prefs global preferences
+ * @var string $se_base_url the base url
+ * @var array $page_contents
  */
 
 $product_data = se_get_product_data($get_product_id);
@@ -19,18 +24,32 @@ $product_data = se_get_product_data($get_product_id);
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);
 
-// get the posting-page by 'type_of_use' and $languagePack
+// get the product-page by 'type_of_use' and $languagePack
 // we need this if we link to product variants
-$target_page = $db_content->select("se_pages", "page_permalink", [
+// if $swifty_slug is not equal, we set a canonical link
+$target_page = $db_content->get("se_pages", "page_permalink", [
     "AND" => [
         "page_type_of_use" => "display_product",
         "page_language" => $page_contents['page_language']
     ]
 ]);
 
-if ($target_page[0] == '') {
-    $target_page[0] = $swifty_slug;
+if ($target_page == '') {
+    $target_page = $swifty_slug;
 }
+
+if ($target_page != $swifty_slug) {
+    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
+    $smarty->assign('page_canonical_url', $canonical_url);
+}
+
+if($mod_slug != $product_data['slug']) {
+    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
+    $smarty->assign('page_canonical_url', $canonical_url);
+}
+
+
+
 
 if($product_data['product_tax'] == '1') {
     $tax = $se_prefs['prefs_posts_products_default_tax'];
@@ -293,7 +312,7 @@ if($cnt_variants > 1) {
         }
 
         $product_slug = basename($v['slug']);
-        $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $v['id'] . ".html";
+        $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
 
         $var[$k]['class'] = '';
         if($v['id'] == $product_data['id']) {

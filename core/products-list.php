@@ -4,30 +4,26 @@
  * SwiftyEdit - list products
  *
  * global variables
- * @var $db_content object database
- * @var $se_prefs array
- * @var $page_contents array
- * @var $swifty_slug string
+ * @var array $se_prefs global preferences
+ * @var string $se_base_url the base url
+ * @var array $page_contents
+ * @var string $page_content
+ * @var string $swifty_slug
+ * @var object $smarty smarty templates
+ * @var string $img_path
+ * @var array $lang translations
+ * @var string $mod_slug is set in core/products.php
+ * @var string $cache_id smarty cache id
  *
  * variables from parent file
- * @var $products_start int
- * @var $products_limit int
- * @var $products_filter
- * @var $display_mode
+ * @var integer $products_start
+ * @var integer $products_limit
+ * @var array $products_filter
+ * @var string $display_mode
+ * @var array $all_categories
+ * @var array $categories
+ *
  */
-
-// get the posting-page by 'type_of_use' and $languagePack
-$target_page = $db_content->select("se_pages", "page_permalink", [
-    "AND" => [
-        "page_type_of_use" => "display_product",
-        "page_language" => $page_contents['page_language']
-    ]
-]);
-
-if (!isset($target_page[0]) OR $target_page[0] == '') {
-    $target_page[0] = $swifty_slug;
-}
-
 
 $sql_start = ($products_start * $products_limit) - $products_limit;
 if ($sql_start < 0) {
@@ -162,7 +158,7 @@ foreach ($get_products as $k => $post) {
     }
 
     $post_filename = basename($get_products[$k]['slug']);
-    $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$post_filename-" . $get_products[$k]['id'] . ".html";
+    $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . "$post_filename-" . $get_products[$k]['id'] . ".html";
 
 
     $post_releasedate = date($se_prefs['prefs_dateformat'], $get_products[$k]['releasedate']);
@@ -295,28 +291,16 @@ foreach ($get_products as $k => $post) {
 
 }
 
-
-
-if ($display_mode == 'list_posts_category') {
-    $category_message = str_replace('{categorie}', $selected_category_title, $lang['posts_category_filter']);
-    $page_content = str_replace("{category_filter}", $category_message, $page_content);
-} else {
-    $page_content = str_replace("{category_filter}", '', $page_content);
-}
-
 $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
 $smarty->assign('product_cnt', $cnt_filter_products);
 $smarty->assign('products', $get_products);
 $smarty->assign('show_products_list', $show_products_list);
 
-$smarty->assign('product_filter', $product_filter);
-
 $smarty->assign('show_pagination', $show_pagination);
 if(isset($pagination)) {
     $smarty->assign('pagination', $pagination);
 }
-
 
 $smarty->assign('show_shopping_cart', $show_shopping_cart);
 $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
