@@ -114,6 +114,7 @@ $lang['label_product_net'] = 'net';
 $lang['label_product_gross'] = 'gross';
 $lang['label_product_price_net'] = 'Price (net)';
 $lang['label_product_price_gross'] = 'Price (gross)';
+$lang['label_select_price_group'] = 'Select a price group (optional)';
 $lang['label_product_amount'] = 'Amount';
 $lang['label_product_price_label'] = 'Label';
 $lang['label_product_unit'] = 'Unit';

@@ -19,6 +19,7 @@ $lang += [
     /* tienda */
     'nav_shop' => 'tienda',
     'nav_products' => 'productos',
+    'nav_price_groups' => 'Grupos de precios',
     'nav_features' => 'características',
     'nav_filter' => 'filtro',
     'nav_orders' => 'pedidos',

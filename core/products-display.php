@@ -6,12 +6,17 @@ error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
  * display product from se_products
  *
  * @var integer $get_product_id is set in core/products.php
+ * @var string $mod_slug is set in core/products.php
  *
  * global variables
  * @var object $db_content meedoo database object
+ * @var object $smarty smarty templates
  * @var string $languagePack de | en ...
+ * @var array $lang translations
  * @var string $swifty_slug query
  * @var array $se_prefs global preferences
+ * @var string $se_base_url the base url
+ * @var array $page_contents
  */
 
 $product_data = se_get_product_data($get_product_id);
@@ -19,25 +24,68 @@ $product_data = se_get_product_data($get_product_id);
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);
 
-// get the posting-page by 'type_of_use' and $languagePack
+// get the product-page by 'type_of_use' and $languagePack
 // we need this if we link to product variants
-$target_page = $db_content->select("se_pages", "page_permalink", [
+// if $swifty_slug is not equal, we set a canonical link
+$target_page = $db_content->get("se_pages", "page_permalink", [
     "AND" => [
         "page_type_of_use" => "display_product",
         "page_language" => $page_contents['page_language']
     ]
 ]);
 
-if ($target_page[0] == '') {
-    $target_page[0] = $swifty_slug;
+if ($target_page == '') {
+    $target_page = $swifty_slug;
 }
 
-if($product_data['product_tax'] == '1') {
+if ($target_page != $swifty_slug) {
+    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
+    $smarty->assign('page_canonical_url', $canonical_url);
+}
+
+if($mod_slug != $product_data['slug']) {
+    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
+    $smarty->assign('page_canonical_url', $canonical_url);
+}
+
+// get price from price groups or from products data
+if($product_data['product_price_group'] != '' AND $product_data['product_price_group'] != 'null') {
+    $price_data = se_get_price_group_data($product_data['product_price_group']);
+    $product_tax = $price_data['tax'];
+    $product_price_net = $price_data['price_net'];
+    $product_volume_discounts_json = $price_data['price_volume_discount'];
+} else {
+    $product_tax = $product_data['product_tax'];
+    $product_price_net = $product_data['product_price_net'];
+    $product_volume_discounts_json = $product_data['product_price_volume_discounts'];
+}
+
+if($product_tax == '1') {
     $tax = $se_prefs['prefs_posts_products_default_tax'];
-} else if($product_data['product_tax'] == '2') {
+} else if($product_tax == '2') {
     $tax = $se_prefs['prefs_posts_products_tax_alt1'];
 } else {
     $tax = $se_prefs['prefs_posts_products_tax_alt2'];
+}
+
+$post_prices = se_posts_calc_price($product_price_net,$tax);
+$post_price_net = $post_prices['net'];
+$post_price_gross = $post_prices['gross'];
+
+
+/* volume discounts */
+if($product_volume_discounts_json != '') {
+    $product_volume_discounts = json_decode($product_volume_discounts_json,true);
+    $smarty->assign('label_prices_discount', $lang['label_prices_discount']);
+
+    // calculate gross prices
+    foreach($product_volume_discounts as $k => $v) {
+        $vd_price = se_posts_calc_price($v['price'],$tax);
+        $show_volume_discounts[$k]['amount'] = $v['amount'];
+        $show_volume_discounts[$k]['price_net'] = $vd_price['net'];
+        $show_volume_discounts[$k]['price_gross'] = $vd_price['gross'];
+    }
+    $smarty->assign('show_volume_discounts', $show_volume_discounts);
 }
 
 
@@ -70,21 +118,6 @@ for($i=1;$i<6;$i++) {
     $smarty->assign($var_label, $$var_label);
     $smarty->assign($var_text, $$var_text);
 
-}
-
-/* volume discounts */
-if($product_data['product_price_volume_discount'] != '') {
-    $product_volume_discounts = json_decode($product_data['product_price_volume_discount'],true);
-    $smarty->assign('label_prices_discount', $lang['label_prices_discount']);
-
-    // calculate gross prices
-    foreach($product_volume_discounts as $k => $v) {
-        $vd_price = se_posts_calc_price($v['price'],$tax);
-        $show_volume_discounts[$k]['amount'] = $v['amount'];
-        $show_volume_discounts[$k]['price_net'] = $vd_price['net'];
-        $show_volume_discounts[$k]['price_gross'] = $vd_price['gross'];
-    }
-    $smarty->assign('show_volume_discounts', $show_volume_discounts);
 }
 
 $product_images = explode("<->", $product_data['images']);
@@ -195,10 +228,6 @@ if($se_prefs['prefs_posts_products_cart'] == 1) {
     $product_data['product_cart_mode'] = 2;
 }
 
-$post_prices = se_posts_calc_price($product_data['product_price_net'],$tax);
-$post_price_net = $post_prices['net'];
-$post_price_gross = $post_prices['gross'];
-
 $smarty->assign('product_price_gross', $post_price_gross);
 $smarty->assign('product_price_net', $post_price_net_calculated);
 $smarty->assign('product_price_tax', $tax);
@@ -293,7 +322,7 @@ if($cnt_variants > 1) {
         }
 
         $product_slug = basename($v['slug']);
-        $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $v['id'] . ".html";
+        $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
 
         $var[$k]['class'] = '';
         if($v['id'] == $product_data['id']) {

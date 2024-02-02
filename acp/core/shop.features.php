@@ -207,10 +207,18 @@ if($show_form !== false) {
         $value_lang = $option_lang;
         $btn_send = '<button class="btn btn-success" name="send_options_data" value="'.$edit_id.'">'.$lang['update'].'</button>';
 
-        $inputs_tpl = '';
+        $inputs_tpl = '<div class="sortableListGroup list-group mt-1">';
         foreach($option_text_array as $option_value) {
+            $inputs_tpl .= '<div class="list-group-item">';
+            $inputs_tpl .= '<div class="input-group">';
+            $inputs_tpl .= '<span class="input-group-text" id="basic-addon1">';
+            $inputs_tpl .= '<i class="bi bi-arrows-move" aria-hidden="true"></i>';
+            $inputs_tpl .= '</span>';
             $inputs_tpl .= '<input type="text" name="option_text[]" value="'.$option_value.'" class="form-control">';
+            $inputs_tpl .= '</div>';
+            $inputs_tpl .= '</div>';
         }
+        $inputs_tpl .= '</div>';
         $form_edit = str_replace('{option_text_inputs}',$inputs_tpl, $form_edit);
 
 
@@ -276,7 +284,7 @@ for($i=0;$i<$cnt_data;$i++) {
         $get_show_values = json_decode($show_data[$i]['snippet_content']);
         $show_values = '';
         foreach($get_show_values as $value) {
-            $show_values .= '<span class="badge badge-secondary">'.$value.'</span> ';
+            $show_values .= '<span class="badge text-bg-secondary">'.$value.'</span> ';
         }
     } else {
         $show_values = $show_data[$i]['snippet_content'];

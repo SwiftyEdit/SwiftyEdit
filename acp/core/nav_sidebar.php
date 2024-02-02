@@ -55,6 +55,7 @@ echo '</a>';
 echo '<div class="collapse '.($tn == "shop" ? 'show' :'').'" id="sidebarShop">';
 echo '<ul>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-list" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-list">'.$icon['files'].' '.$lang['nav_products'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($sub == "shop-prices" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-prices">'.$icon['cash_stack'].' '.$lang['nav_price_groups'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-features" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-features">'.$icon['star_outline'].' '.$lang['nav_features'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-filter" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-filter">'.$icon['filter'].' '.$lang['nav_filter'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($sub == "shop-orders" ? 'sidebar-nav-active' :'').'" href="acp.php?tn=shop&sub=shop-orders">'.$icon['cart'].' '.$lang['nav_orders'].'</a></li>';

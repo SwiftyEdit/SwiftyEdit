@@ -28,6 +28,7 @@ $icon = [
     "caret_right_fill" => '<i class="bi bi-caret-right-fill"></i>',
     "caret_up" => '<i class="bi bi-caret-up"></i>',
     "cart" => '<i class="bi bi-cart"></i>',
+    "cash_stack" => '<i class="bi bi-cash-stack"></i>',
     "chart_bar" => '<i class="bi bi-bar-chart"></i>',
     "chat_square_dots" => '<i class="bi bi-chat-square-dots"></i>',
     "check" => '<i class="bi bi-check"></i>',
@@ -42,6 +43,7 @@ $icon = [
     "code_slash" => '<i class="bi bi-code-slash"></i>',
     "cog" => '<i class="bi bi-gear"></i>',
     "cogs" => '<i class="bi bi-gear"></i>',
+    "collection" => '<i class="bi bi-collection"></i>',
     "comments" => '<i class="bi bi-chat"></i>',
     "compress" => '<i class="bi bi-file-earmark-zip"></i>',
     "copy" => '<i class="bi bi-clipboard-plus"></i>',
@@ -149,7 +151,8 @@ $icon = [
     "user_plus" => '<i class="bi bi-person-plus"></i>',
     "user_slash" => '<i class="bi bi-person-dash"></i>',
     "users" => '<i class="bi bi-people"></i>',
-    
+
+    "wallet" => '<i class="bi bi-wallet"></i>',
     "wrench" => '<i class="bi bi-wrench"></i>',
     "x" => '<i class="bi bi-x"></i>'
 ];
