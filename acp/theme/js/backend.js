@@ -31,6 +31,8 @@ document.addEventListener('htmx:afterRequest', function(evt) {
 	});
 });
 
+
+
 $(function() {
 	
 
@@ -427,11 +429,11 @@ $(function() {
 			}
     }
   }
-			
 
-		 
 
-				 
+
+
+
 	
 
 
@@ -495,6 +497,14 @@ $(function() {
 			$(price_gross_input).val(current_gross);
 		}
 	});
+
+
+	$('.sortableListGroup').sortable({
+		handle: '.bi-arrows-move',
+		invertSwap: true
+	})
+
+
 });
 
 

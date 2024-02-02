@@ -7,7 +7,7 @@
     "@popperjs/core": "^2.11.8",
     "@tinymce/tinymce-jquery": "^2.1.0",
     "accounting": "^0.4.1",
-    "ace-builds": "^1.32.3",
+    "ace-builds": "^1.32.5",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.3",
     "bootstrap-tagsinput-2021": "^0.8.6",
@@ -25,7 +25,9 @@
   "version": "1.0.0",
   "description": "This Theme is used in the SwiftyEdit CMS backend",
   "devDependencies": {
-    "htmx.org": "^1.9.10"
+    "htmx.org": "^1.9.10",
+    "jquery-sortablejs": "^1.0.1",
+    "sortablejs": "^1.15.2"
   },
   "repository": {},
   "author": ""
