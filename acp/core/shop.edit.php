@@ -175,6 +175,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $product_features_values = json_encode($_POST['product_features_values'],JSON_FORCE_OBJECT);
     }
 
+    // volume discounts
     if(isset($_POST['product_vd_amount'])) {
         $cnt_vd_prices = count($_POST['product_vd_amount']);
         for($i=0;$i<$cnt_vd_prices;$i++) {
@@ -709,6 +710,22 @@ if($product_price_net_purchasing == '') {
     $product_price_net_purchasing = '0,00';
 }
 
+// select for price groups
+
+$get_price_groups = se_get_price_groups();
+
+$select_price_groups = '<select class="form-control custom-select" name="product_price_group">';
+$select_price_groups .= '<option value="null">'.$lang['label_select_price_group'].'</option>';
+foreach($get_price_groups as $price_group) {
+    $selected = "";
+    if($price_group['hash'] == $product_data['product_price_group']) {
+        $selected = 'selected';
+    }
+    $select_price_groups .= '<option '.$selected.' value='.$price_group['hash'].'>'.$price_group['title'].'</option>';
+}
+$select_price_groups .= '</select>';
+
+
 /* volume discounts */
 
 $volume_discounts = json_decode($product_data['product_price_volume_discount'],true);
@@ -1015,6 +1032,8 @@ $form_tpl = str_replace('{product_price_net}', $product_price_net, $form_tpl);
 $form_tpl = str_replace('{select_tax}', $select_tax, $form_tpl);
 $form_tpl = str_replace('{select_shipping_mode}', $select_shipping_mode, $form_tpl);
 $form_tpl = str_replace('{select_shipping_category}', $select_shipping_category, $form_tpl);
+$form_tpl = str_replace('{select_price_group}', $select_price_groups, $form_tpl);
+
 
 $form_tpl = str_replace('{product_nbr_stock}', $product_data['product_nbr_stock'], $form_tpl);
 $form_tpl = str_replace('{product_cnt_sales}', $product_data['product_cnt_sales'], $form_tpl);

@@ -991,3 +991,29 @@ function se_get_product_filter($lang) {
 
     return $filter;
 }
+
+
+/**
+ * get all price groups
+ * @return mixed
+ */
+function se_get_price_groups() {
+
+    global $db_posts;
+
+    $groups = $db_posts->select("se_prices", "*");
+
+    return $groups;
+}
+
+/**
+ * @param string $hash
+ * @return mixed
+ */
+function se_get_price_group_data($hash) {
+    global $db_posts;
+    $data = $db_posts->get("se_prices", "*",[
+        "hash" => $hash
+    ]);
+    return $data;
+}

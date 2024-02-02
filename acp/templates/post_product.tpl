@@ -273,6 +273,11 @@
 
                             <hr>
 
+                            <div class="mb-1">
+                                <label>{nav_price_groups}</label>
+                                {select_price_group}
+                            </div>
+
                             <div class="row">
 
                                 <div class="col-md-2">

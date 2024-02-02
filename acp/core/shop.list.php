@@ -382,33 +382,47 @@ if($cnt_filter_posts > 0) {
         $show_items_dates = '<span class="text-muted small">'.$published_date.' | '.$lastedit_date.' | '.$release_date.'</span>';
 
 
+        // price tag from product or from price groups
         $show_items_price = '';
 
-            if($get_products[$i]['product_tax'] == '1') {
-                $tax = $se_prefs['prefs_posts_products_default_tax'];
-            } else if($get_products[$i]['product_tax'] == '2') {
-                $tax = $se_prefs['prefs_posts_products_tax_alt1'];
-            } else {
-                $tax = $se_prefs['prefs_posts_products_tax_alt2'];
-            }
+        if($get_products[$i]['product_price_group'] != '' AND $get_products[$i]['product_price_group'] != 'null') {
 
-            if(empty($get_products[$i]['product_price_net'])) {
-                $get_products[$i]['product_price_net'] = 0;
-            }
+            $price_data = se_get_price_group_data($get_products[$i]['product_price_group']);
 
-            $post_price_net = str_replace('.', '', $get_products[$i]['product_price_net']);
-            $post_price_net = str_replace(',', '.', $post_price_net);
+            $product_tax = $price_data['tax'];
+            $product_price_net = $price_data['price_net'];
+            $product_volume_discounts = $price_data['price_volume_discount'];
+        } else {
+            $product_tax = $get_products[$i]['product_tax'];
+            $product_price_net = $get_products[$i]['product_price_net'];
+            $product_volume_discounts = $get_products[$i]['product_price_volume_discounts'];
+        }
 
-            $post_price_gross = $post_price_net*($tax+100)/100;
+        if ($product_tax == '1') {
+            $tax = $se_prefs['prefs_posts_products_default_tax'];
+        } else if ($get_products[$i]['product_tax'] == '2') {
+            $tax = $se_prefs['prefs_posts_products_tax_alt1'];
+        } else {
+            $tax = $se_prefs['prefs_posts_products_tax_alt2'];
+        }
 
-            $post_price_net_format = se_post_print_currency($post_price_net);
-            $post_price_gross_format = se_post_print_currency($post_price_gross);
+        if (empty($product_price_net)) {
+            $product_price_net = 0;
+        }
 
-            $show_items_price = '<div class="card p-2 text-nowrap">';
-            $show_items_price .= '<span class="small">'.$get_products[$i]['product_currency'].' '.$post_price_net_format . '</span>';
-            $show_items_price .= '<span class="small"> + '.$tax.'%</span>';
-            $show_items_price .= '<span class="text-success">'.$get_products[$i]['product_currency'].' '.$post_price_gross_format.'</span>';
-            $show_items_price .= '</div>';
+        $post_price_net = str_replace('.', '', $product_price_net);
+        $post_price_net = str_replace(',', '.', $post_price_net);
+
+        $post_price_gross = $post_price_net * ($tax + 100) / 100;
+
+        $post_price_net_format = se_post_print_currency($post_price_net);
+        $post_price_gross_format = se_post_print_currency($post_price_gross);
+
+        $show_items_price = '<div class="card p-2 text-nowrap">';
+        $show_items_price .= '<span class="small">' . $get_products[$i]['product_currency'] . ' ' . $post_price_net_format . '</span>';
+        $show_items_price .= '<span class="small"> + ' . $tax . '%</span>';
+        $show_items_price .= '<span class="text-success">' . $get_products[$i]['product_currency'] . ' ' . $post_price_gross_format . '</span>';
+        $show_items_price .= '</div>';
 
 
 

@@ -16,6 +16,7 @@ $lang += [
     /* shop */
     'nav_shop' => 'Shop',
     'nav_products' => 'Products',
+    'nav_price_groups' => 'Price groups',
     'nav_features' => 'Features',
     'nav_filter' => 'Filter',
     'nav_orders' => 'Orders',

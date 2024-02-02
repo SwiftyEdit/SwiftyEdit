@@ -229,16 +229,30 @@ foreach ($get_products as $k => $post) {
     }
 
 
+    // price
 
-    if ($get_products[$k]['product_tax'] == '1') {
+    if($get_products[$k]['product_price_group'] != '' AND $get_products[$k]['product_price_group'] != 'null') {
+
+        $price_data = se_get_price_group_data($get_products[$k]['product_price_group']);
+
+        $product_tax = $price_data['tax'];
+        $product_price_net = $price_data['price_net'];
+        $product_volume_discounts = $price_data['price_volume_discount'];
+    } else {
+        $product_tax = $get_products[$k]['product_tax'];
+        $product_price_net = $get_products[$k]['product_price_net'];
+        $product_volume_discounts = $get_products[$k]['product_price_volume_discounts'];
+    }
+
+    if ($product_tax == '1') {
         $tax = $se_prefs['prefs_posts_products_default_tax'];
-    } else if ($get_products[$k]['product_tax'] == '2') {
+    } else if ($product_tax == '2') {
         $tax = $se_prefs['prefs_posts_products_tax_alt1'];
     } else {
         $tax = $se_prefs['prefs_posts_products_tax_alt2'];
     }
 
-    $post_prices = se_posts_calc_price($get_products[$k]['product_price_net'], $tax);
+    $post_prices = se_posts_calc_price($product_price_net, $tax);
     $post_price_net = $post_prices['net'];
     $post_price_gross = $post_prices['gross'];
 
