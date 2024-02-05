@@ -58,6 +58,19 @@ $select_user_status .= tpl_radio('user_verified','paused','paused',$lang['f_user
 echo '<fieldset>';
 echo '<legend>'.$lang['f_user_status'].'</legend>';
 echo $select_user_status;
+
+echo '<hr>';
+
+$check_user_unlocked_by_admin = '';
+if($user_verified_by_admin == 'yes') {
+    $check_user_unlocked_by_admin = 'checked';
+}
+
+echo '<div class=form-check mt-1">';
+echo '<input type="checkbox" id="unlocked_by_admin" class="form-check-input" name="user_unlocked_by_admin" value="yes" '.$check_user_unlocked_by_admin.'>';
+echo '<label for="unlocked_by_admin" class="form-check-label">User unlocked by admin</label>';
+echo '</div>';
+
 echo '</fieldset>';
 
 

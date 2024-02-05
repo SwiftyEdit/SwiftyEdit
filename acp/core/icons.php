@@ -94,6 +94,7 @@ $icon = [
     "paper_clip" => '<i class="bi bi-paperclip"></i>',
     "paper_plane" => '<i class="bi bi-send"></i>',
     "paste" => '<i class="bi bi-clipboard-plus"></i>',
+    "patch_check" => '<i class="bi bi-patch-check"></i>',
     "people" => '<i class="bi bi-people"></i>',
     "people_fill" => '<i class="bi bi-people-fill"></i>',
     "person" => '<i class="bi bi-person"></i>',

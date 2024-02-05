@@ -130,12 +130,19 @@ if($_POST['save_the_user']) {
 			}			
 		}
 
+        // user_unlocked_by_admin
+        $user_verified_by_admin = 'no';
+        if($_POST['user_unlocked_by_admin'] == "yes") {
+            $user_verified_by_admin = 'yes';
+        }
+
 			
 		if($db_status == "unlocked") {
 			$columns_update = [
 				"user_nick" => "$user_nick",
 				"user_mail" => "$user_mail",
 				"user_verified" => "$user_verified",
+                "user_verified_by_admin" => "$user_verified_by_admin",
 				"user_registerdate" => "$user_registerdate",
 				"user_drm" => "$drm_string",
 				"user_class" => "$drm_acp_class",

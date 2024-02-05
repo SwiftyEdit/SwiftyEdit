@@ -553,6 +553,8 @@ $lang['f_prefs_descriptions'] = "Beschreibungen";
 $lang['f_prefs_user'] = "Benutzereinstellungen";
 $lang['f_prefs_registration'] = "Neue Registrierungen erlauben";
 $lang['f_prefs_showloginform'] = "Anmeldeformular anzeigen";
+$lang['f_prefs_user_unlock_by_admin'] = "Neue Benutzer müssen von einem Administrator freigeschaltet werden";
+
 $lang['f_prefs_uploads'] = "Uploads";
 $lang['f_prefs_layout'] = "Layout & Design";
 $lang['f_prefs_custom_fields'] = "Eigene Felder";

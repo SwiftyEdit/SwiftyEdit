@@ -68,6 +68,10 @@ if(isset($_POST['set_status_verified'])) {
     $_SESSION['checked_verified'] = ($_SESSION['checked_verified'] == 'checked') ? '' : 'checked';
 }
 
+if(isset($_POST['set_status_verified_by_admin'])) {
+    $_SESSION['checked_verified_by_admin'] = ($_SESSION['checked_verified_by_admin'] == 'checked') ? '' : 'checked';
+}
+
 if(isset($_POST['set_status_waiting'])) {
     $_SESSION['checked_waiting'] = ($_SESSION['checked_waiting'] == 'checked') ? '' : 'checked';
 }
@@ -94,6 +98,12 @@ if($_SESSION['checked_paused'] == "checked") {
 if($_SESSION['checked_verified'] == "checked") {
 	$btn_status_verified = 'active';
     $user_status[] = 'verified';
+}
+
+$user_verified_admin = '';
+if($_SESSION['checked_verified_by_admin'] == "checked") {
+    $btn_status_verified_by_admin = 'active';
+    $user_verified_admin = 'yes';
 }
 
 if($_SESSION['checked_deleted'] == "checked") {
@@ -124,7 +134,8 @@ $cnt_all_users = $db_user->count("se_user", [
 $cnt_filter_users = $db_user->count("se_user", [
     "user_id[>]" => 0,
     "user_nick[~]" => $_SESSION['user_match'],
-    "user_verified" => $user_status
+    "user_verified" => $user_status,
+    "user_verified_by_admin" => $user_verified_admin,
 ]);
 
 
@@ -132,6 +143,7 @@ $get_users = $db_user->select("se_user","*",[
 	"user_id[>]" => 0,
     "user_nick[~]" => $_SESSION['user_match'],
     "user_verified" => $user_status,
+    "user_verified_by_admin" => $user_verified_admin,
 	"LIMIT" => [$sql_start, $items_per_page],
     "ORDER" => [$_SESSION['sorting_user'] => $_SESSION['sorting_user_dir']]
 ]);
@@ -261,10 +273,11 @@ echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
 echo '<div class="card-body">';
 echo '<form action="?tn=user" method="POST">';
 echo '<div class="btn-group d-flex">';
-echo '<button type="submit" name="set_status_verified" class="btn btn-default w-100 '.$btn_status_verified.'">'.$icon['check'].'</button>';
-echo '<button type="submit" name="set_status_waiting" class="btn btn-default w-100 '.$btn_status_waiting.'">'.$icon['clock'].'</button>';
-echo '<button type="submit" name="set_status_paused" class="btn btn-default w-100 '.$btn_status_paused.'">'.$icon['lock'].'</button>';
-echo '<button type="submit" name="set_status_deleted" class="btn btn-default w-100 '.$btn_status_deleted.'">'.$icon['trash'].'</button>';
+echo '<button type="submit" title="E-Mail is verfified" name="set_status_verified" class="btn btn-default w-100 '.$btn_status_verified.'">'.$icon['check'].'</button>';
+echo '<button type="submit" title="User is verified by an admin" name="set_status_verified_by_admin" class="btn btn-default w-100 '.$btn_status_verified_by_admin.'">'.$icon['patch_check'].'</button>';
+echo '<button type="submit" title="User is not verified" name="set_status_waiting" class="btn btn-default w-100 '.$btn_status_waiting.'">'.$icon['clock'].'</button>';
+echo '<button type="submit" title="The user has been temporarily blocked by an admin" name="set_status_paused" class="btn btn-default w-100 '.$btn_status_paused.'">'.$icon['lock'].'</button>';
+echo '<button type="submit" title="The user has been deleted or the user name has been blocked" name="set_status_deleted" class="btn btn-default w-100 '.$btn_status_deleted.'">'.$icon['trash'].'</button>';
 echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';

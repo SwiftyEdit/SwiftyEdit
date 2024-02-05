@@ -546,6 +546,8 @@ $lang['f_prefs_descriptions'] = "Descriptions";
 $lang['f_prefs_user'] = "User preferences";
 $lang['f_prefs_registration'] = "Allow new registrations";
 $lang['f_prefs_showloginform'] = "Show registration form";
+$lang['f_prefs_user_unlock_by_admin'] = "New users must be activated by an administrator";
+
 $lang['f_prefs_uploads'] = "Uploads";
 $lang['f_prefs_layout'] = "Layout & Design";
 $lang['f_prefs_custom_fields'] = "Custom Fields";
