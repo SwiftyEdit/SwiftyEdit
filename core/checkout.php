@@ -79,6 +79,10 @@ if($get_cd['user_firstname'] == '' ||
     $checkout_error = 'missing_mandatory_informations';
 }
 
+if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_admin'] != 'yes') {
+    $checkout_error = 'missing_approval';
+}
+
 $client_data .= $get_cd['user_firstname']. ' '.$get_cd['user_lastname'].'<br>';
 $client_data .= $get_cd['user_street']. ' '.$get_cd['user_street_nbr'].'<br>';
 $client_data .= $get_cd['user_zip']. ' '.$get_cd['user_city'].'<br>';
@@ -375,6 +379,10 @@ if($_POST['order'] == 'send') {
 
 if($checkout_error == 'missing_mandatory_informations') {
     $checkout_error_msg = $lang['msg_missing_mandatory_informations'];
+}
+
+if($checkout_error == 'missing_approval') {
+    $checkout_error_msg = $lang['msg_missing_user_approval'];
 }
 
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);

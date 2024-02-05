@@ -216,6 +216,7 @@ $lang['msg_order_send'] = '<b>Thank you very much!</b> Your order has been sent.
 $lang['msg_request_send'] = '<b>Thank you very much!</b> Your request was sent.';
 $lang['request_form_intro'] = 'Please provide your name and email address so that we can process your request.';
 $lang['msg_missing_mandatory_informations'] = 'We need your full postal address to complete the order';
+$lang['msg_missing_user_approval'] = 'Your account must be activated by an administrator.';
 $lang['btn_send_order'] = 'Buy';
 $lang['btn_send_order_request'] = 'Send request';
 $lang['order_status'] = 'Status';
