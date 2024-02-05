@@ -4,7 +4,7 @@
  * prohibit unauthorized access
  */
 
-error_reporting(E_ALL ^E_NOTICE ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_DEPRECATED);
 
 if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
 	die ('<h2>Direct File Access Prohibited</h2>');
