@@ -59,6 +59,7 @@ if($_SESSION['sorting_user'] == 'user_nick') {
 // switch user status
 
 $user_status = array();
+$user_status_vba = array();
 
 if($_SESSION['checked_verified'] == '' AND $_SESSION['checked_waiting'] == '' AND $_SESSION['checked_paused'] == '' AND $_SESSION['set_user_status'] == false) {
 	$_SESSION['checked_verified'] = 'checked';
@@ -100,10 +101,15 @@ if($_SESSION['checked_verified'] == "checked") {
     $user_status[] = 'verified';
 }
 
-$user_verified_admin = '';
+
 if($_SESSION['checked_verified_by_admin'] == "checked") {
     $btn_status_verified_by_admin = 'active';
-    $user_verified_admin = 'yes';
+    $user_status_vba[] = 'yes';
+} else {
+    $user_status_vba[] = 'no';
+    $user_status_vba[] = 'null';
+    $user_status_vba[] = '';
+    $user_status_vba[] = null;
 }
 
 if($_SESSION['checked_deleted'] == "checked") {
@@ -112,7 +118,11 @@ if($_SESSION['checked_deleted'] == "checked") {
 }
 
 if(isset($_POST['findUser'])) {
-    $_SESSION['user_match'] = sanitizeUserInputs($_POST['findUser']);
+    if($_POST['findUser'] != '') {
+        $_SESSION['user_match'] = sanitizeUserInputs($_POST['findUser']);
+    } else {
+        $_SESSION['user_match'] = '';
+    }
 }
 
 if(!isset($_SESSION['user_match'])) {
@@ -135,7 +145,7 @@ $cnt_filter_users = $db_user->count("se_user", [
     "user_id[>]" => 0,
     "user_nick[~]" => $_SESSION['user_match'],
     "user_verified" => $user_status,
-    "user_verified_by_admin" => $user_verified_admin,
+    "user_verified_by_admin" => $user_status_vba,
 ]);
 
 
@@ -143,7 +153,7 @@ $get_users = $db_user->select("se_user","*",[
 	"user_id[>]" => 0,
     "user_nick[~]" => $_SESSION['user_match'],
     "user_verified" => $user_status,
-    "user_verified_by_admin" => $user_verified_admin,
+    "user_verified_by_admin" => $user_status_vba,
 	"LIMIT" => [$sql_start, $items_per_page],
     "ORDER" => [$_SESSION['sorting_user'] => $_SESSION['sorting_user_dir']]
 ]);
