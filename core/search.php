@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * global variables
+ * @var string $languagePack
+ * @var array $lang
+ * @var array $se_prefs
+ * @var object $smarty
+ */
+
 $start_search = "true";
 
 $s = sanitizeUserInputs($_REQUEST['s']);
@@ -9,9 +17,9 @@ if($s != '' && strlen($s) < 3) {
 	$search_msg = $lang['msg_search_undersized'];
 }
 
-$msg_no_serach_results = se_get_textlib('no_search_results',$languagePack,'all');
-if($msg_no_serach_results == '') {
-	$msg_no_serach_results = $lang['msg_search_no_results'];
+$msg_no_search_results = se_get_textlib('no_search_results',$languagePack,'content');
+if($msg_no_search_results == '') {
+    $msg_no_search_results = $lang['msg_search_no_results'];
 }
 
 if($s != '' && $start_search == "true") {
@@ -19,7 +27,7 @@ if($s != '' && $start_search == "true") {
 	$sr = se_search($s,1,10);
 	$cnt_result = count($sr);
 	if($cnt_result < 1) {
-		$search_msg = $msg_no_serach_results;
+		$search_msg = $msg_no_search_results;
 	} else {
 		$search_msg = sprintf($lang['msg_search_results'], $cnt_result);
 		
@@ -61,7 +69,3 @@ $smarty->assign('search_string', $s, true);
 $search_tpl = $smarty->fetch("search.tpl");
 $output = $smarty->fetch("searchresults.tpl");
 $smarty->assign('page_content', "$search_tpl $output", true);
-
-
-
-?>
