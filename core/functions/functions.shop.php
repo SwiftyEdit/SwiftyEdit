@@ -265,9 +265,13 @@ function se_get_product_data($id) {
  */
 function se_get_product_data_by_slug($slug) {
     global $db_posts;
+    global $languagePack;
 
     $data = $db_posts->get("se_products","*", [
-        "slug" => $slug
+        "AND" => [
+            "slug" => $slug,
+            "product_lang" => $languagePack
+            ]
     ]);
 
     return $data;
