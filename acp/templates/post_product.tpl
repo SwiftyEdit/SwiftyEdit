@@ -29,7 +29,10 @@
                                                 href="#links" title="{post_tab_links}"><i class="bi bi-link"></i></a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#downloads" title="{post_tab_downloads}"><i class="bi bi-download"></i></a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter" title="Filter"><i class="bi bi-filter"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                href="#filter" title="Filter"><i class="bi bi-filter"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                href="#addons" title="Filter"><i class="bi bi-plugin"></i></a></li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -530,6 +533,9 @@
                         <div class="tab-pane fade" id="filter">
                             <h3>Filter</h3>
                             {list_products_filter}
+                        </div>
+                        <div class="tab-pane fade" id="addons">
+                            {list_product_update_hooks}
                         </div>
 
                     </div>

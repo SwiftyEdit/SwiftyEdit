@@ -268,6 +268,12 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         }
     }
 
+    if (isset($_POST['send_hook'])) {
+        if (is_array($_POST['send_hook'])) {
+            se_run_hooks($_POST['send_hook'],$_POST);
+        }
+    }
+
 
     /* re load the posts data */
     $product_data = se_get_product_data($id);
@@ -470,6 +476,23 @@ foreach($active_lang as $k => $v) {
     $translation_inputs .= '<span class="input-group-text"><i class="bi bi-translate me-1"></i> '.$ls.'</span>';
     $translation_inputs .= '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url_'.$ls.'" value="'.$translation_urls_array[$ls].'">';
     $translation_inputs .= '</div>';
+}
+
+// hooks
+
+$product_update_hooks = se_get_hook('product_updated');
+if (count($product_update_hooks) > 0) {
+
+    $list_product_update_hooks = '<div class="card">';
+    $list_product_update_hooks .= '<div class="card-header">Hooks</div>';
+    $list_product_update_hooks .= '<ul class="list-group list-group-flush">';
+    foreach ($product_update_hooks as $hook) {
+        $list_product_update_hooks .= '<li class="list-group-item">';
+        $list_product_update_hooks .= $hook;
+        $list_product_update_hooks .= '</ul>';
+    }
+    $list_product_update_hooks .= '</ul>';
+    $list_product_update_hooks .= '</div>';
 }
 
 
@@ -1076,6 +1099,9 @@ $form_tpl = str_replace('{checkboxes_features}', $checkbox_features, $form_tpl);
 $form_tpl = str_replace('{select_product_cart_mode}', $select_cart_mode, $form_tpl);
 $form_tpl = str_replace('{select_product_pricetag_mode}', $select_pricetag_mode, $form_tpl);
 $form_tpl = str_replace('{select_delivery_time}', $snippet_select_delivery_time, $form_tpl);
+
+$form_tpl = str_replace('{list_product_update_hooks}', $list_product_update_hooks, $form_tpl);
+
 
 
 /* form modes */
