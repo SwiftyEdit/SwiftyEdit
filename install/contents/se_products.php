@@ -64,6 +64,7 @@ $cols = array(
     "rss_url" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_lang" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "slug" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "translation_urls" => "LONGTEXT NOT NULL DEFAULT ''",
     "priority" => 'INTEGER(12)',
     "fixed" => 'INTEGER(12)',
     "hits" => 'INTEGER(12)',

@@ -81,6 +81,15 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
     $product_related = json_encode($_POST['product_related'],JSON_FORCE_OBJECT);
     $filter = json_encode($_POST['product_filter'],JSON_FORCE_OBJECT);
 
+    // translation url
+    $translation_urls = '';
+    if(is_array($_POST['translation_url'])) {
+        foreach($_POST['translation_url'] as $k => $v) {
+            $t_urls[$k] = se_clean_permalink($v);
+        }
+        $translation_urls = json_encode($t_urls,JSON_UNESCAPED_UNICODE);
+    }
+
     if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
         $file_attachment_user = 2;
     } else {
@@ -447,6 +456,21 @@ $select_rss = "<select name='rss' class='form-control custom-select'>";
 $select_rss .= '<option value="on" '.$sel_rss_on.'>'.$lang['yes'].'</option>';
 $select_rss .= '<option value="off" '.$sel_rss_off.'>'.$lang['no'].'</option>';
 $select_rss .=	'</select>';
+
+
+if($product_data['translation_urls'] != '') {
+    $product_translation_urls = html_entity_decode($product_data['translation_urls']);
+    $translation_urls_array = json_decode($product_translation_urls,true);
+}
+
+$translation_inputs = '';
+foreach($active_lang as $k => $v) {
+    $ls = $v['sign'];
+    $translation_inputs .= '<div class="input-group mb-3">';
+    $translation_inputs .= '<span class="input-group-text"><i class="bi bi-translate me-1"></i> '.$ls.'</span>';
+    $translation_inputs .= '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url_'.$ls.'" value="'.$translation_urls_array[$ls].'">';
+    $translation_inputs .= '</div>';
+}
 
 
 /* select tax */
@@ -975,6 +999,8 @@ $form_tpl = str_replace('{text_label_additional_5}', $product_data['text_additio
 
 $form_tpl = str_replace('{author}', $product_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $product_data['slug'], $form_tpl);
+$form_tpl = str_replace('{translation_inputs}', $translation_inputs, $form_tpl);
+
 $form_tpl = str_replace('{tags}', $product_data['tags'], $form_tpl);
 $form_tpl = str_replace('{rss_url}', $product_data['rss_url'], $form_tpl);
 $form_tpl = str_replace('{select_rss}', $select_rss, $form_tpl);

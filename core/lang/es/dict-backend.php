@@ -462,6 +462,7 @@ $lang['label_filter'] = "Filtro";
 $lang['label_filter_reset'] = "Restablecer filtro";
 $lang['label_type'] = "Tipo";
 $lang['label_overwrite_existing_files'] = "Sobrescribir archivos existentes";
+$lang['label_translations'] = "Traducciones";
 
 $lang['label_ready_to_install'] = 'Listo para instalar';
 $lang['remember_me'] = 'Recordarme';

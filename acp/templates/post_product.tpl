@@ -513,6 +513,9 @@
                                 <input class='form-control' name="slug" type="text" value="{slug}">
                             </div>
 
+                            <h5 class="heading-line">{label_translations}</h5>
+                            {translation_inputs}
+
                                 <h5 class="heading-line">RSS</h5>
                                 <div class="form-group">
                                     <label>{label_activate_rss}</label>

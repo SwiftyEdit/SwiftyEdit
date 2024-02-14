@@ -460,6 +460,7 @@ $lang['label_filter'] = "Filter";
 $lang['label_filter_reset'] = "Reset Filter";
 $lang['label_type'] = "Type";
 $lang['label_overwrite_existing_files'] = "Overwrite existing";
+$lang['label_translations'] = "Translations";
 
 $lang['label_ready_to_install'] = 'Ready to install';
 $lang['remember_me'] = 'Remember me';
