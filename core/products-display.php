@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 
 /**
  * SfiftyEdit frontend
@@ -471,6 +471,8 @@ $smarty->assign('product_title', $product_data['title']);
 $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
 $smarty->assign('product_text_label', $text_label);
+$smarty->assign('product_href', $swifty_slug.$product_data['slug']);
+
 
 $smarty->assign('product_pricetag_mode', $product_data['product_pricetag_mode']);
 $smarty->assign('product_cart_mode', $product_data['product_cart_mode']);

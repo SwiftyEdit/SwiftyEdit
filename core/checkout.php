@@ -101,6 +101,7 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['amount'] = $get_cart_items[$i]['cart_product_amount'];
 	$cart_item[$i]['cart_id'] = $get_cart_items[$i]['cart_id'];
 	$cart_item[$i]['post_id'] = $get_cart_items[$i]['cart_product_id'];
+    $cart_item[$i]['slug'] = $get_cart_items[$i]['cart_product_slug'];
 	
 	/* will the product be delivered? */
 	if($this_item['product_shipping_mode'] == 2) {

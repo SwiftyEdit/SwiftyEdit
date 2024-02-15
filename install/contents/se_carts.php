@@ -17,6 +17,7 @@ $cols = array(
     "cart_user_hash" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "cart_user_id" => 'INTEGER(12)',
     "cart_product_id" => 'INTEGER(12)',
+    "cart_product_slug" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cart_product_amount" => 'INTEGER(12)',
     "cart_product_tax" => 'INTEGER(12)',
     "cart_product_price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",
