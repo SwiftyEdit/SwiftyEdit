@@ -19,6 +19,7 @@
  * @var integer $products_start
  * @var integer $products_limit
  * @var array $product_filter
+ * @var array $products_filter
  * @var string $display_mode
  * @var array $all_categories
  * @var array $categories
@@ -30,7 +31,7 @@ if ($sql_start < 0) {
     $sql_start = 0;
 }
 
-$get_products = se_get_products($sql_start, $products_limit, $product_filter);
+$get_products = se_get_products($sql_start, $products_limit, $products_filter);
 $cnt_filter_products = $get_products[0]['cnt_products_match'];
 $cnt_get_products = count($get_products);
 
