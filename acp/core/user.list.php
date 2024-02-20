@@ -291,9 +291,9 @@ echo '<button type="submit" title="The user has been deleted or the user name ha
 echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
-echo '</div>';
 
-echo '<div class="my-3">';
+
+echo '<div class="mt-3">';
 echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
 echo '<form action="?tn=user&sub=user-list" method="post" class="dirtyignore">';
 
@@ -319,7 +319,7 @@ echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
 echo '</div>';
-
+echo '</div>';
 
 echo '</div>';
 
