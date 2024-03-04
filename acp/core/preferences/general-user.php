@@ -23,6 +23,12 @@ if(isset($_POST['save_prefs_user'])) {
         $data['prefs_showloginform'] = 'no';
     }
 
+    if(isset($_POST['prefs_user_unlock_by_admin'])) {
+        $data['prefs_user_unlock_by_admin'] = 'yes';
+    } else {
+        $data['prefs_user_unlock_by_admin'] = 'no';
+    }
+
     $data['prefs_acp_session_lifetime'] = (int) $_POST['prefs_acp_session_lifetime'];
 
     se_write_option($data,'se');
@@ -60,15 +66,20 @@ echo '<h5 class="heading-line">'.$lang['f_prefs_user'].'</h5>';
 echo '<form action="?tn=system&sub=general&file=general-user" method="POST" class="form-horizontal">';
 
 
-echo '<div class="form-group form-check mt-3">';
+echo '<div class="form-group form-check mt-2">';
 echo '<input type="checkbox" class="form-check-input" id="userregister" name="prefs_userregistration" '.($se_prefs['prefs_userregistration'] == "yes" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="userregister">'.$lang['f_prefs_registration'].'</label>';
 echo '</div>';
 
 
-echo '<div class="form-group form-check mt-3">';
+echo '<div class="form-group form-check mt-2">';
 echo '<input type="checkbox" class="form-check-input" id="loginform" name="prefs_showloginform" '.($se_prefs['prefs_showloginform'] == "yes" ? 'checked' :'').'>';
 echo '<label class="form-check-label" for="loginform">'.$lang['f_prefs_showloginform'].'</label>';
+echo '</div>';
+
+echo '<div class="form-group form-check mt-2">';
+echo '<input type="checkbox" class="form-check-input" id="unlock_user" name="prefs_user_unlock_by_admin" '.($se_prefs['prefs_user_unlock_by_admin'] == "yes" ? 'checked' :'').'>';
+echo '<label class="form-check-label" for="unlock_user">'.$lang['f_prefs_user_unlock_by_admin'].'</label>';
 echo '</div>';
 
 $input_acp_session_lifetime = [

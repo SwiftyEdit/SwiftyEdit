@@ -25,6 +25,7 @@ $cols = array(
     "user_fax" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "user_registerdate" => "VARCHAR(25) NOT NULL DEFAULT ''",
     "user_verified" => "VARCHAR(25) NOT NULL DEFAULT ''",
+    "user_verified_by_admin" => "VARCHAR(25) NOT NULL DEFAULT ''",
     "user_drm" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_acp_settings" => "LONGTEXT NOT NULL DEFAULT ''",
     "user_firstname" => "VARCHAR(50) NOT NULL DEFAULT ''",

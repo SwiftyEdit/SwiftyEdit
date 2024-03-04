@@ -59,6 +59,7 @@ if($_SESSION['sorting_user'] == 'user_nick') {
 // switch user status
 
 $user_status = array();
+$user_status_vba = array();
 
 if($_SESSION['checked_verified'] == '' AND $_SESSION['checked_waiting'] == '' AND $_SESSION['checked_paused'] == '' AND $_SESSION['set_user_status'] == false) {
 	$_SESSION['checked_verified'] = 'checked';
@@ -66,6 +67,10 @@ if($_SESSION['checked_verified'] == '' AND $_SESSION['checked_waiting'] == '' AN
 
 if(isset($_POST['set_status_verified'])) {
     $_SESSION['checked_verified'] = ($_SESSION['checked_verified'] == 'checked') ? '' : 'checked';
+}
+
+if(isset($_POST['set_status_verified_by_admin'])) {
+    $_SESSION['checked_verified_by_admin'] = ($_SESSION['checked_verified_by_admin'] == 'checked') ? '' : 'checked';
 }
 
 if(isset($_POST['set_status_waiting'])) {
@@ -96,13 +101,28 @@ if($_SESSION['checked_verified'] == "checked") {
     $user_status[] = 'verified';
 }
 
+
+if($_SESSION['checked_verified_by_admin'] == "checked") {
+    $btn_status_verified_by_admin = 'active';
+    $user_status_vba[] = 'yes';
+} else {
+    $user_status_vba[] = 'no';
+    $user_status_vba[] = 'null';
+    $user_status_vba[] = '';
+    $user_status_vba[] = null;
+}
+
 if($_SESSION['checked_deleted'] == "checked") {
 	$btn_status_deleted = 'active';
     $user_status[] = '';
 }
 
 if(isset($_POST['findUser'])) {
-    $_SESSION['user_match'] = sanitizeUserInputs($_POST['findUser']);
+    if($_POST['findUser'] != '') {
+        $_SESSION['user_match'] = sanitizeUserInputs($_POST['findUser']);
+    } else {
+        $_SESSION['user_match'] = '';
+    }
 }
 
 if(!isset($_SESSION['user_match'])) {
@@ -124,7 +144,8 @@ $cnt_all_users = $db_user->count("se_user", [
 $cnt_filter_users = $db_user->count("se_user", [
     "user_id[>]" => 0,
     "user_nick[~]" => $_SESSION['user_match'],
-    "user_verified" => $user_status
+    "user_verified" => $user_status,
+    "user_verified_by_admin" => $user_status_vba,
 ]);
 
 
@@ -132,6 +153,7 @@ $get_users = $db_user->select("se_user","*",[
 	"user_id[>]" => 0,
     "user_nick[~]" => $_SESSION['user_match'],
     "user_verified" => $user_status,
+    "user_verified_by_admin" => $user_status_vba,
 	"LIMIT" => [$sql_start, $items_per_page],
     "ORDER" => [$_SESSION['sorting_user'] => $_SESSION['sorting_user_dir']]
 ]);
@@ -261,16 +283,17 @@ echo '<div class="card-header">'.$icon['filter'].' Filter</div>';
 echo '<div class="card-body">';
 echo '<form action="?tn=user" method="POST">';
 echo '<div class="btn-group d-flex">';
-echo '<button type="submit" name="set_status_verified" class="btn btn-default w-100 '.$btn_status_verified.'">'.$icon['check'].'</button>';
-echo '<button type="submit" name="set_status_waiting" class="btn btn-default w-100 '.$btn_status_waiting.'">'.$icon['clock'].'</button>';
-echo '<button type="submit" name="set_status_paused" class="btn btn-default w-100 '.$btn_status_paused.'">'.$icon['lock'].'</button>';
-echo '<button type="submit" name="set_status_deleted" class="btn btn-default w-100 '.$btn_status_deleted.'">'.$icon['trash'].'</button>';
+echo '<button type="submit" title="E-Mail is verfified" name="set_status_verified" class="btn btn-default w-100 '.$btn_status_verified.'">'.$icon['check'].'</button>';
+echo '<button type="submit" title="User is verified by an admin" name="set_status_verified_by_admin" class="btn btn-default w-100 '.$btn_status_verified_by_admin.'">'.$icon['patch_check'].'</button>';
+echo '<button type="submit" title="User is not verified" name="set_status_waiting" class="btn btn-default w-100 '.$btn_status_waiting.'">'.$icon['clock'].'</button>';
+echo '<button type="submit" title="The user has been temporarily blocked by an admin" name="set_status_paused" class="btn btn-default w-100 '.$btn_status_paused.'">'.$icon['lock'].'</button>';
+echo '<button type="submit" title="The user has been deleted or the user name has been blocked" name="set_status_deleted" class="btn btn-default w-100 '.$btn_status_deleted.'">'.$icon['trash'].'</button>';
 echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
-echo '</div>';
 
-echo '<div class="my-3">';
+
+echo '<div class="mt-3">';
 echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
 echo '<form action="?tn=user&sub=user-list" method="post" class="dirtyignore">';
 
@@ -296,7 +319,7 @@ echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
 echo '</div>';
-
+echo '</div>';
 
 echo '</div>';
 

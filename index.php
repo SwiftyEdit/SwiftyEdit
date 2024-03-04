@@ -489,7 +489,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account') {
+    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register') {
         $show_posts = false;
     }
 

@@ -86,7 +86,6 @@ function start_update() {
 
     global $remote_file;
     global $se_content_files;
-    global $se_db_content;
 
     $get_file = $remote_file;
     $source_file = 'https://swiftyedit.net/releases/files/'.$remote_file;
@@ -113,7 +112,7 @@ function start_update() {
 
     if(!is_array($se_content_files)) {
         /* update single file database */
-        update_database($se_db_content);
+        update_database();
     } else {
         /* update multisite database */
         for($i=0;$i<count($se_content_files);$i++) {
@@ -405,7 +404,7 @@ function copy_recursive($source, $target) {
  * Update the database
  */
 
-function update_database($dbfile) {
+function update_database() {
 
     /**
      * build an array from all php files in folder ../install/contents
@@ -419,7 +418,7 @@ function update_database($dbfile) {
 
     for($i=0;$i<count($all_tables);$i++) {
 
-        unset($db_path,$table_name,$database);
+        unset($db_path,$table_name,$database,$table_type);
 
         include $all_tables[$i]; // returns $cols and $table_name
 

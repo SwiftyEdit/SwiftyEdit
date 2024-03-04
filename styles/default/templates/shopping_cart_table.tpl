@@ -11,7 +11,7 @@
         <tr>
             <td>{$item.nbr}</td>
             <td>
-                <small class="text-muted">{$item.product_number}</small> {$item.title}
+                <small class="text-muted">{$item.product_number}</small> <a href="{$item.slug}" title="{$item.slug}">{$item.title}</a>
                 <div class="sc-items-options">{$item.options}</div>
                 {if $item.options_comment != ""}
                     <div class="sc-items-options-comment">{$item.options_comment_label}:<br>{$item.options_comment}

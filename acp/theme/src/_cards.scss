@@ -1,7 +1,6 @@
 .card {
 	background: $widget_background;
-	border-color: var(--bs-widget-bg-500);
-
+	border-color: darken($widget_background,5);
 	.card-header {
 		background: lighten($widget_background,5);
 	}
@@ -71,6 +70,7 @@
 
 	.card {
 		background: $widget_background_dark;
+		border-color: lighten($widget_background_dark,10);
 		.card-header {
 			background: darken($widget_background_dark,5);
 		}

@@ -18,6 +18,7 @@
  * variables from parent file
  * @var integer $products_start
  * @var integer $products_limit
+ * @var array $product_filter
  * @var array $products_filter
  * @var string $display_mode
  * @var array $all_categories
@@ -310,6 +311,7 @@ $smarty->assign('form_action', $form_action);
 $smarty->assign('product_cnt', $cnt_filter_products);
 $smarty->assign('products', $get_products);
 $smarty->assign('show_products_list', $show_products_list);
+$smarty->assign('product_filter', $product_filter);
 
 $smarty->assign('show_pagination', $show_pagination);
 if(isset($pagination)) {

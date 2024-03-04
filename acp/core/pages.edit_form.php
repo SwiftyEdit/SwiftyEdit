@@ -553,7 +553,7 @@ $select_page_modul .= '</select>';
 
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_modul'].'</label>';
+echo '<label for="selMod">'.$lang['f_page_modul'].'</label>';
 echo $select_page_modul;
 echo '</div>';
 
@@ -562,10 +562,13 @@ for($i=0;$i<$cnt_mods;$i++) {
     $show_mod = basename($all_mods[$i]['folder']);
     $mod_id = md5($all_mods[$i]['folder']);
     if(is_file(SE_CONTENT."/modules/$show_mod/backend/page_values.php")) {
-        echo '<fieldset id="'.$mod_id.'" class="my-4">';
-        echo '<legend>' . $all_mods[$i]['folder'] . '</legend>';
+
+        echo '<div class="card mb-1">';
+        echo '<div class="card-header">' . $all_mods[$i]['folder'] . '</div>';
+        echo '<div class="card-body">';
         include SE_CONTENT."/modules/$show_mod/backend/page_values.php";
-        echo '</fieldset>';
+        echo '</div>';
+        echo '</div>';
     }
 }
 
@@ -576,12 +579,15 @@ echo '<div class="col-md-6">';
 $page_update_hooks = se_get_hook('page_updated');
 if (count($page_update_hooks) > 0) {
 
-    echo '<div class="card p-3">';
-
+    echo '<div class="card">';
+    echo '<div class="card-header">Hooks</div>';
+    echo '<ul class="list-group list-group-flush">';
     foreach ($page_update_hooks as $hook) {
+        echo '<li class="list-group-item">';
         echo $hook;
+        echo '</ul>';
     }
-
+    echo '</ul>';
     echo '</div>';
 }
 
@@ -599,8 +605,10 @@ echo '<p class="mb-3">'.se_print_docs_link('tooltips/tip-activate-posts.md',$lan
 echo '<div class="row">';
 echo '<div class="col-6">';
 
-echo '<fieldset>';
-echo '<legend>'.$lang['select_post_type'].'</legend>';
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['select_post_type'].'</div>';
+
+echo '<div class="card-body">';
 
 	if(strpos($page_posts_types, 'm') !== FALSE) {
 		$check_m = 'checked';
@@ -701,14 +709,16 @@ echo '<legend>'.$lang['select_post_type'].'</legend>';
 
 <?php
 
-
-echo '</fieldset>';
+echo '</div>';
+echo '</div>';
 
 echo '</div>';
 echo '<div class="col-6">';
 
-echo '<fieldset>';
-echo '<legend>'.$lang['categories'].'</legend>';
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['categories'].'</div>';
+
+echo '<div class="card-body">';
 
 if($page_categories_mode == '' OR $page_categories_mode == 1) {
     $sel_show_categories = 'selected';
@@ -770,8 +780,8 @@ for($i=0;$i<count($categories);$i++) {
 </script>
 
 <?php
-
-echo '</fieldset>';
+echo '</div>';
+echo '</div>';
 
 echo '</div>'; // col
 echo '</div>'; // row

@@ -462,6 +462,7 @@ $lang['label_filter'] = "Filter";
 $lang['label_filter_reset'] = "Filter zurücksetzen";
 $lang['label_type'] = "Type";
 $lang['label_overwrite_existing_files'] = "Bestehende überschreiben";
+$lang['label_translations'] = "Übersetzungen";
 
 $lang['label_ready_to_install'] = 'Bereit für die Installation';
 $lang['remember_me'] = 'Angemeldet bleiben';
@@ -553,6 +554,8 @@ $lang['f_prefs_descriptions'] = "Beschreibungen";
 $lang['f_prefs_user'] = "Benutzereinstellungen";
 $lang['f_prefs_registration'] = "Neue Registrierungen erlauben";
 $lang['f_prefs_showloginform'] = "Anmeldeformular anzeigen";
+$lang['f_prefs_user_unlock_by_admin'] = "Neue Benutzer müssen von einem Administrator freigeschaltet werden";
+
 $lang['f_prefs_uploads'] = "Uploads";
 $lang['f_prefs_layout'] = "Layout & Design";
 $lang['f_prefs_custom_fields'] = "Eigene Felder";

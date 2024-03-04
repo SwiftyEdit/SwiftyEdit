@@ -198,6 +198,7 @@ $lang['msg_order_send'] = '<b>¡Gracias!</b> Su pedido ha sido enviado.';
 $lang['msg_request_send'] = '<b>¡Gracias!</b> Su solicitud ha sido enviada.';
 $lang['request_form_intro'] = 'Por favor, introduzca su nombre y dirección de correo electrónico para que podamos procesar su solicitud.';
 $lang['msg_missing_mandatory_informations'] = 'Necesitamos su dirección completa para completar el pedido';
+$lang['msg_missing_user_approval'] = 'Su cuenta debe ser activada por un administrador.';
 $lang['btn_send_order'] = 'Comprar';
 $lang['btn_send_order_request'] = 'Enviar solicitud';
 $lang['order_status'] = 'Estado';

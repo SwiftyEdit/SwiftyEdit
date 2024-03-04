@@ -265,9 +265,13 @@ function se_get_product_data($id) {
  */
 function se_get_product_data_by_slug($slug) {
     global $db_posts;
+    global $languagePack;
 
     $data = $db_posts->get("se_products","*", [
-        "slug" => $slug
+        "AND" => [
+            "slug" => $slug,
+            "product_lang" => $languagePack
+            ]
     ]);
 
     return $data;
@@ -421,6 +425,12 @@ function se_add_to_cart() {
 	$cart_product_price_net = $this_item['product_price_net'];
 	$cart_product_title = $this_item['title'];
 	$cart_product_number = $this_item['product_number'];
+
+    $cart_product_slug = '#';
+    if(isset($_POST['product_href'])) {
+        $cart_product_slug = htmlspecialchars($_POST['product_href'], ENT_QUOTES, 'UTF-8');
+    }
+
 	
 	if($this_item['product_tax'] == '1') {
 		$cart_product_tax = $se_prefs['prefs_posts_products_default_tax'];
@@ -435,6 +445,7 @@ function se_add_to_cart() {
 		"cart_user_hash" =>  $cart_user_hash,
 		"cart_user_id" =>  $cart_user_id,
 		"cart_product_id" =>  $cart_product_id,
+        "cart_product_slug" =>  $cart_product_slug,
 		"cart_product_amount" =>  $cart_product_amount,
 		"cart_product_price_net" =>  $cart_product_price_net,
 		"cart_product_tax" =>  $cart_product_tax,

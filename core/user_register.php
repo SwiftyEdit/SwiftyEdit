@@ -4,7 +4,7 @@
  * prohibit unauthorized access
  */
 
-error_reporting(E_ALL ^E_NOTICE ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_DEPRECATED);
 
 if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
 	die ('<h2>Direct File Access Prohibited</h2>');
@@ -87,6 +87,7 @@ if($send_data == 'true') {
 	$user_groups = "1";
 	$user_registerdate = time();
 	$user_verified = 'waiting';
+    $user_verified_by_admin = 'no';
 	$drm_string = '';
 	$psw_string = md5("$psw$username");
 	$user_psw_hash = password_hash($psw, PASSWORD_DEFAULT);
@@ -98,6 +99,7 @@ if($send_data == 'true') {
 		"user_nick" => "$username",
 		"user_registerdate" => "$user_registerdate",
 		"user_verified" => "$user_verified",
+        "user_verified_by_admin" => "$user_verified_by_admin",
 		"user_groups" => "$user_groups",
 		"user_drm" => "$drm_string",
 		"user_firstname" => "$firstname",

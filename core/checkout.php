@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING);
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING);
 /**
  * SwiftyEdit frontend
  * - show shopping cart
@@ -79,6 +79,10 @@ if($get_cd['user_firstname'] == '' ||
     $checkout_error = 'missing_mandatory_informations';
 }
 
+if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_admin'] != 'yes') {
+    $checkout_error = 'missing_approval';
+}
+
 $client_data .= $get_cd['user_firstname']. ' '.$get_cd['user_lastname'].'<br>';
 $client_data .= $get_cd['user_street']. ' '.$get_cd['user_street_nbr'].'<br>';
 $client_data .= $get_cd['user_zip']. ' '.$get_cd['user_city'].'<br>';
@@ -97,6 +101,7 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['amount'] = $get_cart_items[$i]['cart_product_amount'];
 	$cart_item[$i]['cart_id'] = $get_cart_items[$i]['cart_id'];
 	$cart_item[$i]['post_id'] = $get_cart_items[$i]['cart_product_id'];
+    $cart_item[$i]['slug'] = $get_cart_items[$i]['cart_product_slug'];
 	
 	/* will the product be delivered? */
 	if($this_item['product_shipping_mode'] == 2) {
@@ -375,6 +380,10 @@ if($_POST['order'] == 'send') {
 
 if($checkout_error == 'missing_mandatory_informations') {
     $checkout_error_msg = $lang['msg_missing_mandatory_informations'];
+}
+
+if($checkout_error == 'missing_approval') {
+    $checkout_error_msg = $lang['msg_missing_user_approval'];
 }
 
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
