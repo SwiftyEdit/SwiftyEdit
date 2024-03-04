@@ -3,7 +3,7 @@
   "name": "SwiftyEditBackendTheme",
   "private": true,
   "dependencies": {
-    "@eonasdan/tempus-dominus": "^6.9.4",
+    "@eonasdan/tempus-dominus": "^6.9.5",
     "@popperjs/core": "^2.11.8",
     "@tinymce/tinymce-jquery": "^2.1.0",
     "accounting": "^0.4.1",
