@@ -1,6 +1,10 @@
 {
-  "scripts": {},
-  "name": "SwiftyEditBackendTheme",
+  "name": "swiftyedit-backend-theme",
+  "version": "1.0.0",
+  "description": "This Theme is used in the SwiftyEdit CMS backend",
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "repository": {},
   "private": true,
   "dependencies": {
     "@eonasdan/tempus-dominus": "^6.9.5",
@@ -18,17 +22,13 @@
     "jquery.dirtyforms": "^2.0.0",
     "moment": "^2.30.1",
     "tags-input": "^1.1.1",
-    "tinymce": "^6.8.3"
-  },
-  "optionalDependencies": {},
-  "license": "UNLICENSED",
-  "version": "1.0.0",
-  "description": "This Theme is used in the SwiftyEdit CMS backend",
-  "devDependencies": {
+    "tinymce": "^6.8.3",
     "htmx.org": "^1.9.10",
     "jquery-sortablejs": "^1.0.1",
     "sortablejs": "^1.15.2"
   },
-  "repository": {},
-  "author": ""
+  "optionalDependencies": {},
+  "devDependencies": {
+  },
+  "scripts": {}
 }
