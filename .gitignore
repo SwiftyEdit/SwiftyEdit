@@ -61,6 +61,7 @@ sitemap.xml
 #!/styles/default/*
 #!/styles/default/**/*
 !/styles/default/php/*
+!/styles/default/dist/*
 !/styles/default/templates/*
 !/styles/default/templates/posts/*
 !/styles/default/templates/comments/*
