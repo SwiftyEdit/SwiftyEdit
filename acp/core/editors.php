@@ -18,8 +18,31 @@ if($editor_tpl_folder == 'use_standard') {
 	$editor_tpl_folder = $se_prefs['prefs_template'];
 }
 
-$editor_styles = '../styles/'.$editor_tpl_folder.'/css/editor.css';
-$tinyMCE_config = '../styles/'.$editor_tpl_folder.'/js/tinyMCE_config.js';
+/**
+ * We check the directories in the following order
+ * 1. ../styles/.../dist/
+ * 2. ../styles/.../config/
+ * 3. ../styles/.../css/ and ../styles/.../js/
+ */
+
+$theme_src = '../styles/' . $editor_tpl_folder . '/';
+
+if (is_file($theme_src . 'dist/editor.css')) {
+    $editor_styles = $theme_src.'dist/editor.css';
+} else if (is_file($theme_src . 'config/editor.css')) {
+    $editor_styles = $theme_src.'config/editor.css';
+} else {
+    $editor_styles = $theme_src.'css/editor.css';
+}
+
+if (is_file($theme_src . 'dist/tinyMCE_config.js')) {
+    $tinyMCE_config = $theme_src.'dist/tinyMCE_config.js';
+} else if (is_file($theme_src . 'config/tinyMCE_config.js')) {
+    $tinyMCE_config = $theme_src.'config/tinyMCE_config.js';
+} else {
+    $tinyMCE_config = $theme_src.'js/tinyMCE_config.js';
+}
+
 
 if(!is_file("$editor_styles")) {
     $editor_styles = '../styles/default/dist/editor.css';
