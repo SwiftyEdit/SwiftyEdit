@@ -315,7 +315,7 @@
   "label.settings.publisher_mode": "Toujours écraser l'auteur",
   "label.settings.rss_time_offset": "Décalage horaire RSS",
   "label.settings.nbr_page_versions": "Nombre de versions de page",
-  "label.settings.page_sort_min_length": "Page sort must be at least <i>n</i> digits long",
+  "label.settings.page_sort_min_length": "Le tri par page doit être composé d'au moins <i>n</i> chiffres",
   "label.settings.prefix": "Préfixe",
   "label.settings.favicon": "Favicon",
   "label.settings.max_img": "Taille maximale des images (px)",
