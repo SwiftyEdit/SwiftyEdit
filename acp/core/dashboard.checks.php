@@ -13,7 +13,7 @@ require __DIR__.'/access.php';
 $se_check_messages = array();
 
 if(!is_file('../.htaccess')) {
-    $se_check_messages[] = $lang['alert_no_htaccess'];
+    $se_check_messages[] = $lang['msg_error_no_htaccess'];
 }
 
 if(!is_dir(SE_CONTENT.'/cache/cache/')) {
@@ -56,21 +56,21 @@ foreach($writable_items as $f) {
 	
 	
 	if(!is_writable($f)) {
-        $se_check_messages[] = $lang['alert_not_writable']. ' (... '.basename($f).')';
+        $se_check_messages[] = $lang['msg_error_not_writable']. ' (... '.basename($f).')';
 	}
 
 }
 
 if($se_prefs['prefs_cms_domain'] == '') {
-    $se_check_messages[] = $lang['alert_prefs_cms_domain'];
+    $se_check_messages[] = str_replace('{setting}','CMS DOMAIN',$lang['msg_error_missing_setting']);
 }
 
 if($se_prefs['prefs_cms_base'] == '') {
-    $se_check_messages[] = $lang['alert_prefs_cms_base'];
+    $se_check_messages[] = str_replace('{setting}','CMS BASE',$lang['msg_error_missing_setting']);
 }
 
 if($se_prefs['prefs_maxtmbwidth'] == '' || $se_prefs['prefs_maxtmbheight'] == '') {
-    $se_check_messages[] = $lang['alert_prefs_thumbnails'];
+    $se_check_messages[] = str_replace('{setting}','THUMBS WIDTH/HEIGHT',$lang['msg_error_missing_setting']);
 }
 
 /* check special pages */

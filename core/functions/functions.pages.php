@@ -151,9 +151,9 @@ function se_save_page($data) {
         $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>","5");
         generate_xml_sitemap();
-        show_toast($lang['msg_page_saved'],'success');
+        show_toast($lang['msg_success_page_saved'],'success');
     } else {
-        show_toast($lang['msg_page_saved_error'],'danger');
+        show_toast($lang['msg_error_page_saved'],'danger');
     }
 
     return $new_page_id;
@@ -196,9 +196,9 @@ function se_update_page($data,$id) {
         $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;","5");
         generate_xml_sitemap();
-        show_toast($lang['msg_page_updated'],'success');
+        show_toast($lang['msg_success_page_saved'],'success');
     } else {
-        show_toast($lang['msg_page_saved_error'],'danger');
+        show_toast($lang['msg_error_page_saved'],'danger');
     }
 
 }

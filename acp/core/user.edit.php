@@ -66,7 +66,7 @@ if(isset($_POST['delete_the_user'])) {
 		]);
 	
 	if($cnt_changes->rowCount() > 0) {
-		$success_message = $lang['msg_user_deleted'].'<br />';
+		$success_message = $lang['msg_success_entry_delete'].'<br />';
 		$show_form = "false";
 		record_log($_SESSION['user_nick'],"deleted user id: $edituser","9");
 	}
@@ -102,11 +102,11 @@ if($_POST['save_the_user']) {
 
 		if($_POST['user_psw_new'] != $_POST['user_psw_reconfirmation']) {
 			$db_status = "locked";
-			$error_message .= $lang['msg_psw_error'].'<br>';
+			$error_message .= $lang['msg_error_psw_not_match'].'<br>';
 		} else {
 			//generate password hash
 			$user_psw = password_hash($_POST['user_psw_new'], PASSWORD_DEFAULT);
-			$success_message .= $lang['msg_psw_changed'].'<br>';
+			$success_message .= $lang['msg_success_psw_changed'].'<br>';
 			$set_psw = 'true';
 		}
 
@@ -125,7 +125,7 @@ if($_POST['save_the_user']) {
 		
 		if(is_array($check_user)) {
 			if(count($check_user) > 0) {
-				$error_message .= $lang['msg_user_exists'].'<br>';
+				$error_message .= $lang['msg_info_user_exists'].'<br>';
 				$db_status = "locked";
 			}			
 		}
@@ -177,7 +177,7 @@ if($_POST['save_the_user']) {
 			}
 										
 			if($cnt_changes->rowCount() > 0) {
-				$success_message .= $lang['msg_user_updated'].'<br>';
+				$success_message .= $lang['msg_success_db_changed'].'<br>';
 				record_log($_SESSION['user_nick'],"update user id: $edituser via acp","5");
 			}
 		}
@@ -198,7 +198,7 @@ if($_POST['save_the_user']) {
 		]);
 		
 		if(count((array) $check_user) > 0) {
-			$error_message .= $lang['msg_user_exists'].'<br>';
+			$error_message .= $lang['msg_info_user_exists'].'<br>';
 			$db_status = "locked";
 		}
 		
@@ -207,12 +207,12 @@ if($_POST['save_the_user']) {
 		]);
 		
 		if(count((array) $check_mail) > 0) {
-			$error_message .= $lang['msg_usermail_exists'].'<br>';
+			$error_message .= $lang['msg.info.usermail_exists'].'<br>';
 			$db_status = "locked";
 		}
 		
 		if($user_nick == '') {
-			$error_message .= $lang['msg_user_mandatory'].'<br>';
+			$error_message .= $lang['msg_error_mandatory'].'<br>';
 			$db_status = "locked";			
 		}
 		
@@ -246,7 +246,7 @@ if($_POST['save_the_user']) {
 		
 		
 			if($edituser > 0) {
-				$success_message .= $lang['msg_new_user_saved'].'<br>';
+				$success_message .= $lang['msg_success_new_record'].'<br>';
 				record_log($_SESSION['user_nick'],"new user <i>$user_nick</i>","5");
 			} else {
 				print_r($db_user->errorInfo);
@@ -334,23 +334,23 @@ if(is_numeric($edituser)){
 	$user_avatar_path = '../content/avatars/' . md5($user_nick) . '.png';
 	
 	echo '<div class="subHeader">';
-	echo '<h3>'.$lang['h_modus_edituser'].' - '.$user_nick.' <small>ID: '.$user_id.'</small></h3>';
+	echo '<h3>'.$lang['status_edit'].' - '.$user_nick.' <small>ID: '.$user_id.'</small></h3>';
 	echo '</div>';
 	
-	$submit_button = "<input class='btn btn-success w-100' type='submit' name='save_the_user' value='$lang[update_user]'>";
+	$submit_button = "<input class='btn btn-success w-100' type='submit' name='save_the_user' value='$lang[update]'>";
 		
 	//no delete_button for myself
 	if($user_nick != $_SESSION['user_nick']){
-		$delete_button = '<button class="btn btn-danger btn-sm w-100" type="submit" name="delete_the_user" value="'.$user_id.'" onclick="return confirm(\''.$lang['confirm_delete_user'].'\')">'.$icon['trash_alt'].'</button>';
+		$delete_button = '<button class="btn btn-danger btn-sm w-100" type="submit" name="delete_the_user" value="'.$user_id.'" onclick="return confirm(\''.$lang['msg_confirm_delete_user'].'\')">'.$icon['trash_alt'].'</button>';
 	}
 
 } else {
 	// modus new user
 	echo '<div class="subHeader">';
-	echo"<h3>$lang[h_modus_newuser]</h3>";
+	echo '<h3>'.$lang['status_new'].'</h3>';
 	echo '</div>';
 	
-	$submit_button = "<input class='btn btn-success w-100' type='submit' name='save_the_user' value='$lang[save_new_user]'>";
+	$submit_button = "<input class='btn btn-success w-100' type='submit' name='save_the_user' value='$lang[save]'>";
 	$delete_button = "";
 }
 

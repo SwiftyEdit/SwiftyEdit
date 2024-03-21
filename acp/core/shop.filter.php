@@ -181,7 +181,7 @@ if($show_form !== false)  {
     $form_tpl = str_replace('{mode}',"$mode",$form_tpl);
     $form_tpl = str_replace('{csrf_token}',$_SESSION['token'],$form_tpl);
     $form_tpl = str_replace('{btn_submit_text}',"$btn_submit_text",$form_tpl);
-    $form_tpl = str_replace('{btn_delete_text}',$lang['button_delete'],$form_tpl);
+    $form_tpl = str_replace('{btn_delete_text}',$lang['btn_delete'],$form_tpl);
     $form_tpl = str_replace('{btn_close}',$lang['btn_close'],$form_tpl);
 
     echo $form_tpl;

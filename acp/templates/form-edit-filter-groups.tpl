@@ -13,11 +13,11 @@
         <div class="row">
             <div class="col-5">
                 <div class="mb-3">
-                    <label>{label_group_name}</label>
+                    <label>{label_group}</label>
                     <input type="text" class="form-control" name="filter_group_name" value="{val_group_name}">
                 </div>
                 <div class="mb-3">
-                    <label>{label_group_description}</label>
+                    <label>{label_description}</label>
                     <textarea class="form-control" name="filter_group_description">{val_group_description}</textarea>
                 </div>
             </div>

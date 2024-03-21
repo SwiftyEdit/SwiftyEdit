@@ -59,19 +59,19 @@ for($i=1;$i<6;$i++) {
 }
 
 echo '<input type="checkbox" name="set_status[]" value="1" class="btn-check" id="status-1" '.$checked_status_1.' autocomplete="off">';
-echo '<label class="btn btn-sm btn-default m-1" for="status-1">'.$lang['label_status_public'].'</label>';
+echo '<label class="btn btn-sm btn-default m-1" for="status-1">'.$lang['status_public'].'</label>';
 
 echo '<input type="checkbox" name="set_status[]" value="2" class="btn-check" id="status-2" '.$checked_status_2.' autocomplete="off">';
-echo '<label class="btn btn-sm btn-default m-1" for="status-2">'.$lang['label_status_draft'].'</label>';
+echo '<label class="btn btn-sm btn-default m-1" for="status-2">'.$lang['status_draft'].'</label>';
 
 echo '<input type="checkbox" name="set_status[]" value="3" class="btn-check" id="status-3" '.$checked_status_3.' autocomplete="off">';
-echo '<label class="btn btn-sm btn-default m-1" for="status-3">'.$lang['label_status_private'].'</label>';
+echo '<label class="btn btn-sm btn-default m-1" for="status-3">'.$lang['status_private'].'</label>';
 
 echo '<input type="checkbox" name="set_status[]" value="4" class="btn-check" id="status-4" '.$checked_status_4.' autocomplete="off">';
-echo '<label class="btn btn-sm btn-default m-1" for="status-4">'.$lang['label_status_ghost'].'</label>';
+echo '<label class="btn btn-sm btn-default m-1" for="status-4">'.$lang['status_ghost'].'</label>';
 
 echo '<input type="checkbox" name="set_status[]" value="5" class="btn-check" id="status-5" '.$checked_status_5.' autocomplete="off">';
-echo '<label class="btn btn-sm btn-default m-1" for="status-5">'.$lang['label_status_redirect'].'</label>';
+echo '<label class="btn btn-sm btn-default m-1" for="status-5">'.$lang['status_redirect'].'</label>';
 
 echo '</div>';
 echo '</div>';

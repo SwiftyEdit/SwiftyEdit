@@ -29,7 +29,7 @@ if((isset($_POST['delete_id'])) && is_numeric($_POST['delete_id'])) {
     ]);
 
     if($delete->rowCount() > 0) {
-        echo '<div class="alert alert-success">'.$lang['msg_post_deleted'].'</div>';
+        echo '<div class="alert alert-success">'.$lang['msg_info_data_deleted'].'</div>';
         record_log($_SESSION['user_nick'],"delete event id: $del_id","8");
     }
 }
@@ -190,7 +190,7 @@ $pagination = se_return_pagination($pagination_query,$cnt_filter_events,$sql_sta
 echo '<div class="subHeader d-flex flex-row align-items-center">';
 echo '<h3 class="align-middle">' . sprintf($lang['label_show_events'], $cnt_filter_events, $cnt_all_events) .'</h3>';
 echo '<div class="ms-auto ps-3">';
-echo '<a class="btn btn-default text-success" href="?tn=events&sub=edit&new=e">'.$icon['plus'].' '.$lang['label_new_post'].'</a>';
+echo '<a class="btn btn-default text-success" href="?tn=events&sub=edit&new=e">'.$icon['plus'].' '.$lang['btn_new'].'</a>';
 echo '</div>';
 echo '</div>';
 
@@ -202,7 +202,7 @@ echo '<div class="card p-3">';
 
 echo '<div class="d-flex flex-row-reverse">';
 echo '<div class="ps-3">';
-echo '<form action="?tn=events&sub=events-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<form action="?tn=events&sub=events-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['label_items_per_page'].'">';
 echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
 echo $hidden_csrf_token;
 echo '</form>';
@@ -222,7 +222,7 @@ if($cnt_filter_events > 0) {
     echo '<th class="text-center">' . $icon['star'] . '</th>';
     echo '<th>' . $lang['label_priority'] . '</th>';
     echo '<th nowrap>' . $lang['label_date'] . '</th>';
-    echo '<th>' . $lang['label_post_title'] . '</th>';
+    echo '<th>' . $lang['label_title'] . '</th>';
     echo '<th></th>';
     echo '<th></th>';
     echo '</tr></thead>';
@@ -345,7 +345,7 @@ if($cnt_filter_events > 0) {
     echo '</table>';
 
 } else {
-    echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
+    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries'].'</div>';
 }
 
 echo $pagination;
@@ -366,7 +366,7 @@ echo '<div class="card-body">';
 echo '<form action="?tn=events&sub=events-list" method="POST" class="ms-auto">';
 echo '<div class="input-group">';
 echo '<span class="input-group-text">'.$icon['search'].'</span>';
-echo '<input class="form-control" type="text" name="events_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo '<input class="form-control" type="text" name="events_text_filter" value="" placeholder="'.$lang['filter'].'">';
 echo $hidden_csrf_token;
 echo '</div>';
 echo '</form>';
@@ -386,15 +386,15 @@ echo '<div class="card-header p-1 px-2">'.$lang['label_status'].'</div>';
 /* show or hide past events  */
 echo '<div class="btn-group d-flex mt-1">';
 if($_SESSION['show_past_events'] == 1 OR $_SESSION['show_past_events'] == '') {
-    echo '<a href="acp.php?tn=events&show_past_events=2" class="btn btn-sm btn-default active w-100">'.$icon['check_circle'].' '.$lang['status_past_events'].'</a>';
+    echo '<a href="acp.php?tn=events&show_past_events=2" class="btn btn-sm btn-default active w-100">'.$icon['check_circle'].' '.$lang['label_events_show_past_events'].'</a>';
 } else {
-    echo '<a href="acp.php?tn=events&show_past_events=1" class="btn btn-sm btn-default w-100">'.$icon['circle_alt'].' '.$lang['status_past_events'].'</a>';
+    echo '<a href="acp.php?tn=events&show_past_events=1" class="btn btn-sm btn-default w-100">'.$icon['circle_alt'].' '.$lang['label_events_show_past_events'].'</a>';
 }
 echo '</div>';
 echo '</div>';
 
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
+echo '<div class="card-header p-1 px-2">'.$lang['categories'].'</div>';
 
 echo $cat_btn_group;
 

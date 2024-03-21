@@ -5,7 +5,7 @@ require 'core/access.php';
 
 if(count($all_plugins)<1) {
 	/* no plugins */
-	echo '<div class="alert alert-info">'.$lang['alert_no_plugins'].'</div>';
+	echo '<div class="alert alert-info">'.$lang['msg_info_no_addons'].'</div>';
 } else {
 
 	$template_file = file_get_contents("templates/pluginlist.tpl");
@@ -26,7 +26,7 @@ if(count($all_plugins)<1) {
 			}
 		}
 		
-		$btn_delete_addon = '<form class="d-inline ps-2" action="?tn=addons&sub=p" method="POST" onsubmit="return confirm(\''.$lang['confirm_delete_file'].'\');">';
+		$btn_delete_addon = '<form class="d-inline ps-2" action="?tn=addons&sub=p" method="POST" onsubmit="return confirm(\''.$lang['msg_confirm_delete'].'\');">';
 		$btn_delete_addon .= '<button type="submit" name="delete_addon" class="btn btn-sm btn-primary text-danger">'.$icon['trash_alt'].'</button>';
 		$btn_delete_addon .= '<input type="hidden" name="type" value="p">';
 		$btn_delete_addon .= '<input type="hidden" name="addon" value="'.$plugin.'">';
@@ -46,7 +46,7 @@ if(count($all_plugins)<1) {
 		/* show version information */
 		$plugin_version = '<p class="text-muted">';
 		if($plugin_info['version'] != '') {
-			$plugin_version .= '<span class="">Version: '.$plugin_info['version'].'</span> · ';
+			$plugin_version .= '<span class="">Version: '.$plugin_info['version'].'</span> · ';
 		}
 		/* show author information */
 		$plugin_author = '';

@@ -1,0 +1,12 @@
+{
+  "btn.save": "Speichern",
+  "btn.update": "Aktualisieren",
+  "nav.btn.overview": "Übersicht",
+  "nav.btn.overview.title": "zurück zur Übersicht",
+  "nav.btn.pages": "Seiten",
+  "nav.btn.pages.title": "Alle Seiten anzeigen",
+  "nav.btn.settings": "Einstellungen",
+  "nav.btn.settings.title": "Einstellungen anzeigen",
+
+  "legend.login": "Login"
+}

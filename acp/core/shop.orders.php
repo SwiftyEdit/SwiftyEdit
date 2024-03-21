@@ -162,7 +162,7 @@ $pagination_query = '?tn=shop&sub=shop-orders&sql_start_nbr={page}';
 $pagination = se_return_pagination($pagination_query,$cnt_matching_orders,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
 echo '<div class="subHeader">';
-echo $lang['nav_orders'] .' '. $cnt_matching_orders;
+echo $lang['nav_btn_orders'] .' '. $cnt_matching_orders;
 echo '</div>';
 
 // reset message
@@ -265,7 +265,7 @@ if(is_numeric($_POST['open_order'])) {
 
 echo '<div class="d-flex flex-row-reverse">';
 echo '<div class="ps-3">';
-echo '<form action="?tn=shop&sub=shop-orders" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<form action="?tn=shop&sub=shop-orders" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['label_items_per_page'].'">';
 echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
 echo $hidden_csrf_token;
 echo '</form>';
@@ -284,9 +284,9 @@ echo '<td>#</td>';
 echo '<td>'.$lang['label_order_nbr'].'</td>';
 echo '<td>'.$lang['label_order_date'].'</td>';
 echo '<td class="text-end">'.$lang['price_total'].'</td>';
-echo '<td>'.$lang['label_status_payment'].'</td>';
-echo '<td>'.$lang['label_status_shipping'].'</td>';
-echo '<td>'.$lang['label_status_order'].'</td>';
+echo '<td>'.$lang['label_payment'].'</td>';
+echo '<td>'.$lang['label_shipping'].'</td>';
+echo '<td>'.$lang['label_status'].'</td>';
 echo '<td></td>';
 echo '</tr>';
 for($i=0;$i<$cnt_orders;$i++) {
@@ -325,8 +325,8 @@ for($i=0;$i<$cnt_orders;$i++) {
 
     $select_status_payment  = '<form action="?tn=shop&sub=shop-orders" method="POST">';
     $select_status_payment .= '<select name="change_status_payment" class="form-control" onchange="this.form.submit()">';
-    $select_status_payment .= '<option value="1" '.$sel_sp[1].'>'.$lang['status_payment_open'].'</option>';
-    $select_status_payment .= '<option value="2" '.$sel_sp[2].'>'.$lang['status_payment_paid'].'</option>';
+    $select_status_payment .= '<option value="1" '.$sel_sp[1].'>'.$lang['status_order_payment_open'].'</option>';
+    $select_status_payment .= '<option value="2" '.$sel_sp[2].'>'.$lang['status_order_payment_paid'].'</option>';
     $select_status_payment .= '</select>';
     $select_status_payment .= '<input type="hidden" name="id" value="'.$orders[$i]['id'].'">';
     $select_status_payment .= $hidden_csrf_token;
@@ -343,8 +343,8 @@ for($i=0;$i<$cnt_orders;$i++) {
 
     $select_status_shipping  = '<form action="?tn=shop&sub=shop-orders" method="POST">';
     $select_status_shipping .= '<select name="change_status_shipping" class="form-control" onchange="this.form.submit()">';
-    $select_status_shipping .= '<option value="1" '.$sel_ss[1].'>'.$lang['status_shipping_prepared'].'</option>';
-    $select_status_shipping .= '<option value="2" '.$sel_ss[2].'>'.$lang['status_shipping_shipped'].'</option>';
+    $select_status_shipping .= '<option value="1" '.$sel_ss[1].'>'.$lang['status_order_shipping_prepared'].'</option>';
+    $select_status_shipping .= '<option value="2" '.$sel_ss[2].'>'.$lang['status_order_shipping_shipped'].'</option>';
     $select_status_shipping .= '</select>';
     $select_status_shipping .= '<input type="hidden" name="id" value="'.$orders[$i]['id'].'">';
     $select_status_shipping .= $hidden_csrf_token;
@@ -394,7 +394,7 @@ echo '<h6>Filter</h6>';
 
 /* filter payment */
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_status_payment'].'</div>';
+echo '<div class="card-header p-1 px-2">'.$lang['label_payment'].'</div>';
 echo '<div class="list-group list-group-flush">';
 
 $class = 'list-group-item list-group-item-ghost p-1 px-2';
@@ -403,7 +403,7 @@ if(strpos("$_SESSION[checked_order_filter]", "-paid-") !== false) {
     $class = 'list-group-item list-group-item-ghost p-1 px-2 active';
     $icon_toggle = $icon['check_circle'];
 }
-echo '<a href="?tn=shop&sub=shop-orders&sof=paid" class="'.$class.'">'.$icon_toggle.' '.$lang['status_payment_paid'].'</a>';
+echo '<a href="?tn=shop&sub=shop-orders&sof=paid" class="'.$class.'">'.$icon_toggle.' '.$lang['status_order_payment_paid'].'</a>';
 
 $class = 'list-group-item list-group-item-ghost p-1 px-2';
 $icon_toggle = $icon['circle_alt'];
@@ -411,13 +411,13 @@ if(strpos("$_SESSION[checked_order_filter]", "-unpaid-") !== false) {
     $class = 'list-group-item list-group-item-ghost p-1 px-2 active';
     $icon_toggle = $icon['check_circle'];
 }
-echo '<a href="?tn=shop&sub=shop-orders&sof=unpaid" class="'.$class.'">'.$icon_toggle.' '.$lang['status_payment_open'].'</a>';
+echo '<a href="?tn=shop&sub=shop-orders&sof=unpaid" class="'.$class.'">'.$icon_toggle.' '.$lang['status_order_payment_open'].'</a>';
 echo '</div>';
 echo '</div>';
 
 /* filter shipping */
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_status_shipping'].'</div>';
+echo '<div class="card-header p-1 px-2">'.$lang['label_shipping'].'</div>';
 echo '<div class="list-group list-group-flush">';
 
 $class = 'list-group-item list-group-item-ghost p-1 px-2';
@@ -426,7 +426,7 @@ if(strpos("$_SESSION[checked_order_filter]", "-shipped-") !== false) {
     $class = 'list-group-item list-group-item-ghost p-1 px-2 active';
     $icon_toggle = $icon['check_circle'];
 }
-echo '<a href="?tn=shop&sub=shop-orders&sof=shipped" class="'.$class.'">'.$icon_toggle.' '.$lang['status_shipping_shipped'].'</a>';
+echo '<a href="?tn=shop&sub=shop-orders&sof=shipped" class="'.$class.'">'.$icon_toggle.' '.$lang['status_order_shipping_shipped'].'</a>';
 
 $class = 'list-group-item list-group-item-ghost p-1 px-2';
 $icon_toggle = $icon['circle_alt'];
@@ -434,13 +434,13 @@ if(strpos("$_SESSION[checked_order_filter]", "-unshipped-") !== false) {
     $class = 'list-group-item list-group-item-ghost p-1 px-2 active';
     $icon_toggle = $icon['check_circle'];
 }
-echo '<a href="?tn=shop&sub=shop-orders&sof=unshipped" class="'.$class.'">'.$icon_toggle.' '.$lang['status_shipping_prepared'].'</a>';
+echo '<a href="?tn=shop&sub=shop-orders&sof=unshipped" class="'.$class.'">'.$icon_toggle.' '.$lang['status_order_shipping_prepared'].'</a>';
 echo '</div>';
 echo '</div>';
 
 /* filter order status */
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_status_order'].'</div>';
+echo '<div class="card-header p-1 px-2">'.$lang['label_status'].'</div>';
 echo '<div class="list-group list-group-flush">';
 
 $class = 'list-group-item list-group-item-ghost p-1 px-2';

@@ -165,7 +165,7 @@ $pagination = se_return_pagination($pagination_query,$cnt_filter_users,$sql_star
 
 echo '<div class="subHeader d-flex">';
 echo '<div class="me-auto"><h3>Userlist ('.$cnt_filter_users.' / '.$cnt_all_users.')</h3></div>';
-echo '<div><a href="?tn=user&sub=new" class="btn btn-success align-self-end">'.$lang['new_user'].'</a></div>';
+echo '<div><a href="?tn=user&sub=new" class="btn btn-default text-success align-self-end">'.$lang['btn_new'].'</a></div>';
 echo '</div>';
 
 echo '<div class="row">';
@@ -181,11 +181,11 @@ echo '<thead>';
 echo '<tr>';
 echo '<th>#</th>';
 echo '<th> </th>';
-echo '<th>'.$lang['h_username'].'</th>';
-echo '<th>'.$lang['h_registerdate'].'</th>';
-echo '<th>'.$lang['h_realname'].'</th>';
-echo '<th>'.$lang['h_email'].'</th>';
-echo '<th>'.$lang['h_action'].'</th>';
+echo '<th>'.$lang['label_username'].'</th>';
+echo '<th>'.$lang['label_date'].'</th>';
+echo '<th>'.$lang['label_name'].'</th>';
+echo '<th>'.$lang['label_mail'].'</th>';
+echo '<th> </th>';
 echo '</tr>';
 echo '</thead>';
 
@@ -294,17 +294,17 @@ echo '</form>';
 
 
 echo '<div class="mt-3">';
-echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
+echo '<label class="form-label">'.$lang['sorting'].'</label>';
 echo '<form action="?tn=user&sub=user-list" method="post" class="dirtyignore">';
 
 echo '<div class="row g-1">';
 echo '<div class="col-md-8">';
 
 echo '<select class="form-control form-select-sm" name="sorting_user" onchange="this.form.submit()">';
-echo '<option value="username" '.$sel_sort_value['username'].'>'.$lang['h_username'].'</option>';
-echo '<option value="registerdate" '.$sel_sort_value['registerdate'].'>'.$lang['h_registerdate'].'</option>';
-echo '<option value="realname" '.$sel_sort_value['realname'].'>'.$lang['h_realname'].'</option>';
-echo '<option value="email" '.$sel_sort_value['email'].'>'.$lang['h_email'].'</option>';
+echo '<option value="username" '.$sel_sort_value['username'].'>'.$lang['label_username'].'</option>';
+echo '<option value="registerdate" '.$sel_sort_value['registerdate'].'>'.$lang['label_date'].'</option>';
+echo '<option value="realname" '.$sel_sort_value['realname'].'>'.$lang['label_name'].'</option>';
+echo '<option value="email" '.$sel_sort_value['email'].'>'.$lang['label_mail'].'</option>';
 echo '</select>';
 
 echo '</div>';

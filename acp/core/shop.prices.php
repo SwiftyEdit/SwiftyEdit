@@ -15,7 +15,7 @@
 require __DIR__.'/access.php';
 
 echo '<div class="subHeader">';
-echo '<h3>'.$lang['nav_price_groups'] .'</h3>';
+echo '<h3>'.$lang['nav_btn_price_groups'] .'</h3>';
 echo '</div>';
 
 /* update / new label */
@@ -134,7 +134,7 @@ if(is_array($volume_discounts)) {
 
 $show_price_volume_discount = '<div class="card my-2">';
 $show_price_volume_discount .= '<div class="card-header">';
-$show_price_volume_discount .= '<span>'.$lang['label_scaling_prices'].'</span>';
+$show_price_volume_discount .= '<span>'.$lang['label_product_scaling_prices'].'</span>';
 $show_price_volume_discount .= '<button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseExample">+</button>';
 $show_price_volume_discount .= '</div>';
 $show_price_volume_discount .= '<div class="card-body collapse" id="collapseVDP">';
@@ -152,11 +152,11 @@ for($i=0;$i<($cnt_volume_discounts+5);$i++) {
     $show_price_volume_discount .= '<input class="form-control" name="product_vd_amount[]" type="number" value="'.$this_ammount.'">';
     $show_price_volume_discount .= '</div>';
     $show_price_volume_discount .= '<div class="col-md-4">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_price_net'] . '</label>';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_net'] . '</label>';
     $show_price_volume_discount .= '<input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="'.$price_net.'">';
     $show_price_volume_discount .= '</div>';
     $show_price_volume_discount .= '<div class="col-md-4">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_price_gross'] . '</label>';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_gross'] . '</label>';
     $show_price_volume_discount .= '<input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">';
     $show_price_volume_discount .= '</div>';
     $show_price_volume_discount .= '</div>';
@@ -177,7 +177,7 @@ $cnt_price_groups = count($get_all_price_groups);
 echo '<div class="card p-2">';
 
 if($cnt_price_groups < 1) {
-    echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
+    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries'].'</div>';
 } else {
 
     echo '<table class="table table-sm">';

@@ -36,13 +36,13 @@ echo '<div class="card-header">';
 
 echo '<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">';
 echo '<li class="nav-item"><a class="nav-link" href="#position" data-bs-toggle="tab">Position</a></li>';
-echo '<li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">'.$lang['tab_info'].'</a></li>';
-echo '<li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">'.$lang['tab_content'].'</a></li>';
-echo '<li class="nav-item"><a class="nav-link" href="#meta" data-bs-toggle="tab">'.$lang['tab_meta'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">'.$lang['nav_btn_info'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">'.$lang['nav_btn_content'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link" href="#meta" data-bs-toggle="tab">'.$lang['nav_btn_metas'].'</a></li>';
 echo $theme_tab;
 
-echo '<li class="nav-item ms-auto"><a class="nav-link" href="#posts" data-bs-toggle="tab" title="'.$lang['tab_posts'].'">'.$icon['file_earmark_post'].'</a></li>';
-echo '<li class="nav-item"><a class="nav-link" href="#addons" data-bs-toggle="tab" title="'.$lang['tab_addons'].'">'.$icon['plugin'].'</a></li>';
+echo '<li class="nav-item ms-auto"><a class="nav-link" href="#posts" data-bs-toggle="tab" title="'.$lang['nav_btn_posts'].'">'.$icon['file_earmark_post'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link" href="#addons" data-bs-toggle="tab" title="'.$lang['nav_btn_addons'].'">'.$icon['plugin'].'</a></li>';
 if($cnt_custom_fields > 0) {
 	echo '<li class="nav-item"><a class="nav-link" href="#custom" data-bs-toggle="tab" title="'.$lang['legend_custom_fields'].'">'.$icon['list'].'</a></li>';
 }
@@ -172,7 +172,7 @@ $sm_string .= '</ul>';
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
-echo $lang['label_position_top'];
+echo $lang['label_page_position'];
 
 echo '<ul class="page-list-top">';
 
@@ -185,24 +185,24 @@ if($page_sort == "portal") {
 }
 
 echo '<li><label class="page-container">';
-echo $lang['label_single_page'];
+echo $lang['label_pages_single'];
 echo '<span class="page-toggler"><input type="radio" name="page_position" value="null" '.$sel_page_sort_default.'></span>';
 echo '</label></li>';
 
 echo '<li><label class="page-container">';
-echo $lang['label_portal_page'];
+echo $lang['label_pages_portal'];
 echo '<span class="page-toggler"><input type="radio" name="page_position" value="portal" '.$sel_page_sort_portal.'></span>';
 echo '</label></li>';
 
 echo '<li><label class="page-container">';
-echo $lang['label_mainnav_page'];
+echo $lang['label_pages_mainmenu'];
 echo '<span class="page-toggler"><input type="radio" name="page_position" value="mainpage" '.$sel_page_sort_mainpage.'></span>';
 echo '</label></li>';
 
 echo '</ul>';
 
 // print the generated sitemap
-echo $lang['label_position_sub'];
+echo $lang['label_pages_position_sub'];
 
 echo '<div class="scroll-container">';
 echo $sm_string;
@@ -216,7 +216,7 @@ if(ctype_digit($page_sort)) {
 	$page_order = $page_sort;
 }
 
-echo tpl_form_control_group('',$lang['f_page_order'],"<input class='form-control' type='text' name='page_order' value='$page_order'>");
+echo tpl_form_control_group('',$lang['label_pages_order'],"<input class='form-control' type='text' name='page_order' value='$page_order'>");
 
 echo '</div>';
 echo '</div>';
@@ -253,22 +253,22 @@ echo '<legend>Navigation</legend>';
 
 echo '<div class="row">';
 echo '<div class="col-md-4">';
-echo tpl_form_control_group('',$lang['f_page_linkname'],'<input class="form-control" type="text" name="page_linkname" value="'.html_entity_decode($page_linkname).'">');
+echo tpl_form_control_group('',$lang['label_pages_link_name'],'<input class="form-control" type="text" name="page_linkname" value="'.html_entity_decode($page_linkname).'">');
 echo '</div>';
 echo '<div class="col-md-4">';
-echo tpl_form_control_group('',$lang['f_page_classes'],"<input class='form-control' type='text' name='page_classes' value='$page_classes'>");
+echo tpl_form_control_group('',$lang['label_pages_classes'],"<input class='form-control' type='text' name='page_classes' value='$page_classes'>");
 echo '</div>';
 echo '<div class="col-md-2">';
 echo tpl_form_control_group('',"target","$sel_target");
 echo '</div>';
 echo '<div class="col-md-2">';
-echo tpl_form_control_group('',$lang['f_page_hash'],"<input class='form-control' type='text' name='page_hash' value='$page_hash'>");
+echo tpl_form_control_group('',$lang['label_pages_hash'],"<input class='form-control' type='text' name='page_hash' value='$page_hash'>");
 echo '</div>';
 echo '</div>';
 
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_permalink'].'</label>';
+echo '<label>'.$lang['label_pages_permalink'].'</label>';
 echo '<div class="input-group">';
 echo '<div class="input-group-prepend">';
 echo '<span class="input-group-text">'.$se_base_url.'</span>';
@@ -329,12 +329,12 @@ echo '<div class="mb-3">';
 if($page_custom_id == '') {
     $page_custom_id = uniqid();
 }
-echo tpl_form_control_group('',$lang['label_custom_id'],"<input class='form-control' type='text' name='page_custom_id' value='$page_custom_id'>");
+echo tpl_form_control_group('',$lang['label_pages_custom_id'],"<input class='form-control' type='text' name='page_custom_id' value='$page_custom_id'>");
 echo '</div>';
 echo '</div>';
 echo '<div class="col-md-4">';
 echo '<div class="mb-3">';
-echo tpl_form_control_group('',$lang['label_custom_classes'],"<input class='form-control' type='text' name='page_custom_classes' value='$page_custom_classes'>");
+echo tpl_form_control_group('',$lang['label_pages_custom_classes'],"<input class='form-control' type='text' name='page_custom_classes' value='$page_custom_classes'>");
 echo '</div>';
 echo '</div>';
 echo '<div class="col-md-4">';
@@ -346,7 +346,7 @@ echo '</div>';
 	
 
 echo '<div class="mb-3">';
-echo '<label>'.$lang['f_page_type_of_use'].'</label>';
+echo '<label>'.$lang['label_pages_type_of_use'].'</label>';
 $select_page_type_of_use  = '<select name="page_type_of_use" class="custom-select form-control">';
 
 foreach($se_page_types as $types) {
@@ -372,7 +372,7 @@ echo '</div>';
 /* redirect */
 
 echo '<fieldset class="mt-4">';
-echo '<legend>'.$lang['legend_redirect'].'</legend>';
+echo '<legend>'.$lang['label_redirect'].'</legend>';
 
 /* shortlink */
 if(empty($page_permalink_short_cnt)) {
@@ -380,7 +380,7 @@ if(empty($page_permalink_short_cnt)) {
 }
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_permalink_short'].'</label>';
+echo '<label>'.$lang['label_pages_permalink_short'].'</label>';
 echo '<div class="input-group">';
 echo '<input class="form-control" type="text" name="page_permalink_short" value="'.$page_permalink_short.'">';
 echo '<div class="input-group-append">';
@@ -390,7 +390,7 @@ echo '</div>';
 echo '</div>';
 
 /* funnel URI */
-echo tpl_form_control_group('',$lang['f_page_funnel_uri'],'<textarea class="form-control" name="page_funnel_uri">'.$page_funnel_uri.'</textarea>');
+echo tpl_form_control_group('',$lang['label_pages_funnel_url'],'<textarea class="form-control" name="page_funnel_uri">'.$page_funnel_uri.'</textarea>');
 
 $select_page_redirect_code  = '<select name="page_redirect_code" class="custom-select form-control">';
 if($page_redirect_code == '') {
@@ -406,7 +406,7 @@ for($i=0;$i<10;$i++) {
 }
 $select_page_redirect_code .= '</select>';
 
-echo tpl_form_control_group('',$lang['f_page_redirect'],'<div class="row"><div class="col-md-3">'.$select_page_redirect_code.'</div><div class="col-md-9"><input class="form-control" type="text" name="page_redirect" value="'.$page_redirect.'"></div></div>');
+echo tpl_form_control_group('',$lang['label_redirect'],'<div class="row"><div class="col-md-3">'.$select_page_redirect_code.'</div><div class="col-md-9"><input class="form-control" type="text" name="page_redirect" value="'.$page_redirect.'"></div></div>');
 
 
 echo '</fieldset>';
@@ -445,7 +445,7 @@ echo '<div class="tab-pane fade" id="meta">';
 echo '<div class="row">';
 echo '<div class="col-md-6">';
 
-echo tpl_form_control_group('',$lang['f_page_title'],'<input class="form-control" type="text" name="page_title" value="'.html_entity_decode($page_title).'">');
+echo tpl_form_control_group('',$lang['label_title'],'<input class="form-control" type="text" name="page_title" value="'.html_entity_decode($page_title).'">');
 
 if($page_meta_author == '') {
 	$page_meta_author = $_SESSION['user_firstname'] .' '. $_SESSION['user_lastname'];
@@ -459,15 +459,15 @@ if($se_prefs['prefs_publisher_mode'] == 'overwrite') {
 	$page_meta_author = $se_prefs['prefs_default_publisher'];
 }
 
-echo tpl_form_control_group('',$lang['f_meta_author'],'<input class="form-control" type="text" name="page_meta_author" value="'.html_entity_decode($page_meta_author).'">');
-echo tpl_form_control_group('',$lang['f_meta_keywords'],'<input class="form-control" type="text" name="page_meta_keywords" value="'.html_entity_decode($page_meta_keywords).'" data-role="tagsinput">');
-echo tpl_form_control_group('',$lang['f_meta_description'],"<textarea name='page_meta_description' class='form-control cntWords cntChars' rows='5'>".html_entity_decode($page_meta_description)."</textarea>");
+echo tpl_form_control_group('',$lang['label_author'],'<input class="form-control" type="text" name="page_meta_author" value="'.html_entity_decode($page_meta_author).'">');
+echo tpl_form_control_group('',$lang['label_keywords'],'<input class="form-control" type="text" name="page_meta_keywords" value="'.html_entity_decode($page_meta_keywords).'" data-role="tagsinput">');
+echo tpl_form_control_group('',$lang['label_description'],"<textarea name='page_meta_description' class='form-control cntWords cntChars' rows='5'>".html_entity_decode($page_meta_description)."</textarea>");
 
 echo '</div>';
 echo '<div class="col-md-6">';
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['page_thumbnail'].'</label>';
+echo '<label>'.$lang['thumbnail'].'</label>';
 
 if($se_prefs['prefs_pagethumbnail_prefix'] != '') {
 	echo '<p>Prefix: '.$se_prefs['prefs_pagethumbnail_prefix'].'</p>';
@@ -512,7 +512,7 @@ foreach($robots as $r) {
 }
 $checkbox_robots .= '</div>';
 
-echo tpl_form_control_group('',$lang['f_meta_robots'],$checkbox_robots);
+echo tpl_form_control_group('',$lang['label_pages_meta_robots'],$checkbox_robots);
 
 echo '</div>'; /* EOL tab_meta */
 
@@ -527,7 +527,7 @@ echo '<div class="col-md-6">';
 /* Select Modul */
 
 $select_page_modul = '<select name="page_modul" class="custom-select form-control" id="selMod">';
-$select_page_modul .= '<option value="">Kein Modul</option>';
+$select_page_modul .= '<option value="">'.$lang['label_pages_no_addon'].'</option>';
 
 for($i=0;$i<$cnt_mods;$i++) {
 
@@ -553,7 +553,7 @@ $select_page_modul .= '</select>';
 
 
 echo '<div class="form-group">';
-echo '<label for="selMod">'.$lang['f_page_modul'].'</label>';
+echo '<label for="selMod">'.$lang['label_pages_select_addon'].'</label>';
 echo $select_page_modul;
 echo '</div>';
 
@@ -600,13 +600,13 @@ echo '</div>'; /* EOL tab addons */
 
 echo '<div class="tab-pane fade" id="posts">';
 
-echo '<p class="mb-3">'.se_print_docs_link('tooltips/tip-activate-posts.md',$lang['label_activate_posts']).'</p>';
+echo '<p class="mb-3">'.se_print_docs_link('tooltips/tip-activate-posts.md',$lang['label_pages_activate_posts']).'</p>';
 
 echo '<div class="row">';
 echo '<div class="col-6">';
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['select_post_type'].'</div>';
+echo '<div class="card-header">'.$lang['label_pages_select_post_type'].'</div>';
 
 echo '<div class="card-body">';
 
@@ -730,8 +730,8 @@ if($page_categories_mode == '' OR $page_categories_mode == 1) {
 
 echo '<div class="mb-3">';
 echo '<select class="form-control" name="page_categories_mode">';
-echo '<option value="1" '.$sel_show_categories.'>'.$lang['categories_select_show'].'</option>';
-echo '<option value="2" '.$sel_hide_categories.'>'.$lang['categories_select_hide'].'</option>';
+echo '<option value="1" '.$sel_show_categories.'>'.$lang['label_categories_show'].'</option>';
+echo '<option value="2" '.$sel_hide_categories.'>'.$lang['label_categories_hide'].'</option>';
 echo '</select>';
 echo '</div>';
 
@@ -746,7 +746,7 @@ if(in_array('all', $page_cats_array)) {
 
 echo '<div class="form-check">';
 echo '<input type="checkbox" class="form-check-input" id="cat_all" name="page_post_categories[]" value="all" '.$checked_cat_all.'>';
-echo '<label class="form-check-label" for="cat_all">'.$lang['label_all_categories'].'</label>';
+echo '<label class="form-check-label" for="cat_all">'.$lang['label_categories_activate_all'].'</label>';
 echo '</div><hr>';
 
 
@@ -875,7 +875,7 @@ echo '<div class="col-lg-3 col-md-4 col-sm-12">';
 
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['tab_page_preferences'].'</div>';
+echo '<div class="card-header">'.$lang['label_settings'].'</div>';
 echo '<div class="card-body">';
 
 
@@ -892,7 +892,7 @@ foreach($lang_codes as $page_lang) {
 $select_page_language .= '</select>';
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_language'].'</label>';
+echo '<label>'.$lang['label_language'].'</label>';
 echo $select_page_language;
 echo '</div>';
 
@@ -934,7 +934,7 @@ foreach($arr_themes as $template) {
 $select_select_template .= '</select>';
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_template'].'</label>';
+echo '<label>'.$lang['label_template'].'</label>';
 echo $select_select_template;
 echo '</div>';
 
@@ -974,7 +974,7 @@ $select_page_status .= '</select>';
 
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_status'].'</label>';
+echo '<label>'.$lang['label_status'].'</label>';
 echo '<div>';
 echo $select_page_status;
 echo '</div>';
@@ -1042,7 +1042,7 @@ for($i=0;$i<count($arr_groups);$i++) {
 
 echo '<div class="form-group">';
 echo '<div class="well well-sm">';
-echo '<a href="#" data-bs-toggle="collapse" data-bs-target="#usergroups">'.$lang['legend_choose_group'].'</a>';
+echo '<a href="#" data-bs-toggle="collapse" data-bs-target="#usergroups">'.$lang['label_choose_group'].'</a>';
 echo '<div id="usergroups" class="collapse">';
 echo '<div class="p-3">';
 echo $checkbox_usergroup;
@@ -1143,7 +1143,7 @@ foreach($all_categories as $cats) {
 }
 
 echo '<div class="well well-sm">';
-echo '<a href="#" data-bs-toggle="collapse" data-bs-target="#categories">'.$lang['label_categories'].'</a>';
+echo '<a href="#" data-bs-toggle="collapse" data-bs-target="#categories">'.$lang['categories'].'</a>';
 echo '<div id="categories" class="collapse">';
 echo '<div class="p-3">';
 echo $checkbox_set_cat;

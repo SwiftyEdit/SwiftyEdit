@@ -1,7 +1,7 @@
 <?php
 session_start();
-//error_reporting(0);
 error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+const SE_SECTION = "backend";
 require '../core/vendor/autoload.php';
 use Medoo\Medoo;
 
@@ -68,7 +68,8 @@ if(is_file('../config_database.php')) {
 
 require 'core/functions.php';
 require '../core/functions/func_userdata.php';
-require '../core/lang/'.$languagePack.'/dict-backend.php';
+require '../core/lang/index.php';
+//require '../core/lang/'.$languagePack.'/dict-backend.php';
 $login = '';
 
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
@@ -117,20 +118,20 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 			<?php
 			if($login == 'failed') {
 			 echo '<div class="alert alert-danger">';
-			 echo $lang['msg_login_false'];
+			 echo $lang['msg_error_login_data'];
 			 echo '</div>';
 			}
 			?>
 
 			<form action="index.php" method="post" class="">
 					<div class="row mb-2">
-						<label class="col-sm-3 col-form-label"><?php echo $lang['f_user_nick']; ?></label>
+						<label class="col-sm-3 col-form-label"><?php echo $lang['label_username']; ?></label>
 						<div class="col-sm-9">
 							<input type="text" class="form-control" name="login_name" autofocus="autofocus">
 						</div>
 					</div>
 					<div class="row mb-2">
-						<label class="col-sm-3 col-form-label"><?php echo $lang['f_user_psw']; ?></label>
+						<label class="col-sm-3 col-form-label"><?php echo $lang['label_password']; ?></label>
 						<div class="col-sm-9">
 							<input type="password" class="form-control" name="login_psw">
 						</div>
@@ -139,7 +140,7 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 				    <div class="offset-sm-3 col-sm-9">
 				      <div class="form-check-inline">
 				        <label class="form-check-label">
-				          <input type="checkbox" name="remember_me"> <?php echo $lang['remember_me']; ?>
+				          <input type="checkbox" name="remember_me"> <?php echo $lang['label_remember_me']; ?>
 				        </label>
 				      </div>
 				    </div>

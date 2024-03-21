@@ -197,7 +197,7 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 
 if($modus != 'update' && !isset($_GET['new'])) {
 	echo '<fieldset class="mt-3">';
-	echo '<legend>'.$lang['select_post_type'].'</legend>';
+	echo '<legend>'.$lang['label_select_post_type'].'</legend>';
 	echo '<div class="btn-group d-flex" role="group">';
 	echo '<a href="acp.php?tn=posts&sub=edit&new=m" class="btn btn-default w-100"><span class="color-message">'.$icon['plus'].'</span> '.$lang['post_type_message'].'</a>';
 	echo '<a href="acp.php?tn=posts&sub=edit&new=i" class="btn btn-default w-100"><span class="color-image">'.$icon['plus'].'</span> '.$lang['post_type_image'].'</a>';
@@ -335,9 +335,9 @@ if($post_data['post_votings'] == 1 OR $post_data['post_votings'] == '') {
 }
 
 $select_votings  = '<select id="select_votings" name="post_votings"  class="custom-select form-control">';
-$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_off'].'</option>';
-$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_on_registered'].'</option>';
-$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_on_global'].'</option>';
+$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_status_off'].'</option>';
+$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_status_registered'].'</option>';
+$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_status_global'].'</option>';
 $select_votings .= '</select>';
 
 
@@ -374,7 +374,7 @@ $select_rss .=	'</select>';
 /* select file from /content/files/ */
 
 $select_file = '<select class="form-control custom-select" name="post_file_attachment">';
-$select_file .= '<option value="">-- '.$lang['label_file_select_no_file'].' --</option>';
+$select_file .= '<option value="">-- '.$lang['label_select_no_file'].' --</option>';
 $files_directory = '../content/files';
 $all_files = se_scandir_rec($files_directory);
 

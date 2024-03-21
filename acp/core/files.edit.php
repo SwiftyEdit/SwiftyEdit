@@ -59,9 +59,9 @@ if(isset($_POST['save'])) {
 	
 	$savedMedia = se_write_media_data($filedata);
 	if($savedMedia == 'success') {
-		$message = '<div class="alert alert-success alert-auto-close">'.$lang['db_changed'].'</div>';
+		$message = '<div class="alert alert-success alert-auto-close">'.$lang['msg_success_db_changed'].'</div>';
 	} else {
-		$message = '<div class="alert alert-danger alert-auto-close">'.$lang['db_not_changed'].$savedMedia.'</div>';
+		$message = '<div class="alert alert-danger alert-auto-close">'.$lang['msg_error_db_changed'].$savedMedia.'</div>';
 	}
 	$form_tpl = str_replace('{message}', $message, $form_tpl);
 } else {
@@ -143,8 +143,8 @@ $form_tpl = str_replace('{label_credits}', $lang['label_credits'], $form_tpl);
 $form_tpl = str_replace('{version}', $media_data['media_version'], $form_tpl);
 $form_tpl = str_replace('{label_version}', $lang['label_version'], $form_tpl);
 $form_tpl = str_replace('{credit}', $media_data['media_credit'], $form_tpl);
-$form_tpl = str_replace('{label_notes}', $lang['label_notes'], $form_tpl);
-$form_tpl = str_replace('{notes}', $media_data['media_notes'], $form_tpl);
+$form_tpl = str_replace('{label_notes}', $lang['notes'], $form_tpl);
+$form_tpl = str_replace('{notes}', $media_data['notes'], $form_tpl);
 $form_tpl = str_replace('{label_text}', $lang['label_text'], $form_tpl);
 $form_tpl = str_replace('{preview}', $preview_src, $form_tpl);
 $form_tpl = str_replace('{save}', $lang['save'], $form_tpl);

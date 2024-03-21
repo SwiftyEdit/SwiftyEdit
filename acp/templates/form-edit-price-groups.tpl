@@ -32,7 +32,7 @@
 
     <div class="col-md-6">
         <div class="">
-            <label>{label_price} {label_net}</label>
+            <label>{label_product_price} {label_product_net}</label>
             <input class='form-control prod_price_net' id="price" name="price_net" type="text"
                    value="{price_net}">
         </div>
@@ -40,7 +40,7 @@
 
     <div class="col-md-6">
         <div class="">
-            <label>{label_price} {label_gross}</label>
+            <label>{label_product_price} {label_product_gross}</label>
             <input class='form-control prod_price_gross' id="price_total" name="price_gross"
                    type="text" value="">
         </div>

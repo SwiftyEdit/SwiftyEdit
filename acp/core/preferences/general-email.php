@@ -44,19 +44,19 @@ $prefs_mail_smtp_psw_input = '<pre>'.$smtp_psw.'</pre>';
 
 $prefs_mail_type_input = '<div class="form-check">';
 $prefs_mail_type_input .= '<input type="radio" class="form-check-input" id="mail" name="prefs_mailer_type" value="mail" '.($se_prefs['prefs_mailer_type'] == "mail" ? 'checked' :'').'>';
-$prefs_mail_type_input .= '<label class="form-check-label" for="mail">'.$lang['prefs_mail_type_mail'].'</label>';
+$prefs_mail_type_input .= '<label class="form-check-label" for="mail">'.$lang['label_settings_use_mail'].'</label>';
 $prefs_mail_type_input .= '</div>';
 $prefs_mail_type_input .= '<div class="form-check">';
 $prefs_mail_type_input .= '<input type="radio" class="form-check-input" id="smtp" name="prefs_mailer_type" value="smtp" '.($se_prefs['prefs_mailer_type'] == "smtp" ? 'checked' :'').'>';
-$prefs_mail_type_input .= '<label class="form-check-label" for="smtp">'.$lang['prefs_mail_type_smtp'].'</label>';
+$prefs_mail_type_input .= '<label class="form-check-label" for="smtp">'.$lang['label_settings_use_smtp'].'</label>';
 $prefs_mail_type_input .= '</div>';
 
-echo tpl_form_control_group('',$lang['prefs_mailer_name'],$prefs_mail_name_input);
-echo tpl_form_control_group('',$lang['prefs_mailer_adr'],$prefs_mail_adr_input);
+echo tpl_form_control_group('',$lang['label_settings_mailer_name'],$prefs_mail_name_input);
+echo tpl_form_control_group('',$lang['label_settings_mailer_mail'],$prefs_mail_adr_input);
 
 echo $prefs_mail_type_input;
 
-echo '<div class="alert alert-info my-2">'.$lang['prefs_mail_type_smtp_desc'].'</div>';
+echo '<div class="alert alert-info my-2">'.$lang['msg_info_settings_use_smtp'].'</div>';
 
 if(is_file(SE_CONTENT.'/config_smtp.php')) {
 
@@ -86,7 +86,7 @@ echo '</form>';
 echo '<div class="mt-3">';
 if($se_prefs['prefs_mailer_adr'] != '') {
     echo '<form action="?tn=system&sub=general&file=general-email" method="post">';
-    echo '<button class="btn btn-primary btn-sm" name="sendtest">' .$lang['prefs_mailer_send_test'].' ('.$se_prefs['prefs_mailer_adr'].')</button>';
+    echo '<button class="btn btn-primary btn-sm" name="sendtest">' .$lang['label_settings_mailer_send_test'].' '.$se_prefs['prefs_mailer_adr'].'</button>';
     echo $hidden_csrf_token;
     echo '</form>';
 }
@@ -100,9 +100,9 @@ if(isset($_POST['sendtest'])) {
     $testmail = se_send_mail($recipient,$subject,$message);
 
     if($testmail == 1) {
-        echo '<p class="alert alert-success mt-3">'.$icon['check'].' '.$lang['prefs_mailer_send_test_success'].'</p>';
+        echo '<p class="alert alert-success mt-3">'.$icon['check'].' '.$lang['msg_success_mailer_sent_test'].'</p>';
     } else {
-        echo '<div class="alert alert-danger mt-3">'.$testmail.'</div>';;
+        echo '<div class="alert alert-danger mt-3">'.print_r($testmail).'</div>';;
     }
 
 }

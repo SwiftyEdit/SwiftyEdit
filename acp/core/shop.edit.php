@@ -218,7 +218,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant']) OR isset($_POS
         $db_posts->update("se_products", $inputs, [
             "id" => $id
         ]);
-        $form_header_message = $lang['db_record_changed'];
+        $form_header_message = $lang['msg_success_db_changed'];
         record_log($_SESSION['user_nick'],"updated product id: $id","6");
     } else if($modus == "save_variant") {
         $db_posts->insert("se_products", $inputs);
@@ -429,9 +429,9 @@ if($product_data['votings'] == 1 OR $product_data['votings'] == '') {
 }
 
 $select_votings  = '<select id="select_votings" name="votings"  class="custom-select form-control">';
-$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_off'].'</option>';
-$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_on_registered'].'</option>';
-$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_on_global'].'</option>';
+$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_status_off'].'</option>';
+$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_status_registered'].'</option>';
+$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_status_global'].'</option>';
 $select_votings .= '</select>';
 
 
@@ -762,7 +762,7 @@ if($product_price_net_purchasing == '') {
 $get_price_groups = se_get_price_groups();
 
 $select_price_groups = '<select class="form-control custom-select" name="product_price_group">';
-$select_price_groups .= '<option value="null">'.$lang['label_select_price_group'].'</option>';
+$select_price_groups .= '<option value="null">'.$lang['label_product_price_group_no_selection'].'</option>';
 foreach($get_price_groups as $price_group) {
     $selected = "";
     if($price_group['hash'] == $product_data['product_price_group']) {
@@ -784,7 +784,7 @@ if(is_array($volume_discounts)) {
 
 $show_price_volume_discount = '<div class="card my-2">';
 $show_price_volume_discount .= '<div class="card-header">';
-$show_price_volume_discount .= '<span>'.$lang['label_scaling_prices'].'</span>';
+$show_price_volume_discount .= '<span>'.$lang['label_product_scaling_prices'].'</span>';
 $show_price_volume_discount .= '<button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseExample">+</button>';
 $show_price_volume_discount .= '</div>';
 $show_price_volume_discount .= '<div class="card-body collapse" id="collapseVDP">';
@@ -802,11 +802,11 @@ for($i=0;$i<($cnt_volume_discounts+5);$i++) {
     $show_price_volume_discount .= '<input class="form-control" name="product_vd_amount[]" type="number" value="'.$this_ammount.'">';
     $show_price_volume_discount .= '</div>';
     $show_price_volume_discount .= '<div class="col-md-3">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_price_net'] . '</label>';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_net'] . '</label>';
     $show_price_volume_discount .= '<input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="'.$price_net.'">';
     $show_price_volume_discount .= '</div>';
     $show_price_volume_discount .= '<div class="col-md-3">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_price_gross'] . '</label>';
+    $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_gross'] . '</label>';
     $show_price_volume_discount .= '<input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">';
     $show_price_volume_discount .= '</div>';
     $show_price_volume_discount .= '</div>';
@@ -823,7 +823,7 @@ $snippets_delivery_time = $db_content->select("se_snippets", "*", [
 ]);
 
 $snippet_select_delivery_time = '<select class="form-control custom-select" name="product_delivery_time">';
-$snippet_select_delivery_time .= '<option value="no_specification">'.$lang['product_no_delivery_time'].'</option>';
+$snippet_select_delivery_time .= '<option value="no_specification">'.$lang['label_product_no_delivery_time'].'</option>';
 foreach($snippets_delivery_time as $snippet) {
     $selected = "";
     if($snippet['snippet_id'] == $product_data['product_delivery_time']) {
@@ -838,7 +838,7 @@ $snippet_select_delivery_time .= '</select>';
 /* add text snippet to prices */
 
 $snippet_select_pricelist = '<select class="form-control custom-select" name="product_textlib_price">';
-$snippet_select_pricelist .= '<option value="no_snippet">'.$lang['product_no_snippet'].'</option>';
+$snippet_select_pricelist .= '<option value="no_snippet">'.$lang['no_snippet_selected'].'</option>';
 
 $snippets_price_list = $db_content->select("se_snippets", "*", [
     "snippet_name[~]" => "%post_price%"
@@ -857,7 +857,7 @@ $snippet_select_pricelist .= '</select>';
 /* add text snippet to text */
 
 $snippet_select_text = '<select class="form-control custom-select" name="product_textlib_content" id="snippet_tex">';
-$snippet_select_text .= '<option value="no_snippet">'.$lang['product_no_snippet'].'</option>';
+$snippet_select_text .= '<option value="no_snippet">'.$lang['no_snippet_selected'].'</option>';
 $snippets_text_list = $db_content->select("se_snippets", "*", [
     "snippet_name[~]" => "%post_text%"
 ]);
@@ -878,7 +878,7 @@ $all_files = se_scandir_rec($files_directory);
 
 /* pre-sale files */
 $select_file = '<select class="form-control custom-select" name="file_attachment">';
-$select_file .= '<option value="">-- '.$lang['label_file_select_no_file'].' --</option>';
+$select_file .= '<option value="">-- '.$lang['label_no_file_selected'].' --</option>';
 
 foreach($all_files as $file) {
     //$se_upload_file_types is set in config.php
@@ -896,7 +896,7 @@ $select_file .= '</select>';
 
 /* after-sale files */
 $select_file_as = '<select class="form-control custom-select" name="file_attachment_as">';
-$select_file_as .= '<option value="">-- '.$lang['label_file_select_no_file'].' --</option>';
+$select_file_as .= '<option value="">-- '.$lang['label_no_file_selected'].' --</option>';
 
 foreach($all_files as $file) {
     //$se_upload_file_types is set in config.php

@@ -81,21 +81,21 @@ echo '<form action="?tn=system&sub=general&file=general" method="POST" class="fo
 $input_page_name = [
     "input_name" => "prefs_pagename",
     "input_value" => $se_prefs['prefs_pagename'],
-    "label" => $lang['f_prefs_pagename']
+    "label" => $lang['label_settings_page_name']
 ];
 
 
 $input_page_title = [
     "input_name" => "prefs_pagetitle",
     "input_value" => $se_prefs['prefs_pagetitle'],
-    "label" => $lang['f_prefs_pagetitle']
+    "label" => $lang['label_settings_page_title']
 ];
 
 
 $input_page_subtitle = [
     "input_name" => "prefs_pagesubtitle",
     "input_value" => $se_prefs['prefs_pagesubtitl'],
-    "label" => $lang['f_prefs_pagesubtitle']
+    "label" => $lang['label_settings_page_subtitle']
 ];
 
 
@@ -113,30 +113,29 @@ echo '</div>';
 
 
 $prefs_pagedescription_input = '<textarea class="form-control" name="prefs_pagedescription">'.$se_prefs['prefs_pagedescription'].'</textarea>';
-echo tpl_form_control_group('',$lang['f_prefs_pagedescription'],$prefs_pagedescription_input);
+echo tpl_form_control_group('',$lang['label_settings_page_description'],$prefs_pagedescription_input);
 
 
 
 
-$toggle_btn_publisher .= '<span class="input-group-text">'.$lang['f_prefs_publisher_mode'].'</span>';
+$toggle_btn_publisher .= '<span class="input-group-text">'.$lang['label_settings_publisher_mode'].'</span>';
 $toggle_btn_publisher .= '<span class="input-group-text">';
 $toggle_btn_publisher .= '<input type="checkbox" name="prefs_publisher_mode" '.($se_prefs['prefs_publisher_mode'] == "overwrite" ? 'checked' :'').'>';
 $toggle_btn_publisher .= '</span>';
 
-
-$prefs_publisher_input  = '<div class="input-group">';
+$prefs_publisher_input  .= '<div class="input-group">';
 $prefs_publisher_input .= '<input class="form-control" type="text" name="prefs_default_publisher" value="'.$se_prefs['prefs_default_publisher'].'">';
 $prefs_publisher_input .= $toggle_btn_publisher;
 $prefs_publisher_input .= '</div>';
 
-echo tpl_form_control_group('',$lang['f_prefs_default_publisher'],$prefs_publisher_input);
+echo tpl_form_control_group('',$lang['label_author'],$prefs_publisher_input);
 
 echo '<hr>';
 
 $input_rss_offset = [
     "input_name" => "prefs_rss_time_offset",
     "input_value" => $se_prefs['prefs_rss_time_offset'],
-    "label" => $lang['rss_offset']
+    "label" => $lang['label_settings_rss_time_offset']
 ];
 
 echo tpl_form_input_text($input_rss_offset);
@@ -144,7 +143,7 @@ echo tpl_form_input_text($input_rss_offset);
 $input_nbr_page_versions = [
     "input_name" => "prefs_nbr_page_versions",
     "input_value" => $se_prefs['prefs_nbr_page_versions'],
-    "label" => $lang['prefs_nbr_page_versions']
+    "label" => $lang['label_settings_nbr_page_versions']
 ];
 
 echo tpl_form_input_text($input_nbr_page_versions);
@@ -152,7 +151,7 @@ echo tpl_form_input_text($input_nbr_page_versions);
 $input_pagesort_minlength = [
     "input_name" => "prefs_pagesort_minlength",
     "input_value" => $se_prefs['prefs_pagesort_minlength'],
-    "label" => $lang['prefs_pagesort_minlength']
+    "label" => $lang['label_settings_page_sort_min_length']
 ];
 
 echo tpl_form_input_text($input_pagesort_minlength);
@@ -162,7 +161,7 @@ echo $hidden_csrf_token;
 echo '</form>';
 
 
-echo '<h5 class="heading-line">'.$lang['system_images'].'</h5>';
+echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
 echo '<form action="?tn=system&sub=general&file=general" method="POST" class="form-horizontal">';
 
@@ -200,14 +199,14 @@ foreach($arr_Images as $page_thumbnail) {
 }
 $select_prefs_thumbnail .= "</select>";
 
-echo tpl_form_control_group('',$lang['page_thumbnail'],$select_prefs_thumbnail);
+echo tpl_form_control_group('',$lang['label_pages_thumbnail'],$select_prefs_thumbnail);
 
 /* Thumbnail Prefix */
 
 $input_tmb_prefix = [
     "input_name" => "prefs_pagethumbnail_prefix",
     "input_value" => $se_prefs['prefs_pagethumbnail_prefix'],
-    "label" => $lang['page_thumbnail_prefix']
+    "label" => $lang['label_settings_prefix']
 ];
 
 echo tpl_form_input_text($input_tmb_prefix);
@@ -231,7 +230,7 @@ foreach($arr_Images as $page_favicon) {
 }
 $select_prefs_favicon .= "</select>";
 
-echo tpl_form_control_group('',$lang['page_favicon'],$select_prefs_favicon);
+echo tpl_form_control_group('',$lang['label_settings_favicon'],$select_prefs_favicon);
 
 
 
@@ -240,7 +239,7 @@ echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</form>';
 
 
-echo '<h6 class="heading-line">'.$lang['f_prefs_uploads'].'</h6>';
+echo '<h6 class="heading-line">'.$lang['uploads'].'</h6>';
 echo '<form action="?tn=system&sub=general&file=general" method="POST" class="form-horizontal">';
 
 $prefs_maximage_input  = '<div class="row"><div class="col-md-6">';
@@ -269,26 +268,24 @@ $prefs_maxtmb_input .= '</div></div>';
 
 echo '<div class="row">';
 echo '<div class="col-md-6">';
-echo '<p>'.$lang['images'].'</p>';
-echo tpl_form_control_group('',$lang['f_prefs_maximage'],"$prefs_maximage_input");
+echo tpl_form_control_group('',$lang['label_settings_max_img'],"$prefs_maximage_input");
 echo '</div>';
 echo '<div class="col-md-6">';
-echo '<p>'.$lang['thumbnails'].'</p>';
-echo tpl_form_control_group('',$lang['f_prefs_maximage'],"$prefs_maxtmb_input");
+echo tpl_form_control_group('',$lang['label_settings_max_tmb'],"$prefs_maxtmb_input");
 echo '</div>';
 echo '</div>';
 
 $input_max_filesize = [
     "input_name" => "prefs_maxfilesize",
     "input_value" => $se_prefs['prefs_maxfilesize'],
-    "label" => $lang['f_prefs_maxfilesize']
+    "label" => $lang['label_settings_max_filesize']
 ];
 
 echo tpl_form_input_text($input_max_filesize);
 
 $toggle_btn_upload_unchanged  = '<div class="form-group form-check">';
 $toggle_btn_upload_unchanged .= '<input type="checkbox" class="form-check-input" id="checkUpload" name="prefs_uploads_remain_unchanged" '.($se_prefs['prefs_uploads_remain_unchanged'] == "yes" ? 'checked' :'').'>';
-$toggle_btn_upload_unchanged .= '<label class="form-check-label" for="checkUpload">'.$lang['f_prefs_uploads_remain_unchanged'].'</label>';
+$toggle_btn_upload_unchanged .= '<label class="form-check-label" for="checkUpload">'.$lang['label_settings_uploads_remain_unchanged'].'</label>';
 $toggle_btn_upload_unchanged .= '</div>';
 
 echo $toggle_btn_upload_unchanged;

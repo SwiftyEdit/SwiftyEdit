@@ -112,7 +112,7 @@ if(isset($_POST['delete_the_page'])) {
 			]);
 			
 			if($del_page->rowCount() > 0) {
-				$success_message = '{OKAY} '. $lang['msg_page_deleted'];
+				$success_message = '{OKAY} '. $lang['msg_success_page_deleted'];
 				record_log($_SESSION['user_nick'],"deleted page id: $editpage","10");
 				generate_xml_sitemap();
 				unset($editpage);
@@ -255,15 +255,15 @@ if(isset($editpage) AND is_numeric($editpage)) {
 	}
 	
 	
-	$form_title = '<h3>'.$lang['h_modus_editpage'].' <span class="badge bg-widget">ID: '.$editpage.'</span> <span class="badge bg-widget">Version: '.$page_version.'</span></h3>';
+	$form_title = '<h3>'.$lang['status_edit'].' <span class="badge bg-widget">ID: '.$editpage.'</span> <span class="badge bg-widget">Version: '.$page_version.'</span></h3>';
 	//set submit button
-	$submit_button = "<input type='submit' class='btn btn-success w-100' name='save_the_page' value='$lang[update_page]'>";
-	$delete_button = "<hr><input type='submit' class='btn btn-danger btn-sm w-100' name='delete_the_page' value='$lang[delete_page]' onclick=\"return confirm('$lang[confirm_delete_data]')\">";
+	$submit_button = "<input type='submit' class='btn btn-success w-100' name='save_the_page' value='$lang[update]'>";
+	$delete_button = "<hr><input type='submit' class='btn btn-danger btn-sm w-100' name='delete_the_page' value='$lang[delete]' onclick=\"return confirm('$lang[msg_confirm_delete]')\">";
 	$previev_button = "<input type='submit' class='btn btn-default w-100' id='preview_the_page' name='preview_the_page' value='$lang[preview]'>";
 	
 	if($modus == 'duplicate') {
 		$form_title = '<h3>'.$lang['h_modus_duplicate'].' - '.$page_title.'</h3>';
-		$submit_button = "<input type='submit' class='btn w-100 btn-success' name='save_the_page' value='$lang[save_duplicate]'>";
+		$submit_button = "<input type='submit' class='btn w-100 btn-success' name='save_the_page' value='$lang[duplicate]'>";
 		$delete_button = '';
 		$previev_button = '';
 	}
@@ -272,9 +272,9 @@ if(isset($editpage) AND is_numeric($editpage)) {
 	// modus newpage
 	
 	
-	$form_title = '<h3>'.$lang['h_modus_newpage'].'</h3>';
+	$form_title = '<h3>'.$lang['status_new'].'</h3>';
 	//set submit button
-	$submit_button = "<input type='submit' class='btn btn-success w-100' name='save_the_page' value='$lang[save_new_page]'>";
+	$submit_button = "<input type='submit' class='btn btn-success w-100' name='save_the_page' value='$lang[save]'>";
 	$delete_button = '';
 	$previev_button = '';
 }
@@ -288,7 +288,7 @@ if($_SESSION['acp_editpages'] != "allowed") {
 	$arr_checked_admins = explode(",",$page_authorized_users);
 	if(!in_array("$_SESSION[user_nick]", $arr_checked_admins)) {
 		$show_form = "false";
-		echo '<p>'.$lang['drm_no_access'].'</p>';
+		echo '<p>'.$lang['rm_no_access'].'</p>';
 	}
 }
 
@@ -401,9 +401,9 @@ if($show_form == "true" AND $sub != "new") {
 		$today = date('d.m.Y', time());
 			
 		if($date == "$today") {
-			$setdate = $lang['date_today'];
+			$setdate = $lang['today'];
 		} elseif($date == "$yesterday") {
-			$setdate = $lang['date_yesterday'];
+			$setdate = $lang['yesterday'];
 		} else {
 			$setdate = $date;
 		}

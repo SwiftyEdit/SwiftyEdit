@@ -1,0 +1,36 @@
+{
+  "new": "Neu",
+  "edit": "Edit",
+  "save": "Save",
+  "update": "Update",
+  "delete": "Delete",
+  "submit": "Submit",
+  "register": "Register",
+  "total": "Total",
+  "yes": "Yes",
+  "no": "No",
+  "filter": "Filter",
+  "search": "Search",
+
+  "status.new": "New",
+  "status.edit": "Edit",
+
+  "status.public": "Public",
+  "status.ghost": "Invisible",
+  "status.private": "Private",
+  "status.draft": "Draft",
+  "status.redirect": "Redirect",
+
+  "overview": "Overview",
+
+  "d01":"Monday",
+  "d02": "Tuesday",
+  "d03": "Wednesday",
+  "d04": "Thursday",
+  "d05": "Friday",
+  "d06": "Saturday",
+  "d07": "Sunday",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "tomorrow": "Tomorrow"
+}

@@ -62,7 +62,7 @@ if(isset($_POST['delete_snippet'])) {
 		]);
 
 	if(($cnt_changes->rowCount()) > 0){
-		$sys_message = '{OKAY} '. $lang['db_changed'];
+		$sys_message = '{OKAY} '. $lang['msg_success_db_changed'];
 		record_log($_SESSION['user_nick'],"deleted snippet id: $delete_snip_id","10");
 		$modus = 'new';
 	} else {
@@ -146,7 +146,7 @@ if(isset($_POST['save_snippet'])) {
 		]);
 
         if($data->rowCount() > 0) {
-            show_toast($lang['db_changed'],'success');
+            show_toast($lang['msg_success_db_changed'],'success');
             record_log("$_SESSION[user_nick]","edit textlib <strong>$snippet_name</strong>","2");
         } else {
             show_toast($lang['db_not_changed'],'danger');
@@ -181,7 +181,7 @@ if(isset($_POST['save_snippet'])) {
         $snip_id = $db_content->id();
         if($snip_id > 0) {
             $modus = 'update';
-            show_toast($lang['db_changed'],'success');
+            show_toast($lang['msg_success_db_changed'],'success');
             record_log("$_SESSION[user_nick]","insert textlib <strong>$snippet_name</strong>","2");
         } else {
             show_toast($lang['db_not_changed'],'danger');
@@ -344,7 +344,7 @@ if($show_snippet_form)  {
 	/* list snippets */
 
     echo '<div class="subHeader d-flex align-items-center">';
-    echo '<h3>'.$lang['nav_snippets'].'</h3>';
+    echo '<h3>'.$lang['nav_btn_snippets'].'</h3>';
     echo '<form action="?tn=pages&sub=snippets" method="post" class="d-inline ms-auto">';
     echo '<button class="btn btn-default text-success ms-auto" name="snip_id" value="n">'.$icon['plus'].' '.$lang['new'].'</button>';
     echo $hidden_csrf_token;
@@ -362,7 +362,7 @@ if($show_snippet_form)  {
 
     echo '<div class="d-flex flex-row-reverse">';
     echo '<div class="ps-3">';
-    echo '<form action="?tn=pages&sub=snippets" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+    echo '<form action="?tn=pages&sub=snippets" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['label_items_per_page'].'">';
     echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
     echo $hidden_csrf_token;
     echo '</form>';
@@ -412,7 +412,7 @@ if($show_snippet_form)  {
 		}
 
         if($get_snip_title == '') {
-            $get_snip_title = '<em class="opacity-50">'.$lang['missing_title'].'</em>';
+            $get_snip_title = '<em class="opacity-50">'.$lang['msg_error_no_title'].'</em>';
         }
 
         if($get_snip_notes != '') {

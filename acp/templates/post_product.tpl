@@ -15,24 +15,24 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
                         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab"
-                                                href="#intro">{post_tab_intro}</a></li>
+                                                href="#intro">{nav_btn_intro}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#content">{post_tab_descriptions}</a></li>
+                                                href="#content">{nav_btn_descriptions}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#prices_delivery">{post_tab_prices_delivery}</a></li>
+                                                href="#prices_delivery">{nav_btn_prices_delivery}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#product">{post_tab_product}</a></li>
+                                                href="#product">{nav_btn_product}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#features">{post_tab_features}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{post_tab_SEO}</a></li>
+                                                href="#features">{nav_btn_features}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{nav_btn_seo}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#links" title="{post_tab_links}"><i class="bi bi-link"></i></a></li>
+                                                href="#links" title="{nav_btn_links}"><i class="bi bi-link"></i></a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#downloads" title="{post_tab_downloads}"><i class="bi bi-download"></i></a></li>
+                                                href="#downloads" title="{nav_btn_downloads}"><i class="bi bi-download"></i></a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#filter" title="Filter"><i class="bi bi-filter"></i></a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#addons" title="Filter"><i class="bi bi-plugin"></i></a></li>
+                                                href="#addons" title="{nav_btn_addons}"><i class="bi bi-plugin"></i></a></li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -79,23 +79,23 @@
                                 <div class="card-header">
                                     <ul class="nav nav-tabs card-header-tabs" id="content_Sections" role="tablist">
                                         <li class="nav-item"><a class="nav-link active me-auto" data-bs-toggle="tab"
-                                                                href="#main-content">{prod_tab_main_description}</a>
+                                                                href="#main-content">{nav_btn_description}</a>
                                         </li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content1"
-                                                                title="{prod_tab_additional_description}">1</a></li>
+                                                                title="{nav_btn_additional_description}">1</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content2"
-                                                                title="{prod_tab_additional_description}">2</a></li>
+                                                                title="{nav_btn_additional_description}">2</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content3"
-                                                                title="{prod_tab_additional_description}">3</a></li>
+                                                                title="{nav_btn_additional_description}">3</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content4"
-                                                                title="{prod_tab_additional_description}">4</a></li>
+                                                                title="{nav_btn_additional_description}">4</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content5"
-                                                                title="{prod_tab_additional_description}">5</a></li>
+                                                                title="{nav_btn_additional_description}">5</a></li>
                                     </ul>
                                 </div>
                                 <div class="card-body">
@@ -236,8 +236,8 @@
 
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="fw-bold">{msg_aftersale_files}</p>
-                                    <label>{label_file_as_select}</label>
+                                    <p class="fw-bold">{label_product_files_after_sale}</p>
+                                    <label>{label_file_select}</label>
                                     {select_file_as}
                                     <div class="form-text">Downloads: {cnt_attachment_as_hits}</div>
                                     <hr>
@@ -246,7 +246,7 @@
                                            value="{file_attachment_external}">
                                 </div>
                                 <div class="col-6">
-                                    <p class="fw-bold">{msg_presale_files}</p>
+                                    <p class="fw-bold">{label_product_before_sale}</p>
                                     <label>{label_file_select}</label>
                                     {select_file}
                                     <div class="form-text">Downloads: {cnt_attachment_hits}</div>
@@ -277,7 +277,7 @@
                             <hr>
 
                             <div class="mb-1">
-                                <label>{nav_price_groups}</label>
+                                <label>{label_product_price_group}</label>
                                 {select_price_group}
                             </div>
 
@@ -411,13 +411,13 @@
                                 <div class="card-header">
                                     <ul class="nav nav-tabs card-header-tabs" id="content_Sections" role="tablist">
                                         <li class="nav-item">
-                                            <a class="nav-link active" data-bs-toggle="tab" href="#variants">{post_tab_variants}</a>
+                                            <a class="nav-link active" data-bs-toggle="tab" href="#variants">{nav_btn_variants}</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#accessories">{post_tab_accessories}</a>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#accessories">{nav_btn_accessories}</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#related">{post_tab_related}</a>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#related">{nav_btn_related}</a>
                                         </li>
                                     </ul>
                                 </div>

@@ -1,4 +1,4 @@
-<div class="card py-2 border-bottom">
+<div class="card p-2 mb-1">
 	<p class="mb-0">
 		<span class="float-end">{indexed_time}</span>
 		<strong>{title}</strong>

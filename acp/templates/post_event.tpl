@@ -4,12 +4,12 @@
 			<div class="card">
 				<div class="card-header">
 			<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
-				<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{post_tab_intro}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{post_tab_content}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#info">{tab_info}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prices">{post_tab_prices}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{tab_meta}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{post_tab_preferences}</a></li>
+				<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{nav_btn_intro}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{nav_btn_content}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#info">{nav_btn_info}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prices">{nav_btn_prices}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_metas}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{nav_btn_settings}</a></li>
 			</ul>
 				</div>
 				<div class="card-body">
@@ -37,7 +37,7 @@
 				</div>
 				<div class="tab-pane fade" id="info">
 					<fieldset>
-						<legend>{label_eventdates}</legend>
+						<legend>{label_event_dates}</legend>
 					
 						<div class="row">
 							<div class="col">
@@ -55,7 +55,7 @@
 						</div>
 					</fieldset>
 					<fieldset>
-						<legend>{label_event_location}</legend>
+						<legend>{label_location}</legend>
 					
 						<div class="row">
 							<div class="col-md-9">
@@ -89,7 +89,7 @@
 					</fieldset>
 					
 					<fieldset>
-						<legend>{label_event_guestlist}</legend>
+						<legend>{label_guestlist}</legend>
 						
 						<div class="form-group">
 							{select_guestlist}
@@ -97,11 +97,11 @@
 						<hr>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="1" id="event_guestlist_public_nbr_yes" {checked_gl_public_nbr_1}>
-							<label class="form-check-label" for="event_guestlist_public_nbr_yes">{label_guestlist_show_nbr_no}</label>
+							<label class="form-check-label" for="event_guestlist_public_nbr_yes">{label_guestlist_show_number}</label>
 						</div>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="2" id="event_guestlist_public_nbr_no" {checked_gl_public_nbr_2}>
-							<label class="form-check-label" for="event_guestlist_public_nbr_no">{label_guestlist_show_nbr_yes}</label>
+							<label class="form-check-label" for="event_guestlist_public_nbr_no">{label_guestlist_hide_number}</label>
 						</div>
 						<hr>
 						<div class="form-group">

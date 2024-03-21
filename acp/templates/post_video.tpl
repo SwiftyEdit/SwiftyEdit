@@ -4,9 +4,9 @@
 			<div class="card">
 				<div class="card-header">
 			<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
-				<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{post_tab_content}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{post_tab_meta}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{post_tab_preferences}</a></li>
+				<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{nav_btn_content}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_metas}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{nav_btn_settings}</a></li>
 			</ul>
 				</div>
 				<div class="card-body">
@@ -19,7 +19,7 @@
 								<input class="form-control" name="post_title" type="text" value="{post_title}">
 							</div>
 							<div class="form-group">
-								<label>{label_url_video}</label>
+								<label>{label_url} (YouTube)</label>
 								<input class="form-control" name="post_video_url" type="text" value="{post_video_url}">
 							</div>
 							<div class="form-group">

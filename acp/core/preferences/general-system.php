@@ -105,9 +105,9 @@ $prefs_cms_ssl_domain_input = '<input class="form-control" type="text" name="pre
 $prefs_cms_base_input = '<input class="form-control" type="text" name="prefs_cms_base" value="'.$se_prefs['prefs_cms_base'].'">';
 
 echo '<form action="?tn=system&sub=general&file=general-system" method="POST" class="form-horizontal">';
-echo tpl_form_control_group('',$lang['prefs_cms_domain'],$prefs_cms_domain_input);
-echo tpl_form_control_group('',$lang['prefs_cms_ssl_domain'],$prefs_cms_ssl_domain_input);
-echo tpl_form_control_group('',$lang['prefs_cms_base'],$prefs_cms_base_input);
+echo tpl_form_control_group('',$lang['label_settings_cms_domain'],$prefs_cms_domain_input);
+echo tpl_form_control_group('',$lang['label_settings_cms_domain_ssl'],$prefs_cms_ssl_domain_input);
+echo tpl_form_control_group('',$lang['label_settings_cms_base'],$prefs_cms_base_input);
 echo tpl_form_control_group('','',"<input type='submit' class='btn btn-success' name='save_system' value='$lang[save]'>");
 echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</form>';
@@ -119,11 +119,11 @@ echo '</form>';
 
 $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 
-echo '<h5 class="heading-line">'.$lang['label_datetime_settings'].'</h5>';
+echo '<h5 class="heading-line">'.$lang['label_settings_datetime'].'</h5>';
 echo '<form action="?tn=system&sub=general&file=general-system" method="POST">';
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['label_datetime_timezone'].'</label>';
+echo '<label>'.$lang['label_settings_timezone'].'</label>';
 echo '<select class="form-control" name="prefs_timezone">';
 $x=0;
 foreach($timezones as $key => $value) {
@@ -167,7 +167,7 @@ echo '</div>';
 $date_formats = array("Y-m-d","d.m.Y","d/m/Y","m/d/Y");
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['label_datetime_dateformat'].'</label>';
+echo '<label>'.$lang['label_settings_date_format'].'</label>';
 echo '<select class="form-control" name="prefs_dateformat">';
 
 foreach($date_formats as $dates) {
@@ -187,7 +187,7 @@ echo '</div>';
 $time_formats = array("H:i","g:i a","g:i A");
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['label_datetime_timeformat'].'</label>';
+echo '<label>'.$lang['label_settings_time_format'].'</label>';
 echo '<select class="form-control" name="prefs_timeformat">';
 
 foreach($time_formats as $times) {
@@ -213,13 +213,13 @@ echo '</form>';
  */
 
 
-echo '<h5 class="heading-line">'.$lang['themes_templates'].'</h5>';
+echo '<h5 class="heading-line">'.$lang['label_settings_themes'].'</h5>';
 echo '<form action="?tn=system&sub=general&file=general-system" method="POST" class="form-horizontal">';
 
 $prefs_maintenance_input = [
     "input_name" => "prefs_maintenance_code",
     "input_value" => $se_prefs['prefs_maintenance_code'],
-    "label" => $lang['label_maintenance_code']
+    "label" => $lang['label_settings_maintenance_code']
 ];
 echo tpl_form_input_text($prefs_maintenance_input);
 
@@ -228,28 +228,28 @@ if($se_prefs['prefs_usertemplate'] == '') {
 }
 echo '<div class="form-check">';
 echo '<input type="radio" class="form-check-input" id="usertpl_off" name="prefs_usertemplate" value="off" '.($se_prefs['prefs_usertemplate'] == "off" ? 'checked' :'').'>';
-echo '<label class="form-check-label" for="usertpl_off">'.$lang['f_prefs_userstyles_off'].'</label>';
+echo '<label class="form-check-label" for="usertpl_off">'.$lang['label_settings_themes_userstyles_off'].'</label>';
 echo '</div>';
 echo '<div class="form-check">';
 echo '<input type="radio" class="form-check-input" id="usertpl_on" name="prefs_usertemplate" value="on" '.($se_prefs['prefs_usertemplate'] == "on" ? 'checked' :'').'>';
-echo '<label class="form-check-label" for="usertpl_on">'.$lang['f_prefs_userstyles_on'].'</label>';
+echo '<label class="form-check-label" for="usertpl_on">'.$lang['label_settings_themes_userstyles_on'].'</label>';
 echo '</div>';
 echo '<div class="form-check">';
 echo '<input type="radio" class="form-check-input" id="usertpl_overwrite" name="prefs_usertemplate" value="overwrite" '.($se_prefs['prefs_usertemplate'] == "overwrite" ? 'checked' :'').'>';
-echo '<label class="form-check-label" for="usertpl_overwrite">'.$lang['f_prefs_userstyles_overwrite'].'</label>';
+echo '<label class="form-check-label" for="usertpl_overwrite">'.$lang['label_settings_themes_userstyles_overwrite'].'</label>';
 echo '</div>';
 
 echo '<hr>';
 
 echo '<div class="form-group form-check mt-3">';
 echo '<input type="checkbox" class="form-check-input" id="cache" name="prefs_smarty_cache" '.($se_prefs['prefs_smarty_cache'] == "1" ? 'checked' :'').'>';
-echo '<label class="form-check-label" for="cache">'.$lang['cache'].'</label>';
+echo '<label class="form-check-label" for="cache">Smarty Cache</label>';
 echo '</div>';
 
 
 echo '<div class="form-group form-check">';
 echo '<input type="checkbox" class="form-check-input" id="compile" name="prefs_smarty_compile_check" '.($se_prefs['prefs_smarty_compile_check'] == "1" ? 'checked' :'').'>';
-echo '<label class="form-check-label" for="compile">'.$lang['compile_check'].'</label>';
+echo '<label class="form-check-label" for="compile">Smarty Compile check</label>';
 echo '</div>';
 
 
@@ -258,10 +258,10 @@ $compile_size = se_dir_size(SE_CONTENT.'/cache/templates_c/');
 $complete_size = readable_filesize($cache_size+$compile_size);
 
 echo '<div class="input-group mb-3">';
-echo '<label class="form-label" for="cache_lifetime">'.$lang['cache_lifetime'].'</label>';
+echo '<label class="form-label" for="cache_lifetime">Smarty Cache lifetime</label>';
 echo '<div class="input-group mb-3">';
 echo '<input class="form-control" type="text" id="cache_lifetime" name="prefs_smarty_cache_lifetime" value="'.$se_prefs['prefs_smarty_cache_lifetime'].'">';
-echo '<button class="btn btn-primary" type="submit" name="delete_smarty_cache">('.$complete_size.') '.$lang['delete_cache'].'</button>';
+echo '<button class="btn btn-primary" type="submit" name="delete_smarty_cache">('.$complete_size.') '.$lang['btn_delete'].'</button>';
 echo '</div>';
 echo '</div>';
 
@@ -280,14 +280,14 @@ echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
  */
 
 
-echo '<h5 class="heading-line">'.$lang['system_language'].'</h5>';
+echo '<h5 class="heading-line">'.$lang['label_language'].'</h5>';
 
 
 echo '<div class="row">';
 echo '<div class="col-md-6">';
 
 echo '<fieldset>';
-echo '<legend>'.$lang['system_default_language'].'</legend>';
+echo '<legend>'.$lang['label_settings_default_language'].'</legend>';
 echo '<form action="?tn=system&sub=general&file=general-system" method="POST" class="form-horizontal">';
 
 $get_all_languages = get_all_languages();
@@ -317,7 +317,7 @@ echo '</div>';
 echo '<div class="col-md-6">';
 
 echo '<fieldset>';
-echo '<legend>'.$lang['system_deactivate_languages'].'</legend>';
+echo '<legend>'.$lang['label_settings_hide_languages'].'</legend>';
 echo '<form action="?tn=system&sub=general&file=general-system" method="POST" class="">';
 
 echo '<table class="table table-sm table-hover">';
