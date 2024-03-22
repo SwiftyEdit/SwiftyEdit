@@ -5,7 +5,7 @@
   "prev_step": "zurück",
   "btn_check_system": "System-Check",
   "btn_enter_user": "Benutzerkonto",
-  "btn_enter_page_infos": "Basic Page Infos",
+  "btn_enter_page_infos": "Informationen zur Seite",
   "btn_enter_database": "Datenbank",
   "label_add_user": "Benutzerdaten eingeben",
   "description_add_user": "Geben Sie die Daten für ein erstes Benutzerkonto ein. Notieren Sie sich diese Daten - Sie müssen diese Daten verwenden, um sich später in die AKP-Staaten einzuloggen.",
