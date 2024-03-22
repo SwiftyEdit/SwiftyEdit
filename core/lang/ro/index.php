@@ -1,7 +1,7 @@
 <?php
 
 /**
- * language file | romanian
+ * language file | english
  */
 
 $lang_sign = "ro";
