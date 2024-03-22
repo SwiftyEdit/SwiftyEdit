@@ -230,7 +230,7 @@ $set_snippet_keyword_filter = substr("$set_snippet_keyword_filter", 0, -4); // c
 
 /* language filter */
 foreach($global_filter_languages as $l) {
-    echo $l;
+    //echo $l;
     if($l != '') {
         $snippet_lang_filter .= "snippet_lang = '$l' OR ";
     }
@@ -544,9 +544,9 @@ if($show_snippet_form)  {
 	
 	
 	echo '<div class="btn-group d-flex my-3">';
-	echo '<a class="btn btn-default w-100 '.$active_all.'" href="?tn=pages&sub=snippets&type=1">'.$lang['btn_snippets_all'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_snippets'].'</span></a>';
-	echo '<a class="btn btn-default w-100 '.$active_system.'" href="?tn=pages&sub=snippets&type=2">'.$lang['btn_snippets_system'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_system_snippets'].'</span></a>';
-	echo '<a class="btn btn-default w-100 '.$active_own.'" href="?tn=pages&sub=snippets&type=3">'.$lang['btn_snippets_own'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_custom_snippets'].'</span></a>';
+	echo '<a class="btn btn-default w-100 '.$active_all.'" href="?tn=pages&sub=snippets&type=1">'.$lang['btn_all'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_snippets'].'</span></a>';
+	echo '<a class="btn btn-default w-100 '.$active_system.'" href="?tn=pages&sub=snippets&type=2">'.$lang['btn_system'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_system_snippets'].'</span></a>';
+	echo '<a class="btn btn-default w-100 '.$active_own.'" href="?tn=pages&sub=snippets&type=3">'.$lang['btn_custom'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_custom_snippets'].'</span></a>';
 	echo '</div>';
 
 	

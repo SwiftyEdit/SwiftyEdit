@@ -22,6 +22,8 @@
   "btn.send_mail_to_admin": "Send mail to admin",
   "btn.install": "Install",
   "btn.upload": "Upload",
+  "btn.system": "System",
+  "btn.custom": "Custom",
 
   "btn.sort_asc": "Ascending",
   "btn.sort_desc": "Descending",
@@ -173,6 +175,7 @@
   "label.use_default": "Use default",
   "label.layout": "Layout",
   "label.default_sorting": "Default sorting",
+  "label.items_per_page": "Items per page",
 
   "label.data_submited": "Submited",
   "label.data_last_edit": "Last edit",

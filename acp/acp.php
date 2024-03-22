@@ -375,11 +375,6 @@ if (isset($set_acptheme)) {
                  <?php include 'core/' . $maininc . '.php'; ?>
             </div>
             <div class="" id="collapseSupport">
-                <?php
-                echo '<pre>';
-                print_r($lang);
-                echo '</pre>';
-                ?>
                 <?php include 'core/docs.php'; ?>
             </div>
         </div>
