@@ -54,6 +54,8 @@
   "categories": "Κατηγορίες",
   "overview": "Επισκόπηση",
   "label.date": "Ημερομηνία",
+  "label.password": "Password",
+  "label.password_reset": "Reset Password",
   "d01": "Δευτέρα",
   "d02": "Τρίτη",
   "d03": "Τετάρτη",
