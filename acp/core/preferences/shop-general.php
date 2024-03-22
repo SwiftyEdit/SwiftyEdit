@@ -119,6 +119,15 @@ if($prefs_posts_price_mode == 1 OR $prefs_posts_price_mode == '') {
     $sel_price_mode3 = 'selected';
 }
 
+$sel_price_visibility_all = '';
+$sel_price_visibility_registered = '';
+if($prefs_posts_price_visibility == 1 OR $prefs_posts_price_visibility == '') {
+    $sel_price_visibility_all = 'selected';
+} else {
+    $sel_price_visibility_registered = 'selected';
+}
+
+
 echo '<div class="row">';
 echo '<div class="col">';
 
@@ -139,6 +148,13 @@ echo '<option value="3" '.$sel_price_mode3.'>'.$lang['product_show_price_net'].'
 echo '</select>';
 echo '</div>';
 
+echo '</div>';
+echo '<div class="col">';
+echo '<label>' . $lang['label_visibility'] . '</label>';
+echo '<select class="form-control custom-select" name="prefs_posts_price_visibility">';
+echo '<option value="1" '.$sel_price_visibility_all.'>'.$lang['product_show_prices_to_all'].'</option>';
+echo '<option value="2" '.$sel_price_visibility_registered.'>'.$lang['product_show_prices_to_registered'].'</option>';
+echo '</select>';
 echo '</div>';
 echo '</div>';
 

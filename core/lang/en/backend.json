@@ -330,6 +330,8 @@
   "product.show_price_net": "Show prices in net only (B2B mode)",
   "product.show_price_gross": "Show all prices including taxes",
   "product.show_price_both": "Show prices in gross and net",
+  "product.show_prices_to_all": "All visitors can see the prices",
+  "product.show_prices_to_registered": "Only registered users can see the prices",
 
   "product.pricetag_mode_on": "Show pricetag",
   "product.pricetag_mode_off": "Hide pricetag",
