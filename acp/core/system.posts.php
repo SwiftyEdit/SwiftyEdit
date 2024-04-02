@@ -29,7 +29,7 @@ if(isset($_POST)) {
 	}
 }
 
-echo '<div class="subHeader">'.$icon['file_earmark_post'].' '.$lang['nav_blog'].'</div>';
+echo '<div class="subHeader">'.$icon['file_earmark_post'].' '.$lang['nav_btn_settings'].' / '.$lang['nav_btn_blog'].'</div>';
 
 echo '<div class="card card-body">';
 
@@ -43,23 +43,23 @@ echo '<label>'.$lang['label_entries_per_page'].'</label>';
 echo '<input type="text" class="form-control" name="prefs_posts_entries_per_page" value="'.$prefs_posts_entries_per_page.'">';
 echo '</div>';
 
-echo '<h5 class="heading-line">'.$lang['label_images'].'</h5>';
+echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
 
 echo '<div class="mb-3">';
-echo '<label>'.$lang['label_images_prefix'].'</label>
+echo '<label>'.$lang['label_settings_prefix'].'</label>
 			<input type="text" class="form-control" name="prefs_posts_images_prefix" value="'.$prefs_posts_images_prefix.'">
 			</div>';
 
 $all_images = se_get_all_images();
 echo '<div class="mb-3">';
-echo '<label>'.$lang['label_default_image'].'</label>';
+echo '<label>'.$lang['label_settings_default_image'].'</label>';
 				
 echo '<select class="form-control custom-select" name="prefs_posts_default_banner">';
 echo '<option value="use_standard">'.$lang['use_standard'].'</option>';
 
 if($prefs_posts_default_banner == 'without_image') { $sel_without_image = 'selected'; }
-echo '<option value="without_image" '.$sel_without_image.'>'.$lang['dont_use_an_image'].'</option>';
+echo '<option value="without_image" '.$sel_without_image.'>'.$lang['label_no_file_selected'].'</option>';
 foreach ($all_images as $img) {
 	unset($sel);
 	if($prefs_posts_default_banner == $img) {

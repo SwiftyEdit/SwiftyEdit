@@ -90,16 +90,16 @@ echo '<div class="subHeader d-flex">';
 echo '<form action="?tn=pages&sub=pages-list" method="post">';
 echo '<div class="btn-group" role="group">';
 
-echo '<button type="submit" name="switchPageList" value="showBothPages" class="btn btn-default '.$class_switchPageList[0].'">'.$lang['legend_all_pages'].'</button>';
-echo '<button type="submit" name="switchPageList" value="showStructuredPages" class="btn btn-default '.$class_switchPageList[1].'">'.$lang['legend_structured_pages'].'</button>';
-echo '<button type="submit" name="switchPageList" value="showUnstructuredPages" class="btn btn-default '.$class_switchPageList[2].'">'.$lang['legend_unstructured_pages'].'</button>';
+echo '<button type="submit" name="switchPageList" value="showBothPages" class="btn btn-default '.$class_switchPageList[0].'">'.$lang['nav_btn_all_pages'].'</button>';
+echo '<button type="submit" name="switchPageList" value="showStructuredPages" class="btn btn-default '.$class_switchPageList[1].'">'.$lang['nav_btn_structured_pages'].'</button>';
+echo '<button type="submit" name="switchPageList" value="showUnstructuredPages" class="btn btn-default '.$class_switchPageList[2].'">'.$lang['nav_btn_single_pages'].'</button>';
 
 
 echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
 
-echo '<a href="?tn=pages&sub=new#position" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new_page'].'</a>';
+echo '<a href="?tn=pages&sub=new#position" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
 
 echo '</div>'; //subHeader
 
@@ -119,7 +119,7 @@ echo '<div class="'.$class_col_left.'">';
 
 
 echo '<div class="card">';
-echo '<div class="card-header">' . $lang['legend_structured_pages'] . ' '.se_print_docs_link('tooltips/tip-ordered-pages.md').'</div>';
+echo '<div class="card-header">' . $lang['nav_btn_structured_pages'] . ' '.se_print_docs_link('tooltips/tip-ordered-pages.md').'</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div class="pages-list-container">';
@@ -146,7 +146,7 @@ echo '<div class="'.$class_col_right.'">';
 
 echo '<div class="card">';
 echo '<div class="card-header">';
-echo $lang['legend_unstructured_pages'].' '.se_print_docs_link('tooltips/tip-single-pages.md');
+echo $lang['nav_btn_single_pages'].' '.se_print_docs_link('tooltips/tip-single-pages.md');
 echo '</div>';
 echo '<div class="card-body">';
 
@@ -181,7 +181,7 @@ echo '<div class="card-body">';
 echo '<form action="?tn=pages&sub=list" method="POST" class="ms-auto">';
 echo '<div class="input-group">';
 echo '<span class="input-group-text">'.$icon['search'].'</span>';
-echo '<input class="form-control" type="text" name="pages_text_filter" value="" placeholder="'.$lang['button_search'].'">';
+echo '<input class="form-control" type="text" name="pages_text_filter" value="" placeholder="'.$lang['search'].'">';
 echo $hidden_csrf_token;
 echo '</div>';
 echo '</form>';
@@ -215,16 +215,16 @@ if($_SESSION['sorting_single_pages_dir'] == 'ASC') {
 
 
 echo '<div class="my-3">';
-echo '<label class="form-label">'.$lang['h_page_sort'].'</label>';
+echo '<label class="form-label">'.$lang['sorting'].'</label>';
 echo '<form action="?tn=pages&sub=pages-list" method="post" class="dirtyignore">';
 
 echo '<div class="row g-1">';
 echo '<div class="col-md-8">';
 
 echo '<select class="form-control form-select-sm" name="sorting_single_pages" onchange="this.form.submit()">';
-echo '<option value="linkname" '.$sel_value['linkname'].'>'.$lang['btn_sort_linkname'].'</option>';
+echo '<option value="linkname" '.$sel_value['linkname'].'>'.$lang['label_link_name'].'</option>';
 echo '<option value="priority" '.$sel_value['priority'].'>'.$lang['label_priority'].'</option>';
-echo '<option value="lastedit" '.$sel_value['lastedit'].'>'.$lang['btn_sort_edit'].'</option>';
+echo '<option value="lastedit" '.$sel_value['lastedit'].'>'.$lang['label_data_last_edit'].'</option>';
 echo '</select>';
 
 echo '</div>';
@@ -345,7 +345,7 @@ function se_list_pages($data,$type="sorted") {
         $page_lang_thumb = '<img src="/core/lang/'.$page_language.'/flag.png" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
 
         if($page_template == "use_standard") {
-            $show_template_name =  "$lang[use_standard]";
+            $show_template_name =  $lang['label_default_template'];
         } else {
             $show_template_name = "$page_template";
         }
@@ -359,11 +359,11 @@ function se_list_pages($data,$type="sorted") {
         }
 
         if($page_description == '') {
-            $page_description = '<span class="text-danger">'.$icon['exclamation_triangle'].' '.$lang['alert_no_page_description'].'</span>';
+            $page_description = '<span class="text-danger">'.$icon['exclamation_triangle'].' '.$lang['msg_error_no_description'].'</span>';
         }
 
         if($page_title == '') {
-            $page_title = '<span class="text-danger">'.$icon['exclamation_triangle'].' '.$lang['alert_no_page_title'].'</span>';
+            $page_title = '<span class="text-danger">'.$icon['exclamation_triangle'].' '.$lang['msg_error_no_title'].'</span>';
         }
 
         if($page_sort == 'portal') {
@@ -375,16 +375,16 @@ function se_list_pages($data,$type="sorted") {
 
         if($page_status == "public") {
             $item_class = 'page-list-item-public';
-            $status_label = $lang['f_page_status_puplic'];
+            $status_label = $lang['status_puplic'];
         } elseif($page_status == "ghost") {
             $item_class = 'page-list-item-ghost';
-            $status_label = $lang['f_page_status_ghost'];
+            $status_label = $lang['status_ghost'];
         } elseif($page_status == "private") {
             $item_class = 'page-list-item-private';
-            $status_label = $lang['f_page_status_private'];
+            $status_label = $lang['status_private'];
         } elseif($page_status == "draft") {
             $item_class = 'page-list-item-draft';
-            $status_label = $lang['f_page_status_draft'];
+            $status_label = $lang['status_draft'];
         }
 
         if($page_redirect != '') {
@@ -397,7 +397,7 @@ function se_list_pages($data,$type="sorted") {
         /* check for display edit button */
 
         if($_SESSION['acp_editpages'] == "allowed"){
-            $edit_button = '<button class="dropdown-item" name="editpage" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].' '.$lang['btn_edit_page'].'</button>';
+            $edit_button = '<button class="dropdown-item" name="editpage" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].' '.$lang['edit'].'</button>';
             $edit_button_fast = '<button class="btn btn-sm btn-default" name="editpage" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].'</button>';
             $duplicate_button = '<button class="dropdown-item" name="duplicate" value="'.$page_id.'" title="'.$lang['duplicate'].'">'.$icon['copy'].' '.$lang['duplicate'].'</button>';
         } else {
@@ -410,7 +410,7 @@ function se_list_pages($data,$type="sorted") {
 
         $arr_checked_admins = explode(",",$page_authorized_users);
         if(in_array("$_SESSION[user_nick]", $arr_checked_admins)) {
-            $edit_button = '<button class="dropdown-item" name="editpage" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].' '.$lang['btn_edit_page'].'</button>';
+            $edit_button = '<button class="dropdown-item" name="editpage" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].' '.$lang['edit'].'</button>';
             $edit_button_fast = '<button class="btn btn-sm btn-default" name="editpage" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].'</button>';
 
         }

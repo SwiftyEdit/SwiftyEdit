@@ -7,10 +7,11 @@
 SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite. 
 Build websites, blogs, webshops and much more for you or your customers.
 
-* License: GNU GENERAL PUBLIC LICENSE Version 3
-* Official Site: https://swiftyedit.org
++ License: GNU GENERAL PUBLIC LICENSE Version 3<br>
+![GitHub License](https://img.shields.io/github/license/SwiftyEdit/SwiftyEdit)
++ You are welcome to help with the translations<br>
+[![Crowdin](https://badges.crowdin.net/swiftyedit/localized.svg)](https://crowdin.com/project/swiftyedit)
 
-:star: give us a star, it motivates us a lot.
 
 ### Usermanual and Developer Documentation
 
@@ -34,9 +35,10 @@ composer create-project swiftyedit/swiftyedit
 
 ### Contribution
 
-__You are very welcome to take part in this project.__ We are happy for every contribution. Please submit your code to the develop branch, and start a pull request.
+__You are very welcome to take part in this project.__ We are happy for every contribution.
 
-The develop branch will be merged into main branch, as soon as a new stable version is ready.
+When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
+
 
 #### 3rd Party Frameworks and Plugins
 

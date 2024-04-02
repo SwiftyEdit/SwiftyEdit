@@ -31,6 +31,6 @@ if(isset($_POST)) {
 
     echo '<div class="alert alert-info show alert-auto-close">';
     echo '<button type="button" class="btn-close me-2" data-bs-dismiss="alert" aria-label="Close"></button>';
-    echo $lang['alert_filter_updated'];
+    echo $lang['msg_info_filter_updated'];
     echo '</div>';
 }

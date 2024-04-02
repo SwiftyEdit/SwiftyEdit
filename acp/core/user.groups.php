@@ -34,10 +34,10 @@ if($_POST['updateGroup']) {
 	]);
 	
 	if(($update_group->rowCount()) > 0) {
-		$success_message = $lang['db_changed'];
+		$success_message = $lang['msg_success_db_changed'];
 		record_log($_SESSION['user_nick'],"updated usergroup: $group_name","10");
 	} else {
-		$error_message = $lang['db_not_changed'];
+		$error_message = $lang['msg_error_db_changed'];
 	}
 
 }
@@ -69,10 +69,10 @@ if($_POST['saveGroup']) {
 	$group_id = $db_user->id();
 	
 	if($group_id > 0) {
-		$success_message = $lang['db_changed'];
+		$success_message = $lang['msg_success_db_changed'];
 		record_log($_SESSION['user_nick'],"created usergroup: $group_name","10");
 	} else {
-		$error_message = $lang['db_not_changed'];
+		$error_message = $lang['msg_error_db_changed'];
 	}
 
 }
@@ -92,17 +92,17 @@ if($_POST['deleteGroup']) {
 	$show_data = false;
 	
 	if(($delete_group->rowCount()) > 0) {
-		$success_message = $lang['db_changed'];
+		$success_message = $lang['msg_success_db_changed'];
 		record_log($_SESSION['user_nick'],"deleted usergroup id: $editgroup","10");
 	} else {
-		$error_message = $lang['db_not_changed'];
+		$error_message = $lang['msg_error_db_changed'];
 	}
 
 }
 
 
 echo '<div class="subHeader">';
-echo $lang['nav_usergroups'];
+echo $lang['nav_btn_user_groups'];
 echo '</div>';
 
 
@@ -130,7 +130,7 @@ $editgroup = (int) $_POST['editgroup'];
 
 
 echo '<fieldset>';
-echo '<legend>'.$lang['legend_choose_group'].'</legend>';
+echo '<legend>'.$lang['label_choose_group'].'</legend>';
 echo '<form action="acp.php?tn=user&sub=user-groups" method="POST">';
 
 echo '<div class="row">';
@@ -177,7 +177,7 @@ if(($editgroup) && ($show_data !== false)) {
 	$array_group_user = explode(" ", $group_user);
 
 	$submit_button = '<input type="submit" class="btn btn-default text-success" name="updateGroup" value="'.$lang['update'].'">';
-	$delete_button = '<input type="submit" class="btn btn-default text-danger" name="deleteGroup" value="'.$lang['delete'].'" onclick="return confirm(\''.$lang['confirm_delete_file'].'\')">';
+	$delete_button = '<input type="submit" class="btn btn-default text-danger" name="deleteGroup" value="'.$lang['delete'].'" onclick="return confirm(\''.$lang['msg_confirm_delete'].'\')">';
 	$hidden_field = '<input type="hidden" name="editgroup" value="'.$editgroup.'">';
 
 } else {
@@ -193,17 +193,17 @@ if(($editgroup) && ($show_data !== false)) {
  */
 
 echo '<fieldset>';
-echo '<legend>'.$lang['legend_groups_data'].'</legend>';
+echo '<legend>'.$lang['label_group'].'</legend>';
 
 echo '<form action="acp.php?tn=user&sub=user-groups" method="POST">';
 
 echo '<div class="row">';
 echo '<div class="col-md-8">';
 
-echo '<label class="">'.$lang['label_group_name'].'</label>';
+echo '<label class="">'.$lang['label_name'].'</label>';
 echo '<input type="text" class="form-control" name="group_name" value="'.$group_name.'">';
 
-echo '<label>'.$lang['label_group_description'].'</label>';
+echo '<label>'.$lang['label_description'].'</label>';
 echo '<textarea class="mceEditor_small" rows="4" name="group_description">'.$group_description.'</textarea>';
 
 echo '</div>';
@@ -221,8 +221,8 @@ if($group_type == 'p') {
 echo '<div class="mb-3">';
 echo '<label class="">'.$lang['label_type'].'</label>';
 echo '<select class="form-control" name="group_type">';
-echo '<option '.$sel_public.' value="p">'.$lang['label_public_group'].'</option>';
-echo '<option '.$sel_hidden.' value="h">'.$lang['label_hidden_group'].'</option>';
+echo '<option '.$sel_public.' value="p">'.$lang['label_groups_status_public'].'</option>';
+echo '<option '.$sel_hidden.' value="h">'.$lang['label_groups_status_hidden'].'</option>';
 echo '</select>';
 echo '</div>';
 

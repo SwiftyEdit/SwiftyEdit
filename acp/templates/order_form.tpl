@@ -34,6 +34,7 @@
 				
 				</div>
 				<div class="col-md-6">
+					<label>Invoice Address</label>
 					<textarea class="form-control" rows="4" name="invoice_address">{invoice_address}</textarea>
 				</div>		
 			</div>

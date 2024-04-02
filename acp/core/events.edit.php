@@ -230,10 +230,10 @@ for($i=1;$i<11;$i++) {
     $option_add = '';
     $sel_prio = '';
     if($i == 1) {
-        $option_add = ' ('.$lang['label_priority_bottom'].')';
+        $option_add = ' ('.$lang['low'].')';
     }
     if($i == 10) {
-        $option_add = ' ('.$lang['label_priority_top'].')';
+        $option_add = ' ('.$lang['high'].')';
     }
     if($event_data['priority'] == $i) {
         $sel_prio = 'selected';
@@ -249,7 +249,7 @@ if($event_data['fixed'] == '1') {
 }
 $checkbox_fixed  = '<div class="form-check">';
 $checkbox_fixed .= '<input class="form-check-input" id="fix" type="checkbox" name="fixed" value="fixed" '.$checked_fixed.'>';
-$checkbox_fixed .= '<label class="form-check-label" for="fix">'.$lang['label_fixed'].'</label>';
+$checkbox_fixed .= '<label class="form-check-label" for="fix">'.$lang['fixed'].'</label>';
 $checkbox_fixed .= '</div>';
 
 
@@ -311,9 +311,9 @@ if($event_data['votings'] == 1 OR $event_data['votings'] == '') {
 }
 
 $select_votings  = '<select id="select_votings" name="votings"  class="custom-select form-control">';
-$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_off'].'</option>';
-$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_on_registered'].'</option>';
-$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_on_global'].'</option>';
+$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_status_off'].'</option>';
+$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_status_registered'].'</option>';
+$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_status_global'].'</option>';
 $select_votings .= '</select>';
 
 
@@ -448,9 +448,9 @@ if($event_data['event_guestlist'] == '1') {
 
 $select_guestlist = '<select class="form-control custom-select" name="event_guestlist">';
 
-$select_guestlist .= '<option value="1" '.$sel_gl_type1.'>'.$lang['label_guestlist_deactivate'].'</option>';
-$select_guestlist .= '<option value="2" '.$sel_gl_type2.'>'.$lang['label_guestlist_for_registered'].'</option>';
-$select_guestlist .= '<option value="3" '.$sel_gl_type3.'>'.$lang['label_guestlist_for_everybody'].'</option>';
+$select_guestlist .= '<option value="1" '.$sel_gl_type1.'>'.$lang['label_guestlist_status_deactivate'].'</option>';
+$select_guestlist .= '<option value="2" '.$sel_gl_type2.'>'.$lang['label_guestlist_status_registered'].'</option>';
+$select_guestlist .= '<option value="3" '.$sel_gl_type3.'>'.$lang['label_guestlist_status_global'].'</option>';
 
 $select_guestlist .= '</select>';
 $form_tpl = str_replace('{select_guestlist}', $select_guestlist, $form_tpl);

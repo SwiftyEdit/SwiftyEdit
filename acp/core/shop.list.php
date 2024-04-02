@@ -235,7 +235,7 @@ echo '<div class="card p-3">';
 
 echo '<div class="d-flex flex-row-reverse">';
 echo '<div class="ps-3">';
-echo '<form action="?tn=shop&sub=shop-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<form action="?tn=shop&sub=shop-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['label_items_per_page'].'">';
 echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
 echo $hidden_csrf_token;
 echo '</form>';
@@ -254,8 +254,8 @@ if($cnt_filter_posts > 0) {
     echo '<th class="text-center">'.$icon['star'].'</th>';
     echo '<th>'.$lang['label_priority'].'</th>';
     echo '<th></th>';
-    echo '<th>'.$lang['label_post_title'].'</th>';
-    echo '<th>'.$lang['label_price'].'</th>';
+    echo '<th>'.$lang['label_title'].'</th>';
+    echo '<th>'.$lang['label_product_price'].'</th>';
     echo '<th></th>';
     echo '</tr></thead>';
 
@@ -462,7 +462,7 @@ if($cnt_filter_posts > 0) {
     echo '</table>';
 
 } else {
-    echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
+    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries'].'</div>';
 }
 
 echo $pagination;
@@ -540,7 +540,7 @@ echo '</div>';
 
 
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
+echo '<div class="card-header p-1 px-2">'.$lang['categories'].'</div>';
 
 echo $cat_btn_group;
 

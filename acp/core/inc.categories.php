@@ -153,7 +153,7 @@ if($show_form == true)  {
         echo '</td>';
         echo '<td class="text-end">';
         echo '<form action="?tn=categories" method="POST">';
-        echo '<button type="submit" class="btn btn-sm btn-default text-danger me-1" name="delete_category" value="'.$cats['cat_id'].'" onclick="return confirm(\''.$lang['confirm_delete_data'].'\')">'.$icon['trash'].'</button>';
+        echo '<button type="submit" class="btn btn-sm btn-default text-danger me-1" name="delete_category" value="'.$cats['cat_id'].'" onclick="return confirm(\''.$lang['msg_confirm_delete'].'\')">'.$icon['trash'].'</button>';
         echo '<button name="cat" value='.$cats['cat_id'].'" class="btn btn-sm btn-default">'.$icon['edit'].' '.$lang['edit'].'</button>';
         echo $hidden_csrf_token;
         echo '</form>';

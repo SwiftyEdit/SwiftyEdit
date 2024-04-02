@@ -31,7 +31,7 @@ if($_POST['delete_reactions']) {
     $affected_rows = (int) $delete->rowCount();
 	
 	echo '<div class="alert alert-info">';
-	echo $lang['msg_data_delete']. '('.$affected_rows.')';
+	echo $lang['msg_info_data_deleted']. '('.$affected_rows.')';
 	echo '</div>';
 	
 }
@@ -94,7 +94,7 @@ echo '<div class="card p-3">';
 echo '<form action="?tn=inbox&sub=votings" method="POST">';
 
 echo '<div class="position-absolute top-0 end-0 p-3">';
-echo '<input type="submit" name="delete_reactions" value="'.$lang['delete_selected'].'" class="btn btn-sm btn-default text-danger">';
+echo '<input type="submit" name="delete_reactions" value="'.$lang['btn_delete_selected'].'" class="btn btn-sm btn-default text-danger">';
 echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</div>';
 
@@ -153,7 +153,7 @@ echo '<form action="?tn=inbox&sub=votings" method="POST">';
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_filter'].'</label>';
 echo '<select name="filter_by_post" class="custom-select form-control" onchange="this.form.submit()">';
-echo '<option value="all">'.$lang['label_show_all_votings'].'</option>';
+echo '<option value="all">'.$lang['label_show_all_data'].'</option>';
 foreach($get_posts as $posts) {
 	
 	$sel = '';

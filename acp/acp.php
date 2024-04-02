@@ -343,7 +343,7 @@ if (isset($set_acptheme)) {
     <?php
     if (is_file('../maintenance.html')) {
         echo '<div class="alert alert-danger rounded-0 m-0">';
-        echo $lang['msg_update_modus_activated'];
+        echo $lang['update_msg_modus_activated'];
         echo '</div>';
     }
     ?>

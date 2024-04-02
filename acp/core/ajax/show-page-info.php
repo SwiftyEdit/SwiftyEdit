@@ -45,27 +45,27 @@ echo '<div class="col-md-8">';
 echo '<table class="table table-sm">';
 echo '<tr><td class="text-end">ID</td><td><code>'.$page_id.'</code></td></tr>';
 echo '<tr><td class="text-end">Hash</td><td><code>'.$page_hash.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['f_page_classes'].'</td><td><code>'.$page_classes.'</code></td></tr>';
-echo '<tr><td class="text-end text-nowrap">Page impressions</td><td><code>'.$page_hits.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_classes'].'</td><td><code>'.$page_classes.'</code></td></tr>';
+echo '<tr><td class="text-end text-nowrap">'.$lang['label_pages_pageviews'].'</td><td><code>'.$page_hits.'</code></td></tr>';
 
-echo '<tr><td class="text-end">'.$lang['f_page_title'].'</td><td><code>'.$page_title.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['f_meta_description'].'</td><td><code>'.$page_description.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['f_meta_keywords'].'</td><td><code>'.$page_keywords.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_title'].'</td><td><code>'.$page_title.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_description'].'</td><td><code>'.$page_description.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_keywords'].'</td><td><code>'.$page_keywords.'</code></td></tr>';
 
-echo '<tr><td class="text-end">'.$lang['f_meta_robots'].'</td><td><code>'.$page_robots.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['f_page_status'].'</td><td><code>'.$page_status.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_pages_meta_robots'].'</td><td><code>'.$page_robots.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_status'].'</td><td><code>'.$page_status.'</code></td></tr>';
 
-echo '<tr><td class="text-end">'.$lang['f_page_linkname'].'</td><td><code>'.$page_linkname.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['f_page_permalink'].'</td><td><code>'.$page_permalink.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['f_page_permalink_short'].'</td><td><code>'.$page_permalink_short.'</code></td></tr>';
-echo '<tr><td class="text-end">'.$lang['h_page_hits'].'</td><td><code>'.$page_short_link_hits.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_pages_link_name'].'</td><td><code>'.$page_linkname.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_pages_permalink'].'</td><td><code>'.$page_permalink.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_pages_permalink_short'].'</td><td><code>'.$page_permalink_short.'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_pages_clicks'].'</td><td><code>'.$page_short_link_hits.'</code></td></tr>';
 
 if($page_data['page_redirect'] != '') {
-    echo '<tr><td class="text-end">'.$lang['f_page_redirect'].'</td><td><code>'.$page_redirect.' ['.$page_redirect_code.']</code></td></tr>';
+    echo '<tr><td class="text-end">'.$lang['label_pages_redirect'].'</td><td><code>'.$page_redirect.' ['.$page_redirect_code.']</code></td></tr>';
 }
 
 if($page_data['page_funnel_uri'] != '') {
-    echo '<tr><td class="text-end">'.$lang['f_page_funnel_uri'].'</td>';
+    echo '<tr><td class="text-end">'.$lang['label_pages_funnel_uri'].'</td>';
     echo'<td>';
     $funnels = explode(',', $page_funnel_url);
     foreach($funnels as $funnel) {
@@ -75,7 +75,7 @@ if($page_data['page_funnel_uri'] != '') {
 }
 
 
-echo '<tr><td class="text-end">'.$lang['tab_content'].'</td><td><code>'.se_return_clean_value(first_words($page_data['page_content'],50)).'</code></td></tr>';
+echo '<tr><td class="text-end">'.$lang['label_content'].'</td><td><code>'.se_return_clean_value(first_words($page_data['page_content'],50)).'</code></td></tr>';
 echo '</table>';
 
 echo '</div>';

@@ -29,7 +29,7 @@
             </div>
             <div class="col-3">
                 <div class="mb-3">
-                    <label>{label_group_name}</label>
+                    <label>{label_group}</label>
                     {select_parent_group}
                 </div>
             </div>

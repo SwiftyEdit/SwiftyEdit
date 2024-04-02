@@ -62,7 +62,7 @@ if(isset($_POST['delete_snippet'])) {
 		]);
 
 	if(($cnt_changes->rowCount()) > 0){
-		$sys_message = '{OKAY} '. $lang['db_changed'];
+		$sys_message = '{OKAY} '. $lang['msg_success_db_changed'];
 		record_log($_SESSION['user_nick'],"deleted snippet id: $delete_snip_id","10");
 		$modus = 'new';
 	} else {
@@ -146,7 +146,7 @@ if(isset($_POST['save_snippet'])) {
 		]);
 
         if($data->rowCount() > 0) {
-            show_toast($lang['db_changed'],'success');
+            show_toast($lang['msg_success_db_changed'],'success');
             record_log("$_SESSION[user_nick]","edit textlib <strong>$snippet_name</strong>","2");
         } else {
             show_toast($lang['db_not_changed'],'danger');
@@ -181,7 +181,7 @@ if(isset($_POST['save_snippet'])) {
         $snip_id = $db_content->id();
         if($snip_id > 0) {
             $modus = 'update';
-            show_toast($lang['db_changed'],'success');
+            show_toast($lang['msg_success_db_changed'],'success');
             record_log("$_SESSION[user_nick]","insert textlib <strong>$snippet_name</strong>","2");
         } else {
             show_toast($lang['db_not_changed'],'danger');
@@ -230,7 +230,7 @@ $set_snippet_keyword_filter = substr("$set_snippet_keyword_filter", 0, -4); // c
 
 /* language filter */
 foreach($global_filter_languages as $l) {
-    echo $l;
+    //echo $l;
     if($l != '') {
         $snippet_lang_filter .= "snippet_lang = '$l' OR ";
     }
@@ -344,7 +344,7 @@ if($show_snippet_form)  {
 	/* list snippets */
 
     echo '<div class="subHeader d-flex align-items-center">';
-    echo '<h3>'.$lang['nav_snippets'].'</h3>';
+    echo '<h3>'.$lang['nav_btn_snippets'].'</h3>';
     echo '<form action="?tn=pages&sub=snippets" method="post" class="d-inline ms-auto">';
     echo '<button class="btn btn-default text-success ms-auto" name="snip_id" value="n">'.$icon['plus'].' '.$lang['new'].'</button>';
     echo $hidden_csrf_token;
@@ -362,7 +362,7 @@ if($show_snippet_form)  {
 
     echo '<div class="d-flex flex-row-reverse">';
     echo '<div class="ps-3">';
-    echo '<form action="?tn=pages&sub=snippets" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+    echo '<form action="?tn=pages&sub=snippets" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['label_items_per_page'].'">';
     echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
     echo $hidden_csrf_token;
     echo '</form>';
@@ -412,7 +412,7 @@ if($show_snippet_form)  {
 		}
 
         if($get_snip_title == '') {
-            $get_snip_title = '<em class="opacity-50">'.$lang['missing_title'].'</em>';
+            $get_snip_title = '<em class="opacity-50">'.$lang['msg_error_no_title'].'</em>';
         }
 
         if($get_snip_notes != '') {
@@ -544,9 +544,9 @@ if($show_snippet_form)  {
 	
 	
 	echo '<div class="btn-group d-flex my-3">';
-	echo '<a class="btn btn-default w-100 '.$active_all.'" href="?tn=pages&sub=snippets&type=1">'.$lang['btn_snippets_all'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_snippets'].'</span></a>';
-	echo '<a class="btn btn-default w-100 '.$active_system.'" href="?tn=pages&sub=snippets&type=2">'.$lang['btn_snippets_system'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_system_snippets'].'</span></a>';
-	echo '<a class="btn btn-default w-100 '.$active_own.'" href="?tn=pages&sub=snippets&type=3">'.$lang['btn_snippets_own'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_custom_snippets'].'</span></a>';
+	echo '<a class="btn btn-default w-100 '.$active_all.'" href="?tn=pages&sub=snippets&type=1">'.$lang['btn_all'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_snippets'].'</span></a>';
+	echo '<a class="btn btn-default w-100 '.$active_system.'" href="?tn=pages&sub=snippets&type=2">'.$lang['btn_system'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_system_snippets'].'</span></a>';
+	echo '<a class="btn btn-default w-100 '.$active_own.'" href="?tn=pages&sub=snippets&type=3">'.$lang['btn_custom'].' <span class="badge badge-fc position-absolute top-0 end-0">'.$cnt['cnt_custom_snippets'].'</span></a>';
 	echo '</div>';
 
 	

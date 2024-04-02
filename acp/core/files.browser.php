@@ -195,9 +195,9 @@ if(isset($_POST['delete'])) {
 			if(is_file($delete_thumb)) {
 				unlink($delete_thumb);
 			}
-			echo '<div class="alert alert-success alert-auto-close">'.$lang['msg_file_delete'].'</div>';
+			echo '<div class="alert alert-success alert-auto-close">'.$lang['msg_success_file_delete'].'</div>';
 		} else {
-			echo '<div class="alert alert-danger"><strong>'.$delete_file.'</strong><br>'.$lang['msg_file_delete_error'].'</div>';
+			echo '<div class="alert alert-danger"><strong>'.$delete_file.'</strong><br>'.$lang['msg_error_file_delete'].'</div>';
 		}	
 	} else {
 		echo '<div class="alert alert-error">File ('.$delete_file.') not found</div>';
@@ -477,7 +477,7 @@ if($_SESSION['media_filter'] != "") {
 $kw_form  = '<form action="?tn=filebrowser&sub=browse&d=" method="POST" class="form-inline dirtyignore">';
 $kw_form .= '<div class="input-group">';
 $kw_form .= '<span class="input-group-text">'.$icon['search'].'</span>';
-$kw_form .= '<input class="form-control" type="text" name="media_filter" value="" placeholder="'.$lang['button_search'].'">';
+$kw_form .= '<input class="form-control" type="text" name="media_filter" value="" placeholder="'.$lang['search'].'">';
 $kw_form .= '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 $kw_form .= '</div>';
 $kw_form .= '</form>';
@@ -495,7 +495,7 @@ echo '<form action="?tn=filebrowser&sub=browse" method="POST" class="form dirtyi
 echo '<div class="input-group">';
 echo '<input type="text" name="new_folder" class="form-control">';
 echo '<div class="input-group-append">';
-echo '<input type="submit" name="submit" value="'.$lang['create_new_folder'].'" class="btn btn-default">';
+echo '<input type="submit" name="submit" value="'.$lang['btn_create_new_folder'].'" class="btn btn-default">';
 echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</div>';
 echo '</div>';
@@ -638,7 +638,7 @@ for($x=0;$x<$cnt_pages;$x++) {
 if($disk != $path_img AND $disk != $path_files) {
 	echo '<div class="container-fluid">';
 	echo '<form class="inline pull-right" action="acp.php?tn=filebrowser&sub=browse&selected_folder='.dirname($disk).'" method="POST">';
-	echo '<input type="submit" value="'.$lang['delete_folder'].'" class="btn btn-danger" onclick="return confirm(\''.$lang['confirm_delete_folder'].'\')">';
+	echo '<input type="submit" value="'.$lang['btn_delete_folder'].'" class="btn btn-danger" onclick="return confirm(\''.$lang['msg_confirm_delete_directory'].'\')">';
 	echo '<input type="hidden" name="delete_folder" value="'.$disk.'">';
 	echo $hidden_csrf_token;
 	echo '</form>';
@@ -683,7 +683,7 @@ for($i=0;$i<$cnt_get_files;$i++) {
 	}
 	
 	
-	$delete_btn = '<button type="submit" onclick="return confirm(\''.$lang['confirm_delete_file'].'\')" class="btn btn-default btn-sm w-100 text-danger" name="delete" value="'.$id.'">'.$icon['trash_alt'].'</button>';
+	$delete_btn = '<button type="submit" onclick="return confirm(\''.$lang['msg_confirm_delete_file'].'\')" class="btn btn-default btn-sm w-100 text-danger" name="delete" value="'.$id.'">'.$icon['trash_alt'].'</button>';
 	//$edit_btn = '<a data-fancybox data-type="ajax" data-src="/acp/core/ajax.media.php?file='.$filename.'&folder='.$disk.'" href="javascript:;" class="btn btn-sm btn-default w-100 text-success">'.$icon['edit'].'</a>';
 	
 	$edit_btn = '<button type="submit" class="btn btn-sm btn-default w-100 text-success">'.$icon['edit'].'</button>';
@@ -786,7 +786,7 @@ echo '<div class="pt-1">'.$btn_remove_keyword.'</div>';
 echo '<hr>';
 
 echo '<fieldset>';
-echo '<legend>'.$lang['h_page_sort'].'</legend>';
+echo '<legend>'.$lang['sorting'].'</legend>';
 
 echo '<div class="btn-group-vertical d-flex">';
 echo '<a class="btn btn-sm btn-default w-100 '.$check_lastedit.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=time">'.$lang['date_of_change'].'</a>';

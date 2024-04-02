@@ -52,7 +52,7 @@ if(isset($_POST)) {
 }
 
 
-echo '<h3>'.$lang['f_prefs_layout'].'</h3>';
+echo '<h3>'.$lang['label_layout'].'</h3>';
 
 
 
@@ -207,7 +207,7 @@ foreach($arr_Styles as $template) {
 	echo $modal;
 	
 	
-	$btn_delete_addon = '<form class="d-inline ps-2" action="?tn=addons&sub=t" method="POST" onsubmit="return confirm(\''.$lang['confirm_delete_file'].'\');">';
+	$btn_delete_addon = '<form class="d-inline ps-2" action="?tn=addons&sub=t" method="POST" onsubmit="return confirm(\''.$lang['msg_confirm_delete'].'\');">';
 	$btn_delete_addon .= '<button type="submit" name="delete_addon" class="btn btn-sm btn-default text-danger">'.$icon['trash_alt'].'</button>';
 	$btn_delete_addon .= '<input type="hidden" name="type" value="t">';
 	$btn_delete_addon .= '<input type="hidden" name="addon" value="'.$template.'">';

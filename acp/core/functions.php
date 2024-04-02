@@ -321,9 +321,9 @@ function se_flatten_array(array $array) {
 	 $date = date($se_prefs['prefs_dateformat'],$timestring);
 	 
 	 if($date == date($se_prefs['prefs_dateformat'], time())) {
-		 $str_date = $lang['label_datetime_today'];
+		 $str_date = $lang['today'];
 	 } else if($date == date($se_prefs['prefs_dateformat'], time() - (24 * 60 * 60))) {
-		 $str_date = $lang['label_datetime_yesterday'];
+		 $str_date = $lang['yesterday'];
 	 } else {
 		 $str_date = $date;
 	 }
@@ -522,7 +522,7 @@ function se_show_log($limit=10) {
         $logs .= $table;
 
     } else {
-        $logs .= '<div class="alert alert-secondary">'.$lang['msg_no_entries_so_far'].'</div>';
+        $logs .= '<div class="alert alert-secondary">'.$lang['msg_info_no_data_so_far'].'</div>';
 	}
 
     return $logs;
@@ -1050,7 +1050,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
 
     /* if we have selected images, show them first */
     if($cnt_selected_img > 0) {
-        $images_container .= '<h6>'.$lang['label_image_selected'].' ('.$cnt_selected_img.')</h6>';
+        $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
         $images_container .= '<div class="row g-1">';
         foreach($seleced_img as $sel_images) {
             if(is_file("$sel_images")) {
@@ -1387,7 +1387,7 @@ function se_parse_docs_file($file) {
 function se_print_docs_link($file,$text=null,$type=null) {
     global $icon,$lang;
 
-    $title = $lang['show_help'];
+    $title = $lang['label_show_help'];
 
     if($text == null OR $text == 'icon') {
         $text = $icon['question_circle'];

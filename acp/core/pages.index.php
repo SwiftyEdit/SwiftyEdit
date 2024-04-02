@@ -89,7 +89,7 @@ $indexed_entries = se_get_indexed_pages();
 $cnt_get_indexed_entries = count($indexed_entries);
 
 echo '<div class="card">';
-echo '<div class="card-header">' . $lang['page_index'] . ' ('.$cnt_all_indexed_entries.')</div>';
+echo '<div class="card-header">' . $lang['label_pages_index'] . ' ('.$cnt_all_indexed_entries.')</div>';
 
 echo '<div class="p-3">';
 echo '<form action="?tn=pages&sub=pages-index" method="POST">';
@@ -180,7 +180,7 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 		}
 		$h1str .= '</ul>';
 	} else {
-		$h1str = '<span class="text-danger strong">'.$lang['msg_missing_headline'].'</span>';
+		$h1str = '<span class="text-danger strong">'.$lang['msg_error_missing_headline'].'</span>';
 		$ce_page_h1++;
 		$ce_h1++;
 	}
@@ -198,7 +198,7 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 			$h2str .= '<span class="badge badge-secondary">'.$str.'</span> ';
 		}
 	} else {
-		$h2str = '<span class="text-danger">'.$lang['msg_missing_headline'].'</span>';
+		$h2str = '<span class="text-danger">'.$lang['msg_error_missing_headline'].'</span>';
 		$ce_page_h2++;
 		$ce_h2++;
 	}
@@ -216,7 +216,7 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 			$h3str .= '<span class="badge badge-secondary">'.$str.'</span> ';
 		}
 	} else {
-		$h3str = $lang['msg_missing_headline'];
+		$h3str = $lang['msg_error_missing_headline'];
 	}
 	
 	$cnt_headlines = $cnt_h1s+$cnt_h2s+$cnt_h3s;
@@ -347,8 +347,6 @@ for($i=0;$i<$cnt_get_indexed_entries;$i++) {
 	$tpl = str_replace("{btn_update_info}", $icon['sync_alt'], $tpl);
 	$tpl = str_replace("{btn_start_index}", $icon['sitemap'], $tpl);
 	$tpl = str_replace("{btn_remove}", $icon['trash_alt'], $tpl);
-	$tpl = str_replace("{title_update_page_index}", $lang['btn_update_page_index'], $tpl);
-	$tpl = str_replace("{title_update_page_content}", $lang['btn_update_page_content'], $tpl);
 
 	$tpl = str_replace('{meta_str}', $meta_str, $tpl);
 	$tpl = str_replace('{cnt_meta_errors}', $cnt_meta_errors, $tpl);
@@ -386,7 +384,7 @@ echo '<div class="col-sm-4">';
  */
 
 echo '<div class="card">';
-echo '<div class="card-header">' . $lang['tab_page_preferences'] . '</div>';
+echo '<div class="card-header">' . $lang['label_settings'] . '</div>';
 echo '<div class="scroll-box">';
 echo '<div class="p-3">';
 
@@ -452,13 +450,13 @@ $ce_h1_class = 'text-success';
 if($ce_h1 > 0) {
 	$ce_h1_class = 'text-danger';
 }
-echo '<tr><td class="text-end '.$ce_h1_class.'">'.$ce_h1.'</td><td>'.$lang['label_missing_h1'].'</td></tr>';
+echo '<tr><td class="text-end '.$ce_h1_class.'">'.$ce_h1.'</td><td>'.$lang['label_missing_headings'].' (H1)</td></tr>';
 
 $ce_h2_class = 'text-success';
 if($ce_h2 > 0) {
 	$ce_h2_class = 'text-danger';
 }
-echo '<tr><td class="text-end '.$ce_h2_class.'">'.$ce_h2.'</td><td>'.$lang['label_missing_h2'].'</td></tr>';
+echo '<tr><td class="text-end '.$ce_h2_class.'">'.$ce_h2.'</td><td>'.$lang['label_missing_headings'].' (H2)</td></tr>';
 echo '</table>';
 echo '</div>';
 

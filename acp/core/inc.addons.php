@@ -92,10 +92,10 @@ if($addon_mode == 'upload') {
 		if($se_upload_addons === true) {
 			include 'upload_addons.php';
 		} else {
-			echo '<div class="alert alert-danger">'.$lang['upload_addons_deactivated'].'</div>';
+			echo '<div class="alert alert-danger">'.$lang['msg_info_upload_addons_deactivated'].'</div>';
 		}
 	} else {
-		echo '<div class="alert alert-danger">'.$lang['drm_no_access'].'</div>';
+		echo '<div class="alert alert-danger">'.$lang['rm_no_access'].'</div>';
 	}
 	
 }

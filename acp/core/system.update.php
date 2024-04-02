@@ -33,7 +33,7 @@ $remote_versions_array = json_decode($remote_versions_file,true);
 
 
 echo '<fieldset>';
-echo '<legend>'.$lang['system_update'].'</legend>';
+echo '<legend>'.$lang['nav_btn_update'].'</legend>';
 
 compare_versions();
 
@@ -66,7 +66,7 @@ if(isset($_GET['a']) && $_GET['a'] == 'start') {
     }
     echo '</ul>';
     echo '</div>';
-    echo '<div class="alert alert-info">'.$lang['msg_after_update'].'</div>';
+    echo '<div class="alert alert-info">'.$lang['update_msg_post_install'].'</div>';
 }
 
 /**
@@ -310,11 +310,11 @@ function compare_versions() {
 
     if($update_stable == '') {
         echo '<div class="alert alert-success">';
-        echo $icon['check_circle'].' '.$lang['msg_no_update_available'];
+        echo $icon['check_circle'].' '.$lang['update_msg_no_update_available'];
         echo '</div>';
     } else {
         echo '<div class="alert alert-success">';
-        echo $icon['info_circle'].' '.$lang['msg_update_available'];
+        echo $icon['info_circle'].' '.$lang['update_msg_update_available'];
         echo '</div>';
     }
 

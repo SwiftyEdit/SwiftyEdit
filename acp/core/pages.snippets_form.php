@@ -31,7 +31,7 @@ if(is_array($result)) {
 }
 
 
-echo '<div class="subHeader">'.$lang['nav_snippets'].' <span class="badge badge-default">'.$modus.'</span></div>';
+echo '<div class="subHeader">'.$lang['nav_btn_snippets'].' <span class="badge badge-default">'.$modus.'</span></div>';
 
 echo "<form action='acp.php?tn=pages&sub=snippets' method='POST'>";
 
@@ -42,7 +42,7 @@ echo '<div class="card">';
 echo '<div class="card-header">';
 
 echo '<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">';
-echo '<li class="nav-item"><a class="nav-link active" href="#content" data-bs-toggle="tab">'.$lang['tab_content'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link active" href="#content" data-bs-toggle="tab">'.$lang['label_content'].'</a></li>';
 echo '<li class="nav-item"><a class="nav-link" href="#images" data-bs-toggle="tab">'.$lang['images'].'</a></li>';
 echo '<li class="nav-item"><a class="nav-link" href="#link" data-bs-toggle="tab">'.$lang['label_url'].'</a></li>';
 echo '</ul>';
@@ -142,17 +142,17 @@ echo '<input class="form-control" type="text" name="snippet_permalink" value="'.
 echo '</div>';
 
 echo '<div class="form-group mt-2">';
-echo '<label>'.$lang['label_url_name'].'</label>';
+echo '<label>'.$lang['label_link_name'].'</label>';
 echo '<input class="form-control" type="text" name="snippet_permalink_name" value="'.html_entity_decode($snippet_permalink_name).'" />';
 echo '</div>';
 
 echo '<div class="form-group mt-2">';
-echo '<label>'.$lang['label_url_title'].'</label>';
+echo '<label>'.$lang['label_title'].'</label>';
 echo '<input class="form-control" type="text" name="snippet_permalink_title" value="'.html_entity_decode($snippet_permalink_title).'" />';
 echo '</div>';
 
 echo '<div class="form-group mt-2">';
-echo '<label>'.$lang['label_url_classes'].'</label>';
+echo '<label>'.$lang['label_classes'].'</label>';
 echo '<input class="form-control" type="text" name="snippet_permalink_classes" value="'.$snippet_permalink_classes.'" />';
 echo '</div>';
 
@@ -182,7 +182,7 @@ echo '<div class="col-md-3">';
 
 
 echo '<div class="card">';
-echo '<div class="card-header">'.$lang['tab_page_preferences'].'</div>';
+echo '<div class="card-header">'.$lang['label_settings'].'</div>';
 echo '<div class="card-body">';
 
 if($snippet_lang == '' && $default_lang_code != '') {
@@ -199,7 +199,7 @@ echo '<div class="row">';
 echo '<div class="col-md-6">';
 
 echo '<div class="form-group">';
-echo '<label>'.$lang['f_page_language'].'</label>';
+echo '<label>'.$lang['label_language'].'</label>';
 echo $select_snippet_language;
 echo '</div>';
 
@@ -224,7 +224,7 @@ if($snippet_template == '') {
 	$selected_standard = 'selected';
 }
 
-$select_select_template .= "<option value='use_standard<|-|>use_standard' $selected_standard>$lang[use_standard]</option>";
+$select_select_template .= "<option value='use_standard<|-|>use_standard' $selected_standard>$lang[label_use_default]</option>";
 
 /* templates list */
 foreach($arr_Styles as $template) {
@@ -251,7 +251,7 @@ foreach($arr_Styles as $template) {
 $select_select_template .= '</select>';
 
 echo '<div class="mb-3">';
-echo '<label class="form-label">'.$lang['f_page_template'].'</label>';
+echo '<label class="form-label">'.$lang['label_template'].'</label>';
 echo $select_select_template;
 echo '</div>';
 

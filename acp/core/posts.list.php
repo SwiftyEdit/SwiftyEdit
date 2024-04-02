@@ -217,7 +217,7 @@ $pagination_query = '?tn=posts&sql_start_nbr={page}';
 $pagination = se_return_pagination($pagination_query,$cnt_filter_posts,$sql_start_nbr,$_SESSION['items_per_page'],10,3,2);
 
 $dropdown_new_post = '<div class="dropdown">
-  <button class="btn btn-deafult text-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['label_new_post'].'</button>
+  <button class="btn btn-deafult text-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['btn_new'].'</button>
   <ul class="dropdown-menu">
   
 <li><a class="dropdown-item list-group-item-ghost" href="?tn=posts&sub=edit&new=m"><span class="color-message">'.$icon['plus'].'</span> '.$lang['post_type_message'].'</a></li>
@@ -245,7 +245,7 @@ echo '<div class="card p-3">';
 
 echo '<div class="d-flex flex-row-reverse">';
 echo '<div class="ps-3">';
-echo '<form action="?tn=posts&sub=blog-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['items_per_page'].'">';
+echo '<form action="?tn=posts&sub=blog-list" method="POST" data-bs-toggle="tooltip" data-bs-title="'.$lang['label_items_per_page'].'">';
 echo '<input type="number" class="form-control" name="items_per_page" min="5" max="99" value="'.$_SESSION['items_per_page'].'" onchange="this.form.submit()">';
 echo $hidden_csrf_token;
 echo '</form>';
@@ -416,7 +416,7 @@ if($cnt_filter_posts > 0) {
 	echo '</table>';
 
 } else {
-	echo '<div class="alert alert-info">'.$lang['msg_no_posts_to_show'].'</div>';
+	echo '<div class="alert alert-info">'.$lang['msg_info_no_entries'].'</div>';
 }
 
 echo $pagination;
@@ -519,7 +519,7 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="card mt-2">';
-echo '<div class="card-header p-1 px-2">'.$lang['label_categories'].'</div>';
+echo '<div class="card-header p-1 px-2">'.$lang['categories'].'</div>';
 
 echo $cat_btn_group;
 

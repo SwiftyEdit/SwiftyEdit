@@ -58,7 +58,7 @@ if(isset($_POST)) {
 	}
 }
 
-echo '<div class="subHeader">'.$icon['store'].' '.$lang['tn_shop'].'</div>';
+echo '<div class="subHeader">'.$icon['store'].' '.$lang['nav_btn_settings'].' / '.$lang['nav_btn_shop'].'</div>';
 
 $file = 'shop-general';
 
@@ -81,10 +81,10 @@ if(isset($_REQUEST['file'])) {
 echo '<div class="card">';
 echo '<div class="card-header">';
 echo '<ul class="nav nav-tabs card-header-tabs">';
-echo '<li class="nav-item"><a class="nav-link '.($file == "shop-general" ? 'active' :'').'" href="?tn=system&sub=shop&file=general">'.$lang['nav_general'].'</a></li>';
-echo '<li class="nav-item"><a class="nav-link '.($file == "shop-payment-shipping" ? 'active' :'').'" href="?tn=system&sub=shop&file=payment-shipping">'.$lang['nav_payment_shipping'].'</a></li>';
-echo '<li class="nav-item"><a class="nav-link '.($file == "shop-delivery" ? 'active' :'').'" href="?tn=system&sub=shop&file=shop-delivery">'.$lang['nav_delivery_areas'].'</a></li>';
-echo '<li class="nav-item"><a class="nav-link '.($file == "shop-business-details" ? 'active' :'').'" href="?tn=system&sub=shop&file=shop-business-details">'.$lang['nav_business_details'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link '.($file == "shop-general" ? 'active' :'').'" href="?tn=system&sub=shop&file=general">'.$lang['nav_btn_general'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link '.($file == "shop-payment-shipping" ? 'active' :'').'" href="?tn=system&sub=shop&file=payment-shipping">'.$lang['nav_btn_payment_shipping'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link '.($file == "shop-delivery" ? 'active' :'').'" href="?tn=system&sub=shop&file=shop-delivery">'.$lang['nav_btn_delivery_areas'].'</a></li>';
+echo '<li class="nav-item"><a class="nav-link '.($file == "shop-business-details" ? 'active' :'').'" href="?tn=system&sub=shop&file=shop-business-details">'.$lang['nav_btn_business_details'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '<div class="card-body">';

@@ -34,7 +34,7 @@ $show_form = false;
 echo '<div class="subHeader d-flex">';
 echo '<div class="d-flex">E-Mails</div>';
 echo '<form action="'.$section_url.'" method="post" class="d-inline ms-auto">';
-echo '<button class="btn btn-default text-success" name="new_mail">'.$lang['label_new_email'].'</button>';
+echo '<button class="btn btn-default text-success" name="new_mail">'.$lang['btn_new'].'</button>';
 echo $hidden_csrf_token;
 echo '</form>';
 echo '</div>';
@@ -135,11 +135,11 @@ if(isset($_POST['delete_message'])) {
     if(isset($_POST['delete_confirmed'])) {
         $del = se_inbox_delete_message($message_id);
         if($del > 0) {
-            echo '<div class="alert alert-success">'.$lang['msg_entry_delete'].'</div>';
+            echo '<div class="alert alert-success">'.$lang['msg_success_entry_delete'].'</div>';
         }
     } else {
         echo '<div class="alert alert-primary">';
-        echo '<h4>' . $lang['confirm_delete_data'] . '</h4>';
+        echo '<h4>' . $lang['msg_confirm_delete'] . '</h4>';
         echo '<p>Subject: ' . $mail_subject . ' ID: ' . $message_id . '</p>';
         echo '<form action="?tn=inbox&sub=mailbox" method="POST">';
         echo '<button class="btn btn-sm btn-default me-1" name="delete_message" value="' . $message_id . '">' . $lang['yes'] . '</button>';
@@ -166,7 +166,7 @@ if($show_form == true) {
     $mail_form_tpl = file_get_contents('templates/mail-form.tpl');
 
     $btn_save = '<button class="btn btn-default w-100" name="save_mail" value="save">'.$lang['save'].'</button>';
-    $btn_close = '<button class="btn btn-default w-100" name="form_close">'.$lang['btn_close'].'</button>';
+    $btn_close = '<button class="btn btn-default w-100" name="form_close">'.$lang['close'].'</button>';
     $btn_send = '';
 
     $mail_subject = '';
@@ -181,7 +181,7 @@ if($show_form == true) {
         $mail_content = htmlspecialchars($edit_message_data['content'],ENT_QUOTES, 'UTF-8');
         $mail_id = (int) $edit_message_data['id'];
         $btn_save = '<button class="btn btn-default w-100" name="save_mail" value="update">'.$lang['update'].'</button>';
-        $btn_send = '<button class="btn btn-primary" name="send_mail" value="'.$mail_id.'">'.$icon['paper_plane'].' '.$lang['btn_send_email'].'</button>';
+        $btn_send = '<button class="btn btn-primary" name="send_mail" value="'.$mail_id.'">'.$icon['paper_plane'].' '.$lang['btn_send_mail'].'</button>';
         if($edit_message_data['recipients'] == 'all') {
             $checked_all = 'checked';
         } else if($edit_message_data['recipients'] == 'marketing') {
@@ -222,11 +222,11 @@ if($show_form == true) {
     $mail_form_tpl = str_replace('{checked_marketing}',$checked_marketing,$mail_form_tpl);
     $mail_form_tpl = str_replace('{list_usergroups}',$list_usergroup,$mail_form_tpl);
 
-    $mail_form_tpl = str_replace('{lang_subject}',$lang['label_subject'],$mail_form_tpl);
-    $mail_form_tpl = str_replace('{lang_text}',$lang['label_text'],$mail_form_tpl);
-    $mail_form_tpl = str_replace('{lang_recipients}',$lang['recipients'],$mail_form_tpl);
-    $mail_form_tpl = str_replace('{label_all_users}',$lang['label_all_users'],$mail_form_tpl);
-    $mail_form_tpl = str_replace('{label_marketing_users}',$lang['label_marketing_users'],$mail_form_tpl);
+    $mail_form_tpl = str_replace('{lang_subject}',$lang['label_mail_subject'],$mail_form_tpl);
+    $mail_form_tpl = str_replace('{lang_text}',$lang['label_mail_text'],$mail_form_tpl);
+    $mail_form_tpl = str_replace('{lang_recipients}',$lang['label_mail_recipients'],$mail_form_tpl);
+    $mail_form_tpl = str_replace('{label_all_users}',$lang['label_mail_recipients_all'],$mail_form_tpl);
+    $mail_form_tpl = str_replace('{label_marketing_users}',$lang['label_mail_recipients_marketing'],$mail_form_tpl);
 
     echo $mail_form_tpl;
 } else {
@@ -239,11 +239,11 @@ if($show_form == true) {
     echo '<table class="table table-sm">';
     echo '<tr>';
     echo '<td>'.$lang['label_time_created'].'</td>';
-    echo '<td>'.$lang['label_time_lastedit'].'</td>';
+    echo '<td>'.$lang['label_time_last_edit'].'</td>';
     echo '<td>'.$lang['label_time_sent'].'</td>';
-    echo '<td>'.$lang['f_meta_author'].'</td>';
-    echo '<td>'.$lang['label_subject'].'</td>';
-    echo '<td>'.$lang['recipients'].'</td>';
+    echo '<td>'.$lang['label_author'].'</td>';
+    echo '<td>'.$lang['label_mail_subject'].'</td>';
+    echo '<td>'.$lang['label_mail_recipients'].'</td>';
     echo '<td></td>';
     echo '</tr>';
 

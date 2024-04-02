@@ -41,10 +41,10 @@
 <meta property="twitter:image" content="{$page_thumbnail}">
 
 <!-- CSS -->
-<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/css/default.css" />
+<link rel="stylesheet" media="screen" href="{$se_inc_dir}/styles/{$se_template}/dist/default.css" />
 
 <!-- JavaScript -->
-<script type="text/javascript" src="{$se_inc_dir}/styles/{$se_template}/js/main.min.js"></script>
+<script type="text/javascript" src="{$se_inc_dir}/styles/{$se_template}/dist/theme.js"></script>
 
 
 {$page_head_styles}	

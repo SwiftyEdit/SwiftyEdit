@@ -38,7 +38,7 @@ $template_file = file_get_contents("templates/modlist.tpl");
 $modal_template_file = file_get_contents("templates/bs-modal.tpl");
 
 if($cnt_mods < 1) {
-	echo '<div class="alert alert-info">'.$lang['alert_no_modules'].'</div>';
+	echo '<div class="alert alert-info">'.$lang['msg_info_no_addons'].'</div>';
 }
 
 for($i=0;$i<$cnt_mods;$i++) {
@@ -46,11 +46,11 @@ for($i=0;$i<$cnt_mods;$i++) {
 	unset($listlinks, $modnav);
 	
 	$modFolder = $all_mods[$i]['folder'];
-	$bnt_check_in_out = '<a class="btn btn-sm btn-default text-success" href="acp.php?tn=addons&sub=list&enable='.$modFolder.'">'.$lang['btn_mod_enable'].'</a>';
+	$bnt_check_in_out = '<a class="btn btn-sm btn-default text-success" href="acp.php?tn=addons&sub=list&enable='.$modFolder.'">'.$lang['btn_addon_enable'].'</a>';
 		
 	foreach($se_addons as $a) {
 		if($modFolder == $a['addon_dir']) {
-			$bnt_check_in_out = '<a class="btn btn-sm btn-default text-danger" href="acp.php?tn=addons&sub=list&disable='.$modFolder.'">'.$lang['btn_mod_disable'].'</a>';
+			$bnt_check_in_out = '<a class="btn btn-sm btn-default text-danger" href="acp.php?tn=addons&sub=list&disable='.$modFolder.'">'.$lang['btn_addon_disable'].'</a>';
 		}
 	}
 	
@@ -97,7 +97,7 @@ for($i=0;$i<$cnt_mods;$i++) {
 		echo $modal;
 	}
 	
-	$btn_delete_addon = '<form class="d-inline ps-2" action="?tn=addons&sub=m" method="POST" onsubmit="return confirm(\''.$lang['confirm_delete_file'].'\');">';
+	$btn_delete_addon = '<form class="d-inline ps-2" action="?tn=addons&sub=m" method="POST" onsubmit="return confirm(\''.$lang['msg_confirm_delete'].'\');">';
 	$btn_delete_addon .= '<button type="submit" name="delete_addon" class="btn btn-sm btn-default text-danger">'.$icon['trash_alt'].'</button>';
 	$btn_delete_addon .= '<input type="hidden" name="type" value="m">';
 	$btn_delete_addon .= '<input type="hidden" name="addon" value="'.$modFolder.'">';

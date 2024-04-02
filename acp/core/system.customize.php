@@ -150,7 +150,7 @@ if($_POST['add_field_user']) {
 }
 
 
-echo '<div class="alert alert-danger">' . $lang['delete_custom_field_desc'] . '</div>';
+echo '<div class="alert alert-danger">' . $lang['msg_info_delete_custom_fields'] . '</div>';
 
 
 echo '<div class="row">';
@@ -159,11 +159,11 @@ echo '<div class="col-6">';
 /* form - add col to se_pages */
 
 echo '<fieldset>';
-echo '<legend><strong>'.$lang['page_customize'].'</strong> - '.$lang['add_custom_field'].'</legend>';
+echo '<legend><strong>'.$lang['label_customize_pages'].'</strong> - '.$lang['label_customize_field_add'].'</legend>';
 
 echo '<form action="acp.php?tn=system&sub=customize" method="POST">';
 
-echo tpl_form_control_group('',$lang['custom_field_name'],"<input type='text' class='form-control' name='field_name_pages' value='$field_name'>");
+echo tpl_form_control_group('',$lang['label_customize_field_name'],"<input type='text' class='form-control' name='field_name_pages' value='$field_name'>");
 
 $radio_field_type = "
 			<label class='radio inline'><input type='radio' $sel1 name='field_type_pages' value='one'> &lt;input type=&quot;text&quot; ... </label>
@@ -188,14 +188,14 @@ echo '<div class="col-6">';
 /* show custom columns from se_pages */
 
 echo '<fieldset>';
-echo '<legend>' . $lang['delete_custom_field'] . '</legend>';
+echo '<legend>' . $lang['label_customize_field_delete'] . '</legend>';
 
 $result = get_custom_fields();
 $cnt_result = count($result);
 
 
 if($cnt_result < 1) {
-	echo '<div class="alert alert-info">' . $lang['no_custom_fields'] . '</div>';
+	echo '<div class="alert alert-info">' . $lang['msg_info_no_data_so_far'] . '</div>';
 } else {
 	
 	echo '<div class="scroll-container">';
@@ -242,11 +242,11 @@ echo '<div class="col-6">';
 /* form - add col to se_user */
 
 echo '<fieldset>';
-echo '<legend><strong>'.$lang['customize_user'].'</strong> - '.$lang['add_custom_field'].'</legend>';
+echo '<legend><strong>'.$lang['label_customize_user'].'</strong> - '.$lang['label_customize_field_add'].'</legend>';
 
 echo '<form action="acp.php?tn=system&sub=customize" method="POST" class="form-horizontal">';
 
-echo tpl_form_control_group('',$lang['custom_field_name'],"<input type='text' class='form-control' name='field_name_user' value='$field_name'>");
+echo tpl_form_control_group('',$lang['label_customize_field_name'],"<input type='text' class='form-control' name='field_name_user' value='$field_name'>");
 
 $radio_field_type = "
 			<label class='radio inline'><input type='radio' $sel1 name='field_type_user' value='one'> &lt;input type=&quot;text&quot; ... </label>
@@ -269,13 +269,13 @@ echo '<div class="col-6">';
 /* show custom columns from se_user */
 
 echo '<fieldset>';
-echo '<legend>' . $lang['delete_custom_field'] . '</legend>';
+echo '<legend>' . $lang['label_customize_field_add'] . '</legend>';
 
 $result = get_custom_user_fields();
 $cnt_result = count($result);
 
 if($cnt_result < 1) {
-	echo '<div class="alert alert-info">' . $lang['no_custom_fields'] . '</div>';
+	echo '<div class="alert alert-info">' . $lang['msg_info_no_data_so_far'] . '</div>';
 } else {
 
 	echo '<div class="scroll-container">';

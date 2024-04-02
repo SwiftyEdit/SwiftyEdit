@@ -19,7 +19,7 @@ $files_folder = basename($path_files);
 	<div class="col-md-9">
 		<label><?php echo $lang['upload_destination']; ?></label>
 		<select name="upload_destination" class="form-control custom-select">
-			<optgroup label="<?php echo $lang['upload_target_images']; ?>">
+			<optgroup label="<?php echo $lang['images']; ?>">
 				<option value="<?php echo $path_img; ?>"><?php echo $img_folder; ?></option>
 				<?php
 				foreach($img_dirs as $d) {
@@ -28,7 +28,7 @@ $files_folder = basename($path_files);
 				}
 				?>
 			</optgroup>
-			<optgroup label="<?php echo $lang['upload_target_files']; ?>">
+			<optgroup label="<?php echo $lang['files']; ?>">
 				<option value="<?php echo $path_files; ?>"><?php echo $files_folder; ?></option>
 				<?php
 				foreach($files_dirs as $d) {
@@ -43,7 +43,7 @@ $files_folder = basename($path_files);
 		<div class="form-check">
 			<input class="form-check-input" type="checkbox" name="file_mode" value="overwrite" id="overwrite">
 			<label class="form-check-label" for="overwrite">
-				<?php echo $lang['label_overwrite_existing_files']; ?>
+				<?php echo $lang['upload_overwrite_existing_files']; ?>
 			</label>
 		</div>
 	</div>

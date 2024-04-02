@@ -67,7 +67,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'new_group') {
     $new_id = $db_content->id();
 
     if($new_id > 0) {
-        echo '<div class="alert alert-success">'.$lang['db_changed'].'</div>';
+        echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
     }
 
 }
@@ -91,7 +91,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'edit_group') {
     ]);
 
     if($data->rowCount() > 0) {
-        echo '<div class="alert alert-success">'.$lang['db_changed'].'</div>';
+        echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
     }
 
 }
@@ -111,7 +111,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'new_value') {
 
     $new_id = $db_content->id();
     if($new_id > 0) {
-        echo '<div class="alert alert-success">'.$lang['db_changed'].'</div>';
+        echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
     }
 
 }
@@ -131,7 +131,7 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'edit_value') {
     ]);
 
     if($data->rowCount() > 0) {
-        echo '<div class="alert alert-success">'.$lang['db_changed'].'</div>';
+        echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
     }
 
 }

@@ -168,7 +168,7 @@ for ($i = 0; $i < 5; $i++) {
 }
 
 if ($cnt_posts < 1) {
-    $top5posts = '<div class="alert alert-info">' . $lang['msg_no_entries_so_far'] . '</div>';
+    $top5posts = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
 }
 
 $top5posts .= '</table>';
@@ -208,7 +208,7 @@ for ($i = 0; $i < 5; $i++) {
 $list_product .= '</table>';
 
 if ($cnt_products < 1) {
-    $list_product = '<div class="alert alert-info">' . $lang['msg_no_entries_so_far'] . '</div>';
+    $list_product = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
 }
 
 $tpl_file = str_replace('{products_list}', $list_product, $tpl_file);
@@ -250,7 +250,7 @@ for ($i = 0; $i < 5; $i++) {
 $list_events .= '</table>';
 
 if ($cnt_events < 1) {
-    $list_events = '<div class="alert alert-info">' . $lang['msg_no_entries_so_far'] . '</div>';
+    $list_events = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
 }
 
 $tpl_file = str_replace('{events_list}', $list_events, $tpl_file);
@@ -294,7 +294,7 @@ for ($i = 0; $i < 5; $i++) {
 $top5comments .= '</table>';
 
 if ($cnt_comments < 1) {
-    $top5comments = '<div class="alert alert-info">' . $lang['msg_no_entries_so_far'] . '</div>';
+    $top5comments = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
 }
 
 
@@ -309,7 +309,7 @@ $tpl_file = str_replace('{dashboard_logfile}', $show_log, $tpl_file);
 $cnt_dashboard_messages = count($se_check_messages);
 
 if($cnt_dashboard_messages < 1) {
-    $dashboard_alerts = '<div class="alert alert-info">' . $lang['msg_no_entries_so_far'] . '</div>';
+    $dashboard_alerts = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
 } else {
     $dashboard_alerts = '<table class="table table-sm">';
     for($i=0;$i<$cnt_dashboard_messages;$i++) {
@@ -329,26 +329,26 @@ $tpl_file = str_replace('{comments_list}', $top5comments, $tpl_file);
 $tpl_file = str_replace('{user_list}', $user_latest5, $tpl_file);
 
 /* tabs */
-$tpl_file = str_replace('{tab_pages}', $lang['nav_pages'], $tpl_file);
-$tpl_file = str_replace('{tab_snippets}', $lang['nav_snippets'], $tpl_file);
-$tpl_file = str_replace('{tab_products}', $lang['nav_products'], $tpl_file);
-$tpl_file = str_replace('{tab_events}', $lang['nav_events'], $tpl_file);
-$tpl_file = str_replace('{tab_orders}', $lang['nav_orders'], $tpl_file);
+$tpl_file = str_replace('{tab_pages}', $lang['nav_btn_pages'], $tpl_file);
+$tpl_file = str_replace('{tab_snippets}', $lang['snippets'], $tpl_file);
+$tpl_file = str_replace('{tab_products}', $lang['nav_btn_products'], $tpl_file);
+$tpl_file = str_replace('{tab_events}', $lang['nav_btn_events'], $tpl_file);
+$tpl_file = str_replace('{tab_orders}', $lang['nav_btn_orders'], $tpl_file);
 
-$tpl_file = str_replace('{tab_blog}', $lang['nav_blog'], $tpl_file);
-$tpl_file = str_replace('{tab_comments}', $lang['nav_comments'], $tpl_file);
+$tpl_file = str_replace('{tab_blog}', $lang['nav_btn_blog'], $tpl_file);
+$tpl_file = str_replace('{tab_comments}', $lang['nav_btn_comments'], $tpl_file);
 
-$tpl_file = str_replace('{tab_user}', $lang['tn_usermanagement'], $tpl_file);
-$tpl_file = str_replace('{tab_user_stats}', $lang['h_status'], $tpl_file);
+$tpl_file = str_replace('{tab_user}', $lang['nav_btn_user'], $tpl_file);
+$tpl_file = str_replace('{tab_user_stats}', $lang['status'], $tpl_file);
 
 /* labels */
+$tpl_file = str_replace('{label_pages}', $lang['label_pages'], $tpl_file);
+$tpl_file = str_replace('{label_user}', $lang['label_user'], $tpl_file);
+$tpl_file = str_replace('{label_posts}', $lang['label_posts'], $tpl_file);
+$tpl_file = str_replace('{label_products}', $lang['label_products'], $tpl_file);
+$tpl_file = str_replace('{label_events}', $lang['label_events'], $tpl_file);
+$tpl_file = str_replace('{label_comments}', $lang['label_comments'], $tpl_file);
 
-$tpl_file = str_replace('{label_pages}', $lang['nav_pages'], $tpl_file);
-$tpl_file = str_replace('{label_user}', $lang['nav_user'], $tpl_file);
-$tpl_file = str_replace('{label_posts}', $lang['nav_blog'], $tpl_file);
-$tpl_file = str_replace('{label_products}', $lang['nav_products'], $tpl_file);
-$tpl_file = str_replace('{label_events}', $lang['nav_events'], $tpl_file);
-$tpl_file = str_replace('{label_comments}', $lang['nav_comments'], $tpl_file);
 
 /* replace configs */
 $tpl_file = str_replace('{val_server}', $_SERVER['SERVER_NAME'], $tpl_file);
@@ -361,28 +361,28 @@ $tpl_file = str_replace('{val_cms_mail}', $se_prefs['prefs_mailer_adr'], $tpl_fi
 $tpl_file = str_replace('{val_cms_email_name}', $se_prefs['prefs_mailer_name'], $tpl_file);
 
 
-$btn_page_overview = '<a href="?tn=pages" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['nav_pages'] . '</a>';
+$btn_page_overview = '<a href="?tn=pages" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['overview'] . '</a>';
 $btn_new_page = '<a href="?tn=pages&sub=new" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
 
 $btn_update_index = '<form action="?tn=dashboard" method="POST" class="d-inline"><button name="update_index" class="btn btn-default btn-sm w-100 text-nowrap">' . $icon['sync_alt'] . ' Index</button>' . $hidden_csrf_token . '</form>';
 $btn_delete_cache = '<form action="?tn=dashboard" method="POST"><button name="delete_cache" class="btn btn-default btn-sm w-100 text-nowrap">' . $icon['trash_alt'] . ' Cache</button>' . $hidden_csrf_token . '</form>';
 
-$btn_snippets_overview = '<a href="?tn=pages&sub=snippets" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' Snippets</a>';
+$btn_snippets_overview = '<a href="?tn=pages&sub=snippets" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['overview'] . '</a>';
 $btn_snippets_new = '<form action="?tn=pages&sub=snippets" method="post" class="d-inline"><button class="btn btn-default btn-sm w-100" name="snip_id" value="n"><i class="bi bi-plus"></i> '.$lang['new'].'</button>'.$hidden_csrf_token.'</form>';
 
-$btn_post_overview = '<a href="acp.php?tn=posts" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_posts'] . '</a>';
+$btn_post_overview = '<a href="acp.php?tn=posts" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['overview'] . '</a>';
 $btn_new_post = '<a href="acp.php?tn=posts&sub=edit" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
-$btn_comments_overview = '<a href="?tn=inbox&sub=comments" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_comments'] . '</a>';
+$btn_comments_overview = '<a href="?tn=inbox&sub=comments" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['overview'] . '</a>';
 
-$btn_products_overview = '<a href="?tn=shop&sub=shop-list" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_shop'] . '</a>';
+$btn_products_overview = '<a href="?tn=shop&sub=shop-list" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['overview'] . '</a>';
 $btn_products_new = '<a href="?tn=shop&sub=edit&new=p" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
 
-$btn_events_overview = '<a href="?tn=events&sub=events-list" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['tn_events'] . '</a>';
+$btn_events_overview = '<a href="?tn=events&sub=events-list" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['overview'] . '</a>';
 $btn_events_new = '<a href="?tn=events&sub=edit&new=e" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
 
-$btn_user_overview = '<a href="acp.php?tn=user" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['list_user'] . '</a>';
-$btn_new_user = '<a href="acp.php?tn=user&sub=new" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new_user'] . '</a>';
-$btn_usergroups_overview = '<a href="?tn=user&sub=user-groups" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['nav_usergroups'] . '</a>';
+$btn_user_overview = '<a href="acp.php?tn=user" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['nav_btn_user'] . '</a>';
+$btn_new_user = '<a href="acp.php?tn=user&sub=new" class="btn btn-default btn-sm w-100">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
+$btn_usergroups_overview = '<a href="?tn=user&sub=user-groups" class="btn btn-default btn-sm w-100">' . $icon['arrow_right_short'] . ' ' . $lang['nav_btn_user_groups'] . '</a>';
 
 $tpl_file = str_replace('{btn_page_overview}', $btn_page_overview, $tpl_file);
 $tpl_file = str_replace('{btn_new_page}', $btn_new_page, $tpl_file);

@@ -38,8 +38,8 @@ if($_SESSION['switch_product_features'] == 'show_features') {
 echo '<div class="subHeader d-flex">';
 echo '<form action="?tn=shop&sub=shop-features" method="POST">';
 echo '<div class="btn-group" role="group">';
-echo '<button type="submit" class="btn btn-default '.$sel_features.'" name="switch_show" value="show_features">Features</button>';
-echo '<button type="submit" class="btn btn-default '.$sel_options.'" name="switch_show" value="show_options">Options</button>';
+echo '<button type="submit" class="btn btn-default '.$sel_features.'" name="switch_show" value="show_features">'.$lang['btn_features'].'</button>';
+echo '<button type="submit" class="btn btn-default '.$sel_options.'" name="switch_show" value="show_options">'.$lang['btn_options'].'</button>';
 echo '</div>';
 echo $hidden_csrf_token;
 echo '</form>';
@@ -317,9 +317,9 @@ echo '<div class="col-md-3">';
 
 echo '<div class="card p-2">'; // sidebar
 if($sel_features == 'active') {
-    echo '<a href="?tn=shop&sub=shop-features&edit=new-feature" class="btn btn-success w-100 mb-1">' . $lang['btn_new_feature'] . '</a>';
+    echo '<a href="?tn=shop&sub=shop-features&edit=new-feature" class="btn btn-success w-100 mb-1">' . $lang['btn_new'] . '</a>';
 } else {
-    echo '<a href="?tn=shop&sub=shop-features&edit=new-option" class="btn btn-success w-100">' . $lang['btn_new_option'] . '</a>';
+    echo '<a href="?tn=shop&sub=shop-features&edit=new-option" class="btn btn-success w-100">' . $lang['btn_new'] . '</a>';
 }
 echo '</div>'; // card
 

@@ -41,7 +41,7 @@ $input_bd_address = [
 $input_bd_taxnumber = [
     "input_name" => "prefs_business_taxnumber",
     "input_value" => $prefs_business_taxnumber,
-    "label" => $lang['label_tax_number']
+    "label" => $lang['label_business_tax_number']
 ];
 
 echo tpl_form_input_textarea($input_bd_address);

@@ -26,7 +26,19 @@ if(!isset($_SESSION['lang']) || $_SESSION['lang'] == '') {
 
 
 include 'php/functions.php';
-include '../core/lang/'.$l.'/dict-install.php';
+
+$json_backend = file_get_contents(SE_ROOT.'core/lang/'.$l.'/backend.json');
+$data_backend = json_decode($json_backend,true);
+
+$json_install = file_get_contents(SE_ROOT.'core/lang/'.$l.'/install.json');
+$data_install = json_decode($json_install,true);
+
+$lang_data = array_merge($data_backend,$data_install);
+
+foreach($lang_data as $key => $value) {
+    $lang[str_replace('.','_',$key)] = $value;
+}
+
 include '../acp/core/icons.php';
 
 if(is_file("$se_db_content")) {

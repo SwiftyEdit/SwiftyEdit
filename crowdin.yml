@@ -1,0 +1,5 @@
+files:
+  - source: /core/lang/en/
+    ignore:
+      - '*png'
+    translation: /core/lang/%two_letters_code%/%original_file_name%

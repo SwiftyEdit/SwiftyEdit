@@ -4,7 +4,7 @@
 require 'core/access.php';
 
 echo '<div class="subHeader">';
-echo $lang['btn_bookings'];
+echo $lang['nav_btn_bookings'];
 echo '</div>';
 
 
@@ -78,7 +78,7 @@ echo '<div class="card p-3">';
 echo '<form action="?tn=events&sub=bookings" method="POST">';
 
 echo '<div class="position-absolute top-0 end-0 p-3">';
-echo '<input type="submit" name="delete_reactions" value="'.$lang['delete_selected'].'" class="btn btn-danger">';
+echo '<input type="submit" name="delete_reactions" value="'.$lang['btn_delete_selected'].'" class="btn btn-danger">';
 echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</div>';
 
@@ -125,7 +125,7 @@ echo '<div class="card p-3">';
 
 echo '<form action="?tn=events&sub=bookings" method="POST">';
 echo '<div class="form-group">';
-echo '<label>'.$lang['label_filter'].'</label>';
+echo '<label>'.$lang['filter'].'</label>';
 echo '<select name="filter_by_event" class="custom-select form-control" onchange="this.form.submit()">';
 echo '<option value="all">'.$lang['label_show_all_events'].'</option>';
 foreach($get_events as $events) {

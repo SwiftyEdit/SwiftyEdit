@@ -66,7 +66,7 @@ for($i=0;$i<$cnt_rssItems;$i++) {
 	echo '<p><a href="'.$feed_url.'" target="_blank">'.$feed_url.'</a></p>';
 	echo '<hr>';
 	echo '<form action="?tn=pages&sub=rss" method="POST">';
-	echo '<button class="btn btn-danger" name="delete_rss_entry" value="'.$feed_id.'" onclick="return confirm(\''.$lang['confirm_delete_data'].'\')">'.$lang['delete'].'</button>';
+	echo '<button class="btn btn-danger" name="delete_rss_entry" value="'.$feed_id.'" onclick="return confirm(\''.$lang['msg_confirm_delete'].'\')">'.$lang['delete'].'</button>';
 	echo $hidden_csrf_token;
 	echo '</form>';
 	echo '</div>';
@@ -81,7 +81,7 @@ for($i=0;$i<$cnt_rssItems;$i++) {
 
 if($cnt_rssItems < 1) {
 	echo '<div class="alert alert-info">';
-	echo $lang['msg_no_entries_so_far'];
+	echo $lang['msg_info_no_data_so_far'];
 	echo '</div>';
 }
 

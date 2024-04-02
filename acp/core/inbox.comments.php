@@ -25,7 +25,7 @@ if(isset($_POST['update_comment'])) {
 		"comment_id" => $update_id
 	]);
 	
-	$update_msg = '<div class="alert alert-success">'.$lang['db_record_changed'].'</div>';
+	$update_msg = '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
 	
 	$editid = $update_id;
 	
@@ -40,7 +40,7 @@ if(isset($_POST['delid'])) {
 	]);
 	
 	if($delete->rowCount() > 0) {
-		echo '<div class="alert alert-success">'.$lang['msg_entry_delete'].'</div>';
+		echo '<div class="alert alert-success">'.$lang['msg_success_entry_delete'].'</div>';
 	}
 }
 
@@ -167,7 +167,7 @@ echo '<div class="row">';
 echo '<div class="col-md-9">';
 
 if($cnt_comments < 1) {
-	echo '<div class="alert alert-info">'.$lang['msg_no_entries_so_far'].'</div>';
+	echo '<div class="alert alert-info">'.$lang['msg_info_no_entries_so_far'].'</div>';
 }
 
 
@@ -272,12 +272,12 @@ if($_SESSION['cf_status'] == 'all') {
 }
 
 echo '<fieldset>';
-echo '<legend>'.$lang['label_filter_by_status'].'</legend>';
+echo '<legend>'.$lang['label_filter_status'].'</legend>';
 echo '<form action="?tn=inbox&sub=comments" method="POST">';
 echo '<select name="filter_by_status" class="custom-select form-control" onchange="this.form.submit()">';
-echo '<option value="all" '.$sel_status_all.'>'.$lang['label_all_comments'].'</option>';
-echo '<option value="1" '.$sel_status_1.'>'.$lang['label_comments_status1'].'</option>';
-echo '<option value="2" '.$sel_status_2.'>'.$lang['label_comments_status2'].'</option>';
+echo '<option value="all" '.$sel_status_all.'>'.$lang['label_comments_all'].'</option>';
+echo '<option value="1" '.$sel_status_1.'>'.$lang['label_comments_not_approved'].'</option>';
+echo '<option value="2" '.$sel_status_2.'>'.$lang['label_comments_public'].'</option>';
 echo $hidden_csrf_token;
 echo '</select>';
 echo '</form>';
@@ -289,7 +289,7 @@ echo '<fieldset>';
 echo '<legend>'.$lang['label_filter_comments_by_page'].'</legend>';
 echo '<form action="?tn=inbox&sub=comments" method="POST">';
 echo '<select name="filter_by_page_id" class="custom-select form-control" onchange="this.form.submit()">';
-echo '<option value="all">'.$lang['label_all_comments'].'</option>';
+echo '<option value="all">'.$lang['label_comments_all'].'</option>';
 
 foreach($cpages as $k => $v) {
 	$sel = '';
@@ -307,10 +307,10 @@ echo '</fieldset>';
 
 /* show select for posts with comments */
 echo '<fieldset>';
-echo '<legend>'.$lang['label_filter_comments_by_posts'].'</legend>';
+echo '<legend>'.$lang['label_filter_comments_by_post'].'</legend>';
 echo '<form action="?tn=inbox&sub=comments" method="POST">';
 echo '<select name="filter_by_post_id" class="custom-select form-control" onchange="this.form.submit()">';
-echo '<option value="all">'.$lang['label_all_comments'].'</option>';
+echo '<option value="all">'.$lang['label_comments_all'].'</option>';
 
 foreach($cposts as $k => $v) {
 	$sel = '';
