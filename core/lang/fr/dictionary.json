@@ -54,6 +54,8 @@
   "categories": "Catégories",
   "overview": "Aperçu",
   "label.date": "Date",
+  "label.password": "Password",
+  "label.password_reset": "Reset Password",
   "d01": "Lundi",
   "d02": "Mardi",
   "d03": "Mercredi",

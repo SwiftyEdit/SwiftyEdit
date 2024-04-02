@@ -1,7 +1,7 @@
 <?php
 
 /**
- * language file | italian
+ * language file | english
  */
 
 $lang_sign = "it";

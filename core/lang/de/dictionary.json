@@ -1,5 +1,5 @@
 {
-  "new": "New",
+  "new": "Neu",
   "edit": "Bearbeiten",
   "save": "Speichern",
   "duplicate": "Duplizieren",
@@ -54,6 +54,8 @@
   "categories": "Kategorien",
   "overview": "Übersicht",
   "label.date": "Datum",
+  "label.password": "Passwort",
+  "label.password_reset": "Passwort zurücksetzen",
   "d01": "Montag",
   "d02": "Dienstag",
   "d03": "Mittwoch",
