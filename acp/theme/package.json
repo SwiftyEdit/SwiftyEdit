@@ -22,7 +22,7 @@
     "jquery.dirtyforms": "^2.0.0",
     "moment": "^2.30.1",
     "tags-input": "^1.1.1",
-    "tinymce": "^6.8.3",
+    "tinymce": "^7.0.0",
     "htmx.org": "^1.9.10",
     "jquery-sortablejs": "^1.0.1",
     "sortablejs": "^1.15.2"
