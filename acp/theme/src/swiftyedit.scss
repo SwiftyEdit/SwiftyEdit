@@ -556,7 +556,7 @@ div.tox {
 
   .tox-tbtn, button.tox-tbtn, .tox-mbtn {
     color: var(--bs-link-color);
-
+    background: transparent;
     .tox-icon {
       color: var(--bs-link-color);
 
@@ -569,6 +569,7 @@ div.tox {
     }
 
   }
+
   .tox-tbtn:hover {
     background: var(--bs-widget-bg-100) !important;
   }
