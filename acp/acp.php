@@ -292,9 +292,9 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2023-08-08" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2024-04-03" type="text/css" media="screen, projection">
 
-    <script src="theme/js/backend.min.js?v=2023-12-08"></script>
+    <script src="theme/js/backend.min.js?v=2024-04-03"></script>
 
     <script type="text/javascript">
         const languagePack = "<?php echo $languagePack; ?>";
@@ -307,7 +307,7 @@ if (isset($set_acptheme)) {
 
         if (storedTheme === 'dark') {
             ace_theme = 'twilight';
-            tinymce_skin = 'oxide';
+            tinymce_skin = 'oxide-dark';
         }
     </script>
 

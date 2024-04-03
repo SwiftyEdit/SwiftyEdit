@@ -514,8 +514,9 @@ $(function() {
  * but we don't want a dropdown, we want a simple switch
  */
 
-const getStoredTheme = () => localStorage.getItem('theme')
-const setStoredTheme = theme => localStorage.setItem('theme', theme)
+const getStoredTheme = () => localStorage.getItem('backendTheme')
+const setStoredTheme = theme => localStorage.setItem('backendTheme', theme)
+
 
 const getPreferredTheme = () => {
 	const storedTheme = getStoredTheme()
@@ -538,7 +539,7 @@ const setTheme = theme => {
 setTheme(getPreferredTheme())
 
 const container = document.documentElement;
-if(localStorage.getItem("theme")){
+if(localStorage.getItem("backendTheme")){
 	container.setAttribute("data-bs-theme",getStoredTheme());
 	toggleTheme(1)
 }

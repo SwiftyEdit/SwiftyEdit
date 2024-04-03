@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.7.1 (2023-10-19)
+ * TinyMCE version 7.0.0 (2024-03-20)
  */
 
 (function () {
@@ -992,7 +992,8 @@
         name: 'src',
         type: 'urlinput',
         filetype: 'image',
-        label: 'Source'
+        label: 'Source',
+        picker_text: 'Browse files'
       };
       const imageList = info.imageList.map(items => ({
         name: 'images',
