@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.7.1 (2023-10-19)
+ * TinyMCE version 7.0.0 (2024-03-20)
  */
 
 (function () {
@@ -903,7 +903,8 @@
           name: 'url',
           type: 'urlinput',
           filetype: 'file',
-          label: 'URL'
+          label: 'URL',
+          picker_text: 'Browse links'
         }];
       const displayText = settings.anchor.text.map(() => ({
         name: 'text',
@@ -1088,7 +1089,8 @@
         icon: 'link',
         tooltip: 'Insert/edit link',
         onAction: openDialog(editor),
-        onSetup: toggleLinkState(editor)
+        onSetup: toggleLinkState(editor),
+        shortcut: 'Meta+K'
       });
       editor.ui.registry.addButton('openlink', {
         icon: 'new-tab',
@@ -1192,7 +1194,7 @@
                 text,
                 title: Optional.none(),
                 rel: Optional.none(),
-                target: Optional.none(),
+                target: Optional.from(getDefaultLinkTarget(editor)),
                 class: Optional.none()
               });
               collapseSelectionToEnd(editor);

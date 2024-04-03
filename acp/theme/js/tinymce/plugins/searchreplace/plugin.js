@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.7.1 (2023-10-19)
+ * TinyMCE version 7.0.0 (2024-03-20)
  */
 
 (function () {
@@ -360,8 +360,8 @@
     var global = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
 
     const isSimpleBoundary = (dom, node) => dom.isBlock(node) || has(dom.schema.getVoidElements(), node.nodeName);
-    const isContentEditableFalse = (dom, node) => dom.getContentEditable(node) === 'false';
-    const isContentEditableTrueInCef = (dom, node) => dom.getContentEditable(node) === 'true' && node.parentNode && dom.getContentEditableParent(node.parentNode) === 'false';
+    const isContentEditableFalse = (dom, node) => !dom.isEditable(node);
+    const isContentEditableTrueInCef = (dom, node) => dom.getContentEditable(node) === 'true' && node.parentNode && !dom.isEditable(node.parentNode);
     const isHidden = (dom, node) => !dom.isBlock(node) && has(dom.schema.getWhitespaceElements(), node.nodeName);
     const isBoundary = (dom, node) => isSimpleBoundary(dom, node) || isContentEditableFalse(dom, node) || isHidden(dom, node) || isContentEditableTrueInCef(dom, node);
     const isText = node => node.nodeType === 3;
@@ -1067,7 +1067,8 @@
       editor.ui.registry.addButton('searchreplace', {
         tooltip: 'Find and replace',
         onAction: showDialog(editor, currentSearchState),
-        icon: 'search'
+        icon: 'search',
+        shortcut: 'Meta+F'
       });
       editor.shortcuts.add('Meta+F', '', showDialog(editor, currentSearchState));
     };

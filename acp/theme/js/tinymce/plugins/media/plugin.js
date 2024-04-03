@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.7.1 (2023-10-19)
+ * TinyMCE version 7.0.0 (2024-03-20)
  */
 
 (function () {
@@ -625,7 +625,7 @@
         if (cache[data.source]) {
           wrappedResolve(cache[data.source]);
         } else {
-          handler({ url: data.source }, wrappedResolve, rej);
+          handler({ url: data.source }).then(wrappedResolve).catch(rej);
         }
       });
     };
@@ -804,7 +804,8 @@
           name: 'source',
           type: 'urlinput',
           filetype: 'media',
-          label: 'Source'
+          label: 'Source',
+          picker_text: 'Browse files'
         }];
       const sizeInput = !hasDimensions(editor) ? [] : [{
           type: 'sizeinput',
@@ -990,7 +991,8 @@
       if (name === 'iframe') {
         previewNode.attr({
           allowfullscreen: node.attr('allowfullscreen'),
-          frameborder: '0'
+          frameborder: '0',
+          sandbox: node.attr('sandbox')
         });
       } else {
         const attrs = [
