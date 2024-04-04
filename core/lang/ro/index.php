@@ -5,6 +5,6 @@
  */
 
 $lang_sign = "ro";
-$lang_desc = "Română";
+$lang_desc = "Romanian";
 
 ?>

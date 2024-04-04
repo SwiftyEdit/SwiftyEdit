@@ -5,6 +5,6 @@
  */
 
 $lang_sign = "fr";
-$lang_desc = "Anglais";
+$lang_desc = "French";
 
 ?>
