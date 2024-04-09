@@ -91,6 +91,7 @@ if($show_form == true)  {
 
     $form_tpl = str_replace('{csrf_token}',$_SESSION['token'],$form_tpl);
     $form_tpl = str_replace('{btn_submit_text}',$btn_submit_text,$form_tpl);
+    $form_tpl = str_replace('{btn_close}',$lang['close'],$form_tpl);
     $form_tpl = str_replace('{mode}',$mode,$form_tpl);
     $form_tpl = str_replace('{val_cat_name}',$cat_name,$form_tpl);
     $form_tpl = str_replace('{val_cat_priority}',$cat_sort,$form_tpl);
