@@ -78,7 +78,7 @@ echo '<form action="?tn=system&sub=shop&file=shop-delivery" method="POST" class=
 $input_delivery_country = [
     "input_name" => "delivery_country",
     "input_value" => "",
-    "label" => $lang['label_add_delivery_country']
+    "label" => $lang['label_shop_add_delivery_country']
 ];
 
 echo tpl_form_input_text($input_delivery_country);
