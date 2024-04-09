@@ -267,6 +267,7 @@
   "label.product.sorting_date": "Ταξινόμηση κατά ημερομηνία",
   "label.shop.payment_shipping": "Πληρωμή και αποστολή",
   "label.shop.delivery_areas": "Χώροι παράδοσης",
+  "label.shop.add_delivery_area": "Add a Delivery area",
   "label.shop.business_details": "Λεπτομέρειες επιχείρησης",
   "label.product.delivery_time": "Χρόνος παράδοσης",
   "label.product.no_delivery_time": "Χωρίς χρόνο παράδοσης",
