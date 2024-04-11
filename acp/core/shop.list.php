@@ -521,7 +521,7 @@ echo '<div class="col-md-8">';
 echo '<select class="form-control form-select-sm" name="sorting_products" onchange="this.form.submit()">';
 echo '<option value="priority" '.$sel_sort_value['priority'].'>'.$lang['label_priority'].'</option>';
 echo '<option value="time_submited" '.$sel_sort_value['time_submited'].'>'.$lang['label_data_submited'].'</option>';
-echo '<option value="time_edit" '.$sel_sort_value['time_edit'].'>'.$lang['btn_sort_edit'].'</option>';
+echo '<option value="time_edit" '.$sel_sort_value['time_edit'].'>'.$lang['label_data_last_edit'].'</option>';
 echo '<option value="price" '.$sel_sort_value['price'].'>'.$lang['label_price'].'</option>';
 echo '</select>';
 
