@@ -907,7 +907,7 @@ if($page_template == '') {
 	$selected_standard = 'selected';
 }
 
-$select_select_template .= "<option value='use_standard<|-|>use_standard' $selected_standard>$lang[use_standard]</option>";
+$select_select_template .= "<option value='use_standard<|-|>use_standard' $selected_standard>$lang[label_use_default]</option>";
 
 /* templates list */
 foreach($arr_themes as $template) {
@@ -966,10 +966,10 @@ if(!isset($page_status) OR $page_status == "") {
 }
 
 $select_page_status = '<select name="page_status" class="form-control">';
-$select_page_status .= '<option value="public" '.($page_status == "public" ? 'selected' :'').'>'.$lang['f_page_status_puplic'].'</option>';
-$select_page_status .= '<option value="ghost" '.($page_status == "ghost" ? 'selected' :'').'>'.$lang['f_page_status_ghost'].'</option>';
-$select_page_status .= '<option value="private" '.($page_status == "private" ? 'selected' :'').'>'.$lang['f_page_status_private'].'</option>';
-$select_page_status .= '<option value="draft" '.($page_status == "draft" ? 'selected' :'').'>'.$lang['f_page_status_draft'].'</option>';
+$select_page_status .= '<option value="public" '.($page_status == "public" ? 'selected' :'').'>'.$lang['status_public'].'</option>';
+$select_page_status .= '<option value="ghost" '.($page_status == "ghost" ? 'selected' :'').'>'.$lang['status_ghost'].'</option>';
+$select_page_status .= '<option value="private" '.($page_status == "private" ? 'selected' :'').'>'.$lang['status_private'].'</option>';
+$select_page_status .= '<option value="draft" '.($page_status == "draft" ? 'selected' :'').'>'.$lang['status_draft'].'</option>';
 $select_page_status .= '</select>';
 
 
