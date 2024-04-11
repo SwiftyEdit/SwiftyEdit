@@ -160,6 +160,9 @@ foreach ($get_products as $k => $post) {
 
     $post_filename = basename($get_products[$k]['slug']);
     $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . "$post_filename-" . $get_products[$k]['id'] . ".html";
+    if($get_products[$k]['slug'] != '') {
+        $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . $get_products[$k]['slug'];
+    }
 
 
     $post_releasedate = date($se_prefs['prefs_dateformat'], $get_products[$k]['releasedate']);
