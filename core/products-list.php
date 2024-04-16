@@ -309,6 +309,10 @@ foreach ($get_products as $k => $post) {
 
 }
 
+if($status_404 == true) {
+    $show_404 = "true";
+}
+
 $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
 $smarty->assign('product_cnt', $cnt_filter_products);

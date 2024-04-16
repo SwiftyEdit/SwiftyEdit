@@ -12,10 +12,22 @@
  * @var $swifty_slug string
  * @var $mod_slug
  *
+ * possible urls for this module
+ *
+ * listing
+ * /page/
+ * /page/my-category/
+ * /page/p/n/
+ * /page/my-category/p/n/
+ *
+ * show product
+ * /page/product-slug/
+ * /page/product-title-id.html
  */
 
 $time_string_now = time();
 $display_mode = 'list_products';
+$status_404 = true;
 
 /* defaults */
 $products_start = 0;
@@ -162,6 +174,12 @@ $products_filter['sort_by'] = $_SESSION['products_sort_by'];
 if(substr("$mod_slug", -5) == '.html') {
     $file_parts = explode("-", $mod_slug);
     $get_product_id = (int) basename(end($file_parts));
+    $product_data = se_get_product_data($get_product_id);
+
+    if(is_array($product_data)){
+        $status_404 = false;
+    }
+
     $display_mode = 'show_product';
 }
 
@@ -169,6 +187,12 @@ if(substr("$mod_slug", -5) == '.html') {
 $get_data_from_slug = se_get_product_data_by_slug($mod_slug);
 if(is_array($get_data_from_slug)) {
     $get_product_id = (int) $get_data_from_slug['id'];
+    $product_data = se_get_product_data($get_product_id);
+
+    if(is_array($product_data)){
+        $status_404 = false;
+    }
+
     $display_mode = 'show_product';
 }
 
@@ -177,9 +201,11 @@ $array_mod_slug = explode("/", $mod_slug);
 
 if(!isset($array_mod_slug[0])) {
     $array_mod_slug[0] = '';
+    $status_404 = false;
 }
 if(!isset($array_mod_slug[1])) {
     $array_mod_slug[1] = '';
+    $status_404 = false;
 }
 
 $this_page_categories = explode(',',$page_contents['page_posts_categories']);
@@ -244,7 +270,8 @@ foreach($all_categories as $cats) {
     if($cats['cat_name_clean'] == $array_mod_slug[0]) {
         // show only posts from this category
         $products_filter['categories'] = $cats['cat_hash'];
-        $display_mode = 'list_posts_category';
+        $display_mode = 'list_products_category';
+        $status_404 = false;
 
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
@@ -259,8 +286,13 @@ foreach($all_categories as $cats) {
 }
 
 
-/* pagination f.e. /p/2/ or /p/3/ .... */
+/**
+ * pagination
+ * for example /my-page/p/3/ or /my-page/my-category/p/3/
+ */
 if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p') {
+
+    $status_404 = false;
 
     if(is_numeric($array_mod_slug[1])) {
         $products_start = $array_mod_slug[1];
