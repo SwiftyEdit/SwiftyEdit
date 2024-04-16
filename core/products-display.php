@@ -7,6 +7,7 @@
  *
  * @var integer $get_product_id is set in core/products.php
  * @var string $mod_slug is set in core/products.php
+ * @var array $product_data product it's data
  *
  * global variables
  * @var object $db_content meedoo database object
@@ -19,7 +20,11 @@
  * @var array $page_contents
  */
 
-$product_data = se_get_product_data($get_product_id);
+
+
+if(!is_array($product_data)){
+    $show_404 = "true";
+}
 
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);

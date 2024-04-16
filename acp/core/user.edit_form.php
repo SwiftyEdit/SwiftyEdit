@@ -129,8 +129,8 @@ echo tpl_form_control_group('',$lang['label_firstname'],"<input type='text' clas
 echo tpl_form_control_group('',$lang['label_lastname'],"<input type='text' class='form-control' name='user_lastname' value='$user_lastname'>");
 echo tpl_form_control_group('',$lang['label_mail'],"<input type='text' class='form-control' name='user_mail' value='$user_mail'>");
 echo tpl_form_control_group('',$lang['label_company'],"<input type='text' class='form-control' name='user_company' value='$user_company'>");
-echo tpl_form_control_group('',"$lang[label_street]/$lang[label_street_nbr]","<div class='row'><div class='col-md-9'><input type='text' class='form-control' name='user_street' value='$user_street'></div><div class='col-md-3'><input class='form-control' type='text' name='user_street_nbr' value='$user_street_nbr'></div></div>");
-echo tpl_form_control_group('',"$lang[label_zip]/$lang[label_city]","<div class='row'><div class='col-md-3'><input type='text' class='form-control' name='user_zipcode' value='$user_zipcode'></div><div class='col-md-9'><input class='form-control' type='text' name='user_city' value='$user_city'></div></div>");
+echo tpl_form_control_group('',"$lang[label_street]/$lang[label_nr]","<div class='row'><div class='col-md-9'><input type='text' class='form-control' name='user_street' value='$user_street'></div><div class='col-md-3'><input class='form-control' type='text' name='user_street_nbr' value='$user_street_nbr'></div></div>");
+echo tpl_form_control_group('',"$lang[label_zip]/$lang[label_town]","<div class='row'><div class='col-md-3'><input type='text' class='form-control' name='user_zipcode' value='$user_zipcode'></div><div class='col-md-9'><input class='form-control' type='text' name='user_city' value='$user_city'></div></div>");
 
 
 
@@ -141,10 +141,10 @@ echo '</div>';
 
 echo'<div class="tab-pane fade" id="psw">';
 
-echo '<div class="alert alert-info">'.$lang['msg_info_psw_description'].'</div>';
+echo '<div class="alert alert-info">'.$lang['msg_edit_psw'].'</div>';
 
 echo tpl_form_control_group('',$lang['label_psw'],"<input class='form-control' type='password' name='user_psw_new' value=''>");
-echo tpl_form_control_group('',$lang['label_psw_reconfirmation'],"<input class='form-control' type='password' name='user_psw_reconfirmation' value=''>");
+echo tpl_form_control_group('',$lang['label_psw_repeat'],"<input class='form-control' type='password' name='user_psw_reconfirmation' value=''>");
 echo '<input type="hidden" name="user_psw" value="'.$user_psw.'">';
 echo '<input type="hidden" name="user_psw_hash" value="'.$user_psw_hash.'">';
 

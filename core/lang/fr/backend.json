@@ -267,6 +267,7 @@
   "label.product.sorting_date": "Trier par date",
   "label.shop.payment_shipping": "Paiement et livraison",
   "label.shop.delivery_areas": "Zones de livraison",
+  "label.shop.add_delivery_area": "Add a Delivery area",
   "label.shop.business_details": "Détails de l'entreprise",
   "label.product.delivery_time": "Délai de livraison",
   "label.product.no_delivery_time": "Aucun délai de livraison",
