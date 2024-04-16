@@ -15,7 +15,11 @@
             {if $show_pagination == true}
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-md-end justify-content-sm-center">
-                    <li class="page-item">
+                    {if $disable_prev_link == true}
+                        <li class="page-item disabled">
+                    {else}
+                        <li class="page-item">
+                    {/if}
                         <a href="{$pag_prev_href}" aria-label="Previous" class="page-link"><span aria-hidden="true">&laquo;</span></a>
                     </li>
                     {foreach $pagination as $pag}
@@ -23,7 +27,11 @@
                             <a href="{$pag.href}" class="page-link">{$pag.nbr}</a>
                         </li>
                     {/foreach}
-                    <li class="page-item">
+                    {if $disable_next_link == true}
+                        <li class="page-item disabled">
+                    {else}
+                        <li class="page-item">
+                    {/if}
                         <a href="{$pag_next_href}" class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
                     </li>
                 </ul>

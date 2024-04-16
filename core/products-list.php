@@ -92,10 +92,14 @@ if ($cnt_pages > 1) {
 
     if ($prevstart < 1) {
         $prevstart = 1;
+        $disable_prev_link = true;
         $newer_link_query = '#';
+    } else {
+        $disable_prev_link = false;
     }
 
     if ($nextstart > $cnt_pages) {
+        $disable_next_link = true;
         $older_link_query = '#';
     }
 
@@ -321,6 +325,8 @@ $smarty->assign('show_products_list', $show_products_list);
 $smarty->assign('product_filter', $product_filter);
 
 $smarty->assign('show_pagination', $show_pagination);
+$smarty->assign('disable_prev_link', $disable_prev_link);
+$smarty->assign('disable_next_link', $disable_next_link);
 if(isset($pagination)) {
     $smarty->assign('pagination', $pagination);
 }
