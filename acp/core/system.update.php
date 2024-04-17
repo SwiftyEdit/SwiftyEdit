@@ -66,7 +66,8 @@ if(isset($_GET['a']) && $_GET['a'] == 'start') {
     }
     echo '</ul>';
     echo '</div>';
-    echo '<div class="alert alert-info">'.$lang['update_msg_post_install'].'</div>';
+    $installer_url = '<a href="/install/">/install/</a>';
+    echo '<div class="alert alert-info">'.str_replace("{url}","$installer_url",$lang['update_msg_post_install']).'</div>';
 }
 
 /**
