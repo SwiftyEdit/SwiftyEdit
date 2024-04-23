@@ -1,5 +1,4 @@
 {
-
   "btn.addon.enable": "Włącz wtyczkę",
   "btn.addon.disable": "Wyłącz wtyczkę",
   "btn.new": "Nowy",
@@ -28,20 +27,15 @@
   "btn.sort_asc": "Rosnąco",
   "btn.sort_desc": "Malejąco",
   "btn.all_categories": "Wszystkie kategorie",
-
   "btn.help": "Pomoc",
   "btn.docs": "Dokumentacja",
   "btn.run_commands": "Uruchom polecenia",
-
   "btn.new.group": "Nowa grupa",
   "btn.new.value": "Nowa wartość",
-
   "btn.bulk_index": "Zbiorcze indeksowanie",
   "btn.bulk_update": "Zbiorcza aktualizacja",
-
   "btn.features": "Funkcjonalności",
   "btn.options": "Opcje",
-
   "btn.choose_this_update": "Wybierz tą aktualizację",
 
   "nav.btn.dashboard": "Panel",
@@ -79,11 +73,9 @@
   "nav.btn.index": "Indeks",
   "nav.btn.system": "System",
   "nav.btn.update": "Aktualizacja",
-
   "nav.btn.all_pages": "Wszystkie strony",
   "nav.btn.structured_pages": "Uporządkowane strony",
   "nav.btn.single_pages": "Pojedyncze strony",
-
   "nav.btn.intro": "Wprowadzenie",
   "nav.btn.description": "Opis",
   "nav.btn.descriptions": "Opisy",
@@ -92,7 +84,7 @@
   "nav.btn.product": "Produkt",
   "nav.btn.variants": "Warianty",
   "nav.btn.accessories": "Akcesoria",
-  "nav.btn.lated": "Powiązane",
+  "nav.btn.related": "Powiązane",
   "nav.btn.seo": "SEO",
   "nav.btn.content": "Treść",
   "nav.btn.info": "Informacje",
@@ -102,7 +94,6 @@
   "nav.btn.payment_shipping": "Płatność i wysyłka",
   "nav.btn.delivery_areas": "Obszary dostaw",
   "nav.btn.business_details": "Szczegóły firmy",
-
   "nav.btn.contact": "Kontakt",
   "nav.btn.psw": "Hasło",
   "nav.btn.custom_inputs": "Własne dane wejściowe",
@@ -111,7 +102,6 @@
   "label.db.user": "Baza danych użytkowników",
   "label.db.index": "Baza danych indeksów",
   "label.db.posts": "Baza danych wpisów",
-
   "label.pages": "Strony",
   "label.user": "Użytkownik",
   "label.posts": "Posty",
@@ -119,10 +109,8 @@
   "label.events": "Wydarzenia",
   "label.comments": "Komentarze",
   "label.description": "Opis",
-
   "label.event_dates": "Daty wydarzeń",
   "label.location": "Lokalizacja",
-
   "label.status": "Stan",
   "label.priority": "Priorytet",
   "label.date": "Data",
@@ -167,25 +155,19 @@
   "label.translations": "Tłumaczenia",
   "label.rm": "Zarządzanie prawami",
   "label.type": "Typ",
-
   "label.link_name": "Nazwa łącza",
   "label.classes": "Klasy",
-
   "label.default_template": "Domyślny",
   "label.use_default": "Użyj domyślnego",
   "label.layout": "Układ",
   "label.default_sorting": "Domyślne sortowanie",
   "label.items_per_page": "Elementy na stronę",
-
   "label.data_submited": "Przesłano",
   "label.data_last_edit": "Ostatnia edycja",
   "label.data_releasedate": "Wydanie",
-
   "label.categories_show": "Pokaż kategorie",
   "label.categories_hide": "Ukryj kategorie",
-
   "label.select_post_type": "Wybierz typ postu",
-
   "label.pages.position": "Pozycja",
   "label.pages.position_sub": "Ta strona jest podstroną z...",
   "label.pages.portal": "Portal",
@@ -243,10 +225,8 @@
   "label.missing_img_alt_tags": "Brakujące tagi alt (obrazy)",
   "label.missing_img_title_tags": "Brakujące tagi tytułu (obrazy)",
   "label.missing_headings": "Brakujące nagłówki",
-
   "label.shortcode": "Krótki kod",
   "label.shortcode.replacement": "Zastąpienie krótkiego kodu",
-
   "label.form.status_edit": "Edytuj",
   "label.form.status_new": "Nowy",
 
@@ -298,9 +278,9 @@
   "label.product.sorting_price": "Sortuj według ceny",
   "label.product.sorting_name": "Sortuj według nazwy",
   "label.product.sorting_date": "Sortuj według daty",
-
   "label.shop.payment_shipping": "Płatność i wysyłka",
   "label.shop.delivery_areas": "Obszary dostawy",
+  "label.shop.add_delivery_area": "Add a Delivery area",
   "label.shop.business_details": "Szczegóły firmy",
 
   "label.product.delivery_time": "Czas dostawy",
@@ -319,7 +299,6 @@
   "label.shipping.costs_cat3": "Kategoria kosztów wysyłki 3",
   "label.shipping.costs_by_weight": "Koszty wysyłki według wagi",
   "label.delivery_time": "Czas dostawy",
-
 
   "product.cart_mode_on": "Aktywuj koszyk",
   "product.cart_mode_off": "Dezaktywuj koszyk",
@@ -410,14 +389,11 @@
   "label.settings.votings_on_registered": "Dla zarejestrowanych użytkowników",
   "label.settings.votings_on_global": "Dla wszystkich użytkowników",
 
-
   "label.show_all_events": "Pokaż wszystkie wydarzenia",
   "label.show_events": "Wyświetlono %s z %d zdarzeń",
-
   "label.show_help": "Pokaż pomoc",
   "label.show_all_data": "Pokaż dane całkowite",
   "label_show_entries": "Pokaż %s wpisów. Razem: %d",
-
   "label.post.type": "Typ",
   "label.entries": "Wpisy",
   "label.entries_per_page": "Wpisy na stronę",
@@ -439,7 +415,6 @@
   "label.events.show_past_events": "Pokaż przeszłe wydarzenia",
   "label.events.time_offset": "Przesunięcie czasu",
   "label.events.time_offset_text": "Czas (w sekundach), przez który zdarzenie jest nadal wyświetlane po zakończeniu",
-
   "label.price_note": "Uwagi dotyczące cen",
 
   "label.time.created": "Utworzono dnia",
@@ -462,8 +437,10 @@
   "rm.can_edit_user": "Zarządzaj kontami użytkowników",
   "rm.can_edit_user.txt": "<b>Uwaga!</b> Jeżeli ta opcja jest aktywna, użytkownik może zmieniać wszystkie uprawnienia. Oczywiście dotyczy to również jego własnych uprawnień użytkownika.",
   "rm.upload_files": "Prześlij pliki",
-  "rm.upload_protection_files": "może przesyłać poufne pliki",
-  "rm.upload_protection_files.txt": "<b>Uwaga!</b> Ta opcja pozwala użytkownikowi instalować/odinstalowywać motywy, moduły i wtyczki.",
+
+  "rm.upload_sensitive_files": "can upload sensitive files",
+  "rm.upload_sensitive_files.txt": "<b>Attention!</b> This option allows the user to install / uninstall themes, modules and plugins.",
+
   "rm.can_edit_settings": "może edytować ustawienia",
   "rm.is_moderator": "Moderator (niekoniecznie potrzebuje dostępu do ACP)",
   "rm.edit_own_pages": "może edytować tylko swoje własne lub przypisane strony",
@@ -471,8 +448,6 @@
   "rm.create_new_pages": "utwórz nowe strony",
   "rm.can_publish": "Użytkownik może publikować (posty, produkty, wydarzenia...)",
   "rm.no_access": "Nie masz wymaganych praw dostępu dla tej akcji",
-
-
 
   "msg.success.new_record": "Zapisano nowy rekord danych",
   "msg.success.file_delete": "Plik został usunięty",
