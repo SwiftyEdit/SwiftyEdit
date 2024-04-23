@@ -92,10 +92,14 @@ if ($cnt_pages > 1) {
 
     if ($prevstart < 1) {
         $prevstart = 1;
+        $disable_prev_link = true;
         $newer_link_query = '#';
+    } else {
+        $disable_prev_link = false;
     }
 
     if ($nextstart > $cnt_pages) {
+        $disable_next_link = true;
         $older_link_query = '#';
     }
 
@@ -309,6 +313,10 @@ foreach ($get_products as $k => $post) {
 
 }
 
+if($status_404 == true) {
+    $show_404 = "true";
+}
+
 $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
 $smarty->assign('product_cnt', $cnt_filter_products);
@@ -317,6 +325,8 @@ $smarty->assign('show_products_list', $show_products_list);
 $smarty->assign('product_filter', $product_filter);
 
 $smarty->assign('show_pagination', $show_pagination);
+$smarty->assign('disable_prev_link', $disable_prev_link);
+$smarty->assign('disable_next_link', $disable_next_link);
 if(isset($pagination)) {
     $smarty->assign('pagination', $pagination);
 }

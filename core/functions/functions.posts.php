@@ -470,7 +470,7 @@ function se_set_pagination_query($display_mode,$start) {
 	global $pub_preferences;
 	global $array_mod_slug;
 	
-	if($display_mode == 'list_posts_category') {
+	if($display_mode == 'list_posts_category' OR $display_mode == 'list_products_category') {
 		$pagination_link = "/$swifty_slug".$array_mod_slug[0].'/p/'."$start/";
 	} else if($display_mode == 'list_archive_year') {
 		$pagination_link = "/$swifty_slug".$array_mod_slug[0].'/p/'."$start/";
