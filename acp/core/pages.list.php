@@ -176,7 +176,7 @@ echo '<div class="card">';
 echo '<div class="card-header">FILTER</div>';
 echo '<div class="card-body">';
 
-
+echo '<div class="scroll-box">';
 
 echo '<form action="?tn=pages&sub=list" method="POST" class="ms-auto">';
 echo '<div class="input-group">';
@@ -242,7 +242,10 @@ echo '</div>';
 
 
 echo '<div class="card mt-1">';
-echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
+echo '<div class="card-header d-flex"><span>'.$lang['label_keywords'].'</span>';
+echo '<button class="btn btn-sm btn-default ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKeys" aria-expanded="false" aria-controls="collapseKeys">+</button>';
+echo '</div>';
+echo '<div class="collapse" id="collapseKeys">';
 echo '<div class="card-body">';
 echo '<div class="scroll-container">';
 $get_keywords = se_get_pages_keywords();
@@ -260,10 +263,50 @@ foreach($get_keywords as $k => $v) {
 echo $hidden_csrf_token;
 echo '</form>';
 echo '</div>';
+echo '</div>';
 echo '</div>'; // card-body
 echo '</div>'; // card
 
+echo '<div class="card mt-1">';
+echo '<div class="card-header d-flex"><span>'.$lang['label_type'].'</span>';
+echo '<button class="btn btn-sm btn-default ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseType" aria-expanded="false" aria-controls="collapseType">+</button>';
+echo '</div>';
+echo '<div class="collapse" id="collapseType">';
+echo '<div class="scroll-container">';
+echo '<form action="?tn=pages&sub=pages-list" method="POST">';
+echo '<div class="list-group list-group-flush">';
 
+$find_target_page = $db_content->select("se_pages", "page_type_of_use", [
+    "page_type_of_use" => $se_page_types
+]);
+
+$cnt_page_types = array_count_values($find_target_page);
+
+foreach($se_page_types as $types) {
+    $str = 'type_of_use_'.$types;
+    $name = $lang[$str];
+    $active_class = '';
+    if(str_contains($_SESSION['checked_type_string'],"$types")) {
+        $active_class = 'active';
+    }
+
+    echo '<button class="list-group-item list-group-item-action d-flex justify-content-between align-items-start '.$active_class.'" name="filter_type" value="'.$types.'">';
+    echo '<div class="me-auto">'.$name.'</div>';
+    if($cnt_page_types[$types] < 1) {
+        echo '<span class="badge text-bg-danger">0</span>';
+    } else {
+        echo '<span class="badge text-bg-primary">' . $cnt_page_types[$types] . '</span>';
+    }
+    echo '</li>';
+}
+echo '</div>';
+echo $hidden_csrf_token;
+echo '</form>';
+echo '</div>';
+echo '</div>';
+echo '</div>'; // card
+
+echo '</div>'; // scroll-box
 echo '</div>'; // card-body
 echo '</div>'; // card
 

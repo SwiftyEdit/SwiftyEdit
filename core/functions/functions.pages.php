@@ -94,6 +94,18 @@ function se_get_pages($filter) {
         $sql_label_filter = substr("$sql_label_filter", 0, -3); // cut the last ' OR'
     }
 
+    /* type filter - column page_type_of_use */
+    if($filter['types'] == 'all' OR $filter['types'] == '') {
+        $sql_types_filter = '';
+    } else {
+        $checked_types_array = explode(' ', $filter['types']);
+        foreach($checked_types_array as $t) {
+            if($t == '') { continue; }
+            $sql_types_filter .= "(page_type_of_use LIKE '%$t%') OR ";
+        }
+        $sql_types_filter = substr("$sql_types_filter", 0, -3); // cut the last ' OR'
+    }
+
 
     $sql_filter = $filter_string;
 
@@ -109,6 +121,10 @@ function se_get_pages($filter) {
 
     if($sql_text_filter != "") {
         $sql_filter .= " AND ($sql_text_filter) ";
+    }
+
+    if($sql_types_filter != "") {
+        $sql_filter .= " AND ($sql_types_filter) ";
     }
 
     $sql = "SELECT * FROM se_pages $sql_filter $order";
