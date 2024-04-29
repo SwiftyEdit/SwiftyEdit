@@ -23,7 +23,6 @@
   "btn.upload": "Wyślij",
   "btn.system": "Systemowy",
   "btn.custom": "Własny",
-
   "btn.sort_asc": "Rosnąco",
   "btn.sort_desc": "Malejąco",
   "btn.all_categories": "Wszystkie kategorie",
@@ -37,7 +36,6 @@
   "btn.features": "Funkcjonalności",
   "btn.options": "Opcje",
   "btn.choose_this_update": "Wybierz tą aktualizację",
-
   "nav.btn.dashboard": "Panel",
   "nav.btn.dashboard.txt": "Wszystko w skrócie",
   "nav.btn.overview": "Przegląd",
@@ -46,7 +44,6 @@
   "nav.btn.pages.title": "Pokaż wszystkie strony",
   "nav.btn.snippets": "Fragmenty",
   "nav.btn.settings": "Ustawienia",
-
   "nav.btn.settings.title": "Pokaż Ustawienia",
   "nav.btn.general": "Ogólne",
   "nav.btn.posts": "Wpisy",
@@ -84,20 +81,18 @@
   "nav.btn.product": "Produkt",
   "nav.btn.variants": "Warianty",
   "nav.btn.accessories": "Akcesoria",
-  "nav.btn.related": "Powiązane",
+  "nav.btn.related": "Related",
   "nav.btn.seo": "SEO",
   "nav.btn.content": "Treść",
   "nav.btn.info": "Informacje",
   "nav.btn.prices": "Preise",
   "nav.btn.metas": "Metas",
-
   "nav.btn.payment_shipping": "Płatność i wysyłka",
   "nav.btn.delivery_areas": "Obszary dostaw",
   "nav.btn.business_details": "Szczegóły firmy",
   "nav.btn.contact": "Kontakt",
   "nav.btn.psw": "Hasło",
   "nav.btn.custom_inputs": "Własne dane wejściowe",
-
   "label.db.content": "Baza danych treści",
   "label.db.user": "Baza danych użytkowników",
   "label.db.index": "Baza danych indeksów",
@@ -191,7 +186,6 @@
   "label.pages.type_of_use": "Rodzaj zastosowania",
   "label.pages.pageviews": "Wyświetlenia strony",
   "label.pages.clicks": "Kliknięcia",
-
   "type_of_use_normal": "Zwykła strona",
   "type_of_use_search": "Szukaj",
   "type_of_use_profile": "Profil",
@@ -207,7 +201,6 @@
   "type_of_use_legal": "Legalne",
   "type_of_use_checkout": "Do kasy",
   "type_of_use_orders": "Zamówienia",
-
   "post_type_message": "Wiadomości",
   "post_type_gallery": "Galerie",
   "post_type_event": "Wydarzenia",
@@ -216,7 +209,6 @@
   "post_type_link": "Link",
   "post_type_video": "Wideo",
   "post_type_file": "Pliki",
-
   "label.pages.index": "Indeks stron",
   "label.missing_title": "Brakujący tytuł",
   "label.missing_title_tags": "Brakujące tagi tytułu",
@@ -229,21 +221,17 @@
   "label.shortcode.replacement": "Zastąpienie krótkiego kodu",
   "label.form.status_edit": "Edytuj",
   "label.form.status_new": "Nowy",
-
   "label.filter": "Filtr",
   "label.filter.status": "Filtruj według statusu",
   "label.filter.comments_by_page": "Filtruj komentarze według strony",
   "label.filter.comments_by_post": "Filtruj według postu",
-
   "label.all_categories": "Wszystkie kategorie",
   "label.categories.show_selected": "Pokaż wybrane kategorie",
   "label.categories.hide_selected": "Ukryj wybrane kategorie",
   "label.categories.activate_all": "Aktywuj wszystkie kategorie",
-
   "label.comments.all": "Wszystkie komentarze",
   "label.comments.not_approved": "niezatwierdzony",
   "label.comments.public": "publiczny",
-
   "label.product.currency": "Waluta",
   "label.product.price_label": "Etykieta cenowa",
   "label.product.price_group": "Grupa cenowa",
@@ -272,7 +260,6 @@
   "label.product.attachments": "Załączniki produktów",
   "label.product.files_after_sale": "Pliki, które można pobrać po zakupie przedmiotu",
   "label.product.files_before_sale": "Pliki, które można pobrać przed zakupem przedmiotu",
-
   "label.product.sorting_default": "Użyj domyślnego sortowania",
   "label.product.sorting_topseller": "Sortuj według bestsellerów",
   "label.product.sorting_price": "Sortuj według ceny",
@@ -282,7 +269,6 @@
   "label.shop.delivery_areas": "Obszary dostawy",
   "label.shop.add_delivery_area": "Add a Delivery area",
   "label.shop.business_details": "Szczegóły firmy",
-
   "label.product.delivery_time": "Czas dostawy",
   "label.product.no_delivery_time": "Brak czasu dostawy",
   "label.shipping": "Wysyłka",
@@ -299,35 +285,28 @@
   "label.shipping.costs_cat3": "Kategoria kosztów wysyłki 3",
   "label.shipping.costs_by_weight": "Koszty wysyłki według wagi",
   "label.delivery_time": "Czas dostawy",
-
   "product.cart_mode_on": "Aktywuj koszyk",
   "product.cart_mode_off": "Dezaktywuj koszyk",
   "product.cart_mode_registered": "Aktywowany - tylko dla zarejestrowanych użytkowników",
   "product.cart_mode_all_user": "Aktywowane - dla wszystkich użytkowników",
-
   "product.order.mode_on": "Tryb zamawiania jest aktywny",
   "product.order.mode_request": "Pokaż tylko formularz zapytania",
   "product.order.mode_both": "Aktywuj zamówienia i pokaż formularz zapytania",
-
   "product.show_price_net": "Pokaż ceny tylko netto (tryb B2B)",
   "product.show_price_gross": "Pokaż wszystkie ceny łącznie z podatkami",
   "product.show_price_both": "Pokaż ceny brutto i netto",
   "product.show_prices_to_all": "Wszyscy odwiedzający mogą zobaczyć ceny",
   "product.show_prices_to_registered": "Tylko zarejestrowani użytkownicy mogą zobaczyć ceny",
-
   "product.pricetag_mode_on": "Pokaż cenę",
   "product.pricetag_mode_off": "Ukryj cenę",
-
   "label.carts": "Wózki sklepowe",
   "label.orders": "Zamówienia",
   "label.order_nbr": "Numer zamówienia",
   "label.order_date": "Data zamówienia",
   "label.price_total": "Cena całkowita",
   "label.payment": "Płatność",
-
   "label.business.address": "Adres firmy",
   "label.business.tax_number": "Numer podatkowy",
-
   "label.mail.new": "Utwórz nowy e-mail",
   "label.mail.recipients": "Odbiorcy",
   "label.mail.recipients_all": "Wszyscy użytkownicy",
@@ -335,7 +314,6 @@
   "label.mail.recipients_admin": "Administratorzy",
   "label.mail.subject": "Temat",
   "label.mail.text": "Treść wiadomości",
-
   "label.settings.page_name": "Nazwa strony",
   "label.settings.page_title": "Tytuł strony",
   "label.settings.page_subtitle": "Napisy",
@@ -388,7 +366,6 @@
   "label.settings.votings_off": "Dezaktywowane",
   "label.settings.votings_on_registered": "Dla zarejestrowanych użytkowników",
   "label.settings.votings_on_global": "Dla wszystkich użytkowników",
-
   "label.show_all_events": "Pokaż wszystkie wydarzenia",
   "label.show_events": "Wyświetlono %s z %d zdarzeń",
   "label.show_help": "Pokaż pomoc",
@@ -397,13 +374,11 @@
   "label.post.type": "Typ",
   "label.entries": "Wpisy",
   "label.entries_per_page": "Wpisy na stronę",
-
   "label.votings": "Głosy/Reakcje",
   "label.votings.status.off": "Dezaktywowane",
   "label.votings.status.registered": "Dla zarejestrowanych użytkowników",
   "label.votings.status.global": "Dla wszystkich użytkowników",
   "label.votings.show_all": "Pokaż wszystkie głosy",
-
   "label.guestlist": "Lista gości",
   "label.guestlist.status.off": "Dezaktywowane",
   "label.guestlist.status.registered": "Dla zarejestrowanych użytkowników",
@@ -411,36 +386,29 @@
   "label.guestlist.limit": "Limit listy gości",
   "label.guestlist.show_number": "Pokaż liczbę zobowiązań",
   "label.guestlist.hide_number": "Ukryj liczbę zobowiązań",
-
   "label.events.show_past_events": "Pokaż przeszłe wydarzenia",
   "label.events.time_offset": "Przesunięcie czasu",
   "label.events.time_offset_text": "Czas (w sekundach), przez który zdarzenie jest nadal wyświetlane po zakończeniu",
   "label.price_note": "Uwagi dotyczące cen",
-
   "label.time.created": "Utworzono dnia",
   "label.time.last_edit": "Ostatnia edycja",
   "label.time.sent": "Wysłano",
   "label.time.registerdate": "Data rejestracji",
-
   "label.customize.pages": "Dostosuj strony",
   "label.customize.user": "Dostosuj użytkownika",
   "label.customize.field_name": "Nazwa",
   "label.customize.field_add": "Dodaj pole",
   "label.customize.field_delete": "Dostosuj strony",
-
   "upload.destination": "Miejsce docelowe",
   "upload.overwrite_existing_files": "Zastąp istniejące pliki",
-
   "rm.description": "Użytkownik może wykonać następujące akcje...",
   "rm.is_admin": "Ten użytkownik jest administratorem",
   "rm.is_admin.txt": "<b>Uwaga!</b> Ta opcja umożliwia dostęp do ACP (Backend)",
   "rm.can_edit_user": "Zarządzaj kontami użytkowników",
   "rm.can_edit_user.txt": "<b>Uwaga!</b> Jeżeli ta opcja jest aktywna, użytkownik może zmieniać wszystkie uprawnienia. Oczywiście dotyczy to również jego własnych uprawnień użytkownika.",
   "rm.upload_files": "Prześlij pliki",
-
   "rm.upload_sensitive_files": "can upload sensitive files",
   "rm.upload_sensitive_files.txt": "<b>Attention!</b> This option allows the user to install / uninstall themes, modules and plugins.",
-
   "rm.can_edit_settings": "może edytować ustawienia",
   "rm.is_moderator": "Moderator (niekoniecznie potrzebuje dostępu do ACP)",
   "rm.edit_own_pages": "może edytować tylko swoje własne lub przypisane strony",
@@ -448,7 +416,6 @@
   "rm.create_new_pages": "utwórz nowe strony",
   "rm.can_publish": "Użytkownik może publikować (posty, produkty, wydarzenia...)",
   "rm.no_access": "Nie masz wymaganych praw dostępu dla tej akcji",
-
   "msg.success.new_record": "Zapisano nowy rekord danych",
   "msg.success.file_delete": "Plik został usunięty",
   "msg.success.entry_delete": "Wpis został usunięty",
@@ -469,14 +436,12 @@
   "msg.error.page_saved": "Wystąpił błąd, strona nie została zapisana",
   "msg.success.page_deleted": "Strona została usunięta",
   "msg.success.mailer_sent_test": "E-mail testowy został wysłany",
-
   "msg.confirm.no_access": "Nie masz niezbędnych uprawnień dostępu do edycji tych danych",
   "msg.confirm.delete": "Czy na pewno chcesz usunąć te dane?",
   "msg.confirm.delete.file": "Czy na pewno chcesz usunąć ten plik?",
   "msg.confirm.delete.directory": "Czy na pewno chcesz usunąć ten katalog? Cała zawartość również zostanie usunięta!",
   "msg.confirm.delete.user": "Czy na pewno chcesz usunąć tego użytkownika?",
   "msg.confirm.delete.usergroup": "Czy na pewno chcesz usunąć tę grupę użytkowników?",
-
   "msg.info.filter_updated": "Filtry zostały zaktualizowane",
   "msg.info.data_deleted": "Dane zostały usunięte",
   "msg.info.no_files_so_far": "Jak dotąd nie ma żadnych plików",
@@ -489,7 +454,6 @@
   "msg.info.usermail_exists": "Ten adres e-mail już istnieje",
   "msg.info.settings.use_smtp": "Aby używać SMTP, musisz utworzyć plik <code>config_smtp.php</code> w folderze <code>/content/</code>.",
   "msg.info.delete_custom_fields": "Jeśli usuniesz pole, zawarte w nim dane (na wszystkich stronach) zostaną nieodwołalnie utracone.",
-
   "update.msg.alpha": "Do pobrania dostępna jest aktualizacja z kanału Alpha. Tej aktualizacji nie należy ładować w środowisku produktywnym.",
   "update.msg.beta": "Do pobrania dostępna jest aktualizacja z kanału Beta. Tej aktualizacji nie należy ładować w środowisku produktywnym.",
   "update.msg.stable": "Aktualizacja jest dostępna do pobrania",
