@@ -50,15 +50,15 @@ if($user_verified == ""){
 	$user_verified = "waiting";
 }
 
-
 $select_user_status .= tpl_radio('user_verified','verified','verified',$lang['status_user_verified'],($user_verified == "verified" ? 'checked' :''));
 $select_user_status .= tpl_radio('user_verified','waiting','waiting',$lang['status_user_waiting'],($user_verified == "waiting" ? 'checked' :''));
 $select_user_status .= tpl_radio('user_verified','paused','paused',$lang['status_user_paused'],($user_verified == "paused" ? 'checked' :''));
 
-echo '<fieldset>';
-echo '<legend>'.$lang['label_status'].'</legend>';
-echo $select_user_status;
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['label_status'].'</div>';
+echo '<div class="card-body">';
 
+echo $select_user_status;
 echo '<hr>';
 
 $check_user_unlocked_by_admin = '';
@@ -71,7 +71,8 @@ echo '<input type="checkbox" id="unlocked_by_admin" class="form-check-input" nam
 echo '<label for="unlocked_by_admin" class="form-check-label">User unlocked by admin</label>';
 echo '</div>';
 
-echo '</fieldset>';
+echo '</div>';
+echo '</div>';
 
 
 echo '</div>';
@@ -107,11 +108,13 @@ if(is_array($all_groups)) {
 
 }
 
-echo '<fieldset>';
-echo '<legend>'.$lang['label_groups'].'</legend>';
-echo $cb_usergroup;
-echo '</fieldset>';
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['label_groups'].'</div>';
+echo '<div class="card-body">';
 
+echo $cb_usergroup;
+echo '</div>';
+echo '</div>';
 
 
 echo '</div>';
@@ -124,14 +127,81 @@ echo '</div>';
 
 echo '<div class="tab-pane fade" id="contact">';
 
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['legend_adress_fields'].'</div>';
+echo '<div class="card-body">';
 
 echo tpl_form_control_group('',$lang['label_firstname'],"<input type='text' class='form-control' name='user_firstname' value='$user_firstname'>");
 echo tpl_form_control_group('',$lang['label_lastname'],"<input type='text' class='form-control' name='user_lastname' value='$user_lastname'>");
 echo tpl_form_control_group('',$lang['label_mail'],"<input type='text' class='form-control' name='user_mail' value='$user_mail'>");
 echo tpl_form_control_group('',$lang['label_company'],"<input type='text' class='form-control' name='user_company' value='$user_company'>");
-echo tpl_form_control_group('',"$lang[label_street]/$lang[label_nr]","<div class='row'><div class='col-md-9'><input type='text' class='form-control' name='user_street' value='$user_street'></div><div class='col-md-3'><input class='form-control' type='text' name='user_street_nbr' value='$user_street_nbr'></div></div>");
-echo tpl_form_control_group('',"$lang[label_zip]/$lang[label_town]","<div class='row'><div class='col-md-3'><input type='text' class='form-control' name='user_zipcode' value='$user_zipcode'></div><div class='col-md-9'><input class='form-control' type='text' name='user_city' value='$user_city'></div></div>");
 
+echo '<div class="row">';
+echo '<div class="col-md-9">';
+echo tpl_form_control_group('',$lang['label_street'],"<input type='text' class='form-control' name='user_street' value='$user_street'>");
+echo '</div>';
+echo '<div class="col-md-3">';
+echo tpl_form_control_group('',$lang['label_nr'],"<input type='text' class='form-control' name='user_street_nbr' value='$user_street_nbr'>");
+echo '</div>';
+echo '</div>';
+
+echo '<div class="row">';
+echo '<div class="col-md-3">';
+echo tpl_form_control_group('',$lang['label_zip'],"<input type='text' class='form-control' name='user_zip' value='$user_zip'>");
+echo '</div>';
+echo '<div class="col-md-9">';
+echo tpl_form_control_group('',$lang['label_town'],"<input type='text' class='form-control' name='user_city' value='$user_city'>");
+echo '</div>';
+echo '</div>';
+
+
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+echo '<div class="col-md-6">';
+
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['label_billing_address'].'</div>';
+echo '<div class="card-body">';
+
+echo tpl_form_control_group('',$lang['label_firstname'],"<input type='text' class='form-control' name='ba_firstname' value='$ba_firstname'>");
+echo tpl_form_control_group('',$lang['label_lastname'],"<input type='text' class='form-control' name='ba_lastname' value='$ba_lastname'>");
+echo tpl_form_control_group('',$lang['label_mail'],"<input type='text' class='form-control' name='ba_mail' value='$ba_mail'>");
+echo tpl_form_control_group('',$lang['label_company'],"<input type='text' class='form-control' name='ba_company' value='$ba_company'>");
+
+echo '<div class="row">';
+echo '<div class="col-md-9">';
+echo tpl_form_control_group('',$lang['label_street'],"<input type='text' class='form-control' name='ba_street' value='$ba_street'>");
+echo '</div>';
+echo '<div class="col-md-3">';
+echo tpl_form_control_group('',$lang['label_nr'],"<input type='text' class='form-control' name='ba_street_nbr' value='$ba_street_nbr'>");
+echo '</div>';
+echo '</div>';
+
+echo '<div class="row">';
+echo '<div class="col-md-3">';
+echo tpl_form_control_group('',$lang['label_zip'],"<input type='text' class='form-control' name='ba_zip' value='$ba_zip'>");
+echo '</div>';
+echo '<div class="col-md-9">';
+echo tpl_form_control_group('',$lang['label_town'],"<input type='text' class='form-control' name='ba_city' value='$ba_city'>");
+echo '</div>';
+echo '</div>';
+
+echo '<hr>';
+
+echo tpl_form_control_group('',$lang['label_tax_id_number'],"<input type='text' class='form-control' name='ba_tax_id_number' value='$ba_tax_id_number'>");
+echo tpl_form_control_group('',$lang['label_tax_number'],"<input type='text' class='form-control' name='ba_tax_number' value='$ba_tax_number'>");
+
+echo '</div>';
+echo '</div>';
+
+
+echo '</div>';
+echo '</div>';
 
 
 echo '</div>';

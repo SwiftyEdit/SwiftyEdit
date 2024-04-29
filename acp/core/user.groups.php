@@ -105,6 +105,7 @@ echo '<div class="subHeader">';
 echo $lang['nav_btn_user_groups'];
 echo '</div>';
 
+echo '<div class="card p-3">';
 
 //print message
 
@@ -129,8 +130,9 @@ $cnt_user_groups = count($user_groups);
 $editgroup = (int) $_POST['editgroup'];
 
 
-echo '<fieldset>';
-echo '<legend>'.$lang['label_choose_group'].'</legend>';
+echo '<div class="card mb-3">';
+echo '<div class="card-header">'.$lang['label_choose_group'].'</div>';
+echo '<div class="card-body">';
 echo '<form action="acp.php?tn=user&sub=user-groups" method="POST">';
 
 echo '<div class="row">';
@@ -159,7 +161,8 @@ echo '<input type="submit" class="btn btn-primary w-100" name="select_group" val
 echo '</div>';
 echo '</div>';
 echo '</form>';
-echo '</fieldset>';
+echo '</div>';
+echo '</div>';
 
 
 /**
@@ -192,8 +195,10 @@ if(($editgroup) && ($show_data !== false)) {
  * FORM // EDIT GROUPS
  */
 
-echo '<fieldset>';
-echo '<legend>'.$lang['label_group'].'</legend>';
+echo '<div class="card mb-3">';
+echo '<div class="card-header">'.$lang['label_group'].'</div>';
+echo '<div class="card-body">';
+
 
 echo '<form action="acp.php?tn=user&sub=user-groups" method="POST">';
 
@@ -275,6 +280,7 @@ echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</div>';
 echo '</form>';
 
-echo '</fieldset>';
+echo '</div>';
+echo '</div>';
 
-?>
+echo '</div>';
