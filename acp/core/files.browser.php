@@ -92,7 +92,7 @@ if(isset($_GET['switchLabel'])) {
 			}
 		} else {
 			/* add label */
-			$a_checked_labels[] = $_GET['switchLabel'];
+			$a_checked_labels[] = (int) $_GET['switchLabel'];
 		}
 
 		$_SESSION['checked_label_str'] = implode('-', $a_checked_labels);
