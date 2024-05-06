@@ -204,7 +204,7 @@ if (!isset($_SESSION['lang'])) {
 }
 
 if (isset($_GET['set_lang'])) {
-    $set_lang = strip_tags($_GET['set_lang']);
+    $set_lang = sanitizeUserInputs($_GET['set_lang']);
     if (is_dir("../core/lang/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
