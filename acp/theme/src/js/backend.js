@@ -210,52 +210,6 @@ $(function() {
         });
     });
 
-
-    $('.show-doc').click(function(){
-        const docfile = $(this).data('file');
-        const csrf_token = $(this).data('token');
-        const contents = load_modal_content(docfile,csrf_token);
-        //var title = contents.title;
-        const text = contents.content;
-
-        if(!title) {
-            const title = 'Error';
-        }
-
-        $('#infoModal .modal-header .modal-title').html(title);
-        $('#infoModal .modal-body').html(text);
-    });
-
-    $('#infoModal').on('shown.bs.modal', function () {
-        $('#infoModal .jump-doc').click(function(){
-            var docfile = $(this).data('file');
-            var csrf_token = $(this).data('token');
-            var contents = load_modal_content(docfile,csrf_token);
-            $('#infoModal .modal-header .modal-title').html(contents.title);
-            $('#infoModal .modal-body').html(contents.content);
-        });
-    });
-
-    function load_modal_content(file,token) {
-        var response = null;
-        $.ajax({
-            url: 'core/ajax/show-docs.php',
-            type: 'post',
-            async: false,
-            data: {file: file, csrf_token: token},
-            success: function(content){
-                const response = $.parseJSON(content);
-            },
-            error: function(content){
-                const response = {title:"Error", content:"file not found"};
-
-            },
-        });
-        return response;
-    }
-
-    window.load_modal_content = load_modal_content();
-
     $(window).resize(function () {
         stretchAppContainer();
         $( "div.scroll-box" ).each(function() {

@@ -1375,11 +1375,9 @@ function se_parse_docs_file($file): array {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
     }
 
-    $signature = '<p>file: '.$file.$filemtime.'</p>';
-
     $parsed['header'] = $parsed_header;
     $parsed['title'] = $parsed_header['title'];
-    $parsed['content'] = $parsed_content.$signature;
+    $parsed['content'] = $parsed_content;
     $parsed['filemtime'] = $filemtime;
     $parsed['filename_orig'] = basename($file);
     $parsed['filepath_orig'] = $file;
@@ -1398,7 +1396,14 @@ function se_print_docs_link($file,$text=null,$type=null) {
     }
 
     if($type == null OR $type == 'modal') {
-        return '<a class="show-doc" title="'.$title.'" data-bs-toggle="modal" data-bs-target="#infoModal" data-file="'.$file.'" data-token="'.$_SESSION['token'].'" >'.$text.'</a>';
+        $link = '<a data-bs-toggle="modal"
+                    data-bs-target="#infoModal"
+                        hx-post="core/ajax/show-docs-modal.php"
+                        hx-vals=\'{"csrf_token": "'.$_SESSION['token'].'","file":"'.$file.'"}\'
+                        hx-target="#infoModalContent"
+                        hx-trigger="click"
+                        class="show-doc" title="'.$title.'">'.$text.'</a>';
+        return $link;
     }
 
     return '';
