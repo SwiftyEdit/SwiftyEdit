@@ -42,7 +42,8 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 	if($_POST['post_releasedate'] != "") {
 		$post_releasedate = strtotime($_POST['post_releasedate']);
 	}
-	
+
+    /*
 	if($_POST['event_start'] != "") {
 		$event_start = strtotime($_POST['event_start']);
 	}
@@ -56,6 +57,7 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 	
 	$post_event_startdate = $event_start;
 	$post_event_enddate = $event_end;
+    */
 	
 	$clean_title = clean_filename($_POST['post_title']);
 	$post_date_year = date("Y",$post_releasedate);
@@ -246,13 +248,14 @@ for($i=0;$i<count($cats);$i++) {
 
 /* release date */
 if($post_data['post_releasedate'] > 0) {
-	$post_releasedate = date('Y-m-d H:i:s', $post_data['post_releasedate']);
+	$post_releasedate = date('Y-m-d H:i', $post_data['post_releasedate']);
 } else {
-	$post_releasedate = date('Y-m-d H:i:s', time());
+	$post_releasedate = date('Y-m-d H:i', time());
 }
 
 
 /* event dates */
+/*
 if($post_data['post_event_startdate'] > 0) {
 	$post_event_startdate = date('Y-m-d H:i:s', $post_data['post_event_startdate']);
 } else {
@@ -264,6 +267,7 @@ if($post_data['post_event_enddate'] > 0) {
 } else {
 	$post_event_enddate = date('Y-m-d H:i:s', time());
 }
+*/
 
 
 

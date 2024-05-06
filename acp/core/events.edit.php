@@ -204,23 +204,22 @@ for($i=0;$i<count($cats);$i++) {
 
 /* release date */
 if($event_data['releasedate'] > 0) {
-    $releasedate = date('Y-m-d H:i:s', $event_data['releasedate']);
+    $releasedate = date('Y-m-d H:i', $event_data['releasedate']);
 } else {
-    $releasedate = date('Y-m-d H:i:s', time());
+    $releasedate = date('Y-m-d H:i', time());
 }
-
 
 /* event dates */
 if($event_data['event_startdate'] > 0) {
-    $event_startdate = date('Y-m-d H:i:s', $event_data['event_startdate']);
+    $event_startdate = date('Y-m-d H:i', $event_data['event_startdate']);
 } else {
-    $event_startdate = date('Y-m-d H:i:s', time());
+    $event_startdate = date('Y-m-d H:i', time());
 }
 
 if($event_data['event_enddate'] > 0) {
-    $event_enddate = date('Y-m-d H:i:s', $event_data['event_enddate']);
+    $event_enddate = date('Y-m-d H:i', $event_data['event_enddate']);
 } else {
-    $event_enddate = date('Y-m-d H:i:s', time());
+    $event_enddate = date('Y-m-d H:i', time());
 }
 
 
@@ -394,7 +393,7 @@ $form_tpl = str_replace('{meta_description}', $event_data['meta_description'], $
 
 $form_tpl = str_replace('{checkboxes_lang}', $select_lang, $form_tpl);
 $form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
-$form_tpl = str_replace('{releasedate}', $releasedate, $form_tpl);
+$form_tpl = str_replace('{post_releasedate}', $releasedate, $form_tpl);
 $form_tpl = str_replace('{widget_images}', $choose_images, $form_tpl);
 
 

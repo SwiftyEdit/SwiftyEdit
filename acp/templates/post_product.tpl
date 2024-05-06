@@ -508,8 +508,7 @@
                             </div>
                             <div class="form-group">
                                 <label>{label_keywords}</label>
-                                <input type="text" class='form-control' name="tags" data-role="tagsinput"
-                                       value="{tags}">
+                                <input type="text" class='form-control tags' name="tags" value="{tags}">
                             </div>
                             <div class="form-group">
                                 <label>{label_slug}</label>
@@ -558,7 +557,7 @@
 
                 <div class="mb-2 pb-3 border-bottom">
                     <label>{label_releasedate}</label>
-                    <input class='dp form-control' name="releasedate" type="text" value="{releasedate}">
+                    <input class='dp form-control' name="releasedate" type="datetime-local" value="{releasedate}">
                 </div>
                 <div class="mb-2 pb-3 border-bottom">
                     <label>{label_priority}</label>

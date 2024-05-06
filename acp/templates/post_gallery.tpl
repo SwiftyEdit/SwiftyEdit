@@ -41,7 +41,7 @@
 					</div>
 					<div class="form-group">
 						<label>{label_keywords}</label>
-						<input type="text" class='form-control' name="post_tags" data-role="tagsinput" value="{post_tags}">
+						<input type="text" class='form-control tags' name="post_tags" value="{post_tags}">
 					</div>		
 				</div>
 				
@@ -92,7 +92,7 @@
 				</div>
 				<div class="mb-3 pb-3 border-bottom">
 					<label>{label_releasedate}</label>
-					<input class='dp form-control' name="post_releasedate" type="text" value="{post_releasedate}">
+					<input class='dp form-control' name="post_releasedate" type="datetime-local" value="{post_releasedate}">
 				</div>
 				<div class="mb-3 pb-3 border-bottom">
 					<label>{label_priority}</label>

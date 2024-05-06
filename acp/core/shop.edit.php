@@ -327,9 +327,9 @@ for($i=0;$i<$cnt_cats;$i++) {
 
 /* release date */
 if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
-    $releasedate = date('Y-m-d H:i:s', $product_data['releasedate']);
+    $releasedate = date('Y-m-d H:i', $product_data['releasedate']);
 } else {
-    $releasedate = date('Y-m-d H:i:s', time());
+    $releasedate = date('Y-m-d H:i', time());
 }
 
 

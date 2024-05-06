@@ -53,8 +53,8 @@ if(!isset($show_file)) {
 <html lang="<?php echo $languagePack; ?>" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="../theme/css/swiftyedit.css?v=2023-08-08" type="text/css" media="screen, projection">
-    <script src="../theme/js/backend.min.js?v=2023-08-08"></script>
+    <link rel="stylesheet" href="../theme/dist/backend.css" type="text/css" media="screen, projection">
+    <script src="../theme/dist/backend.js"></script>
 </head>
 <body style="background: var(--bs-widget-bg);">
 <div class="container py-2">

@@ -93,7 +93,7 @@ echo '<div class="col-md-4">';
 
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_keywords'].'</label>';
-echo '<input class="form-control" type="text" name="snippet_keywords" value="'.html_entity_decode($snippet_keywords).'" data-role="tagsinput" />';
+echo '<input class="form-control tags" type="text" name="snippet_keywords" value="'.html_entity_decode($snippet_keywords).'">';
 echo '</div>';
 
 echo '</div>';
