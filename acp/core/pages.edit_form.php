@@ -11,8 +11,21 @@ require 'core/access.php';
  * @var string $delete_button
  * @var string $previev_button
  * @var string $form_title
+ * @var string $theme_tab is set if the page it's theme can handle page values
+ *
+ * page data
+ * @var string $page_sort
+ * @var string $page_language
+ * @var string $page_target
+ * @var string $page_linkname
+ * @var string $page_classes
+ * @var string $page_hash
+ * @var string $page_permalink
+ * @var string $page_canonical_url
+ *
  *
  * global variables
+ * @var array $lang translation
  * @var array $icon icons set in acp/core/icons.php
  * @var object $db_content medoo database object
  * @var string $se_base_url
@@ -101,7 +114,7 @@ $all_pages = se_array_multisort($all_pages, 'page_language', SORT_ASC, 'page_sor
 echo'<div class="tab-pane fade" id="position">';
 
 $cnt_all_pages = count($all_pages);
-$sm_string .= '<ul class="page-list">';
+$sm_string = '<ul class="page-list">';
 
 for($i=0;$i<$cnt_all_pages;$i++) {
 	
@@ -460,7 +473,7 @@ if($se_prefs['prefs_publisher_mode'] == 'overwrite') {
 }
 
 echo tpl_form_control_group('',$lang['label_author'],'<input class="form-control" type="text" name="page_meta_author" value="'.html_entity_decode($page_meta_author).'">');
-echo tpl_form_control_group('',$lang['label_keywords'],'<input class="form-control" type="text" name="page_meta_keywords" value="'.html_entity_decode($page_meta_keywords).'" data-role="tagsinput">');
+echo tpl_form_control_group('',$lang['label_keywords'],'<input class="form-control tags" type="text" name="page_meta_keywords" value="'.html_entity_decode($page_meta_keywords).'">');
 echo tpl_form_control_group('',$lang['label_description'],"<textarea name='page_meta_description' class='form-control cntWords cntChars' rows='5'>".html_entity_decode($page_meta_description)."</textarea>");
 
 echo '</div>';

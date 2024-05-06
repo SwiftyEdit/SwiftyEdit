@@ -2,9 +2,9 @@ $(function () {
     $('textarea.mceEditor, textarea.mceEditor_small').tinymce({
         selector: 'textarea.mceEditor',
         license_key: 'gpl',
-        base_url: '/acp/theme/js/tinymce/',
+        base_url: '/acp/theme/dist/tinymce/',
         language: languagePack,
-        language_url: '/acp/theme/js/tinymce-languages/' + languagePack + '.js',
+        language_url: '/acp/theme/dist/tinymce-languages/' + languagePack + '.js',
         skin: tinymce_skin,
         schema: 'html5',
         element_format: "html",

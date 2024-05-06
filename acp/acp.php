@@ -292,9 +292,7 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="theme/css/swiftyedit.css?v=2024-04-03" type="text/css" media="screen, projection">
-
-    <script src="theme/js/backend.min.js?v=2024-04-03"></script>
+    <link rel="stylesheet" href="theme/dist/backend.css?v=2024-04-29" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo $languagePack; ?>";
@@ -303,13 +301,17 @@ if (isset($set_acptheme)) {
         ace_theme = 'chrome';
         tinymce_skin = 'oxide';
 
-        const storedTheme = localStorage.getItem('backend-theme');
+        const storedTheme = localStorage.getItem('backendTheme');
 
         if (storedTheme === 'dark') {
             ace_theme = 'twilight';
             tinymce_skin = 'oxide-dark';
         }
     </script>
+
+    <script src="theme/dist/backend.js?v=2024-04-03"></script>
+    <script src="theme/dist/tinymce/tinymce.min.js"></script>
+    <script src="theme/dist/tinymce-jquery/tinymce-jquery.js"></script>
 
 
     <?php
@@ -447,7 +449,6 @@ if (isset($set_acptheme)) {
 
 <script type="text/javascript">
 
-
     $(function () {
 
         /* toggle editor class [mceEditor|plain|aceEditor_html] */
@@ -532,7 +533,7 @@ if (isset($set_acptheme)) {
                     var HTMLtextarea = $('textarea[class*=aceEditor_code]').hide();
                     var aceEditor = ace.edit(editDiv[0]);
                     aceEditor.$blockScrolling = Infinity;
-                    aceEditor.getSession().setMode({path: '/acp/theme/js/ace/mode/html', inline: true});
+                    aceEditor.getSession().setMode('ace/mode/html');
                     aceEditor.getSession().setValue(textarea.val());
                     aceEditor.setTheme('ace/theme/'+ace_theme);
                     aceEditor.getSession().setUseWorker(false);

@@ -1324,7 +1324,7 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
  * @param $file
  * @return array
  */
-function se_parse_docs_file($file) {
+function se_parse_docs_file($file): array {
 
     global $Parsedown;
     global $languagePack;
@@ -1372,15 +1372,17 @@ function se_parse_docs_file($file) {
         $parsed_content = $Parsedown->text($content);
         $filemtime = filemtime($file);
     } else {
-        $parsed_header = 'FILE NOT FOUND ('.$file.')';
+        $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
     }
 
+    $signature = '<p>file: '.$file.$filemtime.'</p>';
+
     $parsed['header'] = $parsed_header;
-    $parsed['content'] = $parsed_content;
+    $parsed['title'] = $parsed_header['title'];
+    $parsed['content'] = $parsed_content.$signature;
     $parsed['filemtime'] = $filemtime;
     $parsed['filename_orig'] = basename($file);
     $parsed['filepath_orig'] = $file;
-
     return $parsed;
 }
 

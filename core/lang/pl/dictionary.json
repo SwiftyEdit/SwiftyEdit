@@ -16,10 +16,8 @@
   "close": "Zamknij",
   "thumbnail": "Miniaturka",
   "uploads": "Wysłane",
-
   "status.new": "Nowy",
   "status.edit": "Edycja",
-
   "low": "niski",
   "high": "wysoki",
   "fixed": "ustalony",
@@ -27,8 +25,6 @@
   "sorting": "Sortowanie",
   "ascending": "Rosnąco",
   "descending": "Malejąco",
-
-
   "images": "Obrazki",
   "files": "Pliki",
   "filename": "Nazwa pliku",
@@ -37,7 +33,6 @@
   "notes": "Notatki",
   "no_image": "Brak obrazu",
   "use_no_image": "Nie używaj obrazka",
-
   "status.public": "Publiczny",
   "status.ghost": "Niewidzialny",
   "status.private": "Prywatny",
@@ -53,18 +48,14 @@
   "status.user.verified": "Zweryfikowano",
   "status.user.waiting": "Oczekiwanie",
   "status.user.paused": "Wstrzymano",
-
   "snippets": "fragmenty",
   "no_snippet_selected": "Nie wybrano żadnego fragmentu",
   "labels": "Etykiety",
   "categories": "Kategorie",
-
   "overview": "Przegląd",
-
   "label.date": "Data",
   "label.password": "Hasło",
   "label.password_reset": "Zresetuj hasło",
-
   "d01": "poniedziałek",
   "d02": "wtorek",
   "d03": "środa",
@@ -75,7 +66,6 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "tomorrow": "Tomorrow",
-
   "m01": "styczeń",
   "m02": "luty",
   "m03": "Marzec",

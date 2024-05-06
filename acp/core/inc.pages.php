@@ -88,4 +88,29 @@ if(isset($_SESSION['pages_text_filter']) AND $_SESSION['pages_text_filter'] != "
 
 $set_keyword_filter = substr("$set_keyword_filter", 0, -4); // cut the last ' AND'
 
+
+
+if(isset($_POST['filter_type'])) {
+
+    $sent_type_filter = clean_filename($_POST['filter_type']);
+
+    if(str_contains($_SESSION['checked_type_string'],"$sent_type_filter")) {
+        $type_filter = explode(" ", $_SESSION['checked_type_string']);
+        if(($key = array_search($sent_type_filter, $type_filter)) !== false) {
+            unset($type_filter[$key]);
+        }
+        $_SESSION['checked_type_string'] = implode(" ", $type_filter);
+    } else {
+        $_SESSION['checked_type_string'] = $_SESSION['checked_type_string'] . ' ' . $sent_type_filter;
+    }
+
+}
+
+if(isset($_SESSION['checked_type_string']) AND $_SESSION['checked_type_string'] != "") {
+    $type_filter = explode(" ", $_SESSION['checked_type_string']);
+    $type_filter = array_unique($type_filter);
+    $_SESSION['checked_type_string'] = implode(" ", $type_filter);
+}
+
+
 include $subinc.'.php';

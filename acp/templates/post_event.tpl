@@ -43,13 +43,13 @@
 							<div class="col">
 						<div class="input-group mb-2">
 							<div class="input-group-prepend"><span class="input-group-text">Beginn</span></div>
-							<input class='dp form-control' name="event_start" type="text" value="{event_start}">
+							<input class='dp form-control' name="event_start" type="datetime-local" value="{event_start}">
 						</div>
 							</div>
 							<div class="col">
 						<div class="input-group">
 							<div class="input-group-prepend"><span class="input-group-text">Ende</span></div>
-							<input class='dp form-control' name="event_end" type="text" value="{event_end}">
+							<input class='dp form-control' name="event_end" type="datetime-local" value="{event_end}">
 						</div>
 						</div>
 						</div>
@@ -66,7 +66,7 @@
 							</div>
 							<div class="col-md-3">
 								<div class="form-group">
-									<label>{label_street_nbr}</label>
+									<label>{label_nr}</label>
 									<input class="form-control" name="event_street_nbr" type="text" value="{event_street_nbr}">
 								</div>
 							</div>
@@ -80,7 +80,7 @@
 							</div>
 							<div class="col-md-9">
 								<div class="form-group">
-									<label>{label_city}</label>
+									<label>{label_town}</label>
 									<input class="form-control" name="event_city" type="text" value="{event_city}">
 								</div>
 							</div>
@@ -130,7 +130,7 @@
 					</div>
 					<div class="form-group">
 						<label>{label_keywords}</label>
-						<input type="text" class='form-control' name="tags" data-role="tagsinput" value="{tags}">
+						<input type="text" class='form-control tags' name="tags" value="{tags}">
 					</div>
 				</div>
 				
@@ -179,7 +179,7 @@
 				</div>
 				<div class="mb-3 pb-3 border-bottom">
 					<label>{label_releasedate}</label>
-					<input class='dp form-control' name="post_releasedate" type="text" value="{releasedate}">
+					<input class='dp form-control' name="post_releasedate" type="datetime-local" value="{post_releasedate}">
 				</div>
 				<div class="mb-3 pb-3 border-bottom">
 					<label>{label_priority}</label>

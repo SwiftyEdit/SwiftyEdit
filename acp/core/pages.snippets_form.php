@@ -93,7 +93,7 @@ echo '<div class="col-md-4">';
 
 echo '<div class="form-group">';
 echo '<label>'.$lang['label_keywords'].'</label>';
-echo '<input class="form-control" type="text" name="snippet_keywords" value="'.html_entity_decode($snippet_keywords).'" data-role="tagsinput" />';
+echo '<input class="form-control tags" type="text" name="snippet_keywords" value="'.html_entity_decode($snippet_keywords).'">';
 echo '</div>';
 
 echo '</div>';
@@ -301,7 +301,7 @@ if($modus == 'new') {
 	echo '<input type="hidden" name="snip_id" value="'.$snip_id.'">';
 	echo '<input type="submit" name="save_snippet" class="btn btn-success w-100" value="'.$lang['update'].'"> ';
 	echo '<div class="mt-1 d-flex">';
-	echo '<a class="btn btn-default w-100 mr-1" href="acp.php?tn=pages&sub=snippets">'.$lang['discard_changes'].'</a> ';
+	echo '<a class="btn btn-default w-100 mr-1" href="acp.php?tn=pages&sub=snippets">'.$lang['btn_discard'].'</a> ';
 	echo '<input type="submit" name="delete_snippet" class="btn btn-default text-danger" value="'.$lang['delete'].'" onclick="return confirm(\''.$lang['confirm_delete_data'].'\')">';
 	echo '</div>';
 }

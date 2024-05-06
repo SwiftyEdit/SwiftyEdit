@@ -52,5 +52,5 @@ $cols = array(
     "ba_street_nbr" => "VARCHAR(20) NOT NULL DEFAULT ''",
     "ba_zip" => "VARCHAR(20) NOT NULL DEFAULT ''",
     "ba_city" => "VARCHAR(50) NOT NULL DEFAULT ''",
-    "ba_city" => "VARCHAR(50) NOT NULL DEFAULT ''"
+    "ba_mail" => "VARCHAR(100) NOT NULL DEFAULT ''"
 );

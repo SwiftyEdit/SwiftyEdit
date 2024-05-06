@@ -151,8 +151,18 @@ if($_POST['save_the_user']) {
 				"user_company" => "$user_company",
 				"user_street" => "$user_street",
 				"user_street_nbr" => "$user_street_nbr",
-				"user_zip" => "$user_zipcode",
-				"user_city" => "$user_city"
+				"user_zip" => "$user_zip",
+				"user_city" => "$user_city",
+                "ba_firstname" => "$ba_firstname",
+                "ba_lastname" => "$ba_lastname",
+                "ba_company" => "$ba_company",
+                "ba_street" => "$ba_street",
+                "ba_street_nbr" => "$ba_street_nbr",
+                "ba_zip" => "$ba_zip",
+                "ba_city" => "$ba_city",
+                "ba_mail" => "$ba_mail",
+                "ba_tax_id_number" => "$ba_tax_id_number",
+                "ba_tax_number" => "$ba_tax_number"
 			];
 			
 			if($set_psw == "true") {
