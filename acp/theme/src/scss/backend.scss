@@ -55,6 +55,7 @@ $color-mode-type: data;
   --#{$prefix}success: #{$success};
   --#{$prefix}success-rgb: #{to-rgb($success)};
 
+  --body-gradient: linear-gradient(to right bottom, #{$body-gradient-top}, #{$body-gradient-middle}, #{$body-gradient-bottom});
 }
 
 [data-bs-theme="dark"] {
@@ -91,6 +92,8 @@ $color-mode-type: data;
     --#{$prefix}danger-rgb: #{to-rgb($danger-dark)};
     --#{$prefix}success: #{$success-dark};
     --#{$prefix}success-rgb: #{to-rgb($success-dark)};
+
+    --body-gradient: linear-gradient(to right bottom, #{$body-dark-gradient-top}, #{$body-dark-gradient-middle}, #{$body-dark-gradient-bottom});
 }
 
 
@@ -104,6 +107,7 @@ html, body {
   text-align: left;
   font-weight: 400;
   min-height: 100%;
+  background-image: var(--body-gradient);
 }
 
 div#page-content {
