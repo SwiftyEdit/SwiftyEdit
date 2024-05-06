@@ -204,7 +204,7 @@ if (!isset($_SESSION['lang'])) {
 }
 
 if (isset($_GET['set_lang'])) {
-    $set_lang = strip_tags($_GET['set_lang']);
+    $set_lang = sanitizeUserInputs($_GET['set_lang']);
     if (is_dir("../core/lang/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
@@ -435,7 +435,9 @@ if (isset($set_acptheme)) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
+                <div id="infoModalContent">
+                    Loading ...
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
