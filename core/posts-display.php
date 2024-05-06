@@ -137,6 +137,7 @@ $form_action = '/'.$swifty_slug.$mod_slug;
 $redirect = '?goto='.$post_data['post_id'];
 $smarty->assign('post_external_link', $post_data['post_link']);
 $smarty->assign('post_external_redirect', $redirect);
+$smarty->assign('post_link_text', $post_data['post_link_text']);
 
 
 if($post_data['post_meta_title'] == '') {

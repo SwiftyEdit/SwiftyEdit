@@ -66,7 +66,7 @@
     {* post type link *}
     {if $post_type == "l"}
         <p>
-            <a href="{$post_external_redirect}" title="{$post_external_link}" target="_blank">{$post_external_link}</a>
+            <a class="btn btn-primary" href="{$post_external_redirect}" title="{$post_external_link}" target="_blank">{$post_link_text}</a>
         </p>
 
         {$post_teaser}

@@ -43,22 +43,6 @@ if(isset($_POST['save_post']) OR isset($_POST['del_tmb']) OR isset($_POST['sort_
 		$post_releasedate = strtotime($_POST['post_releasedate']);
 	}
 
-    /*
-	if($_POST['event_start'] != "") {
-		$event_start = strtotime($_POST['event_start']);
-	}
-	
-	if($_POST['event_end'] != "") {
-		$event_end = strtotime($_POST['event_end']);
-		if($event_end < $event_start) {
-			$event_end = $event_start;
-		}
-	}
-	
-	$post_event_startdate = $event_start;
-	$post_event_enddate = $event_end;
-    */
-	
 	$clean_title = clean_filename($_POST['post_title']);
 	$post_date_year = date("Y",$post_releasedate);
 	$post_date_month = date("m",$post_releasedate);
@@ -252,23 +236,6 @@ if($post_data['post_releasedate'] > 0) {
 } else {
 	$post_releasedate = date('Y-m-d H:i', time());
 }
-
-
-/* event dates */
-/*
-if($post_data['post_event_startdate'] > 0) {
-	$post_event_startdate = date('Y-m-d H:i:s', $post_data['post_event_startdate']);
-} else {
-	$post_event_startdate = date('Y-m-d H:i:s', time());
-}
-
-if($post_data['post_event_enddate'] > 0) {
-	$post_event_enddate = date('Y-m-d H:i:s', $post_data['post_event_enddate']);
-} else {
-	$post_event_enddate = date('Y-m-d H:i:s', time());
-}
-*/
-
 
 
 /* fix post on top */
@@ -515,6 +482,7 @@ $form_tpl = str_replace('{post_video_url}', $post_data['post_video_url'], $form_
 
 /* links */
 $form_tpl = str_replace('{post_link}', $post_data['post_link'], $form_tpl);
+$form_tpl = str_replace('{post_link_text}', $post_data['post_link_text'], $form_tpl);
 
 /* files */
 $form_tpl = str_replace('{post_file_attachment_external}', $post_data['post_file_attachment_external'], $form_tpl);
