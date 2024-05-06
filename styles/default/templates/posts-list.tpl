@@ -118,7 +118,7 @@
             {$value.post_teaser}
 
             <p>
-               <a href="{$value.post_external_redirect}" title="{$value.post_external_link}" target="_blank">{$value.post_external_link}</a>
+               <a class="btn btn-primary" href="{$value.post_external_redirect}" title="{$value.post_external_link}" target="_blank">{$value.post_link_text}</a>
             </p>
 
         {/if}

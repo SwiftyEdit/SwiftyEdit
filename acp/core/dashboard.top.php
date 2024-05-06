@@ -34,7 +34,7 @@ $user_result = $db_user->select("se_user", ["user_id", "user_nick", "user_firstn
 $cnt_user = count($user_result);
 
 $tpl_file = str_replace('{cnt_all_user}', $cnt_user, $tpl_file);
-$user_latest5 = '<table class="table table-list">';
+$user_latest5 = '<table class="table">';
 
 
 for ($i = 0; $i < 5; $i++) {

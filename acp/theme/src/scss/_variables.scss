@@ -64,13 +64,12 @@ $light-border-subtle:     $gray-200 !default;
 $dark-border-subtle:      $gray-500 !default;
 
 
-
 $alert-bg-scale:                -80% !default; // Deprecated in v5.2.0, to be removed in v6
 $alert-border-scale:            -70% !default; // Deprecated in v5.2.0, to be removed in v6
 $alert-color-scale:             40% !default; // Deprecated in v5.2.0, to be removed in v6
 
 $page_header_bg: desaturate($lighten,5);
-$widget_background: mix($lighten,$primary,80%);
+$widget_background: #f9f9f9;
 $widget_border_color: darken($widget_background,15);
 
 $widget-bg-100: mix($lighten,$widget_background,40%);
@@ -85,7 +84,11 @@ $widget-bg-900: mix($darken,$widget_background,40%);
 
 
 $body-color: #252525;
-$body-bg: desaturate($lighten,10) !default;
+$body-bg: #f1f1f1 !default;
+$body-gradient-top: rgba($primary,0.1);
+$body-gradient-middle: $body-bg;
+$body-gradient-bottom: rgba($primary,0.4);
+
 $body-secondary-color:         rgba($body-color, .75) !default;
 $body-secondary-bg:            $gray-400 !default;
 $body-tertiary-color:          rgba($body-color, .5) !default;
@@ -97,15 +100,6 @@ $headings-color: $primary;
 $link-color:                   darken($primary, 10) !default;
 $link-hover-color:             lighten($link-color, 10) !default;
 $code-color: #ad2d6b;
-
-
-
-
-
-
-
-
-
 
 
 

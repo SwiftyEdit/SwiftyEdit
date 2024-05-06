@@ -69,12 +69,12 @@ if($modus == "update") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="auto">
 <head>
 	<meta charset="utf-8">
 	<title><?php echo"$modus"; ?> SwiftyEdit | Content Management System</title>
-	<script src="../styles/default/js/main.js"></script>
-	<link media="screen" rel="stylesheet" type="text/css" href="../acp/theme/css/swiftyedit.css" />
+	<script src="../acp/theme/dist/backend.js"></script>
+	<link media="screen" rel="stylesheet" type="text/css" href="../acp/theme/dist/backend.css" />
 	<link media="screen" rel="stylesheet" type="text/css" href="css/styles.css?v=20" />
 </head>
 <body>

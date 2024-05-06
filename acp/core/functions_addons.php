@@ -358,7 +358,7 @@ function se_get_hook($command) {
                     $send_value = $key.'<->'.$commands.'<->'.$action;
                     $hook_str .= '<div class="mb-1 form-check">';
                     $hook_str .= '<input type="checkbox" name="send_hook[]" value="'.$send_value.'" id="id'.$x.'"> ';
-                    $hook_str .= '<label for="id'.$x.'"><span class="badge">'.$key.'</span> '.$v.'</label>';
+                    $hook_str .= '<label for="id'.$x.'"><span class="badge text-bg-secondary">'.$key.'</span> '.$v.'</label>';
                     $hook_str .= '</div>';
                     $x++;
                 }

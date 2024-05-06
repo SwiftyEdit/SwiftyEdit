@@ -240,7 +240,7 @@ foreach($get_posts as $k => $post) {
     $get_posts[$k]['post_releasedate_str'] = date($se_prefs['prefs_dateformat'], $get_posts[$k]['post_releasedate']);
 
 	/* links */
-	$redirect = '?goto='.$get_posts[$k]['post_id'];
+	$redirect = $swifty_slug.'?goto='.$get_posts[$k]['post_id'];
     $get_posts[$k]['post_external_link'] = $get_posts[$k]['post_link'];
     $get_posts[$k]['post_external_redirect'] = $redirect;
 

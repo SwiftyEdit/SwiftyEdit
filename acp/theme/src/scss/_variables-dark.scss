@@ -35,7 +35,7 @@ $dark-bg-subtle-dark:               mix($gray-800, $black) !default;
 
 
 $page_header_bg_dark: desaturate($darken,10);
-$widget_background_dark: mix($darken,$primary,80%);
+$widget_background_dark: #262626;
 $widget_border_color_dark: darken($widget_background_dark,25);
 
 $widget-bg-dark-100: mix($lighten,$widget_background_dark,40%);
@@ -50,8 +50,12 @@ $widget-bg-dark-900: mix($darken,$widget_background_dark,80%);
 
 $subHeader_bg_dark: desaturate($darken,5);
 
-$body-color-dark:                   #e5e5e5 !default;
-$body-bg-dark:                      darken($page_header_bg_dark,3) !default;
+$body-color-dark: #e5e5e5 !default;
+$body-bg-dark: #080808 !default;
+$body-dark-gradient-top: rgba($primary-dark,0.2);
+$body-dark-gradient-middle: $body-bg-dark;
+$body-dark-gradient-bottom: rgba($primary-dark,0.4);
+
 $body-secondary-color-dark:         rgba($body-color-dark, .75) !default;
 $body-secondary-bg-dark:            $gray-800 !default;
 $body-tertiary-color-dark:          rgba($body-color-dark, .5) !default;

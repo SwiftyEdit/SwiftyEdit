@@ -13,9 +13,19 @@
 			<div class="tab-content">
 				<div class="tab-pane fade show active" id="content">
 
+					<div class="row">
+						<div class="col-md-8">
 					<div class="mb-3">
 						<label for="inputUrl" class="form-label">{label_url}</label>
 						<input id="inputUrl" class="form-control" name="post_link" type="text" value="{post_link}">
+					</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-3">
+								<label for="inputLinkText" class="form-label">{label_text}</label>
+								<input id="inputLinkText" class="form-control" name="post_link_text" type="text" value="{post_link_text}">
+							</div>
+						</div>
 					</div>
 
 					<div class="row">
