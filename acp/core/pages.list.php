@@ -34,7 +34,7 @@ if(!isset($_SESSION['sorting_single_pages_dir'])) {
 }
 
 $pages_filter['languages'] = implode("-",$global_filter_languages);
-$pages_filter['types'] = $_SESSION['checked_type_string'];
+$pages_filter['types'] = $_SESSION['checked_page_type_string'];
 $pages_filter['status'] = implode("-",$global_filter_status);
 $pages_filter['labels'] = implode("-",$global_filter_label);
 $pages_filter['text'] = $_SESSION['pages_text_filter'];
@@ -286,7 +286,7 @@ foreach($se_page_types as $types) {
     $str = 'type_of_use_'.$types;
     $name = $lang[$str];
     $active_class = '';
-    if(str_contains($_SESSION['checked_type_string'],"$types")) {
+    if(str_contains($_SESSION['checked_page_type_string'],"$types")) {
         $active_class = 'active';
     }
 

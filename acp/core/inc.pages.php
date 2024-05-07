@@ -94,22 +94,22 @@ if(isset($_POST['filter_type'])) {
 
     $sent_type_filter = clean_filename($_POST['filter_type']);
 
-    if(str_contains($_SESSION['checked_type_string'],"$sent_type_filter")) {
-        $type_filter = explode(" ", $_SESSION['checked_type_string']);
+    if(str_contains($_SESSION['checked_page_type_string'],"$sent_type_filter")) {
+        $type_filter = explode(" ", $_SESSION['checked_page_type_string']);
         if(($key = array_search($sent_type_filter, $type_filter)) !== false) {
             unset($type_filter[$key]);
         }
-        $_SESSION['checked_type_string'] = implode(" ", $type_filter);
+        $_SESSION['checked_page_type_string'] = implode(" ", $type_filter);
     } else {
-        $_SESSION['checked_type_string'] = $_SESSION['checked_type_string'] . ' ' . $sent_type_filter;
+        $_SESSION['checked_page_type_string'] = $_SESSION['checked_page_type_string'] . ' ' . $sent_type_filter;
     }
 
 }
 
-if(isset($_SESSION['checked_type_string']) AND $_SESSION['checked_type_string'] != "") {
-    $type_filter = explode(" ", $_SESSION['checked_type_string']);
+if(isset($_SESSION['checked_page_type_string']) AND $_SESSION['checked_page_type_string'] != "") {
+    $type_filter = explode(" ", $_SESSION['checked_page_type_string']);
     $type_filter = array_unique($type_filter);
-    $_SESSION['checked_type_string'] = implode(" ", $type_filter);
+    $_SESSION['checked_page_type_string'] = implode(" ", $type_filter);
 }
 
 
