@@ -14,7 +14,7 @@ $img_folder = basename($path_img);
 $files_folder = basename($path_files);
 ?>
 
-<form action="core/files.upload-script.php" id="myDropzone" class="dropzone dropzone-default">
+<form action="core/files.upload-script.php" id="myDropzone" method="post" class="dropzone dropzone-default">
 <div class="row">
 	<div class="col-md-9">
 		<label><?php echo $lang['upload_destination']; ?></label>
