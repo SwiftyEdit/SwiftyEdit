@@ -113,10 +113,16 @@ if(!isset($_SESSION['checked_type_string'])) {
 }
 /* change status of selected types */
 if($_GET['type']) {
-	if(strpos("$_SESSION[checked_type_string]", "$_GET[type]") !== false) {
-		$checked_type_string = str_replace("$_GET[type]", '', $_SESSION['checked_type_string']);
+
+    $get_type = sanitizeUserInputs($_GET['type']);
+    if(!in_array($get_type, $arr_types)) {
+        exit();
+    }
+
+	if(str_contains($_SESSION['checked_type_string'], "$get_type")) {
+		$checked_type_string = str_replace("$get_type", '', $_SESSION['checked_type_string']);
 	} else {
-		$checked_type_string = $_SESSION['checked_type_string'] . '-' . $_GET['type'];
+		$checked_type_string = $_SESSION['checked_type_string'] . '-' . $get_type;
 	}
 	$checked_type_string = str_replace('--', '-', $checked_type_string);
 	$_SESSION['checked_type_string'] = "$checked_type_string";
