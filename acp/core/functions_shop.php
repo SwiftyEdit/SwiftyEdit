@@ -44,6 +44,6 @@ function se_get_all_products() {
 
     global $db_posts;
 
-    $products = $db_posts->select("se_products",["id","title"]);
+    $products = $db_posts->select("se_products",["id","title","product_lang"]);
     return $products;
 }

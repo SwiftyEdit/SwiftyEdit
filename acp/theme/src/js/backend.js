@@ -192,6 +192,17 @@ $(function() {
         location.reload();
     });
 
+
+    $(".filter-table-input").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        var group = $(this).closest('.filter-group');
+        $(group).find(".table-filter tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+
+
     $('.page-info-btn').click(function(){
 
         var pageid = $(this).data('id');
