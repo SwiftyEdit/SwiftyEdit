@@ -53,6 +53,7 @@ if(is_file('../../config_database.php')) {
 }
 
 
+require '../../core/functions/functions.php';
 
 
 if($_POST['csrf_token'] !== $_SESSION['token']) {
@@ -61,11 +62,11 @@ if($_POST['csrf_token'] !== $_SESSION['token']) {
 
 $time = time();
 
-$max_w = (int) $_REQUEST['w']; // max image width
-$max_h = (int) $_REQUEST['h']; // max image height
-$max_w_tmb = (int) $_REQUEST['w_tmb']; // max thumbnail width
-$max_h_tmb = (int) $_REQUEST['h_tmb']; // max thumbnail height
-$max_fz = (int) $_REQUEST['fz']; // max filesize
+$max_w = (int) $_POST['w']; // max image width
+$max_h = (int) $_POST['h']; // max image height
+$max_w_tmb = (int) $_POST['w_tmb']; // max thumbnail width
+$max_h_tmb = (int) $_POST['h_tmb']; // max thumbnail height
+$max_fz = (int) $_POST['fz']; // max filesize
 
 if($max_w_tmb < 1) {
 	$max_w_tmb = 250;
@@ -75,11 +76,11 @@ if($max_h_tmb < 1) {
 	$max_h_tmb = 250;
 }
 
-if(strpos($_REQUEST['upload_destination'],"/images") !== false) {
-	$destination = '../'.$_REQUEST['upload_destination'];
+if(str_contains($_POST['upload_destination'], "/images")) {
+	$destination = '../'.se_filter_filepath($_POST['upload_destination']);
 	$upload_type = 'images';
-} else if(strpos($_REQUEST['upload_destination'],"/files") !== false) {
-	$destination = '../'.$_REQUEST['upload_destination'];
+} else if(str_contains($_POST['upload_destination'], "/files")) {
+	$destination = '../'.se_filter_filepath($_POST['upload_destination']);
 	$upload_type = 'files';
 }
 
@@ -102,7 +103,7 @@ if($upload_type == 'images') {
 		$org_name = $_FILES['file']['name'];
 		$suffix = substr(strrchr($org_name,'.'),1);
 		$prefix = basename($org_name,".$suffix");
-		$img_name = clean_filename($prefix,$suffix);
+		$img_name = generate_filename($prefix,$suffix);
 		$target = "$destination/$img_name";
 
 		//$se_upload_img_types from config.php
@@ -110,7 +111,7 @@ if($upload_type == 'images') {
 			exit;
 		} else {
 
-			if($_REQUEST['unchanged'] == 'yes' OR $suffix == 'svg') {
+			if($_POST['unchanged'] == 'yes' OR $suffix == 'svg') {
 				@move_uploaded_file($tmp_name, $target);
 			} else {			
 				resize_image($tmp_name,$target,$max_w,$max_h,100);
@@ -124,8 +125,6 @@ if($upload_type == 'images') {
 			if($_POST['file_mode'] !== 'overwrite') {
 				se_write_media_data_name($target,$store_tmb_name,$filesize,$time,$filetype);
 			}
-			
-		
 		}
 
 	}
@@ -139,7 +138,7 @@ if($upload_type == 'files') {
 	  $org_name = $_FILES["file"]["name"];
 	  $suffix = substr(strrchr($org_name,'.'),1);
 	  $prefix = basename($org_name,".$suffix");
-	  $files_name = clean_filename($prefix,$suffix);
+	  $files_name = generate_filename($prefix,$suffix);
 	  $target = "$destination/$files_name";
 	  
 	  $se_upload_types = array_merge($se_upload_img_types,$se_upload_file_types);
@@ -167,7 +166,7 @@ if($se_upload_addons === true) {
 		  $org_name = $_FILES["file"]["name"];
 		  $suffix = strtolower(substr(strrchr($org_name,'.'),1));
 		  $prefix = basename($org_name,".$suffix");
-		  $files_name = clean_filename($prefix,$suffix);
+		  $files_name = generate_filename($prefix,$suffix);
 		  if(!is_dir('../../upload/plugins')) {
 			  mkdir("../../upload/plugins", 0777, true);
 		  }
@@ -183,7 +182,7 @@ if($se_upload_addons === true) {
 		  $org_name = $_FILES["file"]["name"];
 		  $suffix = strtolower(substr(strrchr($org_name,'.'),1));
 		  $prefix = basename($org_name,".$suffix");
-		  $files_name = clean_filename($prefix,$suffix);
+		  $files_name = generate_filename($prefix,$suffix);
 		  if(!is_dir('../../upload/themes')) {
 			  mkdir("../../upload/themes", 0777, true);
 		  }
@@ -199,7 +198,7 @@ if($se_upload_addons === true) {
 		  $org_name = $_FILES["file"]["name"];
 		  $suffix = strtolower(substr(strrchr($org_name,'.'),1));
 		  $prefix = basename($org_name,".$suffix");
-		  $files_name = clean_filename($prefix,$suffix);
+		  $files_name = generate_filename($prefix,$suffix);
 		  if(!is_dir('../../upload/modules')) {
 			  mkdir("../../upload/modules", 0777, true);
 		  }
@@ -301,7 +300,7 @@ function increment_prefix($cnt,$target) {
 }
 
 
-function clean_filename($prefix,$suffix) {
+function generate_filename($prefix,$suffix) {
 
 	global $destination;
 	$prefix = strtolower($prefix);
@@ -325,6 +324,8 @@ function clean_filename($prefix,$suffix) {
 
 	return $filename; 
 }
+
+
 
 
 

@@ -32,8 +32,7 @@ if($_SESSION['confirmed_danger_zone'] !== 'confirmed') {
 	/* confirm that you know it is dangerous here */
 	echo '<form action="?tn=moduls&sub=u" method="POST">';
 	echo '<div class="alert alert-danger mb-4">';
-	echo '<p>'.$lang['section_is_beta'].'</p>';
-	echo '<p>'.$lang['section_is_danger_zone'].'</p>';
+	echo '<p>'.$lang['msg_info_danger_zone'].'</p>';
 	echo '<button type="submit" class="btn btn-danger" name="confirm_danger_zone" value="'.$_SESSION['user_nick'].'">OKAY, I GET IT</button>';
 	echo $hidden_csrf_token;
 	echo '</div>';
@@ -339,7 +338,7 @@ if($_SESSION['confirmed_danger_zone'] == 'confirmed') {
 		$all_uploads = se_scandir_rec('../upload');
 		
 		echo '<fieldset class="mt-3">';
-		echo '<legend>'.$lang['label_ready_to_install'].'</legend>';
+		echo '<legend>'.$lang['btn_install'].'</legend>';
 		
 		if(count($all_uploads) < 1) {
 			echo '<p class="text-muted">'.$lang['msg_nothing_to_install'].' <a href="?tn=moduls&sub=u" class="btn btn-link">'.$icon['sync_alt'].' reload</a></p>';
