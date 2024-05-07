@@ -454,6 +454,7 @@
   "msg.info.usermail_exists": "Αυτή η διεύθυνση ηλεκτρονικού ταχυδρομείου υπάρχει ήδη",
   "msg.info.settings.use_smtp": "Για να χρησιμοποιήσετε το SMTP, πρέπει να δημιουργήσετε ένα αρχείο <code>config_smtp.php</code> στο φάκελο <code>/content/</code>.",
   "msg.info.delete_custom_fields": "Αν διαγράψετε ένα πεδίο, τα δεδομένα που περιέχει (μέσα σε όλες τις σελίδες) θα χαθούν αμετάκλητα.",
+  "msg.info.danger_zone": "Only upload files if you are sure that they do not contain malicious code",
   "update.msg.alpha": "Μια ενημέρωση από το κανάλι Alpha είναι διαθέσιμη για λήψη. Αυτή η ενημέρωση δεν πρέπει να φορτωθεί σε παραγωγικό περιβάλλον.",
   "update.msg.beta": "Μια ενημέρωση από το κανάλι Beta είναι διαθέσιμη για λήψη. Αυτή η ενημέρωση δεν πρέπει να φορτωθεί σε παραγωγικό περιβάλλον.",
   "update.msg.stable": "Υπάρχει διαθέσιμη ενημέρωση για λήψη",
