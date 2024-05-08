@@ -113,6 +113,10 @@ if($se_prefs['prefs_timeformat'] == '') {
     $se_prefs['prefs_timeformat'] = 'H:i:s';
 }
 
+if ($se_prefs['prefs_timezone'] != '') {
+    date_default_timezone_set($se_prefs['prefs_timezone']);
+}
+
 
 /**
  * include the language file
