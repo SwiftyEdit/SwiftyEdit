@@ -18,23 +18,22 @@ require __DIR__.'/access.php';
 
 $show_form = false;
 
-if(isset($_GET['new'])) {
-    if($_GET['new'] == 'group') {
-        $mode = 'new_group';
-        $show_form = 'edit_group';
-    }
-    if($_GET['new'] == 'value') {
-        $mode = 'new_value';
-        $show_form = 'edit_value';
-    }
-
+if(isset($_POST['new_group'])) {
+    $mode = 'new_group';
+    $show_form = 'edit_group';
     $btn_submit_text = $lang['save'];
 }
 
-if(isset($_GET['edit_group'])) {
+if(isset($_POST['new_value'])) {
+    $mode = 'new_value';
+    $show_form = 'edit_value';
+    $btn_submit_text = $lang['save'];
+}
+
+if(isset($_POST['edit_group'])) {
     $mode = 'edit_group';
     $show_form = 'edit_group';
-    $get_data_id = (int) $_GET['edit_group'];
+    $get_data_id = (int) $_POST['edit_group'];
 
     $btn_submit_text = $lang['update'];
 
@@ -44,10 +43,10 @@ if(isset($_GET['edit_group'])) {
 }
 
 
-if(isset($_GET['edit_value'])) {
+if(isset($_POST['edit_value'])) {
     $mode = 'edit_value';
     $show_form = 'edit_value';
-    $get_data_id = (int) $_GET['edit_value'];
+    $get_data_id = (int) $_POST['edit_value'];
     $btn_submit_text = $lang['update'];
     $value_data = $db_content->get("se_filter","*", [
         "filter_id" => $get_data_id
@@ -57,10 +56,15 @@ if(isset($_GET['edit_value'])) {
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo '<h3>'.$icon['filter'] .' Filter</h3>';
+echo '<form action="?tn=shop&sub=shop-filter" method="POST" class="ms-auto">';
 echo '<div class="btn-group ms-auto">';
-echo '<a href="?tn=shop&sub=shop-filter&new=group" class="btn btn-default">'.$icon['plus'].' '.$lang['btn_new_group'].'</a>';
-echo '<a href="?tn=shop&sub=shop-filter&new=value" class="btn btn-default">'.$icon['plus'].' '.$lang['btn_new_value'].'</a>';
+echo '<button type="submit" name="new_group" class="btn btn-default"><span class="text-success">'.$icon['plus'].'</span> '.$lang['btn_new_group'].'</button>';
+echo '<button type="submit" name="new_value" class="btn btn-default"><span class="text-success">'.$icon['plus'].'</span> '.$lang['btn_new_value'].'</button>';
 echo '</div>';
+echo $hidden_csrf_token;
+echo '</form>';
+
+echo '</form>';
 echo '</div>';
 
 $all_filters = se_get_product_filter_groups('all');
@@ -92,8 +96,8 @@ if($show_form !== false)  {
     foreach($all_filters as $k => $v) {
         $title = $v['filter_title'];
         $id = $v['filter_id'];
-        if(isset($_GET['parent'])) {
-            $value_data['filter_parent_id'] = (int) $_GET['parent'];
+        if(isset($_POST['new_value']) && (is_numeric($_POST['new_value']))) {
+            $value_data['filter_parent_id'] = (int) $_POST['new_value'];
         }
         $select_parent_id .= "<option value='$id'".($value_data['filter_parent_id'] == "$id" ? 'selected="selected"' :'').">$title</option>";
     }
@@ -191,7 +195,7 @@ if($show_form !== false)  {
     // list all filter
 
     echo '<div class="card p-3">';
-    echo '<table class="table">';
+    echo '<table class="table table-hover">';
     echo '<thead>';
     echo '<tr>';
     echo '<th>'.$icon['translate'].'</th>';
@@ -224,9 +228,13 @@ if($show_form !== false)  {
         echo '<td>'.$group_prio.'</td>';
         echo '<td>'.$type.'</td>';
         echo '<td>';
-        echo '<a href="?tn=shop&sub=shop-filter&edit_group='.$group_id.'" class="btn btn-default">'.$group_title.'</a>';
+
+        echo '<form action="?tn=shop&sub=shop-filter" method="post">';
+        echo '<button type="submit" name="edit_group" value="'.$group_id.'" class="btn btn-default">'.$icon['edit'].' '.$group_title.'</button>';
+        echo $hidden_csrf_token;
+        echo '</form>';
+
         // show categories
-        echo '<br>';
         foreach($get_all_categories as $k => $v) {
             if (in_array($v['cat_hash'], $group_categories)) {
                 echo '<span class="badge text-bg-secondary opacity-50">'.$v['cat_name'].'</span> ';
@@ -234,12 +242,24 @@ if($show_form !== false)  {
         }
         echo '</td>';
         echo '<td>';
+        echo '<form action="?tn=shop&sub=shop-filter" method="post">';
         foreach($get_filter_items as $item) {
-            echo '<a href="?tn=shop&sub=shop-filter&edit_value='.$item['filter_id'].'" class="btn btn-sm btn-default">';
-            echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> '.$item['filter_title'];
-            echo '</a> ';
+
+            echo '<button type="submit" name="edit_value" value="'.$item['filter_id'].'" class="btn btn-sm btn-default me-1">';
+            echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> ';
+            echo $item['filter_title'];
+            echo '</button>';
+
+            //echo '<a href="?tn=shop&sub=shop-filter&edit_value='.$item['filter_id'].'" class="btn btn-sm btn-default">';
+            //echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> '.$item['filter_title'];
+            //echo '</a> ';
         }
-        echo '<a href="?tn=shop&sub=shop-filter&new=value&parent='.$group_id.'" class="btn btn-sm btn-default text-success">+</a>';
+        echo '<button type="submit" name="new_value" value="'.$group_id.'" class="btn btn-sm btn-default me-1">';
+        echo '<span class="text-success">'.$icon['plus'].'</span>';
+        echo '</button>';
+        echo $hidden_csrf_token;
+        echo '</form>';
+        //echo '<a href="?tn=shop&sub=shop-filter&new=value&parent='.$group_id.'" class="btn btn-sm btn-default text-success">+</a>';
         echo '</td>';
         echo '</tr>';
 
