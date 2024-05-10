@@ -77,7 +77,11 @@ if((isset($_POST['mode'])) && $_POST['mode'] == 'edit_group') {
     $filter_parent_id = (int) $_POST['filter_parent_id'];
     $filter_priority = (int) $_POST['filter_group_priority'];
 
-    $filter_cats = implode(",",$_POST['filter_cats']);
+    if(is_array($_POST['filter_cats'])) {
+        $filter_cats = implode(",", $_POST['filter_cats']);
+    } else {
+        $filter_cats = '';
+    }
 
     $data = $db_content->update("se_filter", [
         "filter_title" =>  $filter_group_name,
