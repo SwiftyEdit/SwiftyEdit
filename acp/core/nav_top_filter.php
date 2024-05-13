@@ -77,7 +77,7 @@ echo '</div>';
 echo '</div>';
 
 /* labels */
-echo '<div class="card">';
+echo '<div class="card mt-1">';
 echo '<div class="card-header">'.$lang['labels'].'</div>';
 echo '<div class="card-body">';
 for($i=0;$i<$cnt_labels;$i++) {
