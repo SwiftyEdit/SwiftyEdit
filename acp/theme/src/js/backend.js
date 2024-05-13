@@ -23,7 +23,7 @@ import 'htmx.org';
 
 import 'dropzone/dist/dropzone'
 
-import '@selectize/selectize';
+import '@selectize/selectize/dist/js/selectize.min';
 
 document.addEventListener('htmx:afterRequest', function(evt) {
 
@@ -68,7 +68,14 @@ $(function() {
     }, 2000);
 
     $(".tags").selectize({
-        delimiter: ","
+        delimiter: ",",
+        persist: false,
+        create: function (input) {
+            return {
+                value: input,
+                text: input,
+            };
+        },
     });
 
     /**
@@ -191,6 +198,17 @@ $(function() {
     $('#globalFilter').on('hide.bs.offcanvas', function () {
         location.reload();
     });
+
+
+    $(".filter-table-input").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        var group = $(this).closest('.filter-group');
+        $(group).find(".table-filter tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+
 
     $('.page-info-btn').click(function(){
 

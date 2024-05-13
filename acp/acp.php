@@ -190,7 +190,10 @@ foreach ($se_get_preferences as $k => $v) {
         $short_key = substr($key,6);
         $se_prefs[$short_key] = $value;
     }
+}
 
+if ($se_prefs['prefs_timezone'] != '') {
+    date_default_timezone_set($se_prefs['prefs_timezone']);
 }
 
 /* set language */

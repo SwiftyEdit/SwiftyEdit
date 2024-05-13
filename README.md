@@ -4,14 +4,23 @@
 
 # SwiftyEdit CMS
 
-SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite. 
-Build websites, blogs, webshops and much more for you or your customers.
+SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite.
 
 + License: GNU GENERAL PUBLIC LICENSE Version 3<br>
 ![GitHub License](https://img.shields.io/github/license/SwiftyEdit/SwiftyEdit)
 + You are welcome to help with the translations<br>
 [![Crowdin](https://badges.crowdin.net/swiftyedit/localized.svg)](https://crowdin.com/project/swiftyedit)
 
+## Features
+
+SwiftyEdit has a very simple structure and can be used for the smallest projects as well as larger challenges. 
+The following modules are integrated in the system:
+
+* The kind of __page management__ a CMS should have.
+* __Snippets and Shortcodes__ - Don't write the same thing over and over again.
+* __Blog__ - Publish your news, pictures, galleries or downloads and videos. Anything you want.
+* __Events__ - Publish your events and manage reservations and guest lists.
+* __Shop__ - Present your offers. Sell your things - including digital products.
 
 ### Usermanual and Developer Documentation
 
@@ -22,7 +31,7 @@ Build websites, blogs, webshops and much more for you or your customers.
 
 + Software: PHP 8+
 + Web Server: Apache with PDO/SQLite Module and mod_rewrite
-+ Database: SQLite, MySQL 5.6+ (optional)
++ Database: MySQL 5.6+ or SQLite
 
 #### Download
 
@@ -37,24 +46,8 @@ composer create-project swiftyedit/swiftyedit
 
 __You are very welcome to take part in this project.__ We are happy for every contribution.
 
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
+When contributing to this repository, please first discuss the change you wish to make via issue, 
+email, or any other method with the owners of this repository before making a change.
 
-
-#### 3rd Party Frameworks and Plugins
-
-+ Medoo - https://github.com/catfan/Medoo
-+ Smarty - http://www.smarty.net/
-+ Parsedown - https://parsedown.org
-+ PHPMailer - https://github.com/PHPMailer/PHPMailer
-+ Ace Editor - http://ace.c9.io/
-+ TinyMCE - http://www.tinymce.com/
-+ Bootstrap - http://getbootstrap.com/
-+ bootstrap-tagsinput - https://github.com/bootstrap-tagsinput/bootstrap-tagsinput
-+ clipboard.js- https://github.com/zenorocha/clipboard.js
-+ DropzoneJS - http://www.dropzonejs.com
-+ featherlight - https://github.com/noelboss/featherlight/
-+ image-picker - https://github.com/rvera/image-picker
-+ jQuery - https://jquery.com/
-+ jquery.dirtyforms - https://github.com/snikch/jquery.dirtyforms
-+ tempus dominus - https://github.com/Eonasdan/tempus-dominus
-+ moment - https://github.com/moment/moment
+If you want to create a translation or improve an existing one, 
+visit the [Crowdin Project](https://crowdin.com/project/swiftyedit)

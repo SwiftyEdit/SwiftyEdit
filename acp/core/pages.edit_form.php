@@ -301,6 +301,13 @@ if($page_translation_urls != '') {
     $translation_urls_array = json_decode($page_translation_urls,true);
 }
 
+
+echo '<div class="card">';
+echo '<div class="card-header d-flex justify-content-between">';
+echo $lang['label_translations'].' (URLs)';
+echo ' <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">'.$icon['plus'].'</button>';
+echo '</div>';
+echo '<div class="card-body collapse" id="collapseTranslationURL">';
 foreach($active_lang as $k => $v) {
 
     $ls = $v['sign'];
@@ -310,6 +317,8 @@ foreach($active_lang as $k => $v) {
     echo '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url" value="'.$translation_urls_array[$ls].'">';
     echo '</div>';
 }
+echo '</div>';
+echo '</div>';
 
 ?>
 <script>

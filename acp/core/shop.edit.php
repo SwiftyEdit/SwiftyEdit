@@ -645,11 +645,16 @@ foreach($all_posts_features as $feature) {
 $all_products = se_get_all_products();
 
 $get_prod_related = json_decode($product_data['product_related'],true);
-$checkbox_related_prod = '';
+
+$checkbox_related_prod = '<div class="filter-group">';
+$checkbox_related_prod .= '<input type="text" class="form-control filter-table-input" placeholder="Filter ...">';
+$checkbox_related_prod .= '<table class="table table-filter">';
 
 foreach($all_products as $prod) {
 
     $prod_id = $prod['id'];
+    $prod_language = $prod['product_lang'];
+    $flag = '<img src="/core/lang/' . $prod_language . '/flag.png" width="15">';
     $prod_title = $prod['title'];
     $checked_prod = '';
     if(is_array($get_prod_related)) {
@@ -658,18 +663,27 @@ foreach($all_products as $prod) {
         }
     }
 
-    $checkbox_related_prod .= '<div class="form-check">';
-    $checkbox_related_prod .= '<input class="form-check-input" id="related_'.$prod_id.'" type="checkbox" name="product_related[]" value="'.$prod_id.'" '.$checked_prod.'>';
-    $checkbox_related_prod .= '<label class="form-check-label" for="related_'.$prod_id.'">'.$prod_title.' <small class="text-muted">('.$prod_id.')</small></label>';
-    $checkbox_related_prod .= '</div>';
+    $checkbox_related_prod .= '<tr>';
+    $checkbox_related_prod .= '<td width="30"><input class="form-check-input" id="related_'.$prod_id.'" type="checkbox" name="product_related[]" value="'.$prod_id.'" '.$checked_prod.'></td>';
+    $checkbox_related_prod .= '<td width="30">'.$flag.'</td>';
+    $checkbox_related_prod .= '<td><label class="form-check-label" for="related_'.$prod_id.'">'.$prod_title.' <small class="text-muted">('.$id.')</small></label></td>';
+    $checkbox_related_prod .= '</tr>';
 }
 
+$checkbox_related_prod .= '</table>';
+$checkbox_related_prod .= '</div>';
+
 $get_prod_accessories = json_decode($product_data['product_accessories'],true);
-$checkbox_accessories_prod = '';
+
+$checkbox_accessories_prod = '<div class="filter-group">';
+$checkbox_accessories_prod .= '<input type="text" class="form-control filter-table-input" placeholder="Filter ...">';
+$checkbox_accessories_prod .= '<table class="table table-filter">';
 
 foreach($all_products as $prod) {
 
     $prod_id = $prod['id'];
+    $prod_language = $prod['product_lang'];
+    $flag = '<img src="/core/lang/' . $prod_language . '/flag.png" width="15">';
     $prod_title = $prod['title'];
     $checked_accessory = '';
     if(is_array($get_prod_accessories)) {
@@ -678,11 +692,15 @@ foreach($all_products as $prod) {
         }
     }
 
-    $checkbox_accessories_prod .= '<div class="form-check">';
-    $checkbox_accessories_prod .= '<input class="form-check-input" id="accessories_'.$prod_id.'" type="checkbox" name="product_accessories[]" value="'.$prod_id.'" '.$checked_accessory.'>';
-    $checkbox_accessories_prod .= '<label class="form-check-label" for="accessories_'.$prod_id.'">'.$prod_title.' <small class="text-muted">'.$prod_id.'</small></label>';
-    $checkbox_accessories_prod .= '</div>';
+    $checkbox_accessories_prod .= '<tr>';
+    $checkbox_accessories_prod .= '<td width="30"><input class="form-check-input" id="accessories_'.$prod_id.'" type="checkbox" name="product_accessories[]" value="'.$prod_id.'" '.$checked_accessory.'></td>';
+    $checkbox_accessories_prod .= '<td width="30">'.$flag.'</td>';
+    $checkbox_accessories_prod .= '<td><label class="form-check-label" for="accessories_'.$prod_id.'">'.$prod_title.' <small class="text-muted">'.$prod_id.'</small></label></td>';
+    $checkbox_accessories_prod .= '</tr>';
 }
+
+$checkbox_accessories_prod .= '</table>';
+$checkbox_accessories_prod .= '</div>';
 
 /* product options */
 
