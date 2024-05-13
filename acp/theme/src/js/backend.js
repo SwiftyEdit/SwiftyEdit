@@ -23,7 +23,7 @@ import 'htmx.org';
 
 import 'dropzone/dist/dropzone'
 
-import '@selectize/selectize';
+import '@selectize/selectize/dist/js/selectize.min';
 
 document.addEventListener('htmx:afterRequest', function(evt) {
 
@@ -68,7 +68,14 @@ $(function() {
     }, 2000);
 
     $(".tags").selectize({
-        delimiter: ","
+        delimiter: ",",
+        persist: false,
+        create: function (input) {
+            return {
+                value: input,
+                text: input,
+            };
+        },
     });
 
     /**
