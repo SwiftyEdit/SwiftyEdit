@@ -134,7 +134,7 @@ $allPosts = $db_posts->select("se_posts", ["post_id", "post_title", "post_teaser
     "OR" => [
         "post_type[~]" => ["m","v","i","g","f","l"]
     ],
-    "ORDER" => ["post_releasedate" => "DESC"]
+    "ORDER" => ["lastedit" => "DESC"]
 ]);
 
 $cnt_posts = count($allPosts);
@@ -177,7 +177,7 @@ $top5posts .= '</table>';
 
 $allProducts = $db_posts->select("se_products", ["id", "title", "teaser", "type", "lastedit"], [
     "type[~]" => "p",
-    "ORDER" => ["releasedate" => "DESC"]
+    "ORDER" => ["lastedit" => "DESC"]
 ]);
 $cnt_products = count($allProducts);
 $tpl_file = str_replace('{cnt_all_products}', $cnt_products, $tpl_file);
@@ -217,7 +217,7 @@ $tpl_file = str_replace('{products_list}', $list_product, $tpl_file);
 
 $allEvents = $db_posts->select("se_events", ["id", "title", "teaser", "lastedit"], [
     "id[!]" => NULL,
-    "ORDER" => ["date" => "DESC"]
+    "ORDER" => ["lastedit" => "DESC"]
 ]);
 
 $cnt_events = count($allEvents);
