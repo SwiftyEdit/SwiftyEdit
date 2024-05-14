@@ -469,7 +469,12 @@ if($product_data['translation_urls'] != '') {
     $translation_urls_array = json_decode($product_translation_urls,true);
 }
 
-$translation_inputs = '';
+$translation_inputs = '<div class="card">';
+$translation_inputs .= '<div class="card-header d-flex justify-content-between">';
+$translation_inputs .= $lang['label_translations'].' (URLs)';
+$translation_inputs .= ' <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">'.$icon['plus'].'</button>';
+$translation_inputs .= '</div>';
+$translation_inputs .= '<div class="card-body collapse" id="collapseTranslationURL">';
 foreach($active_lang as $k => $v) {
     $ls = $v['sign'];
     $translation_inputs .= '<div class="input-group mb-3">';
@@ -477,6 +482,8 @@ foreach($active_lang as $k => $v) {
     $translation_inputs .= '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url_'.$ls.'" value="'.$translation_urls_array[$ls].'">';
     $translation_inputs .= '</div>';
 }
+$translation_inputs .= '</div>';
+$translation_inputs .= '</div>';
 
 // hooks
 
