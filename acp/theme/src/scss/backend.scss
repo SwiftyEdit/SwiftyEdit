@@ -289,11 +289,10 @@ hr.shadow-line:after {
   }
 }
 
-
-
 .alert-se {
   @extend .alert-primary;
-  background: var(--bs-widget-bg);
+  background: rgba($secondary,0.5);
+  color: var(--bs-body-color);
 }
 
 

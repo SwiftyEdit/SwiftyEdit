@@ -1057,7 +1057,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
                 $images_container .= '<div class="col">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
                 $images_container .= '<div class="card h-100">';
-                $images_container .= '<img src="'.$sel_images.'" class="img-fluid">';
+                $images_container .= '<div class="image-select-preview" style="background-image: url('.$sel_images.')"></div>';
                 $images_container .= '<input name="picker'.$id.'_images[]" value="'.$sel_images.'" type="checkbox" checked>';
                 $images_container .= '<div class="card-footer small">'.basename($sel_images).'</div>';
                 $images_container .= '</div>';
@@ -1093,6 +1093,8 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
             $preview = $image_name;
         }
 
+        $preview = str_replace("../","/",$preview);
+
         /* new label for each year */
         $prev_image_ts = (int) $images[$i-1]['media_lastedit'];
         if(date('Y',$prev_image_ts) != $lastedit_year) {
@@ -1100,10 +1102,10 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
         }
 
         if(!in_array($image_name, $seleced_img)) {
-            $images_container .= '<div class="col">';
+            $images_container .= '<div class="col col-lg-3">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
-            $images_container .= '<img src="'.$preview.'" class="img-fluid" loading="lazy">';
+            $images_container .= '<div class="image-select-preview" style="background-image: url('.$preview.')"></div>';
             $images_container .= '<input name="picker'.$id.'_images[]" value="'.$image_name.'" type="checkbox">';
             $images_container .= '<div class="card-footer small">'.$img_filename.'</div>';
             $images_container .= '</div>';
