@@ -454,6 +454,7 @@
   "msg.info.usermail_exists": "Questo indirizzo email esiste già",
   "msg.info.settings.use_smtp": "Per utilizzare SMTP, è necessario creare un file <code>config_smtp.php</code> nella cartella <code>/content/</code>.",
   "msg.info.delete_custom_fields": "Se si elimina un campo, i dati che contiene (all'interno di tutte le pagine) saranno irrevocabilmente persi.",
+  "msg.info.danger_zone": "Only upload files if you are sure that they do not contain malicious code",
   "update.msg.alpha": "Un aggiornamento dal canale alfa è disponibile per il download. Questo aggiornamento non dovrebbe essere caricato in un ambiente produttivo.",
   "update.msg.beta": "Per il download è disponibile un aggiornamento dal canale Beta. Questo aggiornamento non dovrebbe essere caricato in un ambiente produttivo.",
   "update.msg.stable": "Un aggiornamento è disponibile per il download",
