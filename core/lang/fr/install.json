@@ -36,7 +36,7 @@
   "db_name": "Nom de la base de données",
   "db_name_help": "",
   "db_username": "Nom d'utilisateur",
-  "db_username_help": "Possibly this is <i>root</i>. Or a username that was assigned to you by your webhosting provider.",
+  "db_username_help": "Il est possible qu'il s'agisse de la <i>racine</i>. Ou d'un nom d'utilisateur qui vous a été assigné par votre hébergeur.",
   "db_psw": "Mot de passe",
   "db_psw_help": "Le mot de passe de votre base de données",
   "db_prefix": "Préfixe",

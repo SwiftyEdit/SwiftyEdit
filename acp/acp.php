@@ -295,7 +295,7 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="theme/dist/backend.css?v=2024-04-29" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="theme/dist/backend.css?v=2024-05-15" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo $languagePack; ?>";
@@ -312,7 +312,7 @@ if (isset($set_acptheme)) {
         }
     </script>
 
-    <script src="theme/dist/backend.js?v=2024-04-03"></script>
+    <script src="theme/dist/backend.js?v=2024-05-15"></script>
     <script src="theme/dist/tinymce/tinymce.min.js"></script>
     <script src="theme/dist/tinymce-jquery/tinymce-jquery.js"></script>
 
