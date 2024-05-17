@@ -23,7 +23,7 @@
     "catfan/medoo": "^2.1.8",
     "erusev/parsedown": "^1.8.0-beta-7",
     "phpmailer/phpmailer": "^v6.8.0",
-    "smarty/smarty": "^v4.3.1",
+    "smarty/smarty": "^v5.0.2",
     "mustangostang/spyc": "^0.6.3",
     "guzzlehttp/guzzle": "^7.0",
     "ezyang/htmlpurifier": "^v4.17.0"

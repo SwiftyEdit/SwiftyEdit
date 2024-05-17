@@ -6,7 +6,7 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
 	die ('<h2>Direct File Access Prohibited</h2>');
 }
 
-
+use Smarty\Smarty;
 
 /**
  * delete smarty cache files
@@ -14,11 +14,11 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
  * 				(string) 'all' -> delete complete cache
  */
 
-function se_delete_smarty_cache($cache_id) {
+function se_delete_smarty_cache($cache_id): void {
 
 	$smarty = new Smarty;
-	$smarty->cache_dir = SE_CONTENT.'/cache/cache/';
-	$smarty->compile_dir = SE_CONTENT.'/cache/templates_c/';
+	$smarty->setCacheDir(SE_CONTENT.'/cache/cache/');
+	$smarty->setCompileDir(SE_CONTENT.'/cache/templates_c/');
 	
 	if($cache_id == 'all') {
 		$smarty->clearAllCache();
