@@ -132,7 +132,6 @@ if(count($get_product_filter) > 0) {
     }
     foreach ($_SESSION['custom_filter'] as $filter) {
         if(!in_array($filter, $fids)) {
-            echo "REMOVE:".$filter."\n";
             if (($key = array_search($filter, $_SESSION['custom_filter'])) !== false) {
                 unset($_SESSION['custom_filter'][$key]);
             }
