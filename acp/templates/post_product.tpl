@@ -62,11 +62,9 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="well well-sm">
-                                        <label>{label_image}</label> <input class="filter-images form-control"
-                                                                            name="filter-images"
-                                                                            placeholder="Filter ..." type="text">
-                                        <div class="images-list scroll-container">
+                                    <div class="card">
+                                        <div class="card-header">{label_image}</div>
+                                        <div class="card-body">
                                             {widget_images}
                                         </div>
                                     </div>
