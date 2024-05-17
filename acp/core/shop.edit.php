@@ -591,8 +591,10 @@ foreach($all_filters as $k => $v) {
         }
     }
 
+    $flag = '<img src="/core/lang/' . $v['filter_lang'] . '/flag.png" width="15">';
+
     $filter_list .= '<div class="card mb-1">';
-    $filter_list .= '<div class="card-header">'.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
+    $filter_list .= '<div class="card-header">'.$flag.' '.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
     $filter_list .= '<div class="card-body">';
     $get_filter_items = se_get_product_filter_values($v['filter_id']);
     foreach($get_filter_items as $filter_item) {
