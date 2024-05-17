@@ -10,7 +10,7 @@ priority: 100
 
 Das System benötigt keine ausergewöhnichen Komponenten.
 
-* PHP 7.3+ (8.1+ empfohlen)
+* PHP 8.1+
 * aktiviertes PDO/SQLite Modul - PDO/SQLite ist normalerweise standardmäßig aktiviert. Falls nicht musst Du bei Deinem Webhoster nachfragen.
 * MySQL (empfohlen) falls Du nicht die komplette Installation auf SQLite betreiben möchtest.
 
