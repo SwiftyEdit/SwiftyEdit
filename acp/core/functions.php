@@ -1045,29 +1045,37 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
     }
 
 
-    $images_container  = '<div class="scroll-container p-1">';
-
+    $images_container  = '<div class="scroll-container scroll-container-h500 p-1">';
 
     /* if we have selected images, show them first */
     if($cnt_selected_img > 0) {
         $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
-        $images_container .= '<div class="row g-1">';
+        $images_container .= '<div class="sortableListGroup list-group my-1">';
         foreach($seleced_img as $sel_images) {
             if(is_file("$sel_images")) {
-                $images_container .= '<div class="col">';
+                $images_container .= '<div class="list-group-item p-1">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
-                $images_container .= '<div class="card h-100">';
-                $images_container .= '<div class="image-select-preview" style="background-image: url('.$sel_images.')"></div>';
+                $images_container .= '<div class="row">';
+                $images_container .= '<div class="col-3">';
+                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.$sel_images.')">';
+                $images_container .= '</div>';
+                $images_container .= '</div>';
+                $images_container .= '<div class="col-9">';
+                $images_container .= '<span class="input-group-text d-inline-block float-end" id="basic-addon1">';
+                $images_container .= '<i class="bi bi-arrows-move" aria-hidden="true"></i>';
+                $images_container .= '</span>';
                 $images_container .= '<input name="picker'.$id.'_images[]" value="'.$sel_images.'" type="checkbox" checked>';
-                $images_container .= '<div class="card-footer small">'.basename($sel_images).'</div>';
+                $images_container .= '<div class="small text-muted">'.basename($sel_images).'</div>';
+                $images_container .= '</div>';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
             }
         }
-        $images_container .= '</div><hr>'; // row
+        $images_container .= '</div>';
     }
 
+    $images_container .= '<input class="filter-images form-control" name="filter-images" placeholder="Filter ..." type="text">';
     $images_container .= '<div class="row g-1">';
 
     $cnt_images = count($images);
@@ -1075,6 +1083,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
     for($i=0;$i<$cnt_images;$i++) {
 
         $img_filename = basename($images[$i]['media_file']);
+        $img_filename_short = se_return_first_chars($img_filename,15);
         $image_name = $images[$i]['media_file'];
         $image_tmb_name = $images[$i]['media_thumb'];
         $lastedit = (int) $images[$i]['media_lastedit'];
@@ -1102,12 +1111,15 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
         }
 
         if(!in_array($image_name, $seleced_img)) {
-            $images_container .= '<div class="col col-lg-3">';
+            $images_container .= '<div class="col col-lg-3" title="'.$img_filename.'">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
+            $images_container .= '<div class="card-body p-0">';
             $images_container .= '<div class="image-select-preview" style="background-image: url('.$preview.')"></div>';
             $images_container .= '<input name="picker'.$id.'_images[]" value="'.$image_name.'" type="checkbox">';
-            $images_container .= '<div class="card-footer small">'.$img_filename.'</div>';
+            $images_container .= '</div>';
+            $images_container .= '<div class="text-muted small">'.$img_filename_short.'</div>';
+
             $images_container .= '</div>';
             $images_container .= '</div>';
             $images_container .= '</div>';

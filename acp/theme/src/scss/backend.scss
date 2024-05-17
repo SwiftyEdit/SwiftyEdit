@@ -335,6 +335,9 @@ hr.shadow-line:after {
   padding:5px;
   background: var(--bs-widget-bg);
   border-radius:5px;
+  &-h500 {
+    height: 500px;
+  }
 }
 
 .scroll-box {
