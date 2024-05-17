@@ -934,6 +934,11 @@ function se_get_product_filter_groups($lang) {
     return $filters;
 }
 
+/**
+ * get all filter values from se_filter
+ * @param integer $pid id of the filter entry
+ * @return mixed
+ */
 function se_get_product_filter_values($pid) {
 
     global $db_content;
@@ -952,10 +957,15 @@ function se_get_product_filter_values($pid) {
     return $items;
 }
 
-
-function se_get_product_filter($lang) {
+/**
+ * get products filter
+ * @param string $lang
+ * @return array
+ */
+function se_get_product_filter($lang): array {
 
     global $languagePack;
+    $filter = array();
 
     if($lang == '') {
         $lang = $languagePack;

@@ -115,8 +115,32 @@ if(isset($_POST['set_custom_filters'])) {
 
 }
 
+/**
+ * check whether the filters match the current language
+ * if not, remove the filter
+ */
+
+$get_product_filter = se_get_product_filter($languagePack);
+
+if(count($get_product_filter) > 0) {
+    $fids = array(); // array for all filter IDs
+    foreach ($get_product_filter as $filter) {
+        $fids[] = $filter['id'];
+        foreach ($filter['items'] as $items) {
+            $fids[] = $items['id'];
+        }
+    }
+    foreach ($_SESSION['custom_filter'] as $filter) {
+        if(!in_array($filter, $fids)) {
+            echo "REMOVE:".$filter."\n";
+            if (($key = array_search($filter, $_SESSION['custom_filter'])) !== false) {
+                unset($_SESSION['custom_filter'][$key]);
+            }
+        }
+    }
+}
+
 $_SESSION['custom_filter'] = array_unique($_SESSION['custom_filter']);
-$_SESSION['custom_filter'] = array_values($_SESSION['custom_filter']);
 
 $custom_filter = $_SESSION['custom_filter'];
 
@@ -215,8 +239,6 @@ if($this_page_categories[0] == 'all') {
     }
 }
 
-/* get all filters */
-$get_product_filter = se_get_product_filter($languagePack);
 
 /* check which filters should be displayed on this page */
 $product_filter = array();
