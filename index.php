@@ -16,7 +16,7 @@ header("X-Frame-Options: SAMEORIGIN");
 $se_start_time = microtime(true);
 
 require 'core/vendor/autoload.php';
-
+use Smarty\Smarty;
 /**
  * include the default config file
  * @var string $languagePack
@@ -335,8 +335,12 @@ if(!empty($page_contents['page_modul'])) {
 //require_once('lib/Smarty/Smarty.class.php');
 $smarty = new Smarty;
 $smarty->setErrorReporting(0);
-$smarty->compile_dir = 'content/cache/templates_c/';
-$smarty->cache_dir = 'content/cache/cache/';
+$smarty->setCompileDir('content/cache/templates_c/');
+$smarty->setCacheDir('content/cache/cache/');
+
+$smarty->registerPlugin('modifier', 'htmlentities', 'htmlentities');
+$smarty->registerPlugin('modifier', 'strtolower', 'strtolower');
+
 $cache_id = md5($swifty_slug.$mod_slug);
 
 if($se_prefs['prefs_smarty_cache'] == 1) {
@@ -465,7 +469,7 @@ if($se_template != 'default') {
 }
 
 //$smarty->template_dir = 'styles/'.$se_template.'/templates/';
-$smarty->template_dir = $smart_template_dirs;
+$smarty->setTemplateDir($smart_template_dirs);
 
 /**
  * assign all translations to smarty
