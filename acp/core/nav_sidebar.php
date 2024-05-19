@@ -5,10 +5,10 @@
  * sidebar for pages, snippets
  */
 
-echo '<a href="?tn=dashboard" class="d-block px-4 py-3" title="Dashboard">';
-echo '<img src="images/swiftyedit_bright.svg" width="100%" class="mx-auto">';
+echo '<div class="sidebar-logo mb-1 mt-2">';
+echo '<a href="?tn=dashboard" class="" title="Dashboard"></a>';
 echo '</a>';
-
+echo '</div>';
 
 echo '<ul class="nav">';
 
