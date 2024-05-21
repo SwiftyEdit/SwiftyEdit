@@ -785,17 +785,20 @@ echo '<div class="pt-1">'.$btn_remove_keyword.'</div>';
 
 echo '<hr>';
 
-echo '<fieldset>';
-echo '<legend>'.$lang['sorting'].'</legend>';
-
-echo '<div class="btn-group-vertical d-flex">';
-echo '<a class="btn btn-sm btn-default w-100 '.$check_lastedit.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=time">'.$lang['date_of_change'].'</a>';
-echo '<a class="btn btn-sm btn-default w-100 '.$check_name.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=name">'.$lang['filename'].'</a>';
-echo '<a class="btn btn-sm btn-default w-100 '.$check_size.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=size">'.$lang['filesize'].'</a>';
+echo '<div class="card">';
+echo '<div class="card-header d-flex justify-content-between">';
+echo $lang['sorting'];
 echo '<a class="btn btn-sm btn-default" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_direction=1">'. show_sort_arrow() .'</a>';
 echo '</div>';
 
-echo '</fieldset>';
+echo '<div class="list-group list-group-flush">';
+echo '<a class="list-group-item list-group-item-action '.$check_lastedit.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=time">'.$lang['date_of_change'].'</a>';
+echo '<a class="list-group-item list-group-item-action '.$check_name.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=name">'.$lang['filename'].'</a>';
+echo '<a class="list-group-item list-group-item-action '.$check_size.'" href="acp.php?tn='.$tn.'&sub=browse&d='.$disk.'&sort_by=size">'.$lang['filesize'].'</a>';
+
+echo '</div>';
+
+echo '</div>';
 
 
 $label_filter_box  = '<div class="card mt-2">';
@@ -846,11 +849,11 @@ function switch_sort() {
 }
 
 function show_sort_arrow() {
-	global $icon;
+	global $icon,$lang;
 	if($_SESSION['sort_direction'] == 'ASC') {
-		$ic = '<i class="far fa-angle-up"></i>';
+		$ic = '<span title="'.$lang['ascending'].'"><i class="bi bi-caret-up-fill"></i></span>';
 	} else {
-		$ic = '<i class="far fa-angle-down"></i>';
+		$ic = '<span title="'.$lang['descending'].'"><i class="bi bi-caret-down-fill"></i></span>';
 	}
 	return $ic;
 }
