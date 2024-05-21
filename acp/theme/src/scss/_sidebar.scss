@@ -20,6 +20,19 @@ div#page-sidebar {
 	overflow: hidden;
 	overflow-y: auto;
 
+	.sidebar-logo {
+		width: 100%;
+		height: 65px;
+		background-image: url("/acp/images/swiftyedit_bright.svg");
+		background-repeat: no-repeat;
+		background-size: 240px 50px;
+		background-position: -40px;
+		a {
+			display: block;
+			height: 100%;
+		}
+	}
+
 	a {
 		text-decoration: none;
 	}
