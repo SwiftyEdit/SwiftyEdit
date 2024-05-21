@@ -359,7 +359,7 @@ if($product_data['product_related'] != '') {
         } else {
             $rp[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
         }
-        $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $related_product['id'] . ".html";
+        $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $related_product['id'] . ".html";
     }
     $smarty->assign('show_related', $rp);
 }
@@ -383,7 +383,8 @@ if($product_data['product_accessories'] != '') {
         } else {
             $ap[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
         }
-        $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$product_slug-" . $accessories_product['id'] . ".html";
+
+        $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $accessories_product['id'] . ".html";
     }
     $smarty->assign('show_accessories', $ap);
 }
