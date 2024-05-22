@@ -345,7 +345,7 @@ if($cnt_filter_events > 0) {
     echo '</table>';
 
 } else {
-    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries'].'</div>';
+    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries_so_far'].'</div>';
 }
 
 echo $pagination;
