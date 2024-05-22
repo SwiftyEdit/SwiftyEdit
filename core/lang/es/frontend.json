@@ -79,7 +79,7 @@
   "btn_show_gallery": "Mostrar Imágenes {cnt_images}",
   "btn_open_product": "Más información",
   "btn_add_to_cart": "Añadir al carrito de compras",
-  "btn_all": "Alle",
+  "btn_all": "Todos",
   "btn_run_commands": "Ejecutar comandos",
   "msg_missingfield": "Todos los campos son obligatorios",
   "msg_login_false": "No hay datos de usuario coincidentes disponibles.",
