@@ -90,7 +90,7 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Login <?php echo $_SERVER['SERVER_NAME']; ?></title>
 		<meta name="robots" content="noindex">
-		<link rel="stylesheet" href="theme/css/swiftyedit.css" type="text/css" media="screen, projection">
+		<link rel="stylesheet" href="theme/dist/backend.css" type="text/css" media="screen, projection">
 		<style>
 			.form-center {
 				max-width: 475px;
