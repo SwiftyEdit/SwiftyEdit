@@ -289,95 +289,98 @@ echo '<td>'.$lang['label_shipping'].'</td>';
 echo '<td>'.$lang['label_status'].'</td>';
 echo '<td></td>';
 echo '</tr>';
-for($i=0;$i<$cnt_orders;$i++) {
 
-    $order_time = date('d.m.Y H:i',$orders[$i]['order_time']);
+if($cnt_matching_orders > 0) {
+    for ($i = 0; $i < $cnt_orders; $i++) {
 
-    $order_status = $orders[$i]['order_status'];
-    $order_status_payment = $orders[$i]['order_status_payment'];
-    $order_status_shipping = $orders[$i]['order_status_shipping'];
+        $order_time = date('d.m.Y H:i', $orders[$i]['order_time']);
 
-    /* order status */
-    $sel_so = array_fill(0, 3, '');
-    $sel_so[$order_status] = 'selected';
+        $order_status = $orders[$i]['order_status'];
+        $order_status_payment = $orders[$i]['order_status_payment'];
+        $order_status_shipping = $orders[$i]['order_status_shipping'];
 
-    $select_status_order  = '<form action="?tn=shop&sub=shop-orders" method="POST">';
-    $select_status_order .= '<select name="change_order_status" class="form-control" onchange="this.form.submit()">';
-    $select_status_order .= '<option value="1" '.$sel_so[1].'>'.$lang['status_order_received'].'</option>';
-    $select_status_order .= '<option value="2" '.$sel_so[2].'>'.$lang['status_order_completed'].'</option>';
-    $select_status_order .= '<option value="3" '.$sel_so[3].'>'.$lang['status_order_canceled'].'</option>';
-    $select_status_order .= '</select>';
-    $select_status_order .= '<input type="hidden" name="id" value="'.$orders[$i]['id'].'">';
-    $select_status_order .= $hidden_csrf_token;
-    $select_status_order .= '</form>';
+        /* order status */
+        $sel_so = array_fill(0, 3, '');
+        $sel_so[$order_status] = 'selected';
 
-    $class_status_order = '';
-    if($sel_so[2] == 'selected') {
-        $class_status_order = 'table-success';
+        $select_status_order = '<form action="?tn=shop&sub=shop-orders" method="POST">';
+        $select_status_order .= '<select name="change_order_status" class="form-control" onchange="this.form.submit()">';
+        $select_status_order .= '<option value="1" ' . $sel_so[1] . '>' . $lang['status_order_received'] . '</option>';
+        $select_status_order .= '<option value="2" ' . $sel_so[2] . '>' . $lang['status_order_completed'] . '</option>';
+        $select_status_order .= '<option value="3" ' . $sel_so[3] . '>' . $lang['status_order_canceled'] . '</option>';
+        $select_status_order .= '</select>';
+        $select_status_order .= '<input type="hidden" name="id" value="' . $orders[$i]['id'] . '">';
+        $select_status_order .= $hidden_csrf_token;
+        $select_status_order .= '</form>';
+
+        $class_status_order = '';
+        if ($sel_so[2] == 'selected') {
+            $class_status_order = 'table-success';
+        }
+        if ($sel_so[3] == 'selected') {
+            $class_status_order = 'table-danger';
+        }
+
+        /* payment status */
+        $sel_sp = array_fill(0, 3, '');
+        $sel_sp[$order_status_payment] = 'selected';
+
+        $select_status_payment = '<form action="?tn=shop&sub=shop-orders" method="POST">';
+        $select_status_payment .= '<select name="change_status_payment" class="form-control" onchange="this.form.submit()">';
+        $select_status_payment .= '<option value="1" ' . $sel_sp[1] . '>' . $lang['status_order_payment_open'] . '</option>';
+        $select_status_payment .= '<option value="2" ' . $sel_sp[2] . '>' . $lang['status_order_payment_paid'] . '</option>';
+        $select_status_payment .= '</select>';
+        $select_status_payment .= '<input type="hidden" name="id" value="' . $orders[$i]['id'] . '">';
+        $select_status_payment .= $hidden_csrf_token;
+        $select_status_payment .= '</form>';
+
+        $class_payment = '';
+        if ($sel_sp[2] == 'selected') {
+            $class_payment = 'table-success';
+        }
+
+        /* shipping status */
+        $sel_ss = array_fill(0, 3, '');
+        $sel_ss[$order_status_shipping] = 'selected';
+
+        $select_status_shipping = '<form action="?tn=shop&sub=shop-orders" method="POST">';
+        $select_status_shipping .= '<select name="change_status_shipping" class="form-control" onchange="this.form.submit()">';
+        $select_status_shipping .= '<option value="1" ' . $sel_ss[1] . '>' . $lang['status_order_shipping_prepared'] . '</option>';
+        $select_status_shipping .= '<option value="2" ' . $sel_ss[2] . '>' . $lang['status_order_shipping_shipped'] . '</option>';
+        $select_status_shipping .= '</select>';
+        $select_status_shipping .= '<input type="hidden" name="id" value="' . $orders[$i]['id'] . '">';
+        $select_status_shipping .= $hidden_csrf_token;
+        $select_status_shipping .= '</form>';
+
+        $class_shipping = '';
+        if ($sel_ss[2] == 'selected') {
+            $class_shipping = 'table-success';
+        }
+
+
+        $btn_open_order = '<form action="?tn=shop&sub=shop-orders" method="POST">';
+        $btn_open_order .= '<button type="submit" class="btn btn-default text-success w-100" name="open_order" value="' . $orders[$i]['id'] . '">' . $icon['edit'] . '</button>';
+        $btn_open_order .= $hidden_csrf_token;
+        $btn_open_order .= '</form>';
+
+        $order_invoice_address_Str = str_replace("<br>", " ", $orders[$i]['order_invoice_address']);
+
+        echo '<tr>';
+        echo '<td>' . $orders[$i]['id'] . '</td>';
+        echo '<td>' . $orders[$i]['order_nbr'] . '</td>';
+        echo '<td>' . $order_time . '</td>';
+        echo '<td class="text-end">' . se_post_print_currency($orders[$i]['order_price_total']) . '</td>';
+        echo '<td class="' . $class_payment . '">' . $select_status_payment . '</td>';
+        echo '<td class="' . $class_shipping . '">' . $select_status_shipping . '</td>';
+        echo '<td class="' . $class_status_order . '">' . $select_status_order . '</td>';
+        echo '<td>' . $btn_open_order . '</td>';
+        echo '</tr>';
+
+        echo '<tr>';
+        echo '<td colspan="8" class="text-opacity-50"><small>' . $order_invoice_address_Str . '</small></td>';
+        echo '</tr>';
+
     }
-    if($sel_so[3] == 'selected') {
-        $class_status_order = 'table-danger';
-    }
-
-    /* payment status */
-    $sel_sp = array_fill(0, 3, '');
-    $sel_sp[$order_status_payment] = 'selected';
-
-    $select_status_payment  = '<form action="?tn=shop&sub=shop-orders" method="POST">';
-    $select_status_payment .= '<select name="change_status_payment" class="form-control" onchange="this.form.submit()">';
-    $select_status_payment .= '<option value="1" '.$sel_sp[1].'>'.$lang['status_order_payment_open'].'</option>';
-    $select_status_payment .= '<option value="2" '.$sel_sp[2].'>'.$lang['status_order_payment_paid'].'</option>';
-    $select_status_payment .= '</select>';
-    $select_status_payment .= '<input type="hidden" name="id" value="'.$orders[$i]['id'].'">';
-    $select_status_payment .= $hidden_csrf_token;
-    $select_status_payment .= '</form>';
-
-    $class_payment = '';
-    if($sel_sp[2] == 'selected') {
-        $class_payment = 'table-success';
-    }
-
-    /* shipping status */
-    $sel_ss = array_fill(0, 3, '');
-    $sel_ss[$order_status_shipping] = 'selected';
-
-    $select_status_shipping  = '<form action="?tn=shop&sub=shop-orders" method="POST">';
-    $select_status_shipping .= '<select name="change_status_shipping" class="form-control" onchange="this.form.submit()">';
-    $select_status_shipping .= '<option value="1" '.$sel_ss[1].'>'.$lang['status_order_shipping_prepared'].'</option>';
-    $select_status_shipping .= '<option value="2" '.$sel_ss[2].'>'.$lang['status_order_shipping_shipped'].'</option>';
-    $select_status_shipping .= '</select>';
-    $select_status_shipping .= '<input type="hidden" name="id" value="'.$orders[$i]['id'].'">';
-    $select_status_shipping .= $hidden_csrf_token;
-    $select_status_shipping .= '</form>';
-
-    $class_shipping = '';
-    if($sel_ss[2] == 'selected') {
-        $class_shipping = 'table-success';
-    }
-
-
-    $btn_open_order  = '<form action="?tn=shop&sub=shop-orders" method="POST">';
-    $btn_open_order .= '<button type="submit" class="btn btn-default text-success w-100" name="open_order" value="'.$orders[$i]['id'].'">'.$icon['edit'].'</button>';
-    $btn_open_order .= $hidden_csrf_token;
-    $btn_open_order .= '</form>';
-
-    $order_invoice_address_Str = str_replace("<br>"," ",$orders[$i]['order_invoice_address']);
-
-    echo '<tr>';
-    echo '<td>'.$orders[$i]['id'].'</td>';
-    echo '<td>'.$orders[$i]['order_nbr'].'</td>';
-    echo '<td>'.$order_time.'</td>';
-    echo '<td class="text-end">'.se_post_print_currency($orders[$i]['order_price_total']).'</td>';
-    echo '<td class="'.$class_payment.'">'.$select_status_payment.'</td>';
-    echo '<td class="'.$class_shipping.'">'.$select_status_shipping.'</td>';
-    echo '<td class="'.$class_status_order.'">'.$select_status_order.'</td>';
-    echo '<td>'.$btn_open_order.'</td>';
-    echo '</tr>';
-
-    echo '<tr>';
-    echo '<td colspan="8" class="text-opacity-50"><small>'.$order_invoice_address_Str.'</small></td>';
-    echo '</tr>';
-
 }
 echo '</table>';
 
