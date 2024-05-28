@@ -25,6 +25,8 @@ $prefs_cms_domain = $_SESSION['temp_prefs_cms_domain'];
 $prefs_cms_ssl_domain = $_SESSION['temp_prefs_cms_ssl_domain'];
 $prefs_cms_base = $_SESSION['temp_prefs_cms_base'];
 
+$page_lastedit = time();
+
 
 
 if(isset($_POST['install_mysql'])) {
@@ -128,6 +130,7 @@ $sql_categories_table = se_generate_sql_query("se_categories.php",$db_type);
 $sql_addons_table = se_generate_sql_query("se_addons.php",$db_type);
 $sql_posts_table = se_generate_sql_query("se_posts.php",$db_type);
 $sql_products_table = se_generate_sql_query("se_products.php",$db_type);
+$sql_carts_table = se_generate_sql_query("se_carts.php",$db_type);
 $sql_price_groups = se_generate_sql_query("se_price_groups.php",$db_type);
 $sql_filter_table = se_generate_sql_query("se_filter.php",$db_type);
 $sql_events_table = se_generate_sql_query("se_events.php",$db_type);
@@ -202,6 +205,7 @@ $dbh_content->query($sql_categories_table);
 $dbh_content->query($sql_addons_table);
 $dbh_content->query($sql_log_table);
 $dbh_content->query($sql_orders_table);
+$dbh_content->query($sql_carts_table);
 $dbh_content->query($sql_filter_table);
 
 /* insert two example pages */
