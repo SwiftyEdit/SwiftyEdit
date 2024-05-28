@@ -317,7 +317,7 @@
   "label.settings.page_name": "Nome della pagina",
   "label.settings.page_title": "Titolo della pagina",
   "label.settings.page_subtitle": "Sottotitolo",
-  "label.settings.page_description": "Nome della pagina",
+  "label.settings.page_description": "Page description",
   "label.settings.publisher_mode": "Sovrascrivi sempre l'autore",
   "label.settings.rss_time_offset": "Spostamento tempo RSS",
   "label.settings.nbr_page_versions": "Numero di versioni della pagina",
