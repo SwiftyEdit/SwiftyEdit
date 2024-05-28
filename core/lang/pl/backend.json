@@ -317,7 +317,7 @@
   "label.settings.page_name": "Nazwa strony",
   "label.settings.page_title": "Tytuł strony",
   "label.settings.page_subtitle": "Napisy",
-  "label.settings.page_description": "Nazwa strony",
+  "label.settings.page_description": "Page description",
   "label.settings.publisher_mode": "Zawsze nadpisuj autora",
   "label.settings.rss_time_offset": "Przesunięcie czasu RSS",
   "label.settings.nbr_page_versions": "Liczba wersji strony",
