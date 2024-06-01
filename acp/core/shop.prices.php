@@ -177,7 +177,7 @@ $cnt_price_groups = count($get_all_price_groups);
 echo '<div class="card p-2">';
 
 if($cnt_price_groups < 1) {
-    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries'].'</div>';
+    echo '<div class="alert alert-info">'.$lang['msg_info_no_entries_so_far'].'</div>';
 } else {
 
     echo '<table class="table table-sm">';

@@ -168,7 +168,7 @@ for ($i = 0; $i < 5; $i++) {
 }
 
 if ($cnt_posts < 1) {
-    $top5posts = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
+    $top5posts = '<div class="alert alert-info">' . $lang['msg_info_no_entries_so_far'] . '</div>';
 }
 
 $top5posts .= '</table>';
@@ -208,7 +208,7 @@ for ($i = 0; $i < 5; $i++) {
 $list_product .= '</table>';
 
 if ($cnt_products < 1) {
-    $list_product = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
+    $list_product = '<div class="alert alert-info">' . $lang['msg_info_no_entries_so_far'] . '</div>';
 }
 
 $tpl_file = str_replace('{products_list}', $list_product, $tpl_file);
@@ -250,7 +250,7 @@ for ($i = 0; $i < 5; $i++) {
 $list_events .= '</table>';
 
 if ($cnt_events < 1) {
-    $list_events = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
+    $list_events = '<div class="alert alert-info">' . $lang['msg_info_no_entries_so_far'] . '</div>';
 }
 
 $tpl_file = str_replace('{events_list}', $list_events, $tpl_file);
@@ -294,7 +294,7 @@ for ($i = 0; $i < 5; $i++) {
 $top5comments .= '</table>';
 
 if ($cnt_comments < 1) {
-    $top5comments = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
+    $top5comments = '<div class="alert alert-info">' . $lang['msg_info_no_entries_so_far'] . '</div>';
 }
 
 
@@ -309,7 +309,7 @@ $tpl_file = str_replace('{dashboard_logfile}', $show_log, $tpl_file);
 $cnt_dashboard_messages = count($se_check_messages);
 
 if($cnt_dashboard_messages < 1) {
-    $dashboard_alerts = '<div class="alert alert-info">' . $lang['msg_info_no_entries'] . '</div>';
+    $dashboard_alerts = '<div class="alert alert-info">' . $lang['msg_info_no_entries_so_far'] . '</div>';
 } else {
     $dashboard_alerts = '<table class="table table-sm">';
     for($i=0;$i<$cnt_dashboard_messages;$i++) {
