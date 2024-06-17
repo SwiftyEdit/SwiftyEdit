@@ -83,7 +83,7 @@
   "btn_run_commands": "Befehle ausführen",
   "msg_missingfield": "Alle Felder sind erforderlich",
   "msg_login_false": "Es sind keine passenden Benutzerdaten verfügbar.",
-  "msg_login_true": "Begrüßung",
+  "msg_login_true": "Willkommen",
   "msg_logout": "Ausgeloggt",
   "msg_register": "Nicht registriert? Hier können Sie sich registrieren.",
   "msg_edit_psw": "Füllen Sie diese Felder nur aus, wenn das Passwort geändert werden soll.",
