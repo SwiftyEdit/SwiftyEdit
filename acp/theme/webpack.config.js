@@ -12,7 +12,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 
 module.exports = {
-    mode: 'production',
+    mode: 'development',
     entry: ['./src/js/backend.js','./src/scss/backend.scss'],
     output: {
         filename: 'backend.js',
