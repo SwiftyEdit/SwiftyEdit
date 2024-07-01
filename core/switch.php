@@ -303,13 +303,12 @@ if(isset($page_usergroup) AND $page_usergroup != "") {
 	$arr_checked_groups = explode("<|-|>",$page_usergroup);
 
 	for($i=0;$i<count($arr_checked_groups);$i++) {
-		$is_user_in_group[] = is_user_in_group("$_SESSION[user_id]","$arr_checked_groups[$i]");
+		$is_user_in_group[] = is_user_in_group($_SESSION['user_id'],"$arr_checked_groups[$i]");
 	}
 
 	if((!in_array("true",$is_user_in_group)) AND ($_SESSION['user_class'] != "administrator")) {
-		$text = se_get_textlib("no_access", $languagePack,'all');
+		$text = se_get_textlib("no_access", $languagePack,'content');
 		$smarty->assign('page_content', $text);
-		$smarty->assign('extra_content', "");
 	}
 
 }

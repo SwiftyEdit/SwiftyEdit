@@ -1,11 +1,13 @@
 <?php
-	
+
 
 /**
- * check if username exists in usergroup
+ * check if user_id exists in usergroup
+ * @param mixed $user_id
+ * @param string $user_group
+ * @return string
  */
-
-function is_user_in_group($user_id,$user_group) {
+function is_user_in_group(mixed $user_id, string $user_group): string {
 
 	global $db_user;
 	
@@ -15,7 +17,7 @@ function is_user_in_group($user_id,$user_group) {
 	  
 	$arr_users = explode(" ", $result['group_user']);
 
-	if(in_array($_SESSION['user_id'],$arr_users)) {
+	if(in_array($user_id,$arr_users)) {
 		$in_group = "true";
 	} else {
 		$in_group = "false";

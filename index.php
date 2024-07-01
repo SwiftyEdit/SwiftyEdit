@@ -220,7 +220,7 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
 	list($page_contents,$se_nav) = se_get_content($swifty_slug,'permalink');
 }
 
-/* include (once) modules index.php if exists */
+/* include (once) modules global/index.php if exists */
 foreach($active_mods as $mods) {
     $clean_mods[] = $mods['page_modul'];
 }
