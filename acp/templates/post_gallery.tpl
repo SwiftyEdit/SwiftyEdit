@@ -21,7 +21,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label>{label_upload}</label>
-								<button type="button" class="form-control btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadGalModal" {disabled_upload_btn}>{btn_upload}</button>
+								<button type="button" class="w-100 btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadGalModal" {disabled_upload_btn}>{btn_upload}</button>
 								<p class="form-text text-muted">{msg_info_gallery_upload}</p>
 							</div>
 						</div>
