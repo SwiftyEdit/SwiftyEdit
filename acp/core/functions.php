@@ -886,7 +886,7 @@ function se_write_media_data($data) {
 	$credit = se_return_clean_value($data['credit']);
 	$license = se_return_clean_value($data['license']);
 	$version = se_return_clean_value($data['version']);
-    $filesize = se_return_clean_value($data['filesize']);
+    $filesize = (int) $data['filesize'];
 	
 	/* labels */
 	if(is_array($data['labels'])) {
