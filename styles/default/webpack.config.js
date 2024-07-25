@@ -20,8 +20,13 @@ module.exports = {
             filename: 'default.css'
         }),
         new CleanWebpackPlugin({
-            protectWebpackAssets: true,
-            cleanAfterEveryBuildPatterns: ['*.LICENSE.txt'],
+            protectWebpackAssets: false,
+            cleanOnceBeforeBuildPatterns: [
+                '**/*',
+                '!editor.css',
+                '!tinyMCE_config.js'
+            ],
+            cleanAfterEveryBuildPatterns: ['*.LICENSE.txt','!editor.css','!tinyMCE_config.js'],
         }),
         new CopyPlugin({
             patterns: [
