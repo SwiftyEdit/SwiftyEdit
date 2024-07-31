@@ -176,6 +176,29 @@ $(function() {
     });
 
 
+    // count chars and words
+    const cntInput = $('.cntChars');
+
+    cntInput.keyup(function() {
+        const str = $(this).val();
+        counterCW(str);
+    });
+
+    const cntChars = cntInput.val();
+    counterCW( cntChars );
+
+    function counterCW(str) {
+        let chars_length = 0;
+        let words_length = 0;
+        chars_length = str.length;
+        if(chars_length > 0) {
+            words_length = str.split(' ').length;
+        }
+        $('.chars_counter').html(chars_length);
+        $('.word_counter').html(words_length);
+    }
+
+
     // globalFilterForm
     $("#globalFilterForm").submit(function(e){
         e.preventDefault();
