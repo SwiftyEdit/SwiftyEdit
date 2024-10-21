@@ -17,7 +17,7 @@
     "dropzone": "^5.9.3",
     "htmx.org": "^2.0.2",
     "jquery": "^3.7.1",
-    "sortablejs": "^1.15.2",
+    "sortablejs": "^1.15.3",
     "tinymce": "^7.2.1",
     "@selectize/selectize": "^0.15.2"
   },
