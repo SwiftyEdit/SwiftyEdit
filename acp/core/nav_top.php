@@ -51,8 +51,8 @@ if(is_file("$my_avatar_path")) {
 echo '<div class="dropstart me-1">';
 echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$user_avatar.$_SESSION['user_nick'].'</a>';
 echo '<ul class="dropdown-menu">';
-echo '<li><a class="dropdown-item" href="/profile/">Profil</a></li>';
-echo '<li><a class="dropdown-item" href="/index.php?goto=logout">'.$lang['btn_logout'].'</a></li>';
+echo '<li><a class="dropdown-item" href="/profile/">'.$lang['button_profile'].'</a></li>';
+echo '<li><a class="dropdown-item" href="/index.php?goto=logout">'.$lang['button_logout'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 

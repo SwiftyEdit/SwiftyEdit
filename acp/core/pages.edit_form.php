@@ -484,7 +484,7 @@ if($se_prefs['prefs_publisher_mode'] == 'overwrite') {
 echo tpl_form_control_group('',$lang['label_author'],'<input class="form-control" type="text" name="page_meta_author" value="'.html_entity_decode($page_meta_author).'">');
 echo tpl_form_control_group('',$lang['label_keywords'],'<input class="form-control tags" type="text" name="page_meta_keywords" value="'.html_entity_decode($page_meta_keywords).'">');
 echo tpl_form_control_group('',$lang['label_description'],"<textarea name='page_meta_description' class='form-control cntWords cntChars' rows='5'>".html_entity_decode($page_meta_description)."</textarea>");
-
+echo '<div class="chars_counter d-inline-block">0</div> Chars <div class="word_counter d-inline-block">0</div> Words';
 echo '</div>';
 echo '<div class="col-md-6">';
 
