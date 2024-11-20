@@ -213,7 +213,7 @@
                                 <div class="col-md-8">
                                     <div class="form-group">
                                         <label>{label_url}</label>
-                                        <input class='form-control' name="link" type="text" value="{link}">
+                                        <input class='form-control' name="product_url" type="text" value="{product_url}">
                                     </div>
                                 </div>
 
