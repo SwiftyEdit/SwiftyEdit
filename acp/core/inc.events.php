@@ -1,23 +1,11 @@
 <?php
-//prohibit unauthorized access
-require 'core/access.php';
 
-switch ($sub) {
+$subinc = match (true) {
+    str_starts_with($query, 'events/new/') => 'events-edit',
+    str_starts_with($query, 'events/edit/') => 'events-edit',
+    str_starts_with($query, 'events/duplicate/') => 'events-edit',
+    str_starts_with($query, 'events') => 'events-list',
+    default => 'events-list'
+};
 
-    case "edit":
-    case "events-edit":
-        $subinc = "events.edit";
-        break;
-
-    case "bookings":
-        $subinc = "events.bookings";
-        break;
-
-    case "list":
-    case "events-list":
-    default:
-        $subinc = "events.list";
-        break;
-}
-
-include $subinc.'.php';
+include 'events/'.$subinc.'.php';

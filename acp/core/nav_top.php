@@ -14,7 +14,7 @@ echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="
 
 echo '<button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">';
 echo 'Filter ';
-echo '<span class="badge bg-secondary">'.$cnt_global_filters.'</span>';
+echo '<span hx-get="/admin/counter/read/?count=count_global_filters" hx-trigger="load, updated_global_filter from:body" class="badge bg-primary">0</span>';
 echo '</button>';
 
 
@@ -23,7 +23,7 @@ echo '</button>';
  */
 
 $lang_key = array_search($_SESSION['lang'],$all_langs);
-$selected_lang_flag = '<img src="../core/lang/'.$_SESSION['lang'].'/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
+$selected_lang_flag = '<img src="/assets/lang/'.$_SESSION['lang'].'/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
 
 echo '<div class="dropstart me-1">';
 
@@ -42,8 +42,8 @@ echo '</div>';
  * user menu
  */
 
-$user_avatar = '<img src="images/avatar.png" class="rounded-circle avatar" width="22" height="22">';
-$my_avatar_path = '../content/avatars/' . md5($_SESSION['user_nick']) . '.png';
+$user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle avatar" width="22" height="22">';
+$my_avatar_path = '/assets/avatars/' . md5($_SESSION['user_nick']) . '.png';
 if(is_file("$my_avatar_path")) {
     $user_avatar = '<img src="'.$my_avatar_path.'" class="rounded-circle border img-responsive align-top me-1" width="22" height="22">';
 }

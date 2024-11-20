@@ -102,7 +102,7 @@ function table_exists($database,$table_name) {
 
 function se_generate_sql_query($file,$db_type='sqlite') {
 	
-	include "contents/$file";
+	include __DIR__."/../contents/$file";
 	$string = '';
 	
 	if($db_type == 'sqlite') {

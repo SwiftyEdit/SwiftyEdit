@@ -177,17 +177,17 @@ $dbh_user->insert("se_user", [
  */
 
 
-$portal_content = file_get_contents("contents/text_welcome_en.txt");
-$email_confirm_content = file_get_contents("contents/text_email_confirm_en.txt");
-$agreement_content = file_get_contents("contents/text_agreement_en.txt");
+$portal_content = file_get_contents(__DIR__."/../contents/text_welcome_en.txt");
+$email_confirm_content = file_get_contents(__DIR__."/../contents/text_email_confirm_en.txt");
+$agreement_content = file_get_contents(__DIR__."/../contents/text_agreement_en.txt");
 if($_SESSION['lang'] == 'de') {
-    $portal_content = file_get_contents("contents/text_welcome_de.txt");
-    $email_confirm_content = file_get_contents("contents/text_email_confirm_de.txt");
-    $agreement_content = file_get_contents("contents/text_agreement_de.txt");
+    $portal_content = file_get_contents(__DIR__."/../contents/text_welcome_de.txt");
+    $email_confirm_content = file_get_contents(__DIR__."/../contents/text_email_confirm_de.txt");
+    $agreement_content = file_get_contents(__DIR__."/../contents/text_agreement_de.txt");
 }
 
-$example_content = file_get_contents("contents/text_example.txt");
-$footer_content = file_get_contents("contents/text_footer.txt");
+$example_content = file_get_contents(__DIR__."/../contents/text_example.txt");
+$footer_content = file_get_contents(__DIR__."/../contents/text_footer.txt");
 
 $time = time();
 
@@ -491,5 +491,5 @@ $db_index->query($sql_index_items_table);
 
 
 echo '<div class="alert alert-success">'.$lang['installed'].' | Admin: '.$username.'</div>';
-echo '<hr><a class="btn btn-success" href="../acp/index.php">'.$lang['link_admin'].'</a><hr>';
+echo '<hr><a class="btn btn-success" href="../admin/">'.$lang['link_admin'].'</a><hr>';
 

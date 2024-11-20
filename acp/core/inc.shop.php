@@ -1,40 +1,17 @@
 <?php
-//prohibit unauthorized access
-require 'core/access.php';
+
+$subinc = match (true) {
+    str_starts_with($query, 'shop/orders/') => 'orders',
+    str_starts_with($query, 'shop/filter/') => 'filters',
+    str_starts_with($query, 'shop/features/') => 'features',
+    str_starts_with($query, 'shop/prices/') => 'prices',
+    str_starts_with($query, 'shop') => 'products-list',
+    default => 'products-list'
+};
 
 
-switch ($sub) {
-
-    case "shop-list":
-        $subinc = "shop.list";
-        break;
-
-    case "edit":
-    case "shop-edit":
-        $subinc = "shop.edit";
-        break;
-
-    case "shop-prices":
-        $subinc = "shop.prices";
-        break;
-
-    case "shop-features":
-        $subinc = "shop.features";
-        break;
-
-    case "shop-filter":
-        $subinc = "shop.filter";
-        break;
-
-    case "shop-orders":
-        $subinc = "shop.orders";
-        break;
-
-    default:
-        $subinc = "shop.list";
-        break;
-
+if($_SESSION['acp_system'] != "allowed"){
+    $subinc = "no_access";
 }
 
-
-include $subinc.'.php';
+include 'shop/'.$subinc.'.php';

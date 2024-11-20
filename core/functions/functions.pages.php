@@ -11,7 +11,8 @@
  */
 function se_get_pages($filter) {
 
-    global $db_content, $se_labels;
+    global $db_content;
+    $se_labels = se_get_labels();
 
     $order = "ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC";
 
@@ -106,6 +107,15 @@ function se_get_pages($filter) {
         $sql_types_filter = substr("$sql_types_filter", 0, -3); // cut the last ' OR'
     }
 
+    // filter by page_sort - all | sorted | single
+    if($filter['sort_type'] == 'all' OR $filter['sort_type'] == '') {
+        $sql_sort_type_filter = '';
+    } else if($filter['sort_type'] == 'sorted') {
+        $sql_sort_type_filter = "(page_sort IS NOT NULL AND page_sort != '') ";
+    } else if($filter['sort_type'] == 'single') {
+        $sql_sort_type_filter = "(page_sort IS NULL OR page_sort = '' AND page_sort != 'portal') ";
+    }
+
 
     $sql_filter = $filter_string;
 
@@ -125,6 +135,10 @@ function se_get_pages($filter) {
 
     if($sql_types_filter != "") {
         $sql_filter .= " AND ($sql_types_filter) ";
+    }
+
+    if($sql_sort_type_filter != "") {
+        $sql_filter .= " AND ($sql_sort_type_filter) ";
     }
 
     $sql = "SELECT * FROM se_pages $sql_filter $order";

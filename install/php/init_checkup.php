@@ -42,7 +42,7 @@ function checkwritable($path) {
 
 function checkexistingdir($path) {
 
-	global $goto_install;
+	global $goto_install,$lang;
 	
 	if(!is_dir("$path")){
 		echo '<div class="row">';
@@ -65,19 +65,17 @@ function checkexistingdir($path) {
 
 
 $check_this[] = SE_CONTENT . "/";
-$check_this[] = SE_CONTENT . '/images';
-$check_this[] = SE_CONTENT . '/files';
-$check_this[] = SE_CONTENT . '/images_tmb';
-$check_this[] = SE_CONTENT . "/avatars";
-$check_this[] = SE_CONTENT . "/plugins";
-$check_this[] = SE_CONTENT . "/SQLite";
-$check_this[] = SE_CONTENT . "/galleries";
-$check_this[] = SE_CONTENT . "/modules";
+$check_this[] = SE_PUBLIC . "/assets/avatars";
+$check_this[] = SE_PUBLIC . '/assets/files';
+$check_this[] = SE_PUBLIC . "/assets/galleries";
+$check_this[] = SE_PUBLIC . '/assets/images';
+$check_this[] = SE_PUBLIC . '/assets/images_tmb';
+$check_this[] = SE_PUBLIC . "/assets/modules";
+$check_this[] = SE_PUBLIC . "/assets/plugins";
+$check_this[] = SE_CONTENT . "/database";
+
 sort($check_this,SORT_NATURAL | SORT_FLAG_CASE);
 
-$check_is_dir[] = "../styles/";
-$check_is_dir[] = "../core/";
-$check_is_dir[] = "../acp/";
 
 /* minimum php version */
 
@@ -89,19 +87,11 @@ $loaded_extensions = get_loaded_extensions();
  * if not, rename _htaccess
  */
 
-if(!is_file("../.htaccess")) {
-	copy("../_htaccess","../.htaccess");
-}
-
 echo '<fieldset>';
 echo '<legend>'.$lang['files_and_folders'].'</legend>';
 
 foreach($check_this as $filepath){
 	checkwritable("$filepath");
-}
-
-foreach($check_is_dir as $dir){
-	checkexistingdir("$dir");
 }
 
 echo '</fieldset>';

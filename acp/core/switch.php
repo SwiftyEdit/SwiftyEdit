@@ -1,79 +1,32 @@
 <?php
 
-//prohibit unauthorized access
-require __DIR__."/access.php";
 
-/**
- * including vars
- * tn -> mainscripts
- * sub -> subscripts
- */
-
-if(!isset($_GET['tn'])){
-	$tn = "dashboard";
-} else {
-	$tn = clean_vars($_GET['tn']);
+if(isset($_GET['query'])) {
+    $query = se_clean_query($_GET['query']);
 }
 
-if(!isset($_GET['sub'])){
-	$sub = "";
-} else {
-	$sub = clean_vars($_GET['sub']);
+if(!isset($query)) {
+    $query = '/admin/';
 }
 
-if(!isset($_GET['a'])){
-    $a = "";
-} else {
-    $a = clean_vars($_GET['a']);
-}
+$path = explode("/", $query);
 
+$maininc = match (true) {
+    str_starts_with($query, 'pages') => 'inc.pages',
+    str_starts_with($query, 'snippets') => 'inc.pages',
+    str_starts_with($query, 'shortcodes') => 'inc.pages',
+    str_starts_with($query, 'addons') => 'inc.addons',
+    str_starts_with($query, 'users') => 'inc.users',
+    str_starts_with($query, 'categories') => 'inc.categories',
+    str_starts_with($query, 'settings') => 'inc.settings',
+    str_starts_with($query, 'shop') => 'inc.shop',
+    str_starts_with($query, 'events') => 'inc.events',
+    str_starts_with($query, 'blog') => 'inc.blog',
+    str_starts_with($query, 'inbox') => 'inc.inbox',
+    str_starts_with($query, 'uploads') => 'inc.uploads',
+    default => 'inc.dashboard'
+};
 
-switch ($tn) {
-
-    case "pages":
-		$maininc = "inc.pages";
-		break;
-
-    case "moduls":
-    case "addons":
-		$maininc = "inc.addons";
-		break;
-
-    case "filebrowser":
-		$maininc = "inc.filebrowser";
-		$headinc = "head.filebrowser.dat";
-		break;
-		
-	case "user":
-		$maininc = "inc.user";
-		break;
-		
-	case "system":
-		$maininc = "inc.system";
-		break;
-
-	case "events":
-		$maininc = "inc.events";
-		break;
-
-	case "posts":
-		$maininc = "inc.posts";
-		break;
-
-    case "shop":
-        $maininc = "inc.shop";
-        break;
-
-	case "inbox":
-		$maininc = "inc.inbox";
-		break;
-
-    case "categories":
-        $maininc = "inc.categories";
-        break;
-
-    case "dashboard":
-    default:
-		$maininc = "inc.dashboard";
-		break;
+if($maininc == '') {
+    $maininc = "inc.dashboard";
 }

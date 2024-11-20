@@ -15,14 +15,14 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
 function get_all_plugins() {
 	
 	$plugins = array();
-	$scanned_directory = array_diff(scandir(SE_CONTENT.'/plugins/'), array('..', '.','.DS_Store'));
+	$scanned_directory = array_diff(scandir('assets/plugins/'), array('..', '.','.DS_Store'));
 	foreach($scanned_directory as $p) {
 		
 		$path_parts = pathinfo($p);
 		if($path_parts['extension'] == 'php') {
 			$plugins[] = $p;
 		} else {
-			if((is_dir(SE_CONTENT.'/plugins/'.$p)) && (is_file(SE_CONTENT.'/plugins/'.$p.'/index.php'))) {
+			if((is_dir('assets/plugins/'.$p)) && (is_file('assets/plugins/'.$p.'/index.php'))) {
 				$plugins[] = $p;
 			}
 		}
@@ -40,7 +40,7 @@ function get_all_plugins() {
 
 function get_all_modules() {
 
-	$mdir = SE_CONTENT."/modules/";
+	$mdir = "assets/modules/";
 	$cntMods = 0;
 	$arr_iMods = array();
 	$scanned_directory = array_diff(scandir($mdir), array('..', '.','.DS_Store'));
@@ -138,7 +138,7 @@ function se_delete_addon($addon,$type) {
 function get_all_templates() {
 
 	//templates folder
-	$sdir = SE_ROOT."/styles";
+	$sdir = SE_ROOT."/public/assets/themes/";
 	$cntStyles = 0;
 	$scanned_directory = array_diff(scandir($sdir), array('..', '.','.DS_Store'));
 	

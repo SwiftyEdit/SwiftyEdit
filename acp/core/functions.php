@@ -19,7 +19,9 @@ include_once 'functions_shop.php';
  * return as array
  */
 
-function get_all_languages($d='../core/lang') {
+function get_all_languages() {
+
+    $d = '../public/assets/lang/';
 
 	$cntLangs = 0;
 	$scanned_directory = array_diff(scandir($d), array('..', '.','.DS_Store'));
@@ -180,7 +182,7 @@ function se_get_all_images($prefix='') {
 	global $img_path;
 	$images = array();
 
-	$dir = "../$img_path";
+	$dir = "$img_path";
 	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
 	$types = array('jpg','jpeg','png','gif');
 	
@@ -214,7 +216,7 @@ function se_get_all_images_rec($prefix='',$dir='') {
 	$images = array();
 	
 	if($dir == '') {
-		$dir = "../$img_path";
+        $dir = "$img_path";
 	}
 	
 	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
@@ -773,6 +775,8 @@ function se_return_first_chars($str,$length=200) {
 	 
 	 
  }
+
+
  
 
 
@@ -1033,15 +1037,15 @@ function se_get_labels() {
  * @return string
  */
 
-function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
+function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
 
     global $lang;
 
-    if(!array($seleced_img)) {
+    if(!array($selected_img)) {
         $cnt_selected_img = 0;
     } else {
-        $seleced_img = array_filter($seleced_img);
-        $cnt_selected_img = count($seleced_img);
+        $selected_img = array_filter($selected_img);
+        $cnt_selected_img = count($selected_img);
     }
 
 
@@ -1051,7 +1055,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
     if($cnt_selected_img > 0) {
         $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
         $images_container .= '<div class="sortableListGroup list-group my-1">';
-        foreach($seleced_img as $sel_images) {
+        foreach($selected_img as $sel_images) {
             if(is_file("$sel_images")) {
                 $images_container .= '<div class="list-group-item p-1">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
@@ -1110,7 +1114,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
             $images_container .= '<div class="col-12 mt-2"><div class="card p-1"><h6 class="m-0">'.$filemtime.'</h6></div></div>';
         }
 
-        if(!in_array($image_name, $seleced_img)) {
+        if(!in_array($image_name, $selected_img)) {
             $images_container .= '<div class="col col-lg-3" title="'.$img_filename.'">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
