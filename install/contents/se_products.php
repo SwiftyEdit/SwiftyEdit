@@ -81,6 +81,7 @@ $cols = array(
     "product_number" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_manufacturer" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_supplier" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "product_url" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_tax" => 'INTEGER(12)',
     "product_price_net_purchasing" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",

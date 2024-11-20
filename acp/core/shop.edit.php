@@ -1099,6 +1099,7 @@ $form_tpl = str_replace('{checked_user_uploads}', $checked_user_uploads, $form_t
 /* product */
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
 $form_tpl = str_replace('{product_manufacturer}', $product_data['product_manufacturer'], $form_tpl);
+$form_tpl = str_replace('{product_url}', $product_data['product_url'], $form_tpl);
 $form_tpl = str_replace('{product_supplier}', $product_data['product_supplier'], $form_tpl);
 $form_tpl = str_replace('{product_currency}', $product_currency, $form_tpl);
 $form_tpl = str_replace('{product_price_label}', $product_data['product_price_label'], $form_tpl);
