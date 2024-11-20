@@ -22,7 +22,7 @@ if((!empty($_POST['duplicate'])) OR ($_POST['modus'] == 'duplicate')) {
     $form_header_mode = 'Duplicate: '.$id;
     $product_data = se_get_product_data($id);
     $submit_btn = '<input type="submit" class="btn btn-success w-100" name="save_product" value="'.$lang['duplicate'].'">';
-    $submit_variant_btn = '<button type="submit" class="btn btn-default w-100 my-1" name="save_variant" value="'.$id.'">'.$lang['btn_submit_variant'].'</button>';
+    $submit_variant_btn = '<button type="submit" class="btn btn-default w-100 my-1" name="save_variant" value="'.$id.'">'.$lang['submit_variant'].'</button>';
 }
 
 if((!empty($_POST['edit_id'])) && is_numeric($_POST['edit_id'])) {
