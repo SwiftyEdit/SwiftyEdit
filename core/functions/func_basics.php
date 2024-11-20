@@ -138,8 +138,8 @@ function se_get_files_data($file,$parameters=NULL) {
     $form_action = $swifty_slug;
     $form_action = str_replace('//','/',$form_action);
 	
-	$file_src = str_replace('../content/files/', '/content/files/', $fileData['media_file']);
-	$tpl = file_get_contents('./styles/'.$se_template.'/templates/download.tpl');
+	$file_src = str_replace('../content/files/', '/files/', $fileData['media_file']);
+	$tpl = file_get_contents(SE_PUBLIC.'/assets/themes/'.$se_template.'/templates/download.tpl');
     $tpl = str_replace('{$form_Action}', $form_action, $tpl);
     $tpl = str_replace('{$csrf_token}', $_SESSION['token'], $tpl);
 	$tpl = str_replace('{$file_src}', $fileData['media_file'], $tpl);

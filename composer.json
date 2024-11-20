@@ -17,7 +17,7 @@
     "platform": {
       "php": "8.0"
     },
-    "vendor-dir": "core/vendor"
+    "vendor-dir": "vendor"
   },
   "require": {
     "catfan/medoo": "^2.1.8",

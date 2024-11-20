@@ -4,6 +4,12 @@
 
 # SwiftyEdit CMS
 
+## A few notes on version 2
+
+* To increase security, we will use a /public/ folder for the frontend
+* We use mod_rewrite for the backend
+* ...
+
 SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite.
 
 + License: GNU GENERAL PUBLIC LICENSE Version 3<br>

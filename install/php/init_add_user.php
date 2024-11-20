@@ -7,6 +7,16 @@ if(!defined('INSTALLER')) {
 
 $checked_user_data = array();
 
+if(!isset($_SESSION['temp_username'])) {
+    $_SESSION['temp_username'] = '';
+}
+if(!isset($_SESSION['temp_usermail'])) {
+    $_SESSION['temp_usermail'] = '';
+}
+if(!isset($_SESSION['temp_userpsw'])) {
+    $_SESSION['temp_userpsw'] = '';
+}
+
 if(isset($_POST['check_user_data'])) {
 	
 	if($_POST['username'] != '') {
@@ -30,7 +40,10 @@ if(isset($_POST['check_user_data'])) {
 echo '<fieldset>';
 
 echo '<legend>'.$lang['label_add_user'].'</legend>';
-echo '<p class="lead">'.$lang['description_add_user'].'</p>';
+
+echo '<div class="alert alert-info">';
+echo '<p>'.$lang['description_add_user'].'</p>';
+echo '</div>';
 
 echo '<form action="index.php" method="POST">';
 echo '<div class="form-group">';

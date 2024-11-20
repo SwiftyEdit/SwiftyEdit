@@ -34,26 +34,11 @@
 				</p>
 				
 				<div class="controls-container clearfix">
-					<form action="?tn=pages&sub=edit" method="POST">
-						<div class="btn-group w-100" role="group">
-							{edit-btn-fast}
-							<div class="btn-group" role="group">
-						<div class="dropdown">
-							<button class="btn btn-sm btn-default dropdown-toggle caret-off w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<i class="bi bi-three-dots"></i>
-							</button>
 
-							<ul class="dropdown-menu">
-								<li>{edit-btn}</li>
-								<li>{duplicate-btn}</li>
-								<li><hr class="dropdown-divider"></li>
-								<li>{info-btn}</li>
-							</ul>
-							</div>
-						</div>
-						</div>
-						{hidden_csrf_tokken}
-					</form>
+					{edit-btn}
+					{duplicate-btn}
+					{info-btn}
+
 				</div>
 			</div>
 		</div>

@@ -10,6 +10,7 @@
 
 $editor_tpl_folder = $se_prefs['prefs_template'];
 
+
 if(isset($page_template)) {
 	$editor_tpl_folder = $page_template;
 }
@@ -25,7 +26,7 @@ if($editor_tpl_folder == 'use_standard') {
  * 3. ../styles/.../css/ and ../styles/.../js/
  */
 
-$theme_src = '../styles/' . $editor_tpl_folder . '/';
+$theme_src = '../public/assets/themes/' . $editor_tpl_folder . '/';
 
 if (is_file($theme_src . 'dist/editor.css')) {
     $editor_styles = $theme_src.'dist/editor.css';
@@ -45,11 +46,11 @@ if (is_file($theme_src . 'dist/tinyMCE_config.js')) {
 
 
 if(!is_file("$editor_styles")) {
-    $editor_styles = '../styles/default/dist/editor.css';
+    $editor_styles = '../public/assets/themes/default/dist/editor.css';
 }
 
 if(!is_file($tinyMCE_config)) {
-    $tinyMCE_config = '../styles/default/dist/tinyMCE_config.js';
+    $tinyMCE_config = '../public/assets/themes/default/dist/tinyMCE_config.js';
 }
 
 $tinyMCE_config_contents = file_get_contents($tinyMCE_config);

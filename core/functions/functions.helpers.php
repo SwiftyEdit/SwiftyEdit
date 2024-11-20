@@ -1,20 +1,41 @@
 <?php
 
-// source: Laravel Framework
-// https://github.com/laravel/framework/blob/8.x/src/Illuminate/Support/Str.php
+/**
+ * returns all files and directories
+ * return array()
+ */
 
-if (!function_exists('str_starts_with')) {
-    function str_starts_with($haystack, $needle) {
-        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+function se_scandir_recursive($dir) {
+    $root = scandir($dir);
+    foreach($root as $value) {
+        if($value === '.' || $value === '..'|| $value === '.DS_Store') {continue;}
+        $result[]="$dir/$value";
+        if(is_dir("$dir/$value")) {
+            foreach(se_scandir_recursive("$dir/$value") as $value) {
+                $result[]=$value;
+            }
+        }
     }
+    if(is_array($result)) {
+        $result = array_filter($result);
+    }
+
+    return $result;
 }
-if (!function_exists('str_ends_with')) {
-    function str_ends_with($haystack, $needle) {
-        return $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle;
+
+function se_covert_big_int(int $number): string {
+
+    if ($number < 1000) {
+        return sprintf('%d', $number);
     }
-}
-if (!function_exists('str_contains')) {
-    function str_contains($haystack, $needle) {
-        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+
+    if ($number < 1000000) {
+        return sprintf('%d%s', floor($number / 1000), 'K+');
     }
+
+    if ($number >= 1000000) {
+        return sprintf('%d%s', floor($number / 1000000), 'M+');
+    }
+
+    return $number;
 }

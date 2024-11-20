@@ -225,7 +225,7 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 		
 		
 		if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
-			header("location:acp.php");
+			header("location:/admin/");
 		}
 		
 		
