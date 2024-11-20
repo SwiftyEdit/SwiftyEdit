@@ -75,3 +75,8 @@ acp/theme/node_modules/*
 acp/theme/node_modules/**/*
 acp/theme/dist/*
 _config_database.php
+
+## v2
+/public/*
+/data/*
+/vendor
