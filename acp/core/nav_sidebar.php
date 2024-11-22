@@ -5,7 +5,7 @@
  * sidebar for pages, snippets
  */
 
-echo '<div class="sidebar-logo mb-1 mt-2">';
+echo '<div class="sidebar-logo mb-3 mt-2">';
 echo '<a href="/admin/dashboard/" class="" title="Dashboard"></a>';
 echo '</a>';
 echo '</div>';
@@ -13,175 +13,117 @@ echo '</div>';
 echo '<ul class="nav">';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarContents" aria-expanded="false" aria-controls="sidebarContents" class="sidebar-nav-link d-block color-contents">';
-echo $icon['diagram_3'];
-echo '<span>'.$lang['nav_btn_contents'].'</span>';
-echo '</a>';
-
-echo '<div class="collapse '.($maininc == "inc.pages" ? 'show' :'').'" id="sidebarContents">';
-echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "pages-list" ? 'sidebar-nav-active' :'').'" href="/admin/pages/">'.$icon['files'].' '.$lang['nav_btn_pages'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "snippets" ? 'sidebar-nav-active' :'').'" href="/admin/snippets/">'.$icon['card_heading'].' '.$lang['snippets'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shortcodes" ? 'sidebar-nav-active' :'').'" href="/admin/shortcodes/">'.$icon['code'].' Shortcodes</a></li>';
-echo '</ul>';
-echo '</div>';
-echo '</li>';
-
+echo '<a class="sidebar-nav-link d-block color-contents '.($se_section == "pages" ? 'sidebar-nav-active' :'').'" href="/admin/pages/">';
+echo $icon['files'];
+echo '<span>'.$lang['nav_btn_pages'].'</span></a></li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarPosts" aria-expanded="false" aria-controls="sidebarPosts" class="sidebar-nav-link d-block color-blog">';
+echo '<a class="sidebar-nav-link d-block color-contents '.($se_section == "snippets" ? 'sidebar-nav-active' :'').'" href="/admin/snippets/">';
+echo $icon['card_heading'];
+echo '<span>'.$lang['snippets'].'</span></a></li>';
+
+echo '<li class="sidebar-nav-item">';
+echo '<a class="sidebar-nav-link d-block color-contents '.($se_section == "shortcodes" ? 'sidebar-nav-active' :'').'" href="/admin/shortcodes/">';
+echo $icon['code'];
+echo '<span>Shortcodes</span></a></li>';
+
+echo '<li class="sidebar-nav-item">';
+echo '<a class="sidebar-nav-link d-block color-blog '.($se_section == "blog" ? 'sidebar-nav-active' :'').'" href="/admin/blog/">';
 echo $icon['file_earmark_post'];
-echo '<span>'.$lang['nav_btn_blog'].'</span>';
-echo '</a>';
-echo '<div class="collapse '.($maininc == "inc.blog" ? 'show' :'').'" id="sidebarPosts">';
-echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "blog-list" ? 'sidebar-nav-active' :'').'" href="/admin/blog/">'.$icon['files'].' '.$lang['overview'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "blog-edit" ? 'sidebar-nav-active' :'').'" href="/admin/posts/new/">'.$icon['plus'].' '.$lang['btn_new'].'</a></li>';
-echo '</ul>';
-echo '</div>';
-echo '</li>';
-
+echo '<span>'.$lang['nav_btn_blog'].'</span></a></li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarShop" aria-expanded="false" aria-controls="sidebarShop" class="sidebar-nav-link d-block color-shop">';
+echo '<a data-bs-toggle="collapse" href="#sidebarShop" aria-expanded="false" aria-controls="sidebarShop" class="sidebar-nav-link d-block color-shop toggler '.($se_section == "shop" ? 'sidebar-nav-active' :'').'">';
 echo $icon['store'];
 echo '<span>'.$lang['nav_btn_shop'].'</span>';
 echo '</a>';
-echo '<div class="collapse '.($maininc == "inc.shop" ? 'show' :'').'" id="sidebarShop">';
+echo '<div class="collapse '.($se_section == "shop" ? 'show' :'').'" id="sidebarShop">';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "shop-list" ? 'sidebar-nav-active' :'').'" href="/admin/shop/">'.$icon['files'].' '.$lang['nav_btn_products'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shop-prices" ? 'sidebar-nav-active' :'').'" href="/admin/shop/prices/">'.$icon['cash_stack'].' '.$lang['nav_btn_price_groups'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shop-features" ? 'sidebar-nav-active' :'').'" href="/admin/shop/features/">'.$icon['star_outline'].' '.$lang['nav_btn_features'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shop-filter" ? 'sidebar-nav-active' :'').'" href="/admin/shop/filters/">'.$icon['filter'].' '.$lang['filter'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shop-orders" ? 'sidebar-nav-active' :'').'" href="/admin/shop/orders/">'.$icon['cart'].' '.$lang['nav_btn_orders'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "products-list" ? 'sidebar-nav-active' :'').'" href="/admin/shop/">'.$icon['dot'].' '.$lang['nav_btn_products'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "prices" ? 'sidebar-nav-active' :'').'" href="/admin/shop/prices/">'.$icon['dot'].' '.$lang['nav_btn_price_groups'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "features" ? 'sidebar-nav-active' :'').'" href="/admin/shop/features/">'.$icon['dot'].' '.$lang['nav_btn_features'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "filters" ? 'sidebar-nav-active' :'').'" href="/admin/shop/filters/">'.$icon['dot'].' '.$lang['filter'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "orders" ? 'sidebar-nav-active' :'').'" href="/admin/shop/orders/">'.$icon['dot'].' '.$lang['nav_btn_orders'].'</a></li>';
 echo '<li><a class="sidebar-nav" href="/admin/settings/shop/">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '</li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarEvents" aria-expanded="false" aria-controls="sidebarEvents" class="sidebar-nav-link d-block color-events">';
+echo '<a data-bs-toggle="collapse" href="#sidebarEvents" aria-expanded="false" aria-controls="sidebarEvents" class="sidebar-nav-link d-block color-events toggler">';
 echo $icon['calendar_event'];
 echo '<span>'.$lang['nav_btn_events'].'</span>';
 echo '</a>';
-echo '<div class="collapse '.($maininc == "inc.events" ? 'show' :'').'" id="sidebarEvents">';
+echo '<div class="collapse '.($se_section == "events" ? 'show' :'').'" id="sidebarEvents">';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "events-list" ? 'sidebar-nav-active' :'').'" href="/admin/events/">'.$icon['files'].' '.$lang['overview'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "bookings" ? 'sidebar-nav-active' :'').'" href="/admin/events/bookings/">'.$icon['calendar_check'].' '.$lang['nav_btn_bookings'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "events-list" ? 'sidebar-nav-active' :'').'" href="/admin/events/">'.$icon['files'].' '.$lang['overview'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "bookings" ? 'sidebar-nav-active' :'').'" href="/admin/events/bookings/">'.$icon['calendar_check'].' '.$lang['nav_btn_bookings'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '</li>';
 
-
-
-/**
- * addons
- */
-
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarAddons" aria-expanded="false" aria-controls="sidebarAddons" class="sidebar-nav-link d-block color-addons">';
+echo '<a class="sidebar-nav-link d-block color-addons '.($se_section == "addons" ? 'sidebar-nav-active' :'').'" href="/admin/addons/">';
 echo $icon['plugin'];
-echo '<span>'.$lang['nav_btn_addons'].'</span>';
-echo '</a>';
+echo '<span>'.$lang['nav_btn_addons'].'</span></a></li>';
 
-echo '<div class="collapse '.($tn == "addons" ? 'show' :'').'" id="sidebarAddons">';
-echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "list" ? 'sidebar-nav-active' :'').'" href="/admin/addons/">'.$icon['files'].$lang['overview'].'</a></li>';
-
-/* loop trough modules */
-$cnt_mods = count($all_mods);
-for($i=0;$i<$cnt_mods;$i++) {
-    unset($mod);
-    $modFolder = $all_mods[$i]['folder'];
-    echo '<li>';
-    echo '<a class="sidebar-nav '.($sub == "$modFolder" ? 'sidebar-nav-active' :'').'" href="?tn=addons&sub='.$modFolder.'&a=start">'.$icon['plus'].basename($modFolder,'.mod').'</a>';
-
-    if($sub == "$modFolder") {
-        echo '<ul>';
-        include SE_CONTENT.'/modules/'.$modFolder.'/info.inc.php';
-        $cnt_modnav = count($modnav);
-
-        for($x=0;$x<$cnt_modnav;$x++) {
-            $showlink = $modnav[$x]['link'];
-            $incpage = $modnav[$x]['file'];
-
-            if($a == $incpage) {
-                $sub_link_class = "sidebar-sub-active";
-            } else {
-                $sub_link_class = "sidebar-sub";
-            }
-
-            echo '<li><a class="'.$sub_link_class.'" href="acp.php?tn=addons&sub='.$modFolder.'&a='.$incpage.'">'.$showlink.'</a></li>';
-
-        }
-        echo '</ul>';
-    }
-
-    echo '</li>';
-}
-
-echo '</ul>';
-echo '</div>';
-echo '</li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a class="sidebar-nav-link '.($tn == "filebrowser" ? 'sidebar-nav-active' :'').' color-uploads" href="/admin/uploads/">';
+echo '<a class="sidebar-nav-link '.($se_section == "uploads" ? 'sidebar-nav-active' :'').' color-uploads" href="/admin/uploads/">';
 echo $icon['folder'];
 echo '<span>'.$lang['nav_btn_uploads'].'</span></a></li>';
 
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarReactions" aria-expanded="false" aria-controls="sidebarReactions" class="sidebar-nav-link d-block color-reactions">';
+echo '<a data-bs-toggle="collapse" href="#sidebarReactions" aria-expanded="false" aria-controls="sidebarReactions" class="sidebar-nav-link d-block color-reactions toggler">';
 echo $icon['inbox'];
 echo '<span>'.$lang['nav_btn_inbox'].'</span>';
 echo '</a>';
-echo '<div class="collapse '.($tn == "inbox" ? 'show' :'').'" id="sidebarReactions">';
+echo '<div class="collapse '.($se_section == "inbox" ? 'show' :'').'" id="sidebarReactions">';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "mailbox" ? 'sidebar-nav-active' :'').'" href="/admin/inbox/">'.$icon['envelope'].' '.$lang['nav_btn_mails'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "comments" ? 'sidebar-nav-active' :'').'" href="/admin/inbox/comments/">'.$icon['chat_square_dots'].' '.$lang['nav_btn_comments'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "votings" ? 'sidebar-nav-active' :'').'" href="/admin/inbox/reactions/">'.$icon['thumbs_up'].' '.$lang['nav_btn_reactions'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "inbox-mail" ? 'sidebar-nav-active' :'').'" href="/admin/inbox/">'.$icon['dot'].' '.$lang['nav_btn_mails'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "inbox-comments" ? 'sidebar-nav-active' :'').'" href="/admin/inbox/comments/">'.$icon['dot'].' '.$lang['nav_btn_comments'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "inbox-reactions" ? 'sidebar-nav-active' :'').'" href="/admin/inbox/reactions/">'.$icon['dot'].' '.$lang['nav_btn_reactions'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '</li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarUser" aria-expanded="false" aria-controls="sidebarPosts" class="sidebar-nav-link d-block color-user">';
+echo '<a data-bs-toggle="collapse" href="#sidebarUser" aria-expanded="false" aria-controls="sidebarPosts" class="sidebar-nav-link d-block color-user toggler">';
 echo $icon['people'];
 echo '<span>'.$lang['nav_btn_user'].'</span>';
 echo '</a>';
-echo '<div class="collapse '.($tn == "user" ? 'show' :'').'" id="sidebarUser">';
+echo '<div class="collapse '.($se_section == "users" ? 'show' :'').'" id="sidebarUser">';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "user-list" ? 'sidebar-nav-active' :'').'" href="/admin/users/">'.$icon['user'].' '.$lang['overview'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "user-groups" ? 'sidebar-nav-active' :'').'" href="/admin/users/groups/">'.$icon['user_friends'].' '.$lang['nav_btn_user_groups'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "users-list" ? 'sidebar-nav-active' :'').'" href="/admin/users/">'.$icon['dot'].' '.$lang['overview'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "users-groups" ? 'sidebar-nav-active' :'').'" href="/admin/users/groups/">'.$icon['dot'].' '.$lang['nav_btn_user_groups'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '</li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a class="sidebar-nav-link '.($maininc == "inc.categories" ? 'sidebar-nav-active' :'').'" href="/admin/categories/">';
+echo '<a class="sidebar-nav-link '.($se_section == "categories" ? 'sidebar-nav-active' :'').'" href="/admin/categories/">';
 echo $icon['bookmarks_fill'];
 echo '<span>'.$lang['categories'].'</span></a></li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a data-bs-toggle="collapse" href="#sidebarPrefs" aria-expanded="false" aria-controls="sidebarPrefs" class="sidebar-nav-link d-block">';
+echo '<a data-bs-toggle="collapse" href="#sidebarPrefs" aria-expanded="false" aria-controls="sidebarPrefs" class="sidebar-nav-link d-block toggler">';
 echo $icon['gear'];
 echo '<span>'.$lang['nav_btn_settings'].'</span>';
 echo '</a>';
-echo '<div class="collapse '.($maininc == "inc.settings" ? 'show' :'').'" id="sidebarPrefs">';
+echo '<div class="collapse '.($se_section == "settings" ? 'show' :'').'" id="sidebarPrefs">';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "general" ? 'sidebar-nav-active' :'').'" href="/admin/settings/">'.$icon['arrow_right_short'].' '.$lang['nav_btn_general'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "posts" ? 'sidebar-nav-active' :'').'" href="/admin/settings/posts/">'.$icon['file_earmark_post'].' '.$lang['nav_btn_posts'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "shop" ? 'sidebar-nav-active' :'').'" href="/admin/settings/shop/">'.$icon['store'].' '.$lang['nav_btn_shop'].'</a></li>';
-echo '<li><a class="sidebar-nav '.($sub == "events" ? 'sidebar-nav-active' :'').'" href="/admin/settings/events/">'.$icon['calendar_event'].' '.$lang['nav_btn_events'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "general" ? 'sidebar-nav-active' :'').'" href="/admin/settings/">'.$icon['dot'].' '.$lang['nav_btn_general'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "posts" ? 'sidebar-nav-active' :'').'" href="/admin/settings/posts/">'.$icon['dot'].' '.$lang['nav_btn_posts'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "shop" ? 'sidebar-nav-active' :'').'" href="/admin/settings/shop/">'.$icon['dot'].' '.$lang['nav_btn_shop'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "events" ? 'sidebar-nav-active' :'').'" href="/admin/settings/events/">'.$icon['dot'].' '.$lang['nav_btn_events'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "labels" ? 'sidebar-nav-active' :'').'" href="/admin/settings/labels/">'.$icon['dot'].' '.$lang['labels'].'</a></li>';
 echo '</ul>';
 echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "labels" ? 'sidebar-nav-active' :'').'" href="/admin/settings/labels/">'.$icon['tags_fill'].' '.$lang['labels'].'</a></li>';
+echo '<li class="mt-2"><a class="sidebar-nav '.($subinc == "database" ? 'sidebar-nav-active' :'').'" href="/admin/settings/database/">'.$icon['database'].' '.$lang['nav_btn_customize_db'].'</a></li>';
 echo '</ul>';
 echo '<ul>';
-echo '<li class="mt-2"><a class="sidebar-nav '.($sub == "customize" ? 'sidebar-nav-active' :'').'" href="/admin/settings/database/">'.$icon['database'].' '.$lang['nav_btn_customize_db'].'</a></li>';
-echo '</ul>';
-echo '<ul>';
-echo '<li><a class="sidebar-nav '.($sub == "update" ? 'sidebar-nav-active' :'').'" href="/admin/settings/update/">'.$icon['arrow_repeat'].' '.$lang['btn_update'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "update" ? 'sidebar-nav-active' :'').'" href="/admin/settings/update/">'.$icon['arrow_repeat'].' '.$lang['btn_update'].'</a></li>';
 echo '</ul>';
 echo '</div>';
 echo '</li>';

@@ -104,9 +104,10 @@ $code-color: #ad2d6b;
 
 
 $sidebar_background: #2A2030;
-$sidebar_link_background: #151515;
+$sidebar_link_background: $primary;
 $sidebar_color: #eee;
-$sidebar_active_color: lighten($secondary,5);
+$sidebar_active_color: $primary;
+$sidebar_active_bg: darken($sidebar_background,5%);
 $sidebar_help_background: #111;
 $sidebar_help_color: #ccc;
 
