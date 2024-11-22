@@ -82,6 +82,51 @@ if(isset($_POST['delete_page'])) {
 // save or update pages
 if(isset($_POST['save_page'])) {
 
+
+    // update mode
+    if(is_numeric($_POST['save_page'])) {
+        $page_id = (int) $_POST['save_page'];
+        se_update_page($_POST,$page_id);
+    }
+
+    // new page
+    if($_POST['save_page'] == 'new') {
+        $new_page_id = se_save_page($_POST);
+        se_snapshot_page($new_page_id);
+    }
+
+    // preview
+    if(is_numeric($_POST['preview_page'])) {
+        se_save_preview_page($_POST);
+        /* delete older entries from se_pages_cache */
+        $interval = time() - 86400; // now - 24h
+        $db_content->delete("se_pages_cache", [
+            "AND" => [
+                "page_cache_type" => "preview",
+                "page_lastedit[<]" => $interval
+            ]
+        ]);
+    }
+
+    // cache files
+    mods_check_in();
+    cache_url_paths();
+
+    // run hooks
+    if (isset($_POST['send_hook'])) {
+        if (is_array($_POST['send_hook'])) {
+            se_run_hooks($_POST['send_hook'],$_POST);
+        }
+    }
+
+    // delete the smarty cache for this page
+    se_delete_smarty_cache(md5($_POST['page_permalink']));
+
+    if($_POST['page_status'] == 'ghost' OR $_POST['page_status'] == 'public') {
+        se_update_or_insert_index($_POST['page_permalink']);
+    }
+
+    /*
     $page_sort = sanitizeUserInputs($_POST['page_sort']);
     $page_title = sanitizeUserInputs($_POST['page_title']);
     $page_meta_description = sanitizeUserInputs($_POST['page_meta_description']);
@@ -122,6 +167,7 @@ if(isset($_POST['save_page'])) {
             "page_id" => $page_id
         ]);
     }
+    */
 
     show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: updated_pages");
