@@ -147,12 +147,12 @@ function se_list_pages($data,$type="sorted") {
 
         $page_thumbs = array();
         if($data[$i]['page_thumbnail'] != '') {
-            $page_thumbs = explode('<->',$data[$i]['page_thumbnail']);
+            $page_thumbs = explode('<->',html_entity_decode($data[$i]['page_thumbnail']));
         }
 
         $page_thumb_src = '/assets/themes/administration/images/swiftyedit-page-icon.png';
         if(isset($page_thumbs) AND $page_thumbs[0] != '') {
-            $page_thumb_src = $page_thumbs[0];
+            $page_thumb_src = str_replace('../','/',$page_thumbs[0]);
         }
 
         $page_lang_thumb = '<img src="/assets/lang/'.$page_language.'/flag.png" width="15" title="'.$page_language.'" alt="'.$page_language.'">';

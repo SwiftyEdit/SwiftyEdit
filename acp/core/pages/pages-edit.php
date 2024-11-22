@@ -239,13 +239,12 @@ $input_select_language = [
 
 $images = se_get_all_media_data('image');
 $images = se_unique_multi_array($images,'media_file');
-$page_thumbnail_array = explode("&lt;-&gt;", $page_thumbnail);
+$page_thumbnail_array = explode('&lt;-&gt;', html_entity_decode($page_thumbnail));
 
 $input_select_thumbnail = [
     "type" => 'code',
     "code" => se_select_img_widget($images,$page_thumbnail_array,$se_settings['pagethumbnail_prefix'],1)
 ];
-
 
 $input_select_page_categories_mode = [
     "input_name" => "page_categories_mode",

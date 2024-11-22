@@ -13,9 +13,7 @@
  
 function se_crawler($id='') {
 	
-	global $se_base_url;
-	global $exclude_urls;
-	
+	global $se_db_index, $se_base_url, $exclude_urls;
 		
 	$allowed_extensions = array('.html','.htm','.php');
 	$links = array();
@@ -25,7 +23,7 @@ function se_crawler($id='') {
 		$url = '';
 	} else {
 		/* get url bei id */
-		$dbh = new PDO("sqlite:".INDEX_DB);
+		$dbh = new PDO("sqlite:".$se_db_index);
 		$sql = "SELECT page_url FROM pages WHERE page_id = :pid LIMIT 1";
 		$sth = $dbh->prepare($sql);
 		$sth->bindParam(':pid', $id, PDO::PARAM_STR);
@@ -236,9 +234,11 @@ function se_update_page_index($id) {
 	global $se_base_url;
 	global $exclude_items;
 	global $exclude_urls;
+    global $se_db_index;
+
 	$time = time();
 	
-	$dbh = new PDO("sqlite:".INDEX_DB);
+	$dbh = new PDO("sqlite:".$se_db_index);
 	
 	$sql = "select page_url from pages where page_id = :id";
 	$sth = $dbh->prepare($sql);
@@ -377,7 +377,9 @@ function se_update_page_index($id) {
 
 function se_update_bulk_page_index($num=5) {
 
-	$dbh = new PDO("sqlite:".INDEX_DB);
+    global $se_db_index;
+
+	$dbh = new PDO("sqlite:".$se_db_index);
 	$sql = "SELECT page_id FROM pages ORDER BY indexed_time ASC LIMIT $num";
 
 	$items = $dbh->query($sql);
@@ -400,7 +402,9 @@ function se_update_bulk_page_index($num=5) {
 
 function se_crawler_bulk($num=5) {
 
-	$dbh = new PDO("sqlite:".INDEX_DB);
+    global $se_db_index;
+
+	$dbh = new PDO("sqlite:".$se_db_index);
 	$sql = "SELECT page_id FROM pages ORDER BY indexed_time ASC LIMIT $num";
 
 	$items = $dbh->query($sql);
@@ -411,8 +415,6 @@ function se_crawler_bulk($num=5) {
 	foreach($items as $item) {
 		$update = se_crawler($item['page_id']);
 	}
-	
-
 }
 
 
@@ -426,9 +428,11 @@ function se_crawler_bulk($num=5) {
  */
 
 function se_update_or_insert_index($permalink) {
-	
+
+    global $se_db_index;
+
 	$url = '/'.$permalink;
-	$dbh = new PDO("sqlite:".INDEX_DB);
+	$dbh = new PDO("sqlite:".$se_db_index);
 	$sql_check = "select page_id from pages where page_url = :url LIMIT 1";
 	$sth = $dbh->prepare($sql_check);
 	$sth->bindParam(':url', $url, PDO::PARAM_STR);
@@ -443,8 +447,7 @@ function se_update_or_insert_index($permalink) {
 		/* update entry */
 		$update = se_update_page_index($entry['page_id']);
 	}
-	
-		
+
 }
 
 
@@ -455,9 +458,10 @@ function se_update_or_insert_index($permalink) {
  */
 
 function se_add_url($url) {
+
+    global $se_db_index;
 	
-	
-	$dbh = new PDO("sqlite:".INDEX_DB);
+	$dbh = new PDO("sqlite:".$se_db_index);
 	$sql_check = "select count(1) from pages where page_url = :url";
 	$sth = $dbh->prepare($sql_check);
 	$sth->bindParam(':url', $url, PDO::PARAM_STR);

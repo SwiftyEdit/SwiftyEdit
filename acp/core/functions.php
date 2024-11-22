@@ -1040,6 +1040,7 @@ function se_get_labels() {
 function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
 
     global $lang;
+    $path = '../public/assets';
 
     if(!array($selected_img)) {
         $cnt_selected_img = 0;
@@ -1056,12 +1057,15 @@ function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
         $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
         $images_container .= '<div class="sortableListGroup list-group my-1">';
         foreach($selected_img as $sel_images) {
-            if(is_file("$sel_images")) {
+            $sel_images_src = str_replace('../',$path.'/',$sel_images);
+            $sel_images_abs = str_replace('../','/',$sel_images);
+
+            if(file_exists("$sel_images_src")) {
                 $images_container .= '<div class="list-group-item p-1">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
                 $images_container .= '<div class="row">';
                 $images_container .= '<div class="col-3">';
-                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.$sel_images.')">';
+                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.$sel_images_abs.')">';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
                 $images_container .= '<div class="col-9">';
