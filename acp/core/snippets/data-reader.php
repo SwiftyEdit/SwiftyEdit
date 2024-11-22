@@ -107,7 +107,7 @@ if($_REQUEST['action'] == 'list_snippets') {
         echo '<td>'.$snippet['snippet_lang'].'</td>';
         echo '<td><kbd>'.$snippet['snippet_name'].'</kbd></td>';
         echo '<td>'.$snippet['snippet_title'].'<br><small>'.$snippet_content.'</small></td>';
-        echo '<td>'.$snippet['snippet_lastedit'].'</td>';
+        echo '<td>'.se_format_datetime($snippet['snippet_lastedit']).'</td>';
         echo '<td>'.$edit_button.' '.$duplicate_button.'</td>';
         echo '</tr>';
     }
