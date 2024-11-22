@@ -46,24 +46,27 @@ div#page-sidebar {
 			width: auto;
 		}	
 	}
-	
+
+
 	ul.nav {
 		li  {
 			display: block;
 			width: 100%;
 			ul {
-				padding-left: 35px;
+				padding-left: 0;
 				li {
 					i {
-						width: auto;
+						width: 35px;
 					}
 					ul {
-						padding-left: 15px;
+						padding-left: 0;
 					}
 				}
 			}
 		}
 	}
+
+
 
 
 	.sidebar-collapsed {
@@ -97,7 +100,7 @@ div#page-sidebar {
 		transition-duration: .2s, .2s, .35s;
 		transition-timing-function: linear, linear, ease;
         
-		i {
+		* i {
 			display: inline-block;
 			width: 35px;
 			text-align: center;
@@ -110,23 +113,15 @@ div#page-sidebar {
 			}
 		}
 
+
 		ul.nav {
 			li  {
 				display: block;
 				width: 100%;
-				ul {
-					padding-left: 35px;
-					li {
-						i {
-							width: auto;
-						}
-						ul {
-							padding-left: 15px;
-						}
-					}
-				}
 			}
 		}
+
+
 
 	}
 
@@ -210,7 +205,8 @@ a.sidebar-sub:hover {
 
 
 a.sidebar-sub-active {
-	color: desaturate(lighten($primary,15),35);
+	color: $sidebar_active_color;
+	background: rgba($sidebar_active_bg,0.5);
 	i {
 		color: $primary;
 	}
@@ -223,39 +219,30 @@ a.sidebar-nav,
 a.sidebar-nav-disabled {
 	position: relative;
 	display: block;
-	padding: 3px 0;
+	padding: 5px 0;
 	color: $sidebar_color;
 	&.sidebar-nav-active {
 		color: $sidebar_active_color;
+		background: $sidebar_active_bg;
 	}
 	&:hover {
-		color: lighten($sidebar_color,5);
+		color: lighten($sidebar_color,5%);
+		background: lighten($sidebar_background,5%);
 	}
 
 
-
-	.nav-badge {
-		position: absolute;
-
-		background: lighten($sidebar_background,10);
-		color: $secondary;
-		font-size: 10px;
-		line-height: 10px;
-		padding: 2px 5px;
-		border: 1px solid lighten($sidebar_background,5);
-		border-radius: 50px;
-		margin-left: 5px;
-		margin-top: -3px;
+	&.toggler:after {
+		display: inline-block;
+		padding: 0 5px;
+		float: right;
+		font-family: bootstrap-icons;
+		content: "\F282";
+		color: $primary;
+	}
+	&.toggler[aria-expanded="true"]:after {
+		content: "\F286";
 	}
 
-}
-
-a.sidebar-nav {
-	i {
-		opacity: 0.5;
-		margin-left: -10px;
-		margin-right: 5px;
-	}
 }
 
 

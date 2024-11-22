@@ -8,4 +8,4 @@ $subinc = match (true) {
     default => 'snippets-list'
 };
 
-include 'snippets/'.$subinc.'.php';
+include $subinc.'.php';

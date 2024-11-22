@@ -151,6 +151,15 @@ if ($_SESSION['editor_class'] == "wysiwyg") {
 
 require '../acp/core/functions.php';
 require '../core/functions/functions.php';
+
+if(isset($_GET['query'])) {
+    $query = se_clean_query($_GET['query']);
+}
+if(!isset($query)) {
+    $query = '/admin/';
+}
+$se_path = explode("/", $query);
+
 require '../acp/core/switch.php';
 
 
@@ -330,11 +339,7 @@ if (isset($set_acptheme)) {
 </head>
 <body>
 
-<div id="page-sidebar">
-    <div id="page-sidebar-inner">
-        <?php include '../acp/core/nav_sidebar.php'; ?>
-    </div>
-</div>
+
 
 
 <div id="page-content">
@@ -351,14 +356,9 @@ if (isset($set_acptheme)) {
 
     <?php
     $page_header_class = 'ph-dashboard';
-    if($tn == 'pages') { $page_header_class = 'ph-pages'; }
-    if($tn == 'posts') { $page_header_class = 'ph-blog'; }
-    if($tn == 'shop') { $page_header_class = 'ph-shop'; }
-    if($tn == 'events') { $page_header_class = 'ph-events'; }
-    if($tn == 'filebrowser') { $page_header_class = 'ph-uploads'; }
-    if($tn == 'inbox') { $page_header_class = 'ph-inbox'; }
-    if($tn == 'addons') { $page_header_class = 'ph-addons'; }
-    if($tn == 'user') { $page_header_class = 'ph-user'; }
+    if($se_section != '') {
+        $page_header_class = 'ph-'.$se_section;
+    }
     echo '<div class="'.$page_header_class.' page-header">';
     require '../acp/core/nav_top_filter.php';
     require '../acp/core/nav_top.php';
@@ -371,11 +371,17 @@ if (isset($set_acptheme)) {
 
         <div class="row">
             <div class="col">
-                <?php include '../acp/core/' . $maininc . '.php'; ?>
+                <?php include '../acp/core/' . $maininc; ?>
             </div>
             <div id="collapseSupport">
                 <div hx-get="/admin/support/read/?show=index" hx-trigger="load"></div>
             </div>
+        </div>
+    </div>
+
+    <div id="page-sidebar">
+        <div id="page-sidebar-inner">
+            <?php include '../acp/core/nav_sidebar.php'; ?>
         </div>
     </div>
 

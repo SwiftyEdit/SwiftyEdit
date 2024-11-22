@@ -4,4 +4,4 @@
  * SwiftyEdit | dashboard
  */
 
-include 'dashboard/index.php';
+include __DIR__.'/index.php';
