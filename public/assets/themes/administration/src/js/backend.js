@@ -217,7 +217,7 @@ $(function() {
         stretchAppContainer();
         $( "div.scroll-box" ).each(function() {
             var divTop = $(this).offset().top;
-            var newHeight = $('div.app-container').innerHeight() - divTop +40;
+            var newHeight = $('div.app-container').innerHeight() - divTop +60;
             $(this).height(newHeight);
         });
     });

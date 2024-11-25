@@ -195,6 +195,11 @@ a#dashboard {
   padding: 10px;
   background: var(--subheader-bg);
   border-bottom: 1px solid var(--bs-widget-bg-400);
+
+  i:first-child {
+    margin-right: 5px;
+  }
+
   h3 {
     color: $headings-color;
     font-size: 18px;

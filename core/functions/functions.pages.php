@@ -32,12 +32,26 @@ function se_get_pages($filter) {
         // loop through keywords
         foreach($all_filter as $f) {
             if($f == "") { continue; }
-            $sql_text_filter .= "(page_meta_keywords like '%$f%' OR page_title like '%$f%' OR page_linkname like '%$f%' OR page_content like '%$f%') AND";
+            $sql_text_filter .= "(page_meta_keywords like '%$f%' OR page_meta_description like '%$f%' OR page_title like '%$f%' OR page_linkname like '%$f%' OR page_content like '%$f%') AND";
         }
         $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
 
     } else {
         $sql_text_filter = '';
+    }
+
+    // keyword filter
+    if($filter['keywords'] != '') {
+        $sql_keywords_filter = '';
+        $all_filter = explode(" ",$filter['keywords']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_keywords_filter .= "(page_meta_keywords like '%$f%') AND";
+        }
+        $sql_keywords_filter = substr("$sql_keywords_filter", 0, -4); // cut the last ' AND'
+    } else {
+        $sql_keywords_filter = '';
     }
 
 
@@ -131,6 +145,10 @@ function se_get_pages($filter) {
 
     if($sql_text_filter != "") {
         $sql_filter .= " AND ($sql_text_filter) ";
+    }
+
+    if($sql_keywords_filter != "") {
+        $sql_filter .= " AND ($sql_keywords_filter) ";
     }
 
     if($sql_types_filter != "") {

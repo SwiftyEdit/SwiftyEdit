@@ -53,6 +53,7 @@ if(is_array($global_filter_label)) {
 
 $pages_filter['types'] = $_SESSION['checked_page_type_string'];
 $pages_filter['text'] = $_SESSION['pages_text_filter'];
+$pages_filter['keywords'] = $_SESSION['pages_keyword_filter'];
 $pages_filter['sort_by'] = $_SESSION['sorting_single_pages'];
 $pages_filter['sort_direction'] = $_SESSION['sorting_single_pages_dir'];
 
@@ -60,33 +61,97 @@ $pages_filter['sort_direction'] = $_SESSION['sorting_single_pages_dir'];
  * sorted pages
  */
 if($_REQUEST['action'] == 'list_pages_sorted') {
-
-
     $pages_filter['sort_type'] = 'sorted';
     $pages = se_get_pages($pages_filter);
-
     $sorted_pages = se_list_pages($pages,"sorted");
     echo $sorted_pages;
-
     exit;
-
 }
 
 /**
  * single pages
  */
 if($_REQUEST['action'] == 'list_pages_single') {
-
     $pages_filter['sort_type'] = 'single';
     $pages = se_get_pages($pages_filter);
-
     $single_pages = se_list_pages($pages,"single");
     echo $single_pages;
-
     exit;
-
 }
 
+/**
+ * list active keywords from search input
+ * used in sidebar
+ */
+if($_REQUEST['action'] == 'list_active_searches') {
+
+    if(isset($_SESSION['pages_text_filter']) AND $_SESSION['pages_text_filter'] != "") {
+        unset($all_filter);
+        $all_filter = explode(" ", $_SESSION['pages_text_filter']);
+
+        foreach($all_filter as $f) {
+            if($_REQUEST['rm_keyword'] == "$f") { continue; }
+            if($f == "") { continue; }
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+        }
+    }
+
+    if(isset($btn_remove_keyword)) {
+        echo '<div class="d-inline">';
+        echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+        echo '</div><hr>';
+    }
+}
+
+/**
+ * list all keywords
+ * used in sidebar
+ */
+if($_REQUEST['action'] == 'list_keyword_btn') {
+    $get_keywords = se_get_pages_keywords();
+    foreach($get_keywords as $k => $v) {
+        $k = trim($k);
+        if(str_contains($_SESSION['pages_keyword_filter'],$k)) {
+            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+        } else {
+            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+        }
+    }
+}
+
+/**
+ * list all page types
+ * used in the sidebar
+ */
+
+if($_REQUEST['action'] == 'list_page_types') {
+
+    $find_target_page = $db_content->select("se_pages", "page_type_of_use", [
+        "page_type_of_use" => $se_page_types
+    ]);
+
+    $cnt_page_types = array_count_values($find_target_page);
+
+    foreach($se_page_types as $types) {
+        $str = 'type_of_use_'.$types;
+        $name = $lang[$str];
+        $classes = 'list-group-item list-group-item-action d-flex justify-content-between align-items-start';
+        if(str_contains($_SESSION['checked_page_type_string'],"$types")) {
+            $classes .= ' active';
+        }
+
+        echo '<button class=" '.$classes.'" name="filter_type" value="'.$types.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">';
+        echo '<div class="me-auto">'.$name.'</div>';
+        if($cnt_page_types[$types] < 1) {
+            echo '<span class="badge text-bg-danger">0</span>';
+        } else {
+            echo '<span class="badge text-bg-primary">' . $cnt_page_types[$types] . '</span>';
+        }
+        echo '</div>';
+        echo '</button>';
+    }
+
+}
 
 /**
  * @param $data array page contents
