@@ -4,7 +4,7 @@
 
 if(isset($_POST['pages_text_filter'])) {
 
-    $_SESSION['pages_text_filter'] = $_SESSION['pages_text_filter'] . ' ' . clean_filename($_POST['pages_text_filter']);
+    $_SESSION['pages_text_filter'] = $_SESSION['pages_text_filter'] . ' ' . sanitizeUserInputs($_POST['pages_text_filter']);
 
     header( "HX-Trigger: update_pages_list");
 }
@@ -21,6 +21,41 @@ if(isset($_POST['rmkey'])) {
     }
     header( "HX-Trigger: update_pages_list");
 }
+
+if(isset($_POST['add_keyword'])) {
+    $_SESSION['pages_keyword_filter'] = $_SESSION['pages_keyword_filter'] . ' ' . sanitizeUserInputs($_POST['add_keyword']);
+    header( "HX-Trigger: update_pages_list");
+}
+
+if(isset($_POST['remove_keyword'])) {
+
+    $all_keywords_filter = explode(" ", $_SESSION['pages_keyword_filter']);
+    $_SESSION['pages_keyword_filter'] = '';
+    foreach($all_keywords_filter as $f) {
+        if($_POST['remove_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['pages_keyword_filter'] .= "$f ";
+    }
+    header( "HX-Trigger: update_pages_list");
+}
+
+if(isset($_POST['filter_type'])) {
+
+    $sent_type_filter = clean_filename($_POST['filter_type']);
+
+    if(str_contains($_SESSION['checked_page_type_string'],"$sent_type_filter")) {
+        $type_filter = explode(" ", $_SESSION['checked_page_type_string']);
+        if(($key = array_search($sent_type_filter, $type_filter)) !== false) {
+            unset($type_filter[$key]);
+        }
+        $_SESSION['checked_page_type_string'] = implode(" ", $type_filter);
+    } else {
+        $_SESSION['checked_page_type_string'] = $_SESSION['checked_page_type_string'] . ' ' . $sent_type_filter;
+    }
+
+    header( "HX-Trigger: update_pages_list");
+}
+
 
 if(isset($_POST['sorting_single_pages_asc'])) {
 
@@ -125,49 +160,6 @@ if(isset($_POST['save_page'])) {
     if($_POST['page_status'] == 'ghost' OR $_POST['page_status'] == 'public') {
         se_update_or_insert_index($_POST['page_permalink']);
     }
-
-    /*
-    $page_sort = sanitizeUserInputs($_POST['page_sort']);
-    $page_title = sanitizeUserInputs($_POST['page_title']);
-    $page_meta_description = sanitizeUserInputs($_POST['page_meta_description']);
-    $page_meta_keywords = sanitizeUserInputs($_POST['page_meta_keywords']);
-    $page_status = sanitizeUserInputs($_POST['page_status']);
-    $page_lastedit = time();
-    $page_lastedit_from = $_SESSION['user_nick'];
-    $page_language = sanitizeUserInputs($_POST['page_language']);
-    $page_content = $_POST['page_content'];
-    $page_linkname = sanitizeUserInputs($_POST['page_linkname']);
-
-
-
-    $insert_data = [
-        "page_sort" =>  $page_sort,
-        "page_language" =>  $page_language,
-        "page_linkname" =>  $page_linkname,
-        "page_meta_keywords" =>  $page_meta_keywords,
-        "page_meta_description" =>  $page_meta_description,
-        "page_title" =>  $page_title,
-        "page_content" =>  $page_content,
-        "page_status" =>  $page_status,
-        "page_lastedit" =>  $page_lastedit,
-        "page_lastedit_from" =>  $page_lastedit_from
-    ];
-
-    // create new page
-    if($_POST['save_page'] == 'new') {
-        $data = $db_content->insert("se_pages", $insert_data);
-
-        $new_id = $db_content->id();
-    }
-
-    // updated category
-    if(is_numeric($_POST['save_page'])) {
-        $page_id = (int) $_POST['save_page'];
-        $data = $db_content->update("se_pages", $insert_data,[
-            "page_id" => $page_id
-        ]);
-    }
-    */
 
     show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: updated_pages");
