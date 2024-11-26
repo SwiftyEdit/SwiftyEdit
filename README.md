@@ -11,6 +11,7 @@
 * We run almost all actions via AJAX/HTMX
 * Extensions are only available in two variants: Plugins and Themes
 * Existing themes should be able to continue to be used without much effort
+* We remove the shortcode section. It's the same as snippets.
 
 SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite.
 
