@@ -5,7 +5,11 @@
 	height: 40px;
 	padding-top: 7px;
 }
-   
+
+[data-bs-theme="dark"] div#page-sidebar {
+	background: $sidebar-background-dark;
+}
+
 div#page-sidebar {
 	display: block;
 	position: fixed;
@@ -14,7 +18,7 @@ div#page-sidebar {
 	z-index: 1000;
 	width: 50px;
 	color: $sidebar_color;
-	background: $sidebar_background;
+	background: $sidebar-background;
 	height: 100%;
 
 	overflow: hidden;
@@ -206,7 +210,6 @@ a.sidebar-sub:hover {
 
 a.sidebar-sub-active {
 	color: $sidebar_active_color;
-	background: rgba($sidebar_active_bg,0.5);
 	i {
 		color: $primary;
 	}
@@ -223,11 +226,9 @@ a.sidebar-nav-disabled {
 	color: $sidebar_color;
 	&.sidebar-nav-active {
 		color: $sidebar_active_color;
-		background: $sidebar_active_bg;
 	}
 	&:hover {
 		color: lighten($sidebar_color,5%);
-		background: lighten($sidebar_background,5%);
 	}
 
 

@@ -54,7 +54,11 @@ $color-mode-type: data;
   --#{$prefix}success: #{$success};
   --#{$prefix}success-rgb: #{to-rgb($success)};
 
-  --body-gradient: linear-gradient(to right bottom, #{$body-gradient-top}, #{$body-gradient-middle}, #{$body-gradient-bottom});
+  --body-gradient: linear-gradient(to right bottom, #{$body-gradient-top}, #{$body-gradient-bottom});
+  --body-bg: $body-bg;
+
+  --#{$prefix}border-color: #{$border-color};
+  --#{$prefix}border-color-translucent: #{$border-color-translucent};
 }
 
 [data-bs-theme="dark"] {
@@ -92,7 +96,12 @@ $color-mode-type: data;
     --#{$prefix}success: #{$success-dark};
     --#{$prefix}success-rgb: #{to-rgb($success-dark)};
 
-    --body-gradient: linear-gradient(to right bottom, #{$body-dark-gradient-top}, #{$body-dark-gradient-middle}, #{$body-dark-gradient-bottom});
+    --body-gradient: linear-gradient(135deg, #{$body-dark-gradient-top} 15%, #{$body-dark-gradient-bottom} 100%);
+    --body-bg: $body-bg-dark;
+
+    --#{$prefix}border-color: #{$border-color-dark};
+    --#{$prefix}border-color-translucent: #{$border-color-translucent-dark};
+
 }
 
 
@@ -106,7 +115,7 @@ html, body {
   text-align: left;
   font-weight: 400;
   min-height: 100%;
-  background-image: var(--body-gradient);
+  background-image: var(--body-bg);
 }
 
 div#page-content {
@@ -129,14 +138,18 @@ a#dashboard {
   width: 210px;
 }
 
+/*
 @include color-mode(dark) {
   .page-header {
     background: $page_header_bg_dark;
   }
 }
+ */
 
 .page-header {
-  background: $page_header_bg;
+  background: var(--body-gradient);
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 [data-bs-theme="dark"] {
@@ -191,8 +204,8 @@ a#dashboard {
 
 
 .subHeader {
-  margin-bottom: 10px;
-  padding: 10px;
+  margin: -10px -15px 10px -15px;
+  padding: 10px 20px;
   background: var(--subheader-bg);
   border-bottom: 1px solid var(--bs-widget-bg-400);
 
