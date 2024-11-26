@@ -23,11 +23,6 @@ echo $icon['card_heading'];
 echo '<span>'.$lang['snippets'].'</span></a></li>';
 
 echo '<li class="sidebar-nav-item">';
-echo '<a class="sidebar-nav-link d-block color-contents '.($se_section == "shortcodes" ? 'sidebar-nav-active' :'').'" href="/admin/shortcodes/">';
-echo $icon['code'];
-echo '<span>Shortcodes</span></a></li>';
-
-echo '<li class="sidebar-nav-item">';
 echo '<a class="sidebar-nav-link d-block color-blog '.($se_section == "blog" ? 'sidebar-nav-active' :'').'" href="/admin/blog/">';
 echo $icon['file_earmark_post'];
 echo '<span>'.$lang['nav_btn_blog'].'</span></a></li>';

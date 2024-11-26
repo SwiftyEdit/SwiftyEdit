@@ -10,7 +10,6 @@ require 'header.php';
 $reader = match (true) {
     str_contains($_REQUEST['query'], 'pages/') => 'core/pages/data-reader.php',
     str_contains($_REQUEST['query'], 'snippets/') => 'core/snippets/data-reader.php',
-    str_contains($_REQUEST['query'], 'shortcodes/') => 'core/shortcodes/data-reader.php',
     str_contains($_REQUEST['query'], 'blog/') => 'core/blog/data-reader.php',
     str_contains($_REQUEST['query'], 'shop/') => 'core/shop/data-reader.php',
     str_contains($_REQUEST['query'], 'events/') => 'core/events/data-reader.php',
