@@ -16,7 +16,7 @@ if(isset($_POST['snippets_text_filter'])) {
     header( "HX-Trigger: update_snippet_list");
 }
 
-/* remove keyword from filter list */
+/* remove search string from filter list */
 if(isset($_POST['rmkey'])) {
 
     $all_filter = explode(" ", $_SESSION['snippets_text_filter']);
@@ -28,6 +28,26 @@ if(isset($_POST['rmkey'])) {
     }
     header( "HX-Trigger: update_snippet_list");
 }
+
+// add keyword
+if(isset($_POST['add_keyword'])) {
+    $_SESSION['snippets_keyword_filter'] = $_SESSION['snippets_keyword_filter'] . ' ' . sanitizeUserInputs($_POST['add_keyword']);
+    header( "HX-Trigger: update_snippet_list");
+}
+
+// remove keyword
+if(isset($_POST['remove_keyword'])) {
+
+    $all_keywords_filter = explode(" ", $_SESSION['snippets_keyword_filter']);
+    $_SESSION['snippets_keyword_filter'] = '';
+    foreach($all_keywords_filter as $f) {
+        if($_POST['remove_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['snippets_keyword_filter'] .= "$f ";
+    }
+    header( "HX-Trigger: update_snippet_list");
+}
+
 
 /**
  * pagination
