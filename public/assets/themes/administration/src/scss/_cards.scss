@@ -1,15 +1,15 @@
 .card {
 	background: $widget_background;
-	border-color: darken($widget_background,5);
+	//border-color: darken($widget_background,5);
 	.card-header {
-		background: lighten($widget_background,5);
+		background: darken($widget_background,7);
 	}
 	.card-header-tabs {
 		li {
 
 			a {
 				&:hover {
-					border-bottom: 1px solid var(--bs-widget-bg-400);
+					border-bottom: 1px solid var(--bs-widget-bg-500);
 				}
 			}
 
@@ -70,7 +70,7 @@
 
 	.card {
 		background: $widget_background_dark;
-		border-color: lighten($widget_background_dark,10);
+		//border-color: lighten($widget_background_dark,10);
 		.card-header {
 			background: darken($widget_background_dark,5);
 		}

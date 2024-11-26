@@ -4,7 +4,7 @@
 require __DIR__.'/access.php';
 
 echo '<nav class="navbar navbar-custom">';
-echo '<div class="container-fluid pe-4">';
+echo '<div class="container-fluid px-0">';
 echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="caret_left">'.$icon['caret_left'].'</span> <span class="caret_right">'.$icon['caret_right'].'</span></a>';
 
 
@@ -42,10 +42,10 @@ echo '</div>';
  * user menu
  */
 
-$user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle avatar" width="22" height="22">';
+$user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
 $my_avatar_path = '/assets/avatars/' . md5($_SESSION['user_nick']) . '.png';
 if(is_file("$my_avatar_path")) {
-    $user_avatar = '<img src="'.$my_avatar_path.'" class="rounded-circle border img-responsive align-top me-1" width="22" height="22">';
+    $user_avatar = '<img src="'.$my_avatar_path.'" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
 }
 
 echo '<div class="dropstart me-1">';

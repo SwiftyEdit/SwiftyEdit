@@ -51,9 +51,8 @@ $widget-bg-dark-900: mix($darken,$widget_background_dark,80%);
 $subHeader_bg_dark: desaturate($darken,5%);
 
 $body-color-dark: #e5e5e5 !default;
-$body-bg-dark: #080808 !default;
-$body-dark-gradient-top: rgba($primary-dark,0.2);
-$body-dark-gradient-middle: $body-bg-dark;
+$body-bg-dark: #151515 !default;
+$body-dark-gradient-top: rgba($body-bg-dark,1);
 $body-dark-gradient-bottom: rgba($primary-dark,0.4);
 
 $body-secondary-color-dark:         rgba($body-color-dark, .75) !default;
@@ -62,7 +61,7 @@ $body-tertiary-color-dark:          rgba($body-color-dark, .5) !default;
 $body-tertiary-bg-dark:             mix($gray-800, $gray-900, 50%) !default;
 $body-emphasis-color-dark:          $white !default;
 $border-color-dark:                 $widget_border_color_dark !default;
-$border-color-translucent-dark:     rgba($white, .15) !default;
+$border-color-translucent-dark:     rgba($gray-600, .05) !default;
 $headings-color-dark:               $primary-dark !default;
 $link-color-dark:                   lighten($primary-dark, 20%) !default;
 $link-hover-color-dark:             lighten($link-color-dark, 10%) !default;
@@ -83,3 +82,5 @@ $status-ghost-color-dark: #637a5c;
 $status-private-color-dark: #d9534f;
 $status-draft-color-dark: #989898;
 $status-redirect-color-dark: #078dfe;
+
+$sidebar-background-dark: #111111;
