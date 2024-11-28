@@ -134,11 +134,20 @@ if($_REQUEST['action'] == 'list_user') {
 }
 
 /**
+ * print smarty cache size
+ */
+if($_REQUEST['action'] == 'calculate_cache_size') {
+    $cache_size = se_dir_size(SE_CONTENT.'/cache/cache/');
+    $compile_size = se_dir_size(SE_CONTENT.'/cache/templates_c/');
+    $complete_size = readable_filesize($cache_size+$compile_size);
+    echo $complete_size;
+}
+
+/**
  * logfile
  */
 
 if($_REQUEST['action'] == 'list_logfile') {
-    echo 'LOGFILE';
     $show_log = se_show_log(10);
     echo $show_log;
 }
