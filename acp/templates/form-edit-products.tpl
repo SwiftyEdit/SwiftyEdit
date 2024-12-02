@@ -8,7 +8,8 @@
         </div>
     </div>
 </div>
-<form action='{formaction}' class='form-horizontal' id='editpage' method='post' name="editpage">
+<div id="formResponse"></div>
+<form>
     <div class="row">
         <div class="col-md-9">
             <div class="card">
@@ -585,8 +586,6 @@
                 <input name="edit_id" type="hidden" value="{id}">
                 <input type="hidden" name="csrf_token" value="{token}">
                 <input type="hidden" name="date" value="{date}">
-
-
 
                 {submit_variant_button}
                 {submit_button}
