@@ -2,9 +2,15 @@
 
 
 if(isset($_POST['delete'])) {
-    echo '<hr>DELETE<hr>';
-    print_r($_POST);
-    exit;
+    $delete_id = (int) $_POST['delete'];
+    $data = $db_content->delete("se_categories", [
+        "cat_id" => $delete_id
+    ]);
+    if($data->rowCount() > 0) {
+        record_log($_SESSION['user_nick'],"delete category id: $delete_id","8");
+        header( "HX-Trigger: updated_categories");
+        exit;
+    }
 }
 
 if (isset($_POST['save_category'])) {
@@ -30,7 +36,6 @@ if (isset($_POST['save_category'])) {
     // create ne category
     if($_POST['save_category'] == 'new') {
         $data = $db_content->insert("se_categories", $insert_data);
-
         $new_id = $db_content->id();
     }
 

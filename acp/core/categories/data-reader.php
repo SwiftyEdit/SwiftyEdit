@@ -1,28 +1,5 @@
 <?php
 
-//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
-
-$writer_uri = '/admin/categories/edit/';
-$delete_uri = '/admin/categories/delete/';
-$reader_uri = '/admin/categories/read/';
-
-print_r($_REQUEST);
-
-/*
-if(is_numeric($q['filename'])){
-    $cat_id = (int) $q['filename'];
-    $cat_name = 'hoooooooooooooooooo';
-
-}
-*/
-
-
-if(isset($_POST['delete'])) {
-    echo '<hr>DELETE<hr>';
-    print_r($_POST);
-    exit;
-}
-
 
 if($_REQUEST['action'] == 'list') {
 
@@ -52,7 +29,11 @@ if($_REQUEST['action'] == 'list') {
             $show_thumb .= '<div class="show-thumb" style="background-image: url(\'/assets/themes/administration/images/no-image.png\');">';
         }
 
-        $delete_btn = '<button name="delete" class="btn btn-default text-danger" hx-post="'.$delete_uri.$cats['cat_id'].'/">'.$icon['trash_alt'].'</button>';
+        $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-default text-danger" 
+                            hx-post="/admin/categories/write/"
+                            hx-confirm="'.$lang['msg_confirm_delete'].'"
+                            hx-swap="none"
+                            >'.$icon['trash_alt'].'</button>';
 
         echo '<tr id="id_'.$cats['cat_hash'].'">';
         echo '<td>#'.$cats['cat_id'].'</td>';
@@ -63,11 +44,29 @@ if($_REQUEST['action'] == 'list') {
         echo '</td>';
         echo '<td class="text-end">';
         echo $delete_btn;
-        echo '<a class="btn btn-default text-success" href="'.$writer_uri.$cats['cat_id'].'/">'.$icon['edit'].'</a>';
+        echo '<button hx-post="/admin/categories/read/" hx-swap="innerHTML" hx-target="#categoryForm" class="btn btn-default btn-sm text-success" name="open_category" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button> ';
         echo '</td>';
         echo '</tr>';
 
     }
 
     echo '</table>';
+}
+
+if($_REQUEST['action'] == 'show_category_form') {
+    $show_form = true;
+}
+
+if(isset($_REQUEST['open_category'])) {
+
+    $get_cat_id = (int) $_REQUEST['open_category'];
+    $get_category = $db_content->get("se_categories","*",[
+        "cat_id" => "$get_cat_id"
+    ]);
+
+    $show_form = true;
+}
+
+if($show_form) {
+    include 'form.php';
 }
