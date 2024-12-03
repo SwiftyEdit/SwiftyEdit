@@ -1,6 +1,7 @@
 <?php
 
 $writer_uri = '/admin/categories/write/';
+include '../acp/core/templates.php';
 
 if(is_int($get_cat_id)) {
     $btn_submit_text = $lang['update'];
@@ -69,15 +70,12 @@ $select_images = $select_nothing+$select_images;
 $input_select_thumbnail = [
     "input_name" => "cat_thumbnail",
     "input_value" => $cat_thumbnail,
-    "label" => $lang['label_thumbnail'],
+    "label" => $lang['thumbnail'],
     "options" => $select_images,
     "type" => "select"
 ];
 
-
-$form_tpl = '<div id="formResponse" class="alert alert-info"></div>';
-
-$form_tpl .= '<form>';
+$form_tpl = '<form>';
 
 $form_tpl .= se_print_form_input($input_text_title);
 $form_tpl .= se_print_form_input($input_text_priority);
