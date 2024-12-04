@@ -35,6 +35,8 @@ function se_print_form_input(array $input): string {
 
     if($input['type'] === 'text') {
         $block = tpl_form_input_text($input);
+    } else if($input['type'] === 'password') {
+        $block = tpl_form_input_text($input);
     } else if($input['type'] === 'textarea') {
         $block = tpl_form_input_textarea($input);
     } else if($input['type'] === 'checkbox') {
@@ -236,7 +238,12 @@ function tpl_form_select(array $data): string {
     $select_id = uniqid();
     $select_options = '';
 
-    $tpl = str_replace('{select_id}', $select_id, $bs_form_select);
+    if((!isset($data['container_class'])) OR $data['container_class'] == '') {
+        $data['container_class'] = 'mb-3';
+    }
+
+    $tpl = str_replace('{container_classes}', $data['container_class'], $bs_form_select);
+    $tpl = str_replace('{select_id}', $select_id, $tpl);
     $tpl = str_replace('{label}', $data['label'], $tpl);
     $tpl = str_replace('{select_name}', $data['input_name'], $tpl);
 
