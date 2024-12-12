@@ -205,18 +205,23 @@ function tpl_form_checkbox(array $data): string {
 function tpl_form_radios(array $data): string {
 
     global $bs_form_radio,$lang;
-
     $tpl_radio = $bs_form_radio;
-    $tpl = '';
 
     foreach($data['radios'] as $k => $v) {
         $radio_id = uniqid();
-        $tpl = str_replace('{radio_label}', $lang[$k], $tpl_radio);
+
+        if(array_key_exists($k, $lang)) {
+            $radio_label = $lang[$k];
+        } else {
+            $radio_label = $k;
+        }
+
+        $tpl = str_replace('{radio_label}', $radio_label, $tpl_radio);
         $tpl = str_replace('{radio_value}', $v, $tpl);
         $tpl = str_replace('{radio_id}', $radio_id, $tpl);
         $tpl = str_replace('{radio_name}', $data['input_name'], $tpl);
 
-        if($data['input_name'] == $v) {
+        if($data['input_value'] == $v) {
             $tpl = str_replace('{checked}', 'checked', $tpl);
         } else {
             $tpl = str_replace('{checked}', '', $tpl);
@@ -224,9 +229,6 @@ function tpl_form_radios(array $data): string {
 
         $tpl_str .= $tpl;
     }
-
-    //$tpl = str_replace('{radio_name}', $data['input_name'], $bs_form_radio);
-
 
     return $tpl_str;
 }
