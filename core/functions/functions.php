@@ -797,16 +797,11 @@ function se_upload_avatar($file,$username) {
     if(!is_array($file)) {
         return false;
     }
-	
-	if(SE_SECTION == 'frontend') {
-		$uploads_dir = "content/avatars";
-	} else {
-		$uploads_dir = "../content/avatars";
-	}
+
+    $uploads_dir = SE_PUBLIC."/assets/avatars";
 	$max_width = 100;
 		
 	$tmp_name = $file['avatar']['tmp_name'];
-	$org_name = $file['avatar']['name'];
 	$new_name = md5($username);
 	$new_avatar_src = $uploads_dir.'/'.$new_name.'.png';
 		
@@ -837,11 +832,13 @@ function se_upload_avatar($file,$username) {
 			if(imagepng($new_image, $new_avatar_src,9) === true) {
 				imagedestroy($new_image);
 				return true;			
-			}
+			} else {
+                return "Cannot create PNG on $uploads_dir";
+            }
 			
 		
 		} else {
-			return false;
+			return "Cannot create image";
 		}
 
 	
