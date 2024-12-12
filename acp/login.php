@@ -64,7 +64,7 @@ if(is_file('../config_database.php')) {
 
 
 
-require '../admin/core/functions.php';
+require '../acp/core/functions.php';
 require '../core/functions/func_userdata.php';
 require '../public/assets/lang/index.php';
 $login = '';
