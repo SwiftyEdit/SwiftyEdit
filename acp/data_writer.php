@@ -15,6 +15,7 @@ $writer = match (true) {
     str_starts_with($_REQUEST['query'], 'snippets/') => 'core/snippets/data-writer.php',
     str_starts_with($_REQUEST['query'], 'uploads/') => 'core/uploads/data-writer.php',
     str_starts_with($_REQUEST['query'], 'shop/') => 'core/shop/data-writer.php',
+    str_starts_with($_REQUEST['query'], 'users/') => 'core/users/data-writer.php',
     str_starts_with($_REQUEST['query'], 'xhr/') => 'core/xhr/data-writer.php',
     default => ''
 };

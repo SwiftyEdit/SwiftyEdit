@@ -51,3 +51,36 @@ function se_get_userdata_by_id($id) {
 
     return $user_data;
 }
+
+/**
+ * @param integer $user
+ * @param integer $group
+ * @return void
+ */
+function se_add_user_to_group(int $user, int $group): void {
+
+    global $db_user;
+
+    // get data from group
+    $group_data = $db_user->select("se_groups","*",[
+        "group_id" => $group
+    ]);
+    
+    print_r($group_data);
+
+    $users = explode(" ", $group_data['group_user']);
+    if(in_array($user, $users)) {
+        return;
+    } else {
+        $users[] = $user;
+        $db_user->update("se_groups",[
+            "group_user" => implode(" ", $users)
+        ],[
+            "group_id" => $group
+        ]);
+    }
+
+
+
+
+}
