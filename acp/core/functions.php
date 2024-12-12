@@ -312,13 +312,16 @@ function se_flatten_array(array $array) {
 /**
  * format time and date
  * formatting is set in preferences
- * dateformat, timeformat
+ * @param integer $timestring
+ * @return string
  */
  
- function se_format_datetime($timestring) {
+ function se_format_datetime($timestring): string {
 	 
 	 global $lang;
      global $se_prefs;
+
+     $timestring = (int) $timestring;
 	 
 	 $date = date($se_prefs['prefs_dateformat'],$timestring);
 	 
