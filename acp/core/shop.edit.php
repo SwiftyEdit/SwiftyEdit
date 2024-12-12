@@ -873,7 +873,7 @@ $snippets_price_list = $db_content->select("se_snippets", "*", [
 
 foreach($snippets_price_list as $snippet) {
     $selected = "";
-    if($snippet['snippet_name'] == $product_data['post_product_snippet_price']) {
+    if($snippet['snippet_name'] == $product_data['product_textlib_price']) {
         $selected = 'selected';
     }
     $snippet_select_pricelist .= '<option '.$selected.' value='.$snippet['snippet_name'].'>'.$snippet['snippet_name']. ' - ' .$snippet['snippet_title'].'</option>';
