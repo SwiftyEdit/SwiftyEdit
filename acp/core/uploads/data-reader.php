@@ -66,10 +66,8 @@ if($_REQUEST['action'] == 'list') {
     echo '</li>';
 
     // jump to the previous page
-    $previous_page = $_SESSION['pagination_page']-1;
-    if($previous_page < 0) {
-        $previous_page = 0;
-    }
+    $previous_page = max($_SESSION['pagination_page'] - 1, 0);
+
     echo '<li class="page-item">';
     echo '<button class="page-link" hx-post="/admin/uploads/write/" hx-include="[name=\'csrf_token\']" name="pagination" value="'.$previous_page.'" hx-swap="none"><i class="bi bi-arrow-left-short"></i></button>';
     echo '</li>';
@@ -94,10 +92,7 @@ if($_REQUEST['action'] == 'list') {
     }
 
     // jump to the next page
-    $next_page = $_SESSION['pagination_page'] + 1;
-    if($next_page > ($nbr_pages-1)) {
-        $next_page = $nbr_pages-1;
-    }
+    $next_page = min($_SESSION['pagination_page'] + 1, $nbr_pages - 1);
     echo '<li class="page-item">';
     echo '<button class="page-link" hx-post="/admin/uploads/write/" hx-include="[name=\'csrf_token\']" name="pagination" value="'.$next_page.'" hx-swap="none"><i class="bi bi-arrow-right-short"></i></button>';
     echo '</li>';
