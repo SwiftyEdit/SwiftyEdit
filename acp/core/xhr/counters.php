@@ -20,13 +20,13 @@ if($_REQUEST['count'] == 'posts') {
 }
 
 if($_REQUEST['count'] == 'products') {
-    $count = $db_posts->count("se_posts",["post_type"=>"p"]);
+    $count = $db_posts->count("se_products");
     echo se_covert_big_int($count);
     exit;
 }
 
 if($_REQUEST['count'] == 'events') {
-    $count = $db_posts->count("se_posts",["post_type"=>"e"]);
+    $count = $db_posts->count("se_events");
     echo se_covert_big_int($count);
     exit;
 }
