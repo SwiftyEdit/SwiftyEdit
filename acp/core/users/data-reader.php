@@ -2,10 +2,67 @@
 //error_reporting(E_ALL);
 if($_REQUEST['action'] == "list_users") {
 
-    $all_users = $db_user->select("se_user","*");
+    // defaults
+    $order_by = 'user_id';
+    $order_direction = 'ASC';
+    $limit_start = $_SESSION['pagination_users_page'] ?? 0;
+    $nbr_show_items = 10;
 
+    $match_str = $_SESSION['users_text_filter'] ?? '';
+    $order_key = $_SESSION['sorting_users'] ?? $order_by;
+    $order_direction = $_SESSION['sorting_users_direction'] ?? $order_direction;
 
+    if($limit_start > 0) {
+        $limit_start = ($limit_start*$nbr_show_items);
+    }
 
+    $filter_base = [
+        "AND" => [
+            "user_id[>]" => 0
+        ]
+    ];
+
+    $filter_by_str = array();
+    if($match_str != '') {
+        $this_filter = explode(" ",$match_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_str = [
+                "OR" => [
+                    "user_nick[~]" => "%$f%",
+                    "user_firstname[~]" => "%$f%",
+                    "user_lastname[~]" => "%$f%",
+                    "user_mail[~]" => "%$f%",
+                    "user_company[~]" => "%$f%"
+                ]
+            ];
+        }
+    }
+
+    $db_where = [
+        "AND" => $filter_base+$filter_by_str
+    ];
+
+    $db_order = [
+        "ORDER" => [
+            "$order_key" => "$order_direction"
+        ]
+    ];
+
+    $db_limit = [
+        "LIMIT" => [$limit_start, $nbr_show_items]
+    ];
+
+    $users_data_cnt = $db_user->count("se_user", $db_where);
+
+    $users_data = $db_user->select("se_user","*",
+        $db_where+$db_order+$db_limit
+    );
+
+    $nbr_pages = ceil($users_data_cnt/$nbr_show_items);
+
+    echo '<div class="card p-3">';
+    echo se_print_pagination('/admin/users/write/',$nbr_pages,$_SESSION['pagination_users_page']);
 
     echo '<table class="table table-striped table-hover table-sm">';
     echo '<tr>';
@@ -18,7 +75,7 @@ if($_REQUEST['action'] == "list_users") {
     echo '<td></td>';
     echo '</tr>';
 
-    foreach($all_users as $user) {
+    foreach($users_data as $user) {
 
         $user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle avatar" width="50" height="50" alt="no avatar image">';
         $user_avatar_path = '/assets/avatars/' . md5($user['user_nick']) . '.png';
@@ -61,6 +118,7 @@ if($_REQUEST['action'] == "list_users") {
     }
 
     echo '</table>';
+    echo '</div>';
 
 }
 

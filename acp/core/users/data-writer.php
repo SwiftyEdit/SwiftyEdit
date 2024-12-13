@@ -1,6 +1,15 @@
 <?php
 //error_reporting(E_ALL);
 
+/**
+ * pagination
+ */
+
+if(isset($_POST['pagination'])) {
+    $_SESSION['pagination_users_page'] = (int) $_POST['pagination'];
+    header( "HX-Trigger: update_users_list");
+}
+
 // save or update user
 if(isset($_POST['save_user'])) {
 

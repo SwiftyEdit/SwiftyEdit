@@ -1,5 +1,15 @@
 <?php
 error_reporting(E_ALL);
+
+/**
+ * pagination
+ */
+
+if(isset($_POST['pagination'])) {
+    $_SESSION['pagination_products_page'] = (int) $_POST['pagination'];
+    header( "HX-Trigger: update_products_list");
+}
+
 // save or update products
 if(isset($_POST['save_product'])) {
 
