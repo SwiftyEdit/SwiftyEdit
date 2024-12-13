@@ -38,6 +38,10 @@ if($_REQUEST['action'] == 'list_snippets') {
     $order_key = $_SESSION['sorting_snippets'] ?? $order_by;
     $order_direction = $_SESSION['sorting_snippet_direction'] ?? $order_direction;
 
+    if($limit_start > 0) {
+        $limit_start = ($limit_start*$nbr_show_items);
+    }
+
     $filter_base = [
       "AND" => [
           "snippet_id[>]" => 0
@@ -96,19 +100,10 @@ if($_REQUEST['action'] == 'list_snippets') {
 
     $nbr_pages = ceil($snippet_data_cnt/$nbr_show_items);
 
+
     echo '<div class="card p-3">';
 
-    echo '<nav aria-label="Pagination">';
-    echo '<ul class="pagination pagination-sm">';
-    for($i=0;$i<$nbr_pages;$i++) {
-        $active = '';
-        if($i == $_SESSION['pagination_snippets_page']) {
-            $active = 'active';
-        }
-        echo '<li class="page-item"><button class="page-link '.$active.'" hx-post="/admin/snippets/write/" hx-include="[name=\'csrf_token\']" name="pagination" value="'.$i.'" hx-swap="none">'.($i+1).'</button></li>';
-    }
-    echo '</ul>';
-    echo '</nav>';
+    echo se_print_pagination('/admin/snippets/write/',$nbr_pages,$_SESSION['pagination_snippets_page']);
 
     echo '<table class="table table-sm table-striped table-hover">';
 

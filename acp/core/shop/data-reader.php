@@ -5,14 +5,88 @@ $duplicate_uri = '/admin/shop/duplicate/';
 
 if($_REQUEST['action'] == 'list_products') {
 
-    echo '<p>MY Products ...</p>';
-    echo $_SESSION['filter_prod_categories'];
 
-    $get_products = $db_posts->select("se_products","*");
+    // defaults
+    $order_by = 'lastedit';
+    $order_direction = 'DESC';
+    $limit_start = $_SESSION['pagination_products_page'] ?? 0;
+    $nbr_show_items = 20;
+
+    $match_str = $_SESSION['products_text_filter'] ?? '';
+    $keyword_str = $_SESSION['products_keyword_filter'] ?? '';
+    $order_key = $_SESSION['sorting_products'] ?? $order_by;
+    $order_direction = $_SESSION['sorting_products_direction'] ?? $order_direction;
+
+    if($limit_start > 0) {
+        $limit_start = ($limit_start*$nbr_show_items);
+    }
+
+    $filter_base = [
+        "AND" => [
+            "id[>]" => 0
+        ]
+    ];
+
+    $filter_by_str = array();
+    if($match_str != '') {
+        $this_filter = explode(" ",$match_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_str = [
+                "OR" => [
+                    "title[~]" => "%$f%",
+                    "teaser[~]" => "%$f%",
+                    "text[~]" => "%$f%",
+                    "text_additional1[~]" => "%$f%",
+                    "text_additional2[~]" => "%$f%",
+                    "text_additional3[~]" => "%$f%",
+                    "text_additional4[~]" => "%$f%",
+                    "text_additional5[~]" => "%$f%"
+                ]
+            ];
+        }
+    }
+
+    $filter_by_keyword = array();
+    if($keyword_str != '') {
+        $this_filter = explode(" ",$keyword_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_keyword = [
+                "tags[~]" => "%$f%"
+            ];
+        }
+    }
+
+    $db_where = [
+        "AND" => $filter_base+$filter_by_str+$filter_by_keyword
+    ];
+
+    $db_order = [
+        "ORDER" => [
+            "$order_key" => "$order_direction"
+        ]
+    ];
+
+    $db_limit = [
+        "LIMIT" => [$limit_start, $nbr_show_items]
+    ];
+
+    $products_data_cnt = $db_posts->count("se_products", $db_where);
+
+
+    $products_data = $db_posts->select("se_products","*",
+        $db_where+$db_order+$db_limit
+    );
+
+    $nbr_pages = ceil($products_data_cnt/$nbr_show_items);
+
+    echo '<div class="card p-3">';
+    echo se_print_pagination('/admin/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
 
     echo '<table class="table table-striped table-hover">';
 
-    foreach($get_products as $product) {
+    foreach($products_data as $product) {
 
         $product_id = (int) $product['id'];
 
@@ -64,6 +138,7 @@ if($_REQUEST['action'] == 'list_products') {
     }
 
     echo '</table>';
+    echo '</div>';
 
 }
 
