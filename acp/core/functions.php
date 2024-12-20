@@ -1537,14 +1537,22 @@ function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr,
     return $pagination;
 }
 
-function se_print_pagination($url, $pages, $active_page): string {
+function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL): string {
 
     if($pages < 2) {
         return '';
     }
 
+    $class_pagination = 'justify-content-center';
+
+    if(is_array($classes)) {
+        if($classes['class_pagination'] != '') {
+            $class_pagination = $classes['class_pagination'];
+        }
+    }
+
     $pagination = '<nav aria-label="Pagination">';
-    $pagination .= '<ul class="pagination justify-content-center">';
+    $pagination .= '<ul class="pagination '.$class_pagination.'">';
 
     // jump to the first page
     $pagination .= '<li class="page-item">';
@@ -1562,8 +1570,8 @@ function se_print_pagination($url, $pages, $active_page): string {
     for($i=0;$i<$pages;$i++) {
 
         $show_number = $i+1;
-        $show_number_start = $active_page-4;
-        $show_number_end = $active_page+6;
+        $show_number_start = $active_page-($steps/2);
+        $show_number_end = $active_page+($steps/2);
         // skip pages which doesn't match the range from $nbr_show_pages
         if(($show_number < $show_number_start) || ($show_number > $show_number_end)) {
             continue;

@@ -33,3 +33,4 @@ if(isset($_POST['delete_smarty_cache'])) {
     show_toast("Deleted Smarty Cache",'success');
     header( "HX-Trigger: deleted_cache");
 }
+

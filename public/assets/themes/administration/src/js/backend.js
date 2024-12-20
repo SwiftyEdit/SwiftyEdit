@@ -15,7 +15,6 @@ import 'ace-builds/src-noconflict/theme-twilight'
 import 'ace-builds/src-noconflict/theme-chrome'
 
 import Sortable from 'sortablejs';
-import './components/jquery-sortable';
 window.Sortable = Sortable;
 
 import './components/products';
@@ -42,12 +41,101 @@ document.addEventListener('htmx:afterRequest', function(evt) {
             $(".alert-auto-close").slideUp('slow');
         }, 2000);
     });
+
 });
 
-window.htmx = require('htmx.org');
+import htmx from "htmx.org/dist/htmx.esm";
+window.htmx = htmx;
+
+htmx.onLoad(function(content) {
+    var sortables_src = content.querySelectorAll(".sortable_source");
+    for (var i = 0; i < sortables_src.length; i++) {
+        var sortable_source = sortables_src[i];
+        var sortableInstance = new Sortable(sortable_source, {
+            group: 'shared', // set both lists to same group
+            animation: 150,
+            ghostClass: 'blue-background-class',
+            filter: ".htmx-indicator",
+            draggable: ".draggable",
+            onMove: function (evt) {
+                return evt.related.className.indexOf('htmx-indicator') === -1;
+            }
+        });
+
+    }
+
+    var sortables_target = content.querySelectorAll(".sortable_target");
+    for (var i = 0; i < sortables_target.length; i++) {
+        var sortable_target = sortables_target[i];
+        var sortableInstanceTarget = new Sortable(sortable_target, {
+            group: 'shared', // set both lists to same group
+            animation: 150,
+            ghostClass: 'blue-background-class',
+            filter: ".htmx-indicator",
+            draggable: ".draggable"
+        });
+    }
+})
+
+// image picker - sortablejs
+function observeContainersForDraggableDivs(parentSelector) {
+    const parentDivs = document.querySelectorAll(parentSelector);
+
+    if (parentDivs.length === 0) {
+        console.error(`Kein Container mit dem Selektor '${parentSelector}' gefunden.`);
+        return;
+    }
+
+    parentDivs.forEach((parentDiv,parentIndex) => {
+        function assignHiddenInputsToDivs() {
+            const childDivs = parentDiv.querySelectorAll('div.draggable');
+
+            childDivs.forEach((div, index) => {
+                if (!div.querySelector('input[type="hidden"]')) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `picker_${parentIndex}[]`;
+
+                    const dataId = div.getAttribute('data-id');
+                    hiddenInput.value = dataId ? dataId : `value_${index}`; // Fallback-Wert falls keine data-id vorhanden ist
+
+                    div.appendChild(hiddenInput);
+                }
+            });
+        }
+
+        // init MutationObserver
+        const observer = new MutationObserver(() => {
+            assignHiddenInputsToDivs();
+        });
+
+        // start observer
+        observer.observe(parentDiv, {
+            childList: true,
+            subtree: true,
+        });
+        assignHiddenInputsToDivs();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const noEnterFields = document.querySelectorAll('.no-enter');
+
+    noEnterFields.forEach(field => {
+        field.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+    });
+});
 
 
 $(function() {
+
+    // observe "sortable_target" (image picker)
+    observeContainersForDraggableDivs('.sortable_target');
 
     const uppy = new Uppy({
         debug: true,
@@ -67,12 +155,13 @@ $(function() {
     })
 
 
-    $('[data-bs-toggle="popover"]').popover();
-    $('[data-bs-toggle="tooltip"]').tooltip();
+    //$('[data-bs-toggle="popover"]').popover();
+    //$('[data-bs-toggle="tooltip"]').tooltip();
 
     setTimeout(function() {
         $(".alert-auto-close").slideUp('slow');
     }, 2000);
+
 
     $(".tags").selectize({
         delimiter: ",",
@@ -85,37 +174,6 @@ $(function() {
         },
     });
 
-    /**
-     * image picker for choosing thumbnails
-     * we use this f.e. for pages thumbnails
-     */
-
-    $(".image-checkbox").each(function () {
-        if ($(this).find('input[type="checkbox"]').first().attr("checked")) {
-            $(this).addClass('image-checkbox-checked');
-        } else {
-            $(this).removeClass('image-checkbox-checked');
-        }
-    });
-
-    // sync the state to the input
-    $(".image-checkbox").on("click", function (e) {
-        $(this).toggleClass('image-checkbox-checked');
-        var $checkbox = $(this).find('input[type="checkbox"]');
-        $checkbox.prop("checked", !$checkbox.prop("checked"))
-
-        e.preventDefault();
-    });
-
-    $('.filter-images').keyup(function() {
-        var value = $(this).val();
-        var exp = new RegExp('^' + value, 'i');
-
-        $('.image-checkbox').not('.image-checkbox-checked').each(function() {
-            var isMatch = exp.test($('.card-footer', this).text());
-            $(this).toggle(isMatch);
-        });
-    });
 
 
     // editors
@@ -184,35 +242,6 @@ $(function() {
 
 
 
-
-    $(".filter-table-input").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        var group = $(this).closest('.filter-group');
-        $(group).find(".table-filter tr").filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-    });
-
-
-
-    $('.page-info-btn').click(function(){
-
-        var pageid = $(this).data('id');
-        var csrf_token = $(this).data('token');
-
-        // AJAX request
-        $.ajax({
-            url: './core/ajax/show-page-info.php',
-            type: 'post',
-            data: {pageid: pageid, csrf_token: csrf_token},
-            success: function(response){
-                // Add response in Modal body
-                $('#infoModal .modal-body').html(response);
-                $('#infoModal .modal-header .modal-title').html('Page ID #' + pageid);
-            }
-        });
-    });
-
     $(window).resize(function () {
         stretchAppContainer();
         $( "div.scroll-box" ).each(function() {
@@ -236,13 +265,6 @@ $(function() {
             }
         }
     }
-
-
-    $('.sortableListGroup').sortable({
-        handle: '.bi-arrows-move',
-        invertSwap: true
-    });
-
 
 
 });
