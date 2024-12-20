@@ -133,7 +133,24 @@ $checkbox_fixed .= '</div>';
 $images = se_get_all_media_data('image');
 $images = se_unique_multi_array($images,'media_file');
 $array_images = explode("<->", $product_data['images']);
-$choose_images = se_select_img_widget($images,$array_images,$se_prefs['prefs_shop_images_prefix'],1);
+$draggable = '';
+if(is_array($array_images)) {
+    $array_images = array_filter($array_images);
+    foreach($array_images as $image) {
+        $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
+        $image_src = str_replace('../images/','/images/',$image_src);
+        $draggable .= '<div class="list-group-item draggable" data-id="'.$image.'">';
+        $draggable .= '<div class="d-flex flex-row gap-2">';
+        $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
+        $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
+        $draggable .= '</div>';
+        $draggable .= '</div>';
+    }
+}
+
+$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
+$choose_images .= '<div id="imgWidget" hx-post="/admin/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= 'Loading Images ...</div>';
 
 /* status | draft or published */
 $sel_status_draft = '';
