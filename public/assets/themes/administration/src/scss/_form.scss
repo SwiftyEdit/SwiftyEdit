@@ -85,6 +85,16 @@ select.form-control {
 
 /* image picker */
 
+.sortable_target {
+	background: rgba(0,0,0,0.2);
+	&::after {
+		padding: 15px;
+		content: "DROP IMAGES HERE";
+		opacity: 0.5;
+	}
+
+}
+
 div.image-checkbox {
 	cursor: pointer;
 	box-sizing: border-box;

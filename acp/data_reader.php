@@ -20,6 +20,7 @@ $reader = match (true) {
     str_contains($_REQUEST['query'], 'dashboard/') => 'core/dashboard/data-reader.php',
     str_contains($_REQUEST['query'], 'uploads/') => 'core/uploads/data-reader.php',
     str_contains($_REQUEST['query'], 'counter/') => 'core/xhr/counters.php',
+    str_contains($_REQUEST['query'], 'widgets/') => 'core/xhr/widgets.php',
     str_contains($_REQUEST['query'], 'support/') => 'core/support/data-reader.php',
     default => ''
 };
