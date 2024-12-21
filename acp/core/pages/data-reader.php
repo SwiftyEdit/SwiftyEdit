@@ -325,7 +325,7 @@ function se_list_pages($data,$type="sorted") {
         }
 
         if($page_redirect != '') {
-            if(!in_array("5",$global_filter_status)) {
+            if((is_array($global_filter_status)) && !in_array("5",$global_filter_status)) {
                 continue;
             }
         }
