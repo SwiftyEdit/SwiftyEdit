@@ -3,8 +3,9 @@
 $writer_uri = '/admin/shop/edit/';
 $duplicate_uri = '/admin/shop/duplicate/';
 
-if($_REQUEST['action'] == 'list_products') {
+include '../acp/core/templates.php';
 
+if($_REQUEST['action'] == 'list_products') {
 
     // defaults
     $order_by = 'lastedit';
@@ -325,4 +326,98 @@ if($_REQUEST['action'] == 'list_categories') {
         echo '<span class="float-end">'.$cat_lang_thumb.'</span>';
         echo '</button>';
     }
+}
+
+// list all features
+if($_REQUEST['action'] == 'list_features') {
+    $show_data = se_get_posts_features();
+    $cnt_data = count($show_data);
+
+    echo '<div class="card p-3">';
+
+    echo '<table class="table table-sm">';
+    echo '<tr>';
+    echo '<td>#</td>';
+    echo '<td>'.$lang['label_priority'].'</td>';
+    echo '<td>'.$lang['label_language'].'</td>';
+    echo '<td>'.$lang['label_text'].'</td>';
+    echo '<td></td>';
+    echo '</tr>';
+
+    foreach($show_data as $data) {
+
+        $flag = '<img src="/assets/lang/' . $data['snippet_lang'] . '/flag.png" width="15">';
+
+        $btn_edit  = '<form action="/admin/shop/features/edit/" method="post" class="d-inline">';
+        $btn_edit .= '<button class="btn btn-default" name="features-form" value="'.$data['snippet_id'].'">'.$icon['edit'].'</button>';
+        $btn_edit .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $btn_edit .=  '</form>';
+
+        echo '<tr>';
+        echo '<td>'.$data['snippet_id'].'</td>';
+        echo '<td>'.$data['snippet_priority'].'</td>';
+        echo '<td>'.$flag.'</td>';
+        echo '<td><strong>'.$data['snippet_title'].'</strong><br>'.$show_values.'</td>';
+        echo '<td class="text-end" style="width:120px;">';
+
+        echo $btn_edit;
+
+        echo '</td>';
+        echo '</tr>';
+    }
+
+
+    echo '</table>';
+    echo '</div>'; // card
+
+}
+
+// list all options
+if($_REQUEST['action'] == 'list_options') {
+    $show_data = se_get_posts_options();
+    $cnt_data = count($show_data);
+
+    echo '<div class="card p-3">';
+
+    echo '<table class="table table-sm">';
+    echo '<tr>';
+    echo '<td>#</td>';
+    echo '<td>'.$lang['label_priority'].'</td>';
+    echo '<td>'.$lang['label_language'].'</td>';
+    echo '<td>'.$lang['label_text'].'</td>';
+    echo '<td></td>';
+    echo '</tr>';
+
+    foreach($show_data as $data) {
+
+        $flag = '<img src="/assets/lang/' . $data['snippet_lang'] . '/flag.png" width="15">';
+
+        $btn_edit  = '<form action="/admin/shop/options/edit/" method="post" class="d-inline">';
+        $btn_edit .= '<button class="btn btn-default" name="options-form" value="'.$data['snippet_id'].'">'.$icon['edit'].'</button>';
+        $btn_edit .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $btn_edit .=  '</form>';
+
+        $get_show_values = json_decode($data['snippet_content']);
+        $show_values = '';
+        foreach($get_show_values as $value) {
+            $show_values .= '<span class="badge text-bg-secondary">'.$value.'</span> ';
+        }
+
+        echo '<tr>';
+        echo '<td>'.$data['snippet_id'].'</td>';
+        echo '<td>'.$data['snippet_priority'].'</td>';
+        echo '<td>'.$flag.'</td>';
+        echo '<td><strong>'.$data['snippet_title'].'</strong><br>'.$show_values.'</td>';
+        echo '<td class="text-end" style="width:120px;">';
+
+        echo $btn_edit;
+
+        echo '</td>';
+        echo '</tr>';
+    }
+
+
+    echo '</table>';
+    echo '</div>'; // card
+
 }
