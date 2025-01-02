@@ -274,3 +274,69 @@ if(isset($_POST['set_filter_cat'])) {
 
     header( "HX-Trigger: update_products_list");
 }
+
+// save features
+if(isset($_POST['save_feature'])) {
+
+    $lastedit = time();
+    $feature_title = se_return_clean_value($_POST['feature_title']);
+    $feature_text = $_POST['feature_text'];
+    $feature_priority = (int) $_POST['feature_priority'];
+    $feature_lang = $_POST['feature_lang'];
+
+    if(is_numeric($_POST['save_feature'])) {
+        $id = (int) $_POST['save_feature'];
+        $db_content->update("se_snippets", [
+            "snippet_title" => $feature_title,
+            "snippet_content" => $feature_text,
+            "snippet_priority" => $feature_priority,
+            "snippet_lastedit" => $lastedit,
+            "snippet_lang" => $feature_lang,
+            "snippet_type" => 'post_feature'
+        ],[
+            "snippet_id" => $id
+        ]);
+    } else {
+        $db_content->insert("se_snippets", [
+            "snippet_title" => $feature_title,
+            "snippet_content" => $feature_text,
+            "snippet_priority" => $feature_priority,
+            "snippet_lastedit" => $lastedit,
+            "snippet_lang" => $feature_lang,
+            "snippet_type" => 'post_feature'
+        ]);
+    }
+
+
+    show_toast($lang['msg_success_db_changed'],'success');
+    header( "HX-Trigger: update_feature_list");
+}
+
+// save options
+if(isset($_POST['save_option'])) {
+    $option_title = se_return_clean_value($_POST['option_title']);
+    $option_priority = (int) $_POST['option_priority'];
+    $option_lang = $_POST['option_lang'];
+    $option_text = array_filter($_POST['option_text']);
+    $option_text = json_encode($option_text,JSON_FORCE_OBJECT);
+
+    $insert_data = [
+        "snippet_lastedit" =>  time(),
+        "snippet_priority" => $option_priority,
+        "snippet_title" =>  $option_title,
+        "snippet_content" =>  $option_text,
+        "snippet_lang" =>  $option_lang,
+        "snippet_type" => 'post_option'
+    ];
+
+    if(is_numeric($_POST['save_option'])) {
+        $id = (int)$_POST['save_option'];
+        $db_content->update("se_snippets", $insert_data, [
+            "snippet_id" => $id
+        ]);
+    } else {
+        $db_content->insert("se_snippets", $insert_data);
+    }
+    show_toast($lang['msg_success_db_changed'],'success');
+    header( "HX-Trigger: update_options_list");
+}
