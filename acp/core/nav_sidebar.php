@@ -37,6 +37,7 @@ echo '<ul>';
 echo '<li><a class="sidebar-nav '.($subinc == "products-list" ? 'sidebar-nav-active' :'').'" href="/admin/shop/">'.$icon['dot'].' '.$lang['nav_btn_products'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "prices" ? 'sidebar-nav-active' :'').'" href="/admin/shop/prices/">'.$icon['dot'].' '.$lang['nav_btn_price_groups'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "features" ? 'sidebar-nav-active' :'').'" href="/admin/shop/features/">'.$icon['dot'].' '.$lang['nav_btn_features'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "options" ? 'sidebar-nav-active' :'').'" href="/admin/shop/options/">'.$icon['dot'].' '.$lang['btn_options'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "filters" ? 'sidebar-nav-active' :'').'" href="/admin/shop/filters/">'.$icon['dot'].' '.$lang['filter'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "orders" ? 'sidebar-nav-active' :'').'" href="/admin/shop/orders/">'.$icon['dot'].' '.$lang['nav_btn_orders'].'</a></li>';
 echo '<li><a class="sidebar-nav" href="/admin/settings/shop/">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</a></li>';
