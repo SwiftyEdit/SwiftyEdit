@@ -32,8 +32,6 @@ import '@uppy/dashboard/dist/style.css'
 
 
 
-
-
 document.addEventListener('htmx:afterRequest', function(evt) {
 
     $(function() {
@@ -82,7 +80,7 @@ function observeContainersForDraggableDivs(parentSelector) {
     const parentDivs = document.querySelectorAll(parentSelector);
 
     if (parentDivs.length === 0) {
-        console.error(`Kein Container mit dem Selektor '${parentSelector}' gefunden.`);
+        // no container found
         return;
     }
 
@@ -130,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
 
 
 $(function() {
@@ -268,4 +267,3 @@ $(function() {
 
 
 });
-
