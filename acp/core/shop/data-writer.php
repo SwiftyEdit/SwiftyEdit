@@ -340,3 +340,74 @@ if(isset($_POST['save_option'])) {
     show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: update_options_list");
 }
+
+// save filter group
+if(isset($_POST['save_filter_group'])) {
+
+    $filter_type = 1;
+    $filter_priority = (int) $_POST['filter_priority'];
+    $filter_input_type = (int) $_POST['filter_input_type'];
+    $filter_title = se_return_clean_value($_POST['filter_title']);
+    $filter_description = $_POST['filter_description'];
+    $filter_lang = $_POST['filter_lang'];
+
+    if(is_array($_POST['filter_cats'])) {
+        $filter_cats = implode(",", $_POST['filter_cats']);
+    } else {
+        $filter_cats = '';
+    }
+
+    $insert_data = [
+        "filter_type" =>  $filter_type,
+        "filter_input_type" =>  $filter_input_type,
+        "filter_priority" => $filter_priority,
+        "filter_title" =>  $filter_title,
+        "filter_description" =>  $filter_description,
+        "filter_lang" =>  $filter_lang,
+        "filter_categories" => $filter_cats
+    ];
+
+    if(is_numeric($_POST['save_filter_group'])) {
+        // update
+        $id = (int) $_POST['save_filter_group'];
+        $db_content->update("se_filter", $insert_data, [
+            "filter_id" => $id
+        ]);
+    } else {
+        // new
+        $db_content->insert("se_filter", $insert_data);
+    }
+
+
+    show_toast($lang['msg_success_db_changed'],'success');
+}
+
+// save filter value
+if(isset($_POST['save_filter_value'])) {
+
+    $filter_type = 2;
+    $filter_priority = (int) $_POST['filter_priority'];
+    $filter_title = se_return_clean_value($_POST['filter_title']);
+    $filter_description = $_POST['filter_description'];
+    $filter_parent_id = $_POST['filter_parent_id'];
+
+    $insert_data = [
+        "filter_type" =>  $filter_type,
+        "filter_priority" => $filter_priority,
+        "filter_title" =>  $filter_title,
+        "filter_description" =>  $filter_description,
+        "filter_parent_id" => $filter_parent_id
+    ];
+
+    if(is_numeric($_POST['save_filter_value'])) {
+        // new
+        $id = (int) $_POST['save_filter_value'];
+        $db_content->update("se_filter", $insert_data, [
+            "filter_id" => $id
+        ]);
+    } else {
+        // new
+        $db_content->insert("se_filter", $insert_data);
+    }
+    show_toast($lang['msg_success_db_changed'],'success');
+}
