@@ -4,6 +4,7 @@ $writer_uri = '/admin/shop/edit/';
 $duplicate_uri = '/admin/shop/duplicate/';
 
 include '../acp/core/templates.php';
+global $lang_codes;
 
 if($_REQUEST['action'] == 'list_products') {
 
@@ -419,5 +420,85 @@ if($_REQUEST['action'] == 'list_options') {
 
     echo '</table>';
     echo '</div>'; // card
+
+}
+
+// list filters
+
+if($_REQUEST['action'] == 'list_filters') {
+
+    $all_filters = se_get_product_filter_groups('all');
+
+    echo '<div class="card p-3">';
+    echo '<table class="table table-hover">';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th>'.$icon['translate'].'</th>';
+    echo '<th>'.$icon['bars'].'</th>';
+    echo '<th>Type</th>';
+    echo '<th>Group</th>';
+    echo '<th>Values</th>';
+    echo '</tr>';
+    echo '</thead>';
+    foreach($all_filters as $k => $v) {
+
+        $group_title = $v['filter_title'];
+        $group_id = $v['filter_id'];
+        $group_prio = $v['filter_priority'];
+        $group_categories = explode(",",$v['filter_categories']);
+
+        $type = '';
+        if($v['filter_input_type'] == '1') {
+            $type = $icon['ui_radios'];
+        } else {
+            $type = $icon['ui_checks'];
+        }
+
+        $flag = '<img src="/assets/lang/' . $v['filter_lang'] . '/flag.png" width="15">';
+
+        $get_filter_items = se_get_product_filter_values($group_id);
+
+        echo '<tr>';
+        echo '<td>'.$flag.'</td>';
+        echo '<td>'.$group_prio.'</td>';
+        echo '<td>'.$type.'</td>';
+        echo '<td>';
+
+        echo '<form action="/admin/shop/filters/edit/" method="post" class="">';
+        echo '<button class="btn btn-default" name="edit_group" value="'.$group_id.'">'.$icon['edit'].' '.$group_title.'</button>';
+        echo  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo  '</form>';
+
+        // show categories
+        $get_categories = se_get_categories();
+        foreach($get_categories as $k => $v) {
+            if (in_array($v['cat_hash'], $group_categories)) {
+                echo '<span class="badge text-bg-secondary opacity-50">'.$v['cat_name'].'</span> ';
+            }
+        }
+        echo '</td>';
+        echo '<td>';
+        echo '<form action="/admin/shop/filters/edit/" method="post" class="d-inline">';
+        foreach($get_filter_items as $item) {
+            echo '<button type="submit" name="edit_value" value="'.$item['filter_id'].'" class="btn btn-sm btn-default me-1">';
+            echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> ';
+            echo $item['filter_title'];
+            echo '</button>';
+        }
+        echo '<button type="submit" name="edit_value" value="new" class="btn btn-sm btn-default me-1">';
+        echo '<span class="text-success">'.$icon['plus'].'</span>';
+        echo '<input type="hidden" name="parent_id" value="'.$group_id.'">';
+        echo '</button>';
+        echo  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+
+    }
+
+    echo '</table>';
+    echo '</div>';
+
+
 
 }

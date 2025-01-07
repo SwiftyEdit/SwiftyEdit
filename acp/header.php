@@ -87,6 +87,8 @@ foreach ($se_get_preferences as $k => $v) {
 
 /* set language */
 
+$all_langs = get_all_languages();
+
 if (!isset($_SESSION['lang'])) {
     if ($se_prefs['prefs_default_language'] != '') {
         $_SESSION['lang'] = $se_prefs['prefs_default_language'];
@@ -107,3 +109,22 @@ if (isset($_SESSION['lang'])) {
 }
 
 require SE_ROOT.'public/assets/lang/index.php';
+
+/**
+ * $lang_codes (array) all available lang codes
+ * hide languages from $prefs_deactivated_languages
+ * all active languages are stored in $active_lang
+ */
+if (isset($se_prefs['prefs_deactivated_languages']) AND $se_prefs['prefs_deactivated_languages'] != '') {
+    $arr_lang_deactivated = json_decode($se_prefs['prefs_deactivated_languages']);
+}
+
+foreach ($all_langs as $l) {
+    if (isset($arr_lang_deactivated) && (in_array($l['lang_folder'], $arr_lang_deactivated))) {
+        continue;
+    }
+
+    $langs[] = $l['lang_sign'];
+}
+
+$lang_codes = array_values(array_unique($langs));

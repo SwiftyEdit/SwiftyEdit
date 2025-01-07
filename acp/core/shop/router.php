@@ -2,6 +2,8 @@
 
 $subinc = match (true) {
     str_starts_with($query, 'shop/orders/') => 'orders',
+    str_starts_with($query, 'shop/filters/new/') => 'filters-edit',
+    str_starts_with($query, 'shop/filters/edit/') => 'filters-edit',
     str_starts_with($query, 'shop/filters/') => 'filters',
     str_starts_with($query, 'shop/features/new/') => 'features-edit',
     str_starts_with($query, 'shop/features/edit/') => 'features-edit',

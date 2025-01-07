@@ -911,9 +911,9 @@ function se_get_order_details($id) {
  * @param string $lang en, de ...
  * @return array
  */
-function se_get_product_filter_groups($lang) {
+function se_get_product_filter_groups(string $lang): array {
 
-    global $db_content, $languagePack, $lang_codes;
+    global $db_content, $lang_codes;
     if($lang == 'all' OR $lang == '') {
         $lang_filter = $lang_codes;
     } else {
@@ -929,8 +929,6 @@ function se_get_product_filter_groups($lang) {
                 "filter_priority" => "DESC"
         ]
     ]);
-
-
     return $filters;
 }
 
@@ -939,7 +937,7 @@ function se_get_product_filter_groups($lang) {
  * @param integer $pid id of the filter entry
  * @return mixed
  */
-function se_get_product_filter_values($pid) {
+function se_get_product_filter_values($pid): mixed {
 
     global $db_content;
     $pid = (int) $pid;
