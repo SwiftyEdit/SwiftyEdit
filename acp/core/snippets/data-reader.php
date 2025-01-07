@@ -44,7 +44,7 @@ if($_REQUEST['action'] == 'list_snippets') {
 
     $filter_base = [
       "AND" => [
-          "snippet_id[>]" => 0
+          "snippet_type" => ['snippet','snippet_core']
       ]
     ];
 
