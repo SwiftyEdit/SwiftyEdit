@@ -2,36 +2,14 @@
 $writer_uri = '/admin/pages/edit/';
 $duplicate_uri = '/admin/pages/duplicate/';
 
-$global_filter_languages = json_decode($_SESSION['global_filter_languages']);
-$global_filter_status = json_decode($_SESSION['global_filter_status']);
-$global_filter_label = json_decode($_SESSION['global_filter_label']);
-
+$global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
+$global_filter_status = json_decode($_SESSION['global_filter_status'],true);
+$global_filter_label = json_decode($_SESSION['global_filter_label'],true);
 $item_template = file_get_contents('../acp/templates/list-pages-item.tpl');
 
 $sort_single_pages = 'page_lastedit';
 $sort_single_pages_direction = 'DESC';
 
-/*
-if(isset($_POST['sorting_single_pages_dir'])) {
-    if($_POST['sorting_single_pages_dir'] == 'desc') {
-        $_SESSION['sorting_single_pages_dir'] = 'DESC';
-    } else {
-        $_SESSION['sorting_single_pages_dir'] = 'ASC';
-    }
-}
-*/
-
-/*
-if(isset($_POST['sorting_single_pages'])) {
-    if($_POST['sorting_single_pages'] == 'linkname') {
-        $_SESSION['sorting_single_pages'] = 'page_linkname';
-    } else if($_POST['sorting_single_pages'] == 'priority') {
-        $_SESSION['sorting_single_pages'] = 'page_priority';
-    } else {
-        $_SESSION['sorting_single_pages'] = 'page_lastedit';
-    }
-}
-*/
 
 if(!isset($_SESSION['sorting_single_pages'])) {
     $_SESSION['sorting_single_pages'] = $sort_single_pages;
@@ -101,6 +79,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
         echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
         echo '</div><hr>';
     }
+    exit;
 }
 
 /**
@@ -117,6 +96,7 @@ if($_REQUEST['action'] == 'list_keyword_btn') {
             echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         }
     }
+    exit;
 }
 
 /**
@@ -150,7 +130,7 @@ if($_REQUEST['action'] == 'list_page_types') {
         echo '</div>';
         echo '</button>';
     }
-
+    exit;
 }
 
 /**
@@ -161,12 +141,14 @@ if($_REQUEST['action'] == 'list_page_types') {
 
 function se_list_pages($data,$type="sorted") {
 
-    global $item_template, $global_filter_status;
-    global $lang;
-    global $icon;
-    global $hidden_csrf_token;
-    global $se_labels;
-    global $writer_uri, $duplicate_uri;
+    global $item_template, $global_filter_status, $lang, $icon, $hidden_csrf_token, $se_labels, $writer_uri, $duplicate_uri;
+
+    $item_template_vars = array(
+        '{status-label}','{item-linkname}','{item-title}','{item-tmb-src}','{label_edit}',
+        '{item-mod}','{item-class}','{item-indent}','{edit-btn}','{duplicate-btn}','{info-btn}',
+        '{comment-btn}','{item-permalink}','{item-lastedit}','{item-pagesort}','{item-template}',
+        '{item-redirect}','{frontend-link}','{item-description}','{item-lang}', '{page_labels}','{item-pi}','{hidden_csrf_tokken}'
+    );
 
     $listing = '';
     $cnt_pages = 0;
@@ -204,7 +186,6 @@ function se_list_pages($data,$type="sorted") {
         $page_permalink = $data[$i]['page_permalink'];
         $page_redirect = $data[$i]['page_redirect'];
         $page_modul = $data[$i]['page_modul'];
-        $page_cnt_comments = $data[$i]['cnt_comments'];
         $pi = $data[$i]['page_hits'];
         if($data[$i]['page_labels'] != '') {
             $page_labels = explode(',',$data[$i]['page_labels']);
@@ -217,7 +198,7 @@ function se_list_pages($data,$type="sorted") {
 
         $page_thumb_src = '/assets/themes/administration/images/swiftyedit-page-icon.png';
         if(isset($page_thumbs) AND $page_thumbs[0] != '') {
-            $page_thumb_src = str_replace('../','/',$page_thumbs[0]);
+            $page_thumb_src = str_replace('../content/images/','/images/',$page_thumbs[0]);
         }
 
         $page_lang_thumb = '<img src="/assets/lang/'.$page_language.'/flag.png" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
@@ -294,8 +275,8 @@ function se_list_pages($data,$type="sorted") {
             $duplicate_button = '';
         }
 
-        $info_button = '<a class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#infoModal" data-id="'.$page_id.'" data-token="'.$_SESSION['token'].'" title="info">'.$icon['info_circle'].'</a>';
-
+        //$info_button = '<a class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#infoModal" data-id="'.$page_id.'" data-token="'.$_SESSION['token'].'" title="info">'.$icon['info_circle'].'</a>';
+        $info_button = '<a class="btn btn-sm btn-default" href="#">'.$icon['info_circle'].'</a>';
         $arr_checked_admins = explode(",",$page_authorized_users);
         if(in_array($_SESSION['user_nick'], $arr_checked_admins)) {
             $edit_button = $btn_edit_tpl;
@@ -316,7 +297,7 @@ function se_list_pages($data,$type="sorted") {
             }
         }
 
-        $frontend_link = "../$page_permalink";
+        $frontend_link = "../../$page_permalink";
 
         $show_mod = '';
         if($page_modul != '') {
@@ -332,13 +313,8 @@ function se_list_pages($data,$type="sorted") {
 
         $page_comments_link = '';
 
-        $str = array(
-            '{status-label}','{item-linkname}','{item-title}','{item-tmb-src}','{label_edit}',
-            '{item-mod}','{item-class}','{item-indent}','{edit-btn}','{duplicate-btn}','{info-btn}',
-            '{comment-btn}','{item-permalink}','{item-lastedit}','{item-pagesort}','{item-template}',
-            '{item-redirect}','{frontend-link}','{item-description}','{item-lang}', '{page_labels}','{item-pi}','{hidden_csrf_tokken}'
-        );
-        $rplc = array(
+
+        $replace = array(
             $status_label,$page_linkname,$page_title,$page_thumb_src,$lang['edit'],
             $show_mod,$item_class,$indent,$edit_button,$duplicate_button,$info_button,
             $page_comments_link,$page_permalink,$last_edit,$page_sort, $show_template_name,
@@ -346,7 +322,7 @@ function se_list_pages($data,$type="sorted") {
         );
 
 
-        $this_template = str_replace($str, $rplc, $item_template);
+        $this_template = str_replace($item_template_vars, $replace, $item_template);
         $listing .= $this_template;
     }
 

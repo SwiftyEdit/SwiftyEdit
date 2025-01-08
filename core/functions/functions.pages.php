@@ -159,7 +159,10 @@ function se_get_pages($filter) {
         $sql_filter .= " AND ($sql_sort_type_filter) ";
     }
 
-    $sql = "SELECT * FROM se_pages $sql_filter $order";
+    $cols = 'page_id, page_status, page_sort, page_thumbnail, page_language, page_title, page_linkname, page_permalink, 
+    page_meta_description, page_lastedit, page_lastedit_from, page_labels, page_template, page_redirect, page_modul, page_hits';
+
+    $sql = "SELECT $cols FROM se_pages $sql_filter $order";
     $pages = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     return $pages;
