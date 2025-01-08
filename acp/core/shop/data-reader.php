@@ -3,6 +3,11 @@
 $writer_uri = '/admin/shop/edit/';
 $duplicate_uri = '/admin/shop/duplicate/';
 
+$global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
+if(is_array($global_filter_languages)) {
+    $shop_filter['languages'] = implode("-", $global_filter_languages);
+}
+
 include '../acp/core/templates.php';
 global $lang_codes;
 
@@ -60,8 +65,17 @@ if($_REQUEST['action'] == 'list_products') {
         }
     }
 
+    $filter_by_category = array();
+    if($_SESSION['filter_prod_categories'] != '') {
+        $cat_filter = explode(" ",$_SESSION['filter_prod_categories']);
+        $cat_filter = array_filter($cat_filter);
+        $filter_by_category = [
+                "categories[~]" => $cat_filter
+        ];
+    }
+
     $db_where = [
-        "AND" => $filter_base+$filter_by_str+$filter_by_keyword
+        "AND" => $filter_base+$filter_by_str+$filter_by_keyword+$filter_by_category
     ];
 
     $db_order = [
@@ -307,7 +321,7 @@ if($show_form) {
 if($_REQUEST['action'] == 'list_categories') {
 
     $get_categories = se_get_categories();
-    echo '<div class="list-group">';
+    echo '<div class="list-group list-group-flush">';
     foreach($get_categories as $c) {
 
         $cat_lang_thumb = '<img src="/assets/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
@@ -427,7 +441,47 @@ if($_REQUEST['action'] == 'list_options') {
 
 if($_REQUEST['action'] == 'list_filters') {
 
-    $all_filters = se_get_product_filter_groups('all');
+
+    $filter_base = [
+        "AND" => [
+            "filter_type" => 1
+        ]
+    ];
+
+    $filter_by_category = array();
+    if($_SESSION['filter_prod_categories'] != '') {
+        $cat_filter = explode(" ",$_SESSION['filter_prod_categories']);
+        $cat_filter = array_filter($cat_filter);
+        $filter_by_category = [
+            "OR" => [
+                "filter_categories" => $cat_filter
+            ]
+        ];
+    }
+
+    $filter_by_lang = array();
+    if($shop_filter['languages'] != '') {
+        $this_filter = explode("-",$shop_filter['languages']);
+        $filter_by_lang = [
+
+                "filter_lang" => $this_filter
+
+        ];
+    }
+
+    $db_where = [
+        "AND" => $filter_base+$filter_by_category+$filter_by_lang
+    ];
+
+    $db_order = [
+        "ORDER" => [
+            "filter_priority" => "DESC"
+        ]
+    ];
+
+    $filters = $db_content->select("se_filter","*",
+        $db_where+$db_order
+    );
 
     echo '<div class="card p-3">';
     echo '<table class="table table-hover">';
@@ -440,7 +494,7 @@ if($_REQUEST['action'] == 'list_filters') {
     echo '<th>Values</th>';
     echo '</tr>';
     echo '</thead>';
-    foreach($all_filters as $k => $v) {
+    foreach($filters as $k => $v) {
 
         $group_title = $v['filter_title'];
         $group_id = $v['filter_id'];

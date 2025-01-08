@@ -71,8 +71,8 @@ echo '</div>';
 
 echo '<div class="card mb-2">';
 echo '<div class="card-header">'.$lang['label_categories'].'</div>';
-echo '<div class="card-body">';
-echo '<div id="keyList" hx-post="'.$reader_uri.'?action=list_categories" hx-trigger="load, update_products_list from:body, updated_global_filter from:body" hx-include="[name=\'csrf_token\']"></div>';
+echo '<div class="scroll-container p-0">';
+echo '<div id="keyList" hx-get="'.$reader_uri.'?action=list_categories" hx-trigger="load, update_products_list from:body, updated_global_filter from:body"></div>';
 echo '</div>';
 echo '</div>';
 
