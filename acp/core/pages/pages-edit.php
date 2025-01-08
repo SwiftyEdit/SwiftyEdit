@@ -45,7 +45,7 @@ $input_text_page_sort = [
 
 $input_text_page_linkname = [
     "input_name" => "page_linkname",
-    "input_value" => $page_linkname,
+    "input_value" => $get_page['page_linkname'],
     "label" => $lang['label_pages_link_name'],
     "type" => "text"
 ];
@@ -181,21 +181,21 @@ $input_text_page_content = [
 
 $input_text_page_title = [
     "input_name" => "page_title",
-    "input_value" => $page_title,
+    "input_value" => $get_page['page_title'],
     "label" => $lang['label_title'],
     "type" => "text"
 ];
 
 $input_text_page_meta_description = [
     "input_name" => "page_meta_description",
-    "input_value" => $page_meta_description,
+    "input_value" => $get_page['page_meta_description'],
     "label" => $lang['label_description'],
     "type" => "textarea"
 ];
 
 $input_text_page_keywords = [
     "input_name" => "page_meta_keywords",
-    "input_value" => $page_meta_keywords,
+    "input_value" => $get_page['page_meta_keywords'],
     "input_classes" => "form-control tags",
     "label" => $lang['label_keywords'],
     "type" => "text"
@@ -203,7 +203,7 @@ $input_text_page_keywords = [
 
 $input_text_page_autor = [
     "input_name" => "page_meta_author",
-    "input_value" => $page_meta_author,
+    "input_value" => $get_page['page_meta_author'],
     "label" => $lang['label_author'],
     "type" => "text"
 ];
@@ -312,7 +312,7 @@ for($i=0;$i<$cnt_all_pages;$i++) {
     $sm_page_permalink = $all_pages[$i]['page_permalink'];
     $sm_page_lang = $all_pages[$i]['page_language'];
 
-    $flag = '<img src="../../core/lang/'.$sm_page_lang.'/flag.png" alt="'.$sm_page_lang.'" width="15">';
+    $flag = '<img src="/assets/lang/'.$sm_page_lang.'/flag.png" alt="'.$sm_page_lang.'" width="15">';
     $short_title = first_words($all_pages[$i]['page_title'], 6);
 
     if($sm_page_sort == '') { continue; }
@@ -522,7 +522,30 @@ $form_tpl .= '</div>';
 $form_tpl .= '</div>'; // metas tab
 
 $form_tpl .= '<div class="tab-pane" id="theme-tab" role="tabpanel" tabindex="0">';
-$form_tpl .= 'Themes ...';
+
+
+// check if this page can handle theme values
+if($get_page['page_template'] == 'use_standard') {
+    // get theme from prefernces
+    $theme_base = '../public/assets/themes/'.$se_settings['template'];
+} else {
+    $theme_base = '../public/assets/themes/'.$get_page['page_template'];
+}
+
+$page_value_injector = $theme_base.'/php/page_values.php';
+
+if(is_file("$page_value_injector")) {
+    function include_page_value_file($f) {
+        ob_start();
+        include $f;
+        return ob_get_clean();
+    }
+    $form_tpl .= include_page_value_file($page_value_injector);
+} else {
+    $form_tpl .= 'No injection file found';
+}
+
+
 $form_tpl .= '</div>'; // themes tab
 
 $form_tpl .= '<div class="tab-pane fade" id="posts">';
@@ -705,6 +728,130 @@ if($form_mode != 'new') {
 
 $form_tpl .= se_print_form_input($input_select_page_status);
 $form_tpl .= se_print_form_input($input_select_language);
+
+// select template
+$get_themes = get_all_templates();
+$select_template = '<select id="select_template" name="select_template"  class="form-control">';
+if($page_template == '') {
+    $selected_standard = 'selected';
+}
+$select_template .= "<option value='use_standard<|-|>use_standard' $selected_standard>$lang[label_use_default]</option>";
+foreach($get_themes as $template) {
+
+    if($template == 'administration') {continue;}
+    $arr_layout_tpl = glob("../public/assets/themes/$template/templates/layout*.tpl");
+    $select_template .= "<optgroup label='$template'>";
+
+    foreach($arr_layout_tpl as $layout_tpl) {
+        $layout_tpl = basename($layout_tpl);
+        $selected = '';
+        if($template == "$page_template" && $layout_tpl == "$page_template_layout") {
+            $selected = 'selected';
+        }
+        $select_template .=  "<option $selected value='$template<|-|>$layout_tpl'>$template » $layout_tpl</option>";
+    }
+    $select_template .= '</optgroup>';
+}
+
+$select_template .= '</select>';
+
+$form_tpl .= '<div><label class="form-label">'.$lang['label_template'].'</label>'.$select_template.'</div>';
+
+// set password
+$form_tpl .= '<div class="my-2">';
+$form_tpl .= '<label class="form-label">'.$lang['label_password'].'</label>';
+$placeholder = '';
+$reset_psw = '';
+if($page_psw != '') {
+    $form_tpl .= '<input type="hidden" name="page_psw_relay" value="'.$page_psw.'">';
+    $placeholder = '*****';
+    $reset_psw  = '<div class="checkbox"><label>';
+    $reset_psw .= '<input type="checkbox" name="page_psw_reset" value="reset"> '.$lang['label_password_reset'].'</label></div>';
+}
+$form_tpl .= '<input class="form-control" type="text" name="page_psw" value="" placeholder="'.$placeholder.'">';
+$form_tpl .= $reset_psw;
+$form_tpl .= '</div>';
+
+// comments
+if($page_comments == 1) {
+    $sel_comments_yes = 'selected';
+    $sel_comments_no = '';
+} else {
+    $sel_comments_no = 'selected';
+    $sel_comments_yes = '';
+}
+
+$form_tpl .= '<div class="mb-2">';
+$form_tpl .= '<label class="form-label">'.$lang['label_comments'].'</label>';
+$form_tpl .= '<select id="select_comments" name="page_comments"  class="custom-select form-control">';
+$form_tpl .= '<option value="1" '.$sel_comments_yes.'>'.$lang['yes'].'</option>';
+$form_tpl .= '<option value="2" '.$sel_comments_no.'>'.$lang['no'].'</option>';
+$form_tpl .= '</select>';
+$form_tpl .= '</div>';
+
+// usergroups
+$arr_groups = get_all_groups();
+$arr_checked_groups = explode(",",$page_usergroup);
+
+for($i=0;$i<count($arr_groups);$i++) {
+
+    $group_id = $arr_groups[$i]['group_id'];
+    $group_name = $arr_groups[$i]['group_name'];
+
+    if(in_array("$group_name", $arr_checked_groups)) {
+        $checked = "checked";
+    } else {
+        $checked = "";
+    }
+
+    $checkbox_usergroup .= '<div class="form-check"><label>';
+    $checkbox_usergroup .= "<input id='check$group_id' class='form-check-input' type='checkbox' $checked name='set_usergroup[]' value='$group_name'>";
+    $checkbox_usergroup .= '<label class="form-check-label" for="check'.$group_id.'">'.$group_name.'</label></div>';
+}
+
+$form_tpl .= '<div class="card">';
+$form_tpl .= '<div class="card-header">';
+$form_tpl .= '<a href="#" data-bs-toggle="collapse" data-bs-target="#usergroups">'.$lang['label_choose_group'].'</a>';
+$form_tpl .= '</div>';
+$form_tpl .= '<div class="card-body p-1">';
+$form_tpl .= '<div id="usergroups" class="collapse">';
+$form_tpl .= $checkbox_usergroup;
+$form_tpl .= '</div>';
+$form_tpl .= '</div>';
+$form_tpl .= '</div>';
+
+// labels
+$cnt_labels = count($se_labels);
+$arr_checked_labels = explode(",", $page_labels);
+
+for($i=0;$i<$cnt_labels;$i++) {
+    $label_title = $se_labels[$i]['label_title'];
+    $label_id = $se_labels[$i]['label_id'];
+    $label_color = $se_labels[$i]['label_color'];
+
+    if(in_array("$label_id", $arr_checked_labels)) {
+        $checked_label = "checked";
+    } else {
+        $checked_label = "";
+    }
+
+
+    $checkbox_set_labels .= '<div class="form-check form-check-inline" style="border-bottom: 1px solid '.$label_color.'">';
+    $checkbox_set_labels .= '<input class="form-check-input" id="label'.$label_id.'" type="checkbox" '.$checked_label.' name="set_page_labels[]" value="'.$label_id.'">';
+    $checkbox_set_labels .= '<label class="form-check-label" for="label'.$label_id.'">'.$label_title.'</label>';
+    $checkbox_set_labels .= '</div>';
+
+}
+
+
+$form_tpl .= '<div class="my-2">';
+$form_tpl .= '<label>'.$lang['labels'].'</label>';
+$form_tpl .= '<div class="p-3">';
+$form_tpl .= $checkbox_set_labels;
+$form_tpl .= '</div>';
+$form_tpl .= '</div>';
+
+
 
 $form_tpl .= '</div>';
 
