@@ -88,6 +88,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
  */
 if($_REQUEST['action'] == 'list_keyword_btn') {
     $get_keywords = se_get_pages_keywords();
+    echo '<div class="scroll-container">';
     foreach($get_keywords as $k => $v) {
         $k = trim($k);
         if(str_contains($_SESSION['pages_keyword_filter'],$k)) {
@@ -96,6 +97,7 @@ if($_REQUEST['action'] == 'list_keyword_btn') {
             echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         }
     }
+    echo '</div>';
     exit;
 }
 
@@ -111,7 +113,7 @@ if($_REQUEST['action'] == 'list_page_types') {
     ]);
 
     $cnt_page_types = array_count_values($find_target_page);
-
+    echo '<div class="scroll-container">';
     foreach($se_page_types as $types) {
         $str = 'type_of_use_'.$types;
         $name = $lang[$str];
@@ -125,11 +127,12 @@ if($_REQUEST['action'] == 'list_page_types') {
         if($cnt_page_types[$types] < 1) {
             echo '<span class="badge text-bg-danger">0</span>';
         } else {
-            echo '<span class="badge text-bg-primary">' . $cnt_page_types[$types] . '</span>';
+            echo '<span class="badge text-bg-secondary">' . $cnt_page_types[$types] . '</span>';
         }
-        echo '</div>';
+        //echo '</div>';
         echo '</button>';
     }
+    echo '</div>';
     exit;
 }
 
