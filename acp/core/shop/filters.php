@@ -23,5 +23,12 @@ echo '<div class="col-md-3">';
 
 // sidebar
 
+echo '<div class="card mb-2">';
+echo '<div class="card-header">'.$lang['label_categories'].'</div>';
+echo '<div class="scroll-container p-0">';
+echo '<div id="keyList" hx-get="'.$reader_uri.'?action=list_categories" hx-trigger="load, update_filter_list from:body, updated_global_filter from:body"></div>';
+echo '</div>';
+echo '</div>';
+
 echo '</div>';
 echo '</div>';

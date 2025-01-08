@@ -272,7 +272,7 @@ if(isset($_POST['set_filter_cat'])) {
 
     $_SESSION['filter_prod_categories'] = implode(" ", $filter_prod_categories);
 
-    header( "HX-Trigger: update_products_list");
+    header( "HX-Trigger: update_products_list, update_filter_list");
 }
 
 // save features
