@@ -6,7 +6,6 @@
  * pages
  */
 
-
 if($_REQUEST['action'] == 'list_pages') {
     $getPages = $db_content->select("se_pages", ["page_id", "page_linkname", "page_title", "page_meta_description", "page_lastedit", "page_lastedit_from", "page_status"], [
         "ORDER" => ["page_lastedit" => "DESC"],
@@ -66,7 +65,7 @@ if($_REQUEST['action'] == 'list_snippets') {
  */
 
 if($_REQUEST['action'] == 'list_posts') {
-    echo 'POSTS';
+
     $get_posts = $db_posts->select("se_posts", ["post_id", "post_title", "post_teaser", "post_type", "post_lastedit"], [
         "OR" => [
             "post_type[~]" => ["m","v","i","g","f","l"]
@@ -74,9 +73,21 @@ if($_REQUEST['action'] == 'list_posts') {
         "ORDER" => ["post_lastedit" => "DESC"],
         "LIMIT" => 5
     ]);
-    echo '<pre>';
-    print_r($get_posts);
-    echo '</pre>';
+
+    echo '<table class="table table-sm">';
+    foreach($get_posts as $post) {
+        echo '<tr>';
+        echo '<td class="text-nowrap">'.se_format_datetime($post['post_lastedit']).'</td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$post['post_title'].'</h6><small>'.strip_tags($post['post_teaser']).'</small></td>';
+        echo '<td>';
+        echo '<form action="/admin/blog/edit/" method="post">';
+        echo '<button class="btn btn-default" name="post_id" value="'.$post['post_id'].'">'.$icon['edit'].'</button>';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';
 }
 
 /**
@@ -84,13 +95,27 @@ if($_REQUEST['action'] == 'list_posts') {
  */
 
 if($_REQUEST['action'] == 'list_products') {
-    echo 'PRODUCTS';
+
     $get_products = $db_posts->select("se_products", ["id", "title", "teaser", "type", "lastedit"], [
         "type[~]" => "p",
         "ORDER" => ["lastedit" => "DESC"],
         "LIMIT" => 5
     ]);
-    print_r($get_products);
+
+    echo '<table class="table table-sm">';
+    foreach($get_products as $product) {
+        echo '<tr>';
+        echo '<td class="text-nowrap">'.se_format_datetime($product['lastedit']).'</td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$product['title'].'</h6><small>'.strip_tags($product['teaser']).'</small></td>';
+        echo '<td>';
+        echo '<form action="/admin/shop/edit/" method="post">';
+        echo '<button class="btn btn-default" name="product_id" value="'.$product['id'].'">'.$icon['edit'].'</button>';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';
 }
 
 /**
@@ -98,13 +123,27 @@ if($_REQUEST['action'] == 'list_products') {
  */
 
 if($_REQUEST['action'] == 'list_events') {
-    echo 'EVENTS';
+
     $get_events = $db_posts->select("se_events", ["id", "title", "teaser", "lastedit"], [
         "id[!]" => NULL,
         "ORDER" => ["lastedit" => "DESC"],
         "LIMIT" => 5
     ]);
-    print_r($get_events);
+
+    echo '<table class="table table-sm">';
+    foreach($get_events as $event) {
+        echo '<tr>';
+        echo '<td class="text-nowrap">'.se_format_datetime($event['lastedit']).'</td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$event['title'].'</h6><small>'.strip_tags($event['teaser']).'</small></td>';
+        echo '<td>';
+        echo '<form action="/admin/events/edit/" method="post">';
+        echo '<button class="btn btn-default" name="id" value="'.$event['id'].'">'.$icon['edit'].'</button>';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';
 }
 
 /**
@@ -136,6 +175,7 @@ if($_REQUEST['action'] == 'list_user') {
 /**
  * print smarty cache size
  */
+
 if($_REQUEST['action'] == 'calculate_cache_size') {
     $cache_size = se_dir_size(SE_CONTENT.'/cache/cache/');
     $compile_size = se_dir_size(SE_CONTENT.'/cache/templates_c/');
