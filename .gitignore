@@ -100,6 +100,10 @@ _config_database.php
 !/public/assets/modules/se_invoice.pay/**/*
 /public/assets/modules/se_invoice.pay/pm_config.php
 
+/public/assets/themes/*
+!/public/assets/themes/default/*
+!/public/assets/themes/administration/*
+
 /public/assets/themes/default/.DS_Store
 /public/assets/themes/default/node_modules
 /public/assets/themes/default/node_modules/*
