@@ -363,19 +363,29 @@ $get_product_filter = json_decode($product_data['filter'],true);
 
 
 $filter_list = '';
+
+$filter_btns = '<button type="button" id="toggle-all" class="btn-toggle btn btn-sm btn-default">'.$lang['btn_all'].'</button>';
+foreach($cats as $key => $value) {
+    $filter_btns .= '<button type="button" class="btn-toggle btn btn-sm btn-default" data-target="toggle-'.$value['cat_hash'].'">'.$value['cat_name'].'</button>';
+}
+
+$filter_list .= $filter_btns;
+
 foreach($all_filters as $k => $v) {
 
     $group_categories = explode(",",$v['filter_categories']);
     $filter_cats = '';
+    $toggle_class = 'd-none ';
     foreach($cats as $key => $value) {
         if (in_array($value['cat_hash'], $group_categories)) {
             $filter_cats .= '<span class="badge badge-se text-opacity-50">'.$value['cat_name'].'</span>';
+            $toggle_class .= 'toggle-'.$value['cat_hash'].' ';
         }
     }
 
-    $flag = '<img src="/core/lang/' . $v['filter_lang'] . '/flag.png" width="15">';
+    $flag = '<img src="/assets/lang/' . $v['filter_lang'] . '/flag.png" width="15">';
 
-    $filter_list .= '<div class="card mb-1">';
+    $filter_list .= '<div class="toggle-item '.$toggle_class.' card mb-1">';
     $filter_list .= '<div class="card-header">'.$flag.' '.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
     $filter_list .= '<div class="card-body">';
     $get_filter_items = se_get_product_filter_values($v['filter_id']);

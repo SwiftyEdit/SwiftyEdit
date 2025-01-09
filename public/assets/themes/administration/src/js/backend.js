@@ -127,6 +127,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // handle toggle functionality
+    document.querySelectorAll('.btn-toggle').forEach(button => {
+
+        button.addEventListener('click', (event) => {
+            event.preventDefault(); // Verhindert das Absenden des Formulars
+
+            const targetClass = button.getAttribute('data-target');
+            const targetContainers = document.querySelectorAll(`.toggle-item.${targetClass}`);
+
+            targetContainers.forEach(container => {
+                container.classList.toggle('d-none');
+            });
+        });
+    });
+
+    const toggleAllButton = document.getElementById('toggle-all');
+    toggleAllButton.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent form submission
+
+        document.querySelectorAll('.toggle-item').forEach(container => {
+            container.classList.toggle('d-none'); // Toggle each container independently
+        });
+    });
+
 });
 
 
