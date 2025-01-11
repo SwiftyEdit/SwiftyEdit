@@ -205,7 +205,8 @@ a#dashboard {
 
 .subHeader {
   margin: -10px -15px 10px -15px;
-  padding: 10px 20px;
+  padding: 0 20px;
+  height: 45px;
   background: var(--subheader-bg);
   border-bottom: 1px solid var(--bs-widget-bg-400);
 

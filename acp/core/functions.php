@@ -1383,21 +1383,22 @@ function se_parse_docs_file($file): array {
         );
 
         $content = preg_replace_callback(
-            '/\{link=(.*?)\}/si',
+            '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" href="?get_file='.$dir.'/'.$m[1].'">'.$m[1].'</a>';
+                $link = '<a class="" hx-get="/admin/docs/read/?show_file='.$m[1].'" hx-target="#showModalContent">'.$m[1].'</a>';
                 return $link;
             },
             $content
         );
 
-
         $parsed_header = Spyc::YAMLLoadString($src_content[1]);
-        $parsed_content = $Parsedown->text($content);
+        $parsed_content = $Parsedown->text("$content");
+
         $filemtime = filemtime($file);
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
+        $parsed_content = 'FILE NOT FOUND ('.$file.')';
     }
 
     $parsed['header'] = $parsed_header;
@@ -1410,24 +1411,22 @@ function se_parse_docs_file($file): array {
 }
 
 function se_print_docs_link($file,$text=null,$type=null) {
-    global $icon,$lang;
+    global $icon, $lang;
 
     $title = $lang['label_show_help'];
 
     if($text == null OR $text == 'icon') {
         $text = $icon['question_circle'];
-    } else {
-        $text = $icon['question_circle']. ' '.$text;
     }
 
     if($type == null OR $type == 'modal') {
-        $link = '<a data-bs-toggle="modal"
-                    data-bs-target="#infoModal"
-                        hx-post="core/ajax/show-docs-modal.php"
-                        hx-vals=\'{"csrf_token": "'.$_SESSION['token'].'","file":"'.$file.'"}\'
-                        hx-target="#infoModalContent"
+        $link = '<a href="#" data-bs-toggle="modal"
+                    data-bs-target="#helpModal"
+                        hx-get="/admin/docs/read/"
+                        hx-vals=\'{"file":"'.$file.'"}\'
+                        hx-target="#helpModal"
                         hx-trigger="click"
-                        class="show-doc" title="'.$title.'">'.$text.'</a>';
+                        class="show-doc link-success" title="'.$title.'">'.$text.'</a>';
         return $link;
     }
 
