@@ -405,14 +405,6 @@ if (isset($set_acptheme)) {
     </button>
 </div>
 
-<div id="helpModal" class="modal fade"
-     style="display: none"
-     aria-hidden="true" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content"></div>
-    </div>
-</div>
-
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -487,26 +479,23 @@ if (isset($set_acptheme)) {
     </div>
 </div>
 
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">Docs</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="infoModalContent">
-                    Loading ...
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
+<!-- modal for documentation -->
+<div id="helpModal" class="modal fade"
+     style="display: none"
+     aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
     </div>
 </div>
 
-
+<!-- modal for page infos -->
+<div id="infoModal" class="modal fade"
+     style="display: none"
+     aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
 
 
 <script type="text/javascript">
