@@ -1,5 +1,4 @@
 <?php
-
 $reader_uri = '/admin/dashboard/read/';
 
 $tpl_file = file_get_contents('../acp/templates/dashboard_top.tpl');
@@ -40,6 +39,9 @@ $tpl_file = str_replace('{btn_events_new}', $btn_events_new, $tpl_file);
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['speedometer'].' '.$lang['nav_btn_dashboard'];
+echo '<span class="ms-auto">';
+echo se_print_docs_link('dashboard.md');
+echo '</span>';
 echo '</div>';
 
 echo $tpl_file;

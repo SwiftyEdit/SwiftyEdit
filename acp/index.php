@@ -211,7 +211,7 @@ if (!isset($_SESSION['lang'])) {
 
 if (isset($_GET['set_lang'])) {
     $set_lang = sanitizeUserInputs($_GET['set_lang']);
-    if (is_dir("../core/lang/$set_lang/")) {
+    if (is_dir("../public/assets/lang/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
@@ -368,15 +368,7 @@ if (isset($set_acptheme)) {
 
 
     <div id="container">
-
-        <div class="row">
-            <div class="col">
-                <?php include '../acp/core/' . $maininc; ?>
-            </div>
-            <div id="collapseSupport">
-                <div hx-get="/admin/support/read/?show=index" hx-trigger="load"></div>
-            </div>
-        </div>
+        <?php include '../acp/core/' . $maininc; ?>
     </div>
 
     <div id="page-sidebar">
@@ -412,6 +404,15 @@ if (isset($set_acptheme)) {
             data-bs-target="#uploadModal"><?php echo $icon['upload']; ?> Upload
     </button>
 </div>
+
+<div id="helpModal" class="modal fade"
+     style="display: none"
+     aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

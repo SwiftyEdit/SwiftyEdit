@@ -56,11 +56,6 @@ echo '<li><a class="dropdown-item" href="/index.php?goto=logout">'.$lang['button
 echo '</ul>';
 echo '</div>';
 
-
-echo '<a class="btn btn-default" href="#" id="toggleSupport">';
-echo $icon['question'];
-echo '</a>';
-
 echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()">
 <span id="toggle-dark"><i class="bi bi-moon"></i></span>
 <span id="toggle-light"><i class="bi bi-sun"></i></span>
