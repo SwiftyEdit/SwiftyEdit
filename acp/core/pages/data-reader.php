@@ -136,6 +136,10 @@ if($_REQUEST['action'] == 'list_page_types') {
     exit;
 }
 
+if(isset($_GET['page_info'])) {
+    include 'pages-info.php';
+}
+
 /**
  * @param $data array page contents
  * @param $type string sorted|single
@@ -278,8 +282,7 @@ function se_list_pages($data,$type="sorted") {
             $duplicate_button = '';
         }
 
-        //$info_button = '<a class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#infoModal" data-id="'.$page_id.'" data-token="'.$_SESSION['token'].'" title="info">'.$icon['info_circle'].'</a>';
-        $info_button = '<a class="btn btn-sm btn-default" href="#">'.$icon['info_circle'].'</a>';
+        $info_button = '<a class="btn btn-sm btn-default" hx-get="/admin/pages/read/" hx-vals=\'{"page_info":"'.$page_id.'"}\' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">'.$icon['info_circle'].'</a>';
         $arr_checked_admins = explode(",",$page_authorized_users);
         if(in_array($_SESSION['user_nick'], $arr_checked_admins)) {
             $edit_button = $btn_edit_tpl;
