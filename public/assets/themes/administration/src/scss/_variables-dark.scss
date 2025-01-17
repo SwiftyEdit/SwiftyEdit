@@ -68,7 +68,7 @@ $link-hover-color-dark:             lighten($link-color-dark, 10%) !default;
 $code-color-dark:                   lighten($code-color, 20%) !default;
 
 
-$btn_se_background_dark: #222;
+$btn_se_background_dark: #333333;
 $btn_se_background_active_dark: $primary-dark;
 $btn_se_background_disabled_dark: desaturate($primary-dark,15);
 $btn_se_background_hover_dark: darken($primary-dark,15%);
