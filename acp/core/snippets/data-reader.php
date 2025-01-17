@@ -21,17 +21,18 @@ if($_REQUEST['action'] == 'list_active_searches') {
         echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
         echo '</div><hr>';
     }
-
 }
 
 // list the snippets
 if($_REQUEST['action'] == 'list_snippets') {
 
+    $se_labels = se_get_labels();
+
     // defaults
     $order_by = 'snippet_lastedit';
     $order_direction = 'DESC';
     $limit_start = $_SESSION['pagination_snippets_page'] ?? 0;
-    $nbr_show_items = 10;
+    $nbr_show_items = (int) ($_SESSION['snippets_per_page'] ?? 10);
 
     $match_str = $_SESSION['snippets_text_filter'] ?? '';
     $keyword_str = $_SESSION['snippets_keyword_filter'] ?? '';
@@ -100,38 +101,104 @@ if($_REQUEST['action'] == 'list_snippets') {
 
     $nbr_pages = ceil($snippet_data_cnt/$nbr_show_items);
 
-
     echo '<div class="card p-3">';
 
+    echo '<div class="d-flex justify-content-end">';
+    echo '<div>';
     echo se_print_pagination('/admin/snippets/write/',$nbr_pages,$_SESSION['pagination_snippets_page']);
-
+    echo '</div>';
+    echo '<div class="ps-3">';
+    echo '<input type="number" class="form-control" hx-post="/admin/snippets/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
+    echo '</div>';
+    echo '</div>';
     echo '<table class="table table-sm table-striped table-hover">';
 
     foreach($snippets_data as $snippet) {
 
         $snippet_id = $snippet['snippet_id'];
         $snippet_content = strip_tags($snippet['snippet_content']);
+        $snippet_title = strip_tags($snippet['snippet_title']);
+        if($snippet_title == '') {
+            $snippet_title = '<em class="opacity-50">'.$lang['msg_error_no_title'].'</em>';
+        }
+
+        $snippet_url = $snippet['snippet_permalink'];
+        $snippet_url_title = $snippet['snippet_permalink_title'];
+        $snippet_url_name = $snippet['snippet_permalink_name'];
+        $snippet_url_classes = $snippet['snippet_permalink_classes'];
+
+        // labels
+        $get_snippet_labels = explode(',',$snippet['snippet_labels']);
+        $label = '';
+        if($snippet['snippet_labels'] != '') {
+            foreach($get_snippet_labels as $snippet_label) {
+
+                foreach($se_labels as $l) {
+                    if($snippet_label == $l['label_id']) {
+                        $label_color = $l['label_color'];
+                        $label_title = $l['label_title'];
+                    }
+                }
+
+                $label .= '<span class="label-dot" style="background-color:'.$label_color.';" title="'.$label_title.'"></span>';
+            }
+        }
+
+        // classes
+        $snippet_classes = explode(' ',$snippet['snippet_classes']);
+        $class_badge = '';
+        foreach($snippet_classes as $class) {
+            $class_badge .= '<span class="badge badge-secondary">'.$class.'</span> ';
+        }
 
         if(strlen($snippet_content) > 150) {
             $snippet_content = substr($snippet_content, 0, 100) . ' <small><i>(...)</i></small>';
         }
 
+        // images
+        $snippet_images = explode('<->',$snippet['snippet_images']);
+
         $edit_button  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
-        $edit_button .= '<button class="btn btn-default" name="snippet_id" value="'.$snippet_id.'">'.$icon['edit'].'</button>';
+        $edit_button .= '<button class="btn btn-sm btn-default text-success" name="snippet_id" value="'.$snippet_id.'">'.$icon['edit'].'</button>';
         $edit_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $edit_button .=  '</form>';
 
         $duplicate_button  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
-        $duplicate_button .= '<button class="btn btn-default" name="duplicate_id" value="'.$snippet_id.'">'.$icon['copy'].'</button>';
+        $duplicate_button .= '<button class="btn btn-sm btn-default" name="duplicate_id" value="'.$snippet_id.'">'.$icon['copy'].'</button>';
         $duplicate_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $duplicate_button .=  '</form>';
 
+        $snippet_lang_thumb = '<img src="/assets/lang/'.$snippet['snippet_lang'].'/flag.png" width="15" title="'.$snippet['snippet_lang'].'" alt="'.$snippet['snippet_lang'].'">';
+
         echo '<tr>';
-        echo '<td>'.$snippet['snippet_lang'].'</td>';
-        echo '<td><kbd>'.$snippet['snippet_name'].'</kbd></td>';
-        echo '<td>'.$snippet['snippet_title'].'<br><small>'.$snippet_content.'</small></td>';
-        echo '<td>'.se_format_datetime($snippet['snippet_lastedit']).'</td>';
-        echo '<td>'.$edit_button.' '.$duplicate_button.'</td>';
+        echo '<td>'.$snippet_lang_thumb.'</td>';
+        echo '<td><span class="badge text-bg-secondary">'.$snippet['snippet_name'].'</span></td>';
+        echo '<td><h6 class="mb-0">'.$snippet_title.'</h6><small>'.$snippet_content.'</small></td>';
+        echo '<td class="text-nowrap">'.se_format_datetime($snippet['snippet_lastedit']).'</td>';
+        echo '<td>'.$class_badge.'</td>';
+        echo '<td>'.$label.'</td>';
+        echo '<td>';
+        if(count($snippet_images) > 1) {
+            $x=0;
+            foreach($snippet_images as $img) {
+                $img = str_replace('../content/','/',$img);
+                if($img != '') {
+                    $x++;
+                    echo '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-title="'.$img.'" data-bs-content="<img src=\''.$img.'\'>">'.$icon['images'].'</a> ';
+                }
+                if($x>2) {
+                    echo '<small>(...)</small>';
+                    break;
+                }
+            }
+        }
+        echo '</td>';
+        echo '<td>';
+        if($snippet_url != '') {
+            echo '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" title="'.$snippet_url_title.'" data-bs-content="URL: '.$snippet_url.'<br>Name: '.$snippet_url_name.'<br>'.$lang['label_classes'].': '.$snippet_url_classes.'">'.$icon['link'].'</a>';
+        }
+        echo '</td>';
+        echo '<td class="text-nowrap">'.$edit_button.' '.$duplicate_button.'</td>';
         echo '</tr>';
     }
 
