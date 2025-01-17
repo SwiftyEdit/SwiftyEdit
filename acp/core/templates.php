@@ -151,9 +151,9 @@ function tpl_form_input_textarea(array $data) {
     $editor_classes = '';
     if($data['mode'] == 'wysiwyg') {
         $editor_switch = '<div class="btn-group float-end pb-1" role="group">';
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE1"> WYSIWYG</label>';
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE2"> Text</label>';
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE3"> Code</label>';
+        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE1">WYSIWYG</label>';
+        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE2">Text</label>';
+        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE3">Code</label>';
         $editor_switch .= '</div>';
         $editor_classes = 'mceEditor textEditor switchEditor';
     }
