@@ -144,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const toggleAllButton = document.getElementById('toggle-all');
+
+    if (toggleAllButton) {
     toggleAllButton.addEventListener('click', (event) => {
         event.preventDefault(); // Prevent form submission
 
@@ -151,8 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
             container.classList.toggle('d-none'); // Toggle each container independently
         });
     });
+    }
 
 });
+
 
 
 
@@ -162,7 +166,7 @@ $(function() {
     observeContainersForDraggableDivs('.sortable_target');
 
     const uppy = new Uppy({
-        debug: true,
+        debug: false,
         autoProceed: false,
     })
 
@@ -179,8 +183,8 @@ $(function() {
     })
 
 
-    //$('[data-bs-toggle="popover"]').popover();
-    //$('[data-bs-toggle="tooltip"]').tooltip();
+    $('[data-bs-toggle="popover"]').popover();
+    $('[data-bs-toggle="tooltip"]').tooltip();
 
     setTimeout(function() {
         $(".alert-auto-close").slideUp('slow');
@@ -205,34 +209,7 @@ $(function() {
     ace.config.set('modePath', '/assets/themes/administartion/dist/ace');
     ace.config.set('themePath', '/assets/themes/administartion/dist/ace');
 
-    /* css and html editor for page header */
-    if($('#CSSeditor').length != 0) {
-        var CSSeditor = ace.edit("CSSeditor");
-        var CSStextarea = $('textarea[class*=aceEditor_css]').hide();
-        CSSeditor.$blockScrolling = Infinity;
-        CSSeditor.getSession().setValue(CSStextarea.val());
-        CSSeditor.setTheme("ace/theme/" + ace_theme);
-        CSSeditor.getSession().setMode("ace/mode/css");
-        CSSeditor.getSession().setUseWorker(false);
-        CSSeditor.setShowPrintMargin(false);
-        CSSeditor.getSession().on('change', function(){
-            CSStextarea.val(CSSeditor.getSession().getValue());
-        });
-    }
 
-    if($('#HTMLeditor').length != 0) {
-        var HTMLeditor = ace.edit("HTMLeditor");
-        var HTMLtextarea = $('textarea[class*=aceEditor_html]').hide();
-        HTMLeditor.$blockScrolling = Infinity;
-        HTMLeditor.getSession().setValue(HTMLtextarea.val());
-        HTMLeditor.setTheme('ace/theme/'+ace_theme);
-        HTMLeditor.getSession().setMode({ path:'ace/mode/html', inline:true });
-        HTMLeditor.getSession().setUseWorker(false);
-        HTMLeditor.setShowPrintMargin(false);
-        HTMLeditor.getSession().on('change', function(){
-            HTMLtextarea.val(HTMLeditor.getSession().getValue());
-        });
-    }
 
     /* ace editor instead of <pre>, readonly */
     $('textarea[data-editor]').each(function () {
