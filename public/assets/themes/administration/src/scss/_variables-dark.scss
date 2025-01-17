@@ -62,7 +62,7 @@ $body-tertiary-bg-dark:             mix($gray-800, $gray-900, 50%) !default;
 $body-emphasis-color-dark:          $white !default;
 $border-color-dark:                 $widget_border_color_dark !default;
 $border-color-translucent-dark:     rgba($gray-600, .05) !default;
-$headings-color-dark:               $primary-dark !default;
+$headings-color-dark:               lighten($primary-dark,10%) !default;
 $link-color-dark:                   lighten($primary-dark, 20%) !default;
 $link-hover-color-dark:             lighten($link-color-dark, 10%) !default;
 $code-color-dark:                   lighten($code-color, 20%) !default;
