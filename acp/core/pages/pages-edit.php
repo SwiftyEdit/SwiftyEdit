@@ -229,6 +229,8 @@ foreach($get_all_languages as $langs) {
     $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
 }
 
+$page_language = $page_language ?? $languagePack;
+
 $input_select_language = [
     "input_name" => "page_language",
     "input_value" => $page_language,
@@ -254,9 +256,12 @@ $input_select_page_categories_mode = [
     "type" => "select"
 ];
 
+echo '<div class="subHeader d-flex align-items-center">';
+echo $icon['file'].' '.$lang['nav_btn_pages'];
+echo '<a href="/admin/pages/" class="btn btn-default ms-auto">'.$icon['arrow_left_short'].' '.$lang['nav_btn_overview'].'</a>';
+echo '</div>';
 
-
-$form_tpl = '<div id="formResponse" class="alert alert-info"></div>';
+$form_tpl = '<div id="formResponse"></div>';
 
 $form_tpl .= '<form>';
 
@@ -717,14 +722,7 @@ $form_tpl .= '<div class="col-md-3">';
 // sidebar
 
 $form_tpl .= '<div class="card p-3">';
-$form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 
-if($form_mode != 'new') {
-    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
-    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-50" name="preview_page" value="'.$get_page_id.'">'.$lang['btn_preview'].'</button>';
-
-}
 
 $form_tpl .= se_print_form_input($input_select_page_status);
 $form_tpl .= se_print_form_input($input_select_language);
@@ -851,7 +849,14 @@ $form_tpl .= $checkbox_set_labels;
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
+$form_tpl .= '<div class="d-flex justify-content">';
+$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+if($form_mode != 'new') {
+    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
+}
+$form_tpl .= '</div>';
 
+$form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 
 $form_tpl .= '</div>';
 

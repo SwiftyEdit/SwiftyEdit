@@ -2,6 +2,8 @@
 $writer_uri = '/admin/pages/edit/';
 $duplicate_uri = '/admin/pages/duplicate/';
 
+$se_labels = se_get_labels();
+
 $global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
 $global_filter_status = json_decode($_SESSION['global_filter_status'],true);
 $global_filter_label = json_decode($_SESSION['global_filter_label'],true);
@@ -88,13 +90,15 @@ if($_REQUEST['action'] == 'list_active_searches') {
  */
 if($_REQUEST['action'] == 'list_keyword_btn') {
     $get_keywords = se_get_pages_keywords();
+    arsort($get_keywords);
+    $vals = ['csrf_token' => $_SESSION['token']];
     echo '<div class="scroll-container">';
     foreach($get_keywords as $k => $v) {
         $k = trim($k);
         if(str_contains($_SESSION['pages_keyword_filter'],$k)) {
-            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         } else {
-            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/pages/write/" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         }
     }
     echo '</div>';
@@ -121,15 +125,14 @@ if($_REQUEST['action'] == 'list_page_types') {
         if(str_contains($_SESSION['checked_page_type_string'],"$types")) {
             $classes .= ' active';
         }
-
-        echo '<button class=" '.$classes.'" name="filter_type" value="'.$types.'" hx-post="/admin/pages/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">';
+        $vals = ['csrf_token' => $_SESSION['token']];
+        echo '<button class=" '.$classes.'" name="filter_type" value="'.$types.'" hx-post="/admin/pages/write/" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>';
         echo '<div class="me-auto">'.$name.'</div>';
         if($cnt_page_types[$types] < 1) {
             echo '<span class="badge text-bg-danger">0</span>';
         } else {
             echo '<span class="badge text-bg-secondary">' . $cnt_page_types[$types] . '</span>';
         }
-        //echo '</div>';
         echo '</button>';
     }
     echo '</div>';
@@ -262,13 +265,13 @@ function se_list_pages($data,$type="sorted") {
 
         /* check for display edit button */
 
-        $btn_edit_tpl  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
-        $btn_edit_tpl .= '<button class="btn btn-default" name="page_id" value="'.$page_id.'">'.$icon['edit'].'</button>';
+        $btn_edit_tpl  = '<form action="'.$writer_uri.'" method="post" class="d-inline flex-fill me-1">';
+        $btn_edit_tpl .= '<button class="btn btn-sm btn-default text-success w-100" name="page_id" value="'.$page_id.'">'.$icon['edit'].'</button>';
         $btn_edit_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $btn_edit_tpl .=  '</form>';
 
-        $btn_duplicate_tpl  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
-        $btn_duplicate_tpl .= '<button class="btn btn-default" name="duplicate_id" value="'.$page_id.'">'.$icon['copy'].'</button>';
+        $btn_duplicate_tpl  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline flex-fill me-1">';
+        $btn_duplicate_tpl .= '<button class="btn btn-sm btn-default w-100" name="duplicate_id" value="'.$page_id.'">'.$icon['copy'].'</button>';
         $btn_duplicate_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $btn_duplicate_tpl .=  '</form>';
 
@@ -282,7 +285,7 @@ function se_list_pages($data,$type="sorted") {
             $duplicate_button = '';
         }
 
-        $info_button = '<a class="btn btn-sm btn-default" hx-get="/admin/pages/read/" hx-vals=\'{"page_info":"'.$page_id.'"}\' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">'.$icon['info_circle'].'</a>';
+        $info_button = '<a class="btn btn-sm btn-default flex-fill" hx-get="/admin/pages/read/" hx-vals=\'{"page_info":"'.$page_id.'"}\' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">'.$icon['info_circle'].'</a>';
         $arr_checked_admins = explode(",",$page_authorized_users);
         if(in_array($_SESSION['user_nick'], $arr_checked_admins)) {
             $edit_button = $btn_edit_tpl;
@@ -290,7 +293,7 @@ function se_list_pages($data,$type="sorted") {
         }
 
         $label = '';
-        if($data[$i]['page_labels'] != '') {
+        if(is_array($page_labels)) {
             foreach($page_labels as $page_label) {
 
                 foreach($se_labels as $l) {
@@ -303,7 +306,7 @@ function se_list_pages($data,$type="sorted") {
             }
         }
 
-        $frontend_link = "../../$page_permalink";
+        $frontend_link = "/$page_permalink";
 
         $show_mod = '';
         if($page_modul != '') {

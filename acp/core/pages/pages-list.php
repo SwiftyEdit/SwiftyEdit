@@ -18,7 +18,7 @@ echo '<div class="row">';
 echo '<div class="col-md-5">';
 
 echo '<div class="card">';
-echo '<div class="card-header">Sorted</div>';
+echo '<div class="card-header">'.$lang['nav_btn_structured_pages'].'</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div id="getPagesSorted" class="" hx-get="'.$reader_uri.'?action=list_pages_sorted" hx-trigger="load, changed, update_pages_list from:body, updated_global_filter from:body">';
@@ -32,7 +32,7 @@ echo '</div>';
 echo '<div class="col-md-4">';
 
 echo '<div class="card">';
-echo '<div class="card-header">Single</div>';
+echo '<div class="card-header">'.$lang['nav_btn_single_pages'].'</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 echo '<div id="getPagesSingle" class="" hx-get="'.$reader_uri.'?action=list_pages_single" hx-trigger="load, changed, update_pages_list from:body, updated_global_filter from:body">';
@@ -47,7 +47,7 @@ echo '<div class="col-md-3">';
 // sidebar
 
 echo '<div class="card">';
-echo '<div class="card-header">FILTER</div>';
+echo '<div class="card-header">'.$lang['filter'].'</div>';
 echo '<div class="card-body">';
 
 
@@ -85,8 +85,8 @@ echo '</div>';
 echo '<div class="col-md-4">';
 echo '<label class="form-label">&nbsp;</label>';
 echo '<div class="btn-group d-flex">';
-echo '<button name="sorting_single_pages_asc" value="asc" title="'.$lang['btn_sort_asc'].'" class="btn btn-sm btn-default w-100 '.$sel_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
-echo '<button name="sorting_single_pages_desc" value="desc" title="'.$lang['btn_sort_desc'].'" class="btn btn-sm btn-default w-100 '.$sel_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
+echo '<button name="sorting_single_pages_asc" value="asc" title="'.$lang['btn_sort_asc'].'" class="btn btn-sm btn-default w-100">'.$icon['arrow_up'].'</button> ';
+echo '<button name="sorting_single_pages_desc" value="desc" title="'.$lang['btn_sort_desc'].'" class="btn btn-sm btn-default w-100">'.$icon['arrow_down'].'</button>';
 echo '</div>';
 echo '</div>';
 echo '</div>';

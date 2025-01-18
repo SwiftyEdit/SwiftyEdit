@@ -338,10 +338,11 @@ function se_get_pages_keywords() {
     ]);
 
     $get_keywords = array_filter( $get_keywords );
-
     foreach($get_keywords as $keys) {
-        $keys_string .= $keys.',';
+        $keys_string .= trim($keys).',';
     }
+    $keys_string = str_replace(', ', ',', $keys_string);
+    $keys_string = str_replace(' ,', ',', $keys_string);
     $keys_array = explode(",",$keys_string);
     $keys_array = array_filter( $keys_array );
     $count_keywords = array_count_values($keys_array);

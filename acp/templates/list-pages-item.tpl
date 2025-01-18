@@ -33,7 +33,7 @@
 					{item-mod}
 				</p>
 				
-				<div class="controls-container clearfix">
+				<div class="controls-container d-flex justify-content">
 
 					{edit-btn}
 					{duplicate-btn}
