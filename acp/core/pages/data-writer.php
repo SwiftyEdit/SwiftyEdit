@@ -11,7 +11,6 @@ if(isset($_POST['pages_text_filter'])) {
 
 /* remove keyword from filter list */
 if(isset($_POST['rmkey'])) {
-    print_r($_POST);
     $all_filter = explode(" ", $_SESSION['pages_text_filter']);
     $_SESSION['pages_text_filter'] = '';
     foreach($all_filter as $f) {
@@ -23,20 +22,22 @@ if(isset($_POST['rmkey'])) {
 }
 
 if(isset($_POST['add_keyword'])) {
-    $_SESSION['pages_keyword_filter'] = $_SESSION['pages_keyword_filter'] . ' ' . sanitizeUserInputs($_POST['add_keyword']);
+    $_SESSION['pages_keyword_filter'] = $_SESSION['pages_keyword_filter'] . ',' . sanitizeUserInputs($_POST['add_keyword']);
     header( "HX-Trigger: update_pages_list");
+    exit;
 }
 
 if(isset($_POST['remove_keyword'])) {
-
-    $all_keywords_filter = explode(" ", $_SESSION['pages_keyword_filter']);
+    $all_keywords_filter = explode(",", $_SESSION['pages_keyword_filter']);
     $_SESSION['pages_keyword_filter'] = '';
+    echo $_POST['remove_keyword'];
     foreach($all_keywords_filter as $f) {
         if($_POST['remove_keyword'] == "$f") { continue; }
         if($f == "") { continue; }
-        $_SESSION['pages_keyword_filter'] .= "$f ";
+        $_SESSION['pages_keyword_filter'] .= $f.',';
     }
     header( "HX-Trigger: update_pages_list");
+    exit;
 }
 
 if(isset($_POST['filter_type'])) {
@@ -128,19 +129,6 @@ if(isset($_POST['save_page'])) {
     if($_POST['save_page'] == 'new') {
         $new_page_id = se_save_page($_POST);
         se_snapshot_page($new_page_id);
-    }
-
-    // preview
-    if(is_numeric($_POST['preview_page'])) {
-        se_save_preview_page($_POST);
-        /* delete older entries from se_pages_cache */
-        $interval = time() - 86400; // now - 24h
-        $db_content->delete("se_pages_cache", [
-            "AND" => [
-                "page_cache_type" => "preview",
-                "page_lastedit[<]" => $interval
-            ]
-        ]);
     }
 
     // cache files
