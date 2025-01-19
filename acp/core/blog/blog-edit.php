@@ -5,11 +5,16 @@ $reader_uri = '/admin/blog/read/';
 
 if(is_numeric($_POST['post_id'])) {
     $post_id = (int) $_POST['post_id'];
-    $modus = 'update';
+    $mode = 'update';
     $post_data = se_get_post_data($post_id);
 } else {
     $mode = 'new';
 }
+
+echo '<div class="subHeader d-flex align-items-center">';
+echo $icon['files'].' '.$lang['nav_btn_blog'];
+echo '<div class="d-flex ms-auto">'.$mode.'</div>';
+echo '</div>';
 
 if($mode == 'new') {
     echo '<div class="card mb-3">';
