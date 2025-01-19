@@ -1,6 +1,6 @@
 <?php
 
-
+// search
 if($_REQUEST['action'] == 'list_active_searches') {
     if(isset($_SESSION['posts_text_filter']) AND $_SESSION['posts_text_filter'] != "") {
         unset($all_filter);
@@ -18,6 +18,64 @@ if($_REQUEST['action'] == 'list_active_searches') {
         echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
         echo '</div><hr>';
     }
+}
+
+// list categories in sidebar
+if($_REQUEST['action'] == 'list_categories') {
+
+    $get_categories = se_get_categories();
+    echo '<div class="list-group list-group-flush">';
+    foreach($get_categories as $c) {
+
+        $cat_lang_thumb = '<img src="/assets/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
+        $active = '';
+        if(str_contains($_SESSION['filter_posts_categories'],$c['cat_hash'])) {
+            $active = 'active';
+        }
+
+        echo '<button 
+                hx-post="/admin/blog/write/"
+                hx-swap="none"
+                hx-include="[name=\'csrf_token\']"
+                name="set_filter_cat"
+                value="'.$c['cat_hash'].'"
+                class="list-group-item list-group-item-action '.$active.'">';
+        echo ''.$c['cat_name'].'';
+        echo '<span class="float-end">'.$cat_lang_thumb.'</span>';
+        echo '</button>';
+    }
+}
+
+// list post types in sidebar
+if($_REQUEST['action'] == 'list_post_types') {
+
+    $post_types = [
+        'm' => $lang['post_type_message'],
+        'i' => $lang['post_type_image'],
+        'g' => $lang['post_type_gallery'],
+        'v' => $lang['post_type_video'],
+        'l' => $lang['post_type_link'],
+        'f' => $lang['post_type_file']
+    ];
+
+    echo '<div class="list-group list-group-flush">';
+    foreach($post_types as $k => $v) {
+
+        $active = '';
+        if(str_contains($_SESSION['filter_posts_types'],$k)) {
+            $active = 'active';
+        }
+
+        echo '<button 
+                hx-post="/admin/blog/write/"
+                hx-swap="none"
+                hx-include="[name=\'csrf_token\']"
+                name="set_filter_post_types"
+                value="'.$k.'"
+                class="list-group-item list-group-item-action '.$active.'">'.$v.'</button>';
+    }
+    echo '</div>';
+
 }
 
 
@@ -60,8 +118,26 @@ if($_REQUEST['action'] == 'list_posts') {
         }
     }
 
+    $filter_by_category = array();
+    if($_SESSION['filter_posts_categories'] != '') {
+        $cat_filter = explode(" ",$_SESSION['filter_posts_categories']);
+        $cat_filter = array_filter($cat_filter);
+        $filter_by_category = [
+            "post_categories[~]" => $cat_filter
+        ];
+    }
+
+    $filter_by_type = array();
+    if($_SESSION['filter_posts_types'] != '') {
+        $type_filter = explode(",",$_SESSION['filter_posts_types']);
+        $type_filter = array_filter($type_filter);
+        $filter_by_type = [
+            "post_type[~]" => $type_filter
+        ];
+    }
+
     $db_where = [
-        "AND" => $filter_base+$filter_by_str
+        "AND" => $filter_base+$filter_by_str+$filter_by_category+$filter_by_type
     ];
 
     $db_order = [
@@ -206,7 +282,7 @@ if($_REQUEST['action'] == 'list_posts') {
             $show_type = '<span class="'.$type_class.'">'.$lang['post_type_file'].'</span>';
         }
 
-        $delete_btn = '<button name="delete_post" value="'.$post['post_id'].'" class="btn btn-default text-danger" 
+        $delete_btn = '<button name="delete_post" value="'.$post['post_id'].'" class="btn btn-sm btn-default text-danger" 
                             hx-post="/admin/blog/write/"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="beforeend"

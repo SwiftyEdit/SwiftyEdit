@@ -32,6 +32,43 @@ if(isset($_POST['rmkey'])) {
     header( "HX-Trigger: update_posts_list");
 }
 
+// filter by category
+if(isset($_POST['set_filter_cat'])) {
+
+    $set_filter_cat = sanitizeUserInputs($_POST['set_filter_cat']);
+
+    $filter_posts_categories = explode(" ", $_SESSION['filter_posts_categories']);
+    $filter_posts_categories = array_unique($filter_posts_categories);
+
+    if(in_array($set_filter_cat, $filter_posts_categories)) {
+        // remove this category
+        $filter_posts_categories = array_diff($filter_posts_categories, array($set_filter_cat));
+    } else {
+        // add this category
+        $filter_posts_categories[] = $set_filter_cat;
+    }
+
+    $_SESSION['filter_posts_categories'] = implode(" ", $filter_posts_categories);
+
+    header( "HX-Trigger: update_posts_list");
+}
+
+// filter by type
+if(isset($_POST['set_filter_post_types'])) {
+    $set_filter_type = sanitizeUserInputs($_POST['set_filter_post_types']);
+    $filter_posts_types = explode(",", $_SESSION['filter_posts_types']);
+    $filter_posts_types = array_unique($filter_posts_types);
+    if(in_array($set_filter_type, $filter_posts_types)) {
+        // remove this type
+        $filter_posts_types = array_diff($filter_posts_types, array($set_filter_type));
+    } else {
+        // add this type
+        $filter_posts_types[] = $set_filter_type;
+    }
+    $_SESSION['filter_posts_types'] = implode(",", $filter_posts_types);
+    header( "HX-Trigger: update_posts_list");
+}
+
 // change priority
 if(isset($_POST['post_priority'])) {
 
