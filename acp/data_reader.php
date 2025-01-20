@@ -19,6 +19,7 @@ $reader = match (true) {
     str_contains($_REQUEST['query'], 'categories/') => 'core/categories/data-reader.php',
     str_contains($_REQUEST['query'], 'dashboard/') => 'core/dashboard/data-reader.php',
     str_contains($_REQUEST['query'], 'uploads/') => 'core/uploads/data-reader.php',
+    str_contains($_REQUEST['query'], 'update/') => 'core/update/data-reader.php',
     str_contains($_REQUEST['query'], 'counter/') => 'core/xhr/counters.php',
     str_contains($_REQUEST['query'], 'widgets/') => 'core/xhr/widgets.php',
     str_contains($_REQUEST['query'], 'docs/') => 'core/xhr/docs.php',

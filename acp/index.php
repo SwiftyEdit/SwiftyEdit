@@ -41,6 +41,7 @@ require '../vendor/autoload.php';
 use Medoo\Medoo;
 
 require '../acp/core/icons.php';
+require '../acp/core/update/versions.php';
 
 require '../config.php';
 if (is_file(SE_CONTENT . '/config.php')) {
