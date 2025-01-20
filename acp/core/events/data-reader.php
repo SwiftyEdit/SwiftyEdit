@@ -199,7 +199,7 @@ if($_REQUEST['action'] == 'list_events') {
         }
         $show_events_date .= '</div>';
 
-        $delete_btn = '<button name="delete_event" value="'.$post['id'].'" class="btn btn-default text-danger" 
+        $delete_btn = '<button name="delete_event" value="'.$post['id'].'" class="btn btn-sm btn-default text-danger" 
                             hx-post="/admin/events/write/"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="beforeend"
