@@ -4,7 +4,8 @@ $se_sections = [
     "pages","snippets","shortcodes",
     "addons","users","categories",
     "settings","shop","events",
-    "blog","inbox","uploads", "dashboard"
+    "blog","inbox","uploads", "dashboard",
+    "update"
 ];
 
 $se_section = 'dashboard';

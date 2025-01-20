@@ -124,6 +124,11 @@ echo '</ul>';
 echo '</div>';
 echo '</li>';
 
+echo '<li class="sidebar-nav-item">';
+echo '<a class="sidebar-nav-link '.($se_section == "update" ? 'sidebar-nav-active' :'').'" href="/admin/update/">';
+echo $icon['arrow_clockwise'];
+echo '<span>'.$lang['update'].'</span></a></li>';
+
 echo '</ul>';
 
 
