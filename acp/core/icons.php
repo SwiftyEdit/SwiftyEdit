@@ -6,6 +6,7 @@
 
 $icon = [
     "activity" => '<i class="bi bi-activity"></i>',
+    "arrow_clockwise" => '<i class="bi bi-arrow-clockwise"></i>',
     "arrow_down" => '<i class="bi bi-arrow-down"></i>',
     "arrow_left" => '<i class="bi bi-arrow-left"></i>',
     "arrow_left_short" => '<i class="bi bi-arrow-left-short"></i>',
