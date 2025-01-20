@@ -1,3 +1,7 @@
+# htaccess template
+# for public directory
+######################
+
 RewriteEngine On
 RewriteBase /
 
