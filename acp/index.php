@@ -164,9 +164,9 @@ $se_path = explode("/", $query);
 require '../acp/core/switch.php';
 
 
-$all_mods = get_all_modules();
+$all_mods = se_get_all_addons();
 $cnt_mods = count($all_mods);
-$all_plugins = get_all_plugins();
+$all_plugins = se_get_all_addons();
 $se_labels = se_get_labels();
 $cnt_labels = count($se_labels);
 $all_langs = get_all_languages();
