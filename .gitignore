@@ -81,12 +81,10 @@ acp/theme/node_modules/**/*
 acp/theme/dist/*
 _config_database.php
 
-/plugins/*
+/plugins/*/*
 !/plugins/se_cash-pay/*
-!/plugins/se_cash-pay/**/*
 /plugins/se_cash-pay/pm_config.php
 !/plugins/se_invoice-pay/*
-!/plugins/se_invoice-pay/**/*
 /plugins/se_invoice-pay/pm_config.php
 
 /public/assets/config.php
