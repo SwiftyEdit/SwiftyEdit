@@ -33,6 +33,22 @@ function get_all_plugins() {
 
 
 
+function se_get_all_addons() {
+
+    $addons_root = SE_ROOT."/plugins/";
+    $scanned_directory = array_diff(scandir($addons_root), array('..', '.','.DS_Store'));
+
+    foreach($scanned_directory as $plugin_dir) {
+        $addon_info_file = "$addons_root/$plugin_dir/info.json";
+        if(is_file("$addon_info_file")) {
+            $info_json = file_get_contents("$addon_info_file");
+            $addon_info[$plugin_dir] = json_decode($info_json, true);
+        }
+    }
+    return $addon_info;
+}
+
+
 /**
  * get all installed Moduls
  * return as array
