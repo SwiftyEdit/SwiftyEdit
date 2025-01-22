@@ -676,7 +676,7 @@ function se_get_payment_methods() {
  */
 function se_get_payment_addons() {
     $addons = array();
-    $get_addons = glob(SE_CONTENT.'/modules/*.pay');
+    $get_addons = glob(SE_ROOT.'/plugins/*-pay');
 
     if(is_array($get_addons)) {
         foreach($get_addons as $addon) {
