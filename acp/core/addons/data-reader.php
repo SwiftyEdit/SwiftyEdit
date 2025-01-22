@@ -1,6 +1,11 @@
 <?php
 error_reporting(E_ALL);
 
+if(!isset($languagePack)) {
+    $languagePack = $_SESSION['lang'] ?? 'en';
+}
+
+
 // list all plugins
 if($_REQUEST['action'] == 'list_plugins') {
 
@@ -21,6 +26,8 @@ if($_REQUEST['action'] == 'list_plugins') {
         if(is_file($addon_image_src)) {
             $get_image = base64_encode(file_get_contents($addon_image_src));
         }
+
+        $addon_lang = se_return_addon_translations($k);
 
         $btn_help_text = '';
         $modal = '';
@@ -71,7 +78,13 @@ if($_REQUEST['action'] == 'list_plugins') {
         echo '<div class="btn-toolbar mt-1">';
         echo '<div class="btn-group">';
         foreach($v['navigation'] as $nav) {
-            echo '<a href="/admin/addons/plugin/'.$k.'/'.$nav['file'].'/" class="btn btn-sm btn-default">'.$nav['text'].'</a>';
+
+            $nav_text = $nav['text'];
+            if(array_key_exists($nav['text'],$addon_lang)) {
+                $nav_text = $addon_lang[$nav['text']];
+            }
+
+            echo '<a href="/admin/addons/plugin/'.$k.'/'.$nav['file'].'/" class="btn btn-sm btn-default">'.$nav_text.'</a>';
         }
         echo '</div>';
         echo '<div class="btn-group ms-auto">';

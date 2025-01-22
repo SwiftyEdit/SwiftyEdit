@@ -1,5 +1,7 @@
 <?php
 
+global $languagePack;
+
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['plugin'].' '.$lang['nav_btn_addons'];
 echo '</div>';

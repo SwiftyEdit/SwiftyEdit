@@ -26,7 +26,7 @@ if(is_file($pm_prefs_file)) {
 
 echo '<div class="card p-3">';
 
-echo '<form action="'.$this_addon_root_url.'/preferences/" method="POST">';
+echo '<form action="'.$this_addon_root_url.'/settings/" method="POST">';
 
 echo '<div class="mb-3">';
 echo '<label class="form-label">Additional Costs</label>';
