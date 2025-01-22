@@ -7,16 +7,12 @@
   },
   "navigation": [
     {
-      "text": "overview",
+      "text": "nav_overview",
       "file": "start"
     },
     {
-      "text": "preferences",
-      "file": "preferences"
-    },
-    {
-      "text": "readme",
-      "file": "readme"
+      "text": "nav_settings",
+      "file": "settings"
     }
   ]
 }

@@ -48,6 +48,26 @@ function se_get_all_addons() {
     return $addon_info;
 }
 
+/**
+ * @param $addon directory of the addon
+ * @return array
+ */
+function se_return_addon_translations($addon): array {
+    global $languagePack;
+    $translations = [];
+    $addons_lang_file = SE_ROOT."/plugins/".$addon."/lang/".$languagePack.'.json';
+    $addons_lang_file_alt = SE_ROOT."/plugins/".$addon."/lang/en.json";
+
+    if(is_file($addons_lang_file)) {
+        $translations = json_decode(file_get_contents($addons_lang_file), true);
+    } else {
+        if(is_file($addons_lang_file_alt)) {
+            $translations = json_decode(file_get_contents($addons_lang_file_alt), true);
+        }
+    }
+    return $translations;
+}
+
 
 /**
  * get all installed Moduls
