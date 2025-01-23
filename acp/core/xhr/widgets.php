@@ -147,7 +147,8 @@ if($_REQUEST['widget'] == 'img-select') {
 
         $img_filename = basename($image['media_file']);
         $img_filename_short = se_return_first_chars($img_filename,20);
-        $image_name = $image['media_file'];
+        $image_src = $image['media_file'];
+        $image_src = str_replace("../","/",$image_src);
         $image_title = sanitizeUserInputs($image['media_title']);
         $image_tmb_name = $image['media_thumb'];
         $image_upload_time = se_format_datetime($image['media_upload_time']);
@@ -155,12 +156,13 @@ if($_REQUEST['widget'] == 'img-select') {
         if(file_exists($image_tmb_name)) {
             $preview = $image_tmb_name;
         } else {
-            $preview = $image_name;
+            $preview = $image_src;
         }
 
         $preview = str_replace("../","/",$preview);
 
-        echo '<div class="list-group-item draggable" data-id="'.$image_name.'">';
+
+        echo '<div class="list-group-item draggable" data-id="'.$image_src.'">';
         echo '<div class="d-flex flex-row gap-2">';
         echo '<div class="rounded-circle flex-shrink-0" style="width:64px;height:64px;background-image:url('.$preview.');background-size:cover;"></div>';
         echo '<div class="text-muted small">'.$image_title.$img_filename_short.'<br>'.$image_upload_time.'</div>';
