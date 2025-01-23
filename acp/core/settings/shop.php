@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
-echo '<div class="subHeader">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_shop'].'</div>';
+echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_shop'].'</div>';
 
 $writer_uri = '/admin/settings/general/write/';
 
@@ -175,19 +175,28 @@ echo '<div class="card-body">';
 echo '<div class="tab-content" id="myTabContent">';
 echo '<div class="tab-pane fade show active" id="shop-general" role="tabpanel" tabindex="0">';
 
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+
 echo se_print_form_input($input_entries_per_page);
 echo se_print_form_input($input_select_sorting);
+echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
 
 echo '<h5 class="heading-line">' . $lang['label_product_cart_mode'] . '</h5>';
 
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 $input_modes = [
     se_print_form_input($input_select_mode_cart),
     se_print_form_input($input_select_mode_order)
 ];
 
 echo str_replace(['{col1}','{col2}'],$input_modes,$bs_row_col2);
+echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
 
 echo '<h5 class="heading-line">'.$lang['label_product_tax'].' / '.$lang['label_product_currency'].'</h5>';
+
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 
 $input_group = [
     se_print_form_input($input_tax1),
@@ -206,12 +215,15 @@ $input_group = [
 
 echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
 
-
+echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
 
 echo '</div>';
 echo '<div class="tab-pane fade" id="shop-shipping" role="tabpanel" tabindex="0">';
 
 echo '<h5 class="heading-line">'.$lang['label_shipping'].'</h5>';
+
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 
 echo se_print_form_input($input_select_shipping_mode);
 echo se_print_form_input($input_shipping_costs_flat);
@@ -224,22 +236,158 @@ $input_group = [
 
 echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
 
+echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
+
+echo '<div class="card mt-3">';
+echo '<div class="card-header">Plugins</div>';
+echo '<div class="card-body">';
+
+$get_delivery_addons = se_get_delivery_addons();
+// get stored delivery addons from $prefs_delivery_addons (json)
+$active_delivery_addons = json_decode($se_settings['delivery_addons'],true);
+if(!is_array($active_delivery_addons)) {
+    $active_delivery_addons = array();
+}
+
+if(count($get_delivery_addons) > 0){
+
+    echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+
+    echo '<table class="table">';
+    echo '<tr>';
+    echo '<td>'.$lang['label_status'].' / '.$lang['label_name'].'</td>';
+    echo '<td>'.$lang['label_description'].'</td>';
+    echo '</tr>';
+
+    foreach ($get_delivery_addons as $delivery_addon) {
+        echo '<tr>';
+
+        $addon_dir = SE_ROOT . '/plugins/' . $delivery_addon;
+        $addon_info_file = $addon_dir . '/info.json';
+        $mod = array();
+        if (is_file("$addon_info_file")) {
+            $info_json = file_get_contents("$addon_info_file");
+        }
+        $mod = json_decode($info_json, true);
+        $addon_link = '/admin/addons/plugin/'.$delivery_addon.'/';
+        $addon_id = basename($delivery_addon,"-pay");
+
+        $check = '';
+        if(in_array("$delivery_addon",$active_delivery_addons)) {
+            $check = 'checked';
+        }
+
+        echo '<td>';
+        echo '<div class="form-check">';
+        echo '<input class="form-check-input" type="checkbox" name="delivery_addons[]" value="'.$delivery_addon.'" id="delivery_'.$addon_id.'" '.$check.'>';
+        echo '<label for="delivery_'.$addon_id.'">'.$addon_id.'</label>';
+        echo '</div>';
+        echo '</td>';
+        echo '<td><a href="'.$addon_link.'">'.$mod['addon']['name'].'</a> '.$mod['addon']['description'].'</td>';
+        echo '</tr>';
+    }
+
+    echo '</table>';
+
+    echo '<button type="submit" class="btn btn-primary" name="update_shipping_plugins" value="update">'.$lang['btn_update'].'</button>';
+    echo '</form>';
+
+} else {
+    echo '<p>No delivery Plugins</p>';
+}
+
+echo '</div>'; // card-body
+echo '</div>'; // card
+
+
+// payment addons
+
 echo '<h5 class="heading-line">'.$lang['label_payment_method'].'</h5>';
 
-echo '<p>TODO: LIST EXISTING PAYMENT ADDONS</p>';
+echo '<div class="card">';
+echo '<div class="card-header">Plugin</div>';
+echo '<div class="card-body">';
+
+$get_payment_addons = se_get_payment_addons();
+
+// get stored payment addons from $prefs_payment_addons (json)
+$active_payment_addons = json_decode($se_settings['payment_addons'],true);
+if(!is_array($active_payment_addons)) {
+    $active_payment_addons = array();
+}
+
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+
+echo '<table class="table">';
+echo '<tr>';
+echo '<td>'.$lang['label_status'].' / '.$lang['label_name'].'</td>';
+echo '<td>'.$lang['label_description'].'</td>';
+echo '</tr>';
+
+foreach ($get_payment_addons as $payment_addon) {
+    echo '<tr>';
+
+    $addon_dir = SE_ROOT . '/plugins/' . $payment_addon;
+    $addon_info_file = $addon_dir . '/info.json';
+    $mod = array();
+    if (is_file("$addon_info_file")) {
+        $info_json = file_get_contents("$addon_info_file");
+    }
+    $mod = json_decode($info_json, true);
+    $addon_link = '/admin/addons/plugin/'.$payment_addon.'/';
+    $addon_id = basename($payment_addon,"-pay");
+
+    $check = '';
+    if(in_array("$payment_addon",$active_payment_addons)) {
+        $check = 'checked';
+    }
+
+    echo '<td>';
+    echo '<div class="form-check">';
+    echo '<input class="form-check-input" type="checkbox" name="payment_addons[]" value="'.$payment_addon.'" id="payment_'.$addon_id.'" '.$check.'>';
+    echo '<label for="payment_'.$addon_id.'">'.$addon_id.'</label>';
+    echo '</div>';
+    echo '</td>';
+    echo '<td><a href="'.$addon_link.'">'.$mod['addon']['name'].'</a> '.$mod['addon']['description'].'</td>';
+    echo '</tr>';
+}
+
+echo '</table>';
+
+echo '<button type="submit" class="btn btn-primary" name="update_payment_plugins" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
+
+echo '</div>'; // card-body
+echo '</div>'; // card
+
 
 echo '</div>';
 echo '<div class="tab-pane fade" id="shop-delivery" role="tabpanel" tabindex="0">';
 
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 echo se_print_form_input($input_delivery_country);
-
-echo '<p>TODO: LIST EXISTING DELIVERY COUNTRIES</p>';
+echo '<button type="submit" class="btn btn-primary" name="add_delivery_country" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
+echo '</div>';
+echo '<div class="col-md-6">';
+echo '<div id="listDeliveryCountries" hx-get="/admin/settings/read/?action=deliveryCountries" hx-trigger="load, update_deliveryCountries_list from:body">Load ...</div>';
+echo '</div>';
+echo '</div>';
 
 echo '</div>';
 echo '<div class="tab-pane fade" id="shop-business-details" role="tabpanel" tabindex="0">';
 
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 echo se_print_form_input($input_bd_address);
 echo se_print_form_input($input_bd_taxnumber);
+echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>';
+
+echo '</div>'; // card-body
+echo '</div>'; // card
 
 echo '</div>';
 echo '</div>';
