@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
-echo '<div class="subHeader">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_posts'].'</div>';
+echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_posts'].'</div>';
 
 $writer_uri = '/admin/settings/general/write/';
 

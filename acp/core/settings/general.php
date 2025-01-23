@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
-echo '<div class="subHeader">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</div>';
+echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</div>';
 
 
 $writer_uri = '/admin/settings/general/write/';
@@ -110,7 +110,7 @@ $select_favicons = $select_nothing+$select_favicons;
 $input_select_favicon = [
     "input_name" => "prefs_pagefavicon",
     "input_value" => $se_settings['pagefavicon'],
-    "label" => $lang['option_nothing_selected'],
+    "label" => 'Favicon',
     "options" => $select_favicons,
     "type" => "select"
 ];
@@ -260,7 +260,7 @@ $input_maintenance = [
 ];
 
 $input_usertemplates = [
-    "input_name" => "prefs_usertemplates",
+    "input_name" => "prefs_usertemplate",
     "input_value" => $se_settings['usertemplate'],
     "radios" => [
         "label_settings_themes_userstyles_off" => "off",
@@ -283,7 +283,7 @@ $input_smarty_compile_check = [
     "input_value" => $se_settings['smarty_compile_check'],
     "label" => 'Smarty Compile Check',
     "type" => "checkbox",
-    "status" => $se_settings['smarty_cache'] == "1" ? 'checked' :''
+    "status" => $se_settings['smarty_compile_check'] == "1" ? 'checked' :''
 ];
 
 $input_smarty_cache_lifetime = [
@@ -338,7 +338,7 @@ $input_session_lifetime = [
 ];
 
 $input_comments_mode = [
-    "input_name" => "prefs_mailer_type",
+    "input_name" => "prefs_comments_mode",
     "input_value" => $se_settings['comments_mode'],
     "radios" => [
         "label_settings_comments_mode_1" => 1,
@@ -409,46 +409,57 @@ echo '<div class="tab-pane fade show active" id="general-settings-tab" role="tab
 
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 
-echo '<div class="row">';
-echo '<div class="col-md-4">';
-echo se_print_form_input($input_page_name);
-echo '</div>';
-echo '<div class="col-md-4">';
-echo se_print_form_input($input_page_title);
-echo '</div>';
-echo '<div class="col-md-4">';
-echo se_print_form_input($input_page_subtitle);
-echo '</div>';
-echo '</div>';
+$input_group = [
+    se_print_form_input($input_page_name),
+    se_print_form_input($input_page_title),
+    se_print_form_input($input_page_subtitle)
+];
+
+echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
 
 echo se_print_form_input($input_page_description);
-
 echo se_print_form_input($input_page_author);
 echo se_print_form_input($input_page_author_mode);
 
 echo '<hr>';
 
-echo se_print_form_input($input_rss_offset);
-echo se_print_form_input($input_nbr_page_versions);
-echo se_print_form_input($input_pagesort_minlength);
+$input_group = [
+    se_print_form_input($input_rss_offset),
+    se_print_form_input($input_nbr_page_versions),
+    se_print_form_input($input_pagesort_minlength)
+];
+
+echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+
 
 echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
 
 echo se_print_form_input($input_image_prefix);
-echo se_print_form_input($input_select_page_logo);
-echo se_print_form_input($input_select_thumbnail);
-echo se_print_form_input($input_select_favicon);
 
-echo se_print_form_input($input_max_img_width);
-echo se_print_form_input($input_max_img_height);
-echo se_print_form_input($input_max_tmb_width);
-echo se_print_form_input($input_max_tmb_height);
+$input_group = [
+    se_print_form_input($input_select_page_logo),
+    se_print_form_input($input_select_thumbnail),
+    se_print_form_input($input_select_favicon)
+];
+
+echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+
+$input_group = [
+    se_print_form_input($input_max_img_width),
+    se_print_form_input($input_max_img_height),
+    se_print_form_input($input_max_tmb_width),
+    se_print_form_input($input_max_tmb_height)
+];
+
+echo str_replace(['{col1}','{col2}','{col3}','{col4}'],$input_group,$bs_row_col4);
+
+
 echo se_print_form_input($input_max_upload_filesize);
 echo se_print_form_input($input_uploads_unchanged);
 
-
-echo '<button type="submit" class="btn btn-primary" name="update_general_system" value="update">'.$lang['btn_update'].'</button>';
+echo '<hr>';
+echo '<button type="submit" class="btn btn-primary" name="update_general" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
 
 echo '</div>'; // tab
@@ -460,15 +471,19 @@ echo se_print_form_input($input_cms_domain);
 echo se_print_form_input($input_cms_ssl_domain);
 echo se_print_form_input($input_cms_base);
 
-echo '<button type="submit" class="btn btn-primary" name="update_general" value="update">'.$lang['btn_update'].'</button>';
+echo '<button type="submit" class="btn btn-primary" name="update_general_system" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
 
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 echo '<h5 class="heading-line">'.$lang['label_settings_datetime'].'</h5>';
 
-echo se_print_form_input($input_select_timezone);
-echo se_print_form_input($input_select_date_format);
-echo se_print_form_input($input_select_time_format);
+$input_group = [
+    se_print_form_input($input_select_timezone),
+    se_print_form_input($input_select_date_format),
+    se_print_form_input($input_select_time_format)
+];
+
+echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
 
 echo '<button type="submit" class="btn btn-primary" name="update_datetime" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
@@ -484,7 +499,7 @@ echo se_print_form_input($input_smarty_compile_check);
 echo se_print_form_input($input_smarty_cache_lifetime);
 
 
-
+echo '<hr>';
 echo '<button type="submit" class="btn btn-primary" name="update_themes" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
 
@@ -504,8 +519,10 @@ echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-targ
 echo se_print_form_input($input_mail_name);
 echo se_print_form_input($input_mail_address);
 echo se_print_form_input($input_mail_type);
+echo '<hr>';
 echo '<button type="submit" class="btn btn-primary" name="update_email" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
+
 echo '</div>'; // tab
 echo '<div class="tab-pane fade" id="user-tab" role="tabpanel" tabindex="0">';
 
@@ -535,7 +552,7 @@ echo '<h5 class="heading-line">'.$lang['label_votings'].'</h5>';
 echo se_print_form_input($input_select_reactions);
 
 
-echo '<button type="submit" class="btn btn-primary" name="update_user" value="update">'.$lang['btn_update'].'</button>';
+echo '<button type="submit" class="btn btn-primary" name="update_reactions" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
 
 echo '</div>'; // tab

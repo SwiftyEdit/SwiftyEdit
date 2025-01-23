@@ -1,9 +1,6 @@
 <?php
 
-
-echo '<div class="subHeader">';
-echo '<h3>'.$lang['labels'].'</h3>';
-echo '</div>';
+echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['labels'].'</div>';
 
 $writer_uri = '/admin/settings/labels/write/';
 $reader_uri = '/admin/settings/labels/read/';

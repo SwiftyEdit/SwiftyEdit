@@ -670,13 +670,31 @@ function se_get_payment_methods() {
 }
 
 /**
- * find addons from /content/modules/
- * payment addons has the suffix .pay
+ * find payment addons from /plugins/
+ * payment addons has the suffix -pay
  * @return array basename of addons
  */
 function se_get_payment_addons() {
     $addons = array();
     $get_addons = glob(SE_ROOT.'/plugins/*-pay');
+
+    if(is_array($get_addons)) {
+        foreach($get_addons as $addon) {
+            $addons[] = basename($addon);
+        }
+    }
+
+    return $addons;
+}
+
+/**
+ * find delivery addons from /plugins/
+ * delivery addons has the suffix -delivery
+ * @return array basename of addons
+ */
+function se_get_delivery_addons() {
+    $addons = array();
+    $get_addons = glob(SE_ROOT.'/plugins/*-delivery');
 
     if(is_array($get_addons)) {
         foreach($get_addons as $addon) {
