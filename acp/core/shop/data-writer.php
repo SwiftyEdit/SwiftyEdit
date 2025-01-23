@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 
 /**
  * pagination
@@ -22,7 +22,7 @@ if(isset($_POST['save_product'])) {
     $releasedate = time();
     $lastedit = time();
     $lastedit_from = $_SESSION['user_nick'];
-    $priority = (int) $_POST['post_priority'];
+    $priority = (int) $_POST['priority'];
     $type = 'p';
 
     if(isset($_POST['type'])) {
@@ -81,8 +81,8 @@ if(isset($_POST['save_product'])) {
     }
 
     $images = '';
-    if(isset($_POST['picker1_images'])) {
-        $product_images_string = implode("<->", $_POST['picker1_images']);
+    if(isset($_POST['picker_0'])) {
+        $product_images_string = implode("<->", $_POST['picker_0']);
         $product_images_string = "<->$product_images_string<->";
         $images = $product_images_string;
     }
@@ -154,7 +154,7 @@ if(isset($_POST['save_product'])) {
     /* get all $cols */
 
     require SE_ROOT.'install/contents/se_products.php';
-    // build sql string -> f.e. "post_releasedate" => $post_releasedate,
+    // build sql string -> f.e. "releasedate" => $releasedate,
     foreach($cols as $k => $v) {
         if($k == 'id') {continue;}
         $value = $$k;
@@ -167,18 +167,21 @@ if(isset($_POST['save_product'])) {
             "id" => $id
         ]);
         $form_header_message = $lang['msg_success_db_changed'];
+        show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"updated product id: $id","6");
     } else if($_POST['save_product'] == "save_variant") {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
+        show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"new product variant id: $id","6");
     } else {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
+        show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"new product id: $id","6");
     }
 

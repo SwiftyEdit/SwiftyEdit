@@ -124,7 +124,7 @@ if($_REQUEST['action'] == 'list_products') {
         $prod_image = explode("<->", $product['images']);
         $show_thumb = '';
         if($prod_image[1] != "") {
-            $image_src = str_replace("../content/","/",$prod_image[1]);
+            $image_src = str_replace("../images/","/",$prod_image[1]);
             $show_thumb  = '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="<img src=\''.$image_src.'\'>">';
             $show_thumb .= '<div class="show-thumb" style="background-image: url('.$image_src.');">';
             $show_thumb .= '</div>';
