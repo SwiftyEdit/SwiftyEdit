@@ -17,6 +17,7 @@ $bs_form_control_group = file_get_contents($tpl_dir.'/bs-form-control-group.tpl'
 
 $bs_row_col2 = file_get_contents($tpl_dir.'/bs-row-col2.tpl');
 $bs_row_col3 = file_get_contents($tpl_dir.'/bs-row-col3.tpl');
+$bs_row_col4 = file_get_contents($tpl_dir.'/bs-row-col4.tpl');
 
 $bs_row_2_cols = file_get_contents($tpl_dir.'/bs-row-2-cols.tpl');
 $bs_row_3_cols = file_get_contents($tpl_dir.'/bs-row-3-cols.tpl');

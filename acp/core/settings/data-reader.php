@@ -1,7 +1,30 @@
 <?php
 
-if(isset($_POST['load_settings']) && ($_POST['load_settings'] == 'general')) {
-    echo 'FOO';
+/**
+ * global
+ * @var array $icon
+ */
+
+
+if($_REQUEST['action'] == 'deliveryCountries') {
+    $get_countries = json_decode($se_settings['delivery_countries'],JSON_OBJECT_AS_ARRAY);
+    if(is_array($get_countries)) {
+        sort($get_countries);
+        $cnt_countries = count($get_countries);
+        echo '<table class="table">';
+        for($i=0;$i<$cnt_countries;$i++) {
+            echo '<tr>';
+            echo '<td>';
+            echo $get_countries[$i];
+            echo '</td>';
+            echo '<td>';
+            echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$i.'">'.$icon['trash'].'</button>';
+            echo '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
+    }
+    exit;
 }
 
 if(isset($_POST['load_labels'])) {
