@@ -308,12 +308,6 @@ function se_list_pages($data,$type="sorted") {
 
         $frontend_link = "/$page_permalink";
 
-        $show_mod = '';
-        if($page_modul != '') {
-            $page_modul_title = substr($page_modul, 0,-4);
-            $show_mod = ' <small>'.$icon['cog'].' '.$page_modul_title.'</small><br>';
-        }
-
         if($page_redirect != '') {
             if((is_array($global_filter_status)) && !in_array("5",$global_filter_status)) {
                 continue;
@@ -325,7 +319,7 @@ function se_list_pages($data,$type="sorted") {
 
         $replace = array(
             $status_label,$page_linkname,$page_title,$page_thumb_src,$lang['edit'],
-            $show_mod,$item_class,$indent,$edit_button,$duplicate_button,$info_button,
+            $page_modul,$item_class,$indent,$edit_button,$duplicate_button,$info_button,
             $page_comments_link,$page_permalink,$last_edit,$page_sort, $show_template_name,
             $page_redirect,$frontend_link,$page_description,$page_lang_thumb,$label,$pi,$hidden_csrf_token
         );

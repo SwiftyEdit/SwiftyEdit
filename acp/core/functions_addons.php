@@ -321,7 +321,7 @@ function se_run_hooks(array $hooks, array $data) {
         $action = $get_hook_info[1];
         $command = $get_hook_info[2];
 
-        $hook_file = SE_CONTENT.'/modules/'.$addon.'/hooks/'.$action.'.php';
+        $hook_file = SE_ROOT.'/plugins/'.$addon.'/hooks/'.$action.'.php';
         if(is_file($hook_file)) {
             include $hook_file;
         }
@@ -337,22 +337,13 @@ function se_get_all_hooks() {
 
     global $all_mods;
     $get_hook = array();
-
-    /*
-    $hooks = [
-        "page_updated" => [],
-        "product_updated" => [],
-        "dashboard_listed_all_addons" => []
-    ];
-    */
-
     $all_hook_commands = array();
 
     // loop through addons
-    foreach($all_mods as $mod) {
+    foreach($all_mods as $k => $v) {
         // loop through available hooks
 
-        $hook_commands_file = SE_CONTENT.'/modules/'.$mod['folder'].'/hooks/index.php';
+        $hook_commands_file = SE_ROOT.'/plugins/'.$k.'/hooks/index.php';
 
         /**
          * get $hook_commands from /hooks/index.php file
@@ -360,8 +351,8 @@ function se_get_all_hooks() {
          * */
 
         if(is_file($hook_commands_file)) {
-            include($hook_commands_file);
-            $this_hook_commands[$mod['folder']] = $hook_commands;
+            include $hook_commands_file;
+            $this_hook_commands[$k] = $hook_commands;
             if(is_array($hook_commands)) {
                 $all_hook_commands = array_merge($this_hook_commands,$all_hook_commands);
             }
