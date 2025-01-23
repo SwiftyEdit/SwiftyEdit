@@ -1,5 +1,6 @@
 <?php
 
+$all_mods = se_get_all_addons();
 $writer_uri = '/admin/pages/write/';
 
 $q = pathinfo($_REQUEST['query']);
@@ -644,26 +645,20 @@ $form_tpl .= '<div class="col-md-6">';
 $select_page_modul = '<select name="page_modul" class="custom-select form-control" id="selMod">';
 $select_page_modul .= '<option value="">'.$lang['label_pages_no_addon'].'</option>';
 
-for($i=0;$i<$cnt_mods;$i++) {
-
+foreach($all_mods as $k => $v) {
     $selected = "";
-    $mod_name = $all_mods[$i]['name'];
-    $mod_folder = $all_mods[$i]['folder'];
-
-    if(str_ends_with($mod_folder, '.pay')) {
-        // skip payment addons
-        continue;
-    }
-
+    $mod_name = $all_mods[$k]['addon']['name'];
+    $mod_folder = $k;
+    // skip payment plugins
+    if(str_ends_with($mod_folder, '-pay')) { continue; }
+    // skip delivery addons
+    if(str_ends_with($mod_folder, '-delivery')) { continue; }
     if($mod_folder == $page_modul) {
         $selected = 'selected';
     }
-
     $select_page_modul .= "<option value='$mod_folder' $selected>$mod_name</option>";
 
 }
-
-
 $select_page_modul .= '</select>';
 
 
@@ -672,16 +667,15 @@ $form_tpl .= '<label for="selMod">'.$lang['label_pages_select_addon'].'</label>'
 $form_tpl .= $select_page_modul;
 $form_tpl .= '</div>';
 
-for($i=0;$i<$cnt_mods;$i++) {
-
-    $show_mod = basename($all_mods[$i]['folder']);
-    $mod_id = md5($all_mods[$i]['folder']);
-    if(is_file(SE_CONTENT."/modules/$show_mod/backend/page_values.php")) {
-
+foreach($all_mods as $k => $v) {
+    $show_mod = basename($k);
+    $mod_id = md5($k);
+    if(is_file(SE_ROOT."/plugins/$show_mod/backend/page_values.php")) {
         $form_tpl .= '<div class="card mb-1">';
-        $form_tpl .= '<div class="card-header">' . $all_mods[$i]['folder'] . '</div>';
+        $form_tpl .= '<div class="card-header">' . $show_mod . '</div>';
         $form_tpl .= '<div class="card-body">';
-        include SE_CONTENT."/modules/$show_mod/backend/page_values.php";
+        include SE_ROOT."/plugins/$show_mod/backend/page_values.php";
+        $form_tpl .= $plugin_form_tpl;
         $form_tpl .= '</div>';
         $form_tpl .= '</div>';
     }
