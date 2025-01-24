@@ -10,37 +10,49 @@ echo '</div>';
 $reader_uri = '/admin/pages/read/';
 $writer_uri = '/admin/pages/write/';
 
+if(!isset($_SESSION['show_page_type'])) {
+    $_SESSION['show_page_type'] = 'sorted';
+}
+if($_GET['set_type'] == 'sorted') {
+    $_SESSION['show_page_type'] = 'sorted';
+}
+
+if($_GET['set_type'] == 'single') {
+    $_SESSION['show_page_type'] = 'single';
+}
+
 echo '<div class="app-container">';
 echo '<div class="max-height-container">';
 
 echo '<div class="row">';
+echo '<div class="col-md-9">';
 
-echo '<div class="col-md-5">';
+if($_SESSION['show_page_type'] == 'sorted') {
 
-echo '<div class="card">';
-echo '<div class="card-header">'.$lang['nav_btn_structured_pages'].'</div>';
-echo '<div class="card-body">';
-echo '<div class="scroll-box">';
-echo '<div id="getPagesSorted" class="" hx-get="'.$reader_uri.'?action=list_pages_sorted" hx-trigger="load, changed, update_pages_list from:body, updated_global_filter from:body">';
-echo '<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
-echo '</div>';
-echo '</div>';
-echo '</div>';
-echo '</div>';
+    echo '<div class="card">';
+    echo '<div class="card-header">' . $lang['nav_btn_structured_pages'] . '</div>';
+    echo '<div class="card-body">';
+    echo '<div class="scroll-box">';
+    echo '<div id="getPagesSorted" class="" hx-get="' . $reader_uri . '?action=list_pages_sorted" hx-trigger="load, changed, update_pages_list from:body, updated_global_filter from:body">';
+    echo '<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+}
 
-echo '</div>';
-echo '<div class="col-md-4">';
-
-echo '<div class="card">';
-echo '<div class="card-header">'.$lang['nav_btn_single_pages'].'</div>';
-echo '<div class="card-body">';
-echo '<div class="scroll-box">';
-echo '<div id="getPagesSingle" class="" hx-get="'.$reader_uri.'?action=list_pages_single" hx-trigger="load, changed, update_pages_list from:body, updated_global_filter from:body">';
-echo '<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
-echo '</div>';
-echo '</div>';
-echo '</div>';
-echo '</div>';
+if($_SESSION['show_page_type'] == 'single') {
+    echo '<div class="card">';
+    echo '<div class="card-header">' . $lang['nav_btn_single_pages'] . '</div>';
+    echo '<div class="card-body">';
+    echo '<div class="scroll-box">';
+    echo '<div id="getPagesSingle" class="" hx-get="' . $reader_uri . '?action=list_pages_single" hx-trigger="load, changed, update_pages_list from:body, updated_global_filter from:body">';
+    echo '<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+}
 
 echo '</div>';
 echo '<div class="col-md-3">';
@@ -49,6 +61,11 @@ echo '<div class="col-md-3">';
 echo '<div class="card">';
 echo '<div class="card-header">'.$lang['filter'].'</div>';
 echo '<div class="card-body">';
+
+echo '<div class="btn-group w-100 mb-2">';
+echo '<a href="/admin/pages/?set_type=sorted" class="btn btn-default '.($_SESSION['show_page_type']  == "sorted" ? 'active' :'').'">'.$lang['nav_btn_structured_pages'].'</a>';
+echo '<a href="/admin/pages/?set_type=single" class="btn btn-default '.($_SESSION['show_page_type']  == "single" ? 'active' :'').'">'.$lang['nav_btn_single_pages'].'</a>';
+echo '</div>';
 
 
 echo '<form hx-post="'.$writer_uri.'" hx-swap="none" method="POST" hx-on::after-request="this.reset()" class="mt-1">';
