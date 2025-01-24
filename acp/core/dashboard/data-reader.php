@@ -76,9 +76,10 @@ if($_REQUEST['action'] == 'list_posts') {
 
     echo '<table class="table table-sm">';
     foreach($get_posts as $post) {
+        $trimmed_teaser = se_return_first_chars($post['post_teaser'],100);
         echo '<tr>';
         echo '<td class="text-nowrap">'.se_format_datetime($post['post_lastedit']).'</td>';
-        echo '<td class="w-100"><h6 class="mb-0">'.$post['post_title'].'</h6><small>'.strip_tags($post['post_teaser']).'</small></td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$post['post_title'].'</h6><small>'.$trimmed_teaser.'</small></td>';
         echo '<td>';
         echo '<form action="/admin/blog/edit/" method="post">';
         echo '<button class="btn btn-default" name="post_id" value="'.$post['post_id'].'">'.$icon['edit'].'</button>';
@@ -104,9 +105,10 @@ if($_REQUEST['action'] == 'list_products') {
 
     echo '<table class="table table-sm">';
     foreach($get_products as $product) {
+        $trimmed_teaser = se_return_first_chars($product['teaser'],100);
         echo '<tr>';
         echo '<td class="text-nowrap">'.se_format_datetime($product['lastedit']).'</td>';
-        echo '<td class="w-100"><h6 class="mb-0">'.$product['title'].'</h6><small>'.strip_tags($product['teaser']).'</small></td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$product['title'].'</h6><small>'.$trimmed_teaser.'</small></td>';
         echo '<td>';
         echo '<form action="/admin/shop/edit/" method="post">';
         echo '<button class="btn btn-default" name="product_id" value="'.$product['id'].'">'.$icon['edit'].'</button>';
@@ -132,9 +134,10 @@ if($_REQUEST['action'] == 'list_events') {
 
     echo '<table class="table table-sm">';
     foreach($get_events as $event) {
+        $trimmed_teaser = se_return_first_chars($event['teaser'],100);
         echo '<tr>';
         echo '<td class="text-nowrap">'.se_format_datetime($event['lastedit']).'</td>';
-        echo '<td class="w-100"><h6 class="mb-0">'.$event['title'].'</h6><small>'.strip_tags($event['teaser']).'</small></td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$event['title'].'</h6><small>'.$trimmed_teaser.'</small></td>';
         echo '<td>';
         echo '<form action="/admin/events/edit/" method="post">';
         echo '<button class="btn btn-default" name="id" value="'.$event['id'].'">'.$icon['edit'].'</button>';
