@@ -19,18 +19,7 @@
   background: var(--bs-widget-bg-400);
   border: 1px solid var(--bs-widget-bg-600);
   border-left: 3px solid var(--bs-widget-bg-100);
-  h4 {
-    margin-top: 0;
-    margin-bottom: 5px;
-    font-size: 15px;
-    a {
-      color: $headings-color;
-      text-decoration: none;
-    }
-    small {
-      color: $body-color;
-    }
-  }
+
   &:hover {
     background: var(--bs-widget-bg-600);
     box-shadow: 0px 7px 12px -7px rgba(0,0,0,0.3);
