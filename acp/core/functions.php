@@ -547,11 +547,11 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 		$time = time();
 	}
 		
-	/* romove old entries */
+	// remove old entries
 	$db_content->delete("se_feeds", [
 	"feed_time[<]" => $interval
 	]);
-	/* remove duplicates */
+	// remove duplicates
 	$db_content->delete("se_feeds", [
 	"feed_subid" => $sub_id
 	]);
@@ -564,7 +564,6 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 		"feed_text" => "$text",
 		"feed_url" => "$url"
 	]);
-
 }
 
 
