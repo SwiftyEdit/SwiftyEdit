@@ -1,16 +1,17 @@
 <?php
 error_reporting(0);
-define("se_SOURCE", "frontend");
-require 'config.php';
-require SE_ROOT.'/database.php';
-use Medoo\Medoo;
+const SE_SECTION = "frontend";
+require '../vendor/autoload.php';
+require '../config.php';
+
+require SE_ROOT.'/core/database.php';
 
 switch ($_REQUEST['type']) {
 	case 'rss':
 		$type = 'rss';
 		break;
 	case 'atom';
-		$ype = 'atom';
+        $type = 'atom';
 		break;
 	default:
 		$type = 'rss';
@@ -25,8 +26,8 @@ $rssItems = $db_content->select("se_feeds", "*",[
 	]
 ]);
 
-$prefs = $db_content->get("se_preferences", "*",[
-	"prefs_id" => "1"
+$prefs = $db_content->select("se_options", "*", [
+    "option_module" => "se"
 ]);
 
 $cms_domain = $prefs['prefs_cms_ssl_domain'];
@@ -120,5 +121,3 @@ if($type == 'rss') {
 	echo $item_tpl;
 	echo $end_atom_tpl;
 }
-
-?>

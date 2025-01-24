@@ -222,6 +222,27 @@ if(isset($_POST['save_post'])) {
         show_toast($lang['msg_success_db_changed'],'success');
     }
 
+    // update rss feed
+    $target_page = $db_content->select("se_pages", "page_permalink", [
+        "AND" => [
+            "page_type_of_use" => "display_post",
+            "page_language" => $post_lang
+        ]
+    ]);
+
+    if($target_page[0] != '') {
+        $rss_url = $se_base_url.$target_page[0].$clean_title.'-'.$post_id.'.html';
+        $db_posts->update("se_posts", [
+            "post_rss_url" => $rss_url
+        ], [
+            "post_id" => $post_id
+        ]);
+
+        /* send to rss feed */
+        if($_POST['post_rss'] == 'on') {
+            add_feed("$post_title",$_POST['post_teaser'],"$rss_url","post_$id","",$post_releasedate);
+        }
+    }
 
 
     echo '<pre>';
