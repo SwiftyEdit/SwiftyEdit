@@ -210,7 +210,7 @@ function se_get_all_images($prefix='') {
  * return array
  */
 
-function se_get_all_images_rec($prefix='',$dir='') {
+function se_get_all_images_rec($prefix='',$dir=''): array {
 
 	global $img_path;
 	$images = array();

@@ -79,6 +79,7 @@ $arr_Images = se_get_all_images_rec();
 foreach ($arr_Images as $k => $v) {
     $select_images[basename($v)] = $v;
 }
+$select_images = [];
 $select_nothing = ['option_nothing_selected' => "null"];
 $select_images = $select_nothing+$select_images;
 
@@ -104,7 +105,7 @@ foreach ($arr_Images as $k => $v) {
     }
     $select_favicons[basename($v)] = $v;
 }
-
+$select_favicons = [];
 $select_favicons = $select_nothing+$select_favicons;
 
 $input_select_favicon = [
