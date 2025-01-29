@@ -38,7 +38,7 @@ foreach($lang_data as $key => $value) {
     $lang[str_replace('.','_',$key)] = $value;
 }
 
-include '../admin/core/icons.php';
+include '../acp/core/icons.php';
 
 if(is_file("$se_db_content")) {
 	$modus = "update";

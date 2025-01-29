@@ -45,6 +45,7 @@ function checkexistingdir($path) {
 	global $goto_install,$lang;
 	
 	if(!is_dir("$path")){
+        mkdir("$path",0777,true);
 		echo '<div class="row">';
 		echo '<div class="col-md-4"><span title="'.$path.'">'.basename($path).'</span></div>';
 		echo '<div class="col-md-8">';
@@ -70,8 +71,6 @@ $check_this[] = SE_PUBLIC . '/assets/files';
 $check_this[] = SE_PUBLIC . "/assets/galleries";
 $check_this[] = SE_PUBLIC . '/assets/images';
 $check_this[] = SE_PUBLIC . '/assets/images_tmb';
-$check_this[] = SE_PUBLIC . "/assets/modules";
-$check_this[] = SE_PUBLIC . "/assets/plugins";
 $check_this[] = SE_CONTENT . "/database";
 
 sort($check_this,SORT_NATURAL | SORT_FLAG_CASE);
@@ -79,7 +78,7 @@ sort($check_this,SORT_NATURAL | SORT_FLAG_CASE);
 
 /* minimum php version */
 
-$needed_phpversion = "7.3";
+$needed_phpversion = "8.3";
 $loaded_extensions = get_loaded_extensions();
 
 /**
@@ -89,6 +88,11 @@ $loaded_extensions = get_loaded_extensions();
 
 echo '<fieldset>';
 echo '<legend>'.$lang['files_and_folders'].'</legend>';
+
+
+foreach($check_this as $filepath){
+    checkexistingdir("$filepath");
+}
 
 foreach($check_this as $filepath){
 	checkwritable("$filepath");

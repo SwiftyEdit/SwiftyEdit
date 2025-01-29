@@ -1,6 +1,4 @@
-# htaccess template
-# for public directory
-######################
+# SwiftyEdit
 
 RewriteEngine On
 RewriteBase /
