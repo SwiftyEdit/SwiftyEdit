@@ -115,12 +115,6 @@ echo '<li><a class="sidebar-nav '.($subinc == "shop" ? 'sidebar-nav-active' :'')
 echo '<li><a class="sidebar-nav '.($subinc == "events" ? 'sidebar-nav-active' :'').'" href="/admin/settings/events/">'.$icon['dot'].' '.$lang['nav_btn_events'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "labels" ? 'sidebar-nav-active' :'').'" href="/admin/settings/labels/">'.$icon['dot'].' '.$lang['labels'].'</a></li>';
 echo '</ul>';
-echo '<ul>';
-echo '<li class="mt-2"><a class="sidebar-nav '.($subinc == "database" ? 'sidebar-nav-active' :'').'" href="/admin/settings/database/">'.$icon['database'].' '.$lang['nav_btn_customize_db'].'</a></li>';
-echo '</ul>';
-echo '<ul>';
-echo '<li><a class="sidebar-nav '.($subinc == "update" ? 'sidebar-nav-active' :'').'" href="/admin/settings/update/">'.$icon['arrow_repeat'].' '.$lang['btn_update'].'</a></li>';
-echo '</ul>';
 echo '</div>';
 echo '</li>';
 
