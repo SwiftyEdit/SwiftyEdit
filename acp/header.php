@@ -85,6 +85,13 @@ foreach ($se_get_preferences as $k => $v) {
 
 }
 
+/* build absolute URL */
+if ($se_settings['cms_ssl_domain'] != '') {
+    $se_base_url = $se_settings['cms_ssl_domain'] . $se_settings['cms_base'];
+} else {
+    $se_base_url = $se_settings['cms_domain'] . $se_settings['cms_base'];
+}
+
 /* set language */
 
 $all_langs = get_all_languages();
