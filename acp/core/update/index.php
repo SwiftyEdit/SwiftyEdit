@@ -21,8 +21,6 @@
 
 set_time_limit (0);
 
-$remote_versions_file = file_get_contents("https://swiftyedit.net/releases/v2/versions.json");
-$remote_versions_array = json_decode($remote_versions_file,true);
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['arrow_clockwise'].' '.$lang['update'];
@@ -33,11 +31,42 @@ const INSTALLER = TRUE;
 require '../install/php/functions.php';
 require __DIR__.'/functions.php';
 
+echo '<div id="updateResponse"></div>';
+
 if(!extension_loaded('zip')) {
     echo '<div class="alert alert-danger mb-4">The required extension <strong>ZIP</strong> is not installed</div>';
 }
 
-compare_versions();
+echo '<div class="row mb-2">';
+echo '<div class="col-6">';
+/* installed version */
+echo '<div class="card h-100">';
+echo '<div class="card-header">'.$icon['database'].'  '. $se_base_url .'</div>';
+echo '<div class="card-body">';
+echo '<p>Version: '.$se_version_title.'<br>(Build '.$se_version_build.')</p>';
+echo '<p>Date: '.$se_version_date.'</p>';
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+echo '<div class="col-6">';
+
+/* remote version */
+echo '<div class="card h-100">';
+echo '<div class="card-header">'.$icon['server'].'  SwiftyEdit Server</div>';
+echo '<div class="card-body">';
+
+echo '<div id="" class="" hx-get="/admin/update/read/?action=read_versions" hx-trigger="load">';
+echo '<div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span>';
+echo '</div>';
+
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+echo '</div>';
 
 
-
+echo '<div id="" class="" hx-get="/admin/update/read/?action=check_download" hx-trigger="load, update_downloads_list from:body">';
+echo '<div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span>';
+echo '</div>';
