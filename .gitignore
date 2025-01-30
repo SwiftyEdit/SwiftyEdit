@@ -129,3 +129,5 @@ _config_database.php
 !/public/assets/themes/default/templates-mail/*
 
 !/public/assets/lang/*
+
+/acp/core/update/download/*
