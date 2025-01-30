@@ -7,20 +7,9 @@ function compare_versions() {
     $hx_writer_url = '/admin/update/write/';
     $hx_vals = ['csrf_token' => $_SESSION['token']];
 
-    /**
-     * from versions.php
-     * @var string $se_version_date fe: 2025-01-20
-     * @var string $se_version_title fe: beta 2.0
-     * @var string $se_version_build fe: 2500001
-     */
-
-    $this_version = __DIR__.'/versions.php';
-
-    if(is_file($this_version)){
-        include $this_version;
-    } else {
-        $se_version_build = '';
-    }
+    // read version.json
+    $version_file = file_get_contents(SE_ROOT.'version.json');
+    $se_version = json_decode($version_file, true);
 
     echo '<ul class="list-group list-group-flush">';
     echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
@@ -28,7 +17,7 @@ function compare_versions() {
     echo 'Build: '.$remote_versions_array['version']['stable']['build'] .'<br>';
     echo 'Date: ' .$remote_versions_array['version']['stable']['date'];
     $update_stable = '';
-    if($se_version_build < $remote_versions_array['version']['stable']['build']) {
+    if($se_version['build'] < $remote_versions_array['version']['stable']['build']) {
         echo '<button class="btn btn-primary">'.$lang['btn_choose_this_update'].'</button>';
         $update_stable = $lang['update_msg_stable'];
     } else {
@@ -40,7 +29,7 @@ function compare_versions() {
     echo 'Build: '.$remote_versions_array['version']['beta']['build'] .'<br>';
     echo 'Date: '.$remote_versions_array['version']['beta']['date'];
     $update_beta = '';
-    if($se_version_build < $remote_versions_array['version']['beta']['build']) {
+    if($se_version['build'] < $remote_versions_array['version']['beta']['build']) {
         echo '<button class="btn btn-primary">'.$lang['btn_choose_this_update'].'</button>';
         $update_beta = $lang['update_msg_beta'];
     } else {
@@ -53,7 +42,7 @@ function compare_versions() {
     echo 'Date: ' .$remote_versions_array['version']['alpha']['date'];
     $update_alpha = '';
     echo '<div class="w-50">';
-    if($se_version_build < $remote_versions_array['version']['alpha']['build']) {
+    if($se_version['build'] < $remote_versions_array['version']['alpha']['build']) {
         echo '<button class="btn btn-primary btn-sm w-100">'.$lang['btn_choose_this_update'].'</button>';
         $update_alpha = $lang['update_msg_alpha'];
     } else {
