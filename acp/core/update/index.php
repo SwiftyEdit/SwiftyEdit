@@ -11,10 +11,9 @@
  *  5. run the update script and check up the database
  *  6. delete maintenance.html from /public/ - (ends the update modus in frontend)
  *
- * variables
- * @var string $se_version_build from versions.php
  *
  * Global variables
+ * @var array $se_version (date, version, build)
  * @var array $lang language file
  * @var array $icon icons
  */
@@ -24,7 +23,7 @@ set_time_limit (0);
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['arrow_clockwise'].' '.$lang['update'];
-echo '<div class="ms-auto">core updates build: <code>'.$se_version_build.'</code></div>';
+echo '<div class="ms-auto">core updates build: <code>'.$se_version['build'].'</code></div>';
 echo '</div>';
 
 const INSTALLER = TRUE;
@@ -43,7 +42,7 @@ echo '<div class="col-6">';
 echo '<div class="card h-100">';
 echo '<div class="card-header">'.$icon['database'].'  '. $se_base_url .'</div>';
 echo '<div class="card-body">';
-echo '<p>Version: '.$se_version_title.'<br>(Build '.$se_version_build.')</p>';
+echo '<p>Version: '.$se_version['version'].'<br>(Build '.$se_version['build'].')</p>';
 echo '<p>Date: '.$se_version_date.'</p>';
 echo '</div>';
 echo '</div>';
