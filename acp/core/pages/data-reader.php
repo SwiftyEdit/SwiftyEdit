@@ -197,6 +197,7 @@ function se_list_pages($data,$type="sorted") {
         $page_redirect = $data[$i]['page_redirect'];
         $page_modul = $data[$i]['page_modul'];
         $pi = $data[$i]['page_hits'];
+        $page_labels = [];
         if($data[$i]['page_labels'] != '') {
             $page_labels = explode(',',$data[$i]['page_labels']);
         }
