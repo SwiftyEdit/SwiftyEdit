@@ -19,9 +19,9 @@ include_once 'functions_shop.php';
  * return as array
  */
 
-function get_all_languages() {
+function get_all_languages(): array {
 
-    $d = '../public/assets/lang/';
+    $d = SE_ROOT.'/languages/';
 
 	$cntLangs = 0;
 	$scanned_directory = array_diff(scandir($d), array('..', '.','.DS_Store'));
@@ -36,7 +36,19 @@ function get_all_languages() {
 		}
 	}
 	
-	return($arr_lang);
+	return $arr_lang;
+}
+
+/**
+ * @param $lang
+ * @return string
+ */
+function return_language_flag_src($lang): string {
+
+    $real_img_src = SE_ROOT.'/languages/' . $lang . '/flag.png';
+    $encoded_flag = base64_encode(file_get_contents($real_img_src));
+    $encoded = 'data:image/png;base64,'.$encoded_flag;
+    return $encoded;
 }
 
 

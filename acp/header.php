@@ -106,7 +106,7 @@ if (!isset($_SESSION['lang'])) {
 
 if (isset($_GET['set_lang'])) {
     $set_lang = sanitizeUserInputs($_GET['set_lang']);
-    if (is_dir(SE_ROOT.'public/assets/lang/')) {
+    if (is_dir(SE_ROOT.'languages/'.$set_lang)) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
@@ -115,7 +115,7 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
-require SE_ROOT.'public/assets/lang/index.php';
+require SE_ROOT.'languages/index.php';
 
 /**
  * $lang_codes (array) all available lang codes

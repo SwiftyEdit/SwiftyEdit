@@ -113,7 +113,7 @@ if($_REQUEST['action'] == 'list_events') {
 
         $icon_fixed = '';
         $draft_class = '';
-        $event_lang_thumb = '<img src="/assets/lang/'.$post['event_lang'].'/flag.png" width="15" title="'.$post['event_lang'].'" alt="'.$post['event_lang'].'">';
+        $event_lang_thumb = '<img src="'.return_language_flag_src($post['event_lang']).'" width="15" title="'.$post['event_lang'].'" alt="'.$post['event_lang'].'">';
 
         $icon_fixed_form = '<form hx-post="/admin/events/write/">';
         if($post['fixed'] == '1') {

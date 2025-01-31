@@ -174,7 +174,6 @@ $cnt_labels = count($se_labels);
 $all_langs = get_all_languages();
 $all_hooks = se_get_all_hooks();
 
-
 /**
  * read the preferences
  * OLD: do not use the old $prefs_default_language
@@ -223,7 +222,7 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
-require '../public/assets/lang/index.php';
+require SE_ROOT.'/languages/index.php';
 
 
 /**
@@ -231,7 +230,7 @@ require '../public/assets/lang/index.php';
  */
 
 if ($se_prefs['prefs_default_language'] != '') {
-    include '../core/lang/' . $se_prefs['prefs_default_language'] . '/index.php';
+    include SE_ROOT.'/languages/' . $se_prefs['prefs_default_language'] . '/index.php';
     $default_lang_code = $lang_sign; // de|en|es ...
 }
 
@@ -255,11 +254,16 @@ foreach ($all_langs as $l) {
 $lang_codes = array_values(array_unique($langs));
 
 foreach($lang_codes as $l) {
-    if(is_file('../public/assets/lang/'.$l.'/index.php')) {
-        include '../public/assets/lang/'.$l.'/index.php';
+
+    $lang_file = SE_ROOT.'/languages/' . $l . '/index.php';
+
+    if(is_file($lang_file)) {
+        include $lang_file;
         $active_lang[$l]['sign'] = $lang_sign;
         $active_lang[$l]['name'] = $lang_desc;
-        $active_lang[$l]['flag'] = '/assets/lang/'.$l.'/flag.png';
+        $real_img_src = SE_ROOT.'/languages/' . $l . '/flag.png';
+        $encoded_flag = base64_encode(file_get_contents($real_img_src));
+        $active_lang[$l]['flag'] = 'data:image/png;base64,'.$encoded_flag;
     }
 }
 

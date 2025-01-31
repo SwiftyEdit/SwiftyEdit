@@ -118,7 +118,7 @@ if($_REQUEST['action'] == 'list_products') {
         }
         $show_items_dates = '<span class="text-muted small">'.$published_date.' | '.$lastedit_date.' | '.$release_date.'</span>';
 
-        $product_lang_thumb = '<img src="/assets/lang/'.$product['product_lang'].'/flag.png" width="15" title="'.$product['product_lang'].'" alt="'.$product['product_lang'].'">';
+        $product_lang_thumb = '<img src="'.return_language_flag_src($product['product_lang']).'" width="15" title="'.$product['product_lang'].'" alt="'.$product['product_lang'].'">';
 
         // thumbnail
         $prod_image = explode("<->", $product['images']);
@@ -324,7 +324,7 @@ if($_REQUEST['action'] == 'list_categories') {
     echo '<div class="list-group list-group-flush">';
     foreach($get_categories as $c) {
 
-        $cat_lang_thumb = '<img src="/assets/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
+        $cat_lang_thumb = '<img src="'.return_language_flag_src($c['cat_lang']).'" width="15" alt="'.$c['cat_lang'].'">';
         $active = '';
         if(str_contains($_SESSION['filter_prod_categories'],$c['cat_hash'])) {
             $active = 'active';
@@ -361,7 +361,7 @@ if($_REQUEST['action'] == 'list_features') {
 
     foreach($show_data as $data) {
 
-        $flag = '<img src="/assets/lang/' . $data['snippet_lang'] . '/flag.png" width="15">';
+        $flag = '<img src="'.return_language_flag_src($data['snippet_lang']).'" width="15">';
 
         $btn_edit  = '<form action="/admin/shop/features/edit/" method="post" class="d-inline">';
         $btn_edit .= '<button class="btn btn-default" name="features-form" value="'.$data['snippet_id'].'">'.$icon['edit'].'</button>';
@@ -405,7 +405,7 @@ if($_REQUEST['action'] == 'list_options') {
 
     foreach($show_data as $data) {
 
-        $flag = '<img src="/assets/lang/' . $data['snippet_lang'] . '/flag.png" width="15">';
+        $flag = '<img src="'.return_language_flag_src($data['snippet_lang']).'" width="15">';
 
         $btn_edit  = '<form action="/admin/shop/options/edit/" method="post" class="d-inline">';
         $btn_edit .= '<button class="btn btn-default" name="options-form" value="'.$data['snippet_id'].'">'.$icon['edit'].'</button>';
@@ -508,7 +508,7 @@ if($_REQUEST['action'] == 'list_filters') {
             $type = $icon['ui_checks'];
         }
 
-        $flag = '<img src="/assets/lang/' . $v['filter_lang'] . '/flag.png" width="15">';
+        $flag = '<img src="'.return_language_flag_src($v['filter_lang']).'" width="15">';
 
         $get_filter_items = se_get_product_filter_values($group_id);
 

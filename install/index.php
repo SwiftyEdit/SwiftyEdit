@@ -93,10 +93,10 @@ if($modus == "update") {
 				echo '<h3 class="text-center">Choose your Language ...</h3><hr>';
 				echo '<div class="row">';
 				echo '<div class="col-md-6">';
-				echo '<p class="text-center"><a href="index.php?l=de"><img src="../assets/lang/de/flag.png" class="img-rounded"><br>DE</a></p>';
+				echo '<p class="text-center"><a href="index.php?l=de"><img src="'.return_language_flag_src('de').'" class="img-rounded"><br>DE</a></p>';
 				echo '</div>';
 				echo '<div class="col-md-6">';
-				echo '<p class="text-center"><a href="index.php?l=en"><img src="../assets/lang/en/flag.png" class="img-rounded"><br>EN</a></p>';
+				echo '<p class="text-center"><a href="index.php?l=en"><img src="'.return_language_flag_src('en').'" class="img-rounded"><br>EN</a></p>';
 				echo '</div>';
 				echo '</div>';
 			}

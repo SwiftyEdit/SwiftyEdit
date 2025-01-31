@@ -383,7 +383,7 @@ foreach($all_filters as $k => $v) {
         }
     }
 
-    $flag = '<img src="/assets/lang/' . $v['filter_lang'] . '/flag.png" width="15">';
+    $flag = '<img src="'.return_language_flag_src($v['filter_lang']).'" width="15">';
 
     $filter_list .= '<div class="toggle-item '.$toggle_class.' card mb-1">';
     $filter_list .= '<div class="card-header">'.$flag.' '.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
@@ -455,7 +455,7 @@ foreach($all_products as $prod) {
 
     $prod_id = $prod['id'];
     $prod_language = $prod['product_lang'];
-    $flag = '<img src="/core/lang/' . $prod_language . '/flag.png" width="15">';
+    $flag = '<img src="'.return_language_flag_src($prod_language).'" width="15">';
     $prod_title = $prod['title'];
     $checked_prod = '';
     if(is_array($get_prod_related)) {
@@ -484,7 +484,7 @@ foreach($all_products as $prod) {
 
     $prod_id = $prod['id'];
     $prod_language = $prod['product_lang'];
-    $flag = '<img src="/core/lang/' . $prod_language . '/flag.png" width="15">';
+    $flag = '<img src="'.return_language_flag_src($prod_language).'" width="15">';
     $prod_title = $prod['title'];
     $checked_accessory = '';
     if(is_array($get_prod_accessories)) {
