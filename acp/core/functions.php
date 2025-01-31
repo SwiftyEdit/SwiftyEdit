@@ -592,9 +592,9 @@ function generate_xml_sitemap() {
 	global $db_content;
     global $se_prefs;
 	
-	$file = "../sitemap.xml";
-	$tpl_sitemap = file_get_contents('templates/sitemap.tpl');
-	$tpl_sitemap_urlset = file_get_contents('templates/sitemap_urlset.tpl');
+	$file = SE_PUBLIC."/sitemap.xml";
+	$tpl_sitemap = file_get_contents('../acp/templates/sitemap.tpl');
+	$tpl_sitemap_urlset = file_get_contents('../acp/templates/sitemap_urlset.tpl');
 
 		$results = $db_content->select("se_pages", "*", [
 			"AND" => [
