@@ -81,6 +81,8 @@ if(is_array($bcmenu)) {
 	}
 }
 
+$arr_mainmenu = [];
+$arr_subnmenu = [];
 if(is_array($mainmenu)) {
 	$arr_mainmenu = array_filter(array_values($mainmenu));
 }
