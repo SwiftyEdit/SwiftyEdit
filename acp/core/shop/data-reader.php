@@ -4,13 +4,14 @@ $writer_uri = '/admin/shop/edit/';
 $duplicate_uri = '/admin/shop/duplicate/';
 
 $global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
-if(is_array($global_filter_languages)) {
-    $shop_filter['languages'] = implode("-", $global_filter_languages);
-}
+$global_filter_status = json_decode($_SESSION['global_filter_status'],true);
+$global_filter_label = json_decode($_SESSION['global_filter_label'],true);
 
 include '../acp/core/templates.php';
 global $lang_codes;
 
+$se_labels = se_get_labels();
+$se_categories = se_get_categories();
 
 /**
  * list active keywords from search input
@@ -121,8 +122,41 @@ if($_REQUEST['action'] == 'list_products') {
         ];
     }
 
+    // global language filter
+    $filter_by_language = array();
+    if(is_array($global_filter_languages)) {
+        $lang_filter = array_filter($global_filter_languages);
+        $filter_by_language = [
+            "product_lang[~]" => $lang_filter
+        ];
+    }
+
+    // global status filter
+    // global status for ghost = 4 in but in products = 3
+    $filter_by_status = array();
+    if(is_array($global_filter_status)) {
+        $status_filter = array_filter($global_filter_status);
+        $index = array_search(4,$status_filter);
+        if ($index !== false) {
+            $status_filter[$index] = 3;
+        }
+        $filter_by_status = [
+            "status[~]" => $status_filter
+        ];
+    }
+
+    // global label filter
+    $filter_by_label = array();
+    if(is_array($global_filter_label)) {
+        $label_filter = array_filter($global_filter_label);
+        $filter_by_label = [
+            "labels[~]" => $label_filter
+        ];
+    }
+
+
     $db_where = [
-        "AND" => $filter_base+$filter_by_str+$filter_by_keyword+$filter_by_category
+        "AND" => $filter_base+$filter_by_str+$filter_by_keyword+$filter_by_category+$filter_by_language+$filter_by_status+$filter_by_label
     ];
 
     $db_order = [
@@ -152,6 +186,17 @@ if($_REQUEST['action'] == 'list_products') {
     foreach($products_data as $product) {
 
         $product_id = (int) $product['id'];
+        $add_row_class = '';
+        $add_label = '';
+
+        if($product['status'] == '2') {
+            $add_row_class = 'item_is_draft';
+            $add_label = '<span class="badge badge-se">'.$lang['status_draft'].'</span>';
+        }
+        if($product['status'] == '3') {
+            $add_row_class = 'item_is_ghost';
+            $add_label = '<span class="badge badge-se">'.$lang['status_ghost'].'</span>';
+        }
 
         /* trim teaser to $trim chars */
         $trimmed_teaser = se_return_first_chars($product['teaser'],100);
@@ -166,6 +211,41 @@ if($_REQUEST['action'] == 'list_products') {
         $show_items_dates = '<span class="text-muted small">'.$published_date.' | '.$lastedit_date.' | '.$release_date.'</span>';
 
         $product_lang_thumb = '<img src="'.return_language_flag_src($product['product_lang']).'" width="15" title="'.$product['product_lang'].'" alt="'.$product['product_lang'].'">';
+
+        // labels
+        $get_labels = explode(',',$product['labels']);
+        $label = '';
+        if($product['labels'] != '') {
+            $label = '<p>';
+            foreach($get_labels as $labels) {
+
+                foreach($se_labels as $l) {
+                    if($labels == $l['label_id']) {
+                        $label_color = $l['label_color'];
+                        $label_title = $l['label_title'];
+                    }
+                }
+
+                $label .= '<span class="label-dot" style="background-color:'.$label_color.';" title="'.$label_title.'"></span>';
+            }
+            $label .= '</p>';
+        }
+
+        // categories
+        $get_categories = explode('<->',$product['categories']);
+        $categories = '';
+        if($product['categories'] != '') {
+            foreach($get_categories as $cats) {
+
+                foreach($se_categories as $cat) {
+                    if($cats == $cat['cat_hash']) {
+                        $cat_title = $cat['cat_name'];
+                        $cat_description = $cat['cat_description'];
+                    }
+                }
+                $categories .= '<span class="text-muted small" title="'.$cat_description.'">'.$icon['tags'].' '.$cat_title.'</span> ';
+            }
+        }
 
         // thumbnail
         $prod_image = explode("<->", $product['images']);
@@ -227,18 +307,60 @@ if($_REQUEST['action'] == 'list_products') {
         $btn_duplicate_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $btn_duplicate_tpl .= '</form>';
 
-        echo '<tr>';
+
+        // price tag from product or from price groups
+
+        if($product['product_price_group'] != '' AND $product['product_price_group'] != 'null') {
+            $price_data = se_get_price_group_data($product['product_price_group']);
+            $product_tax = $price_data['tax'];
+            $product_price_net = $price_data['price_net'];
+            $product_volume_discounts = $price_data['price_volume_discount'];
+        } else {
+            $product_tax = $product['product_tax'];
+            $product_price_net = $product['product_price_net'];
+            $product_volume_discounts = $product['product_price_volume_discounts'];
+        }
+
+        if ($product_tax == '1') {
+            $tax = $se_settings['posts_products_default_tax'];
+        } else if ($product['product_tax'] == '2') {
+            $tax = $se_settings['posts_products_tax_alt1'];
+        } else {
+            $tax = $se_settings['posts_products_tax_alt2'];
+        }
+
+        if (empty($product_price_net)) {
+            $product_price_net = 0;
+        }
+
+        $post_price_net = str_replace('.', '', $product_price_net);
+        $post_price_net = str_replace(',', '.', $post_price_net);
+
+        $post_price_gross = $post_price_net * ($tax + 100) / 100;
+
+        $post_price_net_format = se_post_print_currency($post_price_net);
+        $post_price_gross_format = se_post_print_currency($post_price_gross);
+
+        $show_items_price = '<div class="card p-2 text-nowrap">';
+        $show_items_price .= '<span class="small">' . $product['product_currency'] . ' ' . $post_price_net_format . '</span>';
+        $show_items_price .= '<span class="small"> + ' . $tax . '%</span>';
+        $show_items_price .= '<span class="text-success">' . $product['product_currency'] . ' ' . $post_price_gross_format . '</span>';
+        $show_items_price .= '</div>';
+
+        echo '<tr class="'.$add_row_class.'">';
         echo '<td>'.$product['id'].'</td>';
         echo '<td>'.$icon_fixed_form.'</td>';
         echo '<td>'.$prio_form.'</td>';
         echo '<td>'.$show_thumb.'</td>';
         echo '<td>';
-        echo '<h6>'.$product_lang_thumb.' '.$product['title'].'</h6>'.$trimmed_teaser.'<br>'.$show_items_dates;
+        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' '.$add_label.'</h6>'.$trimmed_teaser.'<br>'.$show_items_dates;
+        echo $label;
+        echo $categories;
         if($edit_variant_select != '') {
             echo $edit_variant_select;
         }
         echo '</td>';
-        echo '<td>'.$product['product_price_net'].'</td>';
+        echo '<td>'.$show_items_price.'</td>';
         echo '<td>'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
         echo '</tr>';
     }
