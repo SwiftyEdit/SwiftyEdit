@@ -30,7 +30,9 @@ const INSTALLER = TRUE;
 require '../install/php/functions.php';
 require __DIR__.'/functions.php';
 
-echo '<div id="updateResponse"></div>';
+echo '<div id="updateResponse">';
+echo '<div id="updateIndicator" class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+echo '</div>';
 
 if(!extension_loaded('zip')) {
     echo '<div class="alert alert-danger mb-4">The required extension <strong>ZIP</strong> is not installed</div>';
@@ -42,8 +44,7 @@ echo '<div class="col-6">';
 echo '<div class="card h-100">';
 echo '<div class="card-header">'.$icon['database'].'  '. $se_base_url .'</div>';
 echo '<div class="card-body">';
-echo '<p>Version: '.$se_version['version'].'<br>(Build '.$se_version['build'].')</p>';
-echo '<p>Date: '.$se_version_date.'</p>';
+echo '<p>Version: '.$se_version['version'].'<br>Build '.$se_version['build'].'<br>Date: '.$se_version['date'].'</p>';
 echo '</div>';
 echo '</div>';
 

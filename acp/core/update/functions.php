@@ -11,17 +11,17 @@ function compare_versions() {
     $version_file = file_get_contents(SE_ROOT.'version.json');
     $se_version = json_decode($version_file, true);
 
-    echo '<ul class="list-group list-group-flush">';
+    echo '<ul class="list-group list-group-flush mb-1">';
     echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
     echo 'Version: '.$remote_versions_array['version']['stable']['title'] .'<br>';
     echo 'Build: '.$remote_versions_array['version']['stable']['build'] .'<br>';
     echo 'Date: ' .$remote_versions_array['version']['stable']['date'];
     $update_stable = '';
     if($se_version['build'] < $remote_versions_array['version']['stable']['build']) {
-        echo '<button class="btn btn-primary">'.$lang['btn_choose_this_update'].'</button>';
+        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="stable">'.$lang['btn_choose_this_update'].'</button>';
         $update_stable = $lang['update_msg_stable'];
     } else {
-        echo '<button class="btn btn-primary" disabled>'.$lang['btn_choose_this_update'].'</button>';
+        echo '<button class="btn btn-default" disabled>'.$lang['btn_choose_this_update'].'</button>';
     }
     echo '</li>';
     echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
@@ -30,10 +30,10 @@ function compare_versions() {
     echo 'Date: '.$remote_versions_array['version']['beta']['date'];
     $update_beta = '';
     if($se_version['build'] < $remote_versions_array['version']['beta']['build']) {
-        echo '<button class="btn btn-primary">'.$lang['btn_choose_this_update'].'</button>';
+        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="beta">'.$lang['btn_choose_this_update'].'</button>';
         $update_beta = $lang['update_msg_beta'];
     } else {
-        echo '<button class="btn btn-primary" disabled>'.$lang['btn_choose_this_update'].'</button>';
+        echo '<button class="btn btn-default" disabled>'.$lang['btn_choose_this_update'].'</button>';
     }
     echo '</li>';
     echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
@@ -43,15 +43,15 @@ function compare_versions() {
     $update_alpha = '';
     echo '<div class="w-50">';
     if($se_version['build'] < $remote_versions_array['version']['alpha']['build']) {
-        echo '<button class="btn btn-primary btn-sm w-100">'.$lang['btn_choose_this_update'].'</button>';
+        echo '<button class="btn btn-default btn-sm w-100" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].'</button>';
         $update_alpha = $lang['update_msg_alpha'];
     } else {
-        echo '<button class="btn btn-primary btn-sm w-100" disabled>'.$lang['btn_choose_this_update'].'</button>';
+        echo '<button class="btn btn-default btn-sm w-100" disabled>'.$lang['btn_choose_this_update'].'</button>';
     }
     if($se_environment == 'd') {
         $filename_alpha = basename($remote_versions_array['version']['alpha']['file']);
         $hx_vals += ["file" => "$filename_alpha"];
-        echo '<button class="btn btn-default btn-sm w-100" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
+        echo '<button class="btn btn-default btn-sm w-100 mt-1" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
     }
     echo '</div>';
 
@@ -113,11 +113,16 @@ function move_new_files($source) {
 
 
     /* at first, the install folder */
+    rmdir_recursive('../install');
     copy_recursive($sources_path.$sources_dir."/install","../install");
 
     /* payment addons */
     copy_recursive($sources_path.$sources_dir."/plugins/se_invoice-pay","../plugins/se_invoice-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/se_cash-pay","../plugins/se_cash-pay");
+
+    if(!is_array($new_files)) {
+        $_SESSION['protocol'] .= "ERROR can not scan target files<|>";
+    }
 
     /* now copy the other files and directories */
     foreach($new_files as $value) {
@@ -127,16 +132,12 @@ function move_new_files($source) {
         if(str_contains("$value","/plugins/")) { continue; }
         if(str_contains("$value",".github")) { continue; }
         if(str_contains("$value",".idea")) { continue; }
-        if(str_starts_with("$value",".")) { continue; }
-        if(str_starts_with("$value","..")) { continue; }
+        if(str_starts_with(basename($value),".")) { continue; }
         if($value === '.' || $value === '..') {continue;}
         if(str_contains("$value","robots.txt")) { continue; }
 
-
-        /**
-         * copy files from 'download/extract/*'
-         */
-        $target = '../' . substr($value, strlen($sources_path.$sources_dir));
+        // copy files from 'download/extract/*'
+        $target = '..' . substr($value, strlen($sources_path.$sources_dir));
         copy_recursive("$value","$target");
 
     }
@@ -176,8 +177,6 @@ function scandir_recursive($dir) {
  */
 function copy_recursive($source, $target) {
 
-    $_SESSION['protocol'] .= "start copy_recursive ... <|>";
-
     if(is_dir($source)) {
         if(!is_dir("$target")) {
             $_SESSION['protocol'] .= "missing: $target <|>";
@@ -197,7 +196,6 @@ function copy_recursive($source, $target) {
                 //continue;
             }
             copy($sub, $target . '/' . $entry);
-            $_SESSION['protocol'] .= '<b>copied:</b> '.$sub.' to '.$target.'/'.$entry.'<|>';
         }
 
         $dir->close();

@@ -18,7 +18,6 @@ if(isset($_POST['load_update_data'])) {
 
     $source_file = 'https://swiftyedit.net/releases/v2/files/'.$remote_file;
 
-    echo 'Loading file ... '. $source_file;
     $download_dir = __DIR__.'/download/';
     $extract_dir = __DIR__.'/download/extract';
     mkdir("$extract_dir",0777,true);
@@ -31,8 +30,9 @@ if(isset($_POST['load_update_data'])) {
     if($archive->open("$download_dir/$remote_file") === TRUE) {
         $archive->extractTo("$extract_dir");
         $archive->close();
+        echo '<div class="alert alert-info">Download complete. File: '.basename($remote_file).'</div>';
     } else {
-        echo '<div class="alert alert-warning mb-4">Error: can not open zip file</div>';
+        echo '<div class="alert alert-warning">Error: can not open zip file</div>';
     }
     header( "HX-Trigger: update_downloads_list");
     exit;
