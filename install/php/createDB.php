@@ -475,5 +475,5 @@ $dbh_posts->query($sql_mailbox_table);
 
 
 echo '<div class="alert alert-success">'.$lang['installed'].' | Admin: '.$username.'</div>';
-echo '<hr><a class="btn btn-success" href="../admin/">'.$lang['link_admin'].'</a><hr>';
+echo '<hr><a class="btn btn-success" href="/admin/">'.$lang['link_admin'].'</a><hr>';
 

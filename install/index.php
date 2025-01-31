@@ -5,14 +5,14 @@
  * Installer/Updater
  */
 session_start();
-error_reporting(E_ALL ^E_NOTICE);
+error_reporting(0);
 require '../vendor/autoload.php';
 require '../config.php';
 
 $modus = 'install';
 const INSTALLER = TRUE;
 
-if(isset($_GET['l']) && is_dir(SE_ROOT.'public/assets/lang/'.basename($_GET['l']).'/')) {
+if(isset($_GET['l']) && is_dir(SE_ROOT.'languages/'.basename($_GET['l']).'/')) {
 	$_SESSION['lang'] = basename($_GET['l']);
 }
 
@@ -26,10 +26,10 @@ if(!isset($_SESSION['lang']) || $_SESSION['lang'] == '') {
 
 include 'php/functions.php';
 
-$json_backend = file_get_contents(SE_ROOT.'public/assets/lang/'.$l.'/backend.json');
+$json_backend = file_get_contents(SE_ROOT.'languages/'.$l.'/backend.json');
 $data_backend = json_decode($json_backend,true);
 
-$json_install = file_get_contents(SE_ROOT.'public/assets/lang/'.$l.'/install.json');
+$json_install = file_get_contents(SE_ROOT.'languages/'.$l.'/install.json');
 $data_install = json_decode($json_install,true);
 
 $lang_data = array_merge($data_backend,$data_install);
