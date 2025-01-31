@@ -11,7 +11,7 @@ if(isset($_POST['pagination'])) {
 }
 
 // save or update products
-if(isset($_POST['save_product'])) {
+if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
     foreach($_POST as $key => $val) {
         if(is_string($val)) {
@@ -169,7 +169,7 @@ if(isset($_POST['save_product'])) {
         $form_header_message = $lang['msg_success_db_changed'];
         show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"updated product id: $id","6");
-    } else if($_POST['save_product'] == "save_variant") {
+    } else if(is_numeric($_POST['save_variant'])) {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
         $modus = 'update';
@@ -256,7 +256,41 @@ if(isset($_POST['save_price'])) {
     }
 }
 
+// change priority
+if(isset($_POST['priority'])) {
+    $change_id = (int) $_POST['prio_id'];
+    $db_posts->update("se_products", [
+        "priority" => (int) $_POST['priority']
+    ],[
+        "id" => $change_id
+    ]);
+    header( "HX-Trigger: update_products_list");
+    exit;
+}
 
+// remove fixed status
+if(isset($_POST['rfixed'])) {
+    $change_id = (int) $_POST['rfixed'];
+    $db_posts->update("se_products", [
+        "fixed" => "2"
+    ],[
+        "id" => $change_id
+    ]);
+    header( "HX-Trigger: update_products_list");
+    exit;
+}
+
+// set fixed status
+if(isset($_POST['sfixed'])) {
+    $change_id = (int) $_POST['sfixed'];
+    $db_posts->update("se_products", [
+        "fixed" => "1"
+    ],[
+        "id" => $change_id
+    ]);
+    header( "HX-Trigger: update_products_list");
+    exit;
+}
 
 if(isset($_POST['set_filter_cat'])) {
 
