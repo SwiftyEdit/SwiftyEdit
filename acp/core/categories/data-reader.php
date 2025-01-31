@@ -16,7 +16,7 @@ if($_REQUEST['action'] == 'list') {
             $cats['cat_id'] => $cats['cat_hash']
         ];
 
-        $flag = '<img src="/assets/lang/' . $cats['cat_lang'] . '/flag.png" width="15">';
+        $flag = '<img src="'.return_language_flag_src($cats['cat_lang']).'" width="15">';
 
         $show_thumb = '';
 
@@ -29,7 +29,7 @@ if($_REQUEST['action'] == 'list') {
             $show_thumb .= '<div class="show-thumb" style="background-image: url(\'/assets/themes/administration/images/no-image.png\');">';
         }
 
-        $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-default text-danger" 
+        $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-sm btn-default text-danger" 
                             hx-post="/admin/categories/write/"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="none"

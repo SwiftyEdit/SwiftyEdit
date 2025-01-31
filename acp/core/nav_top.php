@@ -19,23 +19,19 @@ echo '</button>';
 
 
 /**
- * choose language
+ * select language
  */
 
-$lang_key = array_search($_SESSION['lang'],$all_langs);
-$selected_lang_flag = '<img src="/assets/lang/'.$_SESSION['lang'].'/flag.png" style="vertical-align: baseline; width:18px; height:auto;">';
+$selected_lang_flag = '<img src="'.$active_lang[$_SESSION['lang']]['flag'].'" style="vertical-align: baseline; width:18px; height:auto;">';
 
 echo '<div class="dropstart me-1">';
-
 echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$selected_lang_flag.'</a>';
-
 echo '<ul class="dropdown-menu">';
 foreach($active_lang as $k => $v) {
     $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
     echo '<li><a class="dropdown-item" href="acp.php?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a></li>';
 }
 echo '</ul>';
-
 echo '</div>';
 
 /**

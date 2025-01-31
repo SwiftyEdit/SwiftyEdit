@@ -211,7 +211,7 @@ function se_list_pages($data,$type="sorted") {
             $page_thumb_src = str_replace('../content/images/','/images/',$page_thumbs[0]);
         }
 
-        $page_lang_thumb = '<img src="/assets/lang/'.$page_language.'/flag.png" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
+        $page_lang_thumb = '<img src="'.return_language_flag_src($page_language).'" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
 
         if($page_template == "use_standard") {
             $show_template_name =  $lang['label_default_template'];

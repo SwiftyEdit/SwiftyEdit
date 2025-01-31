@@ -27,7 +27,7 @@ if($_REQUEST['action'] == 'list_categories') {
     echo '<div class="list-group list-group-flush">';
     foreach($get_categories as $c) {
 
-        $cat_lang_thumb = '<img src="/assets/lang/'.$c['cat_lang'].'/flag.png" width="15" alt="'.$c['cat_lang'].'">';
+        $cat_lang_thumb = '<img src="'.return_language_flag_src($c['cat_lang']).'" width="15" alt="'.$c['cat_lang'].'">';
         $active = '';
         if(str_contains($_SESSION['filter_posts_categories'],$c['cat_hash'])) {
             $active = 'active';
@@ -188,7 +188,7 @@ if($_REQUEST['action'] == 'list_posts') {
             $draft_class = 'item_is_draft';
         }
 
-        $post_lang_thumb = '<img src="/assets/lang/'.$post['post_lang'].'/flag.png" width="15" title="'.$post['post_lang'].'" alt="'.$post['post_lang'].'">';
+        $post_lang_thumb = '<img src="'.return_language_flag_src($post['post_lang']).'" width="15" title="'.$post['post_lang'].'" alt="'.$post['post_lang'].'">';
 
         $trimmed_teaser = se_return_first_chars($post['post_teaser'],100);
 

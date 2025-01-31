@@ -168,7 +168,7 @@ if($_REQUEST['action'] == 'list_snippets') {
         $duplicate_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $duplicate_button .=  '</form>';
 
-        $snippet_lang_thumb = '<img src="/assets/lang/'.$snippet['snippet_lang'].'/flag.png" width="15" title="'.$snippet['snippet_lang'].'" alt="'.$snippet['snippet_lang'].'">';
+        $snippet_lang_thumb = '<img src="'.return_language_flag_src($snippet['snippet_lang']).'" width="15" title="'.$snippet['snippet_lang'].'" alt="'.$snippet['snippet_lang'].'">';
 
         echo '<tr>';
         echo '<td>'.$snippet_lang_thumb.'</td>';
