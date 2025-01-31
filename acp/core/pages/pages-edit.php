@@ -82,8 +82,8 @@ $input_text_page_permalink = [
 ];
 
 $input_text_page_canonical_url = [
-    "input_name" => "page_permalink",
-    "input_value" => $page_permalink,
+    "input_name" => "page_canonical_url",
+    "input_value" => $page_canonical_url,
     "label" => 'Canonical URL',
     "type" => "text"
 ];
