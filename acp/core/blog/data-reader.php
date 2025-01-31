@@ -1,5 +1,8 @@
 <?php
 
+$se_labels = se_get_labels();
+$se_categories = se_get_categories();
+
 // search
 if($_REQUEST['action'] == 'list_active_searches') {
     if(isset($_SESSION['posts_text_filter']) AND $_SESSION['posts_text_filter'] != "") {
@@ -168,6 +171,8 @@ if($_REQUEST['action'] == 'list_posts') {
     echo '<td>'.$lang['type'].'</td>';
     echo '<td></td>';
     echo '<td></td>';
+    echo '<td></td>';
+    echo '<td></td>';
     echo '</tr>';
     foreach($posts_data as $post) {
 
@@ -225,7 +230,7 @@ if($_REQUEST['action'] == 'list_posts') {
         $categories = '';
         if($post['post_categories'] != '') {
             foreach($get_post_categories as $cats) {
-                foreach($arr_categories as $cat) {
+                foreach($se_categories as $cat) {
                     if($cats == $cat['cat_hash']) {
                         $cat_title = $cat['cat_name'];
                         $cat_description = $cat['cat_description'];
