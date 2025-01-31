@@ -35,7 +35,7 @@ if($_REQUEST['action'] == 'list_pages') {
 
 if($_REQUEST['action'] == 'list_snippets') {
 
-    $get_snippets = $db_content->select("se_snippets", ["snippet_id", "snippet_type", "snippet_name", "snippet_title", "snippet_lastedit"], [
+    $get_snippets = $db_content->select("se_snippets", ["snippet_id", "snippet_type", "snippet_name", "snippet_title", "snippet_content", "snippet_lastedit"], [
         "OR" => [
             "snippet_type[~]" => ["snippet","snippet_core"]
         ],
@@ -45,12 +45,18 @@ if($_REQUEST['action'] == 'list_snippets') {
 
     echo '<table class="table table-sm">';
     foreach($get_snippets as $snippet) {
+
+        $snippet_content = strip_tags($snippet['snippet_content']);
+        if(strlen($snippet_content) > 150) {
+            $snippet_content = substr($snippet_content, 0, 100) . ' <small><i>(...)</i></small>';
+        }
+
         echo '<tr>';
         echo '<td class="text-nowrap">'.se_format_datetime($snippet['snippet_lastedit']).'</td>';
-        echo '<td class="w-100"><kbd>'.$snippet['snippet_title'].'</kbd> <small>'.$snippet['snippet_title'].'</small></td>';
+        echo '<td class="w-100"><h6><span class="badge text-bg-secondary">'.$snippet['snippet_name'].'</span> '.$snippet['snippet_title'].'</h6><small>'.$snippet_content.'</small></td>';
         echo '<td>';
         echo '<form action="/admin/snippets/edit/" method="post">';
-        echo '<button class="btn btn-default" name="page_id" value="'.$snippet['snippet_id'].'">'.$icon['edit'].'</button>';
+        echo '<button class="btn btn-default" name="snippet_id" value="'.$snippet['snippet_id'].'">'.$icon['edit'].'</button>';
         echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         echo '</form>';
         echo '</td>';
@@ -73,6 +79,10 @@ if($_REQUEST['action'] == 'list_posts') {
         "ORDER" => ["post_lastedit" => "DESC"],
         "LIMIT" => 5
     ]);
+
+    if(count($get_posts) < 1) {
+        echo '<div class="alert alert-info">'.$lang['msg_no_entries_found'].'</div>';
+    }
 
     echo '<table class="table table-sm">';
     foreach($get_posts as $post) {
@@ -103,6 +113,10 @@ if($_REQUEST['action'] == 'list_products') {
         "LIMIT" => 5
     ]);
 
+    if(count($get_products) < 1) {
+        echo '<div class="alert alert-info">'.$lang['msg_no_entries_found'].'</div>';
+    }
+
     echo '<table class="table table-sm">';
     foreach($get_products as $product) {
         $trimmed_teaser = se_return_first_chars($product['teaser'],100);
@@ -131,6 +145,10 @@ if($_REQUEST['action'] == 'list_events') {
         "ORDER" => ["lastedit" => "DESC"],
         "LIMIT" => 5
     ]);
+
+    if(count($get_events) < 1) {
+        echo '<div class="alert alert-info">'.$lang['msg_no_entries_found'].'</div>';
+    }
 
     echo '<table class="table table-sm">';
     foreach($get_events as $event) {
