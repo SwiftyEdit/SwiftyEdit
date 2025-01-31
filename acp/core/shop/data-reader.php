@@ -11,13 +11,60 @@ if(is_array($global_filter_languages)) {
 include '../acp/core/templates.php';
 global $lang_codes;
 
+
+/**
+ * list active keywords from search input
+ * used in sidebar
+ */
+if($_REQUEST['action'] == 'list_active_searches') {
+
+    if(isset($_SESSION['products_text_filter']) AND $_SESSION['products_text_filter'] != "") {
+        unset($all_filter);
+        $all_filter = explode(" ", $_SESSION['products_text_filter']);
+
+        foreach($all_filter as $f) {
+            if($_REQUEST['rm_keyword'] == "$f") { continue; }
+            if($f == "") { continue; }
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/shop/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+        }
+    }
+
+    if(isset($btn_remove_keyword)) {
+        echo '<div class="d-inline">';
+        echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+        echo '</div><hr>';
+    }
+    exit;
+}
+
+// list all keywords
+// used in sidebar
+if($_REQUEST['action'] == 'list_keyword_btn') {
+    $get_keywords = se_get_products_keywords();
+    arsort($get_keywords);
+    $vals = ['csrf_token' => $_SESSION['token']];
+    echo '<div class="scroll-container">';
+    foreach($get_keywords as $k => $v) {
+        $k = trim($k);
+        if(str_contains($_SESSION['products_keyword_filter'],$k)) {
+            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/shop/write/" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+        } else {
+            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/shop/write/" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+        }
+    }
+    echo '</div>';
+    exit;
+}
+
+
+// list products
 if($_REQUEST['action'] == 'list_products') {
 
     // defaults
     $order_by = 'lastedit';
     $order_direction = 'DESC';
     $limit_start = $_SESSION['pagination_products_page'] ?? 0;
-    $nbr_show_items = 20;
+    $nbr_show_items = 10;
 
     $match_str = $_SESSION['products_text_filter'] ?? '';
     $keyword_str = $_SESSION['products_keyword_filter'] ?? '';
@@ -56,11 +103,11 @@ if($_REQUEST['action'] == 'list_products') {
 
     $filter_by_keyword = array();
     if($keyword_str != '') {
-        $this_filter = explode(" ",$keyword_str);
+        $this_filter = explode(",",$keyword_str);
         foreach($this_filter as $f) {
             if($f == "") { continue; }
             $filter_by_keyword = [
-                "tags[~]" => "%$f%"
+                "tags[~]" => "$f"
             ];
         }
     }
