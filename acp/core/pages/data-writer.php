@@ -145,11 +145,6 @@ if(isset($_POST['save_page'])) {
     // delete the smarty cache for this page
     se_delete_smarty_cache(md5($_POST['page_permalink']));
 
-    if($_POST['page_status'] == 'ghost' OR $_POST['page_status'] == 'public') {
-        se_update_or_insert_index($_POST['page_permalink']);
-    }
-
     show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: updated_pages");
-
 }
