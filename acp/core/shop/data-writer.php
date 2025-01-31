@@ -1,13 +1,63 @@
 <?php
 //error_reporting(E_ALL);
 
-/**
- * pagination
- */
-
+// pagination
 if(isset($_POST['pagination'])) {
     $_SESSION['pagination_products_page'] = (int) $_POST['pagination'];
     header( "HX-Trigger: update_products_list");
+}
+
+// text search
+if(isset($_POST['products_text_filter'])) {
+    $_SESSION['products_text_filter'] = $_SESSION['products_text_filter'] . ' ' . sanitizeUserInputs($_POST['products_text_filter']);
+    header( "HX-Trigger: update_products_list");
+}
+
+// remove keyword from filter list
+if(isset($_POST['rmkey'])) {
+    $all_filter = explode(" ", $_SESSION['products_text_filter']);
+    $_SESSION['products_text_filter'] = '';
+    foreach($all_filter as $f) {
+        if($_POST['rmkey'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['products_text_filter'] .= "$f ";
+    }
+    header( "HX-Trigger: update_products_list");
+}
+
+// search by keyword
+if(isset($_POST['add_keyword'])) {
+    $_SESSION['products_keyword_filter'] = $_SESSION['products_keyword_filter'] . ',' . sanitizeUserInputs($_POST['add_keyword']);
+    header( "HX-Trigger: update_products_list");
+    exit;
+}
+
+// remove keyword from filter
+if(isset($_POST['remove_keyword'])) {
+    $all_keywords_filter = explode(",", $_SESSION['products_keyword_filter']);
+    $_SESSION['products_keyword_filter'] = '';
+    echo $_POST['remove_keyword'];
+    foreach($all_keywords_filter as $f) {
+        if($_POST['remove_keyword'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['products_keyword_filter'] .= $f.',';
+    }
+    header( "HX-Trigger: update_products_list");
+    exit;
+}
+
+// sorting
+if(isset($_POST['sorting_products'])) {
+    $_SESSION['sorting_products'] = sanitizeUserInputs($_POST['sorting_products']);
+    header( "HX-Trigger: update_products_list");
+    exit;
+}
+
+if(isset($_POST['sorting_products_dir'])) {
+    echo $_POST['sorting_products_dir'];
+    $_SESSION['sorting_products_direction'] = sanitizeUserInputs($_POST['sorting_products_dir']);
+    header( "HX-Trigger: update_products_list");
+    exit;
 }
 
 // save or update products
@@ -188,9 +238,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
 }
 
-/**
- * save or update price groups
- */
+// save or update price groups
 if(isset($_POST['save_price'])) {
     $group_title = sanitizeUserInputs($_POST['title']);
     $unit = sanitizeUserInputs($_POST['unit']);

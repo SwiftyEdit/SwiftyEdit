@@ -1054,3 +1054,29 @@ function se_get_price_group_data($hash) {
     ]);
     return $data;
 }
+
+/**
+ * @return array
+ * get all keywords
+ * key is the keyword, value the counter
+ */
+function se_get_products_keywords() {
+
+    global $db_posts;
+
+    $get_keywords = $db_posts->select("se_products", "tags",[
+        "tags[!]" => ""
+    ]);
+
+    $get_keywords = array_filter( $get_keywords );
+    foreach($get_keywords as $keys) {
+        $keys_string .= trim($keys).',';
+    }
+    $keys_string = str_replace(', ', ',', $keys_string);
+    $keys_string = str_replace(' ,', ',', $keys_string);
+    $keys_array = explode(",",$keys_string);
+    $keys_array = array_filter( $keys_array );
+    $count_keywords = array_count_values($keys_array);
+
+    return $count_keywords;
+}
