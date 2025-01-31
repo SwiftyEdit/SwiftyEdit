@@ -13,6 +13,7 @@ $subinc = match (true) {
     str_starts_with($query, 'shop/options/') => 'options',
     str_starts_with($query, 'shop/prices/') => 'prices',
     str_starts_with($query, 'shop/new/') => 'products-edit',
+    str_starts_with($query, 'shop/duplicate/') => 'products-edit',
     str_starts_with($query, 'shop/edit/') => 'products-edit',
     str_starts_with($query, 'shop') => 'products-list',
     default => 'products-list'

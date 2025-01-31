@@ -6,6 +6,7 @@ $form_header_mode = $lang['btn_new'];
 $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">'.$lang['save'].'</button>';
 $btn_update = '';
 $btn_delete = '';
+$submit_variant_btn = '';
 
 if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
@@ -21,6 +22,7 @@ if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $form_mode = 'new';
     $btn_submit_text = $lang['duplicate'];
     $form_header_mode = 'Duplicate: '.$get_product_id;
+    $submit_variant_btn = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="'.$get_product_id.'">'.$lang['submit_variant'].'</button>';
 }
 
 if(is_int($get_product_id)) {

@@ -30,7 +30,7 @@ if($_REQUEST['action'] == 'list_products') {
 
     $filter_base = [
         "AND" => [
-            "id[>]" => 0
+            "type" => 'p'
         ]
     ];
 
@@ -132,22 +132,65 @@ if($_REQUEST['action'] == 'list_products') {
             $show_thumb = '<div class="show-thumb" style="background-image: url(/assets/themes/administration/images/no-image.png);">';
         }
 
+        // variants
+        $variants = [];
+        $variants = se_get_product_variants($product_id);
+        $cnt_variants = count($variants);
+
+        $edit_variant_select = '';
+        if($cnt_variants > 1) {
+            $edit_variant_select = '<form class="mt-2" action="/admin/shop/edit/" method="POST">';
+            $edit_variant_select .= '<div class="dropdown">';
+            $edit_variant_select .= '<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['label_product_variants'].' ('.$cnt_variants.')</button>';
+            $edit_variant_select .= '<ul class="dropdown-menu">';
+            foreach($variants as $variant) {
+                $edit_variant_select .= '<li><button class="dropdown-item" name="product_id" value="'.$variant['id'].'" type="submit">'.$variant['id'].' '.$variant['title'].'</button></li>';
+            }
+            $edit_variant_select .= '</ul>';
+            $edit_variant_select .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+            $edit_variant_select .= '</form>';
+        }
+
+        // fix button
+        $icon_fixed_form = '<form hx-post="/admin/shop/write/" method="POST" class="form-inline">';
+        if($product['fixed'] == '1') {
+            $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="rfixed" value="'.$product['id'].'">'.$icon['star'].'</button>';
+        } else {
+            $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="sfixed" value="'.$product['id'].'">'.$icon['star_outline'].'</button>';
+        }
+        $icon_fixed_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $icon_fixed_form .= '</form>';
+
+        // priority form
+        $prio_form  = '<form hx-post="/admin/shop/write/" hx-trigger="keyup changed delay:1s" method="POST">';
+        $prio_form .= '<input type="number" name="priority" value="'.$product['priority'].'" class="form-control" style="max-width:150px">';
+        $prio_form .= '<input type="hidden" name="prio_id" value="'.$product['id'].'">';
+        $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $prio_form .= '</form>';
+
+
         // buttons
         $btn_edit_tpl  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
         $btn_edit_tpl .= '<button class="btn btn-default" name="product_id" value="'.$product_id.'">'.$icon['edit'].'</button>';
-        $btn_edit_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_edit_tpl .=  '</form>';
+        $btn_edit_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $btn_edit_tpl .= '</form>';
 
         $btn_duplicate_tpl  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
         $btn_duplicate_tpl .= '<button class="btn btn-default" name="duplicate_id" value="'.$product_id.'">'.$icon['copy'].'</button>';
-        $btn_duplicate_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_duplicate_tpl .=  '</form>';
+        $btn_duplicate_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $btn_duplicate_tpl .= '</form>';
 
         echo '<tr>';
         echo '<td>'.$product['id'].'</td>';
-        echo '<td>'.$product['fixed'].'</td>';
+        echo '<td>'.$icon_fixed_form.'</td>';
+        echo '<td>'.$prio_form.'</td>';
         echo '<td>'.$show_thumb.'</td>';
-        echo '<td><h6>'.$product_lang_thumb.' '.$product['title'].'</h6>'.$trimmed_teaser.'<br>'.$show_items_dates.'</td>';
+        echo '<td>';
+        echo '<h6>'.$product_lang_thumb.' '.$product['title'].'</h6>'.$trimmed_teaser.'<br>'.$show_items_dates;
+        if($edit_variant_select != '') {
+            echo $edit_variant_select;
+        }
+        echo '</td>';
         echo '<td>'.$product['product_price_net'].'</td>';
         echo '<td>'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
         echo '</tr>';
