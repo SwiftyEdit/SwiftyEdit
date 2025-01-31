@@ -110,9 +110,7 @@ if(isset($_POST['delete_post'])) {
 // save or update post
 
 if(isset($_POST['save_post'])) {
-
-    print_r($_POST);
-
+    
     foreach($_POST as $key => $val) {
         if(is_string($val)) {
             $$key = @htmlspecialchars($val, ENT_QUOTES);
