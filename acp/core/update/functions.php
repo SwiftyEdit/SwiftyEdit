@@ -18,6 +18,8 @@ function compare_versions() {
     echo 'Date: ' .$remote_versions_array['version']['stable']['date'];
     $update_stable = '';
     if($se_version['build'] < $remote_versions_array['version']['stable']['build']) {
+        $filename_stable = basename($remote_versions_array['version']['stable']['file']);
+        $hx_vals += ["file" => "$filename_stable"];
         echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="stable">'.$lang['btn_choose_this_update'].'</button>';
         $update_stable = $lang['update_msg_stable'];
     } else {
@@ -30,6 +32,8 @@ function compare_versions() {
     echo 'Date: '.$remote_versions_array['version']['beta']['date'];
     $update_beta = '';
     if($se_version['build'] < $remote_versions_array['version']['beta']['build']) {
+        $filename_beta = basename($remote_versions_array['version']['beta']['file']);
+        $hx_vals += ["file" => "$filename_beta"];
         echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="beta">'.$lang['btn_choose_this_update'].'</button>';
         $update_beta = $lang['update_msg_beta'];
     } else {
@@ -43,6 +47,8 @@ function compare_versions() {
     $update_alpha = '';
     echo '<div class="w-50">';
     if($se_version['build'] < $remote_versions_array['version']['alpha']['build']) {
+        $filename_alpha = basename($remote_versions_array['version']['alpha']['file']);
+        $hx_vals += ["file" => "$filename_alpha"];
         echo '<button class="btn btn-default btn-sm w-100" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].'</button>';
         $update_alpha = $lang['update_msg_alpha'];
     } else {
