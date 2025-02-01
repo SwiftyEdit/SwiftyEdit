@@ -33,12 +33,6 @@ if(is_file('../config_database.php')) {
 } else {
     $db_type = 'sqlite';
 
-    if(isset($se_content_files) && is_array($se_content_files)) {
-        /* switch database file $se_db_content */
-        include '../core/contentSwitch.php';
-    }
-
-
     define("CONTENT_DB", "$se_db_content");
     define("USER_DB", "$se_db_user");
     define("STATS_DB", "$se_db_stats");
@@ -66,7 +60,7 @@ if(is_file('../config_database.php')) {
 
 require '../acp/core/functions.php';
 require '../core/functions/func_userdata.php';
-require '../public/assets/lang/index.php';
+require '../languages/index.php';
 $login = '';
 
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
