@@ -18,6 +18,7 @@ composer.phar
 /data/cache/cache/*
 /data/cache/templates_c/*
 /data/config.php
+/data/includes/*
 
 # Database files and generated content #
 *.sqlite

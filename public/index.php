@@ -162,8 +162,13 @@ if(!isset($query)) {
     $query = '/';
 }
 
-if(is_file(SE_CONTENT.'/plugins/query.controller.php')) {
-    include SE_CONTENT.'/plugins/query.controller.php';
+/**
+ * query.controller.php
+ * This is a very old include function.
+ * However, we are leaving it in place for reasons of compatibility
+ */
+if(is_file(SE_CONTENT.'/includes/query.controller.php')) {
+    include SE_CONTENT.'/includes/query.controller.php';
 }
 
 if($query == 'logout' OR (isset($_GET['goto']) && ($_GET['goto'] == 'logout'))) {
@@ -323,7 +328,6 @@ if(!empty($page_contents['page_modul'])) {
 }
 
 /* START SMARTY */
-//require_once('lib/Smarty/Smarty.class.php');
 $smarty = new Smarty;
 $smarty->setErrorReporting(0);
 $smarty->setCompileDir('../data/cache/templates_c/');
