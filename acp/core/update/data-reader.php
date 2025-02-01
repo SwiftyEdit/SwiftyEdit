@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/functions.php';
+require_once __DIR__.'/functions.php';
 
 if($_GET['action'] == 'read_versions') {
 
