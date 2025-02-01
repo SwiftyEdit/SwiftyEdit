@@ -27,7 +27,7 @@ if(SE_SECTION == 'frontend') {
         $lang[str_replace('.','_',$key)] = $value;
     }
 
-	$extend_lf = SE_ROOT.'/plugins/lang_'.$languagePack.'.php';
+	$extend_lf = SE_CONTENT.'/includes/lang_'.$languagePack.'.php';
 
 } elseif(SE_SECTION == 'backend') {
 
@@ -47,7 +47,7 @@ if(SE_SECTION == 'frontend') {
         $lang[str_replace('.','_',$key)] = $value;
     }
 
-    $extend_lf = SE_ROOT.'/plugins/lang_'.$languagePack.'.php';
+    $extend_lf = SE_CONTENT.'/includes/lang_'.$languagePack.'.php';
 
 } else {
 	die();
