@@ -72,6 +72,7 @@ $check_this[] = SE_PUBLIC . "/assets/galleries";
 $check_this[] = SE_PUBLIC . '/assets/images';
 $check_this[] = SE_PUBLIC . '/assets/images_tmb';
 $check_this[] = SE_CONTENT . "/database";
+$check_this[] = SE_CONTENT . "/includes";
 
 sort($check_this,SORT_NATURAL | SORT_FLAG_CASE);
 
