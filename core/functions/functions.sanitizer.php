@@ -170,11 +170,11 @@ function se_sanitize_page_inputs($data) {
         }
 
         // thumbnails
-        if($key == 'picker1_images') {
-            if(count($data['picker1_images']) > 1) {
-                $page_thumbnail = implode("<->", $_POST['picker1_images']);
+        if($key == 'picker_0') {
+            if(count($data['picker_0']) > 1) {
+                $page_thumbnail = implode("<->", $_POST['picker_0']);
             } else {
-                $pt = $_POST['picker1_images'];
+                $pt = $_POST['picker_0'];
                 $page_thumbnail = $pt[0];
             }
             $sanitized['page_thumbnail'] = se_return_clean_value($page_thumbnail);

@@ -38,7 +38,7 @@ if(is_int($get_page_id)) {
 
 
 $input_text_page_sort = [
-    "input_name" => "page_sort",
+    "input_name" => "page_order",
     "input_value" => $page_sort,
     "label" => $lang['label_pages_position'],
     "type" => "text"
@@ -240,14 +240,28 @@ $input_select_language = [
     "type" => "select"
 ];
 
+/* image widget */
 $images = se_get_all_media_data('image');
 $images = se_unique_multi_array($images,'media_file');
-$page_thumbnail_array = explode('&lt;-&gt;', html_entity_decode($page_thumbnail));
+$array_images = explode("&lt;-&gt;", $page_thumbnail_array);
+$draggable = '';
+if(is_array($array_images)) {
+    $array_images = array_filter($array_images);
+    foreach($array_images as $image) {
+        $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
+        $image_src = str_replace('../images/','/images/',$image_src);
+        $draggable .= '<div class="list-group-item draggable" data-id="'.$image.'">';
+        $draggable .= '<div class="d-flex flex-row gap-2">';
+        $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
+        $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
+        $draggable .= '</div>';
+        $draggable .= '</div>';
+    }
+}
 
-$input_select_thumbnail = [
-    "type" => 'code',
-    "code" => se_select_img_widget($images,$page_thumbnail_array,$se_settings['pagethumbnail_prefix'],1)
-];
+$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
+$choose_images .= '<div id="imgWidget" hx-post="/admin/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= 'Loading Images ...</div>';
 
 $input_select_page_categories_mode = [
     "input_name" => "page_categories_mode",
@@ -521,7 +535,7 @@ $form_tpl .= $checkbox_robots;
 
 $form_tpl .= '</div>';
 $form_tpl .= '<div class="col-md-6">';
-$form_tpl .= se_print_form_input($input_select_thumbnail);
+$form_tpl .= $choose_images;
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
