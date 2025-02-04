@@ -1,5 +1,16 @@
 <?php
 
+// give the plugins the possibility to write via xhr
+$path = explode('/', $_REQUEST['query']);
+$plugin = basename($path[2]);
+$plugin_base = '/admin/addons/plugin/' . $plugin . '/';
+$plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
+$plugin_writer_file = SE_ROOT.'plugins/'.$plugin.'/backend/writer.php';
+if(is_file("$plugin_writer_file")) {
+    include_once "$plugin_writer_file";
+    exit;
+}
+
 // save the default template
 if(isset($_POST['save_default_layout'])) {
 

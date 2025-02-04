@@ -2,32 +2,13 @@
 
 $pm_prefs_file = $this_addon_root.'/pm_config.php';
 
-if(isset($_POST['save_invoice_prefs'])) {
-
-    $pm_prefs_content_file = file_get_contents($this_addon_root.'/pm_config.tpl');
-
-    $invoice_pay_additional_costs = sanitizeUserInputs($_POST['invoice_pay_additional_costs']);
-    $invoice_pay_snippet_cart = sanitizeUserInputs($_POST['invoice_pay_snippet']);
-
-    $pm_prefs_content = str_replace("{addon_name}","se_invoice.pay",$pm_prefs_content_file);
-    $pm_prefs_content = str_replace("{addon_additional_costs}","$invoice_pay_additional_costs",$pm_prefs_content);
-    $pm_prefs_content = str_replace("{addon_snippet_cart}","$invoice_pay_snippet_cart",$pm_prefs_content);
-
-    if(file_put_contents($pm_prefs_file,$pm_prefs_content, LOCK_EX)) {
-        show_toast("Saved Preferences","success");
-    }
-
-}
-
 if(is_file($pm_prefs_file)) {
     include $pm_prefs_file;
 }
 
-
+echo '<div id="response"></div>';
 echo '<div class="card p-3">';
-
-echo '<form action="'.$this_addon_root_url.'/settings/" method="POST">';
-
+echo '<form hx-post="/admin/addons/plugin/se_invoice-pay/write/" hx-target="#response" method="POST">';
 echo '<div class="mb-3">';
 echo '<label class="form-label">Additional Costs</label>';
 echo '<input class="form-control" type="text" name="invoice_pay_additional_costs" value="'.$addon_payment_prefs['addon_additional_costs'].'">';
@@ -52,8 +33,11 @@ foreach($get_payment_snippets as $snippet) {
 echo '</select>';
 echo '</div>';
 
-echo '<button type="submit" class="btn btn-default" name="save_invoice_prefs">Save</button>';
+echo '<button type="submit" class="btn btn-default" name="save_settings">Save</button>';
 echo $hidden_csrf_token;
 echo '</form>';
+echo '</div>';
+
+echo '<div class="card p-3">';
 
 echo '</div>';

@@ -5,6 +5,18 @@ if(!isset($languagePack)) {
     $languagePack = $_SESSION['lang'] ?? 'en';
 }
 
+// give the plugins the possibility to read via xhr
+$path = explode('/', $_REQUEST['query']);
+$plugin = basename($path[2]);
+$plugin_base = '/admin/addons/plugin/' . $plugin . '/';
+$plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
+$plugin_reader_file = $plugin_root.'backend/reader.php';
+if(is_file("$plugin_reader_file")) {
+    include_once "$plugin_reader_file";
+    exit;
+}
+
+
 
 // list all plugins
 if($_REQUEST['action'] == 'list_plugins') {
