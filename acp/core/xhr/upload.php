@@ -325,8 +325,8 @@ function se_write_media_data_name($filename,$store_tmb_name,$filesize,$time,$med
     global $db_content;
     global $languagePack;
 
-    $filename = str_replace("assets/","../",$filename);
-    $store_tmb_name = str_replace("assets/","../",$store_tmb_name);
+    $filename = str_replace("assets/","/",$filename);
+    $store_tmb_name = str_replace("assets/","/",$store_tmb_name);
     $uploader = $_SESSION['user_nick'];
 
     $columns = [

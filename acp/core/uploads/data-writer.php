@@ -10,11 +10,11 @@ if(isset($_POST['delete'])) {
     $delete_id = (int) $_POST['delete'];
     $get_file_data = se_get_media_data_by_id($delete_id);
 
-    $delete_file = $get_file_data['media_file'];
-    $delete_thumb = $get_file_data['media_thumb'];
+    $delete_file = $get_file_data['media_file']; // f.e. /images/example.jpg
+    $delete_thumb = $get_file_data['media_thumb']; // f.e. /images_tmb/2025/02/...jpg
 
-    $delete_file_src = str_replace('../', 'assets/', $delete_file);
-    $delete_thumb_src = str_replace('../', 'assets/', $delete_thumb);
+    $delete_file_src = 'assets'.$delete_file;
+    $delete_thumb_src = 'assets'.$delete_thumb;
 
     if(is_file($delete_file_src)) {
         if(unlink($delete_file_src)) {

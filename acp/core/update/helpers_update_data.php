@@ -22,6 +22,12 @@ if($_POST['helper_update_table'] == 'se_content') {
     $db_content->replace("se_media", ["media_file" => [ "$search" => "$replace" ]]);
     echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
 
+    // thumbnails
+    $search = '../content/images_tmb/';
+    $replace = '/images_tmb/';
+    $db_content->replace("se_media", ["media_thumb" => [ "$search" => "$replace" ]]);
+    echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
+
     // replace absolute path
     $search = '/content/images/';
     $replace = '/images/';

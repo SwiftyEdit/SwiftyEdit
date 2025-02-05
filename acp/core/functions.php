@@ -914,7 +914,7 @@ function se_write_media_data($data) {
 		$string_labels = "";
 	}	
 		
-	$filetype = mime_content_type(realpath($data['filename']));
+	$filetype = mime_content_type(realpath('assets'.$data['filename']));
 	
 	$cnt = $db_content->count("se_media", [
 		"AND" => [
