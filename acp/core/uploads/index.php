@@ -7,9 +7,13 @@ include 'functions.php';
 
 $q = pathinfo($_REQUEST['query']);
 
+if(!isset($_SESSION['disk'])) {
+    $_SESSION['disk'] = 'assets/images/';
+}
+
 echo '<div class="subHeader d-flex align-items-center">';
 echo '<h3>'.$lang['uploads'].'</h3>';
-echo '<a href="/admin/categories/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
+echo '<button type="button" class="btn btn-default btn-sm text-success ms-auto" data-bs-toggle="modal" data-bs-target="#uploadModal"><i class="bi bi-upload"></i>Upload</button>';
 echo '</div>';
 
 echo '<div id="response"></div>';

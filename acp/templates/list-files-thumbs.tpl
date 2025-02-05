@@ -6,23 +6,12 @@
 			<p class="m-0 text-center"><small>{show_filetime} / {filesize}</small></p>
 			 {labels}
 		</div>
-		<div class="card-footer p-1">
-			<div  class="row">
-				<div class="col">
-					<form action="?tn=filebrowser&sub=edit" class="" method="POST">
-						{edit_button}
-						<input type="hidden" name="file" value="{filename}">
-						<input  type="hidden" name="csrf_token" value="{csrf_token}">
-					</form>
-				</div>
-				<div class="col">
-					<form action="?tn=filebrowser" class="" method="POST">
-						{delete_button}
-						<input type="hidden" name="file" value="{short_filename}">
-						<input  type="hidden" name="csrf_token" value="{csrf_token}">
-					</form>
-				</div>
-			</div>
+		<div class="card-footer p-1 d-flex justify-content">
+			<form action="/admin/uploads/edit/" method="POST" class="d-inline">
+			{edit_button}
+				<input type="hidden" name="csrf_token" value="{csrf_token}">
+			</form>
+			{delete_button}
 		</div>
 	</div>
 </div>

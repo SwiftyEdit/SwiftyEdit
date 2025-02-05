@@ -10,7 +10,7 @@ if($_REQUEST['action'] == 'list') {
     // defaults
     $order_by = 'media_lastedit';
     $order_direction = 'DESC';
-    $media_file = '../images';
+    $media_file = '/images';
     $limit_start = $_SESSION['pagination_page'] ?? 0;
     $nbr_show_items = 50;
     $nbr_show_pages = 10;
@@ -19,9 +19,14 @@ if($_REQUEST['action'] == 'list') {
         $limit_start = ($limit_start*$nbr_show_items);
     }
 
-
     $file_query = $_SESSION['disk'] ?? $media_file;
-    $file_query = str_replace('assets/', '../', $file_query);
+    $file_query = str_replace('assets/', '/', $file_query);
+
+    if(str_starts_with($file_query, '/images')) {
+        $tpl_list_files = file_get_contents('../acp/templates/list-files-thumbs.tpl');
+    } else {
+        $tpl_list_files = file_get_contents('../acp/templates/list-files-grid.tpl');
+    }
 
     $order_key = $_SESSION['sorting_media_list'] ?? $order_by;
     $order_direction = $_SESSION['sorting_direction'] ?? $order_direction;
@@ -29,13 +34,14 @@ if($_REQUEST['action'] == 'list') {
     if($_SESSION['uploads_text_filter'] != '') {
         $uploads_text_filter = trim($_SESSION['uploads_text_filter']);
     } else {
-        $uploads_text_filter = '../';
+        $uploads_text_filter = '/';
     }
 
     $media_where = [
         "AND" => [
             "media_id[>]" => 0,
             "media_file[~]" => ["AND" => ["$file_query%","%$uploads_text_filter%"]],
+            "media_lang" => "$languagePack"
         ]];
 
     $media_order = [
@@ -64,31 +70,46 @@ if($_REQUEST['action'] == 'list') {
 
     foreach($media_data as $media) {
 
+        $list_tpl = $tpl_list_files;
         $preview_src = str_replace('../', '/', $media['media_file']);
         $preview_filename = str_replace('/images/', '', $preview_src);
         $preview_lastedit = se_format_datetime($media['media_lastedit']);
         $preview_filesize = readable_filesize($media['media_filesize']);
+        $media_file_hits = (int) $media['media_file_hits'];
 
-        $delete_btn = '<button class="btn btn-default text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
+        $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
+        $edit_btn = '<button class="btn btn-default btn-sm text-success w-100" name="file" value="'.$media['media_file'].'" >'.$icon['edit'].'</button>';
 
 
-        echo '<div class="col-md-2">';
+        $labels = '';
+        if($media['media_labels'] != '') {
+            $get_media_labels = explode(',',$media['media_labels']);
+            foreach($get_media_labels as $media_label) {
 
-        echo '<div class="card h-100">';
-        echo '<div class="card-header">'.$preview_filename.'</div>';
-        echo '<img src="'.$preview_src.'" class="card-img-top">';
-        echo '<div class="card-body">';
-        echo $preview_lastedit.'<br>'.$preview_filesize;
-        echo '</div>';
-        echo '<div class="card-footer">';
+                foreach($se_labels as $l) {
+                    if($media_label == $l['label_id']) {
+                        $label_color = $l['label_color'];
+                        $label_title = $l['label_title'];
+                    }
+                }
 
-        echo '<a class="btn btn-default text-success" href="'.$writer_uri.$media['media_id'].'/">'.$icon['edit'].'</a>';
-        echo $delete_btn;
+                $labels .= '<span class="label-dot" style="background-color:'.$label_color.';" title="'.$label_title.'"></span>';
+            }
+        }
 
-        echo '</div>';
-        echo '</div>';
 
-        echo '</div>';
+        $list_tpl = str_replace("{short_filename}","$preview_filename",$list_tpl);
+        $list_tpl = str_replace("{preview_img}",'<img src="'.$preview_src.'" class="card-img-top">',$list_tpl);
+        $list_tpl = str_replace("{show_filetime}","$preview_lastedit",$list_tpl);
+        $list_tpl = str_replace("{filesize}","$preview_filesize",$list_tpl);
+        $list_tpl = str_replace("{media_file_hits}","$media_file_hits",$list_tpl);
+        $list_tpl = str_replace("{labels}","$labels",$list_tpl);
+        $list_tpl = str_replace("{edit_button}","$edit_btn",$list_tpl);
+        $list_tpl = str_replace("{delete_button}","$delete_btn",$list_tpl);
+        $list_tpl = str_replace("{csrf_token}",$_SESSION['token'],$list_tpl);
+
+        echo $list_tpl;
+
     }
 
     echo '</div>';
