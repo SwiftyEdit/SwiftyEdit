@@ -137,7 +137,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $images = $product_images_string;
     }
 
-    $product_price_net = str_replace('.', '', $_POST['product_price_net']);
+    $product_price_net = se_sanitize_price($_POST['product_price_net']);
 
     /* labels */
     $product_labels = '';
@@ -194,7 +194,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
             $vd_price[] = [
                 'amount' => (int) $_POST['product_vd_amount'][$i],
-                'price' => $_POST['product_vd_price'][$i]
+                'price' => se_sanitize_price($_POST['product_vd_price'][$i])
             ];
 
         }

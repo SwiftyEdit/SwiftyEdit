@@ -78,6 +78,33 @@ function se_clean_query($str) {
 	return $str; 	
 }
 
+/**
+ * @param $input
+ * @return array|string|string[]|null
+ */
+function se_sanitize_price($input): array|string|null {
+    // Remove all non-numeric characters except commas and dots
+    $input = preg_replace('/[^0-9,.]/', '', $input);
+
+    // If multiple commas exist, keep only the first one
+    $parts = explode(',', $input);
+    if (count($parts) > 2) {
+        $input = $parts[0] . ',' . implode('', array_slice($parts, 1));
+    }
+
+    // Check if there is only one dot and no comma, then replace the dot with a comma
+    if (substr_count($input, '.') === 1 && strpos($input, ',') === false) {
+        $input = str_replace('.', ',', $input);
+    }
+
+    // If both a dot and a comma exist, remove all commas
+    if (strpos($input, '.') !== false && strpos($input, ',') !== false) {
+        $input = str_replace(',', '', $input);
+    }
+
+    return $input;
+}
+
 
 /**
  * sanitize user inputs
