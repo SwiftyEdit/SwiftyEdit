@@ -13,6 +13,13 @@ if($_POST['helper_update_table'] == 'se_content') {
     $db_content->replace("se_snippets", ["snippet_content" => ["$search" => "$replace"]]);
     $db_content->replace("se_snippets", ["snippet_images" => ["$search" => "$replace"]]);
     $db_content->replace("se_categories", ["cat_thumbnail" => ["$search" => "$replace"]]);
+    $db_content->replace("se_media", ["media_file" => [ "$search" => "$replace" ]]);
+    echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
+
+    // files
+    $search = '../content/files/';
+    $replace = '/files/';
+    $db_content->replace("se_media", ["media_file" => [ "$search" => "$replace" ]]);
     echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
 
     // replace absolute path
