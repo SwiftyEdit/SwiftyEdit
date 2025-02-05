@@ -9,9 +9,9 @@
 		<meta name="generator" content="SwiftyEdit" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<!-- styles -->
-		<link rel="stylesheet" media="screen" href="/styles/default/css/theme_dark.css" />
+		<link rel="stylesheet" media="screen" href="/themes/default/dist/default.css" />
 		<!-- JavaScript -->
-		<script type="text/javascript" src="/styles/default/js/main.min.js"></script>
+		<script type="text/javascript" src="/themes/default/dist/theme.js"></script>
 
 <style>
 	.cover-container {
@@ -34,7 +34,7 @@
 				<input type="text" class="form-control" name="maintenance-access-code" value="">
 				</div>
 				<button class="btn btn-primary">Access</button>
-
+				{$hidden_csrf_token}
 			</form>
 		</div>
 		</main>
