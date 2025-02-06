@@ -89,14 +89,16 @@ if($_REQUEST['action'] == 'list_plugins') {
 
         echo '<div class="btn-toolbar mt-1">';
         echo '<div class="btn-group">';
-        foreach($v['navigation'] as $nav) {
+        if(array_key_exists('navigation',$v)) {
+            foreach ($v['navigation'] as $nav) {
 
-            $nav_text = $nav['text'];
-            if(array_key_exists($nav['text'],$addon_lang)) {
-                $nav_text = $addon_lang[$nav['text']];
+                $nav_text = $nav['text'];
+                if (array_key_exists($nav['text'], $addon_lang)) {
+                    $nav_text = $addon_lang[$nav['text']];
+                }
+
+                echo '<a href="/admin/addons/plugin/' . $k . '/' . $nav['file'] . '/" class="btn btn-sm btn-default">' . $nav_text . '</a>';
             }
-
-            echo '<a href="/admin/addons/plugin/'.$k.'/'.$nav['file'].'/" class="btn btn-sm btn-default">'.$nav_text.'</a>';
         }
         echo '</div>';
         echo '<div class="btn-group ms-auto">';

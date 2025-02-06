@@ -47,12 +47,8 @@ function buffer_script(string $script, string $parameters=NULL) {
 	}
 
 	ob_start();
-	if(is_file("./content/plugins/$script")) {
-		include './content/plugins/'.$script;
-	} else if (is_dir("./content/plugins/$script")) {
-		if(is_file("./content/plugins/$script/index.php")) {
-			include './content/plugins/'.$script.'/index.php';
-		}
+	if(is_file(SE_ROOT."plugins/$script/index.php")) {
+		include SE_ROOT."plugins/$script/index.php";
 	}
 
 	$content = ob_get_clean();
