@@ -33,7 +33,7 @@ function get_all_plugins() {
 
 
 
-function se_get_all_addons() {
+function se_get_all_addons(): array {
 
     $addons_root = SE_ROOT."/plugins/";
     $scanned_directory = array_diff(scandir($addons_root), array('..', '.','.DS_Store'));
