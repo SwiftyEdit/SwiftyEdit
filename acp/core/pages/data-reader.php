@@ -1,4 +1,7 @@
 <?php
+
+use Medoo\Medoo;
+
 $writer_uri = '/admin/pages/edit/';
 $duplicate_uri = '/admin/pages/duplicate/';
 
@@ -20,43 +23,180 @@ if(!isset($_SESSION['sorting_single_pages_dir'])) {
     $_SESSION['sorting_single_pages_dir'] = $sort_single_pages_direction;
 }
 
+// list pages
+if($_REQUEST['action'] == 'list_pages') {
 
-if(is_array($global_filter_languages)) {
-    $pages_filter['languages'] = implode("-", $global_filter_languages);
-}
-if(is_array($global_filter_status)) {
-    $pages_filter['status'] = implode("-", $global_filter_status);
-}
-if(is_array($global_filter_label)) {
-    $pages_filter['labels'] = implode("-", $global_filter_label);
-}
+    $type = (int) $_REQUEST['type']; // 1 = sorted 2 = single
 
-$pages_filter['types'] = $_SESSION['checked_page_type_string'];
-$pages_filter['text'] = $_SESSION['pages_text_filter'];
-$pages_filter['keywords'] = $_SESSION['pages_keyword_filter'];
-$pages_filter['sort_by'] = $_SESSION['sorting_single_pages'];
-$pages_filter['sort_direction'] = $_SESSION['sorting_single_pages_dir'];
+    // defaults
+    $order_by = 'page_lastedit';
+    $order_direction = 'DESC';
+    $limit_start = $_SESSION['pagination_get_pages'] ?? 0;
+    $nbr_show_items = (int) ($_SESSION['items_per_page'] ?? 25);
 
-/**
- * sorted pages
- */
-if($_REQUEST['action'] == 'list_pages_sorted') {
-    $pages_filter['sort_type'] = 'sorted';
-    $pages = se_get_pages($pages_filter);
-    $sorted_pages = se_list_pages($pages,"sorted");
-    echo $sorted_pages;
-    exit;
-}
+    $match_str = $_SESSION['pages_text_filter'] ?? '';
+    $keyword_str = $_SESSION['pages_keyword_filter'] ?? '';
+    $page_type_str = $_SESSION['checked_page_type_string'] ?? '';
+    $order_key = $_SESSION['sorting_single_pages'] ?? $order_by;
+    $order_direction = $_SESSION['sorting_single_pages_dir'] ?? $order_direction;
 
-/**
- * single pages
- */
-if($_REQUEST['action'] == 'list_pages_single') {
-    $pages_filter['sort_type'] = 'single';
-    $pages = se_get_pages($pages_filter);
-    $single_pages = se_list_pages($pages,"single");
-    echo $single_pages;
-    exit;
+    if($limit_start > 0) {
+        $limit_start = ($limit_start*$nbr_show_items);
+    }
+
+    if ($type == 1) {
+        $filter_base = [
+            'AND' => [
+                'AND' => [
+                    'page_sort[!]' => null,
+                    'page_sort[!] #empty' => ''
+                ]
+            ]
+        ];
+    } else {
+        $filter_base = [
+            'AND' => [
+                'OR' => [
+                    'page_sort' => null,
+                    'page_sort #empty' => ''
+                ]
+            ]
+        ];
+    }
+
+    // text search
+    $filter_by_str = [];
+    if($match_str != '') {
+        $this_filter = explode(" ",$match_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_str = [
+                "OR" => [
+                    "page_title[~]" => "%$f%",
+                    "page_meta_description[~]" => "%$f%",
+                    "page_meta_keywords[~]" => "%$f%",
+                    "page_content[~]" => "%$f%",
+                    "page_content_values[~]" => "%$f%",
+                    "page_permalink[~]" => "%$f%"
+                ]
+            ];
+        }
+    }
+
+    // filter by keywords
+    $filter_by_keyword = [];
+    if($keyword_str != '') {
+        $this_filter = explode(",",$keyword_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_keyword = [
+                "page_meta_keywords[~]" => "$f"
+            ];
+        }
+    }
+
+    // filter by page types
+    $filter_by_page_types = [];
+    if($page_type_str != '') {
+        $this_filter = explode(" ",$page_type_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_page_types = [
+                "page_type_of_use[~]" => "$f"
+            ];
+        }
+    }
+
+    // global language filter
+    $filter_by_language = [];
+    if(is_array($global_filter_languages)) {
+        $lang_filter = array_filter($global_filter_languages);
+        $filter_by_language = [
+            "page_language[~]" => $lang_filter
+        ];
+    }
+
+    // global status filter and redirects
+    $filter_by_status = [];
+    $filter_by_redirect = [];
+    if(is_array($global_filter_status)) {
+        $status_filter = array_filter($global_filter_status);
+
+        $index = array_search(5,$status_filter);
+        if ($index !== false) {
+            $filter_by_redirect = [
+                "page_redirect[!]" => ' '
+            ];
+        }
+
+        $index = array_search(1,$status_filter);
+        if ($index !== false) { $status_filter[$index] = 'public'; }
+        $index = array_search(2,$status_filter);
+        if ($index !== false) { $status_filter[$index] = 'draft'; }
+        $index = array_search(3,$status_filter);
+        if ($index !== false) { $status_filter[$index] = 'private'; }
+        $index = array_search(4,$status_filter);
+        if ($index !== false) { $status_filter[$index] = 'ghost'; }
+        $index = array_search(5,$status_filter);
+        if ($index !== false) { $status_filter[$index] = 'redirect'; }
+        $filter_by_status = [
+            "page_status[~]" => $status_filter
+        ];
+    }
+
+    // global label filter
+    $filter_by_label = [];
+    if(is_array($global_filter_label)) {
+        $label_filter = array_filter($global_filter_label);
+        $filter_by_label = [
+            "page_labels[~]" => $label_filter
+        ];
+    }
+
+    $db_where = [
+        "AND" => $filter_base+$filter_by_str+$filter_by_keyword+$filter_by_page_types+$filter_by_language+$filter_by_status+$filter_by_redirect+$filter_by_label
+    ];
+
+    // order single pages
+    $db_order = [
+        "ORDER" => [
+            "$order_key" => "$order_direction"
+        ]
+    ];
+
+    if($type == 1) {
+        $db_order = [
+            "ORDER" => Medoo::raw("page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC")
+        ];
+    }
+
+    $db_limit = [
+        "LIMIT" => [$limit_start, $nbr_show_items]
+    ];
+
+    $pages_data_cnt = $db_content->count("se_pages", $db_where);
+    $pages_data = $db_content->select("se_pages","*",
+        $db_where+$db_order+$db_limit
+    );
+
+    $nbr_pag_pages = ceil($pages_data_cnt/$nbr_show_items);
+    
+    echo '<div class="card p-3">';
+    echo '<div class="d-flex justify-content-end">';
+    echo '<div>';
+    echo se_print_pagination('/admin/pages/write/',$nbr_pag_pages,$_SESSION['pagination_get_pages']);
+    echo '</div>';
+    echo '<div class="ps-3">';
+    echo '<div class="input-group mb-3">';
+    echo '<input type="number" class="form-control" hx-post="/admin/pages/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name=\'csrf_token\']" name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
+    echo '<span class="input-group-text" id="basic-addon2"> / '.$pages_data_cnt.'</span>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+    echo se_list_pages($pages_data);
+    echo '</div>';
+
+
 }
 
 /**
@@ -149,7 +289,7 @@ if(isset($_GET['page_info'])) {
  * @return string
  */
 
-function se_list_pages($data,$type="sorted") {
+function se_list_pages($data) {
 
     global $item_template, $global_filter_status, $lang, $icon, $hidden_csrf_token, $se_labels, $writer_uri, $duplicate_uri;
 
@@ -168,16 +308,6 @@ function se_list_pages($data,$type="sorted") {
     }
 
     for($i=0;$i<$cnt_pages;$i++) {
-
-
-        if($type == 'sorted' && $data[$i]['page_sort'] == "") {
-            continue;
-        }
-
-        if($type == 'single' && ($data[$i]['page_sort'] != "" OR $data[$i]['page_sort'] == 'portal')) {
-            continue;
-        }
-
 
         unset($show_redirect,$page_modul);
         $indent = 0;

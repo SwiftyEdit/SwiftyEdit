@@ -15,10 +15,12 @@ if(!isset($_SESSION['show_page_type'])) {
 }
 if($_GET['set_type'] == 'sorted') {
     $_SESSION['show_page_type'] = 'sorted';
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
 }
 
 if($_GET['set_type'] == 'single') {
     $_SESSION['show_page_type'] = 'single';
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
 }
 
 echo '<div class="app-container">';
@@ -29,10 +31,10 @@ echo '<div class="col-md-9">';
 
 if($_SESSION['show_page_type'] == 'sorted') {
     $card_title = $lang['nav_btn_structured_pages'];
-    $hx_uri = $reader_uri.'?action=list_pages_sorted';
+    $hx_uri = $reader_uri.'?action=list_pages&type=1';
 } else {
     $card_title = $lang['nav_btn_single_pages'];
-    $hx_uri = $reader_uri.'?action=list_pages_single';
+    $hx_uri = $reader_uri.'?action=list_pages&type=2';
 }
 
 echo '<div class="card">';
@@ -128,9 +130,6 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
-
-
-
 
 
 echo '</div>';
