@@ -547,9 +547,9 @@ $form_tpl .= '<div class="tab-pane" id="theme-tab" role="tabpanel" tabindex="0">
 // check if this page can handle theme values
 if($get_page['page_template'] == 'use_standard') {
     // get theme from prefernces
-    $theme_base = '../public/assets/themes/'.$se_settings['template'];
+    $theme_base = SE_ROOT.'public/assets/themes/'.$se_settings['template'];
 } else {
-    $theme_base = '../public/assets/themes/'.$get_page['page_template'];
+    $theme_base = SE_ROOT.'public/assets/themes/'.$get_page['page_template'];
 }
 
 $page_value_injector = $theme_base.'/php/page_values.php';
