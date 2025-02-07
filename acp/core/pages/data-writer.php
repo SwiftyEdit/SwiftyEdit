@@ -1,12 +1,25 @@
 <?php
 
-//print_r($_POST);
+// pagination
+if(isset($_POST['pagination'])) {
+    $_SESSION['pagination_get_pages'] = (int) $_POST['pagination'];
+    header( "HX-Trigger: update_pages_list");
+    exit;
+}
+
+// items per page
+if(isset($_POST['items_per_page'])) {
+    $_SESSION['items_per_page'] = (int) $_POST['items_per_page'];
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
+    header( "HX-Trigger: update_pages_list");
+    exit;
+}
 
 if(isset($_POST['pages_text_filter'])) {
-
     $_SESSION['pages_text_filter'] = $_SESSION['pages_text_filter'] . ' ' . sanitizeUserInputs($_POST['pages_text_filter']);
-
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
     header( "HX-Trigger: update_pages_list");
+    exit;
 }
 
 /* remove keyword from filter list */
@@ -18,12 +31,15 @@ if(isset($_POST['rmkey'])) {
         if($f == "") { continue; }
         $_SESSION['pages_text_filter'] .= "$f ";
     }
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
     header( "HX-Trigger: update_pages_list");
+    exit;
 }
 
 if(isset($_POST['add_keyword'])) {
     $_SESSION['pages_keyword_filter'] = $_SESSION['pages_keyword_filter'] . ',' . sanitizeUserInputs($_POST['add_keyword']);
     header( "HX-Trigger: update_pages_list");
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
     exit;
 }
 
@@ -37,6 +53,7 @@ if(isset($_POST['remove_keyword'])) {
         $_SESSION['pages_keyword_filter'] .= $f.',';
     }
     header( "HX-Trigger: update_pages_list");
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
     exit;
 }
 
@@ -55,6 +72,8 @@ if(isset($_POST['filter_type'])) {
     }
 
     header( "HX-Trigger: update_pages_list");
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
+    exit;
 }
 
 
@@ -69,7 +88,9 @@ if(isset($_POST['sorting_single_pages_asc'])) {
     }
 
     $_SESSION['sorting_single_pages_dir'] = 'ASC';
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
     header( "HX-Trigger: update_pages_list");
+    exit;
 }
 
 if(isset($_POST['sorting_single_pages_desc'])) {
@@ -81,10 +102,11 @@ if(isset($_POST['sorting_single_pages_desc'])) {
         $_SESSION['sorting_single_pages'] = 'page_lastedit';
     }
     $_SESSION['sorting_single_pages_dir'] = 'DESC';
+    $_SESSION['pagination_get_pages'] = 0; // reset pagination
     header( "HX-Trigger: update_pages_list");
+    exit;
 }
 
-//print_r($_POST);
 
 // delete pages by id
 // delete from se_pages se_pages_cache and the assigned comments
