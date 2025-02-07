@@ -393,7 +393,7 @@ function se_increase_product_hits($product_id) {
 function se_add_to_cart() {
 	
 	global $db_content;
-	global $se_prefs;
+	global $se_settings;
 
 	$cart_product_id = (int) $_POST['add_to_cart'];
 	$cart_product_amount = 1;
@@ -433,11 +433,11 @@ function se_add_to_cart() {
 
 	
 	if($this_item['product_tax'] == '1') {
-		$cart_product_tax = $se_prefs['prefs_posts_products_default_tax'];
+		$cart_product_tax = $se_settings['posts_products_default_tax'];
 	} else if($this_item['product_tax'] == '2') {
-		$cart_product_tax = $se_prefs['prefs_posts_products_tax_alt1'];
+		$cart_product_tax = $se_settings['posts_products_tax_alt1'];
 	} else {
-		$cart_product_tax = $se_prefs['prefs_posts_products_tax_alt2'];
+		$cart_product_tax = $se_settings['posts_products_tax_alt2'];
 	}
 	
 	$db_content->insert("se_carts", [
