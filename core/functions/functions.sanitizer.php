@@ -107,10 +107,17 @@ function se_sanitize_price($input): array|string|null {
 
 
 /**
- * sanitize user inputs
+ * @param $str
+ * @param $type
+ * @param $flags
+ * @return mixed|string
  */
 
-function sanitizeUserInputs($str,$type='str',$flags=NULL) {
+function sanitizeUserInputs($str,$type='str',$flags=NULL): mixed {
+
+    if($str == '') {
+        return '';
+    }
 
 	if($type == 'str') {
 		$str = trim($str);	
@@ -119,7 +126,6 @@ function sanitizeUserInputs($str,$type='str',$flags=NULL) {
 	}
 	
 	return $str;
-
 }
 
 /**
