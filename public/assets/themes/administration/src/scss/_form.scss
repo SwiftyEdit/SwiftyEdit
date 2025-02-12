@@ -83,16 +83,55 @@ select.form-control {
 }
 
 
-/* image picker */
+/* image and products picker */
+
+[data-bs-theme="light"] {
+	.sortable_target {
+		border: 1px dashed rgba(0, 0, 0, 0.3);
+		background: repeating-linear-gradient(
+										45deg,
+										rgba(0, 0, 0, 0.05),
+										rgba(0, 0, 0, 0.05) 10px,
+										rgba(0, 0, 0, 0.15) 10px,
+										rgba(0, 0, 0, 0.15) 20px
+		);
+	}
+}
 
 .sortable_target {
-	background: rgba(0,0,0,0.2);
+	border: 1px dashed rgba(255, 255, 255, 0.4);
+	background: rgba(0, 0, 0, 0.2);
+	background: repeating-linear-gradient(
+									45deg,
+									rgba(0, 0, 0, 0.2),
+									rgba(0, 0, 0, 0.2) 10px,
+									rgba(0, 0, 0, 0.4) 10px,
+									rgba(0, 0, 0, 0.4) 20px
+	);
+
 	&::after {
 		padding: 15px;
 		content: "DROP IMAGES HERE";
 		opacity: 0.5;
 	}
+}
 
+.target_products {
+
+	&::after {
+		padding: 15px;
+		content: "DROP ITEMS HERE";
+		opacity: 0.5;
+	}
+}
+
+.draggable {
+	&:hover {
+		cursor: grab;
+	}
+	&:active {
+		cursor: grabbing;
+	}
 }
 
 div.image-checkbox {

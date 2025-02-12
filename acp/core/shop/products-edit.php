@@ -447,63 +447,56 @@ foreach($all_posts_features as $feature) {
 
 $all_products = se_get_all_products();
 
-$get_prod_related = json_decode($product_data['product_related'],true);
-
-$checkbox_related_prod = '<div class="filter-group">';
-$checkbox_related_prod .= '<input type="text" class="form-control filter-table-input" placeholder="Filter ...">';
-$checkbox_related_prod .= '<table class="table table-filter">';
-
+// temporary array for showing title and lang by product id
 foreach($all_products as $prod) {
-
-    $prod_id = $prod['id'];
-    $prod_language = $prod['product_lang'];
-    $flag = '<img src="'.return_language_flag_src($prod_language).'" width="15">';
-    $prod_title = $prod['title'];
-    $checked_prod = '';
-    if(is_array($get_prod_related)) {
-        if(array_search("$prod_id", $get_prod_related) !== false) {
-            $checked_prod = 'checked';
-        }
-    }
-
-    $checkbox_related_prod .= '<tr>';
-    $checkbox_related_prod .= '<td width="30"><input class="form-check-input" id="related_'.$prod_id.'" type="checkbox" name="product_related[]" value="'.$prod_id.'" '.$checked_prod.'></td>';
-    $checkbox_related_prod .= '<td width="30">'.$flag.'</td>';
-    $checkbox_related_prod .= '<td><label class="form-check-label" for="related_'.$prod_id.'">'.$prod_title.' <small class="text-muted">('.$id.')</small></label></td>';
-    $checkbox_related_prod .= '</tr>';
+    $temp_prod[$prod['id']] = [
+      "title" => $prod['title'],
+      "lang" => $prod['product_lang'],
+      "number" => $prod['product_number']
+    ];
 }
 
-$checkbox_related_prod .= '</table>';
-$checkbox_related_prod .= '</div>';
+$get_prod_related = json_decode($product_data['product_related'],true);
+$draggable_related = '';
+if(is_array($get_prod_related)) {
+    $get_prod_related = array_filter($get_prod_related);
+    foreach($get_prod_related as $id) {
+
+        $show_title = $temp_prod[$id]['title'];
+        $show_lang = return_language_flag_src($temp_prod[$id]['lang']);
+
+        $draggable_related .= '<div class="list-group-item draggable" data-id="'.$id.'">';
+        $draggable_related .= '<div class="d-flex flex-row gap-2">';
+        $draggable_related .= '<div class="text-muted small"><img src="'.$show_lang.'" width="15"> '.$show_title;
+        $draggable_related .= '[#'.$id.'] '.$temp_prod[$id]['number'];
+        $draggable_related .= '</div>';
+        $draggable_related .= '</div>';
+        $draggable_related .= '</div>';
+    }
+}
 
 $get_prod_accessories = json_decode($product_data['product_accessories'],true);
+$draggable_accessories = '';
+if(is_array($get_prod_accessories)) {
+    $get_prod_accessories = array_filter($get_prod_accessories);
+    foreach($get_prod_accessories as $id) {
 
-$checkbox_accessories_prod = '<div class="filter-group">';
-$checkbox_accessories_prod .= '<input type="text" class="form-control filter-table-input" placeholder="Filter ...">';
-$checkbox_accessories_prod .= '<table class="table table-filter">';
+        $show_title = $temp_prod[$id]['title'];
+        $show_lang = return_language_flag_src($temp_prod[$id]['lang']);
 
-foreach($all_products as $prod) {
-
-    $prod_id = $prod['id'];
-    $prod_language = $prod['product_lang'];
-    $flag = '<img src="'.return_language_flag_src($prod_language).'" width="15">';
-    $prod_title = $prod['title'];
-    $checked_accessory = '';
-    if(is_array($get_prod_accessories)) {
-        if(array_search("$prod_id", $get_prod_accessories) !== false) {
-            $checked_accessory = 'checked';
-        }
+        $draggable_accessories .= '<div class="list-group-item draggable" data-id="'.$id.'">';
+        $draggable_accessories .= '<div class="d-flex flex-row gap-2">';
+        $draggable_accessories .= '<div class="text-muted small"><img src="'.$show_lang.'" width="15"> '.$show_title;
+        $draggable_accessories .= '[#'.$id.'] '.$temp_prod[$id]['number'];
+        $draggable_accessories .= '</div>';
+        $draggable_accessories .= '</div>';
+        $draggable_accessories .= '</div>';
     }
-
-    $checkbox_accessories_prod .= '<tr>';
-    $checkbox_accessories_prod .= '<td width="30"><input class="form-check-input" id="accessories_'.$prod_id.'" type="checkbox" name="product_accessories[]" value="'.$prod_id.'" '.$checked_accessory.'></td>';
-    $checkbox_accessories_prod .= '<td width="30">'.$flag.'</td>';
-    $checkbox_accessories_prod .= '<td><label class="form-check-label" for="accessories_'.$prod_id.'">'.$prod_title.' <small class="text-muted">'.$prod_id.'</small></label></td>';
-    $checkbox_accessories_prod .= '</tr>';
 }
 
-$checkbox_accessories_prod .= '</table>';
-$checkbox_accessories_prod .= '</div>';
+$prod_related_dropper = '<div id="prodDropper" class="sortable_target target_products list-group mb-3">'.$draggable_related.'</div>';
+$prod_accessories_dropper = '<div id="prodDropper" class="sortable_target target_products list-group mb-3">'.$draggable_accessories.'</div>';
+$prod_sel_widget = '<div id="prodWidget" hx-post="/admin/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
 
 /* product options */
 
@@ -861,6 +854,10 @@ $form_tpl = str_replace('{product_variant_title}', $product_data['product_varian
 $form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);
 $form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
 $form_tpl = str_replace('{product_options_comment_label}', $product_data['product_options_comment_label'], $form_tpl);
+
+$form_tpl = str_replace('{prod_sel_widget}', $prod_sel_widget, $form_tpl);
+$form_tpl = str_replace('{prod_accessories_dropper}', $prod_accessories_dropper, $form_tpl);
+$form_tpl = str_replace('{prod_related_dropper}', $prod_related_dropper, $form_tpl);
 
 $form_tpl = str_replace('{product_list_related}', $checkbox_related_prod, $form_tpl);
 $form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod, $form_tpl);

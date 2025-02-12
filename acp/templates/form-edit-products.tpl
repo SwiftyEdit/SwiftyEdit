@@ -413,10 +413,7 @@
                                             <a class="nav-link active" data-bs-toggle="tab" href="#variants">{nav_btn_variants}</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#accessories">{nav_btn_accessories}</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#related">{nav_btn_related}</a>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#cross_selling">Cross-Selling</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -435,14 +432,19 @@
                                             </div>
                                             {variants_list}
                                         </div>
-                                        <div class="tab-pane fade" id="related">
-                                            <div class="scroll-container">
-                                                {product_list_related}
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="accessories">
-                                            <div class="scroll-container">
-                                                {product_list_accessories}
+                                        <div class="tab-pane fade" id="cross_selling">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    {prod_sel_widget}
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h6>{nav_btn_accessories}</h6>
+                                                    {prod_accessories_dropper}
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h6>{nav_btn_related}</h6>
+                                                    {prod_related_dropper}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

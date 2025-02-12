@@ -85,9 +85,16 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $parent_id = (int) $_POST['save_variant'];
     }
 
+
+    $product_accessories = '';
+    if(isset($_POST['picker_1'])) {
+        $product_accessories = json_encode($_POST['picker_1'],JSON_FORCE_OBJECT);
+    }
+    $product_related = '';
+    if(isset($_POST['picker_2'])) {
+        $product_related = json_encode($_POST['picker_2'], JSON_FORCE_OBJECT);
+    }
     $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
-    $product_accessories = json_encode($_POST['product_accessories'],JSON_FORCE_OBJECT);
-    $product_related = json_encode($_POST['product_related'],JSON_FORCE_OBJECT);
     $filter = json_encode($_POST['product_filter'],JSON_FORCE_OBJECT);
 
     // translation url
