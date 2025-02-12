@@ -50,9 +50,12 @@ htmx.onLoad(function(content) {
     for (var i = 0; i < sortables_src.length; i++) {
         var sortable_source = sortables_src[i];
         var sortableInstance = new Sortable(sortable_source, {
-            group: 'shared', // set both lists to same group
+            group: {
+                name: 'shared',
+                pull: 'clone'
+            },
             animation: 150,
-            ghostClass: 'blue-background-class',
+            ghostClass: 'bg-info-subtle',
             filter: ".htmx-indicator",
             draggable: ".draggable",
             onMove: function (evt) {
@@ -66,9 +69,11 @@ htmx.onLoad(function(content) {
     for (var i = 0; i < sortables_target.length; i++) {
         var sortable_target = sortables_target[i];
         var sortableInstanceTarget = new Sortable(sortable_target, {
-            group: 'shared', // set both lists to same group
+            group: {
+                name: 'shared'
+            },
             animation: 150,
-            ghostClass: 'blue-background-class',
+            ghostClass: 'bg-info-subtle',
             filter: ".htmx-indicator",
             draggable: ".draggable"
         });

@@ -1547,7 +1547,7 @@ function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr,
     return $pagination;
 }
 
-function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL): string {
+function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,$post_name='pagination'): string {
 
     if($pages < 2) {
         return '';
@@ -1561,19 +1561,23 @@ function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL)
         }
     }
 
-    $pagination = '<nav aria-label="Pagination">';
+    $vals = [
+        'csrf_token' => $_SESSION['token']
+    ];
+
+    $pagination = '<nav aria-label="Pagination" hx-params="'.$post_name.',csrf_token" hx-vals=\''.json_encode($vals).'\' hx-swap="none">';
     $pagination .= '<ul class="pagination '.$class_pagination.'">';
 
     // jump to the first page
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link ms-1" hx-post="'.$url.'" hx-include="[name=\'csrf_token\']" name="pagination" value="0" hx-swap="none"><i class="bi bi-arrow-bar-left"></i></button>';
+    $pagination .= '<button class="page-link ms-1" hx-post="'.$url.'"  name="'.$post_name.'" value="0"><i class="bi bi-arrow-bar-left"></i></button>';
     $pagination .= '</li>';
 
     // jump to the previous page
     $previous_page = max($active_page - 1, 0);
 
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link" hx-post="'.$url.'" hx-include="[name=\'csrf_token\']" name="pagination" value="'.$previous_page.'" hx-swap="none"><i class="bi bi-arrow-left-short"></i></button>';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.$previous_page.'"><i class="bi bi-arrow-left-short"></i></button>';
     $pagination .= '</li>';
 
     // loop
@@ -1592,18 +1596,18 @@ function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL)
             $active = 'active';
         }
         $pagination .= '<li class="page-item">';
-        $pagination .= '<button class="page-link '.$active.'" hx-post="'.$url.'" hx-include="[name=\'csrf_token\']" name="pagination" value="'.$i.'" hx-swap="none">'.($i+1).'</button>';
+        $pagination .= '<button class="page-link '.$active.'" hx-post="'.$url.'" name="'.$post_name.'" value="'.$i.'" hx-swap="none">'.($i+1).'</button>';
         $pagination .= '</li>';
     }
 
     // jump to the next page
     $next_page = min($active_page + 1, $pages - 1);
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link" hx-post="'.$url.'" hx-include="[name=\'csrf_token\']" name="pagination" value="'.$next_page.'" hx-swap="none"><i class="bi bi-arrow-right-short"></i></button>';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.$next_page.'" hx-swap="none"><i class="bi bi-arrow-right-short"></i></button>';
     $pagination .= '</li>';
     // jump to the last page
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link" hx-post="'.$url.'" hx-include="[name=\'csrf_token\']" name="pagination" value="'.($pages-1).'" hx-swap="none"><i class="bi bi-arrow-bar-right"></i></button>';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.($pages-1).'" hx-swap="none"><i class="bi bi-arrow-bar-right"></i></button>';
     $pagination .= '</li>';
 
     $pagination .= '</ul>';
