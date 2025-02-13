@@ -709,7 +709,7 @@ function se_get_payment_method_data($addon) {
 
     $addon_payment_prefs = array();
 
-    $addon_config = SE_CONTENT.'/modules/'.$addon.'/pm_config.php';
+    $addon_config = SE_ROOT.'/plugins/'.$addon.'/pm_config.php';
     if(is_file($addon_config)) {
         require $addon_config;
     }
