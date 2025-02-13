@@ -127,11 +127,11 @@ for($i=0;$i<$cnt_cart_items;$i++) {
         $price_data = se_get_price_group_data($this_item['product_price_group']);
         $product_tax = $price_data['tax'];
         $product_price_net = $price_data['price_net'];
-        $product_volume_discounts_json = $price_data['price_volume_discount'];
+        $product_volume_discounts_json = $price_data['product_price_volume_discount'];
     } else {
         $product_tax = $this_item['product_tax'];
         $product_price_net = $this_item['product_price_net'];
-        $product_volume_discounts_json = $this_item['product_price_volume_discounts'];
+        $product_volume_discounts_json = $this_item['product_price_volume_discount'];
     }
 
 	if($product_tax == '1') {
