@@ -275,7 +275,7 @@ hr.shadow-line:after {
   display: block;
   width: 90%;
   height: 20px;
-  box-shadow: 0px 20px 10px var(--bs-widget-bg-900);
+  box-shadow: 0px 20px 10px rgba(0,0,0,0.8);
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
