@@ -524,6 +524,12 @@ echo '<hr>';
 echo '<button type="submit" class="btn btn-primary" name="update_email" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
 
+echo '<div id="sendmail_test" class="my-3"></div>';
+
+echo '<button class="btn btn-default" hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="#sendmail_test" name="sendmail_test">';
+echo $lang['label_settings_mailer_send_test'].' '.$se_settings['mailer_adr'];
+echo '</button>';
+
 echo '</div>'; // tab
 echo '<div class="tab-pane fade" id="user-tab" role="tabpanel" tabindex="0">';
 
