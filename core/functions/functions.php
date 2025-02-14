@@ -336,21 +336,18 @@ function se_write_comment($data) {
 
 /**
  * return the first $nbr words of a string
- * @param $string string
- * @param $nbr integer
+ * @param string $string
+ * @param int $nbr
  * @return string
  */
-
-function se_return_words_str($string,$nbr=5) {
+function se_return_words_str(string $string, int $nbr=5): string {
     $short_string = implode(' ', array_slice(explode(' ', $string), 0, $nbr));
 
     if(strlen($short_string) < strlen($string)) {
         $short_string .= ' (...)';
     }
-
     return $short_string;
 }
-
 
 
 /**
@@ -361,16 +358,17 @@ function se_return_words_str($string,$nbr=5) {
  * @param string $subject subject of the email
  * @param string $message string/html content of the email
  * @return 1 if success or ErrorInfo if failed
+ * @throws Exception
  */
 
 
 function se_send_mail($recipient,$subject,$message) {
 
-    global $se_prefs;
+    global $se_settings;
     global $smtp_host, $smtp_port, $smtp_encryption, $smtp_username, $smtp_psw;
-    $prefs_mailer_adr = $se_prefs['prefs_mailer_adr'];
-    $prefs_mailer_name = $se_prefs['prefs_mailer_name'];
-    $prefs_mailer_type = $se_prefs['prefs_mailer_type'];
+    $prefs_mailer_adr = $se_settings['mailer_adr'];
+    $prefs_mailer_name = $se_settings['mailer_name'];
+    $prefs_mailer_type = $se_settings['mailer_type'];
 
 	$subject = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $subject );
 	$message = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $message );
@@ -423,9 +421,7 @@ function se_send_mail($recipient,$subject,$message) {
 
 function se_send_order_status($recipient,$order,$reason) {
 
-    global $se_prefs;
-    global $languagePack;
-    global $lang;
+    global $se_settings, $lang;
 
     $order_id = (int) $order;
     $this_order = se_get_order_details($order_id);
@@ -440,8 +436,8 @@ function se_send_order_status($recipient,$order,$reason) {
         }
     } else {
         // send to admin
-        $recipient['name'] = $se_prefs['prefs_mailer_name'];
-        $recipient['mail'] = $se_prefs['prefs_mailer_adr'];
+        $recipient['name'] = $se_settings['mailer_name'];
+        $recipient['mail'] = $se_settings['mailer_adr'];
     }
 
     if($reason == 'notification') {
@@ -528,10 +524,9 @@ function se_send_order_status($recipient,$order,$reason) {
 
 function se_build_html_file($data) {
 	
-	global $se_prefs;
-	global $languagePack;
+	global $se_settings;
 	
-	$tpl_dir = SE_ROOT.'styles/'.$se_prefs['prefs_template'];
+	$tpl_dir = SE_ROOT.'/public/assets/themes/'.$se_settings['template'];
 	$tpl_style = file_get_contents($tpl_dir.'/templates-mail/styles.css');
 
     if($data['tpl'] == '') {
@@ -613,10 +608,10 @@ function se_get_textlib($name,$lang,$type) {
 	   		$$k = stripslashes($v);
 		}
 		
-		$get_tpl_file = 'styles/default/templates/snippet.tpl';
+		$get_tpl_file = SE_ROOT.'/public/themes/default/templates/snippet.tpl';
 		
 		if($snippet_theme != '' AND $snippet_theme != 'use_standard') {
-			$get_tpl_file = 'styles/'.$snippet_theme.'/templates/'.$snippet_template;
+			$get_tpl_file = SE_ROOT.'/public/themes/'.$snippet_theme.'/templates/'.$snippet_template;
 		}
 
 		if(is_file("$get_tpl_file")) {
@@ -641,7 +636,7 @@ function se_get_textlib($name,$lang,$type) {
 			return $tpl_file;
 		}
 	}
-
+    return '';
 }
 
 /**

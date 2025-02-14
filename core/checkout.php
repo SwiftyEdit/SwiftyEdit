@@ -366,7 +366,7 @@ if($_POST['order'] == 'send') {
             $send_mail = se_send_order_status($recipient,$order_id,$reason);
 
             // include after sale script from payment addon
-            $aftersale_script = SE_CONTENT.'/modules/'.basename($payment_addon).'/aftersale.php';
+            $aftersale_script = SE_ROOT.'/plugins/'.basename($payment_addon).'/aftersale.php';
             if(is_file($aftersale_script)) {
                 include $aftersale_script;
             }

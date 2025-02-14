@@ -634,12 +634,12 @@ function se_clear_cart($user) {
  
 function se_get_payment_methods() {
 	
-	global $se_prefs;
+	global $se_settings,$languagePack;
 	global $lang;
 	$payment_methods = array();
 
     // get payment addons
-    $active_payment_addons = json_decode($se_prefs['prefs_payment_addons'],true);
+    $active_payment_addons = json_decode($se_settings['payment_addons'],true);
     if(!is_array($active_payment_addons)) {
         $active_payment_addons = array();
     }
