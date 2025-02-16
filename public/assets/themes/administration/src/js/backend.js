@@ -30,6 +30,9 @@ import Form from '@uppy/form'
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 
+import 'print-js/dist/print'
+import 'print-js/dist/print.css'
+
 
 
 document.addEventListener('htmx:afterRequest', function(evt) {
