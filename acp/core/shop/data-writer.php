@@ -7,13 +7,25 @@ if(isset($_POST['pagination'])) {
     header( "HX-Trigger: update_products_list");
 }
 
-// text search
+// pagination orders
+if(isset($_POST['pagination_orders'])) {
+    $_SESSION['pagination_orders'] = (int) $_POST['pagination_orders'];
+    header( "HX-Trigger: update_orders_list");
+}
+
+// text search in products
 if(isset($_POST['products_text_filter'])) {
     $_SESSION['products_text_filter'] = $_SESSION['products_text_filter'] . ' ' . sanitizeUserInputs($_POST['products_text_filter']);
     header( "HX-Trigger: update_products_list");
 }
 
-// remove keyword from filter list
+// text search in orders
+if(isset($_POST['orders_text_filter'])) {
+    $_SESSION['orders_text_filter'] = $_SESSION['orders_text_filter'] . ' ' . sanitizeUserInputs($_POST['orders_text_filter']);
+    header( "HX-Trigger: update_orders_list");
+}
+
+// remove keyword from products filter list
 if(isset($_POST['rmkey'])) {
     $all_filter = explode(" ", $_SESSION['products_text_filter']);
     $_SESSION['products_text_filter'] = '';
@@ -23,6 +35,18 @@ if(isset($_POST['rmkey'])) {
         $_SESSION['products_text_filter'] .= "$f ";
     }
     header( "HX-Trigger: update_products_list");
+}
+
+// remove keyword from orders filter list
+if(isset($_POST['rmkey_orders'])) {
+    $all_filter = explode(" ", $_SESSION['orders_text_filter']);
+    $_SESSION['orders_text_filter'] = '';
+    foreach($all_filter as $f) {
+        if($_POST['rmkey_orders'] == "$f") { continue; }
+        if($f == "") { continue; }
+        $_SESSION['orders_text_filter'] .= "$f ";
+    }
+    header( "HX-Trigger: update_orders_list");
 }
 
 // search by keyword
@@ -502,4 +526,28 @@ if(isset($_POST['save_filter_value'])) {
         $db_content->insert("se_filter", $insert_data);
     }
     show_toast($lang['msg_success_db_changed'],'success');
+}
+
+// change payment status
+if(isset($_POST['set_payment'])) {
+    $set_payment = (int) $_POST['set_payment'];
+    $order_id = (int) $_POST['order_id'];
+    $update = $db_content->update("se_orders", [
+        "order_status_payment" => $set_payment
+    ],[
+        "id" => $order_id
+    ]);
+    header( "HX-Trigger: update_orders_list");
+}
+
+// change order status
+if(isset($_POST['set_order_status'])) {
+    $set_status = (int) $_POST['set_order_status'];
+    $order_id = (int) $_POST['order_id'];
+    $update = $db_content->update("se_orders", [
+        "order_status" => $set_status
+    ],[
+        "id" => $order_id
+    ]);
+    header( "HX-Trigger: update_orders_list");
 }
