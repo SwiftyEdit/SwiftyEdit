@@ -21,19 +21,33 @@ if($_REQUEST['action'] == 'list_active_searches') {
 
     if(isset($_SESSION['products_text_filter']) AND $_SESSION['products_text_filter'] != "") {
         unset($all_filter);
-        $all_filter = explode(" ", $_SESSION['products_text_filter']);
+        $all_filter_products = explode(" ", $_SESSION['products_text_filter']);
 
-        foreach($all_filter as $f) {
+        foreach($all_filter_products as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/shop/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey" value="'.$f.'" hx-post="/admin/shop/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
+        }
+        if(isset($btn_remove_keyword)) {
+            echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
         }
     }
+    exit;
+}
 
-    if(isset($btn_remove_keyword)) {
-        echo '<div class="d-inline">';
-        echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
-        echo '</div><hr>';
+if($_REQUEST['action'] == 'list_active_searches_orders') {
+    if(isset($_SESSION['orders_text_filter']) AND $_SESSION['orders_text_filter'] != "") {
+        unset($all_filter);
+        $all_filter_orders = explode(" ", $_SESSION['orders_text_filter']);
+
+        foreach($all_filter_orders as $f) {
+            if($_REQUEST['rm_keyword'] == "$f") { continue; }
+            if($f == "") { continue; }
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_orders" value="'.$f.'" hx-post="/admin/shop/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
+        }
+        if(isset($btn_remove_keyword)) {
+            echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
+        }
     }
     exit;
 }
@@ -765,6 +779,195 @@ if($_REQUEST['action'] == 'list_filters') {
     echo '</table>';
     echo '</div>';
 
+}
+
+// list orders
+if($_REQUEST['action'] == 'list_orders') {
+
+    // defaults
+    $order_by = 'order_time';
+    $order_direction = 'DESC';
+    $limit_start = $_SESSION['pagination_orders'] ?? 0;
+    $nbr_show_items = 25;
+
+    $match_str = $_SESSION['orders_text_filter'] ?? '';
+    $order_key = $_SESSION['sorting_orders'] ?? $order_by;
+    $order_direction = $_SESSION['sorting_orders_direction'] ?? $order_direction;
+
+    if($limit_start > 0) {
+        $limit_start = ($limit_start*$nbr_show_items);
+    }
+
+    $filter_base = [
+        "AND" => [
+            "id[>]" => 0
+        ]
+    ];
+
+    $filter_by_str = array();
+    if($match_str != '') {
+        $this_filter = explode(" ",$match_str);
+        foreach($this_filter as $f) {
+            if($f == "") { continue; }
+            $filter_by_str = [
+                "OR" => [
+                    "order_invoice_mail[~]" => "%$f%",
+                    "order_invoice_address[~]" => "%$f%",
+                    "order_products[~]" => "%$f%",
+                    "order_user_comment[~]" => "%$f%",
+                    "order_admin_comment[~]" => "%$f%"
+                ]
+            ];
+        }
+    }
 
 
+
+    $db_where = [
+        "AND" => $filter_base+$filter_by_str
+    ];
+
+    $db_order = [
+        "ORDER" => [
+            "$order_key" => "$order_direction"
+        ]
+    ];
+
+    $db_limit = [
+        "LIMIT" => [$limit_start, $nbr_show_items]
+    ];
+
+    $orders_data_cnt = $db_content->count("se_orders", $db_where);
+
+
+    $orders_data = $db_content->select("se_orders","*",
+        $db_where+$db_order+$db_limit
+    );
+
+    $nbr_pages = ceil($orders_data_cnt/$nbr_show_items);
+
+    echo '<div class="card p-3">';
+    echo se_print_pagination('/admin/shop/write/',$nbr_pages,$_SESSION['pagination_orders'],'10','','pagination_orders');
+
+    $show_order_status = [
+        "1" => $lang['status_order_received'],
+        "2" => '<span class="text-success">'.$lang['status_order_completed'].'</span>',
+        "3" => '<span class="text-danger">'.$lang['status_order_canceled'].'</span>'
+    ];
+
+    $show_payment_status = [
+        "1" => '<span class="text-danger">'.$lang['status_order_payment_open'].'</span>',
+        "2" => '<span class="text-success">'.$lang['status_order_payment_paid'].'</span>'
+    ];
+
+    echo '<table class="table table-hover">';
+    foreach($orders_data as $order) {
+
+        $order_status = $order['order_status'];
+        $payment_status = $order['order_status_payment'];
+
+        $vals = [
+            'csrf_token' => $_SESSION['token'],
+            'order_id' => $order['id']
+        ];
+
+        $dropdown = '<div class="dropdown">';
+        $dropdown .= '<button class="btn btn-default dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">'.$icon['edit'].'</button>';
+        $dropdown .= '<ul class="dropdown-menu">';
+        $dropdown .= '<li><span class="dropdown-item-text opacity-50">Payment</span></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/shop/write/" name="set_payment" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_open'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/shop/write/" name="set_payment" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_paid'].'</button></li>';
+        $dropdown .= '<li><hr class="dropdown-divider"></li>';
+        $dropdown .= '<li><span class="dropdown-item-text opacity-50">Order Status</span></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/shop/write/" name="set_order_status" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_received'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/shop/write/" name="set_order_status" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_completed'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/shop/write/" name="set_order_status" value="3" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_canceled'].'</button></li>';
+        $dropdown .= '</ul>';
+        $dropdown .= '</div>';
+
+
+        echo '<tr>';
+        echo '<td>'.se_format_datetime($order['order_time']).'</td>';
+        echo '<td>'.$order['order_nbr'].'</td>';
+        echo '<td>'.$order['order_invoice_address'].' '.$order['order_payment_type'].' '.$order['order_invoice_mail'].'</td>';
+        echo '<td>'.se_post_print_currency($order['order_price_total']).' ('.$show_payment_status[$payment_status].')</td>';
+        echo '<td>'.$show_order_status[$order_status].'</td>';
+        echo '<td><div class="btn-group">'.$dropdown.' ';
+        echo '<button hx-get="/admin/shop/orders/read/?show_order='.$order['id'].'" hx-target="#order-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">'.$icon['info_circle'].'</button>';
+        echo '</div></td>';
+        echo '</tr>';
+    }
+    echo '</table>';
+
+
+    echo '<div id="order-modal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">';
+    echo '<div class="modal-dialog modal-lg modal-dialog-centered" role="document"><div class="modal-content"></div></div>';
+    echo '</div>';
+
+    echo '</div>';
+}
+
+if(isset($_REQUEST['show_order'])) {
+
+    $get_order_id = (int) $_REQUEST['show_order'];
+    $get_order = se_get_order_details($get_order_id);
+
+    $order_invoice_address = html_entity_decode($get_order['order_invoice_address']);
+    $order_products = json_decode($get_order['order_products'],true);
+    $order_time = date('d.m.Y H:i', $get_order['order_time']);
+    $payment_status = $get_order['order_status_payment'];
+
+    $show_payment_status = [
+        "1" => '<span class="text-danger">'.$lang['status_order_payment_open'].'</span>',
+        "2" => '<span class="text-success">'.$lang['status_order_payment_paid'].'</span>'
+    ];
+
+    echo '<div class="modal-dialog modal-xl modal-dialog-centered">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">#'.$get_order['order_nbr'].'</h5>
+      <button class="btn btn-default ms-auto" onclick="printJS(\'printOrder\', \'html\')">Print</button>
+    </div>
+    <div class="modal-body" id="printOrder">';
+
+    echo '<div class="row">';
+    echo '<div class="col-md-6">';
+
+    echo '<p>' . $get_order['order_nbr'] . '</p>';
+    echo '<p>' . $order_time . '</p>';
+    echo '<p class="fs-3">'.se_post_print_currency($get_order['order_price_total']).'</p>';
+    echo '<p>'.$show_payment_status[$payment_status].'</p>';
+    echo '</div>';
+    echo '<div class="col-md-6">';
+    echo $order_invoice_address;
+    echo '</div>';
+    echo '</div>';
+
+    echo '<div class="card p-3">';
+    echo '<table class="table table-bordered">';
+    foreach($order_products as $order_product) {
+        echo '<tr>';
+        echo '<td>'.$order_product['amount'].' x</td>';
+        echo '<td>'.$order_product['title'];
+        if($order_product['options'] != '') {
+            echo '<div class="item-options">';
+            echo $order_product['options'] . '<br>' . $order_product['options_comment_label'] . ':<br>' . $order_product['options_comment'];
+            echo '</div>';
+        }
+        echo '</td>';
+        echo '<td>'.se_post_print_currency($order_product['price_net_raw']).'</td>';
+        echo '<td>'.$order_product['tax'].' %</td>';
+        echo '<td>'.se_post_print_currency($order_product['price_gross_raw']).'</td>';
+
+        echo '</tr>';
+    }
+    echo '</table>';
+    echo '</div>';
+
+    echo '</div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.$lang['close'].'</button>
+    </div>
+  </div>
+</div>';
 }
