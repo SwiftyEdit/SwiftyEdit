@@ -31,8 +31,6 @@ echo '</form>';
 
 echo '<div class="pt-1" hx-get="'.$reader_uri.'?action=list_active_searches_orders" hx-trigger="load, changed, update_orders_list from:body"></div>';
 
-
-
-
+echo '</div>';
 echo '</div>';
 echo '</div>';
