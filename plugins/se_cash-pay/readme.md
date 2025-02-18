@@ -4,7 +4,7 @@ Cash Payment Addon for SwiftyEdit
 
 ## Notes
 
-* This addon has no aftersale functions
+* This addon has **no aftersale** functions
 * Do not remove this module. It will be reinstalled with every update anyway. If you don't need it, you can disable it in the settings.
 
 ## Preferences
