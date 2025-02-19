@@ -22,6 +22,7 @@ if(is_file("$plugin_reader_file")) {
 if($_REQUEST['action'] == 'list_plugins') {
 
     $get_all_addons = se_get_all_addons();
+    $se_addons = se_get_addons($t='plugin');
 
     // for showing help text
     $modal_template_file = file_get_contents("../acp/templates/bs-modal.tpl");
@@ -74,6 +75,15 @@ if($_REQUEST['action'] == 'list_plugins') {
                                 hx-swap="none"
                                 >'.$lang['btn_addon_enable'].'</button>';
 
+        foreach($se_addons as $a) {
+            if($k == $a['addon_dir']) {
+                $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger"
+                                hx-post="/admin/addons/write/"
+                                hx-vals=\''.json_encode($vals).'\'
+                                hx-swap="none"
+                                >'.$lang['btn_addon_disable'].'</button>';
+            }
+        }
 
         echo '<div class="card mb-1 border-bottom">';
         echo '<div class="card-body">';

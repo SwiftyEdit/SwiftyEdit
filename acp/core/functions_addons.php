@@ -103,8 +103,8 @@ function se_get_addons($t='module') {
 	global $db_content;
 	$result = array();
 	
-	if($t == 'module') {
-		$type = 'module';
+	if($t == 'module' OR $t == 'plugin') {
+		$type = 'plugin';
 	} else {
 		$type = 'theme';
 	}
@@ -267,7 +267,7 @@ function mods_check_in() {
 	
 	$str = "<?php\n$string\n?>";
 		
-	$file = SE_CONTENT . "/cache/active_mods.php";
+	$file = SE_ROOT . "/data/cache/active_mods.php";
 	file_put_contents($file, $str, LOCK_EX);
 
 }

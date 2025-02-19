@@ -32,5 +32,33 @@ if(isset($_POST['save_default_layout'])) {
     se_delete_smarty_cache('all');
     show_toast($lang['msg_data_updated'],'success');
     header( "HX-Trigger: update_themes_list");
+}
 
+// activate plugin
+if(isset($_POST['activate_addon'])) {
+    $plugin_base = basename($_POST['activate_addon']);
+    $info_file = SE_ROOT.'plugins/'.$plugin_base.'/info.json';
+    if(is_file($info_file)) {
+        $info = json_decode(file_get_contents($info_file), true);
+        $db_content->insert("se_addons", [
+            "addon_type" => "plugin",
+            "addon_dir" => $plugin_base,
+            "addon_name" => $info['addon']['name'],
+            "addon_version" => $info['addon']['version']
+        ]);
+        mods_check_in();
+    }
+    header( "HX-Trigger: update_plugins_list");
+}
+
+// deactivate plugin
+if(isset($_POST['deactivate_addon'])) {
+    $plugin_base = basename($_POST['deactivate_addon']);
+    $db_content->delete("se_addons", [
+        "AND" => [
+            "addon_dir" => $plugin_base
+        ]
+    ]);
+    mods_check_in();
+    header( "HX-Trigger: update_plugins_list");
 }
