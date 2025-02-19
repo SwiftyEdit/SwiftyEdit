@@ -421,8 +421,10 @@ if (isset($set_acptheme)) {
             </div>
             <div class="modal-body">
                 <form id="dropper" action="/admin/upload/" method="POST">
+                    <!--
                     <input type="file" />
                     <button type="submit">Upload</button>
+                    -->
 
                     <?php
 
