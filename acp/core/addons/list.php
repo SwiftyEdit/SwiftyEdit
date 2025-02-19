@@ -16,7 +16,7 @@ echo '<div class="card">';
 echo '<div class="card-header">Plugins</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
-echo '<div id="listPlugins" hx-get="/admin/addons/read/?action=list_plugins" hx-trigger="load"></div></div>';
+echo '<div id="listPlugins" hx-get="/admin/addons/read/?action=list_plugins" hx-trigger="load, update_plugins_list from:body"></div></div>';
 echo '</div>';
 echo '</div>';
 
