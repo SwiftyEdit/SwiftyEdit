@@ -117,6 +117,9 @@ if($upload_type == 'images') {
             if($_POST['file_mode'] !== 'overwrite') {
                 se_write_media_data_name($target,$store_tmb_name,$filesize,$time,$filetype);
             }
+
+            $data = ['url' => $target, 'message' => 'The file ' . $target . ' has been uploaded.'];
+            echo json_encode($data);
         }
     }
 }
@@ -144,7 +147,8 @@ if($upload_type == 'files') {
             }
         }
 
-
+        $data = ['url' => $target, 'message' => 'The file ' . $files_name . ' has been uploaded.'];
+        echo json_encode($data);
 
     }
 }
