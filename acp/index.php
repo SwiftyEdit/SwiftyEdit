@@ -328,19 +328,7 @@ if (isset($set_acptheme)) {
 
 
     <?php
-
-    /*
-     * individual modul header
-     * optional
-     */
-
-    if (is_file(SE_CONTENT.'/modules/' . $sub . '/backend/header.php')) {
-        include SE_CONTENT.'/modules/' . $sub . '/backend/header.php';
-    }
-
-
     include '../acp/core/templates.php';
-
     ?>
 
 </head>

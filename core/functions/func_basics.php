@@ -167,8 +167,8 @@ function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
 		$parameter = parse_str(html_entity_decode($params),$output);
 	}
 	
-    if(is_file(SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php')) {
-        include SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php';
+    if(is_file(SE_ROOT.'/plugins/'.$mod.'/global/snippets.php')) {
+        include SE_ROOT.'/plugins/'.$mod.'/global/snippets.php';
     }
 	
 	return $mod_str;

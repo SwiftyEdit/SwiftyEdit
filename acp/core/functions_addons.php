@@ -223,7 +223,7 @@ function mods_check_in() {
 	$m = array();
 
 	$mods = $db_content->select("se_addons", "addon_dir", [
-	    "addon_type" => "module"
+	    "addon_type" => ["module","plugin"]
 	]);
 	
 	for($i=0;$i<count($mods);$i++) {
