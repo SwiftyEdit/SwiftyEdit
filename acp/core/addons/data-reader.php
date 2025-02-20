@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 
 if(!isset($languagePack)) {
     $languagePack = $_SESSION['lang'] ?? 'en';
