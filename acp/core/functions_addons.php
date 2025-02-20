@@ -49,7 +49,7 @@ function se_get_all_addons(): array {
 }
 
 /**
- * @param $addon directory of the addon
+ * @param string $addon directory of the addon
  * @return array
  */
 function se_return_addon_translations($addon): array {
