@@ -10,7 +10,6 @@
 ini_set("url_rewriter.tags", '');
 session_start();
 error_reporting(0);
-//error_reporting(E_ALL ^E_NOTICE);
 header("X-Frame-Options: SAMEORIGIN");
 
 $se_start_time = microtime(true);
@@ -97,11 +96,18 @@ if(is_file(SE_ROOT . "/maintenance.html")) {
 
 $se_get_preferences = se_get_preferences();
 
-foreach($se_get_preferences as $value) {
-    $option_key = $value['option_key'];
-    $option_value = $value['option_value'];
-    $se_prefs[$option_key] = $option_value;
+foreach ($se_get_preferences as $k => $v) {
+    $key = $se_get_preferences[$k]['option_key'];
+    $value = $se_get_preferences[$k]['option_value'];
+    $se_prefs[$key] = $value;
+    /* without the 'prefs_' prefix $se_prefs['pagetitle'] */
+    if(substr($key,0,6) == 'prefs_') {
+        $short_key = substr($key,6);
+        $se_prefs[$short_key] = $value; // old
+        $se_settings[$short_key] = $value; // new
+    }
 }
+
 
 if($se_prefs['prefs_dateformat'] == '') {
     $se_prefs['prefs_dateformat'] = 'Y-m-d';
@@ -216,6 +222,16 @@ for($i=0;$i<$cnt_active_mods;$i++) {
     }
 }
 
+// xhr for plugins
+if(str_starts_with($_REQUEST['query'] , 'xhr/')){
+    $plugin_path = explode('/', $_REQUEST['query']);
+    $plugin_name = basename($plugin_path[1]);
+    $plugin_xhr = SE_ROOT.'/plugins/'.$plugin_name.'/global/xhr.php';
+    if(is_file($plugin_xhr)) {
+        include $plugin_xhr;
+        exit;
+    }
+}
 
 if($swifty_slug == '/' OR $swifty_slug == '') {
     list($page_contents,$se_nav) = se_get_content('portal','page_sort');
@@ -232,8 +248,8 @@ if(is_array($clean_mods)) {
     $clean_mods = array_unique($clean_mods);
 
     foreach ($clean_mods as $mod_dir) {
-        if (is_file(SE_CONTENT . '/modules/' . $mod_dir . '/global/index.php')) {
-            include_once SE_CONTENT . '/modules/' . $mod_dir . '/global/index.php';
+        if (is_file(SE_ROOT . '/plugins/' . $mod_dir . '/global/index.php')) {
+            include_once SE_ROOT . '/plugins/' . $mod_dir . '/global/index.php';
         }
     }
 }
@@ -324,7 +340,7 @@ require SE_ROOT."languages/index.php";
 
 
 if(!empty($page_contents['page_modul'])) {
-    include SE_CONTENT.'/modules/'.basename($page_contents['page_modul']).'/index.php';
+    include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/index.php';
 }
 
 /* START SMARTY */
