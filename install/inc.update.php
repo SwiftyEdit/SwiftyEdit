@@ -20,9 +20,9 @@ copy('maintenance.html', '../maintenance.html');
 
 use Medoo\Medoo;
 
-require '../config.php';
-if(is_file('../'.SE_CONTENT.'/config.php')) {
-	include '../'.SE_CONTENT.'/config.php';
+require SE_ROOT.'/config.php';
+if(is_file(SE_CONTENT.'/config.php')) {
+	include SE_CONTENT.'/config.php';
 }
 
 
@@ -77,7 +77,7 @@ if(is_file('../config_database.php')) {
 echo '<h2>UPDATE</h2>';
 
 /* build an array from all php files in folder contents */
-$all_tables = glob("contents/*.php");
+$all_tables = glob(__DIR__."/contents/*.php");
 
 
 for($i=0;$i<count($all_tables);$i++) {
