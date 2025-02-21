@@ -183,6 +183,7 @@ if($query == 'logout' OR (isset($_GET['goto']) && ($_GET['goto'] == 'logout'))) 
 }
 
 $swifty_slug = $query;
+$requestPathParts = explode('/', trim($swifty_slug, '/'));
 
 $active_mods = se_get_active_mods();
 $cnt_active_mods = count($active_mods);
@@ -208,6 +209,7 @@ for($i=0;$i<$cnt_active_mods;$i++) {
 
     $mod_permalink = $active_mods[$i]['page_permalink'];
     $mod_name = $active_mods[$i]['page_modul'];
+    $active_plugins[] = $active_mods[$i]['page_modul'];
     $permalink_length = strlen($mod_permalink);
 
     if(!empty($mod_permalink) && str_contains("$query", "$mod_permalink")) {
@@ -222,13 +224,27 @@ for($i=0;$i<$cnt_active_mods;$i++) {
     }
 }
 
-// xhr for plugins
-if(str_starts_with($_REQUEST['query'] , 'xhr/')){
-    $plugin_path = explode('/', $_REQUEST['query']);
-    $plugin_name = basename($plugin_path[1]);
-    $plugin_xhr = SE_ROOT.'/plugins/'.$plugin_name.'/global/xhr.php';
-    if(is_file($plugin_xhr)) {
-        include $plugin_xhr;
+
+// xhr routes for core /api/se/ and plugins /api/plugins/plugin/
+if ($requestPathParts[0] === 'api') {
+    if ($requestPathParts[1] === 'se') {
+        // route for SwwiftyEdit
+        include SE_ROOT.'/core/xhr/route.php';
+    } elseif ($requestPathParts[1] === 'plugins' && isset($requestPathParts[2])) {
+        // route for plugins
+        // check if plugin is activated (in $active_mods)
+        $plugin_name = basename($requestPathParts[2]);
+        if(in_array($plugin_name, $active_plugins)) {
+            $plugin_xhr = SE_ROOT.'/plugins/'.$plugin_name.'/global/xhr.php';
+            if(is_file($plugin_xhr)) {
+                include $plugin_xhr;
+            }
+            exit;
+        } else {
+            exit;
+        }
+    } else {
+        http_response_code(404);
         exit;
     }
 }
