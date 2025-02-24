@@ -82,7 +82,10 @@ if($post_data['post_type'] == 'g') {
     $smarty->assign('video_id', $video['v']);
 }
 
-
+$show_comments = false;
+if ($post_data['post_comments'] == 1) {
+    $show_comments = true;
+}
 
 
 /* vote up or down this post */
@@ -171,6 +174,7 @@ $smarty->assign('votes_status_dn', $post_data['votes_status_dn']);
 $smarty->assign('votes_up', $post_data['votes_up']);
 $smarty->assign('votes_dn', $post_data['votes_dn']);
 $smarty->assign('show_voting', $show_voting);
+$smarty->assign('show_comments', $show_comments);
 
 $smarty->assign('post_tmb_src', $first_post_image);
 $smarty->assign('gallery_thumbs', $gallery_thumbs);

@@ -208,17 +208,17 @@ function se_build_thread_array(&$array, $data) {
 
     $comment_time = date('d.m.Y H:i',$data['comment_time']);
     /* default avatar image */
-    $comment_avatar = '/styles/default/images/avatar.jpg';
+    $comment_avatar = '/themes/default/images/avatar.jpg';
     /* if it's a registrated user and if there is an avatar, use it */
     if($data['comment_author_id'] != '') {
-        $check_avatar = './content/avatars/'.md5($data['comment_author']).'.png';
+        $check_avatar = SE_CONTENT.'avatars/'.md5($data['comment_author']).'.png';
         if(is_file($check_avatar)) {
-            $comment_avatar = '/content/avatars/'.md5($data['comment_author']).'.png';
+            $comment_avatar = SE_CONTENT.'/avatars/'.md5($data['comment_author']).'.png';
         }
     }
 
     $avatar_img_src = $comment_avatar;
-    $a_url = '?cid='.$data['comment_id'].'#comment-form';
+    $a_url = '/api/se/comments/?form=comments&parent_id='.$data['comment_id'].'&relation_id='.$data["comment_relation_id"].'#comment-form';
 
     if ($data["comment_parent_id"] == 0 OR $data["comment_parent_id"] == NULL) {
         $array[] = [

@@ -16,7 +16,7 @@
                     </div>
                     <div class="card-footer p-1 text-muted">
                         <small>{$item['time']}</small>
-                        <a href="{$item['url_answer_comment']}" class="btn btn-sm btn-outline-primary float-end">{$lang_answer}</a>
+                        <button hx-get="{$item['url_answer_comment']}" hx-swap="none" class="btn btn-sm btn-outline-primary float-end">{$lang_answer}</button>
                     </div>
                 {if $item['childs']}
                     {call name=thread items=$item['childs']}

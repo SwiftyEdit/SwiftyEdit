@@ -144,12 +144,17 @@
 
             {if $value.show_voting == true}
                 <div class="col-3">
-                    <button class="btn btn-sm btn-outline-secondary" name="upvote" onclick="vote(this.value)" value="up-post-{$value.post_id}" {$value.votes_status_up}>
-                        <i class="bi bi-hand-thumbs-up-fill"></i> <span id="vote-up-nbr-{$value.post_id}">{$value.votes_up}</span>
+                    <form>
+                    {$hidden_csrf_token}
+                    <button class="btn btn-sm btn-outline-secondary" hx-post="/api/se/vote/" hx-swap="none" name="vote" value="up-post-{$value.post_id}">
+                        <i class="bi bi-hand-thumbs-up-fill"></i>
+                        <span class="" hx-get="/api/se/votes/?section=b&upv={$value.post_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$value.post_id} from:body">0</span>
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary" name="dnvote" onclick="vote(this.value)" value="dn-post-{$value.post_id}" {$value.votes_status_dn}>
-                        <i class="bi bi-hand-thumbs-down-fill"></i> <span id="vote-dn-nbr-{$value.post_id}">{$value.votes_dn}</span>
-                    </button>
+                        <button class="btn btn-sm btn-outline-secondary" hx-post="/api/se/vote/" hx-swap="none" name="vote" value="dn-post-{$value.post_id}">
+                            <i class="bi bi-hand-thumbs-down-fill"></i>
+                            <span class="" hx-get="/api/se/votes/?section=b&dnv={$value.post_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$value.post_id} from:body">0</span>
+                        </button>
+                    </form>
                 </div>
         {/if}
         {if $value.post_categories == true}

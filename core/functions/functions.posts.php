@@ -535,6 +535,27 @@ function se_get_voting_data($type,$id) {
 	}
 }
 
+function se_get_votes($type,$id,$section) {
+    global $db_content;
+    $id = (int) $id;
+    $count = 0;
+    if($type == 'upv') {
+        $comment_type = 'upv';
+    } else if($type == 'dnv') {
+        $comment_type = 'dnv';
+    } else {
+        return 0;
+    }
+
+    $count = $db_content->count("se_comments",[
+        "comment_type" => $comment_type,
+        "comment_relation_id" => $id,
+        "comment_relation_type" => $section
+    ]);
+
+    return $count;
+}
+
 
 /**
  * check if user can vote on posts
@@ -544,7 +565,7 @@ function se_get_voting_data($type,$id) {
  * return true or false
  */
  
-function se_check_user_legitimacy($id,$user,$type) {
+function se_check_user_legitimacy($id,$user,$type,$section=null) {
 	
 	global $db_content;
 	
@@ -554,6 +575,7 @@ function se_check_user_legitimacy($id,$user,$type) {
 					"comment_type" => $type
 				],
 				"comment_relation_id" => $id,
+                "comment_relation_type" => $section,
 				"comment_author" => $user
 			]
 		]);
