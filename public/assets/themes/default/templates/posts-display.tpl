@@ -98,13 +98,16 @@
 
 {if $show_voting == true}
     <div class="mb-3">
-        <button class="btn btn-sm btn-outline-secondary" name="upvote" onclick="vote(this.value)"
-                value="up-post-{$post_id}" {$votes_status_up}>
-            <i class="bi bi-hand-thumbs-up-fill"></i> <span id="vote-up-nbr-{$post_id}">{$votes_up}</span>
-        </button>
-        <button class="btn btn-sm btn-outline-secondary" name="dnvote" onclick="vote(this.value)"
-                value="dn-post-{$post_id}" {$votes_status_dn}>
-            <i class="bi bi-hand-thumbs-down-fill"></i> <span id="vote-dn-nbr-{$post_id}">{$votes_dn}</span>
-        </button>
+        <form>
+            {$hidden_csrf_token}
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/api/se/vote/" hx-swap="none" name="vote" value="up-post-{$post_id}">
+                <i class="bi bi-hand-thumbs-up-fill"></i>
+                <span class="" hx-get="/api/se/votes/?section=b&upv={$post_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$post_id} from:body">0</span>
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/api/se/vote/" hx-swap="none" name="vote" value="dn-post-{$post_id}">
+                <i class="bi bi-hand-thumbs-down-fill"></i>
+                <span class="" hx-get="/api/se/votes/?section=b&dnv={$post_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$post_id} from:body">0</span>
+            </button>
+        </form>
     </div>
 {/if}
