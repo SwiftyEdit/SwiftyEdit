@@ -245,7 +245,7 @@
                                            value="{file_attachment_external}">
                                 </div>
                                 <div class="col-6">
-                                    <p class="fw-bold">{label_product_before_sale}</p>
+                                    <p class="fw-bold">{label_product_files_before_sale}</p>
                                     <label>{label_file_select}</label>
                                     {select_file}
                                     <div class="form-text">Downloads: {cnt_attachment_hits}</div>

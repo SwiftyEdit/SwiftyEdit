@@ -414,8 +414,8 @@ $get_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_c
 
 if($product_data['file_attachment'] != '') {
 
-    $file_name = '../content/files'.$product_data['file_attachment'];
-    $download_target = SE_CONTENT.$product_data['file_attachment'];
+    $file_name = '../files'.$product_data['file_attachment'];
+    $download_target = SE_PUBLIC.'/assets/files'.$product_data['file_attachment'];
     $file_data = se_get_media_data($file_name,$languagePack);
 
     $smarty->assign('download_title', $file_data['media_title']);
@@ -432,7 +432,7 @@ if($product_data['file_attachment'] != '') {
 if(isset($_POST['get_attachment'])) {
 
     se_increase_downloads_hits($get_product_id);
-    $download_url = SE_CONTENT.'/files'.$product_data['file_attachment'];
+    $download_url = SE_PUBLIC.'/assets/files'.$product_data['file_attachment'];
 
     if(file_exists($download_url)) {
         header('Content-Description: File Transfer');

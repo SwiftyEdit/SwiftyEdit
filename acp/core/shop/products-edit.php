@@ -687,7 +687,7 @@ $snippet_select_text .= '</select>';
 
 /* select file from /content/files/ */
 
-$files_directory = SE_CONTENT.'/files';
+$files_directory = SE_PUBLIC.'/assets/files';
 $all_files = se_scandir_rec($files_directory);
 
 /* pre-sale files */
