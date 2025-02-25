@@ -11,23 +11,32 @@ if(is_numeric($_POST['post_id'])) {
     $mode = 'new';
 }
 
+$post_type_form = $_SESSION['post_type_form'] ?? 'm';
+if(isset($post_data['post_type'])) {
+    $post_type_form = $post_data['post_type'];
+}
+
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['files'].' '.$lang['nav_btn_blog'];
-echo '<div class="d-flex ms-auto">'.$mode.'</div>';
+echo '<div class="d-flex ms-auto">'.$mode.' '.$post_type_form.'</div>';
 echo '</div>';
 
+
 if($mode == 'new') {
+    echo '<form hx-post="' . $writer_uri . '">';
     echo '<div class="card mb-3">';
     echo '<div class="card-header">' . $lang['label_select_post_type'] . '</div>';
     echo '<div class="btn-group d-flex" role="group">';
-    echo '<button hx-post="' . $writer_uri . '" name="set_post_type" value="m" hx-include="[name=\'csrf_token\']"  class="btn btn-default w-100"><span class="color-message">' . $icon['plus'] . '</span> ' . $lang['post_type_message'] . '</button>';
-    echo '<button hx-post="' . $writer_uri . '" name="set_post_type" value="i" hx-include="[name=\'csrf_token\']"  class="btn btn-default w-100"><span class="color-image">' . $icon['plus'] . '</span> ' . $lang['post_type_image'] . '</button>';
-    echo '<button hx-post="' . $writer_uri . '" name="set_post_type" value="g" hx-include="[name=\'csrf_token\']"  class="btn btn-default w-100"><span class="color-gallery">' . $icon['plus'] . '</span> ' . $lang['post_type_gallery'] . '</button>';
-    echo '<button hx-post="' . $writer_uri . '" name="set_post_type" value="v" hx-include="[name=\'csrf_token\']"  class="btn btn-default w-100"><span class="color-video">' . $icon['plus'] . '</span> ' . $lang['post_type_video'] . '</button>';
-    echo '<button hx-post="' . $writer_uri . '" name="set_post_type" value="l" hx-include="[name=\'csrf_token\']"  class="btn btn-default w-100"><span class="color-link">' . $icon['plus'] . '</span> ' . $lang['post_type_link'] . '</button>';
-    echo '<button hx-post="' . $writer_uri . '" name="set_post_type" value="f" hx-include="[name=\'csrf_token\']"  class="btn btn-default w-100"><span class="color-file">' . $icon['plus'] . '</span> ' . $lang['post_type_file'] . '</button>';
+    echo '<button name="set_post_type" value="m" class="btn btn-default w-100 '.($post_type_form == "m" ? 'active' :'').'"><span class="color-message">' . $icon['plus'] . '</span> ' . $lang['post_type_message'] . '</button>';
+    echo '<button name="set_post_type" value="i" class="btn btn-default w-100 '.($post_type_form == "i" ? 'active' :'').'"><span class="color-image">' . $icon['plus'] . '</span> ' . $lang['post_type_image'] . '</button>';
+    echo '<button name="set_post_type" value="g" class="btn btn-default w-100 '.($post_type_form == "g" ? 'active' :'').'"><span class="color-gallery">' . $icon['plus'] . '</span> ' . $lang['post_type_gallery'] . '</button>';
+    echo '<button name="set_post_type" value="v" class="btn btn-default w-100 '.($post_type_form == "v" ? 'active' :'').'"><span class="color-video">' . $icon['plus'] . '</span> ' . $lang['post_type_video'] . '</button>';
+    echo '<button name="set_post_type" value="l" class="btn btn-default w-100 '.($post_type_form == "l" ? 'active' :'').'"><span class="color-link">' . $icon['plus'] . '</span> ' . $lang['post_type_link'] . '</button>';
+    echo '<button name="set_post_type" value="f" class="btn btn-default w-100 '.($post_type_form == "f" ? 'active' :'').'"><span class="color-file">' . $icon['plus'] . '</span> ' . $lang['post_type_file'] . '</button>';
     echo '</div>';
     echo '</div>';
+    echo $hidden_csrf_token;
+    echo '</form>';
 }
 
 // define which template is used
@@ -41,7 +50,6 @@ $form_array = [
 ];
 
 // load the template
-$post_type_form = $_SESSION['post_type_form'] ?? 'm';
 $form_tpl = file_get_contents($form_array[$post_type_form]);
 // inject the sidebar - it is in all templates the same
 $form_tpl_sidebar = file_get_contents('../acp/templates/post_options.tpl');
