@@ -776,7 +776,6 @@ function se_return_first_chars($str,$length=200) {
 	global $db_content;
 	
 	$media_data = $db_content->select("se_media","*",[
-
 		"AND" => [
 			"media_type[~]" => "$type"
 		],
@@ -786,8 +785,6 @@ function se_return_first_chars($str,$length=200) {
 	]);
 	
 	return $media_data;
-	 
-	 
  }
 
 

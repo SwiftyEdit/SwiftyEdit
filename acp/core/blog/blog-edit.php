@@ -208,6 +208,29 @@ $input_select_reactions = se_print_form_input($select_reactions);
 $input_select_rss = se_print_form_input($select_rss);
 
 
+// select for files
+$select_file = '<select class="form-control custom-select" name="post_file_attachment">';
+$select_file .= '<option value="">-- '.$lang['label_select_no_file'].' --</option>';
+$files_directory = SE_PUBLIC.'/assets/files';
+$all_files = se_scandir_rec($files_directory);
+
+foreach($all_files as $file) {
+    //$se_upload_file_types is set in config.php
+    $file_info = pathinfo($file);
+    if(in_array($file_info['extension'],$se_upload_file_types)) {
+
+        $short_path = str_replace("$files_directory","",$file);
+
+        $selected = "";
+        if($post_data['post_file_attachment'] == $short_path) {
+            $selected = 'selected';
+        }
+
+        $select_file .= '<option '.$selected.' value='.$short_path.'>'.$short_path.'</option>';
+    }
+}
+$select_file .= '</select>';
+$form_tpl = str_replace('{select_file}', $select_file, $form_tpl);
 
 
 if($mode == 'new') {
