@@ -20,9 +20,9 @@ if($_REQUEST['action'] == 'list') {
     }
 
     $file_query = $_SESSION['disk'] ?? $media_file;
-    $file_query = str_replace('assets/', '/', $file_query);
+    $file_query = str_replace('assets/', '../', $file_query);
 
-    if(str_starts_with($file_query, '/images')) {
+    if(str_starts_with($file_query, '../images')) {
         $tpl_list_files = file_get_contents('../acp/templates/list-files-thumbs.tpl');
     } else {
         $tpl_list_files = file_get_contents('../acp/templates/list-files-grid.tpl');
@@ -64,7 +64,6 @@ if($_REQUEST['action'] == 'list') {
     $nbr_pages = ceil($media_data_cnt/$nbr_show_items);
 
     echo se_print_pagination('/admin/uploads/write/',$nbr_pages,$_SESSION['pagination_page']);
-
 
     echo '<div class="row">';
 

@@ -88,7 +88,7 @@ if(!is_dir($tmb_destination)) {
 }
 
 
-/* upload images to /content/images/ */
+// upload images to assets/images/
 if($upload_type == 'images') {
     if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
         $tmp_name = $_FILES['file']['tmp_name'];
@@ -329,8 +329,8 @@ function se_write_media_data_name($filename,$store_tmb_name,$filesize,$time,$med
     global $db_content;
     global $languagePack;
 
-    $filename = str_replace("assets/","/",$filename);
-    $store_tmb_name = str_replace("assets/","/",$store_tmb_name);
+    $filename = str_replace("assets/","../",$filename);
+    $store_tmb_name = str_replace("assets/","../",$store_tmb_name);
     $uploader = $_SESSION['user_nick'];
 
     $columns = [
