@@ -292,7 +292,6 @@
             <div class="card-footer">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#startDownloadModal"><i class="bi bi-download"></i> Download</button>
                 <input type="hidden" name="get_attachment" value="{$product_id}">
-                <input type="hidden" name="csrf_token" value="{$csrf_token}">
             </div>
         </div>
             {$hidden_csrf_token}
