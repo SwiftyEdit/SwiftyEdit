@@ -43,7 +43,7 @@ $entrydate_year = date('Y',$post_data['post_date']);
 /* images */
 
 if($post_images[1] != "") {
-	$first_post_image = '/' . $img_path . '/' . str_replace('../content/images/','',$post_images[1]);
+    $first_post_image = $post_images[1];
 	$post_image_data = se_get_images_data($first_post_image,'data=array');
 } else if($se_prefs['prefs_posts_default_banner'] == "without_image") {
 	$first_post_image = '';
@@ -56,7 +56,7 @@ if($post_images[1] != "") {
 
 if($post_data['post_type'] == 'g') {
 
-	$gallery_dir = 'content/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
+	$gallery_dir = SE_PUBLIC.'/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
 	$fp = $gallery_dir.'*_tmb.jpg';
 	$thumbs_array = glob("$fp");
 	arsort($thumbs_array);
