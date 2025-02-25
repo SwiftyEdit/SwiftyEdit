@@ -10,11 +10,16 @@ if(isset($_POST['delete'])) {
     $delete_id = (int) $_POST['delete'];
     $get_file_data = se_get_media_data_by_id($delete_id);
 
-    $delete_file = $get_file_data['media_file']; // f.e. /images/example.jpg
-    $delete_thumb = $get_file_data['media_thumb']; // f.e. /images_tmb/2025/02/...jpg
+    $delete_file = $get_file_data['media_file']; // f.e. ../images/example.jpg
+    $delete_thumb = $get_file_data['media_thumb']; // f.e. ../images_tmb/2025/02/...jpg
 
-    $delete_file_src = 'assets'.$delete_file;
-    $delete_thumb_src = 'assets'.$delete_thumb;
+    if(str_starts_with($delete_file, "../images/")) {
+        $delete_file_src = str_replace('../images/', "assets/images/", $delete_file);
+    }
+    if(str_starts_with($delete_thumb, "../images_tmb/")) {
+        $delete_thumb_src = str_replace('../images_tmb/', "assets/images_tmb/", $delete_thumb);
+    }
+
 
     if(is_file($delete_file_src)) {
         if(unlink($delete_file_src)) {
@@ -120,7 +125,7 @@ if(isset($_POST['rebase'])) {
     if($_POST['rebase'] == "files_to_database") {
 
         $stats_files_to_db = 0;
-        $stats_files_fromm_db = 0;
+        $stats_files_from_db = 0;
 
         $images_dir = 'assets/images';
         $files_dir = 'assets/files';
@@ -165,11 +170,9 @@ if(isset($_POST['rebase'])) {
             }
         }
 
-
-
         foreach($mediaData as $k => $v) {
             if(!in_array($v, $all_files)) {
-                $stats_files_fromm_db++;
+                $stats_files_from_db++;
                 $db_content->delete("se_media", [
                     "media_file" => "$v"
                 ]);
@@ -178,7 +181,7 @@ if(isset($_POST['rebase'])) {
 
 
         echo '<p><code>'.$stats_files_to_db.'</code> were added to the database<br>';
-        echo '<code>'.$stats_files_fromm_db.'</code> were removed from the database</p>';
+        echo '<code>'.$stats_files_from_db.'</code> were removed from the database</p>';
 
     }
 
