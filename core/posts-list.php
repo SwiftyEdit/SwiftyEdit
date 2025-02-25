@@ -129,7 +129,7 @@ foreach($get_posts as $k => $post) {
 	$first_post_image = '';
 	$post_images = explode("<->", $get_posts[$k]['post_images']);
 	if(isset($post_images[1])) {
-        $get_posts[$k]['post_tmb_src'] = '/' . $img_path . '/' . str_replace('../content/images/','',$post_images[1]);
+        $get_posts[$k]['post_tmb_src'] = $post_images[1];
 	} else if($se_prefs['prefs_posts_default_banner'] == "without_image") {
         $get_posts[$k]['post_tmb_src'] = '';
 	} else {
