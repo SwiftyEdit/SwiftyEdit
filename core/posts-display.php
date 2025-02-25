@@ -56,7 +56,7 @@ if($post_images[1] != "") {
 
 if($post_data['post_type'] == 'g') {
 
-	$gallery_dir = SE_PUBLIC.'/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
+	$gallery_dir = 'assets/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
 	$fp = $gallery_dir.'*_tmb.jpg';
 	$thumbs_array = glob("$fp");
 	arsort($thumbs_array);

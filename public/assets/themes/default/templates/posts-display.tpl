@@ -19,13 +19,13 @@
     {if $post_type == "g"}
 
         <div class="post-thumbnails clearfix border-1">
-            <section data-featherlight-gallery data-featherlight-filter="a">
+            <div class="gallery">
                 {if is_array($gallery_thumbs)}
                     {foreach $gallery_thumbs as $thumb}
-                        <a href="{$thumb.img_src}" class="post-thumbnail lightbox" style="background-image: url({$thumb.tmb_src})"></a>
+                        <a href="{$thumb.img_src}" class="post-thumbnail glightbox lightbox" style="background-image: url({$thumb.tmb_src})"></a>
                     {/foreach}
                 {/if}
-            </section>
+            </div>
         </div>
 
         {$post_teaser}

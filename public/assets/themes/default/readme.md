@@ -15,6 +15,6 @@ GNU General Public License 3
 
 * Bootstrap
 * popper.js
-* featherlight
+* Glightbox
 * jquery
 * js-cookie

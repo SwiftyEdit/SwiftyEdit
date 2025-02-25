@@ -66,13 +66,11 @@
             {$value.post_teaser}
 
             <div class="post-thumbnails clearfix border-1">
-                <section data-featherlight-gallery data-featherlight-filter="a">
-                    {if $value.post_thumbnails == true}
-                        {foreach $value.post_thumbnails as $thumb}
-                            <a href="{$thumb.img_src}" class="post-thumbnail lightbox" style="background-image: url({$thumb.tmb_src})"></a>
-                        {/foreach}
-                    {/if}
-                </section>
+                {if $value.post_thumbnails == true}
+                    {foreach $value.post_thumbnails as $thumb}
+                        <a href="{$thumb.img_src}" class="post-thumbnail lightbox" style="background-image: url({$thumb.tmb_src})"></a>
+                    {/foreach}
+                {/if}
             </div>
         {/if}
         {* post type gallery end *}

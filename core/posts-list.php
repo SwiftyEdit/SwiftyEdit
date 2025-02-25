@@ -139,7 +139,7 @@ foreach($get_posts as $k => $post) {
 
 	if($get_posts[$k]['post_type'] == 'g') {
 
-		$gallery_dir = 'content/galleries/'.$entrydate_year.'/gallery'.$get_posts[$k]['post_id'].'/';
+		$gallery_dir = 'assets/galleries/'.$entrydate_year.'/gallery'.$get_posts[$k]['post_id'].'/';
 		$fp = $gallery_dir.'*_tmb.jpg';
 		$thumbs_array = glob("$fp");
 		arsort($thumbs_array);

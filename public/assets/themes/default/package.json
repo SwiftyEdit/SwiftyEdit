@@ -10,7 +10,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "htmx.org": "^2.0.4",
-    "featherlight": "^1.7.14",
+    "glightbox": "^3.3.1",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.5"
   },
@@ -33,6 +33,8 @@
   "repository": {},
 
   "scripts": {
-    "build": "webpack build --mode=production"
+    "build": "webpack build --mode=production",
+    "audit": "npm audit",
+    "audit fix": "npm audit fix"
   }
 }
