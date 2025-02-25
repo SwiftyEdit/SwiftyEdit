@@ -153,54 +153,45 @@ if($upload_type == 'files') {
     }
 }
 
-if($se_upload_addons === true) {
-    /* upload files to /upload/plugins/ */
-    if($_REQUEST['upload_type'] == 'plugin') {
-        if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
-            $tmp_name = $_FILES["file"]["tmp_name"];
-            $org_name = $_FILES["file"]["name"];
-            $suffix = strtolower(substr(strrchr($org_name,'.'),1));
-            $prefix = basename($org_name,".$suffix");
-            $files_name = generate_filename($prefix,$suffix);
-            if(!is_dir('../../upload/plugins')) {
-                mkdir("../../upload/plugins", 0777, true);
-            }
-            $target = "../../upload/plugins/$files_name";
-            @move_uploaded_file($tmp_name, $target);
-        }
+// gallery upload
+if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
+    $year = (int) $_REQUEST['post_year'];
+    $gallery_id = 'gallery'. (int) $_POST['gal'];
+    $uploads_dir = SE_PUBLIC.'/assets/galleries/'.$year.'/'.$gallery_id;
+    $max_width = (int) $_REQUEST['w']; // max image width
+    $max_height = (int) $_REQUEST['h']; // max image height
+    $max_width_tmb = (int) $_REQUEST['w_tmb']; // max thumbnail width
+    $max_height_tmb = (int) $_REQUEST['h_tmb']; // max thumbnail height
+    if(!is_dir($uploads_dir)) {
+        mkdir($uploads_dir, 0777, true);
     }
 
-    /* upload files to /upload/themes/ */
-    if($_REQUEST['upload_type'] == 'theme') {
-        if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
-            $tmp_name = $_FILES["file"]["tmp_name"];
-            $org_name = $_FILES["file"]["name"];
-            $suffix = strtolower(substr(strrchr($org_name,'.'),1));
-            $prefix = basename($org_name,".$suffix");
-            $files_name = generate_filename($prefix,$suffix);
-            if(!is_dir('../../upload/themes')) {
-                mkdir("../../upload/themes", 0777, true);
+    if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
+
+        $tmp_name = $_FILES["file"]["tmp_name"];
+        $timestring = microtime(true);
+        $random_int = random_int(0, 999);
+
+        $suffix = substr(strrchr($_FILES["file"]["name"],"."),1);
+        $org_name = $timestring .'.'. $suffix;
+        $img_name = $timestring.$random_int."_img.jpg";
+        $tmb_name = $timestring.$random_int."_tmb.jpg";
+
+        if(!in_array($suffix, $se_upload_img_types)) {
+            exit;
+        } else {
+
+            if(move_uploaded_file($tmp_name, "$uploads_dir/$org_name")) {
+                se_create_gallery_thumbs($uploads_dir,$org_name,$img_name, $max_width,$max_height,90);
+                se_create_gallery_thumbs($uploads_dir,$img_name,$tmb_name, $max_width_tmb,$max_height_tmb,80);
+                unlink("$uploads_dir/$org_name");
             }
-            $target = "../../upload/themes/$files_name";
-            @move_uploaded_file($tmp_name, $target);
+            $data = ['url' => $uploads_dir, 'message' => 'Gallery: #'.$_POST['gal'].' The files has been uploaded.'];
+            echo json_encode($data);
         }
+
     }
 
-    /* upload files to /upload/modules/ */
-    if($_REQUEST['upload_type'] == 'module') {
-        if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
-            $tmp_name = $_FILES["file"]["tmp_name"];
-            $org_name = $_FILES["file"]["name"];
-            $suffix = strtolower(substr(strrchr($org_name,'.'),1));
-            $prefix = basename($org_name,".$suffix");
-            $files_name = generate_filename($prefix,$suffix);
-            if(!is_dir('../../upload/modules')) {
-                mkdir("../../upload/modules", 0777, true);
-            }
-            $target = "../../upload/modules/$files_name";
-            @move_uploaded_file($tmp_name, $target);
-        }
-    }
 }
 
 
@@ -387,4 +378,36 @@ function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_qualit
         imagedestroy($new_image);
     }
 
+}
+
+function se_create_gallery_thumbs($updir, $img, $name, $thumbnail_width, $thumbnail_height, $quality){
+    $arr_image_details	= GetImageSize("$updir/$img");
+    $original_width		= $arr_image_details[0];
+    $original_height	= $arr_image_details[1];
+    $a = $thumbnail_width / $thumbnail_height;
+    $b = $original_width / $original_height;
+
+
+    if ($a<$b) {
+        $new_width = $thumbnail_width;
+        $new_height	= intval($original_height*$new_width/$original_width);
+    } else {
+        $new_height = $thumbnail_height;
+        $new_width	= intval($original_width*$new_height/$original_height);
+    }
+
+    if(($original_width <= $thumbnail_width) AND ($original_height <= $thumbnail_height)) {
+        $new_width = $original_width;
+        $new_height = $original_height;
+    }
+    if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
+    if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
+    if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
+    if($imgt) {
+        $old_image	= $imgcreatefrom("$updir/$img");
+        $new_image	= imagecreatetruecolor($new_width, $new_height);
+        imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
+        imagejpeg($new_image,"$updir/$name",$quality);
+        imagedestroy($new_image);
+    }
 }

@@ -179,12 +179,12 @@ $(function() {
     })
 
     uppy.use(Form, {
-        target: '#dropper',
+        target: '.dropper-form',
     })
 
     uppy.use(Dashboard, {
         inline: true,
-        target: '#dropper',
+        target: '.dropper-form',
     })
     uppy.use(XHRUpload, {
         endpoint: '/admin/upload/',

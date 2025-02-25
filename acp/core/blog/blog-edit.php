@@ -240,6 +240,24 @@ foreach($all_files as $file) {
 $select_file .= '</select>';
 $form_tpl = str_replace('{select_file}', $select_file, $form_tpl);
 
+if((isset($post_data['post_type'])) && $post_data['post_type'] == 'g') {
+    $form_tpl = str_replace('{disabled_upload_btn}','', $form_tpl);
+
+    $form_upload_tpl = file_get_contents('../acp/templates/gallery_upload_form.tpl');
+    $form_upload_tpl = str_replace('{token}',$_SESSION['token'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{post_id}',$post_data['post_id'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_img_width}',$se_prefs['prefs_maximagewidth'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_tmb_width}',$se_prefs['prefs_maxtmbwidth'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_img_height}',$se_prefs['prefs_maximageheight'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_tmb_height}',$se_prefs['prefs_maxtmbheight'], $form_upload_tpl);
+
+} else {
+    $form_upload_tpl = '';
+    $form_tpl = str_replace('{disabled_upload_btn}','disabled', $form_tpl);
+}
+
+$form_tpl = str_replace('{modal_upload_form}', $form_upload_tpl, $form_tpl);
+
 
 if($mode == 'new') {
     $submit_btn = '<button type="submit" hx-post="/admin/blog/write/" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
