@@ -1156,8 +1156,7 @@ function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
 
 function se_list_gallery_thumbs($gid) {
 	
-	global $db_posts;
-	global $icon;
+	global $db_posts, $icon;
 	$gid = (int) $gid;
 	
 	
@@ -1165,19 +1164,25 @@ function se_list_gallery_thumbs($gid) {
 	"post_id" => $gid
 	]);
 	
-	$filepath = '../content/galleries/'.date('Y',$date).'/gallery'.$gid.'/*_tmb.jpg';
+	$filepath = SE_PUBLIC.'/assets/galleries/'.date('Y',$date).'/gallery'.$gid.'/*_tmb.jpg';
 	$thumbs_array = glob("$filepath");
 	arsort($thumbs_array);
 
 	$thumbs = '';
 	foreach($thumbs_array as $tmb) {
+
+        $tmb_src = str_replace(SE_PUBLIC.'/assets/galleries/','/galleries/',$tmb);
+
 		$thumbs .= '<div class="tmb">';
-		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb.'" class="img-fluid"></div>';
+		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb_src.'" class="img-fluid"></div>';
+        $thumbs .= '<form hx-post="/admin/blog/write/">';
 		$thumbs .= '<div class="tmb-actions d-flex btn-group">';
-		$thumbs .= '<button type="submit" name="sort_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
-		$thumbs .= '<button type="submit" name="del_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
+		$thumbs .= '<button type="submit" name="sort_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
+		$thumbs .= '<button type="submit" name="delete_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
 		$thumbs .= '</div>';
-		$thumbs .= '</div>';
+        $thumbs .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+		$thumbs .= '</form>';
+        $thumbs .= '</div>';
 	}
 	
 	

@@ -166,21 +166,6 @@ if(isset($_POST['save_post'])) {
     }
 
 
-    /* gallery thumbnails */
-    if($_POST['del_tmb'] != '') {
-        $del_tmb = se_filter_filepath($_POST['del_tmb']);
-        $del_img = str_replace('_tmb','_img',$del_tmb);
-
-        if(str_starts_with($del_tmb, '../content/galleries/')) {
-            unlink($del_tmb);
-            unlink($del_img);
-        }
-    }
-
-    if($_POST['sort_tmb'] != '') {
-        se_rename_gallery_image($_POST['sort_tmb']);
-    }
-
     /* metas */
     if($_POST['post_meta_title'] == '') {
         $post_meta_title = $_POST['post_title'];
@@ -246,4 +231,20 @@ if(isset($_POST['save_post'])) {
     echo '<pre>';
     //print_r($_POST);
     echo '</pre>';
+}
+
+if(isset($_POST['sort_gallery_tmb'])) {
+    se_rename_gallery_image($_POST['sort_gallery_tmb']);
+    header( "HX-Trigger: update_gallery_thumbs");
+}
+
+if(isset($_POST['delete_gallery_tmb'])) {
+    $del_tmb = se_filter_filepath($_POST['delete_gallery_tmb']);
+    $del_img = str_replace('_tmb','_img',$del_tmb);
+
+    if(str_starts_with($del_tmb, SE_PUBLIC.'/assets/galleries/')) {
+        unlink($del_tmb);
+        unlink($del_img);
+        header( "HX-Trigger: update_gallery_thumbs");
+    }
 }

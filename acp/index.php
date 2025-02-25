@@ -408,7 +408,7 @@ if (isset($set_acptheme)) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="dropper" action="/admin/upload/" method="POST">
+                <form id="dropper" class="dropper-form" action="/admin/upload/" method="POST">
                     <!--
                     <input type="file" />
                     <button type="submit">Upload</button>
