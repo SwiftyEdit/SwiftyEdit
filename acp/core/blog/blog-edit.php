@@ -215,6 +215,13 @@ $input_select_comments = se_print_form_input($input_select_comments);
 $input_select_reactions = se_print_form_input($select_reactions);
 $input_select_rss = se_print_form_input($select_rss);
 
+// release date
+if($post_data['post_releasedate'] > 0) {
+    $post_releasedate = date('Y-m-d H:i', $post_data['post_releasedate']);
+} else {
+    $post_releasedate = date('Y-m-d H:i', time());
+}
+
 
 // select for files
 $select_file = '<select class="form-control custom-select" name="post_file_attachment">';
@@ -298,6 +305,7 @@ $form_tpl = str_replace('{select_comments}', $input_select_comments, $form_tpl);
 $form_tpl = str_replace('{select_votings}', $input_select_reactions, $form_tpl);
 $form_tpl = str_replace('{select_rss}', $input_select_rss, $form_tpl);
 $form_tpl = str_replace('{post_labels}', $checkbox_set_labels, $form_tpl);
+$form_tpl = str_replace('{post_releasedate}', $post_releasedate, $form_tpl);
 
 
 
