@@ -225,6 +225,13 @@ for($i=0;$i<$cnt_active_mods;$i++) {
 }
 
 require SE_ROOT."languages/index.php";
+
+if($swifty_slug == '/' OR $swifty_slug == '') {
+    list($page_contents,$se_nav) = se_get_content('portal','page_sort');
+} else {
+    list($page_contents,$se_nav) = se_get_content($swifty_slug,'permalink');
+}
+
 require SE_ROOT.'core/smarty.php';
 
 
@@ -250,12 +257,6 @@ if ($requestPathParts[0] === 'api') {
         http_response_code(404);
         exit;
     }
-}
-
-if($swifty_slug == '/' OR $swifty_slug == '') {
-    list($page_contents,$se_nav) = se_get_content('portal','page_sort');
-} else {
-    list($page_contents,$se_nav) = se_get_content($swifty_slug,'permalink');
 }
 
 /* include (once) modules global/index.php if exists */
