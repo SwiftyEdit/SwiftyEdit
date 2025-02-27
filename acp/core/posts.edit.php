@@ -255,7 +255,7 @@ $array_images = explode("<->", $post_data['post_images']);
 $choose_images = se_select_img_widget($images,$array_images,$prefs_posts_images_prefix,1);
 
 /* status | draft or published */
-if($post_data['post_status'] == "draft") {
+if($post_data['post_status'] == "2") {
 	$sel_status_draft = "selected";
 } else {
 	$sel_status_published = "selected";
