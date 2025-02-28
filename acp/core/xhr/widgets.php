@@ -165,12 +165,12 @@ if($_REQUEST['widget'] == 'img-select') {
 
     foreach ($media_data as $image) {
 
-        $img_filename = basename($image['media_file']);
+        $img_filename = se_filter_filepath(basename($image['media_file']));
         $img_filename_short = se_return_first_chars($img_filename,20);
-        $image_src = $image['media_file'];
+        $image_src = se_filter_filepath($image['media_file']);
         $image_src = str_replace("../","/",$image_src);
         $image_title = sanitizeUserInputs($image['media_title']);
-        $image_tmb_name = $image['media_thumb'];
+        $image_tmb_name = se_filter_filepath($image['media_thumb']);
         $image_upload_time = se_format_datetime($image['media_upload_time']);
 
         if(file_exists($image_tmb_name)) {

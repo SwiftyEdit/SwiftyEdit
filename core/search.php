@@ -37,17 +37,9 @@ if($s != '' && $start_search == "true") {
 			$parse_page_thumb = parse_url($sr[$i]['page_thumbnail']);
 			$page_thumb = $parse_page_thumb['path'];
 
-			if(file_exists(".$page_thumb")) {
-				$sr[$i]['page_thumb'] = $page_thumb;
-			} else {
-				$sr[$i]['page_thumb'] = $se_prefs['prefs_pagethumbnail'];
-			}
-			
-			if(strpos($sr[$i]['snipp'],'<|>') === false) {
-				$sr[$i]['page_meta_description'] = $sr[$i]['snipp'];
-			} else {
-				$sr[$i]['page_meta_description'] = $sr[$i]['page_description'];
-			}
+            $sr[$i]['page_thumb'] = $page_thumb;
+
+            $sr[$i]['page_meta_description'] = $sr[$i]['page_meta_description'];
 			
 			
 		}

@@ -13,16 +13,20 @@ if($_POST['helper_update_table'] == 'se_content') {
     $db_content->replace("se_snippets", ["snippet_content" => ["$search" => "$replace"]]);
     $db_content->replace("se_snippets", ["snippet_images" => ["$search" => "$replace"]]);
     $db_content->replace("se_categories", ["cat_thumbnail" => ["$search" => "$replace"]]);
-    $db_content->replace("se_media", ["media_file" => [ "$search" => "$replace" ]]);
     echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
 
-    // files
+    // images in se_media
+    $search = '../content/images/';
+    $replace = '../images/';
+    $db_content->replace("se_media", ["media_file" => [ "$search" => "$replace" ]]);
+
+    // files in se_media
     $search = '../content/files/';
-    $replace = '/files/';
+    $replace = '../files/';
     $db_content->replace("se_media", ["media_file" => [ "$search" => "$replace" ]]);
     echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
 
-    // thumbnails
+    // thumbnails in se_media
     $search = '../content/images_tmb/';
     $replace = '/images_tmb/';
     $db_content->replace("se_media", ["media_thumb" => [ "$search" => "$replace" ]]);
