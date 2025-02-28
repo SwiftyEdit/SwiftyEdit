@@ -222,6 +222,11 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
+$allowedLanguages = ["en", "de", "es", "fr", "gr", "it", "pl", "ro", "tr"];
+if (!in_array($languagePack, $allowedLanguages)) {
+    $languagePack = "en";
+}
+
 require SE_ROOT.'/languages/index.php';
 
 
