@@ -40,9 +40,9 @@ echo '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-l
 echo '</div>';
 echo '<div class="offcanvas-body">';
 
-echo '<div id="response"></div>';
+echo '<div id="globalFilterResponse" class="alert alert-info"></div>';
 
-echo '<form action="" method="POST" id="globalFilterForm">';
+echo '<form hx-post="/admin/xhr/write/" hx-target="#globalFilterResponse" hx-swap="innerHTML" id="globalFilterForm">';
 
 
 /* status */
@@ -119,7 +119,7 @@ echo '</div>';
 
 
 echo '<div class="mt-3">';
-echo '<button type="submit" class="btn btn-default" name="SendForm">'.$lang['save'].'</button>';
+echo '<button type="submit" class="btn btn-default" name="set_global_filter">'.$lang['save'].'</button>';
 echo '</div>';
 
 echo $hidden_csrf_token;

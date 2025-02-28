@@ -4,6 +4,15 @@
 
 # SwiftyEdit CMS
 
+## A few notes on version 2
+
+* To increase security, we will use a /public/ folder for the frontend
+* We use mod_rewrite for the backend
+* We run almost all actions via AJAX/HTMX
+* Extensions are only available in two variants: Plugins and Themes
+* Existing themes should be able to continue to be used without much effort
+* We remove the shortcode section. It's the same as snippets.
+
 SwiftyEdit is an Open Source Content Management System based on PHP and MySQL or SQLite.
 
 + License: GNU GENERAL PUBLIC LICENSE Version 3<br>
@@ -17,12 +26,12 @@ SwiftyEdit has a very simple structure and can be used for the smallest projects
 The following modules are integrated in the system:
 
 * The kind of __page management__ a CMS should have.
-* __Snippets and Shortcodes__ - Don't write the same thing over and over again.
+* __Snippets / Shortcodes__ - Don't write the same thing over and over again.
 * __Blog__ - Publish your news, pictures, galleries or downloads and videos. Anything you want.
 * __Events__ - Publish your events and manage reservations and guest lists.
 * __Shop__ - Present your offers. Sell your things - including digital products.
 
-### Usermanual and Developer Documentation
+### User manual and Developer Documentation
 
 * https://swiftyedit.org/documentation/
 * https://swiftyedit.org/de/dokumentation/
@@ -41,6 +50,9 @@ Get the latest Version from https://swiftyedit.org/download/
 ```
 composer create-project swiftyedit/swiftyedit
 ```
+
+__Please note:__ 
+As of version 2.0, we use the /public/ folder as the domain root. This means that your domain must point to this folder.
 
 ### Contribution
 

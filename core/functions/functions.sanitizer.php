@@ -78,12 +78,46 @@ function se_clean_query($str) {
 	return $str; 	
 }
 
+/**
+ * @param $input
+ * @return array|string|string[]|null
+ */
+function se_sanitize_price($input): array|string|null {
+    // Remove all non-numeric characters except commas and dots
+    $input = preg_replace('/[^0-9,.]/', '', $input);
+
+    // If multiple commas exist, keep only the first one
+    $parts = explode(',', $input);
+    if (count($parts) > 2) {
+        $input = $parts[0] . ',' . implode('', array_slice($parts, 1));
+    }
+
+    // Check if there is only one dot and no comma, then replace the dot with a comma
+    if (substr_count($input, '.') === 1 && strpos($input, ',') === false) {
+        $input = str_replace('.', ',', $input);
+    }
+
+    // If both a dot and a comma exist, remove all commas
+    if (strpos($input, '.') !== false && strpos($input, ',') !== false) {
+        $input = str_replace(',', '', $input);
+    }
+
+    return $input;
+}
+
 
 /**
- * sanitize user inputs
+ * @param $str
+ * @param $type
+ * @param $flags
+ * @return mixed|string
  */
 
-function sanitizeUserInputs($str,$type='str',$flags=NULL) {
+function sanitizeUserInputs($str,$type='str',$flags=NULL): mixed {
+
+    if($str == '') {
+        return '';
+    }
 
 	if($type == 'str') {
 		$str = trim($str);	
@@ -92,7 +126,6 @@ function sanitizeUserInputs($str,$type='str',$flags=NULL) {
 	}
 	
 	return $str;
-
 }
 
 /**
@@ -170,11 +203,11 @@ function se_sanitize_page_inputs($data) {
         }
 
         // thumbnails
-        if($key == 'picker1_images') {
-            if(count($data['picker1_images']) > 1) {
-                $page_thumbnail = implode("<->", $_POST['picker1_images']);
+        if($key == 'picker_0') {
+            if(count($data['picker_0']) > 1) {
+                $page_thumbnail = implode("<->", $_POST['picker_0']);
             } else {
-                $pt = $_POST['picker1_images'];
+                $pt = $_POST['picker_0'];
                 $page_thumbnail = $pt[0];
             }
             $sanitized['page_thumbnail'] = se_return_clean_value($page_thumbnail);

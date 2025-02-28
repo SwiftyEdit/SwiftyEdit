@@ -47,12 +47,8 @@ function buffer_script(string $script, string $parameters=NULL) {
 	}
 
 	ob_start();
-	if(is_file("./content/plugins/$script")) {
-		include './content/plugins/'.$script;
-	} else if (is_dir("./content/plugins/$script")) {
-		if(is_file("./content/plugins/$script/index.php")) {
-			include './content/plugins/'.$script.'/index.php';
-		}
+	if(is_file(SE_ROOT."plugins/$script/index.php")) {
+		include SE_ROOT."plugins/$script/index.php";
 	}
 
 	$content = ob_get_clean();
@@ -138,8 +134,8 @@ function se_get_files_data($file,$parameters=NULL) {
     $form_action = $swifty_slug;
     $form_action = str_replace('//','/',$form_action);
 	
-	$file_src = str_replace('../content/files/', '/content/files/', $fileData['media_file']);
-	$tpl = file_get_contents('./styles/'.$se_template.'/templates/download.tpl');
+	$file_src = str_replace('../content/files/', '/files/', $fileData['media_file']);
+	$tpl = file_get_contents(SE_PUBLIC.'/assets/themes/'.$se_template.'/templates/download.tpl');
     $tpl = str_replace('{$form_Action}', $form_action, $tpl);
     $tpl = str_replace('{$csrf_token}', $_SESSION['token'], $tpl);
 	$tpl = str_replace('{$file_src}', $fileData['media_file'], $tpl);
@@ -171,8 +167,8 @@ function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
 		$parameter = parse_str(html_entity_decode($params),$output);
 	}
 	
-    if(is_file(SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php')) {
-        include SE_CONTENT.'/modules/'.$mod.'.mod/global/snippets.php';
+    if(is_file(SE_ROOT.'/plugins/'.$mod.'/global/snippets.php')) {
+        include SE_ROOT.'/plugins/'.$mod.'/global/snippets.php';
     }
 	
 	return $mod_str;

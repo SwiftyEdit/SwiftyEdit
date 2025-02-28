@@ -20,9 +20,9 @@ copy('maintenance.html', '../maintenance.html');
 
 use Medoo\Medoo;
 
-require '../config.php';
-if(is_file('../'.SE_CONTENT.'/config.php')) {
-	include '../'.SE_CONTENT.'/config.php';
+require SE_ROOT.'/config.php';
+if(is_file(SE_CONTENT.'/config.php')) {
+	include SE_CONTENT.'/config.php';
 }
 
 
@@ -73,19 +73,11 @@ if(is_file('../config_database.php')) {
 	
 }
 
-define("INDEX_DB", "$se_db_index");
-$db_index = new Medoo([
-	'type' => 'sqlite',
-	'database' => INDEX_DB
-]);	
-	
-
-
 
 echo '<h2>UPDATE</h2>';
 
 /* build an array from all php files in folder contents */
-$all_tables = glob("contents/*.php");
+$all_tables = glob(__DIR__."/contents/*.php");
 
 
 for($i=0;$i<count($all_tables);$i++) {
@@ -96,11 +88,7 @@ for($i=0;$i<count($all_tables);$i++) {
 	$is_table = table_exists("$database","$table_name");
 	
 	if($is_table < 1) {
-		if($table_type == 'virtual') {
-			add_virtual_table("$database","$table_name",$cols);
-		} else {
-			add_table("$database","$table_name",$cols);
-		}
+        add_table("$database","$table_name",$cols);
 		
 		$table_updates[] = "New $table_type Table: <b>$table_name</b> in Database <b>$database</b>";
 	}
@@ -150,7 +138,8 @@ if(is_array($fails)) {
 			echo"<span class='text-danger'>$value</span><br />";
 		}
 	
-} else {
+}
+if(is_array($wins)) {
 	echo "<h3>" . count($wins) . " Columns are ready</h3>";
 	
 	if(is_array($table_updates)) {
@@ -168,15 +157,12 @@ if(is_array($fails)) {
 }
 
 echo '<a href="/install/" class="btn btn-primary me-1">Reload</a>';
-echo '<a href="/acp/acp.php?tn=dashboard" class="btn btn-primary">ACP</a>';
+echo '<a href="/admin/" class="btn btn-primary">ACP</a>';
 
 
 if(is_file('../maintenance.html')) {
 	unlink('../maintenance.html');
 }
-
-
-
 
 
 ?>

@@ -1,87 +1,127 @@
-
-
-
-	<div class="row gx-4">
+<div class="row gx-4">
 	<div class="col-8">
 		<div class="card h-100">
 			<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
-					<li class="nav-item"><a class="nav-link active" href="#" data-bs-target="#pages_list" data-bs-toggle="tab">{tab_pages}</a></li>
-					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#snippets_list" data-bs-toggle="tab">{tab_snippets}</a></li>
-					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#post_list" data-bs-toggle="tab">{tab_blog}</a></li>
-					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#products_list" data-bs-toggle="tab">{tab_products}</a></li>
-					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#events_list" data-bs-toggle="tab">{tab_events}</a></li>
-					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#comment_list" data-bs-toggle="tab">{tab_comments}</a></li>
-					<li class="nav-item"><a class="nav-link" href="#" data-bs-target="#user_list" data-bs-toggle="tab">{tab_user}</a></li>
+					<li class="nav-item">
+						<a class="nav-link active" href="#" data-bs-target="#pages_list" data-bs-toggle="tab">
+							{tab_pages}
+							<sup><span id="countPages" hx-get="/admin/counter/read/?count=pages" hx-trigger="load" class="badge bg-secondary"></span></sup>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" data-bs-target="#snippets_list" data-bs-toggle="tab">
+							{tab_snippets}
+							<sup><span id="countPages" hx-get="/admin/counter/read/?count=snippets" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" data-bs-target="#post_list" data-bs-toggle="tab">
+							{tab_blog}
+							<sup><span id="countPosts" hx-get="/admin/counter/read/?count=posts" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" data-bs-target="#products_list" data-bs-toggle="tab">
+							{tab_products}
+							<sup><span id="countProducts" hx-get="/admin/counter/read/?count=products" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" data-bs-target="#events_list" data-bs-toggle="tab">
+							{tab_events}
+							<sup><span id="countEvents" hx-get="/admin/counter/read/?count=events" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+						</a>
+					</li>
 				</ul>
 			</div>
 			<div class="card-body">
 				<div class="tab-content h-100">
 					<div class="tab-pane h-100 fade show active" id="pages_list">
 						<div class="d-flex flex-column h-100">
-							{pages_list}
+							<div id="getPages" class="p-1"
+								 hx-post="{reader_uri}?action=list_pages"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 							<div class="row mt-auto g-1">
-								<div class="col">{btn_page_overview}</div>
-								<div class="col">{btn_new_page}</div>
-								<div class="col-2">{btn_update_index}</div>
-								<div class="col-2">{btn_delete_cache}</div>
+								<div class="col">{btn_page_overview} {btn_new_page}</div>
+								<div class="col-3">
+									<div class="input-group">
+									<button hx-post="/admin/xhr/write/"
+											hx-swap="none"
+											hx-include="[name='csrf_token']"
+											name="delete_smarty_cache" class="btn btn-default">
+											{label_btn_delete_cache}
+									</button>
+									<span id="cntCacheSize" class="input-group-text"
+										  hx-get="{reader_uri}?action=calculate_cache_size"
+										  hx-trigger="load, deleted_cache from:body"
+										  hx-include="[name='csrf_token']">
+											0 KB
+									</span>
+									</div>
+								</div>
 							</div>
 						</div>
-
-
-
 					</div>
 					<div class="tab-pane fade h-100" id="snippets_list">
 						<div class="d-flex flex-column h-100">
-						{snippets_list}
+							<div id="getSnippets" class="p-1"
+								 hx-post="{reader_uri}?action=list_snippets"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 							<div class="row mt-auto g-1">
-								<div class="col-2">{btn_snippets_overview}</div>
-								<div class="col-2">{btn_snippets_new}</div>
+								<div class="col">
+									{btn_snippets_overview}
+									{btn_snippets_new}
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade h-100" id="post_list">
 						<div class="d-flex flex-column h-100">
-							{posts_list}
+							<div id="getPosts" class="p-1"
+								 hx-post="{reader_uri}?action=list_posts"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 							<div class="row mt-auto g-1">
-								<div class="col-2">{btn_blog_overview}</div>
-								<div class="col-2">{btn_blog_new}</div>
+								<div class="col">
+									{btn_blog_overview}
+									{btn_blog_new}
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade h-100" id="products_list">
 						<div class="d-flex flex-column h-100">
-							{products_list}
+							<div id="getProducts" class="p-1"
+								 hx-post="{reader_uri}?action=list_products"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 							<div class="row mt-auto g-1">
-								<div class="col-2">{btn_products_overview}</div>
-								<div class="col-2">{btn_products_new}</div>
+								<div class="col">
+									{btn_products_overview}
+									{btn_products_new}
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade h-100" id="events_list">
 						<div class="d-flex flex-column h-100">
-							{events_list}
-							<div class="row mt-auto g-1">
-								<div class="col-2">{btn_events_overview}</div>
-								<div class="col-2">{btn_events_new}</div>
+							<div id="getEvents" class="p-1"
+								 hx-post="{reader_uri}?action=list_events"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
 							</div>
-						</div>
-					</div>
-					<div class="tab-pane fade h-100" id="comment_list">
-						<div class="d-flex flex-column h-100">
-							{comments_list}
 							<div class="row mt-auto g-1">
-								<div class="col-2">{btn_comments_overview}</div>
-							</div>
-						</div>
-					</div>
-					<div class="tab-pane fade h-100" id="user_list">
-						<div class="d-flex flex-column h-100">
-							{user_list}
-							<div class="row mt-auto g-1">
-								<div class="col-2">{btn_user_overview}</div>
-								<div class="col-2">{btn_user_new}</div>
-								<div class="col-2">{btn_usergroups_overview}</div>
+								<div class="col">
+									{btn_events_overview}
+									{btn_events_new}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -102,77 +142,29 @@
 				<div class="tab-content">
 					<div class="tab-pane fade show active" id="logfile">
 						<div class="scroll-container">
-							{dashboard_logfile}
+							<div id="getLogfile" class="p-1"
+								 hx-post="{reader_uri}?action=list_logfile"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade" id="alerts">
 						<div class="scroll-container">
-							{dashboard_alerts}
+							<div id="getAlerts" class="p-1"
+								 hx-post="{reader_uri}?action=list_alerts"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade" id="info_table">
 						<div class="scroll-container">
-				<table class="table table-sm">
-					<tr>
-						<td>{label_pages}</td>
-						<td>{cnt_all_pages}</td>
-					</tr>
-					<tr>
-						<td>{label_user}</td>
-						<td>{cnt_all_user}</td>
-					</tr>
-					<tr>
-						<td>{label_posts}</td>
-						<td>{cnt_all_posts}</td>
-					</tr>
-					<tr>
-						<td>{label_products}</td>
-						<td>{cnt_all_products}</td>
-					</tr>
-					<tr>
-						<td>{label_events}</td>
-						<td>{cnt_all_events}</td>
-					</tr>
-					<tr>
-						<td>{label_comments}</td>
-						<td>{cnt_all_comments}</td>
-					</tr>
-				</table>
-
-				<table class="table table-sm">
-					<tr>
-						<td>Server:</td>
-						<td>{val_server}</td>
-					</tr>
-					<tr>
-						<td>PHP:</td>
-						<td>{val_phpversion}</td>
-					</tr>
-					<tr>
-						<td>Database:</td>
-						<td>{val_database}</td>
-					</tr>
-					<tr>
-						<td>CMS Domain:</td>
-						<td>{val_cms_domain}</td>
-					</tr>
-					<tr>
-						<td>SSL Domain:</td>
-						<td>{val_cms_ssl_domain}</td>
-					</tr>
-					<tr>
-						<td>Base:</td>
-						<td>{val_base_uri}</td>
-					</tr>
-					<tr>
-						<td>E-Mail:</td>
-						<td>{val_cms_mail}</td>
-					</tr>
-					<tr>
-						<td>E-Mail Name:</td>
-						<td>{val_cms_email_name}</td>
-					</tr>
-				</table>
+							<div id="getInfos" class="p-1"
+								 hx-post="{reader_uri}?action=list_infos"
+								 hx-trigger="load"
+								 hx-include="[name='csrf_token']">
+							</div>
 						</div>
 					</div>
 

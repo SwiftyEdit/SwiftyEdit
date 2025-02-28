@@ -393,7 +393,7 @@ function se_increase_product_hits($product_id) {
 function se_add_to_cart() {
 	
 	global $db_content;
-	global $se_prefs;
+	global $se_settings;
 
 	$cart_product_id = (int) $_POST['add_to_cart'];
 	$cart_product_amount = 1;
@@ -433,11 +433,11 @@ function se_add_to_cart() {
 
 	
 	if($this_item['product_tax'] == '1') {
-		$cart_product_tax = $se_prefs['prefs_posts_products_default_tax'];
+		$cart_product_tax = $se_settings['posts_products_default_tax'];
 	} else if($this_item['product_tax'] == '2') {
-		$cart_product_tax = $se_prefs['prefs_posts_products_tax_alt1'];
+		$cart_product_tax = $se_settings['posts_products_tax_alt1'];
 	} else {
-		$cart_product_tax = $se_prefs['prefs_posts_products_tax_alt2'];
+		$cart_product_tax = $se_settings['posts_products_tax_alt2'];
 	}
 	
 	$db_content->insert("se_carts", [
@@ -634,12 +634,12 @@ function se_clear_cart($user) {
  
 function se_get_payment_methods() {
 	
-	global $se_prefs;
+	global $se_settings,$languagePack;
 	global $lang;
 	$payment_methods = array();
 
     // get payment addons
-    $active_payment_addons = json_decode($se_prefs['prefs_payment_addons'],true);
+    $active_payment_addons = json_decode($se_settings['payment_addons'],true);
     if(!is_array($active_payment_addons)) {
         $active_payment_addons = array();
     }
@@ -670,13 +670,31 @@ function se_get_payment_methods() {
 }
 
 /**
- * find addons from /content/modules/
- * payment addons has the suffix .pay
+ * find payment addons from /plugins/
+ * payment addons has the suffix -pay
  * @return array basename of addons
  */
 function se_get_payment_addons() {
     $addons = array();
-    $get_addons = glob(SE_CONTENT.'/modules/*.pay');
+    $get_addons = glob(SE_ROOT.'/plugins/*-pay');
+
+    if(is_array($get_addons)) {
+        foreach($get_addons as $addon) {
+            $addons[] = basename($addon);
+        }
+    }
+
+    return $addons;
+}
+
+/**
+ * find delivery addons from /plugins/
+ * delivery addons has the suffix -delivery
+ * @return array basename of addons
+ */
+function se_get_delivery_addons() {
+    $addons = array();
+    $get_addons = glob(SE_ROOT.'/plugins/*-delivery');
 
     if(is_array($get_addons)) {
         foreach($get_addons as $addon) {
@@ -691,7 +709,7 @@ function se_get_payment_method_data($addon) {
 
     $addon_payment_prefs = array();
 
-    $addon_config = SE_CONTENT.'/modules/'.$addon.'/pm_config.php';
+    $addon_config = SE_ROOT.'/plugins/'.$addon.'/pm_config.php';
     if(is_file($addon_config)) {
         require $addon_config;
     }
@@ -911,9 +929,9 @@ function se_get_order_details($id) {
  * @param string $lang en, de ...
  * @return array
  */
-function se_get_product_filter_groups($lang) {
+function se_get_product_filter_groups(string $lang): array {
 
-    global $db_content, $languagePack, $lang_codes;
+    global $db_content, $lang_codes;
     if($lang == 'all' OR $lang == '') {
         $lang_filter = $lang_codes;
     } else {
@@ -929,8 +947,6 @@ function se_get_product_filter_groups($lang) {
                 "filter_priority" => "DESC"
         ]
     ]);
-
-
     return $filters;
 }
 
@@ -939,7 +955,7 @@ function se_get_product_filter_groups($lang) {
  * @param integer $pid id of the filter entry
  * @return mixed
  */
-function se_get_product_filter_values($pid) {
+function se_get_product_filter_values($pid): mixed {
 
     global $db_content;
     $pid = (int) $pid;
@@ -1037,4 +1053,30 @@ function se_get_price_group_data($hash) {
         "hash" => $hash
     ]);
     return $data;
+}
+
+/**
+ * @return array
+ * get all keywords
+ * key is the keyword, value the counter
+ */
+function se_get_products_keywords() {
+
+    global $db_posts;
+
+    $get_keywords = $db_posts->select("se_products", "tags",[
+        "tags[!]" => ""
+    ]);
+
+    $get_keywords = array_filter( $get_keywords );
+    foreach($get_keywords as $keys) {
+        $keys_string .= trim($keys).',';
+    }
+    $keys_string = str_replace(', ', ',', $keys_string);
+    $keys_string = str_replace(' ,', ',', $keys_string);
+    $keys_array = explode(",",$keys_string);
+    $keys_array = array_filter( $keys_array );
+    $count_keywords = array_count_values($keys_array);
+
+    return $count_keywords;
 }

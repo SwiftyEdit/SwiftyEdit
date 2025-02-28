@@ -1,0 +1,86 @@
+/**!
+ * SwiftyEdit Backend Theme
+ * dark mode
+ */
+
+/* bootstrap colors */
+$primary-dark: #896e9b;
+$secondary-dark: #978ba2;
+$success-dark: #8EA53C;
+$danger-dark: #f3362f;
+$warning-dark: #f68542;
+$info-dark: #a8a8d7;
+
+
+
+$primary-text-emphasis-dark:        lighten($primary-dark, 10%);
+$secondary-text-emphasis-dark:      lighten($secondary-dark, 10%);
+$success-text-emphasis-dark:        lighten($success-dark, 10%);
+$info-text-emphasis-dark:           lighten($info-dark, 15%);
+$warning-text-emphasis-dark:        lighten($warning-dark, 10%);
+$danger-text-emphasis-dark:         lighten($danger-dark, 10%);
+$light-text-emphasis-dark:          $gray-100;
+$dark-text-emphasis-dark:           $gray-300;
+
+
+$primary-bg-subtle-dark:            rgba($primary-dark, .3) !default;
+$secondary-bg-subtle-dark:          rgba($secondary-dark, .3) !default;
+$success-bg-subtle-dark:            rgba($success-dark, .3) !default;
+$info-bg-subtle-dark:               rgba($info-dark, .3) !default;
+$warning-bg-subtle-dark:            rgba($warning-dark, .3) !default;
+$danger-bg-subtle-dark:             rgba($danger-dark, .3) !default;
+$light-bg-subtle-dark:              $gray-800 !default;
+$dark-bg-subtle-dark:               mix($gray-800, $black) !default;
+
+
+
+$page_header_bg_dark: desaturate($darken,10);
+$widget_background_dark: #262626;
+$widget_border_color_dark: darken($widget_background_dark,25%);
+
+$widget-bg-dark-100: mix($lighten,$widget_background_dark,40%);
+$widget-bg-dark-200: mix($lighten,$widget_background_dark,30%);
+$widget-bg-dark-300: mix($lighten,$widget_background_dark,20%);
+$widget-bg-dark-400: mix($lighten,$widget_background_dark,10%);
+$widget-bg-dark-500: $widget_background_dark;
+$widget-bg-dark-600: mix($darken,$widget_background_dark,20%);
+$widget-bg-dark-700: mix($darken,$widget_background_dark,40%);
+$widget-bg-dark-800: mix($darken,$widget_background_dark,60%);
+$widget-bg-dark-900: mix($darken,$widget_background_dark,80%);
+
+$subHeader_bg_dark: desaturate($darken,5%);
+
+$body-color-dark: #e5e5e5 !default;
+$body-bg-dark: #151515 !default;
+$body-dark-gradient-top: rgba($body-bg-dark,1);
+$body-dark-gradient-bottom: rgba($primary-dark,0.4);
+
+$body-secondary-color-dark:         rgba($body-color-dark, .75) !default;
+$body-secondary-bg-dark:            $gray-800 !default;
+$body-tertiary-color-dark:          rgba($body-color-dark, .5) !default;
+$body-tertiary-bg-dark:             mix($gray-800, $gray-900, 50%) !default;
+$body-emphasis-color-dark:          $white !default;
+$border-color-dark:                 $widget_border_color_dark !default;
+$border-color-translucent-dark:     rgba($gray-600, .05) !default;
+$headings-color-dark:               lighten($primary-dark,10%) !default;
+$link-color-dark:                   lighten($primary-dark, 20%) !default;
+$link-hover-color-dark:             lighten($link-color-dark, 10%) !default;
+$code-color-dark:                   lighten($code-color, 20%) !default;
+
+
+$btn_se_background_dark: #333333;
+$btn_se_background_active_dark: $primary-dark;
+$btn_se_background_disabled_dark: desaturate($primary-dark,15);
+$btn_se_background_hover_dark: darken($primary-dark,15%);
+$btn_se_color_dark: #eee;
+$btn_se_color_active_dark: #fff;
+
+/* page status colors */
+
+$status-public-color-dark: #389d38;
+$status-ghost-color-dark: #637a5c;
+$status-private-color-dark: #d9534f;
+$status-draft-color-dark: #989898;
+$status-redirect-color-dark: #078dfe;
+
+$sidebar-background-dark: #111111;

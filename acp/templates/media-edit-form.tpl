@@ -79,8 +79,7 @@
 				  
 			</div>
 			<div class="col-md-4">
-				<h4 class="small">{filename}</h4>
-				<div class="well well-sm">
+				<div class="card border p-1">
 					{preview}	
 				</div>
 				
@@ -91,7 +90,7 @@
 					</tr>
 					<tr>
 						<td class="text-right"><i class="fas fa-external-link-alt"></i></td>
-						<td><a href="{showpath}">{showpath}</a></td>
+						<td><a href="{realpath}">{realpath}</a></td>
 					</tr>
 					<tr>
 						<td class="text-right"><i class="fas fa-info-circle"></i></td>

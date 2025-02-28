@@ -1,0 +1,89 @@
+.card {
+	background: $widget_background;
+	//border-color: darken($widget_background,5);
+	.card-header {
+		background: darken($widget_background,7);
+	}
+	.card-header-tabs {
+		li {
+
+			a {
+				&:hover {
+					border-bottom: 1px solid var(--bs-widget-bg-500);
+				}
+			}
+
+			.active,
+			.active:hover {
+				background: var(--bs-widget-bg-500);
+				border-color: var(--bs-widget-bg-500);
+				color: var(--bs-nav-tabs-link-active-color);
+			}
+		}
+	}
+	
+	.card-body {
+		background: $widget_background;
+	}
+}
+
+
+@media (min-width: 992px) {
+    .custom-columns {
+        column-count: 4;
+    }
+}
+@media (min-width: 1200px) {
+    .custom-columns {
+        column-count: 5;
+    }
+}
+
+@media (min-width: 1500px) {
+    .custom-columns {
+        column-count: 7;
+    }
+}
+
+
+.card:hover {
+	.card-img-overlay.d-none {
+		visibility: visible;
+	}
+}
+
+.card .fade-menu {
+	visibility: hidden;
+	opacity: 0;
+	height: 0;
+	padding: 0;
+}
+
+.card:hover .fade-menu {
+	height: auto;
+	visibility: visible;
+	opacity: 10;
+	transition: opacity .5s ease;
+}
+
+[data-bs-theme="dark"] {
+
+	.card {
+		background: $widget_background_dark;
+		//border-color: lighten($widget_background_dark,10);
+		.card-header {
+			background: darken($widget_background_dark,5);
+		}
+		.card-body {
+			background: $widget_background_dark;
+		}
+
+		.card {
+			background: darken($widget_background_dark,5);
+			.card-body {
+				background: darken($widget_background_dark,3);
+			}
+		}
+
+	}
+}

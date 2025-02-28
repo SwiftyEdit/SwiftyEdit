@@ -7,7 +7,7 @@
         </button>
       </div>
       <div class="modal-body">
-				<form method="post" action="core/files.upload_gallery.php?gal={post_id}" id="myDropzone" class="dropzone dropzone-default">
+				<form method="post" action="/admin/upload/" id="dropper" class="dropper-form">
 					<div class="fallback">
 						<input name="file" type="file" multiple />
 					</div>
@@ -18,21 +18,9 @@
 					<input type="hidden" name="h" value="{max_img_height}">
 					<input type="hidden" name="h_tmb" value="{max_tmb_height}">
 					<input type="hidden" name="csrf_token" value="{token}">
+					<input type="hidden" name="post_id" value="{post_id}">
 				</form>
       </div>
     </div>
   </div>
 </div>
-
-<form action="acp.php?tn=posts&sub=edit" method="POST" id="reload_form">
-	<input type="hidden" name="post_id" value="{post_id}">
-	<input type="hidden" name="csrf_token" value="{token}">
-</form>
-
-<script>
-$(function() {
-	$('#uploadGalModal').on('hidden.bs.modal', function (e) {
-		$("#reload_form").submit();
-	});
-});
-</script>

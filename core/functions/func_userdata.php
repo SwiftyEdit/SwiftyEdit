@@ -140,8 +140,6 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
     }
 
 	global $db_user;
-
-	$login_hash  = md5($psw.$user);
 	
 	$hash = $db_user->get("se_user", ["user_psw_hash"], [
 		"AND" => [
@@ -160,16 +158,6 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 			]
 		]);
 		
-	} else {
-
-		$result = $db_user->get("se_user", "*", [
-			"AND" => [
-				"user_nick" => "$user",
-				"user_psw" => "$login_hash",
-				"user_verified" => "verified"
-			]
-		]);
-		
 	}
 	
 	//$cnt_result = count($result);
@@ -179,28 +167,6 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 
 		se_start_user_session($result);
 
-		/* store new password_hash */
-		if(empty($result['user_psw_hash'])) {
-			$user_psw_hash = password_hash($psw, PASSWORD_DEFAULT);
-
-			$db_user->update("se_user", [
-				"user_psw_hash" => "$user_psw_hash"
-					], [
-				"user_psw" => "$login_hash"
-			]);
-			
-		}
-		
-		/* if user_psw_hash is not empty, delete user_psw */
-		if(!empty($result['user_psw_hash'])) {
-
-			$db_user->update("se_user", [
-				"user_psw" => ""
-					], [
-				"user_nick" => "$user"
-			]);
-		}
-		
 		/* set cookie to remember user */
 		if($remember == TRUE) {
 			$identifier = randpsw($length=24);
@@ -225,13 +191,13 @@ function se_user_login($user,$psw,$acp=NULL,$remember=NULL) {
 		
 		
 		if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
-			header("location:acp.php");
+			header("location:/admin/");
 		}
 		
 		
 	} else {
 		session_destroy();
-        return 'failed';
+        return "failed";
 	}
 
 }
@@ -310,6 +276,3 @@ function se_end_user_session() {
 	return 'logout';
 	
 }
-
-
-?>

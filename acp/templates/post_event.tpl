@@ -19,21 +19,15 @@
 						<div class="col-md-6">
 							<label>{label_title}</label>
 							<input class="form-control" name="title" type="text" value="{title}">
-							<label>{label_description}</label> 
-							<textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
+							{input_teaser}
 						</div>
 						<div class="col-md-6">
-							<div class="well well-sm">
-								<label>{label_image}</label> <input class="filter-images form-control" name="filter-images" placeholder="Filter ..." type="text">
-								<div class="images-list scroll-container">
-									{widget_images}
-								</div>
-							</div>
+							{widget_images}
 						</div>
 					</div>
 				</div>
 				<div class="tab-pane fade" id="content">
-					<textarea class='mceEditor' name='text'>{text}</textarea>
+					{input_text}
 				</div>
 				<div class="tab-pane fade" id="info">
 					<fieldset>
@@ -114,8 +108,8 @@
 				</div>
 				<div class="tab-pane fade" id="prices">
 						
-						<label>{label_price_note}</label> 
-						<textarea class='mceEditor_small' name='event_price_note'>{event_price_note}</textarea>
+						<label>{label_price_note}</label>
+					{input_price_note}
 						
 				</div>
 				
@@ -138,10 +132,6 @@
 					<div class="form-group">
 						<label>{label_author}</label>
 						<input class='form-control' name="author" type="text" value="{author}">
-					</div>
-					<div class="form-group">
-						<label>{label_source}</label>
-						<input class='form-control' name="source" type="text" value="{source}">
 					</div>
 					<div class="form-group">
 						<label>{label_slug}</label>
@@ -167,45 +157,39 @@
 		</div>
 		<div class="col-md-3">
 			<div class="card p-3">
-				<div class="mb-3 pb-3 border-bottom">
-					<label>{label_language}</label>
-					{checkboxes_lang}
+				<div class="mb-1 pb-1 border-bottom">
+					{select_language}
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
+				<div class="mb-2 pb-1 border-bottom">
 					<label>{label_categories}</label>
 					<div class="scroll-container" style="max-height: 150px;">
 						{checkbox_categories}
 					</div>
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
+				<div class="mb-2 pb-1 border-bottom">
 					<label>{label_releasedate}</label>
 					<input class='dp form-control' name="post_releasedate" type="datetime-local" value="{post_releasedate}">
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
+				<div class="mb-2 pb-1 border-bottom">
 					<label>{label_priority}</label>
-					<input type="number" name="post_priority" value="{priority}" class="form-control">
+					<input type="number" name="priority" value="{priority}" class="form-control">
 					{checkbox_fixed}
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
-					<label>{label_status}</label>
+				<div class="mb-2 pb-1 border-bottom">
 					{select_status}
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
-					<label>{label_comments}</label>
+				<div class="mb-2 pb-1 border-bottom">
 					{select_comments}
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
-					<label>{label_votings}</label>
+				<div class="mb-2 pb-1 border-bottom">
 					{select_votings}
 				</div>
-				<div class="mb-3 pb-3 border-bottom">
+				<div class="mb-2 pb-1 border-bottom">
 					<label>{labels}</label>
-					<div>
-					{event_labels}
-					</div>
+					<div>{post_labels}</div>
 				</div>
-				<input name="type" type="hidden" value="{type}">
-				<input name="modus" type="hidden" value="{modus}">
+				<input name="type" type="hidden" value="e">
+				<input name="mode" type="hidden" value="{mode}">
 				<input name="id" type="hidden" value="{id}">
 				<input type="hidden" name="csrf_token" value="{token}">
 				<input type="hidden" name="date" value="{date}">
