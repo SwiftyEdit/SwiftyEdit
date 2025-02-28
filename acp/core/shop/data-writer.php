@@ -60,7 +60,6 @@ if(isset($_POST['add_keyword'])) {
 if(isset($_POST['remove_keyword'])) {
     $all_keywords_filter = explode(",", $_SESSION['products_keyword_filter']);
     $_SESSION['products_keyword_filter'] = '';
-    echo $_POST['remove_keyword'];
     foreach($all_keywords_filter as $f) {
         if($_POST['remove_keyword'] == "$f") { continue; }
         if($f == "") { continue; }
@@ -78,7 +77,6 @@ if(isset($_POST['sorting_products'])) {
 }
 
 if(isset($_POST['sorting_products_dir'])) {
-    echo $_POST['sorting_products_dir'];
     $_SESSION['sorting_products_direction'] = sanitizeUserInputs($_POST['sorting_products_dir']);
     header( "HX-Trigger: update_products_list");
     exit;

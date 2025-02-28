@@ -46,7 +46,6 @@ if(isset($_POST['add_keyword'])) {
 if(isset($_POST['remove_keyword'])) {
     $all_keywords_filter = explode(",", $_SESSION['pages_keyword_filter']);
     $_SESSION['pages_keyword_filter'] = '';
-    echo $_POST['remove_keyword'];
     foreach($all_keywords_filter as $f) {
         if($_POST['remove_keyword'] == "$f") { continue; }
         if($f == "") { continue; }
