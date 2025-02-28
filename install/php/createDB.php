@@ -101,12 +101,6 @@ if(isset($_POST['install_mysql'])) {
 
 }
 
-define("INDEX_DB", "$se_db_index");
-$db_index = new Medoo([
-	'type' => 'sqlite',
-	'database' => INDEX_DB
-]);
-
 
 echo $db_type. ' Database<hr>';
 
@@ -137,9 +131,6 @@ $sql_events_table = se_generate_sql_query("se_events.php",$db_type);
 $sql_log_table = se_generate_sql_query("se_log.php",$db_type);
 $sql_mailbox_table = se_generate_sql_query("se_mailbox.php",$db_type);
 $sql_orders_table = se_generate_sql_query("se_orders.php",$db_type);
-
-$sql_index_excludes_table = se_generate_sql_query("se_index_excludes.php",'sqlite');
-$sql_index_items_table = se_generate_sql_query("se_index_items.php",'sqlite');
 
 
 if($db_type == 'mysql') {
@@ -177,17 +168,17 @@ $dbh_user->insert("se_user", [
  */
 
 
-$portal_content = file_get_contents("contents/text_welcome_en.txt");
-$email_confirm_content = file_get_contents("contents/text_email_confirm_en.txt");
-$agreement_content = file_get_contents("contents/text_agreement_en.txt");
+$portal_content = file_get_contents(__DIR__."/../contents/text_welcome_en.txt");
+$email_confirm_content = file_get_contents(__DIR__."/../contents/text_email_confirm_en.txt");
+$agreement_content = file_get_contents(__DIR__."/../contents/text_agreement_en.txt");
 if($_SESSION['lang'] == 'de') {
-    $portal_content = file_get_contents("contents/text_welcome_de.txt");
-    $email_confirm_content = file_get_contents("contents/text_email_confirm_de.txt");
-    $agreement_content = file_get_contents("contents/text_agreement_de.txt");
+    $portal_content = file_get_contents(__DIR__."/../contents/text_welcome_de.txt");
+    $email_confirm_content = file_get_contents(__DIR__."/../contents/text_email_confirm_de.txt");
+    $agreement_content = file_get_contents(__DIR__."/../contents/text_agreement_de.txt");
 }
 
-$example_content = file_get_contents("contents/text_example.txt");
-$footer_content = file_get_contents("contents/text_footer.txt");
+$example_content = file_get_contents(__DIR__."/../contents/text_example.txt");
+$footer_content = file_get_contents(__DIR__."/../contents/text_footer.txt");
 
 $time = time();
 
@@ -482,14 +473,7 @@ $dbh_posts->query($sql_price_groups);
 $dbh_posts->query($sql_events_table);
 $dbh_posts->query($sql_mailbox_table);
 
-/**
- * DATABASE INDEX
- */
-
-$db_index->query($sql_index_excludes_table);
-$db_index->query($sql_index_items_table);
-
 
 echo '<div class="alert alert-success">'.$lang['installed'].' | Admin: '.$username.'</div>';
-echo '<hr><a class="btn btn-success" href="../acp/index.php">'.$lang['link_admin'].'</a><hr>';
+echo '<hr><a class="btn btn-success" href="/admin/">'.$lang['link_admin'].'</a><hr>';
 

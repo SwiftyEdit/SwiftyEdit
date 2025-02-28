@@ -1,8 +1,6 @@
-<div class="row files-list">
-    <div class="col-md-1 p-1">
-        {preview_img}
-    </div>
-    <div class="col-md-5">
+
+    <div class="col-md-6">
+        <i class="bi bi-file-earmark"></i>
         <a href="{preview_link}">{short_filename}</a> {labels}
     </div>
     <div class="col-md-1">
@@ -15,23 +13,12 @@
         {show_filetime}
     </div>
     <div class="col-md-2">
-
-        <div class="row">
-            <div class="col">
-                <form action="?tn=filebrowser&sub=edit" class="" method="POST">
-                    {edit_button}
-                    <input type="hidden" name="file" value="{filename}">
-                    <input type="hidden" name="csrf_token" value="{csrf_token}">
-                </form>
-            </div>
-            <div class="col">
-                <form action="?tn=filebrowser" class="" method="POST">
-                    {delete_button}
-                    <input type="hidden" name="file" value="{short_filename}">
-                    <input type="hidden" name="csrf_token" value="{csrf_token}">
-                </form>
-            </div>
+        <div class="d-flex justify-content">
+            <form action="/admin/uploads/edit/" method="POST" class="d-inline">
+                {edit_button}
+                <input type="hidden" name="csrf_token" value="{csrf_token}">
+            </form>
+        {delete_button}
         </div>
     </div>
-</div>
 

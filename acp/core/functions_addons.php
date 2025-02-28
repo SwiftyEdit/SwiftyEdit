@@ -15,14 +15,14 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
 function get_all_plugins() {
 	
 	$plugins = array();
-	$scanned_directory = array_diff(scandir(SE_CONTENT.'/plugins/'), array('..', '.','.DS_Store'));
+	$scanned_directory = array_diff(scandir('assets/plugins/'), array('..', '.','.DS_Store'));
 	foreach($scanned_directory as $p) {
 		
 		$path_parts = pathinfo($p);
 		if($path_parts['extension'] == 'php') {
 			$plugins[] = $p;
 		} else {
-			if((is_dir(SE_CONTENT.'/plugins/'.$p)) && (is_file(SE_CONTENT.'/plugins/'.$p.'/index.php'))) {
+			if((is_dir('assets/plugins/'.$p)) && (is_file('assets/plugins/'.$p.'/index.php'))) {
 				$plugins[] = $p;
 			}
 		}
@@ -33,6 +33,42 @@ function get_all_plugins() {
 
 
 
+function se_get_all_addons(): array {
+
+    $addons_root = SE_ROOT."/plugins/";
+    $scanned_directory = array_diff(scandir($addons_root), array('..', '.','.DS_Store'));
+
+    foreach($scanned_directory as $plugin_dir) {
+        $addon_info_file = "$addons_root/$plugin_dir/info.json";
+        if(is_file("$addon_info_file")) {
+            $info_json = file_get_contents("$addon_info_file");
+            $addon_info[$plugin_dir] = json_decode($info_json, true);
+        }
+    }
+    return $addon_info;
+}
+
+/**
+ * @param string $addon directory of the addon
+ * @return array
+ */
+function se_return_addon_translations($addon): array {
+    global $languagePack;
+    $translations = [];
+    $addons_lang_file = SE_ROOT."/plugins/".$addon."/lang/".$languagePack.'.json';
+    $addons_lang_file_alt = SE_ROOT."/plugins/".$addon."/lang/en.json";
+
+    if(is_file($addons_lang_file)) {
+        $translations = json_decode(file_get_contents($addons_lang_file), true);
+    } else {
+        if(is_file($addons_lang_file_alt)) {
+            $translations = json_decode(file_get_contents($addons_lang_file_alt), true);
+        }
+    }
+    return $translations;
+}
+
+
 /**
  * get all installed Moduls
  * return as array
@@ -40,7 +76,7 @@ function get_all_plugins() {
 
 function get_all_modules() {
 
-	$mdir = SE_CONTENT."/modules/";
+	$mdir = "assets/modules/";
 	$cntMods = 0;
 	$arr_iMods = array();
 	$scanned_directory = array_diff(scandir($mdir), array('..', '.','.DS_Store'));
@@ -67,8 +103,8 @@ function se_get_addons($t='module') {
 	global $db_content;
 	$result = array();
 	
-	if($t == 'module') {
-		$type = 'module';
+	if($t == 'module' OR $t == 'plugin') {
+		$type = 'plugin';
 	} else {
 		$type = 'theme';
 	}
@@ -138,7 +174,7 @@ function se_delete_addon($addon,$type) {
 function get_all_templates() {
 
 	//templates folder
-	$sdir = SE_ROOT."/styles";
+	$sdir = SE_ROOT."/public/assets/themes/";
 	$cntStyles = 0;
 	$scanned_directory = array_diff(scandir($sdir), array('..', '.','.DS_Store'));
 	
@@ -187,7 +223,7 @@ function mods_check_in() {
 	$m = array();
 
 	$mods = $db_content->select("se_addons", "addon_dir", [
-	    "addon_type" => "module"
+	    "addon_type" => ["module","plugin"]
 	]);
 	
 	for($i=0;$i<count($mods);$i++) {
@@ -231,7 +267,7 @@ function mods_check_in() {
 	
 	$str = "<?php\n$string\n?>";
 		
-	$file = SE_CONTENT . "/cache/active_mods.php";
+	$file = SE_ROOT . "/data/cache/active_mods.php";
 	file_put_contents($file, $str, LOCK_EX);
 
 }
@@ -285,7 +321,7 @@ function se_run_hooks(array $hooks, array $data) {
         $action = $get_hook_info[1];
         $command = $get_hook_info[2];
 
-        $hook_file = SE_CONTENT.'/modules/'.$addon.'/hooks/'.$action.'.php';
+        $hook_file = SE_ROOT.'/plugins/'.$addon.'/hooks/'.$action.'.php';
         if(is_file($hook_file)) {
             include $hook_file;
         }
@@ -301,22 +337,13 @@ function se_get_all_hooks() {
 
     global $all_mods;
     $get_hook = array();
-
-    /*
-    $hooks = [
-        "page_updated" => [],
-        "product_updated" => [],
-        "dashboard_listed_all_addons" => []
-    ];
-    */
-
     $all_hook_commands = array();
 
     // loop through addons
-    foreach($all_mods as $mod) {
+    foreach($all_mods as $k => $v) {
         // loop through available hooks
 
-        $hook_commands_file = SE_CONTENT.'/modules/'.$mod['folder'].'/hooks/index.php';
+        $hook_commands_file = SE_ROOT.'/plugins/'.$k.'/hooks/index.php';
 
         /**
          * get $hook_commands from /hooks/index.php file
@@ -324,8 +351,8 @@ function se_get_all_hooks() {
          * */
 
         if(is_file($hook_commands_file)) {
-            include($hook_commands_file);
-            $this_hook_commands[$mod['folder']] = $hook_commands;
+            include $hook_commands_file;
+            $this_hook_commands[$k] = $hook_commands;
             if(is_array($hook_commands)) {
                 $all_hook_commands = array_merge($this_hook_commands,$all_hook_commands);
             }

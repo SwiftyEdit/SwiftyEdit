@@ -11,7 +11,8 @@
  */
 function se_get_pages($filter) {
 
-    global $db_content, $se_labels;
+    global $db_content;
+    $se_labels = se_get_labels();
 
     $order = "ORDER BY page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC";
 
@@ -31,12 +32,26 @@ function se_get_pages($filter) {
         // loop through keywords
         foreach($all_filter as $f) {
             if($f == "") { continue; }
-            $sql_text_filter .= "(page_meta_keywords like '%$f%' OR page_title like '%$f%' OR page_linkname like '%$f%' OR page_content like '%$f%') AND";
+            $sql_text_filter .= "(page_meta_keywords like '%$f%' OR page_meta_description like '%$f%' OR page_title like '%$f%' OR page_linkname like '%$f%' OR page_content like '%$f%') AND";
         }
         $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
 
     } else {
         $sql_text_filter = '';
+    }
+
+    // keyword filter
+    if($filter['keywords'] != '') {
+        $sql_keywords_filter = '';
+        $all_filter = explode(" ",$filter['keywords']);
+        // loop through keywords
+        foreach($all_filter as $f) {
+            if($f == "") { continue; }
+            $sql_keywords_filter .= "(page_meta_keywords like '%$f%') AND";
+        }
+        $sql_keywords_filter = substr("$sql_keywords_filter", 0, -4); // cut the last ' AND'
+    } else {
+        $sql_keywords_filter = '';
     }
 
 
@@ -106,6 +121,15 @@ function se_get_pages($filter) {
         $sql_types_filter = substr("$sql_types_filter", 0, -3); // cut the last ' OR'
     }
 
+    // filter by page_sort - all | sorted | single
+    if($filter['sort_type'] == 'all' OR $filter['sort_type'] == '') {
+        $sql_sort_type_filter = '';
+    } else if($filter['sort_type'] == 'sorted') {
+        $sql_sort_type_filter = "(page_sort IS NOT NULL AND page_sort != '') ";
+    } else if($filter['sort_type'] == 'single') {
+        $sql_sort_type_filter = "(page_sort IS NULL OR page_sort = '' AND page_sort != 'portal') ";
+    }
+
 
     $sql_filter = $filter_string;
 
@@ -123,11 +147,22 @@ function se_get_pages($filter) {
         $sql_filter .= " AND ($sql_text_filter) ";
     }
 
+    if($sql_keywords_filter != "") {
+        $sql_filter .= " AND ($sql_keywords_filter) ";
+    }
+
     if($sql_types_filter != "") {
         $sql_filter .= " AND ($sql_types_filter) ";
     }
 
-    $sql = "SELECT * FROM se_pages $sql_filter $order";
+    if($sql_sort_type_filter != "") {
+        $sql_filter .= " AND ($sql_sort_type_filter) ";
+    }
+
+    $cols = 'page_id, page_status, page_sort, page_thumbnail, page_language, page_title, page_linkname, page_permalink, 
+    page_meta_description, page_lastedit, page_lastedit_from, page_labels, page_template, page_redirect, page_modul, page_hits';
+
+    $sql = "SELECT $cols FROM se_pages $sql_filter $order";
     $pages = $db_content->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     return $pages;
@@ -303,10 +338,11 @@ function se_get_pages_keywords() {
     ]);
 
     $get_keywords = array_filter( $get_keywords );
-
     foreach($get_keywords as $keys) {
-        $keys_string .= $keys.',';
+        $keys_string .= trim($keys).',';
     }
+    $keys_string = str_replace(', ', ',', $keys_string);
+    $keys_string = str_replace(' ,', ',', $keys_string);
     $keys_array = explode(",",$keys_string);
     $keys_array = array_filter( $keys_array );
     $count_keywords = array_count_values($keys_array);

@@ -42,9 +42,10 @@ function checkwritable($path) {
 
 function checkexistingdir($path) {
 
-	global $goto_install;
+	global $goto_install,$lang;
 	
 	if(!is_dir("$path")){
+        mkdir("$path",0777,true);
 		echo '<div class="row">';
 		echo '<div class="col-md-4"><span title="'.$path.'">'.basename($path).'</span></div>';
 		echo '<div class="col-md-8">';
@@ -65,23 +66,20 @@ function checkexistingdir($path) {
 
 
 $check_this[] = SE_CONTENT . "/";
-$check_this[] = SE_CONTENT . '/images';
-$check_this[] = SE_CONTENT . '/files';
-$check_this[] = SE_CONTENT . '/images_tmb';
-$check_this[] = SE_CONTENT . "/avatars";
-$check_this[] = SE_CONTENT . "/plugins";
-$check_this[] = SE_CONTENT . "/SQLite";
-$check_this[] = SE_CONTENT . "/galleries";
-$check_this[] = SE_CONTENT . "/modules";
+$check_this[] = SE_PUBLIC . "/assets/avatars";
+$check_this[] = SE_PUBLIC . '/assets/files';
+$check_this[] = SE_PUBLIC . "/assets/galleries";
+$check_this[] = SE_PUBLIC . '/assets/images';
+$check_this[] = SE_PUBLIC . '/assets/images_tmb';
+$check_this[] = SE_CONTENT . "/database";
+$check_this[] = SE_CONTENT . "/includes";
+
 sort($check_this,SORT_NATURAL | SORT_FLAG_CASE);
 
-$check_is_dir[] = "../styles/";
-$check_is_dir[] = "../core/";
-$check_is_dir[] = "../acp/";
 
 /* minimum php version */
 
-$needed_phpversion = "7.3";
+$needed_phpversion = "8.3";
 $loaded_extensions = get_loaded_extensions();
 
 /**
@@ -89,19 +87,16 @@ $loaded_extensions = get_loaded_extensions();
  * if not, rename _htaccess
  */
 
-if(!is_file("../.htaccess")) {
-	copy("../_htaccess","../.htaccess");
-}
-
 echo '<fieldset>';
 echo '<legend>'.$lang['files_and_folders'].'</legend>';
 
+
 foreach($check_this as $filepath){
-	checkwritable("$filepath");
+    checkexistingdir("$filepath");
 }
 
-foreach($check_is_dir as $dir){
-	checkexistingdir("$dir");
+foreach($check_this as $filepath){
+	checkwritable("$filepath");
 }
 
 echo '</fieldset>';

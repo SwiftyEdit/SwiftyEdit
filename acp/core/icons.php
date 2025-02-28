@@ -6,8 +6,10 @@
 
 $icon = [
     "activity" => '<i class="bi bi-activity"></i>',
+    "arrow_clockwise" => '<i class="bi bi-arrow-clockwise"></i>',
     "arrow_down" => '<i class="bi bi-arrow-down"></i>',
     "arrow_left" => '<i class="bi bi-arrow-left"></i>',
+    "arrow_left_short" => '<i class="bi bi-arrow-left-short"></i>',
     "arrow_repeat" => '<i class="bi bi-arrow-repeat"></i>',
     "arrow_right" => '<i class="bi bi-arrow-right"></i>',
     "arrow_right_short" => '<i class="bi bi-arrow-right-short"></i>',
@@ -50,6 +52,7 @@ $icon = [
 
     "database" => '<i class="bi bi-database"></i>',
     "diagram_3" => '<i class="bi bi-diagram-3"></i>',
+    "dot" => '<i class="bi bi-dot"></i>',
     "dot_circle" => '<i class="bi bi-circle"></i>',
     "download" => '<i class="bi bi-download"></i>',
 

@@ -1,0 +1,40 @@
+{
+  "name": "swiftyedit-default-theme",
+  "description": "The default SwiftyEdit CMS Theme",
+  "version": "1.5.0",
+  "author": "SwiftyEdit",
+  "license": "GPL-3.0 License",
+  "private": true,
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "htmx.org": "^2.0.4",
+    "glightbox": "^3.3.1",
+    "jquery": "^3.7.1",
+    "js-cookie": "^3.0.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "css-loader": "^7.1.2",
+    "cssnano": "^7.0.4",
+    "mini-css-extract-plugin": "^2.9.0",
+    "postcss-loader": "^8.1.1",
+    "clean-webpack-plugin": "^4.0.0",
+    "sass": "^1.77.8",
+    "sass-loader": "^15.0.0",
+    "style-loader": "^4.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "webpack": "5.94.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  },
+  "optionalDependencies": {},
+  "repository": {},
+
+  "scripts": {
+    "build": "webpack build --mode=production",
+    "audit": "npm audit",
+    "audit fix": "npm audit fix"
+  }
+}

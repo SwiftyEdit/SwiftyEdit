@@ -43,7 +43,7 @@ $entrydate_year = date('Y',$post_data['post_date']);
 /* images */
 
 if($post_images[1] != "") {
-	$first_post_image = '/' . $img_path . '/' . str_replace('../content/images/','',$post_images[1]);
+    $first_post_image = $post_images[1];
 	$post_image_data = se_get_images_data($first_post_image,'data=array');
 } else if($se_prefs['prefs_posts_default_banner'] == "without_image") {
 	$first_post_image = '';
@@ -56,7 +56,7 @@ if($post_images[1] != "") {
 
 if($post_data['post_type'] == 'g') {
 
-	$gallery_dir = 'content/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
+	$gallery_dir = 'assets/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
 	$fp = $gallery_dir.'*_tmb.jpg';
 	$thumbs_array = glob("$fp");
 	arsort($thumbs_array);
@@ -82,7 +82,10 @@ if($post_data['post_type'] == 'g') {
     $smarty->assign('video_id', $video['v']);
 }
 
-
+$show_comments = false;
+if ($post_data['post_comments'] == 1) {
+    $show_comments = true;
+}
 
 
 /* vote up or down this post */
@@ -171,6 +174,7 @@ $smarty->assign('votes_status_dn', $post_data['votes_status_dn']);
 $smarty->assign('votes_up', $post_data['votes_up']);
 $smarty->assign('votes_dn', $post_data['votes_dn']);
 $smarty->assign('show_voting', $show_voting);
+$smarty->assign('show_comments', $show_comments);
 
 $smarty->assign('post_tmb_src', $first_post_image);
 $smarty->assign('gallery_thumbs', $gallery_thumbs);

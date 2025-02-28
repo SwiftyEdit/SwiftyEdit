@@ -19,7 +19,9 @@ include_once 'functions_shop.php';
  * return as array
  */
 
-function get_all_languages($d='../core/lang') {
+function get_all_languages(): array {
+
+    $d = SE_ROOT.'/languages/';
 
 	$cntLangs = 0;
 	$scanned_directory = array_diff(scandir($d), array('..', '.','.DS_Store'));
@@ -34,7 +36,19 @@ function get_all_languages($d='../core/lang') {
 		}
 	}
 	
-	return($arr_lang);
+	return $arr_lang;
+}
+
+/**
+ * @param $lang
+ * @return string
+ */
+function return_language_flag_src($lang): string {
+
+    $real_img_src = SE_ROOT.'/languages/' . $lang . '/flag.png';
+    $encoded_flag = base64_encode(file_get_contents($real_img_src));
+    $encoded = 'data:image/png;base64,'.$encoded_flag;
+    return $encoded;
 }
 
 
@@ -180,7 +194,7 @@ function se_get_all_images($prefix='') {
 	global $img_path;
 	$images = array();
 
-	$dir = "../$img_path";
+	$dir = "$img_path";
 	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
 	$types = array('jpg','jpeg','png','gif');
 	
@@ -208,13 +222,13 @@ function se_get_all_images($prefix='') {
  * return array
  */
 
-function se_get_all_images_rec($prefix='',$dir='') {
+function se_get_all_images_rec($prefix='',$dir=''): array {
 
 	global $img_path;
 	$images = array();
 	
 	if($dir == '') {
-		$dir = "../$img_path";
+        $dir = "$img_path";
 	}
 	
 	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
@@ -310,13 +324,16 @@ function se_flatten_array(array $array) {
 /**
  * format time and date
  * formatting is set in preferences
- * dateformat, timeformat
+ * @param integer $timestring
+ * @return string
  */
  
- function se_format_datetime($timestring) {
+ function se_format_datetime($timestring): string {
 	 
 	 global $lang;
      global $se_prefs;
+
+     $timestring = (int) $timestring;
 	 
 	 $date = date($se_prefs['prefs_dateformat'],$timestring);
 	 
@@ -542,11 +559,11 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 		$time = time();
 	}
 		
-	/* romove old entries */
+	// remove old entries
 	$db_content->delete("se_feeds", [
 	"feed_time[<]" => $interval
 	]);
-	/* remove duplicates */
+	// remove duplicates
 	$db_content->delete("se_feeds", [
 	"feed_subid" => $sub_id
 	]);
@@ -559,7 +576,6 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 		"feed_text" => "$text",
 		"feed_url" => "$url"
 	]);
-
 }
 
 
@@ -576,9 +592,9 @@ function generate_xml_sitemap() {
 	global $db_content;
     global $se_prefs;
 	
-	$file = "../sitemap.xml";
-	$tpl_sitemap = file_get_contents('templates/sitemap.tpl');
-	$tpl_sitemap_urlset = file_get_contents('templates/sitemap_urlset.tpl');
+	$file = SE_PUBLIC."/sitemap.xml";
+	$tpl_sitemap = file_get_contents('../acp/templates/sitemap.tpl');
+	$tpl_sitemap_urlset = file_get_contents('../acp/templates/sitemap_urlset.tpl');
 
 		$results = $db_content->select("se_pages", "*", [
 			"AND" => [
@@ -760,7 +776,6 @@ function se_return_first_chars($str,$length=200) {
 	global $db_content;
 	
 	$media_data = $db_content->select("se_media","*",[
-
 		"AND" => [
 			"media_type[~]" => "$type"
 		],
@@ -770,9 +785,9 @@ function se_return_first_chars($str,$length=200) {
 	]);
 	
 	return $media_data;
-	 
-	 
  }
+
+
  
 
 
@@ -896,7 +911,7 @@ function se_write_media_data($data) {
 		$string_labels = "";
 	}	
 		
-	$filetype = mime_content_type(realpath($data['filename']));
+	$filetype = mime_content_type(realpath('assets'.$data['filename']));
 	
 	$cnt = $db_content->count("se_media", [
 		"AND" => [
@@ -1033,15 +1048,16 @@ function se_get_labels() {
  * @return string
  */
 
-function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
+function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
 
     global $lang;
+    $path = '../public/assets';
 
-    if(!array($seleced_img)) {
+    if(!array($selected_img)) {
         $cnt_selected_img = 0;
     } else {
-        $seleced_img = array_filter($seleced_img);
-        $cnt_selected_img = count($seleced_img);
+        $selected_img = array_filter($selected_img);
+        $cnt_selected_img = count($selected_img);
     }
 
 
@@ -1051,13 +1067,16 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
     if($cnt_selected_img > 0) {
         $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
         $images_container .= '<div class="sortableListGroup list-group my-1">';
-        foreach($seleced_img as $sel_images) {
-            if(is_file("$sel_images")) {
+        foreach($selected_img as $sel_images) {
+            $sel_images_src = str_replace('../',$path.'/',$sel_images);
+            $sel_images_abs = str_replace('../','/',$sel_images);
+
+            if(file_exists("$sel_images_src")) {
                 $images_container .= '<div class="list-group-item p-1">';
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
                 $images_container .= '<div class="row">';
                 $images_container .= '<div class="col-3">';
-                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.$sel_images.')">';
+                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.$sel_images_abs.')">';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
                 $images_container .= '<div class="col-9">';
@@ -1110,7 +1129,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
             $images_container .= '<div class="col-12 mt-2"><div class="card p-1"><h6 class="m-0">'.$filemtime.'</h6></div></div>';
         }
 
-        if(!in_array($image_name, $seleced_img)) {
+        if(!in_array($image_name, $selected_img)) {
             $images_container .= '<div class="col col-lg-3" title="'.$img_filename.'">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
@@ -1137,8 +1156,7 @@ function se_select_img_widget($images,$seleced_img,$prefix='',$id=1) {
 
 function se_list_gallery_thumbs($gid) {
 	
-	global $db_posts;
-	global $icon;
+	global $db_posts, $icon;
 	$gid = (int) $gid;
 	
 	
@@ -1146,19 +1164,25 @@ function se_list_gallery_thumbs($gid) {
 	"post_id" => $gid
 	]);
 	
-	$filepath = '../content/galleries/'.date('Y',$date).'/gallery'.$gid.'/*_tmb.jpg';
+	$filepath = SE_PUBLIC.'/assets/galleries/'.date('Y',$date).'/gallery'.$gid.'/*_tmb.jpg';
 	$thumbs_array = glob("$filepath");
 	arsort($thumbs_array);
 
 	$thumbs = '';
 	foreach($thumbs_array as $tmb) {
+
+        $tmb_src = str_replace(SE_PUBLIC.'/assets/galleries/','/galleries/',$tmb);
+
 		$thumbs .= '<div class="tmb">';
-		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb.'" class="img-fluid"></div>';
+		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb_src.'" class="img-fluid"></div>';
+        $thumbs .= '<form hx-post="/admin/blog/write/">';
 		$thumbs .= '<div class="tmb-actions d-flex btn-group">';
-		$thumbs .= '<button type="submit" name="sort_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
-		$thumbs .= '<button type="submit" name="del_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
+		$thumbs .= '<button type="submit" name="sort_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
+		$thumbs .= '<button type="submit" name="delete_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
 		$thumbs .= '</div>';
-		$thumbs .= '</div>';
+        $thumbs .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+		$thumbs .= '</form>';
+        $thumbs .= '</div>';
 	}
 	
 	
@@ -1372,21 +1396,22 @@ function se_parse_docs_file($file): array {
         );
 
         $content = preg_replace_callback(
-            '/\{link=(.*?)\}/si',
+            '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" href="?get_file='.$dir.'/'.$m[1].'">'.$m[1].'</a>';
+                $link = '<a class="" hx-get="/admin/docs/read/?show_file='.$m[1].'" hx-target="#showModalContent">'.$m[1].'</a>';
                 return $link;
             },
             $content
         );
 
-
         $parsed_header = Spyc::YAMLLoadString($src_content[1]);
-        $parsed_content = $Parsedown->text($content);
+        $parsed_content = $Parsedown->text("$content");
+
         $filemtime = filemtime($file);
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
+        $parsed_content = 'FILE NOT FOUND ('.$file.')';
     }
 
     $parsed['header'] = $parsed_header;
@@ -1399,24 +1424,22 @@ function se_parse_docs_file($file): array {
 }
 
 function se_print_docs_link($file,$text=null,$type=null) {
-    global $icon,$lang;
+    global $icon, $lang;
 
     $title = $lang['label_show_help'];
 
     if($text == null OR $text == 'icon') {
         $text = $icon['question_circle'];
-    } else {
-        $text = $icon['question_circle']. ' '.$text;
     }
 
     if($type == null OR $type == 'modal') {
-        $link = '<a data-bs-toggle="modal"
-                    data-bs-target="#infoModal"
-                        hx-post="core/ajax/show-docs-modal.php"
-                        hx-vals=\'{"csrf_token": "'.$_SESSION['token'].'","file":"'.$file.'"}\'
-                        hx-target="#infoModalContent"
+        $link = '<a href="#" data-bs-toggle="modal"
+                    data-bs-target="#helpModal"
+                        hx-get="/admin/docs/read/"
+                        hx-vals=\'{"file":"'.$file.'"}\'
+                        hx-target="#helpModal"
                         hx-trigger="click"
-                        class="show-doc" title="'.$title.'">'.$text.'</a>';
+                        class="show-doc link-success" title="'.$title.'">'.$text.'</a>';
         return $link;
     }
 
@@ -1520,6 +1543,75 @@ function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr,
     $pagination .= '<li class="page-item">
                     <a class="page-link" href="'.$next_query.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
                 </li>';
+    $pagination .= '</ul>';
+    $pagination .= '</nav>';
+
+    return $pagination;
+}
+
+function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,$post_name='pagination'): string {
+
+    if($pages < 2) {
+        return '';
+    }
+
+    $class_pagination = 'justify-content-center';
+
+    if(is_array($classes)) {
+        if($classes['class_pagination'] != '') {
+            $class_pagination = $classes['class_pagination'];
+        }
+    }
+
+    $vals = [
+        'csrf_token' => $_SESSION['token']
+    ];
+
+    $pagination = '<nav aria-label="Pagination" hx-params="'.$post_name.',csrf_token" hx-vals=\''.json_encode($vals).'\' hx-swap="none">';
+    $pagination .= '<ul class="pagination '.$class_pagination.'">';
+
+    // jump to the first page
+    $pagination .= '<li class="page-item">';
+    $pagination .= '<button class="page-link ms-1" hx-post="'.$url.'"  name="'.$post_name.'" value="0"><i class="bi bi-arrow-bar-left"></i></button>';
+    $pagination .= '</li>';
+
+    // jump to the previous page
+    $previous_page = max($active_page - 1, 0);
+
+    $pagination .= '<li class="page-item">';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.$previous_page.'"><i class="bi bi-arrow-left-short"></i></button>';
+    $pagination .= '</li>';
+
+    // loop
+    for($i=0;$i<$pages;$i++) {
+
+        $show_number = $i+1;
+        $show_number_start = $active_page-($steps/2);
+        $show_number_end = $active_page+($steps/2);
+        // skip pages which doesn't match the range from $nbr_show_pages
+        if(($show_number < $show_number_start) || ($show_number > $show_number_end)) {
+            continue;
+        }
+
+        $active = '';
+        if($i == $active_page) {
+            $active = 'active';
+        }
+        $pagination .= '<li class="page-item">';
+        $pagination .= '<button class="page-link '.$active.'" hx-post="'.$url.'" name="'.$post_name.'" value="'.$i.'" hx-swap="none">'.($i+1).'</button>';
+        $pagination .= '</li>';
+    }
+
+    // jump to the next page
+    $next_page = min($active_page + 1, $pages - 1);
+    $pagination .= '<li class="page-item">';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.$next_page.'" hx-swap="none"><i class="bi bi-arrow-right-short"></i></button>';
+    $pagination .= '</li>';
+    // jump to the last page
+    $pagination .= '<li class="page-item">';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.($pages-1).'" hx-swap="none"><i class="bi bi-arrow-bar-right"></i></button>';
+    $pagination .= '</li>';
+
     $pagination .= '</ul>';
     $pagination .= '</nav>';
 

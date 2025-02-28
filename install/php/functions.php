@@ -5,6 +5,8 @@ if(!defined('INSTALLER')) {
 	die("PERMISSION DENIED!");
 }
 
+include_once '../acp/core/functions.php';
+
 /* returns all cols of a existung database/table */
 function get_columns($database, $table_name) {
 	
@@ -12,7 +14,6 @@ function get_columns($database, $table_name) {
 	global $db_user;
 	global $db_statistics;
 	global $db_posts;
-	global $db_index;
 	global $db_type;
 	global $database_name;
 
@@ -31,14 +32,7 @@ function get_columns($database, $table_name) {
 	} else if($database == "posts") {
 		$data = $db_posts->query($query)->fetchAll(PDO::FETCH_ASSOC);
 	}
-	
-	/* index is a sqlite file */
-	if($database == "index") {
-		$query = "PRAGMA table_info(" . $table_name . ")";
-		$data = $db_index->query($query)->fetchAll(PDO::FETCH_ASSOC);
-	}
-	
-	
+
 	
 	$meta = array();
 	foreach ($data as $row) {
@@ -61,7 +55,6 @@ function table_exists($database,$table_name) {
 	global $db_posts;
 	global $db_type;
 	global $database_name;
-	global $db_index;
 	global $db_type;
 	
 	if($db_type == "mysql") {
@@ -78,9 +71,6 @@ function table_exists($database,$table_name) {
 		$cnt_tables = $db_statistics->query($query)->fetch();
 	} else if($database == "posts") {
 		$cnt_tables = $db_posts->query($query)->fetch();
-	} else if($database == "index") {
-		$query = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='$table_name'";
-		$cnt_tables = $db_index->query($query)->fetch();
 	}
 	
 	$cnt_tables = $cnt_tables[0];
@@ -102,7 +92,7 @@ function table_exists($database,$table_name) {
 
 function se_generate_sql_query($file,$db_type='sqlite') {
 	
-	include "contents/$file";
+	include __DIR__."/../contents/$file";
 	$string = '';
 	
 	if($db_type == 'sqlite') {
@@ -172,7 +162,6 @@ function update_table($col_name,$type,$table_name,$database) {
 	global $db_posts;
 	global $db_type;
 	global $database_name;
-	global $db_index;
 	
 		
 	$sql = "ALTER TABLE $table_name ADD $col_name $type";
@@ -185,8 +174,6 @@ function update_table($col_name,$type,$table_name,$database) {
 		$db_statistics->query($sql);
 	} else if($database == "posts") {
 		$db_posts->query($sql);
-	} else if($database == "index") {
-		$db_index->query("DROP TABLE $table_name");
 	}
 }
 
@@ -209,7 +196,6 @@ function add_table($database,$table_name,$cols) {
 	global $db_statistics;
 	global $db_posts;
 	global $db_type;
-	global $db_index;
 	global $database_name;
 
 
@@ -251,23 +237,6 @@ function add_table($database,$table_name,$cols) {
 		$db_statistics->query($sql);
 	} else if($database == "posts") {
 		$db_posts->query($sql);
-	} else if($database == "index") {
-		$db_index->query($sql);
 	}
 
-}
-
-// create virtual table
-
-function add_virtual_table($db,$table_name,$cols) {
-	
-	global $db_index;
-
-	foreach ($cols as $k => $v) {
-		$cols_string .= "$k $cols[$k],";
-	}
-	
-	$cols_string = substr(trim("$cols_string"), 0,-1); // cut last commata and returns
-
-	$db_index->query("CREATE VIRTUAL TABLE $table_name USING fts3($cols_string,tokenize=porter)");
 }

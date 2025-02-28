@@ -176,11 +176,12 @@ if(isset($_POST['post_attachment'])) {
 		// file downloads fron /content/files/
 		
 		$post_attachment = basename($_POST['post_attachment']);
-		$get_target_file = '../content/files/'.$post_attachment;
+		$get_target_file = '/'.$post_attachment;
 		
 		$target_file = $db_posts->get("se_posts", "*", [
 			"post_file_attachment" => $get_target_file
 		]);
+
 		
 		$counter = ((int) $target_file['post_file_attachment_hits'])+1;
 		
@@ -191,7 +192,7 @@ if(isset($_POST['post_attachment'])) {
 		]);
 		
 		/* we take the filepath from the database, so we have no trouble if someone trying to inject evil filepath */
-		$download_file = str_replace('../content/','./content/',$target_file['post_file_attachment']);
+		$download_file = SE_PUBLIC.'/assets/files'.$target_file['post_file_attachment'];
 	
 		if(is_file($download_file)) {
 			header('Content-Description: File Transfer');

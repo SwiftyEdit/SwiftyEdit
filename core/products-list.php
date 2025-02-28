@@ -167,11 +167,9 @@ foreach ($get_products as $k => $post) {
     $first_post_image = '';
     $post_images = explode("<->", $get_products[$k]['images']);
     if (isset($post_images[1]) AND $post_images[1] != "") {
-        $get_products[$k]['product_img_src'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $post_images[1]);
-    } else if ($se_prefs['prefs_shop_default_banner'] == "without_image") {
-        $get_products[$k]['product_img_src'] = '';
+        $get_products[$k]['product_img_src'] = $post_images[1];
     } else {
-        $get_products[$k]['product_img_src'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        $get_products[$k]['product_img_src'] = '';
     }
 
     $post_filename = basename($get_products[$k]['slug']);
