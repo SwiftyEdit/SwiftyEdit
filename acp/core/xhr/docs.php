@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * global variables
+ * @var string $languagePack
+ * @var array $lang
+ */
+
 if(isset($_GET['file'])) {
 
-    $file = basename($_GET['file']);
+    $file = se_filter_filepath($_GET['file']);
 
     echo '<div class="modal-dialog modal-lg modal-dialog-centered">
   <div class="modal-content">
@@ -21,7 +27,8 @@ if(isset($_GET['file'])) {
 }
 
 if(isset($_GET['show_file'])) {
-    $doc_file = '../acp/docs/'.$languagePack.'/'.$_GET['show_file'];
+
+    $doc_file = '../acp/docs/'.$languagePack.'/'.se_filter_filepath($_GET['show_file']);
     $Parsedown = new Parsedown();
     $show_file = se_parse_docs_file($doc_file);
     $docs_viewer_content = $show_file['content'];
