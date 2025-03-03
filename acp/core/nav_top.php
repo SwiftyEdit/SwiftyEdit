@@ -29,7 +29,7 @@ echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" da
 echo '<ul class="dropdown-menu">';
 foreach($active_lang as $k => $v) {
     $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
-    echo '<li><a class="dropdown-item" href="acp.php?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a></li>';
+    echo '<li><a class="dropdown-item" href="?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a></li>';
 }
 echo '</ul>';
 echo '</div>';
