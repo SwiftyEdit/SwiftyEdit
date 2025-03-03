@@ -17,6 +17,7 @@ function se_get_products($start,$limit,$filter) {
     global $time_string_end;
     global $time_string_now;
     global $se_labels;
+    global $custom_filter_key;
 
     if(SE_SECTION == 'frontend') {
         global $se_prefs;
@@ -116,7 +117,7 @@ function se_get_products($start,$limit,$filter) {
     }
 
     /* custom product filter - stored in $_SESSION['custom_filter'] */
-    $nbr_of_filter = is_array($_SESSION['custom_filter']) ? count($_SESSION['custom_filter']) : 0;
+    $nbr_of_filter = is_array($_SESSION[$custom_filter_key]) ? count($_SESSION[$custom_filter_key]) : 0;
 
     if(SE_SECTION == 'backend') {
         // reset the custom filter
@@ -126,7 +127,7 @@ function se_get_products($start,$limit,$filter) {
 
     if ($nbr_of_filter > 0) {
         $sql_product_filter = "filter IS NULL OR ";
-        foreach ($_SESSION['custom_filter'] as $custom_filter) {
+        foreach ($_SESSION[$custom_filter_key] as $custom_filter) {
             if ($custom_filter != '') {
                 $sql_product_filter .= "(filter LIKE '%:\"$custom_filter\"%') AND ";
             }
@@ -981,6 +982,7 @@ function se_get_product_filter_values($pid): mixed {
 function se_get_product_filter($lang): array {
 
     global $languagePack;
+    global $custom_filter_key;
     $filter = array();
 
     if($lang == '') {
@@ -1004,7 +1006,7 @@ function se_get_product_filter($lang): array {
         // loop through items
         foreach($get_filter_items as $filter_item) {
 
-            if(in_array($filter_item['filter_id'],$_SESSION['custom_filter'])) {
+            if(in_array($filter_item['filter_id'],$_SESSION[$custom_filter_key])) {
                 $class = 'active';
                 $checked = 'checked';
             } else {

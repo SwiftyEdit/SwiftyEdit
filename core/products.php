@@ -44,31 +44,32 @@ if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator')
     $str_status = '1-2';
 }
 
+$custom_filter_key = 'custom_filter_'.md5($page_contents['page_permalink']);
 
-if(!isset($_SESSION['custom_filter'])) {
-    $_SESSION['custom_filter'] = array();
+if(!isset($_SESSION[$custom_filter_key])) {
+    $_SESSION[$custom_filter_key] = array();
 }
 
-/* add filter to SESSION['custom_filter'] */
+/* add filter to $_SESSION[$custom_filter_key] */
 if(isset($_REQUEST['add_filter'])) {
     $get_filters = explode("-",$_REQUEST['add_filter']);
     foreach($get_filters as $filter) {
         $set_filter = (int) $filter;
-        $key = array_search($set_filter,$_SESSION['custom_filter']);
+        $key = array_search($set_filter,$_SESSION[$custom_filter_key]);
         if($key === false) {
-            array_push($_SESSION['custom_filter'],"$set_filter");
+            array_push($_SESSION[$custom_filter_key],"$set_filter");
         }
     }
 }
 
-/* remove filter to SESSION['custom_filter'] */
+/* remove filter to $_SESSION[$custom_filter_key] */
 if(isset($_REQUEST['remove_filter'])) {
     $get_filters = explode("-",$_REQUEST['remove_filter']);
     foreach($get_filters as $filter) {
         $remove_filter = (int) $filter;
-        $key = array_search($remove_filter,$_SESSION['custom_filter']);
+        $key = array_search($remove_filter,$_SESSION[$custom_filter_key]);
         if($key !== false) {
-            unset($_SESSION['custom_filter'][$key]);
+            unset($_SESSION[$custom_filter_key][$key]);
         }
     }
 }
@@ -79,8 +80,8 @@ if(isset($_POST['set_custom_filters'])) {
     // loop through all radios and unset them from session
     if(is_array($_POST['all_radios'])) {
         foreach($_POST['all_radios'] as $radios) {
-            if (($key = array_search($radios, $_SESSION['custom_filter'])) !== false) {
-                unset($_SESSION['custom_filter'][$key]);
+            if (($key = array_search($radios, $_SESSION[$custom_filter_key])) !== false) {
+                unset($_SESSION[$custom_filter_key][$key]);
             }
         }
     }
@@ -88,7 +89,7 @@ if(isset($_POST['set_custom_filters'])) {
     if(is_array($sf_radios)) {
         foreach ($sf_radios as $radio) {
             if(is_numeric($radio[0])) {
-                $_SESSION['custom_filter'][] = $radio[0];
+                $_SESSION[$custom_filter_key][] = $radio[0];
             }
         }
     }
@@ -98,17 +99,17 @@ if(isset($_POST['set_custom_filters'])) {
         $sf_checkboxes = $_POST['sf_checkbox'];
         if(!is_array($sf_checkboxes)) {
             // no checkboxes are checked
-            if (($key = array_search($checkboxes, $_SESSION['custom_filter'])) !== false) {
-                unset($_SESSION['custom_filter'][$key]);
+            if (($key = array_search($checkboxes, $_SESSION[$custom_filter_key])) !== false) {
+                unset($_SESSION[$custom_filter_key][$key]);
             }
             continue;
         }
         $key = array_search($checkboxes,$sf_checkboxes);
         if($key !== false) {
-            $_SESSION['custom_filter'][] = $checkboxes;
+            $_SESSION[$custom_filter_key][] = $checkboxes;
         } else {
-            if (($key = array_search($checkboxes, $_SESSION['custom_filter'])) !== false) {
-                unset($_SESSION['custom_filter'][$key]);
+            if (($key = array_search($checkboxes, $_SESSION[$custom_filter_key])) !== false) {
+                unset($_SESSION[$custom_filter_key][$key]);
             }
         }
     }
@@ -130,18 +131,18 @@ if(count($get_product_filter) > 0) {
             $fids[] = $items['id'];
         }
     }
-    foreach ($_SESSION['custom_filter'] as $filter) {
+    foreach ($_SESSION[$custom_filter_key] as $filter) {
         if(!in_array($filter, $fids)) {
-            if (($key = array_search($filter, $_SESSION['custom_filter'])) !== false) {
-                unset($_SESSION['custom_filter'][$key]);
+            if (($key = array_search($filter, $_SESSION[$custom_filter_key])) !== false) {
+                unset($_SESSION[$custom_filter_key][$key]);
             }
         }
     }
 }
 
-$_SESSION['custom_filter'] = array_unique($_SESSION['custom_filter']);
+$_SESSION[$custom_filter_key] = array_unique($_SESSION[$custom_filter_key]);
 
-$custom_filter = $_SESSION['custom_filter'];
+$custom_filter = $_SESSION[$custom_filter_key];
 
 $products_filter['languages'] = $page_contents['page_language'];
 $products_filter['types'] = $page_contents['page_posts_types'];
