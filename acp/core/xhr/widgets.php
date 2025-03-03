@@ -57,7 +57,7 @@ if($_REQUEST['widget'] == 'img-select') {
 
     $order_by = 'media_id';
     $order_direction = 'ASC';
-    $limit_start = $_SESSION['pagination_image_widget'] ?? 0;
+    $limit_start = (int) $_SESSION['pagination_image_widget'] ?? 0;
     $nbr_show_items = 25;
 
     $match_str = $_SESSION['media_widget_text_filter'] ?? '';
@@ -217,7 +217,7 @@ if($_REQUEST['widget'] == 'product-select') {
 
     $order_by = 'id';
     $order_direction = 'ASC';
-    $limit_start = $_SESSION['pagination_product_widget'] ?? 0;
+    $limit_start = (int) $_SESSION['pagination_product_widget'] ?? 0;
     $nbr_show_items = 25;
 
     $match_str = $_SESSION['product_widget_text_filter'] ?? '';
