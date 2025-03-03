@@ -141,8 +141,8 @@ if(is_array($array_images)) {
     foreach($array_images as $image) {
         $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
         $image_src = str_replace('../images/','/images/',$image_src);
-        $draggable .= '<div class="list-group-item d-flex draggable" data-id="'.$image.'">';
-        $draggable .= '<div class="d-flex flex-row gap-2">';
+        $draggable .= '<div class="list-group-item d-flex align-items-start draggable" data-id="'.$image.'">';
+        $draggable .= '<div class="d-flex gap-2">';
         $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
         $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
         $draggable .= '</div>';
