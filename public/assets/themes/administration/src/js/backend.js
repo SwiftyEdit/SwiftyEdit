@@ -78,7 +78,8 @@ htmx.onLoad(function(content) {
             animation: 150,
             ghostClass: 'bg-info-subtle',
             filter: ".htmx-indicator",
-            draggable: ".draggable"
+            draggable: ".draggable",
+            removeOnSpill: true
         });
     }
 })
@@ -105,7 +106,15 @@ function observeContainersForDraggableDivs(parentSelector) {
                     const dataId = div.getAttribute('data-id');
                     hiddenInput.value = dataId ? dataId : `value_${index}`; // Fallback-Wert falls keine data-id vorhanden ist
 
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
+                    deleteButton.className = 'btn btn-danger btn-sm d-flex ms-auto';
+                    deleteButton.onclick = function() {
+                        this.parentElement.remove();
+                    };
+
                     div.appendChild(hiddenInput);
+                    div.appendChild(deleteButton);
                 }
             });
         }

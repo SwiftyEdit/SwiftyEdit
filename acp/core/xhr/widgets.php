@@ -182,7 +182,7 @@ if($_REQUEST['widget'] == 'img-select') {
         $preview = str_replace("../","/",$preview);
 
 
-        echo '<div class="list-group-item draggable" data-id="'.$image_src.'">';
+        echo '<div class="list-group-item d-flex draggable" data-id="'.$image_src.'">';
         echo '<div class="d-flex flex-row gap-2">';
         echo '<div class="rounded-circle flex-shrink-0" style="width:64px;height:64px;background-image:url('.$preview.');background-size:cover;"></div>';
         echo '<div class="text-muted small">'.$image_title.$img_filename_short.'<br>'.$image_upload_time.'</div>';
@@ -214,6 +214,11 @@ if($_REQUEST['widget'] == 'product-select') {
     echo '<div class="card-header">'.$lang['label_products'].'</div>';
 
     echo '<div class="card-body p-0">';
+
+    if(!isset($_SESSION['prod_picker_id'])) {
+        $_SESSION['prod_picker_id'] = uniqid();
+    }
+    $prod_picker_id = $_SESSION['prod_picker_id'];
 
     $order_by = 'id';
     $order_direction = 'ASC';

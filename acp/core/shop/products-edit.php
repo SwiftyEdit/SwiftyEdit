@@ -14,7 +14,7 @@ if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $btn_submit_text = $lang['update'];
     $form_header_mode = 'Edit: '.$get_product_id;
     $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
+    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
 if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
@@ -141,7 +141,7 @@ if(is_array($array_images)) {
     foreach($array_images as $image) {
         $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
         $image_src = str_replace('../images/','/images/',$image_src);
-        $draggable .= '<div class="list-group-item draggable" data-id="'.$image.'">';
+        $draggable .= '<div class="list-group-item d-flex draggable" data-id="'.$image.'">';
         $draggable .= '<div class="d-flex flex-row gap-2">';
         $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
         $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
@@ -494,10 +494,10 @@ if(is_array($get_prod_accessories)) {
     }
 }
 
-$prod_related_dropper = '<div id="prodDropper" class="sortable_target target_products list-group mb-3">'.$draggable_related.'</div>';
-$prod_accessories_dropper = '<div id="prodDropper" class="sortable_target target_products list-group mb-3">'.$draggable_accessories.'</div>';
+$prod_related_dropper = '<div id="prodDropper_r" class="sortable_target target_products list-group mb-3">'.$draggable_related.'</div>';
+$prod_accessories_dropper = '<div id="prodDropper_a" class="sortable_target target_products list-group mb-3">'.$draggable_accessories.'</div>';
 $prod_sel_widget = '<div id="prodWidget" hx-post="/admin/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
-
+$prod_sel_widget .= '<div id="fake" class="sortable_source"><div></div></div>';
 /* product options */
 
 if($product_data['product_options'] != '' OR $product_data['product_options'] != null) {

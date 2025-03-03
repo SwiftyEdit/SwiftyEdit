@@ -82,6 +82,21 @@ if(isset($_POST['sorting_products_dir'])) {
     exit;
 }
 
+// delete product
+if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
+    $delete_id = (int) $_POST['delete_product'];
+    $cnt_changes = $db_posts->delete("se_products",[
+        "id" => $delete_id
+    ]);
+
+    if(($cnt_changes->rowCount()) > 0) {
+        show_toast($lang['msg_info_data_deleted'],'success');
+        record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
+        header( "HX-Redirect: /admin/shop/");
+        $modus = 'new';
+    }
+}
+
 // save or update products
 if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
