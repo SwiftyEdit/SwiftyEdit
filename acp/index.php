@@ -213,7 +213,7 @@ if (!isset($_SESSION['lang'])) {
 
 if (isset($_GET['set_lang'])) {
     $set_lang = sanitizeUserInputs($_GET['set_lang']);
-    if (is_dir("../public/assets/lang/$set_lang/")) {
+    if (is_dir(SE_ROOT."languages/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
@@ -384,7 +384,7 @@ if (isset($set_acptheme)) {
             <?php
             foreach($active_lang as $k => $v) {
                 $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
-                echo '<a class="btn btn-sm btn-default" href="/admin/?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a> ';
+                echo '<a class="btn btn-sm btn-default" href="?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a> ';
             }
             ?>
         </p>
