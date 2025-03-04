@@ -912,10 +912,12 @@ function se_write_media_data($data) {
 	}	
 		
 	$filetype = mime_content_type(realpath('assets'.$data['filename']));
+
+    $saved_filename = '..'.$data['filename'];
 	
 	$cnt = $db_content->count("se_media", [
 		"AND" => [
-		    "media_file" => $data['filename'],
+		    "media_file" => $saved_filename,
 		    "media_lang" => $lang
 		]
 	]);
@@ -939,20 +941,16 @@ function se_write_media_data($data) {
 	];
 	
 	if($cnt > 0) {
-		$modus = 'update';
-		
 		$cnt_changes = $db_content->update("se_media", $columns, [
 			"AND" => [
-				"media_file" => $data['filename'],
+				"media_file" => $saved_filename,
 				"media_lang" => "$lang"
 			]
 		]);
 		
 	} else {
-		$modus = 'new';
-		$columns["media_file"] = $data['filename'];
+		$columns["media_file"] = $saved_filename;
 		$cnt_changes = $db_content->insert("se_media", $columns);
-		$lastId = $db_content->id();
 	}
 
 	if($cnt_changes->rowCount() > 0) {
@@ -1399,7 +1397,7 @@ function se_parse_docs_file($file): array {
             '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" hx-get="/admin/docs/read/?show_file='.$m[1].'" hx-target="#showModalContent">'.$m[1].'</a>';
+                $link = '<a class="" hx-get="/admin/docs/read/?show_file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
                 return $link;
             },
             $content
@@ -1423,7 +1421,7 @@ function se_parse_docs_file($file): array {
     return $parsed;
 }
 
-function se_print_docs_link($file,$text=null,$type=null) {
+function se_print_docs_link($file,$section=null,$text=null,$type=null) {
     global $icon, $lang;
 
     $title = $lang['label_show_help'];
@@ -1432,14 +1430,18 @@ function se_print_docs_link($file,$text=null,$type=null) {
         $text = $icon['question_circle'];
     }
 
+    if($section == null OR $section == '') {
+        $section = 'swiftyedit';
+    }
+
     if($type == null OR $type == 'modal') {
         $link = '<a href="#" data-bs-toggle="modal"
                     data-bs-target="#helpModal"
                         hx-get="/admin/docs/read/"
-                        hx-vals=\'{"file":"'.$file.'"}\'
+                        hx-vals=\'{"file":"'.$file.'","section":"'.$section.'"}\'
                         hx-target="#helpModal"
                         hx-trigger="click"
-                        class="show-doc link-success" title="'.$title.'">'.$text.'</a>';
+                        class="show-doc link-info" title="'.$title.'">'.$text.'</a>';
         return $link;
     }
 
