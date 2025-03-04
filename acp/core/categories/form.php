@@ -61,11 +61,12 @@ $input_select_language = [
 
 $arr_Images = se_get_all_images_rec();
 
+$select_images = [];
 foreach ($arr_Images as $k => $v) {
     $select_images[basename($v)] = $v;
 }
-$select_images = [];
-$select_nothing = ['option_nothing_selected' => "null"];
+
+$select_nothing = ['label_no_file_selected' => "null"];
 $select_images = $select_nothing+$select_images;
 
 $input_select_thumbnail = [
