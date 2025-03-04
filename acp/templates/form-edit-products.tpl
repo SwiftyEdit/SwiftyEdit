@@ -9,7 +9,7 @@
     </div>
 </div>
 <div id="formResponse"></div>
-<form>
+<form class="no-enter">
     <div class="row">
         <div class="col-md-9">
             <div class="card">

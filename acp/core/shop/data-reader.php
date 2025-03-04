@@ -303,7 +303,7 @@ if($_REQUEST['action'] == 'list_products') {
         $icon_fixed_form .= '</form>';
 
         // priority form
-        $prio_form  = '<form hx-post="/admin/shop/write/" hx-trigger="keyup changed delay:1s" method="POST">';
+        $prio_form  = '<form hx-post="/admin/shop/write/" hx-trigger="keyup changed delay:1s" method="POST" class="no-enter">';
         $prio_form .= '<input type="number" name="priority" value="'.$product['priority'].'" class="form-control" style="max-width:150px">';
         $prio_form .= '<input type="hidden" name="prio_id" value="'.$product['id'].'">';
         $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
