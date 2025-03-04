@@ -49,38 +49,42 @@ import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
 htmx.onLoad(function(content) {
-    var sortables_src = content.querySelectorAll(".sortable_source");
-    for (var i = 0; i < sortables_src.length; i++) {
-        var sortable_source = sortables_src[i];
-        var sortableInstance = new Sortable(sortable_source, {
-            group: {
-                name: 'shared',
-                pull: 'clone'
-            },
-            animation: 150,
-            ghostClass: 'bg-info-subtle',
-            filter: ".htmx-indicator",
-            draggable: ".draggable",
-            onMove: function (evt) {
-                return evt.related.className.indexOf('htmx-indicator') === -1;
-            }
-        });
 
+    var sortables_src = content.querySelectorAll(".sortable_source");
+    if (sortables_src.length > 0) {
+        for (var i = 0; i < sortables_src.length; i++) {
+            var sortable_source = sortables_src[i];
+            var sortableInstance = new Sortable(sortable_source, {
+                group: {
+                    name: 'shared',
+                    pull: 'clone'
+                },
+                animation: 150,
+                ghostClass: 'bg-info-subtle',
+                filter: ".htmx-indicator",
+                draggable: ".draggable",
+                onMove: function (evt) {
+                    return evt.related.className.indexOf('htmx-indicator') === -1;
+                }
+            });
+        }
     }
 
     var sortables_target = content.querySelectorAll(".sortable_target");
-    for (var i = 0; i < sortables_target.length; i++) {
-        var sortable_target = sortables_target[i];
-        var sortableInstanceTarget = new Sortable(sortable_target, {
-            group: {
-                name: 'shared'
-            },
-            animation: 150,
-            ghostClass: 'bg-info-subtle',
-            filter: ".htmx-indicator",
-            draggable: ".draggable",
-            removeOnSpill: true
-        });
+    if (sortables_target.length > 0) {
+        for (var i = 0; i < sortables_target.length; i++) {
+            var sortable_target = sortables_target[i];
+            var sortableInstanceTarget = new Sortable(sortable_target, {
+                group: {
+                    name: 'shared'
+                },
+                animation: 150,
+                ghostClass: 'bg-info-subtle',
+                filter: ".htmx-indicator",
+                draggable: ".draggable",
+                removeOnSpill: true
+            });
+        }
     }
 })
 
