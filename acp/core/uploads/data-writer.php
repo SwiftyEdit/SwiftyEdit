@@ -126,6 +126,7 @@ if(isset($_POST['rebase'])) {
 
         $stats_files_to_db = 0;
         $stats_files_from_db = 0;
+        $all_files = [];
 
         $images_dir = 'assets/images';
         $files_dir = 'assets/files';
