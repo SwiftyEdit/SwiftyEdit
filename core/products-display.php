@@ -161,8 +161,8 @@ if(is_array($product_images) && count($product_images) > 0) {
     /* replace img src with absolute path */
     $cnt_images = count($show_images);
     for($i=0;$i<$cnt_images;$i++) {
-        $show_images[$i]['media_file'] = '/' . $img_path . '/' . str_replace('../content/images/','',$show_images[$i]['media_file']);
-        $show_images[$i]['media_thumb'] = '/' . $img_tmb_path . '/' . str_replace('../content/images_tmb/','',$show_images[$i]['media_thumb']);
+        $show_images[$i]['media_file'] =  str_replace('../images/','/images/',$show_images[$i]['media_file']);
+        $show_images[$i]['media_thumb'] = str_replace('../images_tmb/','/images_tmb/',$show_images[$i]['media_thumb']);
     }
 
 
