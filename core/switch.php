@@ -244,10 +244,15 @@ if(!isset($page_hash)) {
     $page_hash = '';
 }
 
-/* fix path to thumbnails and favicon */
-$page_thumbnail = str_replace('../content/', $se_base_url.'content/', $page_thumbnail);
-$page_favicon = str_replace('../content/', $se_base_url.'content/', $page_favicon);
-$page_logo = str_replace('../content/',$se_base_url.'content/',$page_logo);
+if($page_logo != 'null' && $page_logo != '') {
+    $smarty->assign('page_logo', $page_logo);
+}
+if($page_thumbnail != 'null' && $page_thumbnail != '') {
+    $smarty->assign('page_thumbnail', $page_thumbnail);
+}
+if($page_favicon != 'null' && $page_favicon != '') {
+    $smarty->assign('page_favicon', $page_favicon);
+}
 
 $smarty->assign('page_title', html_entity_decode($page_title));
 $smarty->assign('prefs_pagesglobalhead', $se_prefs['prefs_pagesglobalhead']);
@@ -255,9 +260,6 @@ $smarty->assign('page_meta_author', $page_meta_author);
 $smarty->assign('page_meta_date', date('Y-m-d', $page_lastedit));
 $smarty->assign('page_meta_keywords', html_entity_decode($page_meta_keywords));
 $smarty->assign('page_meta_description', html_entity_decode($page_meta_description));
-$smarty->assign('page_thumbnail', $page_thumbnail);
-$smarty->assign('page_favicon', $page_favicon);
-$smarty->assign('page_logo', $page_logo);
 $smarty->assign('page_hash', $page_hash);
 
 if($page_meta_robots == "") {
