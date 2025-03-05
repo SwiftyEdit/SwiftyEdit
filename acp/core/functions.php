@@ -1367,9 +1367,14 @@ function se_parse_docs_file($file): array {
 
     if(is_file($file)) {
         $src = file_get_contents($file);
-        $src_content = explode('---',$src);
-        $header_length = strlen($src_content[1])+6;
-        $content = substr($src, $header_length);
+
+        if(str_starts_with($src, "---")) {
+            $src_content = explode('---',$src);
+            $header_length = strlen($src_content[1])+6;
+            $content = substr($src, $header_length);
+        } else {
+            $content = $src;
+        }
 
         $path_info = pathinfo($file);
         $dir = $path_info['dirname'];
@@ -1397,7 +1402,7 @@ function se_parse_docs_file($file): array {
             '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" hx-get="/admin/docs/read/?show_file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
+                $link = '<a class="" hx-get="/admin/docs/read/?file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
                 return $link;
             },
             $content

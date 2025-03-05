@@ -22,7 +22,7 @@ $reader = match (true) {
     str_contains($_REQUEST['query'], 'update/') => 'core/update/data-reader.php',
     str_contains($_REQUEST['query'], 'counter/') => 'core/xhr/counters.php',
     str_contains($_REQUEST['query'], 'widgets/') => 'core/xhr/widgets.php',
-    str_contains($_REQUEST['query'], 'docs/') => 'core/xhr/docs.php',
+    str_contains($_REQUEST['query'], 'docs/') => 'core/docs/data-reader.php',
     str_contains($_REQUEST['query'], 'addons/') => 'core/addons/data-reader.php',
     default => ''
 };
