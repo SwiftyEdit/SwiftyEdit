@@ -30,5 +30,6 @@ Differently from SwiftyEdit version 1, all plugins must adhere to a specific fol
 
 ### Tipps
 
-- if you include a plugin in the frontend via [plugin=*] shortcut, the file /frontend/index.php will be executed.
+- if you include a plugin in the frontend via [plugin=*] shortcut, the file /plugins/{plugin}/frontend/index.php will be executed.
 - if you name your plugin with the präfix `-pay`, it is automatically recognized as a payment plugin. This makes the aftersale.php file mandatory.
+- You can access the xhr.php file in your theme via /api/themes/{theme}/
