@@ -235,7 +235,9 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
 require SE_ROOT.'core/smarty.php';
 
 
-// xhr routes for core /api/se/ and plugins /api/plugins/plugin/
+// xhr routes for core /api/se/
+// and plugins /api/plugins/plugin/
+// and themes /api/themes/theme/
 if ($requestPathParts[0] === 'api') {
     if ($requestPathParts[1] === 'se') {
         // route for SwwiftyEdit
@@ -253,6 +255,14 @@ if ($requestPathParts[0] === 'api') {
         } else {
             exit;
         }
+    } elseif ($requestPathParts[1] === 'themes' && isset($requestPathParts[2])) {
+        // route for themes
+        $theme_name = basename($requestPathParts[2]);
+        $theme_xhr = SE_PUBLIC.'/assets/themes/'.$theme_name.'/php/xhr.php';
+        if(is_file($theme_xhr)) {
+            include $theme_xhr;
+        }
+        exit;
     } else {
         http_response_code(404);
         exit;
