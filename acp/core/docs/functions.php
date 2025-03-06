@@ -3,7 +3,7 @@
 
 function show_sysdocs_index() {
 
-    global $Parsedown;
+    global $Parsedown, $doc_filepath;
     $languagePack = $_SESSION['lang'];
 
     $docs_root = '../acp/docs/en/*.md';
@@ -35,10 +35,15 @@ function show_sysdocs_index() {
     $list .= '<div class="list-group list-group-flush">';
     foreach($sorted_parsed_files as $k => $v) {
 
+        $active = '';
+        if($doc_filepath == $sorted_parsed_files[$k]['file']) {
+            $active = 'active';
+        }
+
         $hx_get = '/admin/docs/read/?file='.$sorted_parsed_files[$k]['file'];
         $hx_target = '#helpModal';
 
-        $list .= '<button class="list-group-item list-group-item-action" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
+        $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
         $list .= $sorted_parsed_files[$k]['btn'];
         $list .= '</button>';
 
@@ -52,7 +57,7 @@ function show_sysdocs_index() {
 
 function show_themedocs_index() {
 
-    global $Parsedown;
+    global $Parsedown, $doc_filepath;
     $languagePack = $_SESSION['lang'];
     $list = '';
     $themes = get_all_templates();
@@ -67,10 +72,15 @@ function show_themedocs_index() {
         $theme_readme_file = $theme_path.'readme.md';
         if(is_file($theme_readme_file)) {
 
+            $active = '';
+            if($doc_filepath == $theme_readme_file) {
+                $active = 'active';
+            }
+
             $hx_get = '/admin/docs/read/?file='.$theme_readme_file;
             $hx_target = '#helpModal';
 
-            $list .= '<button class="list-group-item list-group-item-action" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
+            $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
             $list .= $theme_dir;
             $list .= '</button>';
 
@@ -85,7 +95,7 @@ function show_themedocs_index() {
 
 
 function show_plugins_index() {
-    global $Parsedown;
+    global $Parsedown, $doc_filepath;
     $languagePack = $_SESSION['lang'];
     $plugins = se_get_all_addons();
 
@@ -100,10 +110,15 @@ function show_plugins_index() {
         $plugin_readme_file = $plugin_path.'readme.md';
         if(is_file($plugin_readme_file)) {
 
+            $active = '';
+            if($doc_filepath == $plugin_readme_file) {
+                $active = 'active';
+            }
+
             $hx_get = '/admin/docs/read/?file='.$plugin_readme_file;
             $hx_target = '#helpModal';
 
-            $list .= '<button class="list-group-item list-group-item-action" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
+            $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
             $list .= $plugin_dir;
             $list .= '</button>';
 

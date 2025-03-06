@@ -13,13 +13,13 @@ if(isset($_GET['file'])) {
     $file = se_filter_filepath($_GET['file']);
     $section = se_filter_filepath($_GET['section']);
 
-    echo '<div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+    echo '<div class="modal-dialog modal-xl modal-dialog-centered">
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title">'.$lang['btn_docs'].'</h5>
     </div>
-    <div class="modal-body">
-    <div id="showModalContent" hx-get="/admin/docs/read/?show_file='.$file.'&section='.$section.'" hx-trigger="load">
+    <div class="modal-body" style="height: 70vh">
+    <div class="h-100" id="showModalContent" hx-get="/admin/docs/read/?show_file='.$file.'&section='.$section.'" hx-trigger="load">
     </div> 
     </div>
     <div class="modal-footer">
@@ -63,20 +63,26 @@ if(isset($_GET['show_file'])) {
         $doc_filepath = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/'.basename($show_file);
     }
 
-    echo '<div class="row">';
-    echo '<div class="col-md-4">';
+    echo '<div class="row h-100">';
+    echo '<div class="w-25 h-100">';
+
+    echo '<div class="h-100 overflow-auto">';
 
     echo show_sysdocs_index();
     echo show_plugins_index();
     echo show_themedocs_index();
 
     echo '</div>';
-    echo '<div class="col-md-8">';
 
+    echo '</div>';
+    echo '<div class="d-flex h-100 w-75">';
+
+    echo '<div class="h-100 overflow-auto">';
     if(str_ends_with($show_file, '.md')) {
         $show_file = se_parse_docs_file($doc_filepath);
         echo $show_file['content'];
     }
+    echo '</div>';
     echo '</div>';
     echo '</div>';
 }
