@@ -178,6 +178,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+document.addEventListener("keydown", function (event) {
+    const shortcuts = {
+        "b": "/admin/blog/",
+        "s": "/admin/shop/",
+        "h": "/admin/dashboard/",
+        "u": "/admin/uploads/"
+    };
+
+    // Konfiguration der Tasten-Kombination
+    const useCtrl = true;
+    const useCmd = true;  // Cmd (Meta) für macOS aktivieren
+    const useShift = false;
+    const useAlt = false;
+
+    const key = event.key.toLowerCase();
+
+    // Prüfen, ob die Tastenkombination gedrückt wurde
+    if (
+        shortcuts[key] &&
+        ((useCtrl && event.ctrlKey) || (useCmd && event.metaKey)) && // Ctrl für Windows, Cmd für Mac
+        (useShift ? event.shiftKey : true) &&
+        (useAlt ? event.altKey : true)
+    ) {
+        event.preventDefault(); // Verhindert Standardaktionen
+        window.location.href = shortcuts[key];
+    }
+});
+
 
 
 
