@@ -221,27 +221,26 @@ if($_REQUEST['action'] == 'list_logfile') {
 if($_REQUEST['action'] == 'list_alerts') {
     $se_check_messages = array();
     $writable_items = array(
-        '../sitemap.xml',
-        SE_CONTENT.'/',
-        SE_CONTENT.'/avatars/',
-        SE_CONTENT.'/cache/',
-        SE_CONTENT.'/cache/cache/',
-        SE_CONTENT.'/cache/templates_c/',
-        SE_CONTENT.'/files/',
-        SE_CONTENT.'/images/',
-        SE_CONTENT.'/SQLite/',
-        SE_CONTENT.'/SQLite/content.sqlite3',
-        SE_CONTENT.'/SQLite/user.sqlite3',
-        SE_CONTENT.'/SQLite/index.sqlite3'
+        SE_PUBLIC.'/sitemap.xml',
+        SE_PUBLIC.'/',
+        SE_PUBLIC.'/assets/avatars/',
+        SE_ROOT.'/data/cache/',
+        SE_ROOT.'/data/cache/cache/',
+        SE_ROOT.'/data/cache/templates_c/',
+        SE_PUBLIC.'/assets/files/',
+        SE_PUBLIC.'/assets/images/',
+        SE_ROOT.'/data/database/content.sqlite3',
+        SE_ROOT.'/data/database/user.sqlite3',
+        SE_ROOT.'/data/database/index.sqlite3'
     );
 
     foreach($writable_items as $f) {
 
         if($db_type !== 'sqlite') {
-            if($f == SE_CONTENT.'/SQLite/content.sqlite3') {
+            if($f == SE_ROOT.'/data/database/content.sqlite3') {
                 continue;
             }
-            if($f == SE_CONTENT.'/SQLite/user.sqlite3') {
+            if($f == SE_ROOT.'/data/database/user.sqlite3') {
                 continue;
             }
         }
