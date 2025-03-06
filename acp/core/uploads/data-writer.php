@@ -19,6 +19,9 @@ if(isset($_POST['delete'])) {
     if(str_starts_with($delete_thumb, "../images_tmb/")) {
         $delete_thumb_src = str_replace('../images_tmb/', "assets/images_tmb/", $delete_thumb);
     }
+    if(str_starts_with($delete_file, "../files/")) {
+        $delete_file_src = str_replace('../files/', "assets/files/", $delete_file);
+    }
 
 
     if(is_file($delete_file_src)) {
