@@ -295,11 +295,12 @@ if($_REQUEST['widget'] == 'product-select') {
     foreach($products_data as $product) {
 
         $flag_src = return_language_flag_src($product['product_lang']);
+        $product_id = (int) $product['id'];
 
-        echo '<div class="list-group-item draggable" data-id="'.$product['id'].'">';
+        echo '<div class="list-group-item draggable" data-id="'.$product_id.'">';
         echo '<img src="'.$flag_src.'" alt="'.$flag_src.'" width="15"> ';
-        echo $product['title'];
-        echo ' [#'.$product['id'].'] '.$product['product_number'];
+        echo htmlentities($product['title']);
+        echo ' [#'.$product_id.'] '.htmlentities($product['product_number']);
         echo '</div>';
     }
     echo '</div>';
