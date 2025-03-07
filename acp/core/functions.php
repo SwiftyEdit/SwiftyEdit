@@ -1445,13 +1445,13 @@ function se_print_docs_link(string $file, string $text = null, string $section =
         $section = 'swiftyedit';
     }
 
-    $link = '<a href="#" data-bs-toggle="modal"
+    $link = '<button data-bs-toggle="modal"
                     data-bs-target="#helpModal"
                         hx-get="/admin/docs/read/"
                         hx-vals=\'{"file":"' . $file . '","section":"' . $section . '"}\'
                         hx-target="#helpModal"
                         hx-trigger="click"
-                        class="show-doc link-info" title="' . $title . '">' . $text . '</a>';
+                        class="btn btn-link" title="' . $title . '">' . $text . '</button>';
     return $link;
 }
 
@@ -1471,7 +1471,6 @@ function se_print_docs_tip(string $file, string $text = null) :string {
     $show_file = se_parse_docs_file($doc_filepath);
 
     $tooltip = '<span 
-                    type="button"
                     class="d-inline-block"
                     data-bs-toggle="popover"
                     data-bs-title="'.$show_file['title'].'" data-bs-content="'.$show_file['content'].'"

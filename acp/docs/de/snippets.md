@@ -7,7 +7,7 @@ priority: 200
 ---
 # Snippets verwalten, erstellen oder bearbeiten
 
-<kbd>Backend</kbd> <kbd>Inhalte</kbd> <kbd>Snippets</kbd>
+<kbd>admin/snippets/</kbd>
 
 Die Möglichkeiten wie Snippets eingesetzt werden können sind grenzenlos.
 Immer wenn Du bestimmte Textphrasen mehr als einmal benötigst, können diese als Snippet gespeichert 
