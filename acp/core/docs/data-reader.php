@@ -49,7 +49,11 @@ if(isset($_GET['show_file'])) {
     }
     // single file - swiftyedit docs
     if(!str_contains($show_file, '/')) {
-        $doc_filepath = '../acp/docs/'.$languagePack.'/'.basename($show_file);
+        if(str_starts_with($show_file, 'tip-')) {
+            $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.basename($show_file);
+        } else {
+            $doc_filepath = '../acp/docs/' . $languagePack . '/' . basename($show_file);
+        }
     }
 
     // plugins readme

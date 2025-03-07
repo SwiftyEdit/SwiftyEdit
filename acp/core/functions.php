@@ -1362,8 +1362,8 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
  */
 function se_parse_docs_file($file): array {
 
-    global $Parsedown;
     global $languagePack;
+    $Parsedown = new Parsedown();
 
     if(is_file($file)) {
         $src = file_get_contents($file);
@@ -1426,32 +1426,61 @@ function se_parse_docs_file($file): array {
     return $parsed;
 }
 
-function se_print_docs_link($file,$section=null,$text=null,$type=null) {
+/**
+ * @param string $file
+ * @param string|null $text
+ * @param string|null $section
+ * @return string
+ */
+function se_print_docs_link(string $file, string $text = null, string $section = null): string {
     global $icon, $lang;
-
+    $link = '';
     $title = $lang['label_show_help'];
 
-    if($text == null OR $text == 'icon') {
+    if ($text == null or $text == 'icon') {
         $text = $icon['question_circle'];
     }
 
-    if($section == null OR $section == '') {
+    if ($section == null or $section == '') {
         $section = 'swiftyedit';
     }
 
-    if($type == null OR $type == 'modal') {
-        $link = '<a href="#" data-bs-toggle="modal"
+    $link = '<a href="#" data-bs-toggle="modal"
                     data-bs-target="#helpModal"
                         hx-get="/admin/docs/read/"
-                        hx-vals=\'{"file":"'.$file.'","section":"'.$section.'"}\'
+                        hx-vals=\'{"file":"' . $file . '","section":"' . $section . '"}\'
                         hx-target="#helpModal"
                         hx-trigger="click"
-                        class="show-doc link-info" title="'.$title.'">'.$text.'</a>';
-        return $link;
+                        class="show-doc link-info" title="' . $title . '">' . $text . '</a>';
+    return $link;
+}
+
+/**
+ * @param string $file
+ * @param string|null $text
+ * @return string
+ */
+function se_print_docs_tip(string $file, string $text = null) :string {
+    global $icon, $languagePack;
+
+    if ($text == null or $text == 'icon') {
+        $text = $icon['question_circle'];
     }
 
-    return '';
+    $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.$file;
+    $show_file = se_parse_docs_file($doc_filepath);
+
+    $tooltip = '<span 
+                    type="button"
+                    class="d-inline-block"
+                    data-bs-toggle="popover"
+                    data-bs-title="'.$show_file['title'].'" data-bs-content="'.$show_file['content'].'"
+                    data-bs-html="true"
+                    data-bs-trigger="hover">'.$text.'</span>';
+
+    return $tooltip;
 }
+
 
 /**
  * display pagination
