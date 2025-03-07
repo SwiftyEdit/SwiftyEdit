@@ -5,7 +5,8 @@
  * return array()
  */
 
-function se_scandir_recursive($dir) {
+function se_scandir_recursive($dir): array {
+    $result = [];
     $root = scandir($dir);
     foreach($root as $value) {
         if($value === '.' || $value === '..'|| $value === '.DS_Store') {continue;}

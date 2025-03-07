@@ -18,11 +18,14 @@ if(isset($_REQUEST['change_filter'])) {
 
     if (isset($_POST['media_widget_text_filter'])) {
         $_SESSION['media_widget_text_filter'] = sanitizeUserInputs($_POST['media_widget_text_filter']);
+        header("HX-Trigger: update_image_widget");
+        exit;
     }
 
     if (isset($_POST['product_widget_text_filter'])) {
         $_SESSION['product_widget_text_filter'] = sanitizeUserInputs($_POST['product_widget_text_filter']);
         header( "HX-Trigger: update_product_widget");
+        exit;
     }
 
     if (isset($_POST['sorting_media_widget'])) {
@@ -122,9 +125,9 @@ if($_REQUEST['widget'] == 'img-select') {
     echo '<div class="p-1">';
     echo '<div class="row g-2">';
     echo '<div class="col-md-6">';
-    echo '<div class="input-group">';
+    echo '<div class="input-group" hx-post="/admin/widgets/read/?change_filter" hx-params="media_widget_text_filter,csrf_token" hx-trigger="input changed delay:500ms" hx-swap="none">';
     echo '<span class="input-group-text"><i class="bi bi-search"></i></span>';
-    echo '<input type="text" class="form-control no-enter" hx-post="/admin/widgets/read/?change_filter" hx-params="media_widget_text_filter,csrf_token" hx-trigger="keyup changed delay:500ms" hx-swap="none" name="media_widget_text_filter" value="'.$_SESSION['media_widget_text_filter'].'">';
+    echo '<input type="text" class="form-control no-enter" name="media_widget_text_filter" value="'.$_SESSION['media_widget_text_filter'].'">';
     echo '</div>';
     echo '</div>';
     echo '<div class="col-md-6">';
@@ -182,7 +185,7 @@ if($_REQUEST['widget'] == 'img-select') {
         $preview = str_replace("../","/",$preview);
 
 
-        echo '<div class="list-group-item draggable" data-id="'.$image_src.'">';
+        echo '<div class="list-group-item d-flex align-items-start draggable" data-id="'.$image_src.'">';
         echo '<div class="d-flex flex-row gap-2">';
         echo '<div class="rounded-circle flex-shrink-0" style="width:64px;height:64px;background-image:url('.$preview.');background-size:cover;"></div>';
         echo '<div class="text-muted small">'.$image_title.$img_filename_short.'<br>'.$image_upload_time.'</div>';
@@ -214,6 +217,11 @@ if($_REQUEST['widget'] == 'product-select') {
     echo '<div class="card-header">'.$lang['label_products'].'</div>';
 
     echo '<div class="card-body p-0">';
+
+    if(!isset($_SESSION['prod_picker_id'])) {
+        $_SESSION['prod_picker_id'] = uniqid();
+    }
+    $prod_picker_id = $_SESSION['prod_picker_id'];
 
     $order_by = 'id';
     $order_direction = 'ASC';

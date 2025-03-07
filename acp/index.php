@@ -306,11 +306,11 @@ if (isset($set_acptheme)) {
 <html lang="<?php echo $languagePack; ?>" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
-    <title>ACP | <?php echo $se_base_url . ' | ' . $tn; ?></title>
+    <title>ACP | <?php echo $se_base_url ?></title>
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2024-06-25" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2025-03-07" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo $languagePack; ?>";
@@ -327,7 +327,7 @@ if (isset($set_acptheme)) {
         }
     </script>
 
-    <script src="/themes/administration/dist/backend.js?v=2024-06-25"></script>
+    <script src="/themes/administration/dist/backend.js?v=2025-03-07"></script>
     <script src="/themes/administration/dist/tinymce/tinymce.min.js"></script>
     <script src="/themes/administration/dist/tinymce-jquery/tinymce-jquery.js"></script>
 

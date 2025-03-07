@@ -4,7 +4,7 @@ echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_shop'];
 echo '</div>';
 
-
+// edit filter group
 if(isset($_POST['edit_group'])) {
     if(is_numeric($_POST['edit_group'])) {
         // edit group
@@ -20,9 +20,18 @@ if(isset($_POST['edit_group'])) {
                 name="save_filter_group"
                 value="'.$edit_group_id.'"
                 class="btn btn-success">UPDATE</button>';
+        $delete_btn = '<button
+                hx-post="/admin/shop/write/"
+                hx-swap="beforeend"
+                hx-include="[name=\'csrf_token\']"
+                hx-confirm="'.$lang['msg_confirm_delete'].'"
+                name="delete_filter_group"
+                value="'.$edit_group_id.'"
+                class="btn btn-danger">'.$icon['trash_alt'].'</button>';
     } else {
         // new group
         $mode = 'new';
+        $delete_btn = '';
         $submit_btn = '<button 
                 hx-post="/admin/shop/write/"
                 hx-swap="beforeend"
@@ -138,6 +147,7 @@ if(isset($_POST['edit_group'])) {
     echo '</div>';
     echo '</div>';
     echo $submit_btn;
+    echo $delete_btn;
     echo '</form>';
 
     echo '</div>';
@@ -160,9 +170,18 @@ if(isset($_POST['edit_value'])) {
                 name="save_filter_value"
                 value="'.$edit_value_id.'"
                 class="btn btn-success">UPDATE</button>';
+        $delete_btn = '<button
+                hx-post="/admin/shop/write/"
+                hx-swap="beforeend"
+                hx-include="[name=\'csrf_token\']"
+                hx-confirm="'.$lang['msg_confirm_delete'].'"
+                name="delete_filter_value"
+                value="'.$edit_value_id.'"
+                class="btn btn-danger">'.$icon['trash_alt'].'</button>';
     } else {
         // new
         $mode = 'new';
+        $delete_btn = '';
         $submit_btn = '<button 
                 hx-post="/admin/shop/write/"
                 hx-swap="beforeend"
@@ -233,6 +252,7 @@ if(isset($_POST['edit_value'])) {
     echo '</div>';
     echo '</div>';
     echo $submit_btn;
+    echo $delete_btn;
     echo '</form>';
 
     echo '</div>';

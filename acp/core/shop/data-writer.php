@@ -82,6 +82,21 @@ if(isset($_POST['sorting_products_dir'])) {
     exit;
 }
 
+// delete product
+if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
+    $delete_id = (int) $_POST['delete_product'];
+    $cnt_changes = $db_posts->delete("se_products",[
+        "id" => $delete_id
+    ]);
+
+    if(($cnt_changes->rowCount()) > 0) {
+        show_toast($lang['msg_info_data_deleted'],'success');
+        record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
+        header( "HX-Redirect: /admin/shop/");
+        $modus = 'new';
+    }
+}
+
 // save or update products
 if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
@@ -387,6 +402,7 @@ if(isset($_POST['set_filter_cat'])) {
     $_SESSION['filter_prod_categories'] = implode(" ", $filter_prod_categories);
 
     header( "HX-Trigger: update_products_list, update_filter_list");
+    exit;
 }
 
 // save features
@@ -484,16 +500,18 @@ if(isset($_POST['save_filter_group'])) {
     if(is_numeric($_POST['save_filter_group'])) {
         // update
         $id = (int) $_POST['save_filter_group'];
-        $db_content->update("se_filter", $insert_data, [
+        $data = $db_content->update("se_filter", $insert_data, [
             "filter_id" => $id
         ]);
     } else {
         // new
-        $db_content->insert("se_filter", $insert_data);
+        $data = $db_content->insert("se_filter", $insert_data);
     }
-
-
-    show_toast($lang['msg_success_db_changed'],'success');
+    if($data->rowCount() > 0) {
+        show_toast($lang['msg_success_db_changed'],'success');
+    } else {
+        show_toast($lang['msg_error_db_changed'],'error');
+    }
 }
 
 // save filter value
@@ -514,16 +532,51 @@ if(isset($_POST['save_filter_value'])) {
     ];
 
     if(is_numeric($_POST['save_filter_value'])) {
-        // new
+        // update
         $id = (int) $_POST['save_filter_value'];
-        $db_content->update("se_filter", $insert_data, [
+        $data = $db_content->update("se_filter", $insert_data, [
             "filter_id" => $id
         ]);
     } else {
         // new
-        $db_content->insert("se_filter", $insert_data);
+        $data = $db_content->insert("se_filter", $insert_data);
     }
-    show_toast($lang['msg_success_db_changed'],'success');
+    if($data->rowCount() > 0) {
+        show_toast($lang['msg_success_db_changed'],'success');
+    } else {
+        show_toast($lang['msg_error_db_changed'],'error');
+    }
+}
+
+// delete filter value
+if(isset($_POST['delete_filter_value'])) {
+    $id = (int) $_POST['delete_filter_value'];
+    $data = $db_content->delete("se_filter", [
+        "filter_id" => $id
+    ]);
+    if($data->rowCount() > 0) {
+        show_toast($lang['msg_success_db_changed'],'success');
+    } else {
+        show_toast($lang['msg_error_db_changed'],'error');
+    }
+    header( "HX-Redirect: /admin/shop/filters/");
+}
+
+// delete filter group
+// delete all values from this group
+if(isset($_POST['delete_filter_group'])) {
+    $id = (int) $_POST['delete_filter_group'];
+    $data = $db_content->delete("se_filter", [
+        "OR" => [
+            "filter_id" => $id,
+            "filter_parent_id" => $id
+        ]
+    ]);
+    if($data->rowCount() > 0) {
+        show_toast($lang['msg_success_db_changed'],'success');
+    } else {
+        show_toast($lang['msg_error_db_changed'],'error');
+    }
 }
 
 // change payment status

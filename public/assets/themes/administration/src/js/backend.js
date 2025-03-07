@@ -33,7 +33,10 @@ import '@uppy/dashboard/dist/style.css'
 import 'print-js/dist/print'
 import 'print-js/dist/print.css'
 
-
+function registerElements() {
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+}
 
 document.addEventListener('htmx:afterRequest', function(evt) {
 
@@ -43,43 +46,50 @@ document.addEventListener('htmx:afterRequest', function(evt) {
         }, 2000);
     });
 
+    registerElements();
+
 });
 
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
 htmx.onLoad(function(content) {
-    var sortables_src = content.querySelectorAll(".sortable_source");
-    for (var i = 0; i < sortables_src.length; i++) {
-        var sortable_source = sortables_src[i];
-        var sortableInstance = new Sortable(sortable_source, {
-            group: {
-                name: 'shared',
-                pull: 'clone'
-            },
-            animation: 150,
-            ghostClass: 'bg-info-subtle',
-            filter: ".htmx-indicator",
-            draggable: ".draggable",
-            onMove: function (evt) {
-                return evt.related.className.indexOf('htmx-indicator') === -1;
-            }
-        });
 
+    var sortables_src = content.querySelectorAll(".sortable_source");
+    if (sortables_src.length > 0) {
+        for (var i = 0; i < sortables_src.length; i++) {
+            var sortable_source = sortables_src[i];
+            var sortableInstance = new Sortable(sortable_source, {
+                group: {
+                    name: 'shared',
+                    pull: 'clone'
+                },
+                animation: 150,
+                ghostClass: 'bg-info-subtle',
+                filter: ".htmx-indicator",
+                draggable: ".draggable",
+                onMove: function (evt) {
+                    return evt.related.className.indexOf('htmx-indicator') === -1;
+                }
+            });
+        }
     }
 
     var sortables_target = content.querySelectorAll(".sortable_target");
-    for (var i = 0; i < sortables_target.length; i++) {
-        var sortable_target = sortables_target[i];
-        var sortableInstanceTarget = new Sortable(sortable_target, {
-            group: {
-                name: 'shared'
-            },
-            animation: 150,
-            ghostClass: 'bg-info-subtle',
-            filter: ".htmx-indicator",
-            draggable: ".draggable"
-        });
+    if (sortables_target.length > 0) {
+        for (var i = 0; i < sortables_target.length; i++) {
+            var sortable_target = sortables_target[i];
+            var sortableInstanceTarget = new Sortable(sortable_target, {
+                group: {
+                    name: 'shared'
+                },
+                animation: 150,
+                ghostClass: 'bg-info-subtle',
+                filter: ".htmx-indicator",
+                draggable: ".draggable",
+                removeOnSpill: true
+            });
+        }
     }
 })
 
@@ -105,7 +115,15 @@ function observeContainersForDraggableDivs(parentSelector) {
                     const dataId = div.getAttribute('data-id');
                     hiddenInput.value = dataId ? dataId : `value_${index}`; // Fallback-Wert falls keine data-id vorhanden ist
 
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
+                    deleteButton.className = 'btn btn-danger btn-sm d-flex ms-auto';
+                    deleteButton.onclick = function() {
+                        this.parentElement.remove();
+                    };
+
                     div.appendChild(hiddenInput);
+                    div.appendChild(deleteButton);
                 }
             });
         }
@@ -125,6 +143,8 @@ function observeContainersForDraggableDivs(parentSelector) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    observeContainersForDraggableDivs('.sortable_target');
 
     const noEnterFields = document.querySelectorAll('.no-enter');
 
@@ -165,13 +185,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+document.addEventListener("keydown", function (event) {
+    const shortcuts = {
+        "b": "/admin/blog/",
+        "s": "/admin/shop/",
+        "h": "/admin/dashboard/",
+        "u": "/admin/uploads/"
+    };
 
+    // Konfiguration der Tasten-Kombination
+    const useCtrl = true;
+    const useCmd = true;  // Cmd (Meta) für macOS aktivieren
+    const useShift = false;
+    const useAlt = false;
+
+    const key = event.key.toLowerCase();
+
+    // Prüfen, ob die Tastenkombination gedrückt wurde
+    if (
+        shortcuts[key] &&
+        ((useCtrl && event.ctrlKey) || (useCmd && event.metaKey)) && // Ctrl für Windows, Cmd für Mac
+        (useShift ? event.shiftKey : true) &&
+        (useAlt ? event.altKey : true)
+    ) {
+        event.preventDefault(); // Verhindert Standardaktionen
+        window.location.href = shortcuts[key];
+    }
+});
 
 
 $(function() {
 
     // observe "sortable_target" (image picker)
-    observeContainersForDraggableDivs('.sortable_target');
+   // observeContainersForDraggableDivs('.sortable_target');
 
     const uppy = new Uppy({
         debug: false,
@@ -191,8 +237,8 @@ $(function() {
     })
 
 
-    $('[data-bs-toggle="popover"]').popover();
-    $('[data-bs-toggle="tooltip"]').tooltip();
+    //$('[data-bs-toggle="popover"]').popover();
+    //$('[data-bs-toggle="tooltip"]').tooltip();
 
     setTimeout(function() {
         $(".alert-auto-close").slideUp('slow');

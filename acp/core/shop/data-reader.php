@@ -266,8 +266,9 @@ if($_REQUEST['action'] == 'list_products') {
         $show_thumb = '';
         if($prod_image[1] != "") {
             $image_src = str_replace("../images/","/",$prod_image[1]);
-            $show_thumb  = '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="<img src=\''.$image_src.'\'>">';
+            $show_thumb  = '<div data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="<img src=\''.$image_src.'\'>">';
             $show_thumb .= '<div class="show-thumb" style="background-image: url('.$image_src.');">';
+            $show_thumb .= '</div>';
             $show_thumb .= '</div>';
         } else {
             $show_thumb = '<div class="show-thumb" style="background-image: url(/assets/themes/administration/images/no-image.png);">';
@@ -303,7 +304,7 @@ if($_REQUEST['action'] == 'list_products') {
         $icon_fixed_form .= '</form>';
 
         // priority form
-        $prio_form  = '<form hx-post="/admin/shop/write/" hx-trigger="keyup changed delay:1s" method="POST">';
+        $prio_form  = '<form hx-post="/admin/shop/write/" hx-trigger="keyup changed delay:1s" method="POST" class="no-enter">';
         $prio_form .= '<input type="number" name="priority" value="'.$product['priority'].'" class="form-control" style="max-width:150px">';
         $prio_form .= '<input type="hidden" name="prio_id" value="'.$product['id'].'">';
         $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

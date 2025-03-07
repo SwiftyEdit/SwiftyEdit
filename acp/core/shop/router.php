@@ -19,9 +19,11 @@ $subinc = match (true) {
     default => 'products-list'
 };
 
-
-if($_SESSION['acp_system'] != "allowed"){
-    $subinc = "no_access";
+if($_SESSION['drm_can_publish'] != "true"){
+    echo '<div class="alert alert-info">';
+    echo $lang['rm_no_access'];
+    echo '</div>';
+} else {
+    include __DIR__.'/'.$subinc.'.php';
 }
 
-include __DIR__.'/'.$subinc.'.php';

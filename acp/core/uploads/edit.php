@@ -13,11 +13,18 @@ $form_tpl = file_get_contents('../acp/templates/media-edit-form.tpl');
 
 if(isset($_POST['save'])) {
 
-    $realpath = se_filter_filepath($_POST['realpath']);
-    $filesize = filesize('assets'.$realpath);
+    $media_filename = se_filter_filepath($_POST['file']);
+
+    if(str_starts_with($media_filename, "../files")) {
+        $media_filename_abs = str_replace("../files/", '/files/', $media_filename);
+    } else {
+        $media_filename_abs = str_replace("../images/", '/images/', $media_filename);
+    }
+
+    $filesize = filesize('assets'.$media_filename_abs);
 
     $filedata = array(
-        'filename' => $_POST['realpath'],
+        'filename' => $media_filename_abs,
         'title' => $_POST['title'],
         'notes' => $_POST['notes'],
         'keywords' => $_POST['keywords'],
@@ -60,23 +67,24 @@ if(isset($_POST['file'])) {
     echo '</div>';
 
 
-    //$media_filename = str_replace("../images/", '/images/', $media_filename);
-    if(str_starts_with($media_data['media_file'], "/files")) {
+    if(str_starts_with($media_filename, "../files")) {
+        $media_filename_abs = str_replace("../files/", '/files/', $media_filename);
         $preview_src = '<p>Filetype: '.substr(strrchr($media_filename, "."), 1).'</p>';
         $realpath = $media_filename;
         $img_dimensions = '';
         $shortcode = 'file';
     } else {
-        $preview_src = '<img src="'. $media_filename.'" class="img-fluid">';
+        $media_filename_abs = str_replace("../images/", '/images/', $media_filename);
+        $preview_src = '<img src="'. $media_filename_abs.'" class="img-fluid">';
         $realpath = $media_filename;
-        list($img_width, $img_height) = getimagesize("assets$media_filename");
+        list($img_width, $img_height) = getimagesize("assets$media_filename_abs");
         $img_dimensions = ' | '.$img_width.' x '.$img_height.' px';
         $shortcode = 'image';
     }
 
     $filesize = filesize("../$realpath");
-    $rfilesize = readable_filesize(filesize("assets$media_filename"));
-    $lastedit = date('d.m.Y H:i',filemtime("assets$realpath"));
+    $rfilesize = readable_filesize(filesize("assets$media_filename_abs"));
+    $lastedit = date('d.m.Y H:i',filemtime("assets$media_filename_abs"));
 
     // change language
     $langSwitch = '<div class="btn-group" role="group">';

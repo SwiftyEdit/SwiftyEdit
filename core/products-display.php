@@ -161,8 +161,8 @@ if(is_array($product_images) && count($product_images) > 0) {
     /* replace img src with absolute path */
     $cnt_images = count($show_images);
     for($i=0;$i<$cnt_images;$i++) {
-        $show_images[$i]['media_file'] = '/' . $img_path . '/' . str_replace('../content/images/','',$show_images[$i]['media_file']);
-        $show_images[$i]['media_thumb'] = '/' . $img_tmb_path . '/' . str_replace('../content/images_tmb/','',$show_images[$i]['media_thumb']);
+        $show_images[$i]['media_file'] =  str_replace('../images/','/images/',$show_images[$i]['media_file']);
+        $show_images[$i]['media_thumb'] = str_replace('../images_tmb/','/images_tmb/',$show_images[$i]['media_thumb']);
     }
 
 
@@ -319,11 +319,11 @@ if($cnt_variants > 1) {
         $var[$k]['teaser'] = se_return_words_str(html_entity_decode($v['teaser']),10);
         $product_images = explode("<->",$v['images']);
         if ($product_images[1] != "") {
-            $var[$k]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+            $var[$k]['image'] = str_replace('../images/', '/images/', $product_images[1]);
         } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
             $var[$k]['image'] = '';
         } else {
-            $var[$k]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+            $var[$k]['image'] = str_replace('../images/', '/images/', $se_prefs['prefs_posts_default_banner']);
         }
 
         $product_slug = basename($v['slug']);

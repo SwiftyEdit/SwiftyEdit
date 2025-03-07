@@ -76,7 +76,7 @@ if($_REQUEST['action'] == 'list') {
         $preview_filesize = readable_filesize($media['media_filesize']);
         $media_file_hits = (int) $media['media_file_hits'];
 
-        $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
+        $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
         $edit_btn = '<button class="btn btn-default btn-sm text-success w-100" name="file" value="'.$media['media_file'].'" >'.$icon['edit'].'</button>';
 
 

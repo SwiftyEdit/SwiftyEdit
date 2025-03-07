@@ -57,5 +57,10 @@ echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()"
 <span id="toggle-light"><i class="bi bi-sun"></i></span>
 </button>';
 
+echo '<button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" 
+hx-get="/admin/docs/read/?file=index.md"
+hx-target="#helpModal"
+hx-trigger="click">'.$icon['question_circle'].' '.$lang['btn_help'].'</button>';
+
 echo '</div>';
 echo '</nav>';

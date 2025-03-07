@@ -9,9 +9,10 @@ $subinc = match (true) {
     default => 'general'
 };
 
-
 if($_SESSION['acp_system'] != "allowed"){
-	$subinc = "no_access";
+    echo '<div class="alert alert-info">';
+    echo $lang['rm_no_access'];
+    echo '</div>';
+} else {
+    include __DIR__.'/'.$subinc.'.php';
 }
-
-include $subinc.'.php';

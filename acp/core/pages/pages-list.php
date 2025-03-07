@@ -31,9 +31,11 @@ echo '<div class="col-md-9">';
 
 if($_SESSION['show_page_type'] == 'sorted') {
     $card_title = $lang['nav_btn_structured_pages'];
+    $card_title .= ' ' .se_print_docs_tip('tip-ordered-pages.md');
     $hx_uri = $reader_uri.'?action=list_pages&type=1';
 } else {
     $card_title = $lang['nav_btn_single_pages'];
+    $card_title .= ' ' .se_print_docs_tip('tip-single-pages.md');
     $hx_uri = $reader_uri.'?action=list_pages&type=2';
 }
 

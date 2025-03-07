@@ -97,9 +97,9 @@ function se_sanitize_price($input): array|string|null {
         $input = str_replace('.', ',', $input);
     }
 
-    // If both a dot and a comma exist, remove all commas
+    // If both a dot and a comma exist, remove the dot
     if (strpos($input, '.') !== false && strpos($input, ',') !== false) {
-        $input = str_replace(',', '', $input);
+        $input = str_replace('.', '', $input);
     }
 
     return $input;

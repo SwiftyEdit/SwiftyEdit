@@ -14,6 +14,9 @@ priority: 100
 
 ## Installing SwiftyEdit
 
+__Please note:__ As of version 2.0, we use the /public/ folder as the domain root.
+This means that your domain must point to this folder.
+
 The installation takes only a few minutes.
 
 Installation via Composer:
@@ -30,3 +33,4 @@ Or download the files from the website: https://swiftyedit.org/de/download/
 If the installation was successful, the next step is to go to the ACP.
 Just click on <kbd>Administration</kbd>.
 By the way, you can always reach the backend via the URL `example.com/acp/`.
+As of version 2, the backend can be accessed at a new address: `example.com/admin/`
