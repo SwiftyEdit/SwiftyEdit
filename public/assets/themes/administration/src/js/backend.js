@@ -33,7 +33,10 @@ import '@uppy/dashboard/dist/style.css'
 import 'print-js/dist/print'
 import 'print-js/dist/print.css'
 
-
+function registerElements() {
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+}
 
 document.addEventListener('htmx:afterRequest', function(evt) {
 
@@ -42,6 +45,8 @@ document.addEventListener('htmx:afterRequest', function(evt) {
             $(".alert-auto-close").slideUp('slow');
         }, 2000);
     });
+
+    registerElements();
 
 });
 
@@ -139,6 +144,8 @@ function observeContainersForDraggableDivs(parentSelector) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    observeContainersForDraggableDivs('.sortable_target');
+
     const noEnterFields = document.querySelectorAll('.no-enter');
 
     noEnterFields.forEach(field => {
@@ -207,12 +214,10 @@ document.addEventListener("keydown", function (event) {
 });
 
 
-
-
 $(function() {
 
     // observe "sortable_target" (image picker)
-    observeContainersForDraggableDivs('.sortable_target');
+   // observeContainersForDraggableDivs('.sortable_target');
 
     const uppy = new Uppy({
         debug: false,
@@ -232,8 +237,8 @@ $(function() {
     })
 
 
-    $('[data-bs-toggle="popover"]').popover();
-    $('[data-bs-toggle="tooltip"]').tooltip();
+    //$('[data-bs-toggle="popover"]').popover();
+    //$('[data-bs-toggle="tooltip"]').tooltip();
 
     setTimeout(function() {
         $(".alert-auto-close").slideUp('slow');
