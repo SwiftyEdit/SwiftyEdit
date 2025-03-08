@@ -70,7 +70,6 @@
 				  
 			  <input type="hidden" name="saveMedia" value="save">
 			  <input type="hidden" name="realpath" value="{realpath}">
-			  <input type="hidden" name="folder" value="{folder}">
 			  <input type="hidden" name="set_lang" value="{set_lang}">
 			  <input type="hidden" name="filesize" value="{filesize}">
 			  <input type="hidden" name="file" value="{filename}">

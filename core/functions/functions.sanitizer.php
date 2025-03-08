@@ -365,3 +365,15 @@ function se_sanitize_page_inputs($data) {
 
     return $sanitized;
 }
+
+/**
+ * @param string $lang
+ * @return mixed|string
+ */
+function se_sanitize_lang_input(string $lang): mixed {
+    $allowedLanguages = ["en", "de", "es", "fr", "gr", "it", "pl", "ro", "tr"];
+    if (!in_array($lang, $allowedLanguages)) {
+        $lang = '';
+    }
+    return $lang;
+}

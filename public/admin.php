@@ -11,16 +11,7 @@
 session_start();
 error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 
-
 if($_SESSION['user_class'] == 'administrator') {
-
-
-    /*
-    if(str_contains($_REQUEST['query'] , '/data/')){
-        include '../acp/data.php';
-        exit;
-    }
-    */
 
     if(str_contains($_REQUEST['query'] , '/read/')){
         include '../acp/data_reader.php';
