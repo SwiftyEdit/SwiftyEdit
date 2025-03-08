@@ -40,6 +40,9 @@ require '../vendor/autoload.php';
 
 use Medoo\Medoo;
 
+$purifier_config = HTMLPurifier_Config::createDefault();
+$purifier = new HTMLPurifier($purifier_config);
+
 require '../acp/core/icons.php';
 
 require '../config.php';
@@ -212,7 +215,7 @@ if (!isset($_SESSION['lang'])) {
 }
 
 if (isset($_GET['set_lang'])) {
-    $set_lang = sanitizeUserInputs($_GET['set_lang']);
+    $set_lang = se_sanitize_lang_input($_GET['set_lang']);
     if (is_dir(SE_ROOT."languages/$set_lang/")) {
         $_SESSION['lang'] = "$set_lang";
     }
@@ -222,10 +225,7 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
-$allowedLanguages = ["en", "de", "es", "fr", "gr", "it", "pl", "ro", "tr"];
-if (!in_array($languagePack, $allowedLanguages)) {
-    $languagePack = "en";
-}
+$languagePack = $purifier->purify($languagePack);
 
 require SE_ROOT.'/languages/index.php';
 
