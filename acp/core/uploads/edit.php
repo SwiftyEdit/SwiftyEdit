@@ -95,7 +95,6 @@ if(isset($_POST['file'])) {
     }
     $langSwitch .= '</div>';
     $langSwitch .= '<input type="hidden" name="file" value="'.$media_filename.'">';
-    $langSwitch .= '<input type="hidden" name="folder" value="'.$_REQUEST['folder'].'">';
 
 
     // labels
@@ -131,7 +130,6 @@ if(isset($_POST['file'])) {
     $form_tpl = str_replace('{rfilesize}', $rfilesize, $form_tpl);
     $form_tpl = str_replace('{image_dimensions}', $img_dimensions, $form_tpl);
     $form_tpl = str_replace('{edittime}', $lastedit, $form_tpl);
-    $form_tpl = str_replace('{folder}', $_REQUEST['folder'], $form_tpl);
     $form_tpl = str_replace('{title}', $media_data['media_title'], $form_tpl);
     $form_tpl = str_replace('{description}', $media_data['media_description'], $form_tpl);
     $form_tpl = str_replace('{keywords}', $media_data['media_keywords'], $form_tpl);
