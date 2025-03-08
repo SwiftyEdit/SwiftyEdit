@@ -40,7 +40,7 @@ echo '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-l
 echo '</div>';
 echo '<div class="offcanvas-body">';
 
-echo '<div id="globalFilterResponse" class="alert alert-info"></div>';
+echo '<div id="globalFilterResponse"></div>';
 
 echo '<form hx-post="/admin/xhr/write/" hx-target="#globalFilterResponse" hx-swap="innerHTML" id="globalFilterForm">';
 
