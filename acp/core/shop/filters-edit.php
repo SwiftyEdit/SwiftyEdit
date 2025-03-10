@@ -19,7 +19,7 @@ if(isset($_POST['edit_group'])) {
                 hx-include="[name=\'csrf_token\']"
                 name="save_filter_group"
                 value="'.$edit_group_id.'"
-                class="btn btn-success">UPDATE</button>';
+                class="btn btn-success">'.$lang['btn_update'].'</button>';
         $delete_btn = '<button
                 hx-post="/admin/shop/write/"
                 hx-swap="beforeend"
@@ -38,7 +38,7 @@ if(isset($_POST['edit_group'])) {
                 hx-include="[name=\'csrf_token\']"
                 name="save_filter_group"
                 value="new"
-                class="btn btn-success">SAVE</button>';
+                class="btn btn-success">'.$lang['btn_save'].'</button>';
     }
 
     $input_title = [
@@ -126,7 +126,7 @@ if(isset($_POST['edit_group'])) {
 
     echo '<form>';
     echo '<div class="card">';
-    echo '<div class="card-header">Edit filter group ('.$mode.')</div>';
+    echo '<div class="card-header"><a href="/admin/shop/">'.$lang['nav_btn_shop'].'</a> / <a href="/admin/shop/filters/">'.$lang['filter'].'</a></div>';
     echo '<div class="card-body">';
     echo '<div class="row">';
     echo '<div class="col-md-9">';
@@ -143,11 +143,18 @@ if(isset($_POST['edit_group'])) {
     echo '</div>';
     echo '</div>';
     echo '<div class="col-md-3">';
+
+    echo '<div class="ps-3 border-start">';
     echo $checkboxes_cat;
-    echo '</div>';
-    echo '</div>';
+    echo '<div class="mt-3 d-flex justify-content-between">';
     echo $submit_btn;
     echo $delete_btn;
+    echo '</div>';
+    echo '</div>';
+
+    echo '</div>';
+    echo '</div>';
+
     echo '</form>';
 
     echo '</div>';
@@ -169,7 +176,7 @@ if(isset($_POST['edit_value'])) {
                 hx-include="[name=\'csrf_token\']"
                 name="save_filter_value"
                 value="'.$edit_value_id.'"
-                class="btn btn-success">UPDATE</button>';
+                class="btn btn-success">'.$lang['btn_update'].'</button>';
         $delete_btn = '<button
                 hx-post="/admin/shop/write/"
                 hx-swap="beforeend"
@@ -188,7 +195,7 @@ if(isset($_POST['edit_value'])) {
                 hx-include="[name=\'csrf_token\']"
                 name="save_filter_value"
                 value="new"
-                class="btn btn-success">SAVE</button>';
+                class="btn btn-success">'.$lang['btn_save'].'</button>';
         if(isset($_POST['parent_id'])) {
             $value_data['filter_parent_id'] = (int) $_POST['parent_id'];
         }
@@ -233,26 +240,30 @@ if(isset($_POST['edit_value'])) {
 
     echo '<form>';
     echo '<div class="card">';
-    echo '<div class="card-header">Edit filter value ('.$mode.')</div>';
+    echo '<div class="card-header"><a href="/admin/shop/">'.$lang['nav_btn_shop'].'</a> / <a href="/admin/shop/filters/">'.$lang['filter'].'</a> / '.$lang['label_value'].'</div>';
     echo '<div class="card-body">';
     echo '<div class="row">';
     echo '<div class="col-md-9">';
-    echo '<div class="row">';
-    echo '<div class="col-md-8">';
+
     echo se_print_form_input($input_title);
     echo se_print_form_input($input_text);
-    echo '</div>';
-    echo '<div class="col-md-4">';
-    echo se_print_form_input($input_priority);
-    echo '</div>';
-    echo '</div>';
+
     echo '</div>';
     echo '<div class="col-md-3">';
+
+    echo '<div class="ps-3 border-start">';
     echo se_print_form_input($input_select_groups);
-    echo '</div>';
-    echo '</div>';
+    echo se_print_form_input($input_priority);
+    echo '<div class="mt-3 d-flex justify-content-between">';
     echo $submit_btn;
     echo $delete_btn;
+    echo '</div>';
+    echo '</div>';
+
+    echo '</div>';
+    echo '</div>';
+
+
     echo '</form>';
 
     echo '</div>';
