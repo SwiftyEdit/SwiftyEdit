@@ -22,11 +22,11 @@ $(function () {
             'media', 'table'
         ],
         toolbar1: "styles | bold italic underline subscript superscript removeformat | alignleft aligncenter alignright | bullist numlist | table | link unlink anchor image | fullscreen visualblocks  code",
-        //image_list: "core/imagelist.php",
+        image_list: "/themes/default/php/tinymce-images.php",
         image_advtab: true,
         image_title: true,
 
-        //link_list: "core/linklist.php",
+        link_list: "/themes/default/php/tinymce-links.php",
         convert_urls: false,
         setup: function (editor) {
             editor.on('change', function () {

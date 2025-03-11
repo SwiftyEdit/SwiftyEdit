@@ -6,14 +6,18 @@
  *
  *	{title: 'My page', value: '/my_page/'}, ...
  */
-error_reporting(0);
+error_reporting(E_ALL);
 session_start();
 
-require '../../core/vendor/autoload.php';
+if(!isset($_SESSION['user_class']) && $_SESSION['user_class'] != 'administrator'){
+    die();
+}
+
+require '../../../../../vendor/autoload.php';
 use Medoo\Medoo;
 
-include '../../config.php';
-include 'functions.php';
+require '../../../../../config.php';
+require '../../../../../acp/core/functions.php';
 
 $counter = 0;
 
