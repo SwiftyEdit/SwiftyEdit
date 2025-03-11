@@ -14,7 +14,6 @@
  * @var string $se_db_content filepath to sqlite file
  * @var string $se_db_user filepath to sqlite file
  * @var string $se_db_posts filepath to sqlite file
- * @var string $se_db_index filepath to sqlite file
  * @var string $img_path filepath to image/uploads directory
  * @var string $files_path filepath to files upload directory
  *
@@ -111,7 +110,6 @@ if (is_file('../config_database.php')) {
 
 }
 
-define("INDEX_DB", "$se_db_index");
 define("IMAGES_FOLDER", "$img_path");
 define("FILES_FOLDER", "$files_path");
 const SE_SECTION = "backend";

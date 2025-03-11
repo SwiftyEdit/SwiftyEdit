@@ -38,8 +38,6 @@ const SE_ACP = "admin";
 $se_db_content = SE_CONTENT . "/database/content.sqlite3";
 $se_db_posts = SE_CONTENT . "/database/posts.sqlite3";
 $se_db_user = SE_CONTENT . "/database/user.sqlite3";
-$se_db_index = SE_CONTENT . "/database/index.sqlite3";
-
 
 /**
  * folders for uploaded content
