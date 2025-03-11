@@ -32,7 +32,6 @@ if(is_file(SE_ROOT.'/config_database.php')) {
 	
 	define("CONTENT_DB", "$se_db_content");
 	define("USER_DB", "$se_db_user");
-	define("INDEX_DB", "$se_db_index");
 	define("POSTS_DB", "$se_db_posts");
 	
 	$db_content = new Medoo([

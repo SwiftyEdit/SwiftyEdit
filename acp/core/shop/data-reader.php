@@ -731,8 +731,10 @@ if($_REQUEST['action'] == 'list_filters') {
         $type = '';
         if($v['filter_input_type'] == '1') {
             $type = $icon['ui_radios'];
-        } else {
+        } else if($v['filter_input_type'] == '2') {
             $type = $icon['ui_checks'];
+        } else {
+            $type = $icon['sliders'];
         }
 
         $flag = '<img src="'.return_language_flag_src($v['filter_lang']).'" width="15">';

@@ -123,6 +123,7 @@ $icon = [
     "shopping_basket" => '<i class="bi bi-basket"></i>',
     "sign_out_alt" => '<i class="bi bi-box-arrow-left"></i>',
     "sitemap" => '<i class="bi bi-diagram-3"></i>',
+    "sliders" => '<i class="bi bi-sliders"></i>',
     "speedometer" => '<i class="bi bi-speedometer"></i>',
     "star" => '<i class="bi-star-fill"></i>',
     "star_outline" => '<i class="bi bi-star"></i>',
