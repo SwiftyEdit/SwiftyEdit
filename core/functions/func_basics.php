@@ -527,35 +527,6 @@ function mailto_admin($subject,$message) {
 
 
 
-/**
- * create logs
- * @param string $log_trigger system or username
- * @param string $log_entry what's happened
- * @param integer $log_priority 0-10
- * @example record_log("$_SESSION[user_nick]","the message","5");
- */
-
-function record_log($log_trigger, $log_entry, $log_priority = '0') {
-
-	global $db_content;
-	
-	if(empty($log_trigger)) {
-		$log_trigger = 'undefined';
-	}
-	
-	$log_time = time();
-
-    $db_content->insert("se_logs", [
-		"time" => "$log_time",
-		"source" => "$log_trigger",
-		"entry" => "$log_entry",
-		"priority" => $log_priority
-	]);
-
-}
-
-
-
 
 /**
  * returns the part of the $string

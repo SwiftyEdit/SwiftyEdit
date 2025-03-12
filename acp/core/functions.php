@@ -1,10 +1,4 @@
 <?php
-/**
- * prohibit unauthorized access
- */
-if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
-	die ('<h2>Direct File Access Prohibited</h2>');
-}
 
 include_once 'functions_addons.php';
 include_once 'functions_database.php';
@@ -458,30 +452,6 @@ function get_page_impression($pid) {
 	]);
 		
 	return $counter;
-}
-
-
-/**
- * write a log message
- */
-
-function record_log($log_trigger, $log_entry, $log_priority = '0') {
-
-	$log_time = time();
-	
-	global $db_content;
-	
-	if(empty($log_trigger)) {
-		$log_trigger = 'undefined';
-	}
-
-    $db_content->insert("se_logs", [
-		"time" => $log_time,
-		"source" => $log_trigger,
-		"entry" => $log_entry,
-		"priority" => $log_priority
-	]);
-
 }
 
 
