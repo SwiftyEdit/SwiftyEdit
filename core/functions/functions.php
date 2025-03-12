@@ -863,3 +863,27 @@ function record_log($log_trigger, $log_entry, $log_priority = '0') {
     ]);
 
 }
+
+/**
+ * sort arrays like SQL Results
+ * example:
+ * $s = se_array_multisort($pages, 'lang', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
+ *
+ */
+
+function se_array_multisort() {
+    $args = func_get_args();
+    $data = array_shift($args);
+    foreach ($args as $n => $field) {
+        if (is_string($field)) {
+            $tmp = array();
+            foreach ($data as $key => $row) {
+                $tmp[$key] = $row[$field];
+                $args[$n] = $tmp;
+            }
+        }
+    }
+    $args[] = &$data;
+    call_user_func_array('array_multisort', $args);
+    return array_pop($args);
+}
