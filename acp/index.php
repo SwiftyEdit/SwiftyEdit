@@ -114,13 +114,6 @@ define("IMAGES_FOLDER", "$img_path");
 define("FILES_FOLDER", "$files_path");
 const SE_SECTION = "backend";
 
-
-$db_index = new Medoo([
-    'type' => 'sqlite',
-    'database' => INDEX_DB
-]);
-
-
 require '../acp/core/access.php';
 
 
