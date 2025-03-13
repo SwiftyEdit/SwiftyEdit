@@ -835,6 +835,55 @@ function se_upload_avatar($file,$username) {
 		} else {
 			return "Cannot create image";
 		}
+}
 
-	
+/**
+ * create logs
+ * @param string $log_trigger system or username
+ * @param string $log_entry what's happened
+ * @param integer $log_priority 0-10
+ * @example record_log("$_SESSION[user_nick]","the message","5");
+ */
+
+function record_log($log_trigger, $log_entry, $log_priority = '0') {
+
+    global $db_content;
+
+    if(empty($log_trigger)) {
+        $log_trigger = 'undefined';
+    }
+
+    $log_time = time();
+
+    $db_content->insert("se_logs", [
+        "time" => "$log_time",
+        "source" => "$log_trigger",
+        "entry" => "$log_entry",
+        "priority" => $log_priority
+    ]);
+
+}
+
+/**
+ * sort arrays like SQL Results
+ * example:
+ * $s = se_array_multisort($pages, 'lang', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
+ *
+ */
+
+function se_array_multisort() {
+    $args = func_get_args();
+    $data = array_shift($args);
+    foreach ($args as $n => $field) {
+        if (is_string($field)) {
+            $tmp = array();
+            foreach ($data as $key => $row) {
+                $tmp[$key] = $row[$field];
+                $args[$n] = $tmp;
+            }
+        }
+    }
+    $args[] = &$data;
+    call_user_func_array('array_multisort', $args);
+    return array_pop($args);
 }

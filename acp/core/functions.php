@@ -1,10 +1,4 @@
 <?php
-/**
- * prohibit unauthorized access
- */
-if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
-	die ('<h2>Direct File Access Prohibited</h2>');
-}
 
 include_once 'functions_addons.php';
 include_once 'functions_database.php';
@@ -458,30 +452,6 @@ function get_page_impression($pid) {
 	]);
 		
 	return $counter;
-}
-
-
-/**
- * write a log message
- */
-
-function record_log($log_trigger, $log_entry, $log_priority = '0') {
-
-	$log_time = time();
-	
-	global $db_content;
-	
-	if(empty($log_trigger)) {
-		$log_trigger = 'undefined';
-	}
-
-    $db_content->insert("se_logs", [
-		"time" => $log_time,
-		"source" => $log_trigger,
-		"entry" => $log_entry,
-		"priority" => $log_priority
-	]);
-
 }
 
 
@@ -993,29 +963,7 @@ function se_unique_multi_array($array, $key) {
 
 
 
-/**
- * sort arrays like SQL Results
- * example:
- * $s = se_array_multisort($pages, 'lang', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
- *
- */
 
-function se_array_multisort() {
-    $args = func_get_args();
-    $data = array_shift($args);
-    foreach ($args as $n => $field) {
-        if (is_string($field)) {
-            $tmp = array();
-            foreach ($data as $key => $row) {
-                $tmp[$key] = $row[$field];
-                $args[$n] = $tmp;
-            }
-        }
-    }
-    $args[] = &$data;
-    call_user_func_array('array_multisort', $args);
-    return array_pop($args);
-}
 
 
 /**
