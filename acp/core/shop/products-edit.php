@@ -8,6 +8,19 @@ $btn_update = '';
 $btn_delete = '';
 $submit_variant_btn = '';
 
+// check if last part of url is an id
+$path = parse_url($query, PHP_URL_PATH);
+$segments = explode('/', rtrim($path, '/'));
+$lastSegment = end($segments);
+if(is_numeric($lastSegment)) {
+    $get_product_id = (int) $lastSegment;
+    $form_mode = $get_product_id;
+    $btn_submit_text = $lang['update'];
+    $form_header_mode = 'Edit: '.$get_product_id;
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
+}
+
 if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
     $form_mode = $get_product_id;
@@ -661,7 +674,7 @@ $snippets_price_list = $db_content->select("se_snippets", "*", [
 
 foreach($snippets_price_list as $snippet) {
     $selected = "";
-    if($snippet['snippet_name'] == $product_data['post_product_snippet_price']) {
+    if($snippet['snippet_name'] == $product_data['product_textlib_price']) {
         $selected = 'selected';
     }
     $snippet_select_pricelist .= '<option '.$selected.' value='.$snippet['snippet_name'].'>'.$snippet['snippet_name']. ' - ' .$snippet['snippet_title'].'</option>';
