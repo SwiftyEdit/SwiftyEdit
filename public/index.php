@@ -532,9 +532,9 @@ if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator"
         $store['plugin'] = array_unique($store['plugin']);
         $smarty->assign('admin_helpers_plugins', $store['plugin']);
     }
-    if(isset($store['shortcodes'])) {
-        $store['shortcodes'] = array_unique($store['shortcodes']);
-        $smarty->assign('admin_helpers_shortcodes', $store['shortcodes']);
+    if(isset($store['products'])) {
+        $store['products'] = array_unique($store['products']);
+        $smarty->assign('admin_helpers_products', $store['products']);
     }
     if(isset($store['images'])) {
         $store['images'] = array_unique($store['images']);
