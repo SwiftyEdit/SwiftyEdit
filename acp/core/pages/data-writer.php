@@ -110,7 +110,7 @@ if(isset($_POST['sorting_single_pages_desc'])) {
 // delete pages by id
 // delete from se_pages se_pages_cache and the assigned comments
 if(isset($_POST['delete_page'])) {
-    echo 'we delete ...';
+
     $delete_id = (int) $_POST['delete_page'];
     $comment_id = 'p'.$delete_id;
 
@@ -128,10 +128,9 @@ if(isset($_POST['delete_page'])) {
     ]);
 
     if($del_page->rowCount() > 0) {
-        $success_message = '{OKAY} '. $lang['msg_success_page_deleted'];
         record_log($_SESSION['user_nick'],"deleted page id: $delete_id","10");
         generate_xml_sitemap();
-        show_toast($success_message,'success');
+        show_toast($lang['msg_success_page_deleted'],'success');
     }
 
 }
