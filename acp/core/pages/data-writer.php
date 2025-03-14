@@ -165,7 +165,11 @@ if(isset($_POST['save_page'])) {
 
     // delete the smarty cache for this page
     se_delete_smarty_cache(md5($_POST['page_permalink']));
-
     show_toast($lang['msg_success_db_changed'],'success');
+
+    if(is_numeric($new_page_id)) {
+        header( "HX-Redirect: /admin/pages/edit/$new_page_id/");
+    }
+
     header( "HX-Trigger: updated_pages");
 }

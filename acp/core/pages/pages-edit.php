@@ -5,6 +5,16 @@ $writer_uri = '/admin/pages/write/';
 
 $q = pathinfo($_REQUEST['query']);
 
+// check if last part of url is an id
+$path = parse_url($_REQUEST['query'], PHP_URL_PATH);
+$segments = explode('/', rtrim($path, '/'));
+$lastSegment = end($segments);
+if(is_numeric($lastSegment)) {
+    $get_page_id = (int) $lastSegment;
+    $form_mode = $get_page_id;
+    $btn_submit_text = $lang['update'];
+}
+
 if(isset($_POST['page_id']) && is_numeric($_POST['page_id'])) {
     $get_page_id = (int) $_POST['page_id'];
     $form_mode = $get_page_id;
