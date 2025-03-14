@@ -64,7 +64,6 @@ if(!is_file('../config_database.php') && !is_file("$se_db_content")) {
  * connect the database
  * @var string $db_content
  * @var string $db_user
- * @var string $db_statistics
  * @var string $db_posts
  */
 
