@@ -144,6 +144,7 @@ if(isset($_POST['save_page'])) {
     if(is_numeric($_POST['save_page'])) {
         $page_id = (int) $_POST['save_page'];
         se_update_page($_POST,$page_id);
+        se_snapshot_page($page_id);
     }
 
     // new page

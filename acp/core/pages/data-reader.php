@@ -279,6 +279,64 @@ if($_REQUEST['action'] == 'list_page_types') {
     exit;
 }
 
+// show snapshots of pages
+if(isset($_REQUEST['snapshots']) && is_numeric($_REQUEST['snapshots'])) {
+    $snapshot_id = (int) $_REQUEST['snapshots'];
+
+    $max = (int) $se_settings['nbr_page_versions'] ?: 25;
+    $cnt_all_snapshots = $db_content->count("se_pages_cache",[
+        "page_id_original" => $snapshot_id,
+        "page_cache_type" => "history"
+    ]);
+
+    $delete_nbr = $cnt_all_snapshots-$max;
+
+    $get_snapshots = $db_content->select("se_pages_cache",["page_id", "page_linkname", "page_title", "page_lastedit", "page_lastedit_from"],[
+        "AND" => [
+            "page_id_original" => $snapshot_id,
+            "page_cache_type" => "history"
+            ],
+        "ORDER" => [
+            "page_id" => "DESC"
+        ]
+    ]);
+
+    echo '<div class="card my-3">';
+    echo '<div class="accordion accordion-flush" id="accordionVersions">';
+    echo '<div class="accordion-item">';
+    echo '<div class="accordion-header" id="headingOne">';
+    echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVersions" aria-expanded="false" aria-controls="collapseOne">Versions ('.$cnt_all_snapshots.')</button>';
+    echo '</div>';
+    echo '<div id="collapseVersions" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionVersions">';
+    echo '<div class="accordion-body">';
+    echo '<div class="scroll-container">';
+    echo '<table class="table table-hover">';
+    foreach($get_snapshots as $snapshot) {
+
+        $page_id = $snapshot['page_id'];
+
+        echo '<tr>';
+        echo '<td>'.se_format_datetime($snapshot['page_lastedit']).'</td>';
+        echo '<td>'.htmlentities($snapshot['page_title']).'</td>';
+        echo '<td>'.htmlentities($snapshot['page_lastedit_from']).'</td>';
+        echo '<td>';
+        echo '<form action="/admin/pages/edit/" method="POST">';
+        echo '<button class="btn btn-sm btn-default w-100" name="restore_id" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].' '.$lang['edit'].'</button>';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';
+    echo '</div>'; // scroll-container
+    echo '</div>'; // accordion-body
+    echo '</div>'; // collapse
+    echo '</div>'; // accordion-item
+    echo '</div>'; // accordion
+    echo '</div>';
+
+}
+
 if(isset($_GET['page_info'])) {
     include 'pages-info.php';
 }

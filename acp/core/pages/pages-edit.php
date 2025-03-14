@@ -27,7 +27,6 @@ if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $btn_submit_text = $lang['duplicate'];
 }
 
-
 if(is_int($get_page_id)) {
 
     $get_page = $db_content->get("se_pages","*",[
@@ -44,6 +43,20 @@ if(is_int($get_page_id)) {
 } else {
     $btn_submit_text = $lang['save'];
     $form_mode = 'new';
+}
+
+if(isset($_POST['restore_id']) && is_numeric($_POST['restore_id'])) {
+    $restore_id = (int) $_POST['restore_id'];
+    $get_page = $db_content->get("se_pages_cache","*",[ "page_id" => $restore_id ]);
+    foreach($get_page as $k => $v) {
+        if($v == '') {
+            continue;
+        }
+        $$k = htmlentities(stripslashes($v), ENT_QUOTES, "UTF-8");
+    }
+
+    $form_mode = (int) $get_page['page_id_original'];
+    $btn_submit_text = $lang['update'];
 }
 
 
@@ -884,3 +897,8 @@ $form_tpl .= '</div>';
 $form_tpl .= '</form>';
 
 echo $form_tpl;
+
+// show older snapshots from this page
+if(is_numeric($get_page_id)) {
+    echo '<div id="timeWarp" hx-get="/admin/pages/read/?snapshots=' . $get_page_id . '" hx-trigger="load, updated_pages from:body">Loading Snapshots ...</div>';
+}
