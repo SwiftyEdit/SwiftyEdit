@@ -68,7 +68,7 @@ if($modus == "update") {
 ?>
 
 <!DOCTYPE html>
-<html data-bs-theme="auto">
+<html data-bs-theme="dark">
 <head>
 	<meta charset="utf-8">
 	<title><?php echo"$modus"; ?> SwiftyEdit | Content Management System</title>

@@ -42,10 +42,9 @@ echo '<legend>MySQL</legend>';
 
 
 if(isset($_POST['check_connection'])) {
-	include 'php/check_connection.php';
+	include __DIR__.'/check_connection.php';
 }
 
-echo '<p>'.$lang['db_sqlite_help'].'</p>';
 echo '<form action="index.php#mysql" method="POST">';
 
 echo '<div class="form-group">';
