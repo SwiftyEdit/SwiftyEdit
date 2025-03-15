@@ -26,15 +26,16 @@ $green:   #198754 !default;
 $teal: #25d99a !default;
 $cyan: #03d1fa !default;
 
-$primary: #896e9b;
-$secondary: #978ba2;
+$primary: #6B69F0;
+$secondary: #A6A5F6;
 $success: #9cb642;
 $info:  #64C9E0;
 $warning: #FF9407;
 $danger: #b7212f;
+$spot: rgb(193, 64, 216);
 
-$lighten: mix(#ffffff,$primary,75%);
-$darken: mix(#000000,$primary,75%);
+$lighten: mix(#ffffff,$primary,85%);
+$darken: mix(#000000,$primary,85%);
 
 $primary-text-emphasis:   darken($primary, 30%) !default;
 $secondary-text-emphasis: darken($secondary, 30%) !default;
@@ -69,7 +70,7 @@ $alert-border-scale:            -70% !default; // Deprecated in v5.2.0, to be re
 $alert-color-scale:             40% !default; // Deprecated in v5.2.0, to be removed in v6
 
 $page_header_bg: desaturate($lighten,5);
-$widget_background: #f9f9f9;
+$widget_background: #eaeaea;
 $widget_border_color: darken($widget_background,15);
 
 $widget-bg-100: mix($lighten,$widget_background,40%);
@@ -85,8 +86,8 @@ $widget-bg-900: mix($darken,$widget_background,40%);
 
 $body-color: #252525;
 $body-bg: #f1f1f1 !default;
-$body-gradient-top: rgba($primary,0.1);
-$body-gradient-bottom: rgba($primary,0.4);
+$body-gradient-top: rgba($gray-600,0.1);
+$body-gradient-bottom: rgba($spot,0.3);
 
 $body-secondary-color:         rgba($body-color, .75) !default;
 $body-secondary-bg:            $gray-400 !default;
@@ -96,13 +97,13 @@ $body-emphasis-color:          $black !default;
 $border-color: $widget_border_color !default;
 $border-color-translucent:     rgba($black, .15) !default;
 $headings-color: darken($primary,10%);
-$link-color:                   darken($primary, 10) !default;
-$link-hover-color:             lighten($link-color, 10) !default;
-$code-color: #ad2d6b;
+$link-color:                   darken($primary, 5%) !default;
+$link-hover-color:             lighten($link-color, 10%) !default;
+$code-color: rgb(193, 64, 216);
 
 
 
-$sidebar-background: #222222;
+$sidebar-background: #191A1A;
 $sidebar_link_background: $primary;
 $sidebar_color: #eee;
 $sidebar_active_color: $primary;
@@ -110,7 +111,7 @@ $sidebar_active_bg: darken($sidebar_background,5%);
 $sidebar_help_background: #111;
 $sidebar_help_color: #ccc;
 
-$subHeader_bg: desaturate($widget_background,5);
+$subHeader_bg: darken($widget_background,5%);
 
 $section_color_contents: $secondary;
 $section_color_dashboard: #aaaaaa;
@@ -121,13 +122,14 @@ $section_color_addons: #95efcc;
 $section_color_reactions: #bede97;
 $section_color_uploads: #c9b2f5;
 $section_color_user: #e3b981;
+$section_color_settings: $spot;
 
 $table-bg: transparent;
 
 $btn_se_background: #eee;
 $btn_se_background_active: $primary;
-$btn_se_background_disabled: desaturate($primary,15);
-$btn_se_background_hover: darken($primary,15);
+$btn_se_background_disabled: desaturate($primary,5%);
+$btn_se_background_hover: darken($primary,5%);
 $btn_se_color: #333;
 $btn_se_color_active: #eee;
 

@@ -255,7 +255,7 @@ if (isset($set_acptheme)) {
 
     <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
 
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2025-03-07" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2025-03-15" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo $languagePack; ?>";

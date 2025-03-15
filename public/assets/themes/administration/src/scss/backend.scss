@@ -54,7 +54,7 @@ $color-mode-type: data;
   --#{$prefix}success: #{$success};
   --#{$prefix}success-rgb: #{to-rgb($success)};
 
-  --body-gradient: linear-gradient(to right bottom, #{$body-gradient-top}, #{$body-gradient-bottom});
+  --body-gradient: linear-gradient(135deg, #{$body-gradient-top} 35%, #{$body-gradient-bottom} 100%);
   --body-bg: $body-bg;
 
   --#{$prefix}border-color: #{$border-color};
@@ -96,7 +96,7 @@ $color-mode-type: data;
     --#{$prefix}success: #{$success-dark};
     --#{$prefix}success-rgb: #{to-rgb($success-dark)};
 
-    --body-gradient: linear-gradient(135deg, #{$body-dark-gradient-top} 15%, #{$body-dark-gradient-bottom} 100%);
+    --body-gradient: linear-gradient(135deg, #{$body-dark-gradient-top} 35%, #{$body-dark-gradient-bottom} 100%);
     --body-bg: $body-bg-dark;
 
     --#{$prefix}border-color: #{$border-color-dark};
@@ -150,6 +150,7 @@ a#dashboard {
   background: var(--body-gradient);
   padding-left: 20px;
   padding-right: 20px;
+  height: 57px;
 }
 
 [data-bs-theme="dark"] {
@@ -170,6 +171,10 @@ a#dashboard {
 }
 
 .ph-pages {
+  border-bottom: 1px solid rgba($section_color_contents,.5);
+}
+
+.ph-snippets {
   border-bottom: 1px solid rgba($section_color_contents,.5);
 }
 
@@ -199,6 +204,10 @@ a#dashboard {
 
 .ph-user {
   border-bottom: 1px solid rgba($section_color_user,.5);
+}
+
+.ph-settings {
+  border-bottom: 1px solid rgba($section_color_settings,.5);
 }
 
 
@@ -250,6 +259,11 @@ div#footer {
   text-align: center;
   background: var(--bs-footer-bg);
   border-radius: 5px;
+  hr {
+    border-color: $spot;
+    width: 90%;
+    margin: 25px auto;
+  }
 }
 
 
