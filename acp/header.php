@@ -16,56 +16,22 @@ if(is_file('../'.SE_CONTENT.'/config.php')) {
     include '../'.SE_CONTENT.'/config.php';
 }
 
+/**
+ * connect the database
+ * @var string $db_content
+ * @var string $db_user
+ * @var string $db_posts
+ */
 
-if(is_file('../config_database.php')) {
-    include '../config_database.php';
-    $db_type = 'mysql';
-
-    $database = new Medoo([
-        'type' => 'mysql',
-        'database' => "$database_name",
-        'host' => "$database_host",
-        'username' => "$database_user",
-        'password' => "$database_psw",
-        'charset' => 'utf8',
-        'port' => $database_port,
-        'prefix' => DB_PREFIX
-    ]);
-
-    $db_content = $database;
-    $db_user = $database;
-    $db_statistics = $database;
-
-} else {
-    $db_type = 'sqlite';
-
-    define("CONTENT_DB", "$se_db_content");
-    define("USER_DB", "$se_db_user");
-    define("POSTS_DB", "$se_db_posts");
-
-    $db_content = new Medoo([
-        'type' => 'sqlite',
-        'database' => CONTENT_DB
-    ]);
-
-    $db_user = new Medoo([
-        'type' => 'sqlite',
-        'database' => USER_DB
-    ]);
-
-    $db_posts = new Medoo([
-        'type' => 'sqlite',
-        'database' => POSTS_DB
-    ]);
-}
+require SE_ROOT.'/core/database.php';
 
 if(!empty($_POST) && $_POST['csrf_token'] !== $_SESSION['token']) {
     die('Error: CSRF Token is invalid');
 }
 
 require 'core/icons.php';
-require 'core/functions.php';
-require '../core/functions/functions.php';
+require_once 'core/functions.php';
+require_once '../core/functions/functions.php';
 
 $se_get_preferences = se_get_preferences();
 
