@@ -5,7 +5,7 @@
  * sidebar for pages, snippets
  */
 
-echo '<div class="sidebar-logo mb-3 mt-2">';
+echo '<div class="sidebar-logo">';
 echo '<a href="/admin/dashboard/" class="" title="Dashboard"></a>';
 echo '</a>';
 echo '</div>';

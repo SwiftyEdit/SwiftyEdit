@@ -25,8 +25,8 @@ $cols = array(
   "media_meta"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_notes"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_labels"  => "VARCHAR(255) NOT NULL DEFAULT ''",
-  "media_filesize"  => "INTEGER(12) NOT NULL DEFAULT ''",
-  "media_lastedit"  => "INTEGER(12) NOT NULL DEFAULT ''",
-  "media_upload_time"  => "INTEGER(12) NOT NULL DEFAULT ''",
+  "media_filesize"  => "INTEGER(12)",
+  "media_lastedit"  => "INTEGER(12)",
+  "media_upload_time"  => "INTEGER(12)",
   "media_upload_from"  => "VARCHAR(255) NOT NULL DEFAULT ''"
   );

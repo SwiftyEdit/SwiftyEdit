@@ -320,6 +320,11 @@ foreach ($get_products as $k => $post) {
         }
     }
 
+    // add helpers for admins
+    if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
+        se_store_admin_helper("prod", $get_products[$k]['id']);
+    }
+
 }
 
 if($status_404 == true) {

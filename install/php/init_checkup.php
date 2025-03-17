@@ -152,6 +152,8 @@ if(!in_array("false",$goto_install)) {
 	
 	echo '</form>';
 
+} else {
+    echo '<hr><p><a href="/install/" class="btn btn-info">Reload</a></p>';
 }
 
 echo '</fieldset>';

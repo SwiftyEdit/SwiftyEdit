@@ -201,15 +201,23 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
+                                        <label>{label_product_manufacturer} {label_product_price} {label_product_net}</label>
+                                        <input class='form-control' name="product_price_manufacturer" type="text"
+                                               value="{product_price_manufacturer}">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
                                         <label>{label_product_supplier}</label>
                                         <input class='form-control' name="product_supplier" type="text"
                                                value="{product_supplier}">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
-
 
                                 <div class="col-md-8">
                                     <div class="form-group">
@@ -329,7 +337,7 @@
                             <hr>
 
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>{label_product_nbr_stock}</label>
                                         <input class='form-control' id="nbr_stock" name="product_nbr_stock" type="text"
@@ -342,12 +350,24 @@
                                                for="ignoreStock">{label_product_ignore_stock}</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>{label_product_cnt_sales}</label>
                                         <input class='form-control' id="cnt_sales" name="product_cnt_sales" type="text"
                                                value="{product_cnt_sales}">
                                     </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{label_order_quantity_min}</label>
+                                        <input class='form-control' id="product_order_quantity_min" name="product_order_quantity_min" type="text"
+                                               value="{product_order_quantity_min}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>{label_order_quantity_max}</label>
+                                    <input class='form-control' id="product_order_quantity_max" name="product_order_quantity_max" type="text"
+                                           value="{product_order_quantity_max}">
                                 </div>
                             </div>
 

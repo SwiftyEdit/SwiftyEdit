@@ -10,6 +10,13 @@
 	}
 }
 
+.btn-primary {
+	color: #eeeeee;
+	&:hover {
+		color: #f5f5f5;
+	}
+}
+
 .btn-default {
 	@extend .btn-primary;
 	background: var(--bs-btn-default-bg);
@@ -17,7 +24,7 @@
 	border-color: var(--bs-btn-default-bg);
 
 	&:hover {
-		color: var(--bs-btn-default-color-active);
+		color: var(--bs-btn-default-color-active) !important;
 		background: var(--bs-btn-default-bg-hover);
 		border-color: var(--bs-btn-default-bg);
 	}

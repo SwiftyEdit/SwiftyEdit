@@ -5,6 +5,16 @@ $writer_uri = '/admin/pages/write/';
 
 $q = pathinfo($_REQUEST['query']);
 
+// check if last part of url is an id
+$path = parse_url($_REQUEST['query'], PHP_URL_PATH);
+$segments = explode('/', rtrim($path, '/'));
+$lastSegment = end($segments);
+if(is_numeric($lastSegment)) {
+    $get_page_id = (int) $lastSegment;
+    $form_mode = $get_page_id;
+    $btn_submit_text = $lang['update'];
+}
+
 if(isset($_POST['page_id']) && is_numeric($_POST['page_id'])) {
     $get_page_id = (int) $_POST['page_id'];
     $form_mode = $get_page_id;
@@ -16,7 +26,6 @@ if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $form_mode = 'new';
     $btn_submit_text = $lang['duplicate'];
 }
-
 
 if(is_int($get_page_id)) {
 
@@ -34,6 +43,20 @@ if(is_int($get_page_id)) {
 } else {
     $btn_submit_text = $lang['save'];
     $form_mode = 'new';
+}
+
+if(isset($_POST['restore_id']) && is_numeric($_POST['restore_id'])) {
+    $restore_id = (int) $_POST['restore_id'];
+    $get_page = $db_content->get("se_pages_cache","*",[ "page_id" => $restore_id ]);
+    foreach($get_page as $k => $v) {
+        if($v == '') {
+            continue;
+        }
+        $$k = htmlentities(stripslashes($v), ENT_QUOTES, "UTF-8");
+    }
+
+    $form_mode = (int) $get_page['page_id_original'];
+    $btn_submit_text = $lang['update'];
 }
 
 
@@ -860,7 +883,7 @@ $form_tpl .= '</div>';
 $form_tpl .= '<div class="d-flex justify-content">';
 $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 if($form_mode != 'new') {
-    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
+    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
 }
 $form_tpl .= '</div>';
 
@@ -874,3 +897,8 @@ $form_tpl .= '</div>';
 $form_tpl .= '</form>';
 
 echo $form_tpl;
+
+// show older snapshots from this page
+if(is_numeric($get_page_id)) {
+    echo '<div id="timeWarp" hx-get="/admin/pages/read/?snapshots=' . $get_page_id . '" hx-trigger="load, updated_pages from:body">Loading Snapshots ...</div>';
+}

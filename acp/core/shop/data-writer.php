@@ -182,6 +182,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
     }
 
     $product_price_net = se_sanitize_price($_POST['product_price_net']);
+    $product_price_manufacturer = se_sanitize_price($_POST['product_price_manufacturer']);
 
     /* labels */
     $product_labels = '';
@@ -203,6 +204,9 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         // ignore stock
         $product_stock_mode = 1;
     }
+
+    $product_order_quantity_min = (int) $_POST['product_order_quantity_min'];
+    $product_order_quantity_max = (int) $_POST['product_order_quantity_max'];
 
     /* metas */
     if($_POST['meta_title'] == '') {
@@ -270,6 +274,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"new product variant id: $id","6");
+
     } else {
         $db_posts->insert("se_products", $inputs);
         $id = $db_posts->id();
@@ -277,6 +282,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"new product id: $id","6");
+        // redirect to edit form
+        header( "HX-Redirect: /admin/shop/edit/$id/");
     }
 
 

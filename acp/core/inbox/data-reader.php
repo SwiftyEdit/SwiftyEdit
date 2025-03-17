@@ -37,7 +37,7 @@ if($_REQUEST['action'] == 'list_comments') {
 
     $filter_base = [
         "AND" => [
-            "comments_id[>]" => 0
+            "comment_id[>]" => 0
         ]
     ];
 

@@ -299,6 +299,8 @@
   "product.show_prices_to_registered": "Tylko zarejestrowani użytkownicy mogą zobaczyć ceny",
   "product.pricetag_mode_on": "Pokaż cenę",
   "product.pricetag_mode_off": "Ukryj cenę",
+  "label.order.quantity.min": "Minimum order quantity",
+  "label.order.quantity.max": "Maximum order quantity",
   "label.carts": "Wózki sklepowe",
   "label.orders": "Zamówienia",
   "label.order_nbr": "Numer zamówienia",

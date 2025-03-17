@@ -110,7 +110,7 @@ if(isset($_POST['sorting_single_pages_desc'])) {
 // delete pages by id
 // delete from se_pages se_pages_cache and the assigned comments
 if(isset($_POST['delete_page'])) {
-    echo 'we delete ...';
+
     $delete_id = (int) $_POST['delete_page'];
     $comment_id = 'p'.$delete_id;
 
@@ -128,10 +128,9 @@ if(isset($_POST['delete_page'])) {
     ]);
 
     if($del_page->rowCount() > 0) {
-        $success_message = '{OKAY} '. $lang['msg_success_page_deleted'];
         record_log($_SESSION['user_nick'],"deleted page id: $delete_id","10");
         generate_xml_sitemap();
-        show_toast($success_message,'success');
+        show_toast($lang['msg_success_page_deleted'],'success');
     }
 
 }
@@ -144,6 +143,7 @@ if(isset($_POST['save_page'])) {
     if(is_numeric($_POST['save_page'])) {
         $page_id = (int) $_POST['save_page'];
         se_update_page($_POST,$page_id);
+        se_snapshot_page($page_id);
     }
 
     // new page
@@ -165,7 +165,11 @@ if(isset($_POST['save_page'])) {
 
     // delete the smarty cache for this page
     se_delete_smarty_cache(md5($_POST['page_permalink']));
-
     show_toast($lang['msg_success_db_changed'],'success');
+
+    if(is_numeric($new_page_id)) {
+        header( "HX-Redirect: /admin/pages/edit/$new_page_id/");
+    }
+
     header( "HX-Trigger: updated_pages");
 }

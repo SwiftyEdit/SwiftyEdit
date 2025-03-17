@@ -330,9 +330,9 @@ function text_parser($text) {
  * use smarty variable {$admin_helpers} in frontend
  *
  * $trigger p 	= plugin
- * 					s 	= snippet
- *					sc 	= shortcode
- *					i|f	= media file / image or file from se_media
+ * 			s 	= snippet
+ *			i|f	= media file / image or file from se_media
+ *          prod = product
  * $lang = language
  */
 function se_store_admin_helper($trigger,$val) {
@@ -349,22 +349,12 @@ function se_store_admin_helper($trigger,$val) {
 	}
 	
 	$store = $_SESSION['se_admin_helpers'];
-
-	/* add a shortcode */
-	if($trigger == 'sc') {
-		
-		$stored_sc  = '<form action="/acp/acp.php?tn=pages&sub=shortcodes" method="POST" class="d-inline">';
-		$stored_sc .= '<button class="btn btn-sm btn-secondary m-1">'.$val.'</button>';
-		$stored_sc .= '<input type="hidden" name="edit_shortcode" value="'.$val.'">';
-		$stored_sc .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-		$stored_sc .= '</form>';
-		
-		$store['shortcodes'][] = $stored_sc;
-	}
 	
 	/* add a plugin */
 	if($trigger == 'p') {
-		$store['plugin'][] = $val;
+        $plugin_name = htmlentities($val);
+        $stored_plg = '<a href="/admin/addons/plugin/'.$plugin_name.'/start/" class="btn btn-secondary w-100">'.$plugin_name.'</a>';
+		$store['plugin'][] = $stored_plg;
 	}
 	
 	/* add a image */
@@ -376,15 +366,32 @@ function se_store_admin_helper($trigger,$val) {
 	if($trigger == 'f') {
 		$store['files'][] = $val;
 	}
+
+    /* add a product */
+    if($trigger == 'prod') {
+
+        $product_id = (int) $val;
+        $get_product_data = se_get_product_data($product_id);
+        if(is_array($get_product_data)) {
+            $prod_id = (int) $get_product_data['id'];
+            $stored_prod = '<form action="/admin/shop/edit/" method="POST" class="d-inline">';
+            $stored_prod .= '<button class="btn btn-sm btn-secondary m-1" name="product_id" value="'.$prod_id.'">';
+            $stored_prod .= htmlentities($get_product_data['title']);
+            $stored_prod .= '</button>';
+            $stored_prod .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+            $stored_prod .= '</form>';
+            $store['products'][] = $stored_prod;
+        }
+    }
 	
 	/* add a snippet */
 	if($trigger == 's') {
 		
 		$snippet_data = se_get_textlib($val,$languagePack,'all');
 		
-		$stored_snippet = '<form action="/acp/acp.php?tn=pages&sub=snippets" method="POST" class="d-inline">';
+		$stored_snippet = '<form action="/admin/snippets/edit/" method="POST" class="d-inline">';
 		$stored_snippet .= '<button class="btn btn-sm btn-secondary m-1">'.$val.'</button>';
-		$stored_snippet .= '<input type="hidden" name="snip_id" value="'.$snippet_data['snippet_id'].'">';
+		$stored_snippet .= '<input type="hidden" name="snippet_id" value="'.$snippet_data['snippet_id'].'">';
 		$stored_snippet .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 		$stored_snippet .= '</form>';
 		

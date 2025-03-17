@@ -5,7 +5,7 @@ if(!defined('INSTALLER')) {
 	die("PERMISSION DENIED!");
 }
 
-include_once '../acp/core/functions.php';
+include_once SE_ROOT.'/acp/core/functions.php';
 
 /* returns all cols of a existung database/table */
 function get_columns($database, $table_name) {

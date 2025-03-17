@@ -26,11 +26,17 @@ div#page-sidebar {
 
 	.sidebar-logo {
 		width: 100%;
-		height: 65px;
+		height: 57px;
 		background-image: url("/themes/administration/images/swiftyedit_logo.svg");
 		background-repeat: no-repeat;
-		background-size: 240px 50px;
-		background-position: -40px;
+		background-size: 140px auto;
+		background-position: 5px 5px;
+		border-bottom: 1px solid lighten($sidebar-background,15%);
+		margin-bottom: 1rem;
+		&:hover {
+			filter: drop-shadow( 0 0 7px rgba(193, 64, 216, .5));
+		}
+
 		a {
 			display: block;
 			height: 100%;
@@ -79,6 +85,10 @@ div#page-sidebar {
 		white-space: nowrap;
 		padding-top: 1px;
 		padding-bottom: 5px;
+
+		.sidebar-logo {
+			background-size: 150px auto
+		}
 
       
 		i {

@@ -8,6 +8,19 @@ $btn_update = '';
 $btn_delete = '';
 $submit_variant_btn = '';
 
+// check if last part of url is an id
+$path = parse_url($query, PHP_URL_PATH);
+$segments = explode('/', rtrim($path, '/'));
+$lastSegment = end($segments);
+if(is_numeric($lastSegment)) {
+    $get_product_id = (int) $lastSegment;
+    $form_mode = $get_product_id;
+    $btn_submit_text = $lang['update'];
+    $form_header_mode = 'Edit: '.$get_product_id;
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
+}
+
 if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
     $form_mode = $get_product_id;
@@ -554,6 +567,11 @@ if($cnt_variants > 1) {
     }
 }
 
+$product_price_manufacturer = $product_data['product_price_manufacturer'];
+if($product_price_manufacturer == '') {
+    $product_price_net = '';
+}
+
 $product_price_net = $product_data['product_price_net'];
 if($product_price_net == '') {
     $product_price_net = '0,00';
@@ -661,7 +679,7 @@ $snippets_price_list = $db_content->select("se_snippets", "*", [
 
 foreach($snippets_price_list as $snippet) {
     $selected = "";
-    if($snippet['snippet_name'] == $product_data['post_product_snippet_price']) {
+    if($snippet['snippet_name'] == $product_data['product_textlib_price']) {
         $selected = 'selected';
     }
     $snippet_select_pricelist .= '<option '.$selected.' value='.$snippet['snippet_name'].'>'.$snippet['snippet_name']. ' - ' .$snippet['snippet_title'].'</option>';
@@ -768,6 +786,15 @@ if($product_data['product_stock_mode'] == 1) {
     $checkIgnoreStock = '';
 }
 
+$product_order_quantity_min = (int) $product_data['product_order_quantity_min'];
+$product_order_quantity_max = (int) $product_data['product_order_quantity_max'];
+if($product_order_quantity_min < 2) {
+    $product_order_quantity_min = 1;
+}
+if($product_order_quantity_max == 0) {
+    $product_order_quantity_max = '';
+}
+
 // labels
 $arr_checked_labels = explode(",", $product_data['labels']);
 $checkbox_set_labels = '';
@@ -867,6 +894,8 @@ $form_tpl = str_replace('{link}', $product_data['link'], $form_tpl);
 
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
 $form_tpl = str_replace('{product_manufacturer}', $product_data['product_manufacturer'], $form_tpl);
+$form_tpl = str_replace('{product_price_manufacturer}', $product_data['product_price_manufacturer'], $form_tpl);
+
 $form_tpl = str_replace('{product_url}', $product_data['product_url'], $form_tpl);
 $form_tpl = str_replace('{product_supplier}', $product_data['product_supplier'], $form_tpl);
 $form_tpl = str_replace('{product_currency}', $product_currency, $form_tpl);
@@ -881,6 +910,9 @@ $form_tpl = str_replace('{select_price_group}', $select_price_groups, $form_tpl)
 
 $form_tpl = str_replace('{product_nbr_stock}', $product_data['product_nbr_stock'], $form_tpl);
 $form_tpl = str_replace('{product_cnt_sales}', $product_data['product_cnt_sales'], $form_tpl);
+
+$form_tpl = str_replace('{product_order_quantity_min}', $product_order_quantity_min, $form_tpl);
+$form_tpl = str_replace('{product_order_quantity_max}', $product_order_quantity_max, $form_tpl);
 
 $form_tpl = str_replace('{snippet_select_pricelist}', $snippet_select_pricelist, $form_tpl);
 $form_tpl = str_replace('{snippet_select_text}', $snippet_select_text, $form_tpl);
