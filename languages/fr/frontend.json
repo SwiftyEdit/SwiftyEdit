@@ -56,6 +56,7 @@
   "label_prices_snippet": "Notes sur les prix",
   "price_tag_label_gross": "TTC",
   "price_tag_label_net": "TTC",
+  "price_tag_label_from": "from",
   "label_product_delivery_time": "Délai de livraison",
   "button_login": "Connexion",
   "button_profile": "Modifier le profil",
