@@ -182,6 +182,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
     }
 
     $product_price_net = se_sanitize_price($_POST['product_price_net']);
+    $product_price_manufacturer = se_sanitize_price($_POST['product_price_manufacturer']);
 
     /* labels */
     $product_labels = '';

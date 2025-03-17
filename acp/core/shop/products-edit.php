@@ -567,6 +567,11 @@ if($cnt_variants > 1) {
     }
 }
 
+$product_price_manufacturer = $product_data['product_price_manufacturer'];
+if($product_price_manufacturer == '') {
+    $product_price_net = '';
+}
+
 $product_price_net = $product_data['product_price_net'];
 if($product_price_net == '') {
     $product_price_net = '0,00';
@@ -880,6 +885,8 @@ $form_tpl = str_replace('{link}', $product_data['link'], $form_tpl);
 
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
 $form_tpl = str_replace('{product_manufacturer}', $product_data['product_manufacturer'], $form_tpl);
+$form_tpl = str_replace('{product_price_manufacturer}', $product_data['product_price_manufacturer'], $form_tpl);
+
 $form_tpl = str_replace('{product_url}', $product_data['product_url'], $form_tpl);
 $form_tpl = str_replace('{product_supplier}', $product_data['product_supplier'], $form_tpl);
 $form_tpl = str_replace('{product_currency}', $product_currency, $form_tpl);
