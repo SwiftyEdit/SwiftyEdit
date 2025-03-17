@@ -340,6 +340,9 @@
   "product.pricetag_mode_on": "Show pricetag",
   "product.pricetag_mode_off": "Hide pricetag",
 
+  "label.order.quantity.min": "Minimum order quantity",
+  "label.order.quantity.max": "Maximum order quantity",
+
   "label.carts": "Shopping carts",
   "label.orders": "Orders",
   "label.order_nbr": "Order Number",
