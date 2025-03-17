@@ -56,6 +56,7 @@
   "label_prices_snippet": "Notas sobre los precios",
   "price_tag_label_gross": "IVA incluido",
   "price_tag_label_net": "más IVA",
+  "price_tag_label_from": "from",
   "label_product_delivery_time": "Tiempo de entrega",
   "button_login": "Ingresar",
   "button_profile": "Editar perfil",

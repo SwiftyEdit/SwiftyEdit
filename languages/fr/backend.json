@@ -299,6 +299,8 @@
   "product.show_prices_to_registered": "Seuls les utilisateurs enregistrés peuvent signer la liste des invités",
   "product.pricetag_mode_on": "Afficher le prix",
   "product.pricetag_mode_off": "Cacher le prix",
+  "label.order.quantity.min": "Minimum order quantity",
+  "label.order.quantity.max": "Maximum order quantity",
   "label.carts": "Paniers",
   "label.orders": "Commandes",
   "label.order_nbr": "Numéro de commande",

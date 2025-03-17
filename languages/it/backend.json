@@ -299,6 +299,8 @@
   "product.show_prices_to_registered": "Solo gli utenti registrati possono vedere i prezzi",
   "product.pricetag_mode_on": "Mostra pricetag",
   "product.pricetag_mode_off": "Nascondi pricetag",
+  "label.order.quantity.min": "Minimum order quantity",
+  "label.order.quantity.max": "Maximum order quantity",
   "label.carts": "Carrelli commerciali",
   "label.orders": "Ordini",
   "label.order_nbr": "Numero D'Ordine",

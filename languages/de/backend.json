@@ -299,6 +299,8 @@
   "product.show_prices_to_registered": "Nur registrierte Benutzer können die Preise sehen",
   "product.pricetag_mode_on": "Preis anzeigen",
   "product.pricetag_mode_off": "Preis ausblenden",
+  "label.order.quantity.min": "Mindestbestellmenge",
+  "label.order.quantity.max": "Maximale Bestellmenge",
   "label.carts": "Warenkorb",
   "label.orders": "Bestellungen",
   "label.order_nbr": "Bestellnummer",

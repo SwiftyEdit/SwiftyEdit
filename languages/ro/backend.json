@@ -299,6 +299,8 @@
   "product.show_prices_to_registered": "Only registered users can see the prices",
   "product.pricetag_mode_on": "Arată pretul",
   "product.pricetag_mode_off": "Ascunde pretul",
+  "label.order.quantity.min": "Minimum order quantity",
+  "label.order.quantity.max": "Maximum order quantity",
   "label.carts": "Cosuri de cumparaturi",
   "label.orders": "Comenzi",
   "label.order_nbr": "Numărul comenzii",
