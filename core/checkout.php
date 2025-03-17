@@ -102,6 +102,11 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['cart_id'] = $get_cart_items[$i]['cart_id'];
 	$cart_item[$i]['post_id'] = $get_cart_items[$i]['cart_product_id'];
     $cart_item[$i]['slug'] = $get_cart_items[$i]['cart_product_slug'];
+
+    // check if we have a maximum quantity for this item
+    if(($this_item['product_order_quantity_max'] > 0) && ($cart_item[$i]['amount'] > $this_item['product_order_quantity_max'])) {
+        $cart_item[$i]['amount'] = $this_item['product_order_quantity_max'];
+    }
 	
 	/* will the product be delivered? */
 	if($this_item['product_shipping_mode'] == 2) {
