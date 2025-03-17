@@ -426,11 +426,12 @@ function se_post_print_currency($number) {
 
 
 /**
- * add tax and addition to net prices
+ * calculate product's price
+ * return net and gross price, formatted and raw
  * @param float $price price net (stored in the database)
  * @param integer $tax
  * @param integer $amount
- * @return array
+ * @return array gross, gross_single, gross_raw, net, net_single, net_raw
  */
 function se_posts_calc_price($price,$tax,$amount=1) {
 	

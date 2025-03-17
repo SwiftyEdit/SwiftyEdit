@@ -62,7 +62,7 @@ if($product_data['product_price_group'] != '' AND $product_data['product_price_g
 } else {
     $product_tax = $product_data['product_tax'];
     $product_price_net = $product_data['product_price_net'];
-    $product_volume_discounts_json = $product_data['product_price_volume_discounts'];
+    $product_volume_discounts_json = $product_data['product_price_volume_discount'];
 }
 
 if($product_tax == '1') {
@@ -76,6 +76,20 @@ if($product_tax == '1') {
 $post_prices = se_posts_calc_price($product_price_net,$tax);
 $post_price_net = $post_prices['net'];
 $post_price_gross = $post_prices['gross'];
+
+if ($se_prefs['prefs_posts_price_mode'] == 1) {
+    // gross prices
+    $product_price_tag = $post_price_gross;
+    $product_tax_label = $lang['price_tag_label_gross'];
+} else if($se_prefs['prefs_posts_price_mode'] == 2) {
+    // gross and net prices
+    $product_price_tag = $post_price_net. '/'. $post_price_gross;
+    $product_tax_label = $lang['label_net']. ' / '. $lang['label_net'];
+} else {
+    // net only (b2b mode)
+    $product_price_tag = $post_price_net;
+    $product_tax_label = $lang['price_tag_label_net'];
+}
 
 
 /* volume discounts */
@@ -232,6 +246,9 @@ if($se_prefs['prefs_posts_products_cart'] == 1) {
     // all shopping carts are disabled - overwrite products settings
     $product_data['product_cart_mode'] = 2;
 }
+
+$smarty->assign('product_price_tag', $product_price_tag);
+$smarty->assign('product_tax_label', $product_tax_label);
 
 $smarty->assign('product_price_gross', $post_price_gross);
 $smarty->assign('product_price_net', $post_price_net_calculated);

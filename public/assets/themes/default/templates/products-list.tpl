@@ -65,7 +65,7 @@
                         <div class="price-tag-label">{$post_product_price_label}</div>
                     </div>
                     <div class="price-tag-inner">
-                        <div class="price">{$value.product_price_gross}</div>
+                        <div class="price">{$value.price_tag_label_from} {$value.price_tag}</div>
                         {$value.product_currency} <span class="product-amount">{$value.product_amount}</span> <span class="product-unit">{$value.product_unit}</span>
                     </div>
                 </div>
