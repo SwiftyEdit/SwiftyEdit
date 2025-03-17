@@ -56,6 +56,7 @@
   "label_prices_snippet": "Notes on the prices",
   "price_tag_label_gross": "VAT included",
   "price_tag_label_net": "plus VAT",
+  "price_tag_label_from": "from",
   "label_product_delivery_time": "Delivery time",
   "button_login": "Login",
   "button_profile": "Edit Profile",

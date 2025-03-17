@@ -786,6 +786,15 @@ if($product_data['product_stock_mode'] == 1) {
     $checkIgnoreStock = '';
 }
 
+$product_order_quantity_min = (int) $product_data['product_order_quantity_min'];
+$product_order_quantity_max = (int) $product_data['product_order_quantity_max'];
+if($product_order_quantity_min < 2) {
+    $product_order_quantity_min = 1;
+}
+if($product_order_quantity_max == 0) {
+    $product_order_quantity_max = '';
+}
+
 // labels
 $arr_checked_labels = explode(",", $product_data['labels']);
 $checkbox_set_labels = '';
@@ -901,6 +910,9 @@ $form_tpl = str_replace('{select_price_group}', $select_price_groups, $form_tpl)
 
 $form_tpl = str_replace('{product_nbr_stock}', $product_data['product_nbr_stock'], $form_tpl);
 $form_tpl = str_replace('{product_cnt_sales}', $product_data['product_cnt_sales'], $form_tpl);
+
+$form_tpl = str_replace('{product_order_quantity_min}', $product_order_quantity_min, $form_tpl);
+$form_tpl = str_replace('{product_order_quantity_max}', $product_order_quantity_max, $form_tpl);
 
 $form_tpl = str_replace('{snippet_select_pricelist}', $snippet_select_pricelist, $form_tpl);
 $form_tpl = str_replace('{snippet_select_text}', $snippet_select_text, $form_tpl);

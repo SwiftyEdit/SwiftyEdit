@@ -205,6 +205,9 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $product_stock_mode = 1;
     }
 
+    $product_order_quantity_min = (int) $_POST['product_order_quantity_min'];
+    $product_order_quantity_max = (int) $_POST['product_order_quantity_max'];
+
     /* metas */
     if($_POST['meta_title'] == '') {
         $meta_title = $_POST['title'];
