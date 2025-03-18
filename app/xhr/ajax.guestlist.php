@@ -3,10 +3,10 @@ session_start();
 error_reporting(0);
 
 define('SE_SECTION', 'frontend');
-require '../core/vendor/autoload.php';
+require '../vendor/autoload.php';
 include_once '../config.php';
 include_once '../database.php';
-include_once '../core/functions/functions.posts.php';
+include_once '../app/functions/functions.posts.php';
 
 $time = time();
 

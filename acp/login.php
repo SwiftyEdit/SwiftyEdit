@@ -18,7 +18,7 @@ if(is_file(SE_CONTENT.'/config.php')) {
  * @var string $db_posts
  */
 
-require SE_ROOT.'/core/database.php';
+require SE_ROOT.'/app/database.php';
 require '../languages/index.php';
 $login = '';
 

@@ -4,7 +4,7 @@ const SE_SECTION = "frontend";
 require '../vendor/autoload.php';
 require '../config.php';
 
-require SE_ROOT.'/core/database.php';
+require SE_ROOT.'/app/database.php';
 
 switch ($_REQUEST['type']) {
 	case 'rss':

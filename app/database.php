@@ -51,5 +51,5 @@ if(is_file(SE_ROOT.'/config_database.php')) {
 	
 }
 
-require_once SE_ROOT . '/core/functions.php';
-require_once SE_ROOT . '/core/functions/functions.php';
+require_once SE_ROOT . '/app/functions.php';
+require_once SE_ROOT . '/app/functions/functions.php';
