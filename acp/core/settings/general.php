@@ -506,13 +506,42 @@ echo '<button type="submit" class="btn btn-primary" name="update_themes" value="
 echo '</form>'; // hx-post
 
 echo '<h5 class="heading-line">'.$lang['label_language'].'</h5>';
+
+echo '<div class="row">';
+echo '<div class="col-md-6">';
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-
 echo se_print_form_input($input_select_language);
-
-
 echo '<button type="submit" class="btn btn-primary" name="update_language" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
+echo '</div>';
+echo '<div class="col-md-6">';
+echo $lang['label_settings_hide_languages'];
+$hidden_langs = [];
+if($se_settings['deactivated_languages'] != '') {
+    $hidden_langs = json_decode($se_settings['deactivated_languages']);
+}
+echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+echo '<table class="table table-sm table-hover">';
+foreach($get_all_languages as $langs) {
+    $check = '';
+    if (in_array($langs['lang_folder'], $hidden_langs)) {
+        $check = 'checked';
+    }
+
+    echo '<tr>';
+    echo '<td>';
+    echo '<input type="checkbox" id="' . $langs['lang_folder'] . '" class="form-check-input" name="hide_langs[]" value="' . $langs['lang_folder'] . '" ' . $check . '>';
+    echo '</td>';
+    echo '<td><label for="' . $langs['lang_folder'] . '" class="d-block">' . $langs['lang_sign'] . '</label></td>';
+    echo '<td><label for="' . $langs['lang_folder'] . '" class="d-block">' . $langs['lang_desc'] . '</label></td>';
+    echo '<td><label for="' . $langs['lang_folder'] . '" class="d-block">' . $langs['lang_folder'] . '</label></td>';
+    echo '</tr>';
+}
+echo '</table>';
+echo '<button type="submit" class="btn btn-primary" name="update_hide_languages" value="update">'.$lang['btn_update'].'</button>';
+echo '</form>'; // hx-post
+echo '</div>';
+echo '</div>';
 
 echo '</div>'; // tab
 echo '<div class="tab-pane fade" id="email-tab" role="tabpanel" tabindex="0">';
