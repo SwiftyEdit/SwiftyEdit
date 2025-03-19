@@ -273,10 +273,12 @@ foreach ($get_products as $k => $post) {
     if($product_volume_discounts != 'null') {
         // if we have volume discounts, show the cheapest
         $product_volume_discounts_array = json_decode($product_volume_discounts, true);
-        $priceValues = array_map(fn($p) => (float) str_replace(',', '.', $p['price']), $product_volume_discounts_array);
-        $product_price_net = min($priceValues);
-        $product_price_net = str_replace('.', ',', $product_price_net);
-        $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
+        if(is_array($product_volume_discounts_array)) {
+            $priceValues = array_map(fn($p) => (float)str_replace(',', '.', $p['price']), $product_volume_discounts_array);
+            $product_price_net = min($priceValues);
+            $product_price_net = str_replace('.', ',', $product_price_net);
+            $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
+        }
     }
 
     $post_prices = se_posts_calc_price($product_price_net, $tax);
