@@ -48,6 +48,10 @@ echo '<p>Version: '.$se_version['version'].'<br>Build '.$se_version['build'].'<b
 echo '</div>';
 echo '</div>';
 
+echo '<div id="updateDone">';
+echo '<div id="htmxIndicator" class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+echo '</div>';
+
 echo '</div>';
 echo '<div class="col-6">';
 
