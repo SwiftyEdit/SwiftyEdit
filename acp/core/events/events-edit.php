@@ -39,6 +39,9 @@ $input_event_price_note = [
 // select language
 $get_all_languages = get_all_languages();
 foreach($get_all_languages as $langs) {
+    if(!in_array($langs['lang_folder'],$lang_codes)) {
+        continue;
+    }
     $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
 }
 
