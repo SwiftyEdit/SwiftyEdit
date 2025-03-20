@@ -45,7 +45,7 @@ if(is_file('../config_database.php')) {
 }
 
 
-require '../core/functions/functions.php';
+require '../app/functions/functions.php';
 
 
 if($_POST['csrf_token'] !== $_SESSION['token']) {
