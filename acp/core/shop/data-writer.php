@@ -529,13 +529,15 @@ if(isset($_POST['save_filter_value'])) {
     $filter_title = se_return_clean_value($_POST['filter_title']);
     $filter_description = $_POST['filter_description'];
     $filter_parent_id = $_POST['filter_parent_id'];
+    $filter_hash = $_POST['filter_hash'];
 
     $insert_data = [
         "filter_type" =>  $filter_type,
         "filter_priority" => $filter_priority,
         "filter_title" =>  $filter_title,
         "filter_description" =>  $filter_description,
-        "filter_parent_id" => $filter_parent_id
+        "filter_parent_id" => $filter_parent_id,
+        "filter_hash" => $filter_hash
     ];
 
     if(is_numeric($_POST['save_filter_value'])) {

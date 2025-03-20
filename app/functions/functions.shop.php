@@ -1016,6 +1016,7 @@ function se_get_product_filter($lang): array {
 
             $filter[$k]['items'][] = [
                 "id" => $filter_item['filter_id'],
+                "hash" => $filter_item['filter_hash'],
                 "title" => $filter_item['filter_title'],
                 "description" => $filter_item['filter_description'],
                 "class" => $class,

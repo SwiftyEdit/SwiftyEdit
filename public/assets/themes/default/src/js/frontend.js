@@ -17,6 +17,14 @@ window.glightbox = GLightbox;
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
+function registerElements() {
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+}
+
 document.addEventListener('DOMContentLoaded', function(event) {
     const lightbox = GLightbox({
         selector: '.lightbox',
@@ -24,4 +32,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         loop: true,
         autoplayVideos: true
     });
+
+    registerElements()
+
 });

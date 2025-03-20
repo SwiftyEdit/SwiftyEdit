@@ -4,6 +4,8 @@ Custom filters a set in the backend > shop > filter
 You can display filters as links or in a form
 example for links:
 <a class="list-group-item list-group-item-action {$item.class}" href="?remove_filter={$item.id}">{$item.title}</a>
+or experimental:
+<a class="list-group-item list-group-item-action {$item.class}" href="?filter={$item.hash}">{$item.title}</a>
 <a class="list-group-item list-group-item-action {$item.class}" href="?add_filter={$item.id}">{$item.title}</a>
 *}
 
@@ -18,7 +20,7 @@ example for links:
                         <div class="card-header fw-bold">
                             {$groups.title}
                             {if $groups.description != ""}
-                            <span title="{$groups.description}"><i class="bi-info-circle"></i></span>
+                                <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
                             {/if}
                         </div>
                         <div class="card-body">
@@ -34,12 +36,18 @@ example for links:
                                     <input class="form-check-input" type="radio" name="sf_radio[{$groups.id}][]"
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
-                                    <label class="form-check-label" for="sf_id_{$item.id}"><span title="{$item.description}">{$item.title}</span></label>
+                                    <label class="form-check-label" for="sf_id_{$item.id}"><span
+                                                title="{$item.description}">{$item.title} - {$item.hash}</span></label>
                                 </div>
                             {/foreach}
                         </div>
                     {else}
-                        <div class="card-header fw-bold">{$groups.title}</div>
+                        <div class="card-header fw-bold">
+                            {$groups.title}
+                            {if $groups.description != ""}
+                                <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
+                            {/if}
+                        </div>
                         <div class="card-body">
                             {foreach $groups.items as $item}
                                 <div class="form-check">
@@ -47,7 +55,8 @@ example for links:
                                     <input class="form-check-input" type="checkbox" name="sf_checkbox[]"
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
-                                    <label class="form-check-label" for="sf_id_{$item.id}"><span title="{$item.description}">{$item.title}</span></label>
+                                    <label class="form-check-label" for="sf_id_{$item.id}"><span
+                                                title="{$item.description}">{$item.title} - {$item.hash}</span></label>
                                 </div>
                             {/foreach}
                         </div>
@@ -55,8 +64,14 @@ example for links:
 
                 </div>
             {/foreach}
-    <input type="hidden" name="set_custom_filters" value="send">
-    {$hidden_csrf_token}
-    </form>
+            <input type="hidden" name="set_custom_filters" value="send">
+            {$hidden_csrf_token}
+        </form>
     </div>
+    {if $reset_filter_link}
+        <div class="mb-2">
+            <a class="btn btn-secondary btn-sm" href="{$form_action}?reset_filter">{$lang_reset}</a>
+        </div>
+    {/if}
+
 {/if}

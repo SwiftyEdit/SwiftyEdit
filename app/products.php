@@ -50,7 +50,30 @@ if(!isset($_SESSION[$custom_filter_key])) {
     $_SESSION[$custom_filter_key] = array();
 }
 
-/* add filter to $_SESSION[$custom_filter_key] */
+if(isset($_REQUEST['reset_filter'])) {
+    $_SESSION[$custom_filter_key] = array();
+}
+
+
+// add filter by filter_hash (experimental)
+// example /your-page/?filter=67dbcfd0b66ff-67dbcfe2a1185
+if(isset($_GET['filter'])) {
+    $get_filter = sanitizeUserInputs($_GET['filter']);
+    $get_filter_array = explode('-', $get_filter);
+    foreach($get_filter_array as $v) {
+        // get filter id from hash
+        $filter_id = $db_content->get('se_filter', 'filter_id',[ 'filter_hash' => $v ]);
+        // add to filters
+        $key = array_search($filter_id,$_SESSION[$custom_filter_key]);
+        if($key === false) {
+            array_push($_SESSION[$custom_filter_key],"$filter_id");
+        }
+    }
+}
+
+
+// add filter by filter_id (experimental)
+// example /your-page/?add_filter=2-7
 if(isset($_REQUEST['add_filter'])) {
     $get_filters = explode("-",$_REQUEST['add_filter']);
     foreach($get_filters as $filter) {
@@ -62,7 +85,8 @@ if(isset($_REQUEST['add_filter'])) {
     }
 }
 
-/* remove filter to $_SESSION[$custom_filter_key] */
+// remove filter by id
+// example /your-page/?remove_filter=2-7
 if(isset($_REQUEST['remove_filter'])) {
     $get_filters = explode("-",$_REQUEST['remove_filter']);
     foreach($get_filters as $filter) {
@@ -74,6 +98,7 @@ if(isset($_REQUEST['remove_filter'])) {
     }
 }
 
+// set filter from $_POST
 if(isset($_POST['set_custom_filters'])) {
 
     $sf_radios = $_POST['sf_radio'];
@@ -143,6 +168,11 @@ if(count($get_product_filter) > 0) {
 $_SESSION[$custom_filter_key] = array_unique($_SESSION[$custom_filter_key]);
 
 $custom_filter = $_SESSION[$custom_filter_key];
+
+// display reset link
+if(is_array($custom_filter) && count($custom_filter) > 0) {
+    $smarty->assign('reset_filter_link', true);
+}
 
 $products_filter['languages'] = $page_contents['page_language'];
 $products_filter['types'] = $page_contents['page_posts_types'];

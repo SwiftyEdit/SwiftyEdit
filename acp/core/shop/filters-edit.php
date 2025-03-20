@@ -174,6 +174,10 @@ if(isset($_POST['edit_value'])) {
         $value_data = $db_content->get("se_filter","*", [
             "filter_id" => $edit_value_id
         ]);
+        $filter_hash = $value_data['filter_hash'];
+        if($filter_hash == '') {
+            $filter_hash = uniqid();
+        }
         $submit_btn = '<button 
                 hx-post="/admin/shop/write/"
                 hx-swap="beforeend"
@@ -203,6 +207,9 @@ if(isset($_POST['edit_value'])) {
         if(isset($_POST['parent_id'])) {
             $value_data['filter_parent_id'] = (int) $_POST['parent_id'];
         }
+
+        $filter_hash = uniqid();
+
     }
 
     $input_title = [
@@ -261,6 +268,7 @@ if(isset($_POST['edit_value'])) {
     echo '<div class="mt-3 d-flex justify-content-between">';
     echo $submit_btn;
     echo $delete_btn;
+    echo '<input type="hidden" name="filter_hash" value="'.$filter_hash.'">';
     echo '</div>';
     echo '</div>';
 
