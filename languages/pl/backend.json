@@ -441,6 +441,7 @@
   "msg.confirm.no_access": "Nie masz niezbędnych uprawnień dostępu do edycji tych danych",
   "msg.confirm.delete": "Czy na pewno chcesz usunąć te dane?",
   "msg.confirm.delete.file": "Czy na pewno chcesz usunąć ten plik?",
+  "msg.confirm.delete.media": "Are you sure you want to delete this file?\rAttention: All data records in other languages will also be deleted!",
   "msg.confirm.delete.directory": "Czy na pewno chcesz usunąć ten katalog? Cała zawartość również zostanie usunięta!",
   "msg.confirm.delete.user": "Czy na pewno chcesz usunąć tego użytkownika?",
   "msg.confirm.delete.usergroup": "Czy na pewno chcesz usunąć tę grupę użytkowników?",
