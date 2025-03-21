@@ -441,6 +441,7 @@
   "msg.confirm.no_access": "Nu aveți drepturile de acces necesare pentru a edita aceste date",
   "msg.confirm.delete": "Sunteţi sigur că doriţi să ştergeţi aceste date?",
   "msg.confirm.delete.file": "Sunteţi sigur că doriţi să ştergeţi acest fişier?",
+  "msg.confirm.delete.media": "Are you sure you want to delete this file?\rAttention: All data records in other languages will also be deleted!",
   "msg.confirm.delete.directory": "Sunteţi sigur că doriţi să ştergeţi acest director? Tot conţinutul va fi de asemenea şters!",
   "msg.confirm.delete.user": "Sunteţi sigur că doriţi să ştergeţi acest utilizator?",
   "msg.confirm.delete.usergroup": "Sunteţi sigur că doriţi să ştergeţi acest grup de utilizator?",
