@@ -5,6 +5,47 @@ $delete_uri = '/admin/uploads/delete/';
 $reader_uri = '/admin/uploads/read/';
 
 
+if($_REQUEST['action'] == 'list_active_searches') {
+
+    if(isset($_SESSION['uploads_text_filter']) AND $_SESSION['uploads_text_filter'] != "") {
+        unset($all_filter);
+        $all_filter = explode(" ", $_SESSION['uploads_text_filter']);
+
+        foreach($all_filter as $f) {
+            if($_REQUEST['rm_keyword'] == "$f") { continue; }
+            if($f == "") { continue; }
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/uploads/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+        }
+    }
+
+    if(isset($btn_remove_keyword)) {
+        echo '<div class="d-inline">';
+        echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
+        echo '</div><hr>';
+    }
+}
+
+if($_REQUEST['action'] == 'show_stats') {
+
+    $media_cnt_images = $db_content->count("se_media",[
+        "media_file[~]" => "../images/"
+    ]);
+
+    $media_cnt_files = $db_content->count("se_media",[
+        "media_file[~]" => "../files/"
+    ]);
+
+    echo '<table class="table">';
+    echo '<tr>';
+    echo '<td>Images</td><td>'.$media_cnt_images.'</td>';
+    echo '</tr>';
+    echo '<tr>';
+    echo '<td>Files</td><td>'.$media_cnt_files.'</td>';
+    echo '</tr>';
+    echo '</table>';
+}
+
+
 if($_REQUEST['action'] == 'list') {
 
     // defaults
@@ -113,4 +154,13 @@ if($_REQUEST['action'] == 'list') {
 
     echo '</div>';
 
+    if($_SESSION['disk'] != 'assets/images' AND $_SESSION['disk'] != 'assets/files' AND $_SESSION['disk'] != '') {
+        $delete_dir_btn = '<form hx-post="/admin/uploads/write/" hx-confirm="' . $lang['msg_confirm_delete_directory'] . '" hx-target="#response" class="mt-3 text-end">';
+        $delete_dir_btn .= '<button name="delete_dir" value="' . $_SESSION['disk'] . '" class="btn btn-danger">';
+        $delete_dir_btn .= $icon['trash_alt'] . ' ' . $_SESSION['disk'];
+        $delete_dir_btn .= '</button>';
+        $delete_dir_btn .= '<input type="hidden" name="csrf_token" value="' . $_SESSION['token'] . '">';
+        $delete_dir_btn .= '</form>';
+        echo $delete_dir_btn;
+    }
 }

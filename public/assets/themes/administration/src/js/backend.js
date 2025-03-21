@@ -174,14 +174,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleAllButton = document.getElementById('toggle-all');
 
     if (toggleAllButton) {
-    toggleAllButton.addEventListener('click', (event) => {
-        event.preventDefault(); // Prevent form submission
+        toggleAllButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent form submission
 
-        document.querySelectorAll('.toggle-item').forEach(container => {
-            container.classList.toggle('d-none'); // Toggle each container independently
+            document.querySelectorAll('.toggle-item').forEach(container => {
+                container.classList.toggle('d-none'); // Toggle each container independently
+            });
         });
-    });
     }
+
+    // uploads
+    const uppy = new Uppy({
+        debug: false,
+        autoProceed: false,
+    })
+
+    uppy.use(Form, {
+        target: '.dropper-form',
+    })
+
+    uppy.use(Dashboard, {
+        inline: true,
+        target: '.dropper-form',
+    })
+    uppy.use(XHRUpload, {
+        endpoint: '/admin/upload/'
+    })
+
+    uppy.on('complete', (result) => {
+        htmx.trigger("body", "update_uploads_list");
+    });
 
 });
 
@@ -216,29 +238,6 @@ document.addEventListener("keydown", function (event) {
 
 $(function() {
 
-    // observe "sortable_target" (image picker)
-   // observeContainersForDraggableDivs('.sortable_target');
-
-    const uppy = new Uppy({
-        debug: false,
-        autoProceed: false,
-    })
-
-    uppy.use(Form, {
-        target: '.dropper-form',
-    })
-
-    uppy.use(Dashboard, {
-        inline: true,
-        target: '.dropper-form',
-    })
-    uppy.use(XHRUpload, {
-        endpoint: '/admin/upload/',
-    })
-
-
-    //$('[data-bs-toggle="popover"]').popover();
-    //$('[data-bs-toggle="tooltip"]').tooltip();
 
     setTimeout(function() {
         $(".alert-auto-close").slideUp('slow');

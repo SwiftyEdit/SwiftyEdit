@@ -3,7 +3,7 @@
 $reader_uri = '/admin/uploads/read/';
 $writer_uri = '/admin/uploads/write/';
 
-include 'functions.php';
+
 
 $q = pathinfo($_REQUEST['query']);
 
@@ -51,22 +51,7 @@ echo $hidden_csrf_token;
 echo '</div>';
 echo '</form>';
 
-if(isset($_SESSION['uploads_text_filter']) AND $_SESSION['uploads_text_filter'] != "") {
-    unset($all_filter);
-    $all_filter = explode(" ", $_SESSION['uploads_text_filter']);
-
-    foreach($all_filter as $f) {
-        if($_REQUEST['rm_keyword'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="'.$writer_uri.'" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
-    }
-}
-
-if(isset($btn_remove_keyword)) {
-    echo '<div class="d-inline">';
-    echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
-    echo '</div><hr>';
-}
+echo '<div class="pt-1" hx-get="'.$reader_uri.'?action=list_active_searches" hx-trigger="load, changed, update_uploads_list from:body, updated_global_filter from:body"></div>';
 
 echo '</div>';
 
@@ -89,6 +74,9 @@ echo '</div>';
 echo '<div class="card mt-2">';
 echo '<div class="card-header">Database</div>';
 echo '<div class="card-body">';
+
+echo '<div class="pt-1" hx-get="'.$reader_uri.'?action=show_stats" hx-trigger="load, changed, update_uploads_list from:body, updated_global_filter from:body"></div>';
+
 echo '<div id="responseRebase"></div>';
 
 echo '<button class="btn btn-default w-100" name="rebase" value="files_to_database" hx-post="'.$writer_uri.'" hx-target="#responseRebase" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">Rebase DB</button> ';
