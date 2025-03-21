@@ -441,6 +441,7 @@
   "msg.confirm.no_access": "No tiene los permisos de acceso necesarios para editar estos datos",
   "msg.confirm.delete": "¿Está seguro que desea eliminar estos datos?",
   "msg.confirm.delete.file": "¿Está seguro que desea eliminar este archivo?",
+  "msg.confirm.delete.media": "Are you sure you want to delete this file?\rAttention: All data records in other languages will also be deleted!",
   "msg.confirm.delete.directory": "¿Está seguro que desea eliminar este directorio? ¡También se eliminará todo el contenido!",
   "msg.confirm.delete.user": "¿Está seguro que desea eliminar este usuario?",
   "msg.confirm.delete.usergroup": "¿Está seguro que desea eliminar este Grupo de Usuarios?",
