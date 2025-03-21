@@ -441,6 +441,7 @@
   "msg.confirm.no_access": "Δεν έχετε τα απαραίτητα δικαιώματα πρόσβασης για να επεξεργαστείτε αυτά τα δεδομένα",
   "msg.confirm.delete": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτά τα δεδομένα?",
   "msg.confirm.delete.file": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το αρχείο?",
+  "msg.confirm.delete.media": "Are you sure you want to delete this file?\rAttention: All data records in other languages will also be deleted!",
   "msg.confirm.delete.directory": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον κατάλογο? Όλο το περιεχόμενο θα διαγραφεί επίσης!",
   "msg.confirm.delete.user": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον χρήστη?",
   "msg.confirm.delete.usergroup": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την ομάδα χρηστών?",
