@@ -3,8 +3,6 @@
 $reader_uri = '/admin/uploads/read/';
 $writer_uri = '/admin/uploads/write/';
 
-
-
 $q = pathinfo($_REQUEST['query']);
 
 if(!isset($_SESSION['disk'])) {

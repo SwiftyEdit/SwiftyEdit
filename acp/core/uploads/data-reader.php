@@ -78,11 +78,16 @@ if($_REQUEST['action'] == 'list') {
         $uploads_text_filter = '/';
     }
 
+    $langs = json_decode($_SESSION['global_filter_languages']);
+    if(!is_array($langs)) {
+        $langs[] = $languagePack;
+    }
+
     $media_where = [
         "AND" => [
             "media_id[>]" => 0,
             "media_file[~]" => ["AND" => ["$file_query%","%$uploads_text_filter%"]],
-            "media_lang" => "$languagePack"
+            "media_lang" => $langs
         ]];
 
     $media_order = [
@@ -116,9 +121,10 @@ if($_REQUEST['action'] == 'list') {
         $preview_lastedit = se_format_datetime($media['media_lastedit']);
         $preview_filesize = readable_filesize($media['media_filesize']);
         $media_file_hits = (int) $media['media_file_hits'];
+        $media_lang_thumb = '<img src="'.return_language_flag_src($media['media_lang']).'" width="15" title="'.$media['media_lang'].'" alt="'.$media['media_lang'].'">';
 
-        $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
-        $edit_btn = '<button class="btn btn-default btn-sm text-success w-100" name="file" value="'.$media['media_file'].'" >'.$icon['edit'].'</button>';
+        $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-confirm="'.$lang['msg_confirm_delete_media'].'" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
+        $edit_btn = '<button class="btn btn-default btn-sm text-success w-100" name="file" value="'.$media['media_file'].'" >'.$icon['edit'].' '.$lang['edit'].'</button>';
 
 
         $labels = '';
@@ -145,6 +151,7 @@ if($_REQUEST['action'] == 'list') {
         $list_tpl = str_replace("{filesize}","$preview_filesize",$list_tpl);
         $list_tpl = str_replace("{media_file_hits}","$media_file_hits",$list_tpl);
         $list_tpl = str_replace("{labels}","$labels",$list_tpl);
+        $list_tpl = str_replace("{lang_thumb}","$media_lang_thumb",$list_tpl);
         $list_tpl = str_replace("{edit_button}","$edit_btn",$list_tpl);
         $list_tpl = str_replace("{delete_button}","$delete_btn",$list_tpl);
         $list_tpl = str_replace("{csrf_token}",$_SESSION['token'],$list_tpl);
