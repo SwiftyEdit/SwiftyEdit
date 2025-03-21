@@ -139,6 +139,7 @@ if($_REQUEST['action'] == 'list') {
 
 
         $list_tpl = str_replace("{short_filename}","$preview_filename",$list_tpl);
+        $list_tpl = str_replace("{preview_link}","$preview_filename",$list_tpl);
         $list_tpl = str_replace("{preview_img}",'<img src="'.$preview_src.'" class="card-img-top">',$list_tpl);
         $list_tpl = str_replace("{show_filetime}","$preview_lastedit",$list_tpl);
         $list_tpl = str_replace("{filesize}","$preview_filesize",$list_tpl);
