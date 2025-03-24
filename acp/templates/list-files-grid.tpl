@@ -1,7 +1,7 @@
 
     <div class="col-md-6">
         <i class="bi bi-file-earmark"></i>
-        <a href="{preview_link}">{short_filename}</a> {labels}
+        {lang_thumb} <a href="{preview_link}">{short_filename}</a> {labels}
     </div>
     <div class="col-md-1">
         {filesize}

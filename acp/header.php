@@ -23,7 +23,7 @@ if(is_file('../'.SE_CONTENT.'/config.php')) {
  * @var string $db_posts
  */
 
-require SE_ROOT.'/core/database.php';
+require SE_ROOT.'/app/database.php';
 
 if(!empty($_POST) && $_POST['csrf_token'] !== $_SESSION['token']) {
     die('Error: CSRF Token is invalid');
@@ -31,7 +31,7 @@ if(!empty($_POST) && $_POST['csrf_token'] !== $_SESSION['token']) {
 
 require 'core/icons.php';
 require_once 'core/functions.php';
-require_once '../core/functions/functions.php';
+require_once '../app/functions/functions.php';
 
 $se_get_preferences = se_get_preferences();
 

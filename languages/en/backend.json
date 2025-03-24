@@ -502,6 +502,7 @@
   "msg.confirm.no_access": "You do not have the necessary access rights to edit these data",
   "msg.confirm.delete": "Are you sure you want to delete this data?",
   "msg.confirm.delete.file": "Are you sure you want to delete this file?",
+  "msg.confirm.delete.media": "Are you sure you want to delete this file?\rAttention: All data records in other languages will also be deleted!",
   "msg.confirm.delete.directory": "Are you sure you want to delete this directory? All content will also be deleted!",
   "msg.confirm.delete.user": "Are you sure you want to delete this User?",
   "msg.confirm.delete.usergroup": "Are you sure you want to delete this Usergroup?",

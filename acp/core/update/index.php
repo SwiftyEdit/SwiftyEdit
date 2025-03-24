@@ -45,6 +45,11 @@ echo '<div class="card h-100">';
 echo '<div class="card-header">'.$icon['database'].'  '. $se_base_url .'</div>';
 echo '<div class="card-body">';
 echo '<p>Version: '.$se_version['version'].'<br>Build '.$se_version['build'].'<br>Date: '.$se_version['date'].'</p>';
+
+echo '<div id="updateDone">';
+echo '<div id="htmxIndicator" class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+echo '</div>';
+
 echo '</div>';
 echo '</div>';
 

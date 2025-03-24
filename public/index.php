@@ -67,7 +67,7 @@ if(!is_file('../config_database.php') && !is_file("$se_db_content")) {
  * @var string $db_posts
  */
 
-require SE_ROOT.'/core/database.php';
+require SE_ROOT.'/app/database.php';
 
 /**
  * maintenance mode
@@ -231,7 +231,7 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
     list($page_contents,$se_nav) = se_get_content($swifty_slug,'permalink');
 }
 
-require SE_ROOT.'core/smarty.php';
+require SE_ROOT.'app/smarty.php';
 
 
 // xhr routes for core /api/se/
@@ -240,7 +240,7 @@ require SE_ROOT.'core/smarty.php';
 if ($requestPathParts[0] === 'api') {
     if ($requestPathParts[1] === 'se') {
         // route for SwwiftyEdit
-        include SE_ROOT.'/core/xhr/route.php';
+        include SE_ROOT.'/app/xhr/route.php';
     } elseif ($requestPathParts[1] === 'plugins' && isset($requestPathParts[2])) {
         // route for plugins
         // check if plugin is activated (in $active_mods)
@@ -356,7 +356,7 @@ if($se_prefs['prefs_cms_ssl_domain'] != '') {
 
 /* if is set page_redirect, we can stop here and go straight to the desired location */
 if($page_contents['page_redirect'] != '') {
-    include_once 'core/tracker.php';
+    include_once 'app/tracker.php';
     $redirect = $page_contents['page_redirect'];
     $redirect_code = (int) $page_contents['page_redirect_code'];
     header("location: $redirect",TRUE,$redirect_code);
@@ -488,8 +488,8 @@ if($se_prefs['prefs_posts_products_cart'] == 2 OR $se_prefs['prefs_posts_product
 }
 
 
-require '../core/user_management.php';
-require '../core/switch.php';
+require '../app/user_management.php';
+require '../app/switch.php';
 
 if(is_file($themes_path.'/'.$se_template.'/php/options.php')) {
     include $themes_path.'/'.$se_template.'/php/options.php';
@@ -562,5 +562,5 @@ if($se_prefs['prefs_maintenance_code'] != '') {
 
 /* track the hits */
 if(!isset($preview)) {
-    include_once '../core/tracker.php';
+    include_once '../app/tracker.php';
 }

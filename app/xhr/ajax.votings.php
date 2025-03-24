@@ -6,7 +6,7 @@ const SE_SECTION = 'frontend';
 require SE_ROOT.'/vendor/autoload.php';
 include_once SE_ROOT.'/config.php';
 include_once SE_ROOT.'/database.php';
-include_once SE_ROOT.'/core/functions/functions.posts.php';
+include_once SE_ROOT.'/app/functions/functions.posts.php';
 
 $time = time();
 

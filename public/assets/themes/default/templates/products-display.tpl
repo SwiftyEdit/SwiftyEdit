@@ -27,22 +27,21 @@
         <div class="col">
 
             <h1>{$product_title}</h1>
-
+            {$product_teaser}
             <!-- pricetag -->
             {if $product_pricetag_mode != "2"}
                 <div class="price-tag d-inline-block">
                     <div class="clearfix">
-                        <div class="price-tag-label">{$product_product_price_label}</div>
+                        <div class="price-tag-label">{$product_price_label}</div>
                     </div>
                     <div class="price-tag-inner">
-                        {$product_currency} {$product_price_gross} <span class="product-amount">{$product_amount}</span> <span class="product-unit">{$product_unit}</span>
+                        {$product_currency} {$product_price_tag} <span class="product-amount">{$product_amount}</span> <span class="product-unit">{$product_unit}</span>
                     </div>
+                    <div class="price-tag-note">{$product_tax_label}</div>
                 </div>
-                <div class="price-tag-note">
-                    {$product_price_tag_label_gross} {$product_price_tag_label_delivery}
-                </div>
+
                 <div class="delivery-time">
-                    {$label_delivery_time}: <span>{$product_delivery_time_title}</span>
+                    {$label_delivery_time}: <span><strong>{$product_delivery_time_title}</strong> {$product_delivery_time_text}</span>
                 </div>
                 {if $product_cart_mode != "2"}
                 <div class="mt-3">

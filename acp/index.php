@@ -64,7 +64,7 @@ $se_version = json_decode($version_file, true);
  * @var string $db_posts
  */
 
-require SE_ROOT.'/core/database.php';
+require SE_ROOT.'/app/database.php';
 
 define("IMAGES_FOLDER", "$img_path");
 define("FILES_FOLDER", "$files_path");

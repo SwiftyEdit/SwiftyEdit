@@ -55,7 +55,17 @@ if (isset($_POST['update_shipping_plugins'])) {
     show_toast($lang['msg_success_db_changed'],'success');
 }
 
+if(isset($_POST['update_language'])) {
+    $data['prefs_default_language'] = htmlentities($_POST['prefs_default_language']);
+    se_write_option($data,'se');
+    show_toast($lang['msg_success_db_changed'],'success');
+}
 
+if(isset($_POST['update_hide_languages'])) {
+    $data['prefs_deactivated_languages'] = json_encode($_POST['hide_langs']);
+    se_write_option($data,'se');
+    show_toast($lang['msg_success_db_changed'],'success');
+}
 
 // write delivery settings
 if (isset($_POST['add_delivery_country'])) {

@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__.'/functions.php';
 
 /**
  * delete media
@@ -102,20 +103,28 @@ if(isset($_POST['rmkey'])) {
 }
 
 // change directory
-if(isset($_POST['selected_folder'])) {
+if(isset($_POST['selected_folder']) OR isset($_POST['repeat_selected_folder'])) {
     $_SESSION['disk'] = se_filter_filepath($_POST['selected_folder']);
     header( "HX-Trigger: update_uploads_list");
 }
 
-/**
- * create new folder
- */
+// create new folder
 if((isset($_POST['new_folder'])) && ($_POST['new_folder'] != '')) {
     $folder_name = clean_filename($_POST['new_folder']);
     $create_path = $_SESSION['disk'] . '/' . $folder_name;
     mkdir($create_path, 0777, true);
-    header( "HX-Trigger: update_directories");
+    header( "HX-Trigger: update_directories, update_uploads_list");
 }
+
+// delete folder
+if(isset($_POST['delete_dir'])) {
+    $del_dir = se_filter_filepath($_POST['delete_dir']);
+    if(delete_folder($del_dir) === true) {
+        $_SESSION['disk'] = 'assets/images/';
+        header( "HX-Trigger: update_directories, update_uploads_list");
+    }
+}
+
 
 /**
  * rebase the database
@@ -138,6 +147,16 @@ if(isset($_POST['rebase'])) {
         $scan_files = se_scandir_recursive("$files_dir");
         $images_and_files = array_merge($scan_images, $scan_files);
 
+        $cnt_images_on_disk = 0;
+        if(is_array($scan_images)) {
+            $cnt_images_on_disk = count($scan_images);
+        }
+
+        $cnt_files_on_disk = 0;
+        if(is_array($scan_files)) {
+            $cnt_files_on_disk = count($scan_files);
+        }
+
         foreach ($images_and_files as $key => $value) {
             if(str_contains("$value","index.html")) { continue; }
             $all_files[] = str_replace('assets/', '../', $value);
@@ -150,8 +169,7 @@ if(isset($_POST['rebase'])) {
 
         foreach($all_files as $filename) {
             if(!in_array($filename, $mediaData)) {
-                // filename is not in database, mak an entry
-
+                // filename is not in database, make an entry
                 $file_src = str_replace("../","assets/",$filename);
                 $filesize = filesize($file_src);
                 $filemtime = filemtime($file_src);
@@ -183,9 +201,10 @@ if(isset($_POST['rebase'])) {
             }
         }
 
-
+        echo '<p>Found <code>'.$cnt_images_on_disk.'</code> images and <code>'.$cnt_files_on_disk.'</code> files.</p>';
         echo '<p><code>'.$stats_files_to_db.'</code> were added to the database<br>';
         echo '<code>'.$stats_files_from_db.'</code> were removed from the database</p>';
+        header( "HX-Trigger: update_uploads_list");
 
     }
 

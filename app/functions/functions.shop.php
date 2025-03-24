@@ -406,7 +406,7 @@ function se_add_to_cart() {
 		$cart_user_hash = '';
 	} else {
 		$cart_user_id = '';
-		$cart_user_hash = $_SESSION['visitor_csrf_token'];
+		$cart_user_hash = $_SESSION['token'];
 	}
 
     $option_string = '';
@@ -490,7 +490,7 @@ function se_update_cart_item_amount($item,$amount){
 
     } else {
 
-        $cart_user_hash = $_SESSION['visitor_csrf_token'];
+        $cart_user_hash = $_SESSION['token'];
         $db_content->update("se_carts", [
             "cart_product_amount" => $amount
         ], [
@@ -521,7 +521,7 @@ function se_return_cart_amount() {
 		]);
 		
 	} else {
-		$cart_user_hash = $_SESSION['visitor_csrf_token'];
+		$cart_user_hash = $_SESSION['token'];
 		$items = $db_content->select("se_carts", ["cart_id"], [
 			"AND" => [
 				"cart_user_hash" => $cart_user_hash,
@@ -553,7 +553,7 @@ function se_return_my_cart() {
 		]);
 		
 	} else {
-		$cart_user_hash = $_SESSION['visitor_csrf_token'];
+		$cart_user_hash = $_SESSION['token'];
 		$items = $db_content->select("se_carts", "*", [
 			"AND" => [
 				"cart_user_hash" => $cart_user_hash,
@@ -589,7 +589,7 @@ function se_remove_from_cart($id) {
 		]);
 		
 	} else {
-		$cart_user_hash = $_SESSION['visitor_csrf_token'];
+		$cart_user_hash = $_SESSION['token'];
 		$data = $db_content->delete("se_carts", [
 			"AND" => [
 				"cart_user_hash" => $cart_user_hash,
@@ -1016,6 +1016,7 @@ function se_get_product_filter($lang): array {
 
             $filter[$k]['items'][] = [
                 "id" => $filter_item['filter_id'],
+                "hash" => $filter_item['filter_hash'],
                 "title" => $filter_item['filter_title'],
                 "description" => $filter_item['filter_description'],
                 "class" => $class,

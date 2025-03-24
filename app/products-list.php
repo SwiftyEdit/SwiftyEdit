@@ -258,7 +258,7 @@ foreach ($get_products as $k => $post) {
     } else {
         $product_tax = $get_products[$k]['product_tax'];
         $product_price_net = $get_products[$k]['product_price_net'];
-        $product_volume_discounts = $get_products[$k]['product_price_volume_discounts'];
+        $product_volume_discounts = $get_products[$k]['product_price_volume_discount'];
     }
 
     if ($product_tax == '1') {
@@ -267,6 +267,18 @@ foreach ($get_products as $k => $post) {
         $tax = $se_prefs['prefs_posts_products_tax_alt1'];
     } else {
         $tax = $se_prefs['prefs_posts_products_tax_alt2'];
+    }
+
+    $get_products[$k]['price_tag_label_from'] = '';
+    if($product_volume_discounts != 'null') {
+        // if we have volume discounts, show the cheapest
+        $product_volume_discounts_array = json_decode($product_volume_discounts, true);
+        if(is_array($product_volume_discounts_array)) {
+            $priceValues = array_map(fn($p) => (float)str_replace(',', '.', $p['price']), $product_volume_discounts_array);
+            $product_price_net = min($priceValues);
+            $product_price_net = str_replace('.', ',', $product_price_net);
+            $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
+        }
     }
 
     $post_prices = se_posts_calc_price($product_price_net, $tax);
@@ -278,6 +290,17 @@ foreach ($get_products as $k => $post) {
     $get_products[$k]['product_price_net'] = $post_price_net;
     $get_products[$k]['product_price_tax'] = $tax;
     $get_products[$k]['product_id'] = $get_products[$k]['id'];
+
+    if ($se_prefs['prefs_posts_price_mode'] == 1) {
+        // gross prices
+        $get_products[$k]['price_tag'] = $get_products[$k]['product_price_gross'];
+    } else if($se_prefs['prefs_posts_price_mode'] == 2) {
+        // gross and net prices
+        $get_products[$k]['price_tag'] = $get_products[$k]['product_price_net']. '/'. $get_products[$k]['product_price_gross'];
+    } else {
+        // net only (b2b mode)
+        $get_products[$k]['price_tag'] = $get_products[$k]['product_price_net'];
+    }
 
     $get_products[$k]['product_author'] = $get_products[$k]['author'];
 
