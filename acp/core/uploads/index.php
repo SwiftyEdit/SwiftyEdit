@@ -22,7 +22,16 @@ if($q['dirname'] == 'uploads/edit' && is_numeric($q['filename'])) {
 }
 
 
-include 'select_directory.php';
+echo '<div class="card p-3 mb-1">';
+echo '<div class="row">';
+echo '<div class="col-md-8">';
+echo '<div id="selDirectory" hx-get="'.$reader_uri.'?action=select_directory" hx-trigger="load, changed, updated_global_filter from:body, update_uploads_list from:body"></div>';
+echo '</div>';
+echo '<div class="col-md-4">';
+echo '<div id="newDirectory" hx-get="'.$reader_uri.'?action=input_new_directory" hx-trigger="load, changed, updated_global_filter from:body, update_uploads_list from:body"></div>';
+echo '</div>';
+echo '</div>';
+echo '</div>';
 
 
 // show existing uploads

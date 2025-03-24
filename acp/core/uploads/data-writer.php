@@ -103,8 +103,7 @@ if(isset($_POST['rmkey'])) {
 }
 
 // change directory
-if(isset($_POST['selected_folder'])) {
-    echo 'Swapped folder';
+if(isset($_POST['selected_folder']) OR isset($_POST['repeat_selected_folder'])) {
     $_SESSION['disk'] = se_filter_filepath($_POST['selected_folder']);
     header( "HX-Trigger: update_uploads_list");
 }
@@ -114,14 +113,16 @@ if((isset($_POST['new_folder'])) && ($_POST['new_folder'] != '')) {
     $folder_name = clean_filename($_POST['new_folder']);
     $create_path = $_SESSION['disk'] . '/' . $folder_name;
     mkdir($create_path, 0777, true);
-    header( "HX-Trigger: update_directories");
+    header( "HX-Trigger: update_directories, update_uploads_list");
 }
 
 // delete folder
 if(isset($_POST['delete_dir'])) {
     $del_dir = se_filter_filepath($_POST['delete_dir']);
-    delete_folder($del_dir);
-    header( "HX-Trigger: update_directories, update_uploads_list");
+    if(delete_folder($del_dir) === true) {
+        $_SESSION['disk'] = 'assets/images/';
+        header( "HX-Trigger: update_directories, update_uploads_list");
+    }
 }
 
 

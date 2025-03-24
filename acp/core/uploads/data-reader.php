@@ -46,6 +46,57 @@ if($_REQUEST['action'] == 'show_stats') {
 }
 
 
+// show select for directories
+if($_REQUEST['action'] == 'select_directory') {
+
+    $path_img = 'assets/images';
+    $dirs_img = se_get_dirs_rec($path_img);
+    array_unshift($dirs_img, $path_img);
+    $path_files = 'assets/files';
+    $dirs_files = se_get_dirs_rec($path_files);
+    array_unshift($dirs_files, $path_files);
+
+    $disk = $_SESSION['disk'] ?? $path_img;
+
+    echo '<form hx-post="/admin/uploads/write/" hx-swap="none" hx-trigger="change, click" method="POST" class="d-inline">';
+
+    echo '<select name="selected_folder" class="form-control custom-select">';
+    echo '<optgroup label="'.$lang['images'].'">';
+    foreach($dirs_img as $d) {
+        $selected = ($disk == $d) ? 'selected' : '';
+        $short_d = str_replace($path_img, '', $d);
+        echo '<option value="'.$d.'" '.$selected.'>'.basename($path_img).$short_d.'</option>';
+    }
+    echo '</optgroup>';
+    echo '<optgroup label="'.$lang['files'].'">';
+    foreach($dirs_files as $d) {
+        $selected = ($disk == $d) ? 'selected' : '';
+        $short_d = str_replace($path_files, '', $d);
+        echo '<option value="'.$d.'" '.$selected.'>'.basename($path_files).$short_d.'</option>';
+    }
+    echo '</optgroup>';
+    echo '</select>';
+
+    echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+    echo '</form>';
+
+}
+
+// show input for new directories
+if($_REQUEST['action'] == 'input_new_directory') {
+    echo '<form hx-post="/admin/uploads/write/" hx-swap="none" method="POST">';
+    echo '<div class="input-group">';
+    echo '<input type="text" name="new_folder" class="form-control">';
+    echo '<div class="input-group-append">';
+    echo '<input type="submit" name="submit" value="'.$lang['btn_create_new_folder'].'" class="btn btn-default">';
+    echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+    echo '</div>';
+    echo '</div>';
+    echo '</form>';
+}
+
+
+// list files
 if($_REQUEST['action'] == 'list') {
 
     // defaults
@@ -163,7 +214,7 @@ if($_REQUEST['action'] == 'list') {
     echo '</div>';
 
     if($_SESSION['disk'] != 'assets/images' AND $_SESSION['disk'] != 'assets/files' AND $_SESSION['disk'] != '') {
-        $delete_dir_btn = '<form hx-post="/admin/uploads/write/" hx-confirm="' . $lang['msg_confirm_delete_directory'] . '" hx-target="#response" class="mt-3 text-end">';
+        $delete_dir_btn = '<form hx-post="/admin/uploads/write/" hx-confirm="' . $lang['msg_confirm_delete_directory'] . '" hx-swap="none" class="mt-3 text-end">';
         $delete_dir_btn .= '<button name="delete_dir" value="' . $_SESSION['disk'] . '" class="btn btn-danger">';
         $delete_dir_btn .= $icon['trash_alt'] . ' ' . $_SESSION['disk'];
         $delete_dir_btn .= '</button>';
