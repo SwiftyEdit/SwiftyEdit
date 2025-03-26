@@ -61,21 +61,22 @@ $smarty->assign("$check_pm_radio", 'checked');
 
 $get_cd = get_my_userdata();
 $client_data = '';
-if($get_cd['user_company'] != '') {
-	$client_data .= $get_cd['user_company'].'<br>';
+if($get_cd['ba_company'] != '') {
+	$client_data .= $get_cd['ba_company'].'<br>';
 }
 
 /**
  * check if we have all mandatory information
+ * billing address
  * firstname, lastname, street, street nbr, zip and city
  */
 
-if($get_cd['user_firstname'] == '' ||
-    $get_cd['user_lastname'] == '' ||
-    $get_cd['user_street'] == '' ||
-    $get_cd['user_street_nbr'] == '' ||
-    $get_cd['user_zip'] == '' ||
-    $get_cd['user_city'] == '') {
+if($get_cd['ba_firstname'] == '' ||
+    $get_cd['ba_lastname'] == '' ||
+    $get_cd['ba_street'] == '' ||
+    $get_cd['ba_street_nbr'] == '' ||
+    $get_cd['ba_zip'] == '' ||
+    $get_cd['ba_city'] == '') {
     $checkout_error = 'missing_mandatory_informations';
 }
 
@@ -83,9 +84,9 @@ if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_b
     $checkout_error = 'missing_approval';
 }
 
-$client_data .= $get_cd['user_firstname']. ' '.$get_cd['user_lastname'].'<br>';
-$client_data .= $get_cd['user_street']. ' '.$get_cd['user_street_nbr'].'<br>';
-$client_data .= $get_cd['user_zip']. ' '.$get_cd['user_city'].'<br>';
+$client_data .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
+$client_data .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
+$client_data .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
 
 
 for($i=0;$i<$cnt_cart_items;$i++) {

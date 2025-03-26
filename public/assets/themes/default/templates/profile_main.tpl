@@ -58,8 +58,8 @@
 	{$hidden_csrf_token}
 </form>
 
+{* billing address *}
 <form class="form-horizontal" id="form_ba_address" action="{$form_url}" method="POST">
-
 	<div class="card mb-3">
 		<div class="card-header">{$lang_label_billing_address}</div>
 		<div class="card-body">
@@ -79,7 +79,6 @@
 				<input type="text" class="form-control" id="ba_lastname" value="{$ba_lastname}" name="ba_lastname">
 			</div>
 			</div>
-
 			<div class="row mb-3">
 				<div class="col-9">
 					<label for="ba_street">{$lang_label_street}</label>
@@ -91,13 +90,11 @@
 					<input type="text" class="form-control" id="ba_street_nbr" value="{$ba_street_nbr}" name="ba_street_nbr">
 				</div>
 			</div>
-
 			<div class="row mb-3">
 				<div class="col-3">
 					<label for="ba_zip">{$lang_label_zip}</label>
 					<input type="text" class="form-control" id="ba_zip" value="{$ba_zip}" name="ba_zip">
 				</div>
-
 				<div class="col-9">
 					<label for="ba_city">{$lang_label_town}</label>
 					<input type="text" class="form-control" id="ba_city" value="{$ba_city}" name="ba_city">
@@ -112,7 +109,7 @@
 					<select class="form-control" name="ba_country" id="ba_country">
 						<option value="">{$lang_label_please_select}</option>
 					{foreach $ba_countries as $country}
-						<option value="{$country}" {$selected_{$country|strtolower}}>{$country}</option>
+						<option value="{$country}" {$selected_ba_{$country|strtolower}}>{$country}</option>
 					{/foreach}
 					</select>
 				{/if}
@@ -127,6 +124,73 @@
 
 	{$hidden_csrf_token}
 </form>
+
+	{* shipping address *}
+	<form class="form-horizontal" id="form_sa_address" action="{$form_url}" method="POST">
+		<div class="card mb-3">
+			<div class="card-header">{$lang_label_delivery_address}</div>
+			<div class="card-body">
+				<div class="row mb-3">
+					<div class="col-6">
+						<label for="sa_company">{$lang_label_company}</label>
+						<input type="text" class="form-control" id="sa_company" value="{$sa_company}" name="sa_company">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-6">
+						<label for="sa_firstname">{$lang_label_firstname}</label>
+						<input type="text" class="form-control" id="sa_firstname" value="{$sa_firstname}" name="sa_firstname">
+					</div>
+					<div class="col-6">
+						<label for="sa_lastname">{$lang_label_lastname}</label>
+						<input type="text" class="form-control" id="sa_lastname" value="{$sa_lastname}" name="sa_lastname">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-9">
+						<label for="sa_street">{$lang_label_street}</label>
+						<input type="text" class="form-control" id="sa_street" value="{$sa_street}" name="sa_street">
+					</div>
+
+					<div class="col-3">
+						<label for="sa_street_nbr">{$lang_label_nr}</label>
+						<input type="text" class="form-control" id="sa_street_nbr" value="{$sa_street_nbr}" name="sa_street_nbr">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-3">
+						<label for="sa_zip">{$lang_label_zip}</label>
+						<input type="text" class="form-control" id="sa_zip" value="{$sa_zip}" name="sa_zip">
+					</div>
+					<div class="col-9">
+						<label for="sa_city">{$lang_label_town}</label>
+						<input type="text" class="form-control" id="sa_city" value="{$sa_city}" name="sa_city">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col">
+						<label for="sa_country">{$lang_label_country}</label>
+						{if $show_sa_country_input == "input"}
+							<input type="text" class="form-control" id="sa_country" value="{$sa_country}" name="sa_country">
+						{else}
+							<select class="form-control" name="sa_country" id="sa_country">
+								<option value="">{$lang_label_please_select}</option>
+								{foreach $sa_countries as $country}
+									<option value="{$country}" {$selected_sa_{$country|strtolower}}>{$country}</option>
+								{/foreach}
+							</select>
+						{/if}
+					</div>
+				</div>
+
+			</div>
+			<div class="card-footer">
+				<input class="btn btn-primary" type="submit" name="update_sa_data" value="{$lang_button_update}">
+			</div>
+		</div>
+
+		{$hidden_csrf_token}
+	</form>
 
 <form class="form-horizontal" id="form_psw_data" action="{$form_url}" method="POST">
 	<div class="card mb-3">
