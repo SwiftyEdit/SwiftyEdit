@@ -37,7 +37,7 @@ or experimental:
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
                                     <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title} - {$item.hash}</span></label>
+                                                title="{$item.description}">{$item.title}</span></label>
                                 </div>
                             {/foreach}
                         </div>
@@ -56,7 +56,7 @@ or experimental:
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
                                     <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title} - {$item.hash}</span></label>
+                                                title="{$item.description}">{$item.title}</span></label>
                                 </div>
                             {/foreach}
                         </div>
