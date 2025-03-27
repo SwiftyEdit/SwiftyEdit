@@ -235,9 +235,10 @@ if(isset($_POST['edit_value'])) {
     ];
 
     // select for group
+    $set_options = [];
     $all_filters = se_get_product_filter_groups('all');
     foreach($all_filters as $filters) {
-        $key = '['.$filters['filter_priority'].'] '.$filters['filter_title'];
+        $key = '('.$filters['filter_priority'].') '.$filters['filter_title'];
         $set_options["$key"] = $filters['filter_id'];
     }
 

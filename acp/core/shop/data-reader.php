@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * SwiftyEdit /admin/shop/
+ *
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $db_content
+ * @var object $db_posts
+ * @var string $hidden_csrf_token
+ * @var array $se_settings
+ */
+
 $writer_uri = '/admin/shop/edit/';
 $duplicate_uri = '/admin/shop/duplicate/';
 
@@ -271,7 +283,7 @@ if($_REQUEST['action'] == 'list_products') {
             $show_thumb .= '</div>';
             $show_thumb .= '</div>';
         } else {
-            $show_thumb = '<div class="show-thumb" style="background-image: url(/assets/themes/administration/images/no-image.png);">';
+            $show_thumb = '<div class="show-thumb" style="background-image: url(/themes/administration/images/no-image.png);">';
         }
 
         // variants
@@ -453,9 +465,9 @@ if($show_form) {
 
     // buid select for tax
     $tax_options = [
-        1 => $se_prefs['prefs_posts_products_default_tax'],
-        2 => $se_prefs['prefs_posts_products_tax_alt1'],
-        3 => $se_prefs['prefs_posts_products_tax_alt2'],
+        1 => $se_settings['posts_products_default_tax'],
+        2 => $se_settings['posts_products_tax_alt1'],
+        3 => $se_settings['posts_products_tax_alt2'],
     ];
 
     // use default tax if $price_group['tax'] is not set
@@ -539,7 +551,7 @@ if($show_form) {
                 hx-include="[name=\'csrf_token\']"
                 name="save_price"
                 value="'.$price_group_id.'"
-                class="list-group-item list-group-item-action '.$active.'">'.$btn_name.'</button>';
+                class="list-group-item list-group-item-action">'.$btn_name.'</button>';
     echo '</form>';
 
 }
@@ -599,7 +611,7 @@ if($_REQUEST['action'] == 'list_features') {
         echo '<td>'.$data['snippet_id'].'</td>';
         echo '<td>'.$data['snippet_priority'].'</td>';
         echo '<td>'.$flag.'</td>';
-        echo '<td><strong>'.$data['snippet_title'].'</strong><br>'.$show_values.'</td>';
+        echo '<td><strong>'.$data['snippet_title'].'</strong><br>'.$data['snippet_content'].'</td>';
         echo '<td class="text-end" style="width:120px;">';
 
         echo $btn_edit;
@@ -687,12 +699,9 @@ if($_REQUEST['action'] == 'list_filters') {
     }
 
     $filter_by_lang = array();
-    if($shop_filter['languages'] != '') {
-        $this_filter = explode("-",$shop_filter['languages']);
+    if($global_filter_languages != '') {
         $filter_by_lang = [
-
-                "filter_lang" => $this_filter
-
+                "filter_lang" => $global_filter_languages
         ];
     }
 
@@ -754,9 +763,9 @@ if($_REQUEST['action'] == 'list_filters') {
 
         // show categories
         $get_categories = se_get_categories();
-        foreach($get_categories as $k => $v) {
-            if (in_array($v['cat_hash'], $group_categories)) {
-                echo '<span class="badge text-bg-secondary opacity-50">'.$v['cat_name'].'</span> ';
+        foreach($get_categories as $key => $value) {
+            if (in_array($value['cat_hash'], $group_categories)) {
+                echo '<span class="badge text-bg-secondary opacity-50">'.$value['cat_name'].'</span> ';
             }
         }
         echo '</td>';
@@ -770,9 +779,9 @@ if($_REQUEST['action'] == 'list_filters') {
         }
         echo '<button type="submit" name="edit_value" value="new" class="btn btn-sm btn-default me-1">';
         echo '<span class="text-success">'.$icon['plus'].'</span>';
-        echo '<input type="hidden" name="parent_id" value="'.$group_id.'">';
         echo '</button>';
-        echo  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '<input type="hidden" name="parent_id" value="'.$group_id.'">';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         echo '</form>';
         echo '</td>';
         echo '</tr>';

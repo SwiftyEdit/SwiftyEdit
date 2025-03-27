@@ -1599,3 +1599,9 @@ function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,
 
     return $pagination;
 }
+
+function se_get_my_presets() {
+    global $db_user;
+    $presets = $db_user->get("se_user","user_acp_settings",["user_id"=>$_SESSION['user_id']]);
+    return json_decode($presets,true);
+}

@@ -69,7 +69,6 @@ if(isset($_POST['save_user'])) {
 
     if(isset($_POST['user_groups'])) {
         // ad this user to user group(s)
-        print_r($_POST['user_groups']);
         foreach($_POST['user_groups'] as $group) {
             se_add_user_to_group($edit_user_id,$group);
         }
@@ -193,7 +192,6 @@ if(isset($_POST['rmkey'])) {
 }
 
 if(isset($_POST['set_status_filter'])) {
-    echo "FOOBAR";
     if($_POST['set_status_verified'] == '') {
         if($_SESSION['set_status_verified'] == 'on') {
             $_SESSION['set_status_verified'] = '';
@@ -201,5 +199,21 @@ if(isset($_POST['set_status_filter'])) {
             $_SESSION['set_status_verified'] = 'on';
         }
     }
-    // set_status_verified
+}
+
+
+if(isset($_POST['save_my_settings'])) {
+
+    $save_presets = [];
+    $save_presets['status'] = sanitizeUserInputs($_POST['preset_status']);
+    $save_presets['product_type'] = sanitizeUserInputs($_POST['preset_product_type']);
+
+    $presets_json = json_encode($save_presets);
+
+    $db_user->update("se_user",[
+        "user_acp_settings" => $presets_json
+    ],[
+        "user_id" => $_SESSION['user_id']
+    ]);
+    echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
 }

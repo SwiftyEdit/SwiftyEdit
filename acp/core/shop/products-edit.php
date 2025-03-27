@@ -2,6 +2,7 @@
 
 $writer_uri = '/admin/shop/write/';
 $form_header_mode = $lang['btn_new'];
+$my_user_presets = se_get_my_presets();
 
 $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">'.$lang['save'].'</button>';
 $btn_update = '';
@@ -171,6 +172,17 @@ $choose_images .= 'Loading Images ...</div>';
 $sel_status_draft = '';
 $sel_status_published = '';
 $sel_status_ghost = '';
+
+if(!isset($product_data['status'])) {
+    // new product, check if we have user presets
+    if($my_user_presets['status'] == 'p') {
+        $product_data['status'] = 1;
+    } else if($my_user_presets['status'] == 'd') {
+        $product_data['status'] = 2;
+    }
+
+}
+
 if($product_data['status'] == "2") {
     $sel_status_draft = "selected";
 } else if($product_data['status'] == "1") {
@@ -327,6 +339,12 @@ $select_tax .= '<option value="3" '.$sel_tax_3.'>'.$se_prefs['prefs_posts_produc
 $select_tax .= '</select>';
 
 /* select shipping mode */
+
+if(!isset($product_data['product_shipping_mode'])) {
+    if($my_user_presets['product_type'] == 'deliver') {
+        $product_data['product_shipping_mode'] = 2;
+    }
+}
 
 if(($product_data['product_shipping_mode'] == '1') OR ($product_data['product_shipping_mode'] == '')) {
     $sel_shipping_mode_1 = 'selected';
