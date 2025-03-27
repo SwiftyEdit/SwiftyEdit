@@ -14,7 +14,9 @@
 
                 {foreach $product_show_images as $img => $value}
                 <div class="col-3">
-                    <a href="{$value.media_file}" title="{$value.media_title}"><img src="{$value.media_thumb}" alt="{$value.media_alt}" class="img-fluid"></a>
+                    <a href="{$value.media_file}" title="{$value.media_title}">
+                        <img src="{$value.media_file}" alt="{$value.media_alt}" class="img-fluid">
+                    </a>
                 </div>
                 {/foreach}
 

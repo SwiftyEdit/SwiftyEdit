@@ -168,7 +168,7 @@ if(is_array($product_images) && count($product_images) > 0) {
     }
 
     if($show_images[0]['media_file'] == "") {
-        /* fallback if there are no informations in database - maybe if we have more than one langusage */
+        /* fallback if there are no informations in database - maybe if we have more than one language */
         $show_images[0]['media_file'] = reset($product_images);
     }
 
@@ -178,9 +178,6 @@ if(is_array($product_images) && count($product_images) > 0) {
         $show_images[$i]['media_file'] =  str_replace('../images/','/images/',$show_images[$i]['media_file']);
         $show_images[$i]['media_thumb'] = str_replace('../images_tmb/','/images_tmb/',$show_images[$i]['media_thumb']);
     }
-
-
-
 }
 
 if($show_images[0]['media_file'] != "") {
