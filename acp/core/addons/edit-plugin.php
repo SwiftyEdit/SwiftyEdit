@@ -49,3 +49,4 @@ if(is_file($addon_include_file)) {
 }
 
 echo '</div>';
+echo '</div>';
