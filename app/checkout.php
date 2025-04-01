@@ -198,8 +198,7 @@ if($shipping_products > 0) {
 		$shipping_type = '';
 		$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_flat']);
 	}
-	
-	
+
 	if($se_prefs['prefs_shipping_costs_mode'] == 2) {
 		/* we need to determine the highest shipping category */
 		/* it's stored in $store_shipping_cat */
@@ -210,8 +209,16 @@ if($shipping_products > 0) {
 		} else {
 			$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_cat3']);
 		}
-		
 	}
+
+    // check for delivery plugins and maybe overwrite $shipping_costs
+    $active_delivery_addons = json_decode($se_prefs['prefs_delivery_addons'],true);
+    foreach($active_delivery_addons as $delivery_addon) {
+        $addon_root = SE_ROOT.'/plugins/'.basename($delivery_addon);
+        if(file_exists("$addon_root/global/index.php")) {
+            include "$addon_root/global/index.php";
+        }
+    }
 	
 }
 

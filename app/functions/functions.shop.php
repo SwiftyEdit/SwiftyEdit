@@ -629,11 +629,9 @@ function se_clear_cart($user) {
 
 /**
  * get payment methods
- * at the moment we have no third party payment methods
- * just check if payment method is active
  */
  
-function se_get_payment_methods() {
+function se_get_payment_methods(): array {
 	
 	global $se_settings,$languagePack;
 	global $lang;
@@ -664,9 +662,6 @@ function se_get_payment_methods() {
 
         }
     }
-
-
-	
 	return $payment_methods;
 }
 
