@@ -301,6 +301,7 @@
   "product.pricetag_mode_off": "Preis ausblenden",
   "label.order.quantity.min": "Mindestbestellmenge",
   "label.order.quantity.max": "Maximale Bestellmenge",
+  "label.max.order.value": "Maximum order value",
   "label.carts": "Warenkorb",
   "label.orders": "Bestellungen",
   "label.order_nbr": "Bestellnummer",
