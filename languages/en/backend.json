@@ -342,6 +342,7 @@
 
   "label.order.quantity.min": "Minimum order quantity",
   "label.order.quantity.max": "Maximum order quantity",
+  "label.max.order.value": "Maximum order value",
 
   "label.carts": "Shopping carts",
   "label.orders": "Orders",
