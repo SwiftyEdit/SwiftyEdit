@@ -301,6 +301,7 @@
   "product.pricetag_mode_off": "Nascondi pricetag",
   "label.order.quantity.min": "Minimum order quantity",
   "label.order.quantity.max": "Maximum order quantity",
+  "label.max.order.value": "Maximum order value",
   "label.carts": "Carrelli commerciali",
   "label.orders": "Ordini",
   "label.order_nbr": "Numero D'Ordine",
