@@ -123,6 +123,11 @@
 </div>
 {/if}
 
+{if $max_order_value_msg != ''}
+<div class="alert alert-info">
+    {$max_order_value_msg}
+</div>
+{/if}
 
 {if $show_request_form == 1}
     {include file='shopping_cart_form.tpl'}

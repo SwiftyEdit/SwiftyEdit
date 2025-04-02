@@ -234,6 +234,19 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 $cart_price_subtotal = $all_items_subtotal;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs;
 
+// check if we have a maximum order value
+if($se_prefs['prefs_posts_max_order_value'] != '') {
+
+    $settings_max_order_value = str_replace(',','.',$se_prefs['prefs_posts_max_order_value']);
+    if($cart_price_subtotal > $settings_max_order_value) {
+        // switch to request mode
+        // overwrite $se_prefs['prefs_posts_order_mode']
+        $se_prefs['prefs_posts_order_mode'] = 2;
+        $max_order_value_msg = se_get_textlib('cart_max_order_value',$languagePack,'content');
+    }
+}
+
+
 /**
  * check prefs_posts_order_mode
  * 1 - order mode is active
@@ -399,6 +412,7 @@ if($checkout_error == 'missing_approval') {
     $checkout_error_msg = $lang['msg_missing_user_approval'];
 }
 
+$smarty->assign("max_order_value_msg",$max_order_value_msg,true);
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);
