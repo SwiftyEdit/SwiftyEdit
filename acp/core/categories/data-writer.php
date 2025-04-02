@@ -21,7 +21,13 @@ if (isset($_POST['save_category'])) {
     $cat_thumbnail = sanitizeUserInputs($_POST['cat_thumbnail']);
     $cat_description = sanitizeUserInputs($_POST['cat_description']);
     $cat_sort = (int) $_POST['cat_sort'];
-    $cat_hash = md5(time());
+
+    if($_POST['cat_hash'] != '') {
+        $cat_hash = $_POST['cat_hash'];
+    } else {
+        $cat_hash = md5(time());
+    }
+
 
     $insert_data = [
         "cat_name" =>  $cat_name,
