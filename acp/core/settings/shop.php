@@ -50,6 +50,13 @@ $input_select_mode_order = [
     "type" => "select"
 ];
 
+$input_max_order_value = [
+    "input_name" => "prefs_posts_max_order_value",
+    "input_value" => $se_settings['posts_max_order_value'],
+    "label" => $lang['label_max_order_value'],
+    "type" => "text"
+];
+
 $input_tax1 = [
     "input_name" => "prefs_posts_products_default_tax",
     "input_value" => $se_settings['posts_products_default_tax'],
@@ -187,10 +194,11 @@ echo '<h5 class="heading-line">' . $lang['label_product_cart_mode'] . '</h5>';
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 $input_modes = [
     se_print_form_input($input_select_mode_cart),
-    se_print_form_input($input_select_mode_order)
+    se_print_form_input($input_select_mode_order),
+    se_print_form_input($input_max_order_value)
 ];
 
-echo str_replace(['{col1}','{col2}'],$input_modes,$bs_row_col2);
+echo str_replace(['{col1}','{col2}','{col3}'],$input_modes,$bs_row_col3);
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
 
