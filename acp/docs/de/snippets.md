@@ -109,3 +109,4 @@ Meistens wird Dir direkt eine Auswahl mit den passenden Snippets angezeigt.
 * Alle Snippets mit dem Namen <code>%post_text%</code> können zu den Texten hinzugefügt werden.
 * Plugins für Bezahlmethoden nutzen Snippets mit den Namen <code>`cart_pm_%`</code>
 * Plugins für den Versand nutzen Snippets mit den Namen <code>`cart_dm_%`</code>
+* Im Warenkorb wird das Snippet <code>`cart_agree_term`</code> für die Bestätigung der AGB genutzt.
