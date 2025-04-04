@@ -18,6 +18,7 @@ function se_get_products($start,$limit,$filter) {
     global $time_string_now;
     global $se_labels;
     global $custom_filter_key;
+    global $custom_range_filter_key;
 
     if(SE_SECTION == 'frontend') {
         global $se_prefs;
@@ -118,6 +119,7 @@ function se_get_products($start,$limit,$filter) {
 
     /* custom product filter - stored in $_SESSION['custom_filter'] */
     $nbr_of_filter = is_array($_SESSION[$custom_filter_key]) ? count($_SESSION[$custom_filter_key]) : 0;
+    $nbr_of_range_filter = is_array($_SESSION[$custom_range_filter_key]) ? count($_SESSION[$custom_range_filter_key]) : 0;
 
     if(SE_SECTION == 'backend') {
         // reset the custom filter
@@ -135,6 +137,18 @@ function se_get_products($start,$limit,$filter) {
         $sql_product_filter = substr("$sql_product_filter", 0, -4); // cut the last ' AND'
     } else {
         $sql_product_filter = '';
+    }
+
+    if ($nbr_of_range_filter > 0) {
+        $sql_product_range_filter = "filter IS NULL OR ";
+        foreach ($_SESSION[$custom_range_filter_key] as $custom_range_filter) {
+            if ($custom_range_filter != '') {
+                $sql_product_range_filter .= "(filter LIKE '%:\"$custom_range_filter\"%') OR ";
+            }
+        }
+        $sql_product_range_filter = substr("$sql_product_range_filter", 0, -3); // cut the last ' AND'
+    } else {
+        $sql_product_range_filter = '';
     }
 
 
@@ -210,6 +224,9 @@ function se_get_products($start,$limit,$filter) {
     }
     if($sql_product_filter != "") {
         $sql_filter .= " AND ($sql_product_filter) ";
+    }
+    if($sql_product_range_filter != '') {
+        $sql_filter .= " AND ($sql_product_range_filter) ";
     }
     if($sql_status_filter != "") {
         $sql_filter .= " AND ($sql_status_filter) ";

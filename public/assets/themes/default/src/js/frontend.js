@@ -17,6 +17,9 @@ window.glightbox = GLightbox;
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
+import * as noUiSlider from 'nouislider';
+window.noUiSlider = noUiSlider;
+
 function registerElements() {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
@@ -34,5 +37,40 @@ document.addEventListener('DOMContentLoaded', function(event) {
     });
 
     registerElements()
+
+    document.querySelectorAll('.slider-container').forEach(container => {
+        var slider = container.querySelector('.slider');
+        var minInput = container.querySelector('.minValue');
+        var maxInput = container.querySelector('.maxValue');
+        var rangeDisplay = container.querySelector('.rangeDisplay');
+        var values = container.querySelector('.slider-values').value.split(',').map(Number); // Array der möglichen Werte
+
+        var min = Math.min(...values);
+        var max = Math.max(...values);
+        var step = values.length > 1 ? values[1] - values[0] : 1; // Schrittweite aus dem Array ableiten
+
+        noUiSlider.cssClasses.target += ' range-slider';
+
+        noUiSlider.create(slider, {
+            start: [parseInt(minInput.value), parseInt(maxInput.value)],
+            connect: true,
+            range: {
+                'min': min,
+                'max': max
+            },
+            step: step,
+            tooltips: true,
+            format: {
+                to: function(value) { return Math.round(value); },
+                from: function(value) { return Number(value); }
+            }
+        });
+
+        slider.noUiSlider.on('update', function(values) {
+            minInput.value = values[0];
+            maxInput.value = values[1];
+            rangeDisplay.textContent = values[0] + ' - ' + values[1];
+        });
+    });
 
 });

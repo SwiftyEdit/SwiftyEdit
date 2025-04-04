@@ -112,3 +112,40 @@
     }
   }
 }
+
+
+// range slider
+
+.range-slider {
+
+    height: 10px;
+    border-color: darken($primary, 15%);
+
+  .noUi-connect {
+    background: $primary;
+  }
+
+  .noUi-tooltip {
+    display: none;
+  }
+
+  .noUi-active .noUi-tooltip {
+    display: block;
+  }
+
+  .noUi-base {
+    .noUi-handle {
+      height: 20px;
+      width: 20px;
+      top: -5px;
+      right: -10px; /* half the width */
+      border-radius: 50%;
+      background: $secondary;
+      border-color: $primary;
+      box-shadow: none;
+      &::after, &::before {
+        display: none;
+      }
+    }
+  }
+}

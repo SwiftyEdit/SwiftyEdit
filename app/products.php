@@ -39,19 +39,28 @@ $products_order = 'id';
 $products_direction = 'DESC';
 $products_filter = array();
 
+
 $str_status = '1';
 if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
     $str_status = '1-2';
 }
 
+// filter for radios and checkboxes
 $custom_filter_key = 'custom_filter_'.md5($page_contents['page_permalink']);
+// filter for range slider
+$custom_range_filter_key = 'custom_range_filter_'.md5($page_contents['page_permalink']);
 
 if(!isset($_SESSION[$custom_filter_key])) {
     $_SESSION[$custom_filter_key] = array();
 }
+if(!isset($_SESSION[$custom_range_filter_key])) {
+    $_SESSION[$custom_range_filter_key] = array();
+}
 
 if(isset($_REQUEST['reset_filter'])) {
     $_SESSION[$custom_filter_key] = array();
+    $_SESSION[$custom_range_filter_key] = array();
+    unset($_SESSION['ranges']);
 }
 
 
@@ -139,6 +148,33 @@ if(isset($_POST['set_custom_filters'])) {
         }
     }
 
+
+    // ranges
+    if(isset($_REQUEST['ranges'])) {
+        $range_keys = array_keys($_REQUEST['ranges']);
+        foreach($range_keys as $range_key) {
+            // get all entries from this range group
+            $filter_values = $db_content->select('se_filter', '*',[ 'filter_parent_id' => $range_key ]);
+
+            // min value
+            $min_value = $_REQUEST['ranges'][$range_key]['min'];
+            $max_value = $_REQUEST['ranges'][$range_key]['max'];
+
+            $_SESSION['ranges'][$range_key]['min'] = $min_value;
+            $_SESSION['ranges'][$range_key]['max'] = $max_value;
+
+            foreach($filter_values as $fv) {
+
+                $this_value = (int) $fv['filter_title'];
+                if($this_value >= $min_value && $this_value <= $max_value) {
+                    // add to filter $fv['filter_id']
+                    $_SESSION[$custom_range_filter_key][] = $fv['filter_id'];
+                }
+            }
+
+        }
+    }
+
 }
 
 /**
@@ -166,11 +202,17 @@ if(count($get_product_filter) > 0) {
 }
 
 $_SESSION[$custom_filter_key] = array_unique($_SESSION[$custom_filter_key]);
+$_SESSION[$custom_range_filter_key] = array_unique($_SESSION[$custom_range_filter_key]);
 
 $custom_filter = $_SESSION[$custom_filter_key];
+$custom_range_filter = $_SESSION[$custom_range_filter_key];
 
 // display reset link
 if(is_array($custom_filter) && count($custom_filter) > 0) {
+    $smarty->assign('reset_filter_link', true);
+}
+
+if(is_array($custom_range_filter) && count($custom_range_filter) > 0) {
     $smarty->assign('reset_filter_link', true);
 }
 
@@ -179,6 +221,7 @@ $products_filter['types'] = $page_contents['page_posts_types'];
 $products_filter['status'] = $str_status;
 $products_filter['categories'] = $page_contents['page_posts_categories'];
 $products_filter['custom_filter'] = $custom_filter;
+$products_filter['custom_range_filter'] = $custom_range_filter;
 
 if(isset($_POST['sort_by'])) {
     if($_POST['sort_by'] == 'ts') {
