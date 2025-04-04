@@ -140,7 +140,7 @@ function se_get_products($start,$limit,$filter) {
     }
 
     if ($nbr_of_range_filter > 0) {
-        $sql_product_range_filter = "filter IS NULL OR ";
+        $sql_product_range_filter = "";
         foreach ($_SESSION[$custom_range_filter_key] as $custom_range_filter) {
             if ($custom_range_filter != '') {
                 $sql_product_range_filter .= "(filter LIKE '%:\"$custom_range_filter\"%') OR ";

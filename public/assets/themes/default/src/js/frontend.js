@@ -43,13 +43,22 @@ document.addEventListener('DOMContentLoaded', function(event) {
         var minInput = container.querySelector('.minValue');
         var maxInput = container.querySelector('.maxValue');
         var rangeDisplay = container.querySelector('.rangeDisplay');
-        var values = container.querySelector('.slider-values').value.split(',').map(Number); // Array der möglichen Werte
+        var rawValues = container.querySelector('.slider-values').value.split(',');
+
+        // clean up the values: Only numbers + optional sign
+        function cleanValue(value) {
+            let match = value.match(/^[+-]?\d+/); // Erlaubt nur Zahlen mit optionalem +/-
+            return match ? parseInt(match[0], 10) : null;
+        }
+
+        noUiSlider.cssClasses.target += ' range-slider';
+
+        // Save adjusted values as numbers
+        var values = rawValues.map(cleanValue).filter(v => v !== null); // Entfernt ungültige Werte
 
         var min = Math.min(...values);
         var max = Math.max(...values);
-        var step = values.length > 1 ? values[1] - values[0] : 1; // Schrittweite aus dem Array ableiten
-
-        noUiSlider.cssClasses.target += ' range-slider';
+        var step = values.length > 1 ? Math.abs(values[1] - values[0]) : 1;
 
         noUiSlider.create(slider, {
             start: [parseInt(minInput.value), parseInt(maxInput.value)],
@@ -61,15 +70,20 @@ document.addEventListener('DOMContentLoaded', function(event) {
             step: step,
             tooltips: true,
             format: {
-                to: function(value) { return Math.round(value); },
-                from: function(value) { return Number(value); }
+                to: function(value) {
+                    let rounded = Math.round(value);
+                    return rounded >= 0 ? `+${rounded}` : rounded.toString(); // Optional “+” for positive values
+                },
+                from: function(value) {
+                    return Number(value.replace('+', '')); // Remove “+” when converting back
+                }
             }
         });
 
         slider.noUiSlider.on('update', function(values) {
-            minInput.value = values[0];
-            maxInput.value = values[1];
-            rangeDisplay.textContent = values[0] + ' - ' + values[1];
+            minInput.value = values[0].replace('+', ''); // Save without “+”
+            maxInput.value = values[1].replace('+', ''); // Save without “+”
+            rangeDisplay.textContent = values[0] + ' - ' + values[1]; // With optional “+”
         });
     });
 

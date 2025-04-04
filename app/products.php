@@ -151,6 +151,7 @@ if(isset($_POST['set_custom_filters'])) {
 
     // ranges
     if(isset($_REQUEST['ranges'])) {
+        $_SESSION[$custom_range_filter_key] = array();
         $range_keys = array_keys($_REQUEST['ranges']);
         foreach($range_keys as $range_key) {
             // get all entries from this range group
