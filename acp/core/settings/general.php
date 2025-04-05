@@ -189,6 +189,14 @@ $input_cms_base = [
     "type" => "text"
 ];
 
+$input_login_slug = [
+    "input_name" => "prefs_login_slug",
+    "input_value" => $se_settings['login_slug'],
+    "label" => $lang['label_settings_login_slug'],
+    "input_group_start_text" => "/admin/",
+    "type" => "text"
+];
+
 $input_mail_name = [
     "input_name" => "prefs_mailer_name",
     "input_value" => $se_settings['mailer_name'],
@@ -472,6 +480,8 @@ echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-targ
 echo se_print_form_input($input_cms_domain);
 echo se_print_form_input($input_cms_ssl_domain);
 echo se_print_form_input($input_cms_base);
+echo se_print_form_input($input_login_slug);
+
 
 echo '<button type="submit" class="btn btn-primary" name="update_general_system" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post

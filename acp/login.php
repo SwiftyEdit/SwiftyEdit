@@ -22,6 +22,40 @@ require SE_ROOT.'/app/database.php';
 require '../languages/index.php';
 $login = '';
 
+$se_get_settings = se_get_preferences();
+
+foreach ($se_get_settings as $k => $v) {
+    $key = $se_get_settings[$k]['option_key'];
+    $value = $se_get_settings[$k]['option_value'];
+    if(substr($key,0,6) == 'prefs_') {
+        $short_key = substr($key,6);
+        $se_settings[$short_key] = $value; // new
+    }
+}
+
+if($se_settings['login_slug'] != '') {
+    // check the url
+    $form_path = '/admin/'.$se_settings['login_slug'];
+    if($_REQUEST['query'] != $se_settings['login_slug']) {
+        //redirect to startpage
+        header('Location: /');
+        exit;
+    }
+} else {
+    $form_path = '/admin/';
+}
+
+if(empty($_SESSION['token'])) {
+    se_generate_token();
+}
+
+$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+
+/* stop all $_POST actions if csrf token is empty or invalid */
+if(!empty($_POST)) {
+    se_validate_token($_POST['csrf_token']);
+}
+
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 
     $remember = false;
@@ -68,12 +102,12 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
     <?php
     if($login == 'failed') {
         echo '<div class="alert alert-danger">';
-        echo $lang['msg_error_login_data'];
+        echo $lang['msg_login_false'];
         echo '</div>';
     }
     ?>
 
-    <form action="/admin/" method="post" class="">
+    <form action="<?php echo $form_path; ?>" method="post" class="">
         <div class="row mb-2">
             <label class="col-sm-3 col-form-label"><?php echo $lang['label_username']; ?></label>
             <div class="col-sm-9">
@@ -98,6 +132,7 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
         <div class="row">
             <div class="offset-sm-3 col-sm-9">
                 <input type="submit" class="btn btn-primary w-100" name="check" value="Login">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
             </div>
         </div>
     </form>

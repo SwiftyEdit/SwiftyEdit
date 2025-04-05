@@ -29,30 +29,6 @@ function se_get_preferences() {
 	$prefs = $db_content->select("se_options", "*", [
 		"option_module" => "se"
 	]);
-	
-	if(count($prefs) < 1) {
-		echo '<p class="alert alert-danger">There are no options</p>';
-	
-		/* read the old prefs from se_preferences and write it to se_options */
-		$prefs = $db_content->get("se_preferences", "*", [
-			"prefs_status" => "active"
-		]);
-		
-		foreach($prefs as $key => $value) {		
-			$db_content->insert("se_options", [
-				"option_module" => 'fc',
-				"option_key" => $key,
-				"option_value" => $value
-			]);
-		}
-	
-		$prefs = $db_content->select("se_options", "*", [
-			"option_module" => "fc"
-		]);	
-	
-	}
-	
-	
 
 	return $prefs;
 }

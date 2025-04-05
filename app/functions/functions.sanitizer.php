@@ -377,3 +377,25 @@ function se_sanitize_lang_input(string $lang): mixed {
     }
     return $lang;
 }
+
+function se_generate_token() {
+    $_SESSION['token'] = bin2hex(random_bytes(35));
+    $_SESSION['token_time'] = time();
+}
+
+/**
+ * @param string $token $_POST['csrf_token']
+ * @return void
+ */
+function se_validate_token($token): void {
+
+    $token =  htmlspecialchars($token);
+
+    if(empty($token)) {
+        die('Error: CSRF Token is empty');
+    }
+    if($token !== $_SESSION['token']) {
+        die('Error: CSRF Token is invalid');
+    }
+
+}
