@@ -334,6 +334,7 @@
   "label.settings.cms_domain": "Τομέας",
   "label.settings.cms_domain_ssl": "Τομέας SSL",
   "label.settings.cms_base": "Διαδρομή βάσης",
+  "label.settings.login_slug": "Login slug <small>(hide the login page for administrators)</small>",
   "label.settings.datetime": "Ημερομηνία και ώρα",
   "label.settings.timezone": "Timezone",
   "label.settings.date_format": "Μορφή ημερομηνίας",
