@@ -334,6 +334,7 @@
   "label.settings.cms_domain": "Dominio",
   "label.settings.cms_domain_ssl": "Dominio SSL",
   "label.settings.cms_base": "Ruta base",
+  "label.settings.login_slug": "Login slug <small>(hide the login page for administrators)</small>",
   "label.settings.datetime": "Fecha y hora",
   "label.settings.timezone": "Timezone",
   "label.settings.date_format": "Formato de fecha",
