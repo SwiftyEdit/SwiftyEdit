@@ -133,6 +133,7 @@
   "forgotten_psw_intro": "Bitte geben Sie in das folgende Feld die E-Mail-Adresse Ihres Benutzerkontos ein. Sie erhalten eine E-Mail mit den notwendigen Informationen zum Zurücksetzen Ihres Passworts.",
   "forgotten_psw_mail_info": "Hallo {USERNAME},<br \/>Sie möchten Ihr Passwort zurücksetzen? Klicken Sie einfach auf den Link unten.<br \/>Bitte ignorieren Sie diese E-Mail, wenn die Anfrage zum Zurücksetzen Ihres Passworts nicht von Ihnen stammt.<br><br>Passwort zurücksetzen:<br \/>{RESET_LINK}",
   "forgotten_psw_mail_update": "<p>Hallo {USERNAME},<br \/>Ihr Passwort wurde zurückgesetzt.<\/p> <p>Ihr neues Passwort lautet:<br \/>{temp_psw}<\/p>",
+  "account_temporarily_locked": "<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br \/>{RESET_LINK}<\/p>",
   "posts_category_filter": "Einträge aus der Kategorie <strong>{categorie}<\/strong>.",
   "post_is_draft": "Dieser Eintrag ist ein Entwurf. Nur Administratoren können diesen Eintrag sehen.",
   "label_name": "Name",
