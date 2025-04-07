@@ -133,6 +133,7 @@
   "forgotten_psw_intro": "Παρακαλώ εισάγετε στο παρακάτω πεδίο τη διεύθυνση ηλεκτρονικού ταχυδρομείου του λογαριασμού χρήστη σας. Θα λάβετε ένα email με τις απαραίτητες πληροφορίες για το πώς να επαναφέρετε τον κωδικό πρόσβασής σας.",
   "forgotten_psw_mail_info": "Hello {USERNAME},<br \/>You want to reset your password? Just click on the link below.<br \/>Please ignore this e-mail if the request to reset your password, is not by you.<br><br>Reset your Password:<br \/>{RESET_LINK}",
   "forgotten_psw_mail_update": "<p>Γεια σας {USERNAME},<br \/>Ο κωδικός πρόσβασής σας έχει επαναφερθεί.<\/p> <p>Ο νέος σας κωδικός είναι:<br \/>{temp_psw}<\/p>",
+  "account_temporarily_locked": "<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br \/>{RESET_LINK}<\/p>",
   "posts_category_filter": "Entries from Category <strong>{categorie}<\/strong>.",
   "post_is_draft": "Αυτή η καταχώρηση είναι πρόχειρο. Μόνο οι διαχειριστές μπορούν να δουν αυτή την καταχώρηση.",
   "label_name": "Όνομα",
