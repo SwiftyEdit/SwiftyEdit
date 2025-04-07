@@ -133,6 +133,7 @@
   "forgotten_psw_intro": "Veuillez entrer dans le champ suivant l'adresse e-mail de votre compte utilisateur. Vous recevrez un email contenant les informations nécessaires pour réinitialiser votre mot de passe.",
   "forgotten_psw_mail_info": "Hello {USERNAME}, <br>Vous souhaitez réinitialiser votre mot de passe ? Cliquez sur le lien ci-dessous. <br>Veuillez ignorer cet e-mail si la demande de réinitialisation de votre mot de passe n'émane pas de vous.<br><br> Réinitialiser votre mot de passe :<br> {RESET_LINK}",
   "forgotten_psw_mail_update": "<p>Bonjour {USERNAME},<br \/>Votre mot de passe a été réinitialisé.<\/p> <p>Votre nouveau mot de passe est :<br \/>{temp_psw}<\/p>",
+  "account_temporarily_locked": "<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br \/>{RESET_LINK}<\/p>",
   "posts_category_filter": "Entrées de la catégorie <strong>{categorie}<\/strong>.",
   "post_is_draft": "Cette entrée est un brouillon. Seuls les administrateurs peuvent voir cette entrée.",
   "label_name": "Nom",
