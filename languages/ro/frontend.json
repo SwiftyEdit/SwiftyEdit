@@ -133,6 +133,7 @@
   "forgotten_psw_intro": "Vă rugăm să introduceți în următorul câmp adresa de e-mail a contului dvs. de utilizator. Veţi primi un e-mail cu informaţiile necesare despre cum să resetaţi parola.",
   "forgotten_psw_mail_info": "Bună ziua {USERNAME},<br \/>Doriți să resetați parola? Doar faceți clic pe link-ul de mai jos.<br \/>Vă rugăm să ignorați acest e-mail dacă solicitarea de resetare a parolei nu este făcută de dvs.<br><br>Resetați parola:<br \/>{RESET_LINK}",
   "forgotten_psw_mail_update": "<p>Salut {USERNAME},<br \/>Parola ta a fost resetată.<\/p> <p>Noua ta parolă este:<br \/>{temp_psw}<\/p>",
+  "account_temporarily_locked": "<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br \/>{RESET_LINK}<\/p>",
   "posts_category_filter": "Intrări din categoria <strong>{categorie}<\/strong>.",
   "post_is_draft": "Această intrare este o ciornă. Doar administratorii pot vedea această intrare.",
   "label_name": "Nume",
