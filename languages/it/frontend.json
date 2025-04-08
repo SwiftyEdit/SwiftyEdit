@@ -134,6 +134,7 @@
   "forgotten_psw_mail_info": "Ciao {USERNAME},<br \/>Vuoi reimpostare la tua password? Basta cliccare sul link qui sotto.<br \/>Si prega di ignorare questa e-mail se la richiesta di reimpostare la password, non è da te.<br><br>Reimposta la tua password:<br \/>{RESET_LINK}",
   "forgotten_psw_mail_update": "<p>Ciao {USERNAME},<br \/>La tua password è stata reimpostata.<\/p> <p>La tua nuova password è:<br \/>{temp_psw}<\/p>",
   "account_temporarily_locked": "<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br \/>{RESET_LINK}<\/p>",
+  "account_unlocked": "Your account has been reactivated. You can log in again with your username and password.",
   "posts_category_filter": "Voci dalla categoria <strong>{categorie}<\/strong>.",
   "post_is_draft": "Questa voce è una bozza. Solo gli amministratori possono vedere questa voce.",
   "label_name": "Nome",
