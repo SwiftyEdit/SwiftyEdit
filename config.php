@@ -26,6 +26,8 @@ $se_upload_frontend_types = array('jpg','jpeg','png');
 /* page types */
 $se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders');
 
+// limit login fails - integer || null
+$se_failed_logins_limit = null;
 
 /* define Folder structure */
 const SE_ROOT = __DIR__ . DIRECTORY_SEPARATOR;

@@ -451,6 +451,10 @@ if($p == "password" OR $page_contents['page_type_of_use'] == 'password') {
 	include 'password.php';
 }
 
+if($p == "unlock" OR $page_contents['page_type_of_use'] == 'unlock_account') {
+    include 'unlock_account.php';
+}
+
 
 if($p == "404") {
 	header("HTTP/1.0 404 Not Found");

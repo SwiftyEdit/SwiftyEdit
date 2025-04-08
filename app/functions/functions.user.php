@@ -94,12 +94,13 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
         return 'failed';
     }
 
-    global $db_user;
+    global $db_user, $se_settings, $se_failed_logins_limit;
 
     $hash = $db_user->get("se_user", ["user_psw_hash"], [
         "AND" => [
             "user_nick" => "$user",
-            "user_verified" => "verified"
+            "user_verified" => "verified",
+            "user_unlock_code" => ""
         ]
     ]);
 
@@ -126,6 +127,8 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
             $securitytoken_hashed = sha1($securitytoken);
             $time = time();
 
+            $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
+
             $db_user->insert("se_tokens", [
                 "user_id" => $result['user_id'],
                 "identifier" => "$identifier",
@@ -133,9 +136,16 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
                 "time" => "$time"
             ]);
 
-            setcookie("identifier",$identifier,time()+(3600*24*365));
-            setcookie("securitytoken",$securitytoken,time()+(3600*24*365));
+            setcookie("identifier",$identifier,time()+(3600*24*365),"/","$se_base_url");
+            setcookie("securitytoken",$securitytoken,time()+(3600*24*365),"/","$se_base_url");
         }
+
+        // reset failed logins
+        $db_user->update("se_user",[
+            "user_failed_logins" => 0
+        ],[
+            "user_nick" => $user
+        ]);
 
         if($_SESSION['user_class'] == 'administrator') {
             record_log("$user","admin logged in",1);
@@ -148,10 +158,67 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
 
     } else {
+
+        if(is_numeric($se_failed_logins_limit)) {
+            se_handle_failed_logins($user);
+        }
         session_destroy();
         return "failed";
     }
 }
+
+
+function se_handle_failed_logins($user) {
+
+    global $db_user,$se_failed_logins_limit,$lang,$se_base_url;
+
+    $failed_user_data = $db_user->get("se_user", "*", ["user_nick" => $user]);
+    $failed_logins = $failed_user_data['user_failed_logins']+1;
+
+    if($failed_logins >= $se_failed_logins_limit) {
+        // generate and save unlock code
+        $unlock_code = bin2hex(random_bytes(16));
+        $db_user->update("se_user",[
+            "user_unlock_code" => $unlock_code
+        ],[
+            "user_nick" => $user,
+            "user_unlock_code" => ""
+        ]);
+
+        // send mail to user
+        $unlock_link = $se_base_url."unlock/?code=$unlock_code";
+        $email_msg = str_replace("{USERNAME}","$user",$lang['account_temporarily_locked']);
+        $email_msg = str_replace("{RESET_LINK}","$unlock_link",$email_msg);
+
+        $mail_data['tpl'] = 'mail.tpl';
+        $mail_data['subject'] = 'Account / '.$se_base_url;
+        $mail_data['preheader'] = 'Unlock your Account at '.$se_base_url;
+        $mail_data['title'] = 'Unlock your Account at  '.$se_base_url;
+        $mail_data['salutation'] = "Unlock your Account | $user";
+        $mail_data['body'] = "$email_msg";
+
+        $build_html_mail = se_build_html_file($mail_data);
+
+        $recipient = array('name' => $user, 'mail' => $failed_user_data['user_mail']);
+        $send_reset_mail = se_send_mail($recipient,$mail_data['subject'],$build_html_mail);
+
+
+    } else {
+        // update failed_logins
+        $db_user->update("se_user",[
+            "user_failed_logins" => $failed_logins
+        ],[
+            "user_nick" => $user
+        ]);
+    }
+
+
+
+
+
+}
+
+
 
 /**
  * @param array $ud

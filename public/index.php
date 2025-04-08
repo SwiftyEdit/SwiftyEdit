@@ -136,6 +136,7 @@ $a_allowed_p = [
     'register',
     'account',
     'profile',
+    'unlock',
     'search',
     'sitemap',
     'logout',
@@ -395,7 +396,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register') {
+    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register' || $p == 'unlock') {
         $show_posts = false;
     }
 
