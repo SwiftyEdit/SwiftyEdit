@@ -365,7 +365,6 @@ if($product_data['product_related'] != '') {
         $rp[$i]['title'] = $related_product['title'];
         $rp[$i]['teaser'] = se_return_words_str(html_entity_decode($related_product['teaser']),10);
         $rp[$i]['product_number'] = $related_product['product_number'];
-        $rp[$i]['product_number'] = $related_product['product_number'];
         $rp[$i]['product_currency'] = $related_product['product_currency'];
         $rp[$i]['product_unit'] = $related_product['product_unit'];
         $rp[$i]['product_amount'] = $related_product['product_amount'];
@@ -394,7 +393,6 @@ if($product_data['product_accessories'] != '') {
 
         $ap[$i]['title'] = $accessories_product['title'];
         $ap[$i]['teaser'] = se_return_words_str(html_entity_decode($accessories_product['teaser']),10);
-        $ap[$i]['product_number'] = $accessories_product['product_number'];
         $ap[$i]['product_number'] = $accessories_product['product_number'];
         $ap[$i]['product_currency'] = $accessories_product['product_currency'];
         $ap[$i]['product_unit'] = $accessories_product['product_unit'];
@@ -500,6 +498,7 @@ $smarty->assign('product_show_images', $show_images);
 
 $smarty->assign('product_id', $product_data['id']);
 $smarty->assign('product_title', $product_data['title']);
+$smarty->assign('product_number', $product_data['product_number']);
 $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
 $smarty->assign('product_text_label', $text_label);
