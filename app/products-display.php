@@ -364,10 +364,16 @@ if($product_data['product_related'] != '') {
 
         $rp[$i]['title'] = $related_product['title'];
         $rp[$i]['teaser'] = se_return_words_str(html_entity_decode($related_product['teaser']),10);
+        $rp[$i]['product_number'] = $related_product['product_number'];
+        $rp[$i]['product_number'] = $related_product['product_number'];
+        $rp[$i]['product_currency'] = $related_product['product_currency'];
+        $rp[$i]['product_unit'] = $related_product['product_unit'];
+        $rp[$i]['product_amount'] = $related_product['product_amount'];
+
         $product_slug = basename($related_product['slug']);
         $product_images = explode("<->",$related_product['images']);
         if ($product_images[1] != "") {
-            $rp[$i]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+            $rp[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
         } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
             $rp[$i]['image'] = '';
         } else {
@@ -388,10 +394,16 @@ if($product_data['product_accessories'] != '') {
 
         $ap[$i]['title'] = $accessories_product['title'];
         $ap[$i]['teaser'] = se_return_words_str(html_entity_decode($accessories_product['teaser']),10);
+        $ap[$i]['product_number'] = $accessories_product['product_number'];
+        $ap[$i]['product_number'] = $accessories_product['product_number'];
+        $ap[$i]['product_currency'] = $accessories_product['product_currency'];
+        $ap[$i]['product_unit'] = $accessories_product['product_unit'];
+        $ap[$i]['product_amount'] = $accessories_product['product_amount'];
+
         $product_slug = basename($accessories_product['slug']);
         $product_images = explode("<->",$accessories_product['images']);
         if ($product_images[1] != "") {
-            $ap[$i]['image'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $product_images[1]);
+            $ap[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
         } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
             $ap[$i]['image'] = '';
         } else {
