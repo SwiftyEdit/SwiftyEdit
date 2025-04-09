@@ -134,6 +134,7 @@
   "forgotten_psw_mail_info": "Hola {USERNAME},<br \/>¿Quieres restablecer tu contraseña? Simplemente haz clic en el siguiente enlace.<br \/>Por favor, ignore este correo electrónico si la solicitud para restablecer su contraseña, no es suya.<br><br>Restablecer contraseña:<br \/>{RESET_LINK}",
   "forgotten_psw_mail_update": "<p>Hola {USERNAME},<br \/>Tu contraseña ha sido restablecida.<\/p> <p>Tu nueva contraseña es:<br \/>{temp_psw}<\/p>",
   "account_temporarily_locked": "<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br \/>{RESET_LINK}<\/p>",
+  "account_unlocked": "Your account has been reactivated. You can log in again with your username and password.",
   "posts_category_filter": "Entradas de la categoría <strong>{categorie}<\/strong>.",
   "post_is_draft": "Esta entrada es un borrador. Sólo los administradores pueden ver esta entrada.",
   "label_name": "Nombre",
