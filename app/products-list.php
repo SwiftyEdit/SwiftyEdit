@@ -245,9 +245,25 @@ foreach ($get_products as $k => $post) {
         $get_products[$k]['show_voting'] = false;
     }
 
+    /* check for variants */
+    $variants = [];
+    $variants = se_get_product_variants($get_products[$k]['id']);
+    $cnt_variants = count($variants);
+    if($cnt_variants > 1) {
+        $get_products[$k]['variants_alert'] = sprintf($lang['label_nbr_of_product_variants'],$cnt_variants);
+    }
+
+
+    // tax
+    if ($product_tax == '1') {
+        $tax = $se_prefs['prefs_posts_products_default_tax'];
+    } else if ($product_tax == '2') {
+        $tax = $se_prefs['prefs_posts_products_tax_alt1'];
+    } else {
+        $tax = $se_prefs['prefs_posts_products_tax_alt2'];
+    }
 
     // price
-
     if($get_products[$k]['product_price_group'] != '' AND $get_products[$k]['product_price_group'] != 'null') {
 
         $price_data = se_get_price_group_data($get_products[$k]['product_price_group']);
@@ -261,14 +277,6 @@ foreach ($get_products as $k => $post) {
         $product_volume_discounts = $get_products[$k]['product_price_volume_discount'];
     }
 
-    if ($product_tax == '1') {
-        $tax = $se_prefs['prefs_posts_products_default_tax'];
-    } else if ($product_tax == '2') {
-        $tax = $se_prefs['prefs_posts_products_tax_alt1'];
-    } else {
-        $tax = $se_prefs['prefs_posts_products_tax_alt2'];
-    }
-
     $get_products[$k]['price_tag_label_from'] = '';
     if($product_volume_discounts != 'null') {
         // if we have volume discounts, show the cheapest
@@ -279,6 +287,22 @@ foreach ($get_products as $k => $post) {
             $product_price_net = str_replace('.', ',', $product_price_net);
             $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
         }
+    }
+
+    // check if we have cheaper price from variants
+    if($cnt_variants > 1) {
+        foreach($variants as $variant) {
+            $variant_prices[] = $db_posts->get("se_products","product_price_net",[
+               "id" => $variant['id']
+            ]);
+        }
+        $priceValues = array_map(function($pr) {
+            return floatval(str_replace(',', '.', $pr));
+        }, $variant_prices);
+
+        $product_price_net = min($priceValues);
+        $product_price_net = str_replace('.', ',', $product_price_net);
+        $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
     }
 
     $post_prices = se_posts_calc_price($product_price_net, $tax);
@@ -302,15 +326,11 @@ foreach ($get_products as $k => $post) {
         $get_products[$k]['price_tag'] = $get_products[$k]['product_price_net'];
     }
 
-    $get_products[$k]['product_author'] = $get_products[$k]['author'];
 
-    /* check for variants */
-    $variants = array();
-    $variants = se_get_product_variants($get_products[$k]['id']);
-    $cnt_variants = count($variants);
-    if($cnt_variants > 1) {
-        $get_products[$k]['variants_alert'] = sprintf($lang['label_nbr_of_product_variants'],$cnt_variants);
-    }
+
+
+
+    $get_products[$k]['product_author'] = $get_products[$k]['author'];
 
     /* item status */
     if (isset($get_products[$k]['post_status']) AND $get_products[$k]['post_status'] == '2') {
