@@ -58,7 +58,7 @@ $submenu = array();
 
 $mainmenu = show_mainmenu();
 $submenu = show_menu($current_page_sort);
-$bcmenu = breadcrumbs_menu($current_page_sort);
+$bcmenu = breadcrumbs_menu();
 
 /* shortcodes will be replaced in text_parser */
 $shortcodes = se_get_shortcodes();
