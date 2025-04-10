@@ -397,6 +397,24 @@ if($_REQUEST['action'] == 'list_products') {
 
 }
 
+// List of products that have been assigned to a specific filter
+if($_REQUEST['show'] == 'products_by_filter') {
+    $filter_id = (int) $_REQUEST['filter_id'];
+    // search in json string
+    $get_filter = ':"'.$filter_id.'"';
+    $get_products = $db_posts->select("se_products",["id","title"],[
+        "filter[~]" => $get_filter,
+        "ORDER" => ["lastedit" => "DESC"],
+        "LIMIT" => 50,
+    ]);
+
+    foreach($get_products as $prod) {
+        echo '<div class="d-flex justify-content-start border-end mb-1">';
+        echo '<div class="flex-shrink-0 p-1">#'.$prod['id'].'</div>';
+        echo '<div class="w-100 p-1">'.htmlentities($prod['title']).'</div>';
+        echo '</div>';
+    }
+}
 
 
 // list price groups
@@ -757,7 +775,7 @@ if($_REQUEST['action'] == 'list_filters') {
         echo '<td>';
 
         echo '<form action="/admin/shop/filters/edit/" method="post" class="">';
-        echo '<button class="btn btn-default" name="edit_group" value="'.$group_id.'">'.$icon['edit'].' '.$group_title.'</button>';
+        echo '<button class="btn btn-default" name="edit_group" value="'.$group_id.'"><code>#'.$group_id.'</code> '.$group_title.'</button>';
         echo  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         echo  '</form>';
 

@@ -238,7 +238,7 @@ if(isset($_POST['edit_value'])) {
     $set_options = [];
     $all_filters = se_get_product_filter_groups('all');
     foreach($all_filters as $filters) {
-        $key = '('.$filters['filter_priority'].') '.$filters['filter_title'];
+        $key = '#'.$filters['filter_id'].' | '.$filters['filter_title'];
         $set_options["$key"] = $filters['filter_id'];
     }
 
@@ -272,6 +272,17 @@ if(isset($_POST['edit_value'])) {
     echo '<input type="hidden" name="filter_hash" value="'.$filter_hash.'">';
     echo '</div>';
     echo '</div>';
+
+    if(isset($edit_value_id)) {
+        echo '<div class="card mt-3">';
+        echo '<div class="card-header">' . $lang['nav_btn_products'] . '</div>';
+        echo '<div class="card-body">';
+        echo '<div class="scroll-container">';
+        echo '<div id="loadingProducts" hx-get="/admin/shop/read/?show=products_by_filter&filter_id=' . $edit_value_id . '" hx-trigger="load">Loading data ...</div>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
+    }
 
     echo '</div>';
     echo '</div>';
