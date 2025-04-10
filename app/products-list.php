@@ -291,6 +291,7 @@ foreach ($get_products as $k => $post) {
 
     // check if we have cheaper price from variants
     // check volume discounts, also
+    $variant_prices = [];
     if($cnt_variants > 1) {
         foreach($variants as $variant) {
             $variant_prices[] = $db_posts->get("se_products",["product_price_net","product_price_volume_discount"],[
