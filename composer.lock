@@ -4,20 +4,236 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0365beb82d8fcb6b12d6bc157ae9c168",
+    "content-hash": "9f048dbbfb94e2cc771b21b9febd093b",
     "packages": [
         {
-            "name": "catfan/medoo",
-            "version": "v2.1.12",
+            "name": "apimatic/core",
+            "version": "0.3.14",
             "source": {
                 "type": "git",
-                "url": "https://github.com/catfan/Medoo.git",
-                "reference": "d1ff4e0e873a3e032e3d8804031dd6be4e013b22"
+                "url": "https://github.com/apimatic/core-lib-php.git",
+                "reference": "c3eaad6cf0c00b793ce6d9bee8b87176247da582"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/catfan/Medoo/zipball/d1ff4e0e873a3e032e3d8804031dd6be4e013b22",
-                "reference": "d1ff4e0e873a3e032e3d8804031dd6be4e013b22",
+                "url": "https://api.github.com/repos/apimatic/core-lib-php/zipball/c3eaad6cf0c00b793ce6d9bee8b87176247da582",
+                "reference": "c3eaad6cf0c00b793ce6d9bee8b87176247da582",
+                "shasum": ""
+            },
+            "require": {
+                "apimatic/core-interfaces": "~0.1.5",
+                "apimatic/jsonmapper": "^3.1.1",
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "php": "^7.2 || ^8.0",
+                "php-jsonpointer/php-jsonpointer": "^3.0.2",
+                "psr/log": "^1.1.4 || ^2.0.0 || ^3.0.0"
+            },
+            "require-dev": {
+                "phan/phan": "5.4.5",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Core\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Core logic and the utilities for the Apimatic's PHP SDK",
+            "homepage": "https://github.com/apimatic/core-lib-php",
+            "keywords": [
+                "apimatic",
+                "core",
+                "corelib",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/apimatic/core-lib-php/issues",
+                "source": "https://github.com/apimatic/core-lib-php/tree/0.3.14"
+            },
+            "time": "2025-02-27T06:03:30+00:00"
+        },
+        {
+            "name": "apimatic/core-interfaces",
+            "version": "0.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/apimatic/core-interfaces-php.git",
+                "reference": "b4f1bffc8be79584836f70af33c65e097eec155c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apimatic/core-interfaces-php/zipball/b4f1bffc8be79584836f70af33c65e097eec155c",
+                "reference": "b4f1bffc8be79584836f70af33c65e097eec155c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CoreInterfaces\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Definition of the behavior of apimatic/core, apimatic/unirest-php and Apimatic's PHP SDK",
+            "homepage": "https://github.com/apimatic/core-interfaces-php",
+            "keywords": [
+                "apimatic",
+                "core",
+                "corelib",
+                "interface",
+                "php",
+                "unirest"
+            ],
+            "support": {
+                "issues": "https://github.com/apimatic/core-interfaces-php/issues",
+                "source": "https://github.com/apimatic/core-interfaces-php/tree/0.1.5"
+            },
+            "time": "2024-05-09T06:32:07+00:00"
+        },
+        {
+            "name": "apimatic/jsonmapper",
+            "version": "3.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/apimatic/jsonmapper.git",
+                "reference": "c6cc21bd56bfe5d5822bbd08f514be465c0b24e7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apimatic/jsonmapper/zipball/c6cc21bd56bfe5d5822bbd08f514be465c0b24e7",
+                "reference": "c6cc21bd56bfe5d5822bbd08f514be465c0b24e7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^5.6 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0",
+                "squizlabs/php_codesniffer": "^3.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "apimatic\\jsonmapper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Weiske",
+                    "email": "christian.weiske@netresearch.de",
+                    "homepage": "http://www.netresearch.de/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Mehdi Jaffery",
+                    "email": "mehdi.jaffery@apimatic.io",
+                    "homepage": "http://apimatic.io/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Map nested JSON structures onto PHP classes",
+            "support": {
+                "email": "mehdi.jaffery@apimatic.io",
+                "issues": "https://github.com/apimatic/jsonmapper/issues",
+                "source": "https://github.com/apimatic/jsonmapper/tree/3.1.6"
+            },
+            "time": "2024-11-28T09:15:32+00:00"
+        },
+        {
+            "name": "apimatic/unirest-php",
+            "version": "4.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/apimatic/unirest-php.git",
+                "reference": "e16754010c16be5473289470f129d87a0f41b55e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apimatic/unirest-php/zipball/e16754010c16be5473289470f129d87a0f41b55e",
+                "reference": "e16754010c16be5473289470f129d87a0f41b55e",
+                "shasum": ""
+            },
+            "require": {
+                "apimatic/core-interfaces": "^0.1.0",
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "phan/phan": "5.4.2",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Unirest\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mashape",
+                    "email": "opensource@mashape.com",
+                    "homepage": "https://www.mashape.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "APIMATIC",
+                    "email": "opensource@apimatic.io",
+                    "homepage": "https://www.apimatic.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Unirest PHP",
+            "homepage": "https://github.com/apimatic/unirest-php",
+            "keywords": [
+                "client",
+                "curl",
+                "http",
+                "https",
+                "rest"
+            ],
+            "support": {
+                "email": "opensource@apimatic.io",
+                "issues": "https://github.com/apimatic/unirest-php/issues",
+                "source": "https://github.com/apimatic/unirest-php/tree/4.0.5"
+            },
+            "time": "2023-04-25T14:19:45+00:00"
+        },
+        {
+            "name": "catfan/medoo",
+            "version": "v2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/catfan/Medoo.git",
+                "reference": "347515fe63339387738c5c1c93d1d6726cc9774a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/catfan/Medoo/zipball/347515fe63339387738c5c1c93d1d6726cc9774a",
+                "reference": "347515fe63339387738c5c1c93d1d6726cc9774a",
                 "shasum": ""
             },
             "require": {
@@ -80,7 +296,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-02-03T11:28:59+00:00"
+            "time": "2025-03-31T07:37:23+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -195,16 +411,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.9.2",
+            "version": "7.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "d281ed313b989f213357e3be1a179f02196ac99b"
+                "reference": "7b2f29fe81dc4da0ca0ea7d42107a0845946ea77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/d281ed313b989f213357e3be1a179f02196ac99b",
-                "reference": "d281ed313b989f213357e3be1a179f02196ac99b",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/7b2f29fe81dc4da0ca0ea7d42107a0845946ea77",
+                "reference": "7b2f29fe81dc4da0ca0ea7d42107a0845946ea77",
                 "shasum": ""
             },
             "require": {
@@ -301,7 +517,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.9.2"
+                "source": "https://github.com/guzzle/guzzle/tree/7.9.3"
             },
             "funding": [
                 {
@@ -317,20 +533,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-24T11:22:20+00:00"
+            "time": "2025-03-27T13:37:11+00:00"
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "2.0.4",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "f9c436286ab2892c7db7be8c8da4ef61ccf7b455"
+                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/f9c436286ab2892c7db7be8c8da4ef61ccf7b455",
-                "reference": "f9c436286ab2892c7db7be8c8da4ef61ccf7b455",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/7c69f28996b0a6920945dd20b3857e499d9ca96c",
+                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c",
                 "shasum": ""
             },
             "require": {
@@ -384,7 +600,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/2.0.4"
+                "source": "https://github.com/guzzle/promises/tree/2.2.0"
             },
             "funding": [
                 {
@@ -400,20 +616,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-10-17T10:06:22+00:00"
+            "time": "2025-03-27T13:27:01+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "a70f5c95fb43bc83f07c9c948baa0dc1829bf201"
+                "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/a70f5c95fb43bc83f07c9c948baa0dc1829bf201",
-                "reference": "a70f5c95fb43bc83f07c9c948baa0dc1829bf201",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/c2270caaabe631b3b44c85f99e5a04bbb8060d16",
+                "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16",
                 "shasum": ""
             },
             "require": {
@@ -500,7 +716,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.7.0"
+                "source": "https://github.com/guzzle/psr7/tree/2.7.1"
             },
             "funding": [
                 {
@@ -516,7 +732,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-18T11:15:46+00:00"
+            "time": "2025-03-27T12:30:47+00:00"
         },
         {
             "name": "mustangostang/spyc",
@@ -571,6 +787,105 @@
                 "source": "https://github.com/mustangostang/spyc/tree/0.6.3"
             },
             "time": "2019-09-10T13:16:29+00:00"
+        },
+        {
+            "name": "paypal/paypal-server-sdk",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paypal/PayPal-PHP-Server-SDK.git",
+                "reference": "66fd3341bbffafe7d650fe7d9d2699fabf355e67"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paypal/PayPal-PHP-Server-SDK/zipball/66fd3341bbffafe7d650fe7d9d2699fabf355e67",
+                "reference": "66fd3341bbffafe7d650fe7d9d2699fabf355e67",
+                "shasum": ""
+            },
+            "require": {
+                "apimatic/core": "~0.3.13",
+                "apimatic/core-interfaces": "~0.1.5",
+                "apimatic/unirest-php": "^4.0.0",
+                "ext-json": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "phan/phan": "5.4.5",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PaypalServerSdkLib\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PayPal's SDK for interacting with the REST APIs",
+            "homepage": "https://github.com/paypal/PayPal-PHP-Server-SDK",
+            "support": {
+                "issues": "https://github.com/paypal/PayPal-PHP-Server-SDK/issues",
+                "source": "https://github.com/paypal/PayPal-PHP-Server-SDK/tree/1.0.0"
+            },
+            "time": "2025-03-24T18:44:18+00:00"
+        },
+        {
+            "name": "php-jsonpointer/php-jsonpointer",
+            "version": "v3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/raphaelstolt/php-jsonpointer.git",
+                "reference": "4428f86c6f23846e9faa5a420c4ef14e485b3afb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpointer/zipball/4428f86c6f23846e9faa5a420c4ef14e485b3afb",
+                "reference": "4428f86c6f23846e9faa5a420c4ef14e485b3afb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.11",
+                "phpunit/phpunit": "4.6.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Rs\\Json": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Raphael Stolt",
+                    "email": "raphael.stolt@gmail.com",
+                    "homepage": "http://raphaelstolt.blogspot.com/"
+                }
+            ],
+            "description": "Implementation of JSON Pointer (http://tools.ietf.org/html/rfc6901)",
+            "homepage": "https://github.com/raphaelstolt/php-jsonpointer",
+            "keywords": [
+                "json",
+                "json pointer",
+                "json traversal"
+            ],
+            "support": {
+                "issues": "https://github.com/raphaelstolt/php-jsonpointer/issues",
+                "source": "https://github.com/raphaelstolt/php-jsonpointer/tree/master"
+            },
+            "time": "2016-08-29T08:51:01+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -812,6 +1127,56 @@
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
             "time": "2023-04-04T09:54:51+00:00"
+        },
+        {
+            "name": "psr/log",
+            "version": "3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/3.0.2"
+            },
+            "time": "2024-09-11T13:17:53+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
