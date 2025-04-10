@@ -5,7 +5,11 @@
 		<nav aria-label="breadcrumb" class="mt-3">
 			<ol class="breadcrumb">
 				{foreach item=bc from=$arr_bcmenue}
-				<li class="breadcrumb-item"><a href="{$bc.link}" title="{$bc.page_title}">{$bc.page_linkname}</a></li>
+					{if $bc.link == ''}
+						<li class="breadcrumb-item">{$bc.page_linkname}</li>
+					{else}
+						<li class="breadcrumb-item"><a href="{$bc.link}" title="{$bc.page_title}">{$bc.page_linkname}</a></li>
+					{/if}
 				{/foreach}
 			</ol>
 		</nav>
