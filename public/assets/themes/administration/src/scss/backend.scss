@@ -39,6 +39,7 @@ $color-mode-type: data;
   --#{$prefix}btn-default-bg: #{$btn_se_background};
   --#{$prefix}btn-default-bg-active: #{$btn_se_background_active};
   --#{$prefix}btn-default-bg-hover: #{$btn_se_background_hover};
+  --#{$prefix}btn-default-border-color: #{$btn_se_border_color};
   --#{$prefix}btn-default-color: #{$btn_se_color};
   --#{$prefix}btn-default-color-active: #{$btn_se_color_active};
 
@@ -81,6 +82,7 @@ $color-mode-type: data;
     --#{$prefix}btn-default-bg: #{$btn_se_background_dark};
     --#{$prefix}btn-default-bg-active: #{$btn_se_background_active_dark};
     --#{$prefix}btn-default-bg-hover: #{$btn_se_background_hover_dark};
+    --#{$prefix}btn-default-border-color: #{$btn_se_border_color_dark};
     --#{$prefix}btn-default-color: #{$btn_se_color_dark};
     --#{$prefix}btn-default-color-active: #{$btn_se_color_active_dark};
 

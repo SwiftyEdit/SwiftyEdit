@@ -21,7 +21,7 @@
 	@extend .btn-primary;
 	background: var(--bs-btn-default-bg);
 	color: var(--bs-btn-default-color);
-	border-color: var(--bs-btn-default-bg);
+	border-color: var(--bs-btn-default-border-color);
 
 	&:hover {
 		color: var(--bs-btn-default-color-active) !important;
