@@ -187,6 +187,7 @@
   "label_order_nbr": "Numer zamówienia",
   "status_payment_open": "Płatność w toku",
   "status_payment_paid": "Zapłacono",
+  "label_scope_of_delivery": "Scope of delivery",
   "label_shipping": "Wysyłka",
   "status_shipping_open": "Wysyłka w przygotowaniu",
   "status_shipping_done": "Zamówienie zostało wysłane",
