@@ -260,6 +260,7 @@
   "label.product.attachments": "Pièces jointes du produit",
   "label.product.files_after_sale": "Fichiers qui peuvent être téléchargés après l'achat de l'article",
   "label.product.files_before_sale": "Fichiers qui peuvent être téléchargés avant l'achat de l'article",
+  "label.main_catalog_page": "Main catalog page",
   "label.product.sorting_default": "Utiliser le tri par défaut",
   "label.product.sorting_topseller": "Trier par best-seller",
   "label.product.sorting_price": "Trier par prix",
