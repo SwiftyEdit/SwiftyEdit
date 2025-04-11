@@ -58,7 +58,10 @@ if(is_int($get_product_id)) {
 }
 
 
-
+if(!is_array($product_data)) {
+    $product_data = [];
+    $product_data['product_amount'] = 1;
+}
 
 
 
