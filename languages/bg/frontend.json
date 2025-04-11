@@ -187,6 +187,7 @@
   "label_order_nbr": "Въведете запитване",
   "status_payment_open": "Очаква се плащане",
   "status_payment_paid": "Платено",
+  "label_scope_of_delivery": "Scope of delivery",
   "label_shipping": "Shipping",
   "status_shipping_open": "Shipping is being prepared",
   "status_shipping_done": "Order has been shipped",
