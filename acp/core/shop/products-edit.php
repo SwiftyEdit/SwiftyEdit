@@ -63,7 +63,27 @@ if(!is_array($product_data)) {
     $product_data['product_amount'] = 1;
 }
 
+// select main catalog page
+$all_catalog_pages = [];
+$all_catalog_pages = $db_content->select("se_pages","page_permalink",[
+    "page_posts_types" => "p"
+]);
+array_unshift($all_catalog_pages, "default");
 
+$product_main_catalog_slug = '';
+if(isset($product_data['main_catalog_slug'])) {
+    $product_main_catalog_slug = $product_data['main_catalog_slug'];
+}
+
+$select_main_catalog_page  = '<select name="main_catalog_slug" class="custom-select form-control">';
+foreach($all_catalog_pages as $permalink) {
+    $label = $permalink;
+    if($permalink == 'default') {
+        $label = $lang['label_use_default'];
+    }
+    $select_main_catalog_page .= "<option value='$permalink'".($product_main_catalog_slug == "$permalink" ? 'selected="selected"' :'').">$label</option>";
+}
+$select_main_catalog_page .= '</select>';
 
 
 
@@ -878,6 +898,9 @@ $form_tpl = str_replace('{text_scope_of_delivery}', $product_data['text_scope_of
 $form_tpl = str_replace('{author}', $product_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $product_data['slug'], $form_tpl);
 $form_tpl = str_replace('{translation_inputs}', $translation_inputs, $form_tpl);
+
+$form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
+$form_tpl = str_replace('{select_main_catalog_page}', $select_main_catalog_page, $form_tpl);
 
 $form_tpl = str_replace('{tags}', $product_data['tags'], $form_tpl);
 $form_tpl = str_replace('{rss_url}', $product_data['rss_url'], $form_tpl);
