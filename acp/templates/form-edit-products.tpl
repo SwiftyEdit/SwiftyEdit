@@ -95,6 +95,9 @@
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content5"
                                                                 title="{nav_btn_additional_description}">5</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                                href="#sod"
+                                                                title="{label_scope_of_delivery}">{label_scope_of_delivery}</a></li>
                                     </ul>
                                 </div>
                                 <div class="card-body">
@@ -167,6 +170,12 @@
                                             <div class="mb-3">
                                                 <textarea class='mceEditor'
                                                           name='text_additional5'>{text_additional_5}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="sod">
+                                            <div class="mb-3">
+                                                <textarea class='mceEditor'
+                                                          name='text_scope_of_delivery'>{text_scope_of_delivery}</textarea>
                                             </div>
                                         </div>
                                     </div>

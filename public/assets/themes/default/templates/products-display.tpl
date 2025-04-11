@@ -115,6 +115,9 @@
                 {if $text_additional5_label != ""}
                     <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional5">{$text_additional5_label}</a>
                 {/if}
+                {if $text_scope_of_delivery != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#sod">{$lang_label_scope_of_delivery}</a>
+                {/if}
             </div>
         </nav>
         <div class="tab-content my-3" id="myTabContent">
@@ -178,6 +181,11 @@
             {if $text_additional5_label != ""}
                 <div class="tab-pane fade" id="tab_additional5" role="tabpanel">
                     {$text_additional5}
+                </div>
+            {/if}
+            {if $text_scope_of_delivery != ""}
+                <div class="tab-pane fade" id="sod" role="tabpanel">
+                    {$text_scope_of_delivery}
                 </div>
             {/if}
         </div>

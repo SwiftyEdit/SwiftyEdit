@@ -110,6 +110,7 @@ if($product_volume_discounts_json != '') {
 
 $teaser = text_parser(htmlspecialchars_decode($product_data['teaser']));
 $text = text_parser(htmlspecialchars_decode($product_data['text']));
+$text_scope_of_delivery = text_parser(htmlspecialchars_decode($product_data['text_scope_of_delivery']));
 
 if($product_data['text_label'] != '') {
     $text_label = text_parser(htmlspecialchars_decode($product_data['text_label']));
@@ -501,6 +502,7 @@ $smarty->assign('product_title', $product_data['title']);
 $smarty->assign('product_number', $product_data['product_number']);
 $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
+$smarty->assign('text_scope_of_delivery', $text_scope_of_delivery);
 $smarty->assign('product_text_label', $text_label);
 $smarty->assign('product_href', $swifty_slug.$product_data['slug']);
 

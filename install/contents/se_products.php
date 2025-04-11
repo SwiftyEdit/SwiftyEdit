@@ -53,6 +53,7 @@ $cols = array(
     "text_additional4_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "text_additional5" => "LONGTEXT NOT NULL DEFAULT ''",
     "text_additional5_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "text_scope_of_delivery" => "LONGTEXT NOT NULL DEFAULT ''",
 
     "images" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "tags" => "VARCHAR(255) NOT NULL DEFAULT ''",
