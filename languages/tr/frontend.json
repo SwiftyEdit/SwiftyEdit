@@ -187,6 +187,7 @@
   "label_order_nbr": "Silme seçildi",
   "status_payment_open": "Ödeme bekleniyor",
   "status_payment_paid": "Ödenmiş",
+  "label_scope_of_delivery": "Scope of delivery",
   "label_shipping": "Teslimat",
   "status_shipping_open": "Shipping is being prepared",
   "status_shipping_done": "Order has been shipped",

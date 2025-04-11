@@ -187,6 +187,7 @@
   "label_order_nbr": "Αύξων αριθμός",
   "status_payment_open": "Πληρωμή σε αναμονή",
   "status_payment_paid": "Πληρωμένο",
+  "label_scope_of_delivery": "Scope of delivery",
   "label_shipping": "Μεταφορικά",
   "status_shipping_open": "Η αποστολή προετοιμάζεται",
   "status_shipping_done": "Η παραγγελία έχει αποσταλεί",

@@ -187,6 +187,7 @@
   "label_order_nbr": "Numărul comenzii",
   "status_payment_open": "Plată în așteptare",
   "status_payment_paid": "Plătit",
+  "label_scope_of_delivery": "Scope of delivery",
   "label_shipping": "Livrare",
   "status_shipping_open": "Livrarea este în curs de pregătire",
   "status_shipping_done": "Comanda a fost expediată",
