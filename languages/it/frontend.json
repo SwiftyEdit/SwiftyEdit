@@ -187,6 +187,7 @@
   "label_order_nbr": "Numero d’ordine",
   "status_payment_open": "Pagamento in sospeso",
   "status_payment_paid": "Pagato",
+  "label_scope_of_delivery": "Scope of delivery",
   "label_shipping": "Spedizione",
   "status_shipping_open": "Spedizione in fase di preparazione",
   "status_shipping_done": "L'ordine è stato spedito",
