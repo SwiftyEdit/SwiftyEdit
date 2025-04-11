@@ -293,6 +293,8 @@
   "label.product.files_after_sale": "Files that can be downloaded after the item has been purchased",
   "label.product.files_before_sale": "Files that can be downloaded before the item has been purchased",
 
+  "label.main_catalog_page": "Main catalog page",
+
   "label.product.sorting_default": "Use the default sorting",
   "label.product.sorting_topseller": "Sort by top seller",
   "label.product.sorting_price": "Sort by price",
