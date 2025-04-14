@@ -325,7 +325,7 @@ if($_REQUEST['action'] == 'list_products') {
 
         // buttons
         $btn_edit_tpl  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
-        $btn_edit_tpl .= '<button class="btn btn-default" name="product_id" value="'.$product_id.'">'.$icon['edit'].'</button>';
+        $btn_edit_tpl .= '<button class="btn btn-default text-success" name="product_id" value="'.$product_id.'">'.$icon['edit'].'</button>';
         $btn_edit_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $btn_edit_tpl .= '</form>';
 
@@ -388,7 +388,7 @@ if($_REQUEST['action'] == 'list_products') {
         }
         echo '</td>';
         echo '<td>'.$show_items_price.'</td>';
-        echo '<td>'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
+        echo '<td class="text-nowrap">'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
         echo '</tr>';
     }
 

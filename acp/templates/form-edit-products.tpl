@@ -1,12 +1,5 @@
 <div class="subHeader">
-    <div class="row">
-        <div class="col-9">
-            {form_header_message}
-        </div>
-        <div class="col-3">
-            {form_header_mode}
-        </div>
-    </div>
+    {form_header_message}
 </div>
 <div id="formResponse"></div>
 <form class="no-enter">
@@ -594,6 +587,20 @@
         </div>
         <div class="col-md-3">
             <div class="card p-3">
+
+                <!-- sidebar -->
+
+                <div class="sidebar-actions sticky-lg-top">
+                    <div class="form-mode">
+                        {form_header_mode}
+                    </div>
+
+                    {submit_variant_button}
+                    {submit_button}
+
+                    {submit_delete_button}
+                </div>
+
                 <div class="mb-2 pb-3 border-bottom">
                     <label>{label_language}</label>
                     {checkboxes_lang}
@@ -639,10 +646,7 @@
                 <input type="hidden" name="csrf_token" value="{token}">
                 <input type="hidden" name="date" value="{date}">
 
-                {submit_variant_button}
-                {submit_button}
-                
-                {submit_delete_button}
+
 
             </div>
         </div>

@@ -17,8 +17,8 @@ if(is_numeric($lastSegment)) {
     $get_product_id = (int) $lastSegment;
     $form_mode = $get_product_id;
     $btn_submit_text = $lang['update'];
-    $form_header_mode = 'Edit: '.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $form_header_mode = $lang['edit'].' #'.$get_product_id;
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
     $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
@@ -26,8 +26,8 @@ if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
     $form_mode = $get_product_id;
     $btn_submit_text = $lang['update'];
-    $form_header_mode = 'Edit: '.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $form_header_mode = $lang['edit'].' #'.$get_product_id;
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
     $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
@@ -35,7 +35,7 @@ if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $get_product_id = (int) $_POST['duplicate_id'];
     $form_mode = 'new';
     $btn_submit_text = $lang['duplicate'];
-    $form_header_mode = 'Duplicate: '.$get_product_id;
+    $form_header_mode = $lang['duplicate'].' #'.$get_product_id;
     $submit_variant_btn = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="'.$get_product_id.'">'.$lang['submit_variant'].'</button>';
 }
 
