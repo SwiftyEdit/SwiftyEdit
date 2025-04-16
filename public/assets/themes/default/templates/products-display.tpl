@@ -71,8 +71,8 @@
                             {$file_upload_message}
                         </div>
                     {/if}
-                        <div class="mt-2">
-                            <hr>
+                        <div class="mt-2 pt-2 d-flex border-top">
+                            <input type="number" name="amount" value="1" class="form-control form-control-lg w-25 me-1">
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
                         </div>
                         <input type="hidden" name="product_href" value="{$product_href}">

@@ -414,8 +414,8 @@ function se_add_to_cart() {
 	global $se_settings;
 
 	$cart_product_id = (int) $_POST['add_to_cart'];
-	$cart_product_amount = 1;
-	$cart_time = time();
+    $cart_product_amount = max(1, (int) ($_POST['amount'] ?? 0));
+    $cart_time = time();
 	
 	/* check if user or visitor */
 	if(is_numeric($_SESSION['user_id'])) {
