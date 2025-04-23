@@ -86,7 +86,7 @@
                 {foreach $payment_methods as $pm}
                     <div class="form-check">
                         <input type="radio" class="form-check-input" name="set_payment" value="{$pm.key}"
-                               id="id_{$pm.key}" autocomplete="off" {$checked_{$pm.key}}>
+                               id="id_{$pm.key}" autocomplete="off" {$checked_{$pm.key}} onchange="this.form.submit()">
                         <label class="form-check-label" for="id_{$pm.key}">{$pm.title} ({$currency} {$pm.cost})</label>
                     </div>
                 {/foreach}
