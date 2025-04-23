@@ -75,7 +75,7 @@
     </tr>
 
     <tr>
-        <td colspan="2" class="text-end">{$lang_shipping_costs}</td>
+        <td colspan="2" class="text-end">{$lang_label_shipping}</td>
         <td class="text-end">{$currency} {$cart_shipping_costs}</td>
         <td></td>
     </tr>
