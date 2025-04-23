@@ -276,7 +276,7 @@ if($se_prefs['prefs_posts_order_mode'] == 1 OR $se_prefs['prefs_posts_order_mode
 
 /**
  * client has sent a request
- * send vial mail to admin
+ * send via mail to admin
  * reset shopping cart if data is sent
  */
 
@@ -368,6 +368,7 @@ if($_POST['order'] == 'send') {
 		$order_data['order_payment_type'] = $payment_addon;
 		$order_data['order_payment_costs'] = $payment_costs;
         $order_data['order_comment'] = $_POST['cart_comment'];
+        $order_data['order_nbr'] = $get_cd['user_id'].'-'.uniqid();
 		
 		$order_id = se_send_order($order_data);
 

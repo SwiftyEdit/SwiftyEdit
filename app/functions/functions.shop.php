@@ -753,7 +753,7 @@ function se_send_order($data) {
 	global $se_prefs;
 	
 	$user_id = $data['user_id'];
-	$order_nbr = $user_id.'-'.uniqid();
+	$order_nbr = $data['order_nbr'];
 	$order_time = time();
 	$order_status = 1;
 	$order_status_shipping = 1;
