@@ -221,6 +221,13 @@ $input_mail_type = [
     "type" => "radios"
 ];
 
+$input_notify_mail_address = [
+    "input_name" => "prefs_notify_mail",
+    "input_value" => $se_settings['notify_mail'],
+    "label" => $lang['label_settings_notify_mail'],
+    "type" => "text"
+];
+
 $date_formats = array("Y-m-d","d.m.Y","d/m/Y","m/d/Y");
 foreach($date_formats as $dates) {
     $example = date("$dates",time());
@@ -557,9 +564,17 @@ echo '</div>'; // tab
 echo '<div class="tab-pane fade" id="email-tab" role="tabpanel" tabindex="0">';
 
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+echo '<div class="row">';
+echo '<div class="col-md-6">';
 echo se_print_form_input($input_mail_name);
 echo se_print_form_input($input_mail_address);
 echo se_print_form_input($input_mail_type);
+echo '</div>';
+echo '<div class="col-md-6">';
+echo se_print_form_input($input_notify_mail_address);
+echo '</div>';
+echo '</div>';
+
 echo '<hr>';
 echo '<button type="submit" class="btn btn-primary" name="update_email" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
