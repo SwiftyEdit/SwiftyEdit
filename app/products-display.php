@@ -245,15 +245,29 @@ if($se_prefs['prefs_posts_products_cart'] == 1) {
     $product_data['product_cart_mode'] = 2;
 }
 
+if($product_data['product_order_quantity_min'] == '') {
+    $input_min_quantity = '';
+} else {
+    $input_min_quantity = 'min="' . $product_data['product_order_quantity_min'] . '"';
+    $product_data['product_amount'] = $product_data['product_order_quantity_min'];
+}
+
+if($product_data['product_order_quantity_max'] == '' OR $product_data['product_order_quantity_max'] < 1) {
+    $input_max_quantity = '';
+} else {
+    $input_max_quantity = 'max="' . $product_data['product_order_quantity_max'] . '"';
+}
+
 $smarty->assign('product_price_tag', $product_price_tag);
 $smarty->assign('product_tax_label', $product_tax_label);
-
 $smarty->assign('product_price_gross', $post_price_gross);
 $smarty->assign('product_price_net', $post_price_net_calculated);
 $smarty->assign('product_price_tax', $tax);
 $smarty->assign('product_currency', $product_data['product_currency']);
 $smarty->assign('product_unit', $product_data['product_unit']);
 $smarty->assign('product_amount', $product_data['product_amount']);
+$smarty->assign('product_order_quantity_max', $input_max_quantity);
+$smarty->assign('product_order_quantity_min', $input_min_quantity);
 $smarty->assign('product_price_label', $product_data['product_price_label']);
 $smarty->assign('product_price_tag_label_gross', $lang['price_tag_label_gross']);
 $smarty->assign('product_price_tag_label_net', $lang['price_tag_label_net']);
