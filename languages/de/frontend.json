@@ -164,6 +164,7 @@
   "label_product_amount": "Menge",
   "label_product_info": "Produkt",
   "label_tax": "Steuer",
+  "label_plus_tax": "zzgl. Steuer",
   "label_net": "Netto",
   "label_gross": "Brutto",
   "price_single": "Einzelpreis",
