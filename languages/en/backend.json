@@ -399,6 +399,7 @@
   "label.settings.mailer_name": "Sender name",
   "label.settings.mailer_mail": "Sender e-mail",
   "label.settings.mailer_send_test": "Send test to ",
+  "label.settings.notify_mail": "Notify e-mail",
   "label.settings.allow_registration": "Allow new registrations",
   "label.settings.show_login": "Show login form",
   "label.settings.new_user_unlock_by_admin": "New users must be activated by an administrator",
