@@ -164,6 +164,7 @@
   "label_product_amount": "Amount",
   "label_product_info": "Product",
   "label_tax": "Tax",
+  "label_plus_vat": "plus tax",
   "label_net": "Net",
   "label_gross": "Gross",
   "price_single": "Single price",
