@@ -2,6 +2,13 @@
 
 /**
  * USER LOGIN
+ *
+ * @var string $se_base_url
+ * @var object $smarty
+ * @var string $cache_id
+ * @var array $lang
+ * @var array $se_settings
+ * @var int $p
  */
 
 unset($status_msg);
@@ -49,6 +56,7 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 	
 	$smarty->assign('status_msg', $status_msg,true);
 	$smarty->assign('link_profile', $link_profile);
+    $smarty->assign('href_profile', $link_profile);
 	$smarty->assign('lang_button_profile', $lang['button_profile']);
 	$smarty->assign("link_logout","$link_logout");
 	$smarty->assign('lang_button_logout', $lang['button_logout']);	
@@ -67,7 +75,7 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
         $status_msg = '';
     }
 	
-	if($se_prefs['prefs_showloginform'] == 'yes') {
+	if($se_settings['showloginform'] == 'yes') {
 		$smarty->assign("legend_login",$lang['legend_login']);
 		$smarty->assign("label_login",$lang['label_login']);
 		$smarty->assign("label_username",$lang['label_username']);
@@ -76,16 +84,31 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 		$smarty->assign('status_msg', $status_msg);
 		$smarty->assign('label_remember_me', $lang['label_remember_me']);
 		$smarty->assign("p","$p");
+
+        $href_register = SE_INCLUDE_PATH . "/register/";
+        $register_page = se_get_type_of_use_pages('register');
+        if($register_page['page_permalink'] != '') {
+            $href_register = $se_base_url . $register_page['page_permalink'];
+        }
+
+		$show_register_link = '<a href="'.$href_register.'">'.$lang['link_register'].'</a>';
+
+        $href_reset_psw = SE_INCLUDE_PATH . "/password/";
+        $reset_psw_page = se_get_type_of_use_pages('password');
+        if($reset_psw_page['page_permalink'] != '') {
+            $href_reset_psw = $se_base_url . $reset_psw_page['page_permalink'];
+        }
+
+        $show_forgotten_psw_link = '<a href="'.$href_reset_psw.'">'.$lang['forgotten_psw'].'</a>';
 		
-		$show_register_link = SE_INCLUDE_PATH . "/register/";
-		$show_forgotten_psw_link = SE_INCLUDE_PATH . "/password/";
+		$smarty->assign("show_forgotten_psw_link","$show_forgotten_psw_link");
+        $smarty->assign("href_reset_psw","$href_reset_psw");
 		
-		$smarty->assign("show_forgotten_psw_link","<a href='$show_forgotten_psw_link'>$lang[forgotten_psw]</a>");
-		
-		if(isset($se_prefs['prefs_userregistration']) AND $se_prefs['prefs_userregistration'] == "yes") {
-			$smarty->assign("show_register_link","<a href='$show_register_link'>$lang[link_register]</a>");
-			$smarty->assign("msg_register","$lang[msg_register]");
-			$smarty->assign("link_register","$lang[link_register]");
+		if(isset($se_settings['userregistration']) AND $se_settings['userregistration'] == "yes") {
+			$smarty->assign("show_register_link","$show_register_link");
+            $smarty->assign("href_register","$href_register");
+			$smarty->assign("msg_register",$lang['msg_register']);
+			$smarty->assign("link_register",$lang['link_register']);
 		}
 		
 		$output = $smarty->fetch("loginbox.tpl",$cache_id);
