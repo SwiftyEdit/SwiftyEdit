@@ -353,6 +353,7 @@
   "label.settings.mailer_name": "Nazwa nadawcy",
   "label.settings.mailer_mail": "E-mail nadawcy",
   "label.settings.mailer_send_test": "Wyślij test do ",
+  "label.settings.notify_mail": "Notify e-mail",
   "label.settings.allow_registration": "Zezwalaj na nowe rejestracje",
   "label.settings.show_login": "Pokaż formularz logowania",
   "label.settings.new_user_unlock_by_admin": "Nowi użytkownicy muszą zostać aktywowani przez administratora",
