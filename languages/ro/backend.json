@@ -353,6 +353,7 @@
   "label.settings.mailer_name": "Nume expeditor",
   "label.settings.mailer_mail": "E-mail expeditor",
   "label.settings.mailer_send_test": "Trimite test la ",
+  "label.settings.notify_mail": "Notify e-mail",
   "label.settings.allow_registration": "Permite înregistrări noi",
   "label.settings.show_login": "Arată formularul de autentificare",
   "label.settings.new_user_unlock_by_admin": "Utilizatorii noi trebuie să fie activați de un administrator",
