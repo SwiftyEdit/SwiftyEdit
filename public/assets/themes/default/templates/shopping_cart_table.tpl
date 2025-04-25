@@ -80,7 +80,21 @@
     {/foreach}
 
     <tr>
-        <td colspan="2" class="text-end">{$lang_price_subtotal}</td>
+        <td colspan="2" class="text-end">{$lang_price_subtotal} <small class="text-muted">{$lang_label_net}</small></td>
+        <td class="text-end">{$currency} {$cart_price_subtotal_net}</td>
+        <td></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="text-end">{$lang_label_plus_tax}</td>
+        <td class="text-end">{$currency} {$cart_included_taxes}</td>
+        <td></td>
+    </tr>
+
+
+
+    <tr>
+        <td colspan="2" class="text-end">{$lang_price_subtotal} <small class="text-muted">{$lang_label_gross}</small></td>
         <td class="text-end">{$currency} {$cart_price_subtotal}</td>
         <td></td>
     </tr>
@@ -108,7 +122,7 @@
         <td></td>
     </tr>
 
-    <tr>
+    <tr class="border-top">
         <td colspan="2" class="text-end">{$lang_price_total}</td>
         <td class="text-end">{$currency} {$cart_price_total}</td>
         <td></td>

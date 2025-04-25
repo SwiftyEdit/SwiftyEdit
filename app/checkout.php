@@ -239,6 +239,7 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 /* calculate subtotal and total */
 $cart_price_subtotal_net = $all_items_subtotal_net;
 $cart_price_subtotal = $all_items_subtotal;
+$cart_included_taxes = $all_items_subtotal-$all_items_subtotal_net;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs;
 
 // check if we have a maximum order value
@@ -427,6 +428,7 @@ $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), 
 $smarty->assign('cart_payment_costs', se_post_print_currency($payment_costs), true);
 $smarty->assign('cart_price_subtotal', se_post_print_currency($cart_price_subtotal), true);
 $smarty->assign('cart_price_subtotal_net', se_post_print_currency($cart_price_subtotal_net), true);
+$smarty->assign('cart_included_taxes', se_post_print_currency($cart_included_taxes), true);
 $smarty->assign('cart_price_total', se_post_print_currency($cart_price_total), true);
 $smarty->assign('currency', $se_prefs['prefs_posts_products_default_currency'], true);
 $smarty->assign('price_mode', $se_prefs['prefs_posts_price_mode'], true);
