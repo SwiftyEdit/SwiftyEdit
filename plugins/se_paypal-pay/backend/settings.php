@@ -144,9 +144,9 @@ echo '</div>';
 
 // sandbox testing
 echo '<button 
-        class="btn btn-default" type="button"
+        class="btn btn-default w-100" type="button"
         data-bs-toggle="collapse" data-bs-target="#collapseTesting" aria-expanded="false" 
-        aria-controls="collapseTesting">Sandbox Testing</button>';
+        aria-controls="collapseTesting">PayPal API Testing</button>';
 
 echo '<div class="collapse" id="collapseTesting">';
 

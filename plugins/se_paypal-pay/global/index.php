@@ -6,6 +6,7 @@
  */
 
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
+use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalHttp\HttpException;
@@ -14,22 +15,29 @@ require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
 
 $paypal_settings = pp_get_settings();
 
-$paypal_url = parse_url($paypal_settings['paypal_sb_return_url']);
+if($paypal_settings['paypal_mode'] == 'live') {
+    $clientId = $paypal_settings['paypal_client_id'];
+    $clientSecret = $paypal_settings['paypal_client_secret'];
+    $paypal_url = parse_url($paypal_settings['paypal_return_url']);
+    $environment = new ProductionEnvironment($clientId, $clientSecret);
+} else {
+    $clientId = $paypal_settings['paypal_sb_client_id'];
+    $clientSecret = $paypal_settings['paypal_sb_client_secret'];
+    $paypal_url = parse_url($paypal_settings['paypal_sb_return_url']);
+    $environment = new SandboxEnvironment($clientId, $clientSecret);
+}
+
 $paypal_url_str = substr($paypal_url['path'],1);
 if(isset($_GET['token']) && $_REQUEST['query'] == $paypal_url_str){
 
-    $clientId = $paypal_settings['paypal_sb_client_id'];
-    $clientSecret = $paypal_settings['paypal_sb_client_secret'];
-
-    $environment = new SandboxEnvironment($clientId, $clientSecret);
     $client = new PayPalHttpClient($environment);
 
     $orderId = $_GET['token'] ?? null;
     if (!$orderId) {
-        die('Keine Order-ID vorhanden.');
+        die('ERROR - No Order-ID');
     }
 
-    $return_str = '<p>PayPal Plugin</p>';
+    $return_str = '';
 
     try {
         // get data from PayPal

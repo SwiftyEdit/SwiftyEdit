@@ -3,6 +3,7 @@
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
+use PayPalCheckoutSdk\Core\ProductionEnvironment;
 
 
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
@@ -44,10 +45,17 @@ if($_GET['show'] == 'paypal_tests') {
 
     $paypal_settings = pp_get_settings();
 
-    $clientId = $paypal_settings['paypal_sb_client_id'];
-    $clientSecret = $paypal_settings['paypal_sb_client_secret'];
+    if($paypal_settings['paypal_mode'] == 'live') {
+        $clientId = $paypal_settings['paypal_client_id'];
+        $clientSecret = $paypal_settings['paypal_client_secret'];
+        $environment = new ProductionEnvironment($clientId, $clientSecret);
+    } else {
+        $clientId = $paypal_settings['paypal_sb_client_id'];
+        $clientSecret = $paypal_settings['paypal_sb_client_secret'];
+        $environment = new SandboxEnvironment($clientId, $clientSecret);
+    }
 
-    $environment = new SandboxEnvironment($clientId, $clientSecret);
+
     $client = new PayPalHttpClient($environment);
 
     echo '<form hx-post="/admin/addons/plugin/se_paypal-pay/read/?show=paypal_tests" method="post">';
