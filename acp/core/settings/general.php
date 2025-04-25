@@ -582,7 +582,7 @@ echo '</form>'; // hx-post
 echo '<div id="sendmail_test" class="my-3"></div>';
 
 echo '<button class="btn btn-default" hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="#sendmail_test" name="sendmail_test">';
-echo $lang['label_settings_mailer_send_test'].' '.$se_settings['mailer_adr'];
+echo $lang['label_settings_mailer_send_test'].' '.$se_settings['notify_mail'];
 echo '</button>';
 
 echo '</div>'; // tab

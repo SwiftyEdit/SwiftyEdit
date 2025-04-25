@@ -374,7 +374,11 @@ function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
 	$mail->addAddress($recipient['mail'], $recipient['name']);
 
     if($bcc_admin) {
-        $mail->addBCC($se_settings['mailer_adr']);
+        if($se_settings['notify_mail'] != '') {
+            $mail->addBCC($se_settings['notify_mail']);
+        } else {
+            $mail->addBCC($se_settings['mailer_adr']);
+        }
     }
 	   
 	$mail->isHTML(true);
