@@ -11,7 +11,8 @@
         <tr>
             <td>{$item.nbr}</td>
             <td>
-                <small class="text-muted">{$item.product_number}</small> <a href="{$item.slug}" title="{$item.slug}">{$item.title}</a>
+                <small class="text-muted">{$item.product_number}</small> <a href="{$item.slug}"
+                                                                            title="{$item.slug}">{$item.title}</a>
                 <div class="sc-items-options">{$item.options}</div>
                 {if $item.options_comment != ""}
                     <div class="sc-items-options-comment">{$item.options_comment_label}:<br>{$item.options_comment}
@@ -20,13 +21,23 @@
 
                 <div class="row">
                     <div class="col-6">
-                        <div class="p-1">
-                            <p class="h6">{$lang_price_single}</p>
-                            {if $price_mode == 2 || $price_mode == 3}
-                                <p><small class="text-muted">{$lang_label_net}:</small> {$currency} {$item.price_net_single_format}</p>
-                            {/if}
-                            <p class="mb-1"><small class="text-muted">{$lang_label_gross}:</small> {$currency} {$item.price_gross_single_format}</p>
-                        </div>
+                        <p class="h6">{$lang_price_single}</p>
+                        {if $price_mode == 1}
+                            <p class="mb-1">
+                                <small class="text-muted">{$lang_label_gross}
+                                    :</small> {$currency} {$item.price_gross_single_format}
+                            </p>
+                        {/if}
+                        {if $price_mode == 2}
+                            <p><small class="text-muted">{$lang_label_net}
+                                    :</small> {$currency} {$item.price_net_single_format}</p>
+                            <p class="mb-1"><small class="text-muted">{$lang_label_gross}
+                                    :</small> {$currency} {$item.price_gross_single_format}</p>
+                        {/if}
+                        {if $price_mode == 3}
+                            <p><small class="text-muted">{$lang_label_net}
+                                    :</small> {$currency} {$item.price_net_single_format}</p>
+                        {/if}
                     </div>
                     <div class="col-2">
                         {$lang_label_tax}
