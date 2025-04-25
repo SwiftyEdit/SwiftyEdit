@@ -353,6 +353,7 @@
   "label.settings.mailer_name": "Όνομα αποστολέα",
   "label.settings.mailer_mail": "Email αποστολέα",
   "label.settings.mailer_send_test": "Αποστολή δοκιμής σε ",
+  "label.settings.notify_mail": "Notify e-mail",
   "label.settings.allow_registration": "Επιτρέψτε νέες εγγραφές",
   "label.settings.show_login": "Εμφάνιση φόρμας σύνδεσης",
   "label.settings.new_user_unlock_by_admin": "Οι νέοι χρήστες πρέπει να ενεργοποιηθούν από το διαχειριστή",
