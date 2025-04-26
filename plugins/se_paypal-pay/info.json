@@ -13,6 +13,10 @@
     {
       "text": "nav_settings",
       "file": "settings"
+    },
+    {
+      "text": "nav_docs",
+      "file": "docs"
     }
   ]
 }

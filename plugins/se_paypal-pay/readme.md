@@ -1,21 +1,29 @@
-# PayPal
+# Payment Addon for SwiftyEdit
 
-Payment Addon for SwiftyEdit
+Help and instructions for use and settings are available at:
+
+`/admin/addons/plugin/se_paypal-pay/docs/`
 
 ## Notes
 
 * This addon **has aftersale** functions
-* Do not remove this Plugin. It will be reinstalled with every update anyway. If you don't need it, you can disable it in the settings.
+* Do not remove this Plugin. It will be reinstalled with every update anyway.
+* Good to know: Plugins that are not activated do not affect the Core. So, if you don't need it, do not activate it.
 
-## Preferences
+## How it works
 
-### Additional Costs
+In order for this plugin to be displayed in the shopping cart, it must be activated under
+Settings / Shop / Payment & Shipping
 
-If you want to charge an extra fee for this payment method, you can enter it here.
-This fee will be automatically added to the total in the shopping cart.
+`se_paypal-pay/aftersale.php`
+will be included after the checkout is done. A button for the PayPal payment process is displayed.
 
-### Snippet for Shopping Cart
+`se_paypal-pay/global/index.php`
+* Create a page to which PayPal redirects when the payment has been made.
+* Activate this Plugin.
+* The orders are automatically marked as paid.
 
-All snippets you can use for payment methods are displayed here. These are all snippets named with `cart_pm_*`.
-The content of the snippet is displayed in the shopping cart as an explanation, for this payment method.
-The title of the snippet appears in the payment methods selection.
+### Resources
+
+* https://github.com/paypal/Checkout-PHP-SDK
+* https://developer.paypal.com/
