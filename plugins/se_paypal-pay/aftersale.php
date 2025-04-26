@@ -2,15 +2,19 @@
 
 /**
  * PayPal Plugin
- * aftersale functions
+ * aftersale file
  *
  * @var array $order_data
  * @var array $se_settings
+ * @var array $lang
  */
 
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
+use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
+
+
 
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
 
@@ -25,14 +29,15 @@ if($paypal_settings['paypal_mode'] == 'live') {
     $clientSecret = $paypal_settings['paypal_client_secret'];
     $paypal_return_url = $paypal_settings['paypal_return_url'];
     $paypal_cancel_url = $paypal_settings['paypal_cancel_url'];
+    $environment = new ProductionEnvironment($clientId, $clientSecret);
 } else {
     $clientId = $paypal_settings['paypal_sb_client_id'];
     $clientSecret = $paypal_settings['paypal_sb_client_secret'];
     $paypal_return_url = $paypal_settings['paypal_sb_return_url'];
     $paypal_cancel_url = $paypal_settings['paypal_sb_cancel_url'];
+    $environment = new SandboxEnvironment($clientId, $clientSecret);
 }
 
-$environment = new SandboxEnvironment($clientId, $clientSecret);
 $client = new PayPalHttpClient($environment);
 
 
