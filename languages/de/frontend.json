@@ -204,6 +204,6 @@
   "mail_subject_order_notify": "Benachrichtigung: Status Ihrer Bestellung",
   "mail_subject_order_change_status_pm": "Wir haben den Zahlungsstatus für Ihre Bestellung geändert",
   "mail_subject_order_change_status_shipping": "Wir haben den Versandstatus für Ihre Bestellung geändert",
-  "mail_subject_order_sent": "Ihr Bestellung wurde aufgenommen",
+  "mail_subject_order_sent": "Ihre Bestellung wurde aufgenommen",
   "mail_subject_order_changed": "Wir haben etwas in Ihrer Bestellung geändert"
 }
