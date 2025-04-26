@@ -7,7 +7,7 @@
   "private": true,
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "htmx.org": "^2.0.4",
     "glightbox": "^3.3.1",
@@ -16,19 +16,19 @@
     "nouislider": "^15.8.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.21",
     "css-loader": "^7.1.2",
     "cssnano": "^7.0.6",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss-loader": "^8.1.1",
     "clean-webpack-plugin": "^4.0.0",
-    "sass": "^1.85.1",
+    "sass": "^1.87.0",
     "sass-loader": "^16.0.5",
     "style-loader": "^4.0.0",
     "copy-webpack-plugin": "^13.0.0",
-    "webpack": "5.98.0",
+    "webpack": "5.99.7",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0"
+    "webpack-dev-server": "^5.2.1"
   },
   "optionalDependencies": {},
   "repository": {},
