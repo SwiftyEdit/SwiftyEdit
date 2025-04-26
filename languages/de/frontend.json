@@ -200,5 +200,10 @@
   "label_sort_price_asc": "Preis aufsteigend",
   "label_sort_price_desc": "Preis absteigend",
   "label_sort_topseller": "Topseller",
-  "label_sort_name": "Name"
+  "label_sort_name": "Name",
+  "mail_subject_order_notify": "Benachrichtigung: Status Ihrer Bestellung",
+  "mail_subject_order_change_status_pm": "Wir haben den Zahlungsstatus für Ihre Bestellung geändert",
+  "mail_subject_order_change_status_shipping": "Wir haben den Versandstatus für Ihre Bestellung geändert",
+  "mail_subject_order_sent": "Ihr Auftrag wurde versandt",
+  "mail_subject_order_changed": "Wir haben etwas in Ihrer Bestellung geändert"
 }
