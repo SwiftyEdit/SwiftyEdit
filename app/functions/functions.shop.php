@@ -18,6 +18,7 @@ function se_get_products($start,$limit,$filter) {
     global $time_string_now;
     global $se_labels;
     global $custom_filter_key;
+    global $custom_range_filter_key;
 
     if(SE_SECTION == 'frontend') {
         global $se_prefs;
@@ -118,6 +119,7 @@ function se_get_products($start,$limit,$filter) {
 
     /* custom product filter - stored in $_SESSION['custom_filter'] */
     $nbr_of_filter = is_array($_SESSION[$custom_filter_key]) ? count($_SESSION[$custom_filter_key]) : 0;
+    $nbr_of_range_filter = is_array($_SESSION[$custom_range_filter_key]) ? count($_SESSION[$custom_range_filter_key]) : 0;
 
     if(SE_SECTION == 'backend') {
         // reset the custom filter
@@ -135,6 +137,18 @@ function se_get_products($start,$limit,$filter) {
         $sql_product_filter = substr("$sql_product_filter", 0, -4); // cut the last ' AND'
     } else {
         $sql_product_filter = '';
+    }
+
+    if ($nbr_of_range_filter > 0) {
+        $sql_product_range_filter = "";
+        foreach ($_SESSION[$custom_range_filter_key] as $custom_range_filter) {
+            if ($custom_range_filter != '') {
+                $sql_product_range_filter .= "(filter LIKE '%:\"$custom_range_filter\"%') OR ";
+            }
+        }
+        $sql_product_range_filter = substr("$sql_product_range_filter", 0, -3); // cut the last ' AND'
+    } else {
+        $sql_product_range_filter = '';
     }
 
 
@@ -210,6 +224,9 @@ function se_get_products($start,$limit,$filter) {
     }
     if($sql_product_filter != "") {
         $sql_filter .= " AND ($sql_product_filter) ";
+    }
+    if($sql_product_range_filter != '') {
+        $sql_filter .= " AND ($sql_product_range_filter) ";
     }
     if($sql_status_filter != "") {
         $sql_filter .= " AND ($sql_status_filter) ";
@@ -397,8 +414,8 @@ function se_add_to_cart() {
 	global $se_settings;
 
 	$cart_product_id = (int) $_POST['add_to_cart'];
-	$cart_product_amount = 1;
-	$cart_time = time();
+    $cart_product_amount = max(1, (int) ($_POST['amount'] ?? 0));
+    $cart_time = time();
 	
 	/* check if user or visitor */
 	if(is_numeric($_SESSION['user_id'])) {
@@ -629,11 +646,9 @@ function se_clear_cart($user) {
 
 /**
  * get payment methods
- * at the moment we have no third party payment methods
- * just check if payment method is active
  */
  
-function se_get_payment_methods() {
+function se_get_payment_methods(): array {
 	
 	global $se_settings,$languagePack;
 	global $lang;
@@ -664,9 +679,6 @@ function se_get_payment_methods() {
 
         }
     }
-
-
-	
 	return $payment_methods;
 }
 
@@ -741,7 +753,7 @@ function se_send_order($data) {
 	global $se_prefs;
 	
 	$user_id = $data['user_id'];
-	$order_nbr = $user_id.'-'.uniqid();
+	$order_nbr = $data['order_nbr'];
 	$order_time = time();
 	$order_status = 1;
 	$order_status_shipping = 1;

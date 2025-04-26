@@ -246,7 +246,13 @@ if(isset($_POST['delete_label'])) {
 if(isset($_POST['sendmail_test'])) {
     $subject = 'SwiftyEdit Mail Test';
     $message = 'SwiftyEdit Test (via '.$se_settings['mailer_type'].')';
-    $recipient = array('name' => $se_settings['mailer_name'], 'mail' => $se_settings['mailer_adr']);
+
+    if($se_settings['notify_mail'] != '') {
+        $recipient = array('name' => $se_settings['mailer_name'], 'mail' => $se_settings['notify_mail']);
+    } else {
+        $recipient = array('name' => $se_settings['mailer_name'], 'mail' => $se_settings['mailer_adr']);
+    }
+
     $testmail = se_send_mail($recipient,$subject,$message);
     if($testmail == 1) {
         echo '<p class="alert alert-success mt-3">'.$icon['check'].' '.$lang['msg_success_mailer_sent_test'].'</p>';

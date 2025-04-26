@@ -23,12 +23,3 @@
 {if $cnt_items > 0}
     {include file='shopping_cart_table.tpl'}
 {/if}
-
-
-<script type='text/javascript'>
-    $(document).ready(function() {
-        $('input[name^=set_payment]').change(function(){
-            $('form#set_payment').submit();
-        });
-    });
-</script>

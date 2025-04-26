@@ -1,0 +1,22 @@
+{
+  "addon": {
+    "name": "PayPal Payment",
+    "version": "0.1",
+    "author": "SwiftyEdit Developer Team",
+    "description": "PayPal Payment addon for SwiftyEdit"
+  },
+  "navigation": [
+    {
+      "text": "nav_overview",
+      "file": "start"
+    },
+    {
+      "text": "nav_settings",
+      "file": "settings"
+    },
+    {
+      "text": "nav_docs",
+      "file": "docs"
+    }
+  ]
+}

@@ -168,53 +168,51 @@ function build_submenu($index,$level=1) {
 }
 
 /**
- * create breadcrumb menu
- * example: Homepage >> Products >> Product XY
- * @return	array
+ * create breadcrumb menu from url
+ * @return array
  */
+function breadcrumbs_menu(): array {
 
-function breadcrumbs_menu($num){
+    global $query, $db_content;
 
-    global $se_nav;
+    $parts = explode('/', trim($query, '/'));
+    $breadcrumbs = [];
+    $path = '';
+    $check_permalink = '';
+    $lastIndex = count($parts) - 1;
 
-    if($num == '') {
-        return;
-    }
+    $x=0;
+    foreach ($parts as $index => $part) {
+        $path .= '/' . $part;
+        $label = urldecode($part);
+        $title = $label;
+        $check_permalink .= $part.'/';
 
-    $points_of_num = substr_count($num, '.');
-    $count_result = count($se_nav);
-    $bc = array();
+        $get_page_info = $db_content->get("se_pages",["page_linkname", "page_title", "page_meta_description"],[
+            "page_permalink" => $check_permalink,
+            "page_status" => ['public','ghost']
+        ]);
 
-    if($points_of_num > 0) {
-
-        for($i=0;$i<$count_result;$i++) {
-
-            if($se_nav[$i]['page_sort'] == "") {
-                continue; //no page_sort no menu item
-            }
-
-            $sort = $se_nav[$i]['page_sort'];
-            $sort_length = strlen($sort);
-            $trim_actual_page = substr($num, 0, $sort_length);
-
-            if($sort === $trim_actual_page) {
-
-                $bc[$i]['page_id'] = $se_nav[$i]['page_id'];
-                $bc[$i]['page_sort'] = $se_nav[$i]['page_sort'];
-                $bc[$i]['page_linkname'] = stripslashes($se_nav[$i]['page_linkname']);
-                $bc[$i]['page_permalink'] = $se_nav[$i]['page_permalink'];
-                $bc[$i]['page_title'] = $se_nav[$i]['page_title'];
-
-                $bc[$i]['link'] = SE_INCLUDE_PATH . "/" . $se_nav[$i]['page_permalink'];
-
-            }
-
-
+        if($get_page_info['page_linkname'] != '') {
+            $label = $get_page_info['page_linkname'];
         }
 
+        if($get_page_info['page_title'] != '') {
+            $title = $get_page_info['page_title'];
+        }
+
+        if ($index === $lastIndex) {
+            $breadcrumbs[$x]['page_linkname'] = $label;
+            $breadcrumbs[$x]['link'] = '';
+        } else {
+            $breadcrumbs[$x]['page_linkname'] = $label;
+            $breadcrumbs[$x]['page_title'] = $title;
+            $breadcrumbs[$x]['link'] = $path.'/';
+        }
+        $x++;
     }
 
-    return $bc;
+    return $breadcrumbs;
 }
 
 function left_string($string) {

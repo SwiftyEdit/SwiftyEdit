@@ -30,10 +30,10 @@ if($_POST['ask_for_psw']) {
 	
 		$userdata_array = get_userdata_by_mail($mail);
 		$user_nick = $userdata_array['user_nick'];
-		$user_registerdate = $userdata_arry['user_registerdate'];
+		$user_registerdate = $userdata_array['user_registerdate'];
 		
 		/* unique token user_registerdate + user_mail */
-		$reset_token = random_text('alnum',32);
+		$reset_token = bin2hex(random_bytes(16));
 		$reset_link = $se_base_url."password/?token=$reset_token";
 		
 		/* input token */

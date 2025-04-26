@@ -29,30 +29,6 @@ function se_get_preferences() {
 	$prefs = $db_content->select("se_options", "*", [
 		"option_module" => "se"
 	]);
-	
-	if(count($prefs) < 1) {
-		echo '<p class="alert alert-danger">There are no options</p>';
-	
-		/* read the old prefs from se_preferences and write it to se_options */
-		$prefs = $db_content->get("se_preferences", "*", [
-			"prefs_status" => "active"
-		]);
-		
-		foreach($prefs as $key => $value) {		
-			$db_content->insert("se_options", [
-				"option_module" => 'fc',
-				"option_key" => $key,
-				"option_value" => $value
-			]);
-		}
-	
-		$prefs = $db_content->select("se_options", "*", [
-			"option_module" => "fc"
-		]);	
-	
-	}
-	
-	
 
 	return $prefs;
 }
@@ -362,7 +338,7 @@ function se_return_words_str(string $string, int $nbr=5): string {
  */
 
 
-function se_send_mail($recipient,$subject,$message) {
+function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
 
     global $se_settings;
     global $smtp_host, $smtp_port, $smtp_encryption, $smtp_username, $smtp_psw;
@@ -396,6 +372,14 @@ function se_send_mail($recipient,$subject,$message) {
 
 	$mail->setFrom("$prefs_mailer_adr", "$prefs_mailer_name");
 	$mail->addAddress($recipient['mail'], $recipient['name']);
+
+    if($bcc_admin) {
+        if($se_settings['notify_mail'] != '') {
+            $mail->addBCC($se_settings['notify_mail']);
+        } else {
+            $mail->addBCC($se_settings['mailer_adr']);
+        }
+    }
 	   
 	$mail->isHTML(true);
 	$mail->CharSet = 'utf-8';
@@ -404,10 +388,10 @@ function se_send_mail($recipient,$subject,$message) {
 	  
 	  
 	if(!$mail->send()) {
-    $fail = 'Mailer Error: ' . $mail->ErrorInfo;
-    $return = $fail;
+        $fail = 'Mailer Error: ' . $mail->ErrorInfo;
+        $return = $fail;
 	} else {
-     $return = 1;
+        $return = 1;
 	}
 	return $return;
 }
@@ -435,7 +419,7 @@ function se_send_order_status($recipient,$order,$reason) {
             return 'error';
         }
     } else {
-        // send to admin
+        // send it to admin
         $recipient['name'] = $se_settings['mailer_name'];
         $recipient['mail'] = $se_settings['mailer_adr'];
     }
@@ -506,7 +490,7 @@ function se_send_order_status($recipient,$order,$reason) {
         $build_html_mail = str_replace("$search","$val",$build_html_mail);
     }
 
-    $send_mail = se_send_mail($recipient, $subject, $build_html_mail);
+    $send_mail = se_send_mail($recipient, $subject, $build_html_mail,true);
     return $send_mail;
 }
 

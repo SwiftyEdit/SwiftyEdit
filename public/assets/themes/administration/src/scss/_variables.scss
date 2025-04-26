@@ -132,6 +132,7 @@ $btn_se_background_disabled: desaturate($primary,5%);
 $btn_se_background_hover: darken($primary,5%);
 $btn_se_color: #333;
 $btn_se_color_active: #eee;
+$btn_se_border_color: darken($btn_se_background,10%);
 
 /* pages - status colors */
 $color_public: #2ca62c;

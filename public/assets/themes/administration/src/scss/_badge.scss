@@ -2,3 +2,10 @@
   background-color: var(--bs-btn-default-bg);
   color: var(--bs-btn-default-color);
 }
+
+.badge-se {
+  @extend .badge;
+  background: var(--bs-btn-default-bg);
+  color: var(--bs-btn-default-color);
+  border-color: var(--bs-btn-default-border-color);
+}

@@ -189,6 +189,14 @@ $input_cms_base = [
     "type" => "text"
 ];
 
+$input_login_slug = [
+    "input_name" => "prefs_login_slug",
+    "input_value" => $se_settings['login_slug'],
+    "label" => $lang['label_settings_login_slug'],
+    "input_group_start_text" => "/admin/",
+    "type" => "text"
+];
+
 $input_mail_name = [
     "input_name" => "prefs_mailer_name",
     "input_value" => $se_settings['mailer_name'],
@@ -211,6 +219,13 @@ $input_mail_type = [
         "label_settings_use_smtp" => "smtp"
     ],
     "type" => "radios"
+];
+
+$input_notify_mail_address = [
+    "input_name" => "prefs_notify_mail",
+    "input_value" => $se_settings['notify_mail'],
+    "label" => $lang['label_settings_notify_mail'],
+    "type" => "text"
 ];
 
 $date_formats = array("Y-m-d","d.m.Y","d/m/Y","m/d/Y");
@@ -472,6 +487,8 @@ echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-targ
 echo se_print_form_input($input_cms_domain);
 echo se_print_form_input($input_cms_ssl_domain);
 echo se_print_form_input($input_cms_base);
+echo se_print_form_input($input_login_slug);
+
 
 echo '<button type="submit" class="btn btn-primary" name="update_general_system" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
@@ -547,9 +564,17 @@ echo '</div>'; // tab
 echo '<div class="tab-pane fade" id="email-tab" role="tabpanel" tabindex="0">';
 
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+echo '<div class="row">';
+echo '<div class="col-md-6">';
 echo se_print_form_input($input_mail_name);
 echo se_print_form_input($input_mail_address);
 echo se_print_form_input($input_mail_type);
+echo '</div>';
+echo '<div class="col-md-6">';
+echo se_print_form_input($input_notify_mail_address);
+echo '</div>';
+echo '</div>';
+
 echo '<hr>';
 echo '<button type="submit" class="btn btn-primary" name="update_email" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post
@@ -557,7 +582,7 @@ echo '</form>'; // hx-post
 echo '<div id="sendmail_test" class="my-3"></div>';
 
 echo '<button class="btn btn-default" hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="#sendmail_test" name="sendmail_test">';
-echo $lang['label_settings_mailer_send_test'].' '.$se_settings['mailer_adr'];
+echo $lang['label_settings_mailer_send_test'].' '.$se_settings['notify_mail'];
 echo '</button>';
 
 echo '</div>'; // tab

@@ -61,21 +61,22 @@ $smarty->assign("$check_pm_radio", 'checked');
 
 $get_cd = get_my_userdata();
 $client_data = '';
-if($get_cd['user_company'] != '') {
-	$client_data .= $get_cd['user_company'].'<br>';
+if($get_cd['ba_company'] != '') {
+	$client_data .= $get_cd['ba_company'].'<br>';
 }
 
 /**
  * check if we have all mandatory information
+ * billing address
  * firstname, lastname, street, street nbr, zip and city
  */
 
-if($get_cd['user_firstname'] == '' ||
-    $get_cd['user_lastname'] == '' ||
-    $get_cd['user_street'] == '' ||
-    $get_cd['user_street_nbr'] == '' ||
-    $get_cd['user_zip'] == '' ||
-    $get_cd['user_city'] == '') {
+if($get_cd['ba_firstname'] == '' ||
+    $get_cd['ba_lastname'] == '' ||
+    $get_cd['ba_street'] == '' ||
+    $get_cd['ba_street_nbr'] == '' ||
+    $get_cd['ba_zip'] == '' ||
+    $get_cd['ba_city'] == '') {
     $checkout_error = 'missing_mandatory_informations';
 }
 
@@ -83,9 +84,9 @@ if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_b
     $checkout_error = 'missing_approval';
 }
 
-$client_data .= $get_cd['user_firstname']. ' '.$get_cd['user_lastname'].'<br>';
-$client_data .= $get_cd['user_street']. ' '.$get_cd['user_street_nbr'].'<br>';
-$client_data .= $get_cd['user_zip']. ' '.$get_cd['user_city'].'<br>';
+$client_data .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
+$client_data .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
+$client_data .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
 
 
 for($i=0;$i<$cnt_cart_items;$i++) {
@@ -102,6 +103,11 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['cart_id'] = $get_cart_items[$i]['cart_id'];
 	$cart_item[$i]['post_id'] = $get_cart_items[$i]['cart_product_id'];
     $cart_item[$i]['slug'] = $get_cart_items[$i]['cart_product_slug'];
+
+    // check if we have a minimum quantity for this item
+    if(($this_item['product_order_quantity_min'] > 0) && ($cart_item[$i]['amount'] < $this_item['product_order_quantity_min'])) {
+        $cart_item[$i]['amount'] = $this_item['product_order_quantity_min'];
+    }
 
     // check if we have a maximum quantity for this item
     if(($this_item['product_order_quantity_max'] > 0) && ($cart_item[$i]['amount'] > $this_item['product_order_quantity_max'])) {
@@ -183,6 +189,7 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['price_net'] = $this_item['product_price_net'];
 	
 	$price_all_net = $price_all_net+round($post_prices['net_raw'],2);
+    $all_items_subtotal_net = $all_items_subtotal_net+$cart_item[$i]['price_net_raw'];
     $all_items_subtotal = $all_items_subtotal+$cart_item[$i]['price_gross_raw'];
 }
 
@@ -197,8 +204,7 @@ if($shipping_products > 0) {
 		$shipping_type = '';
 		$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_flat']);
 	}
-	
-	
+
 	if($se_prefs['prefs_shipping_costs_mode'] == 2) {
 		/* we need to determine the highest shipping category */
 		/* it's stored in $store_shipping_cat */
@@ -209,8 +215,16 @@ if($shipping_products > 0) {
 		} else {
 			$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_cat3']);
 		}
-		
 	}
+
+    // check for delivery plugins and maybe overwrite $shipping_costs
+    $active_delivery_addons = json_decode($se_prefs['prefs_delivery_addons'],true);
+    foreach($active_delivery_addons as $delivery_addon) {
+        $addon_root = SE_ROOT.'/plugins/'.basename($delivery_addon);
+        if(file_exists("$addon_root/global/index.php")) {
+            include "$addon_root/global/index.php";
+        }
+    }
 	
 }
 
@@ -223,8 +237,23 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 
 
 /* calculate subtotal and total */
+$cart_price_subtotal_net = $all_items_subtotal_net;
 $cart_price_subtotal = $all_items_subtotal;
+$cart_included_taxes = $all_items_subtotal-$all_items_subtotal_net;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs;
+
+// check if we have a maximum order value
+if($se_prefs['prefs_posts_max_order_value'] != '') {
+
+    $settings_max_order_value = str_replace(',','.',$se_prefs['prefs_posts_max_order_value']);
+    if($cart_price_subtotal > $settings_max_order_value) {
+        // switch to request mode
+        // overwrite $se_prefs['prefs_posts_order_mode']
+        $se_prefs['prefs_posts_order_mode'] = 2;
+        $max_order_value_msg = se_get_textlib('cart_max_order_value',$languagePack,'content');
+    }
+}
+
 
 /**
  * check prefs_posts_order_mode
@@ -255,7 +284,7 @@ if($se_prefs['prefs_posts_order_mode'] == 1 OR $se_prefs['prefs_posts_order_mode
 
 /**
  * client has sent a request
- * send vial mail to admin
+ * send via mail to admin
  * reset shopping cart if data is sent
  */
 
@@ -347,6 +376,7 @@ if($_POST['order'] == 'send') {
 		$order_data['order_payment_type'] = $payment_addon;
 		$order_data['order_payment_costs'] = $payment_costs;
         $order_data['order_comment'] = $_POST['cart_comment'];
+        $order_data['order_nbr'] = $get_cd['user_id'].'-'.uniqid();
 		
 		$order_id = se_send_order($order_data);
 
@@ -391,11 +421,14 @@ if($checkout_error == 'missing_approval') {
     $checkout_error_msg = $lang['msg_missing_user_approval'];
 }
 
+$smarty->assign("max_order_value_msg",$max_order_value_msg,true);
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);
 $smarty->assign('cart_payment_costs', se_post_print_currency($payment_costs), true);
 $smarty->assign('cart_price_subtotal', se_post_print_currency($cart_price_subtotal), true);
+$smarty->assign('cart_price_subtotal_net', se_post_print_currency($cart_price_subtotal_net), true);
+$smarty->assign('cart_included_taxes', se_post_print_currency($cart_included_taxes), true);
 $smarty->assign('cart_price_total', se_post_print_currency($cart_price_total), true);
 $smarty->assign('currency', $se_prefs['prefs_posts_products_default_currency'], true);
 $smarty->assign('price_mode', $se_prefs['prefs_posts_price_mode'], true);

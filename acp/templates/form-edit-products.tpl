@@ -1,12 +1,5 @@
 <div class="subHeader">
-    <div class="row">
-        <div class="col-9">
-            {form_header_message}
-        </div>
-        <div class="col-3">
-            {form_header_mode}
-        </div>
-    </div>
+    {form_header_message}
 </div>
 <div id="formResponse"></div>
 <form class="no-enter">
@@ -95,6 +88,9 @@
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                                 href="#add-content5"
                                                                 title="{nav_btn_additional_description}">5</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+                                                                href="#sod"
+                                                                title="{label_scope_of_delivery}">{label_scope_of_delivery}</a></li>
                                     </ul>
                                 </div>
                                 <div class="card-body">
@@ -167,6 +163,12 @@
                                             <div class="mb-3">
                                                 <textarea class='mceEditor'
                                                           name='text_additional5'>{text_additional_5}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="sod">
+                                            <div class="mb-3">
+                                                <textarea class='mceEditor'
+                                                          name='text_scope_of_delivery'>{text_scope_of_delivery}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -531,10 +533,31 @@
                                 <label>{label_keywords}</label>
                                 <input type="text" class='form-control tags' name="tags" value="{tags}">
                             </div>
-                            <div class="form-group">
-                                <label>{label_slug}</label>
-                                <input class='form-control' name="slug" type="text" value="{slug}">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label>{label_pages_permalink}</label>
+                                        <input type="text" id="disabledTextInput" class="form-control" value="{se_base_url}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label>{label_main_catalog_page}</label>
+                                        {select_main_catalog_page}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label>{label_slug}</label>
+                                        <input class='form-control' name="slug" type="text" value="{slug}">
+                                    </div>
+                                </div>
                             </div>
+
+
+
+
 
                             <h5 class="heading-line">{label_translations}</h5>
                             {translation_inputs}
@@ -564,6 +587,20 @@
         </div>
         <div class="col-md-3">
             <div class="card p-3">
+
+                <!-- sidebar -->
+
+                <div class="sidebar-actions sticky-lg-top">
+                    <div class="form-mode">
+                        {form_header_mode}
+                    </div>
+
+                    {submit_variant_button}
+                    {submit_button}
+
+                    {submit_delete_button}
+                </div>
+
                 <div class="mb-2 pb-3 border-bottom">
                     <label>{label_language}</label>
                     {checkboxes_lang}
@@ -609,10 +646,7 @@
                 <input type="hidden" name="csrf_token" value="{token}">
                 <input type="hidden" name="date" value="{date}">
 
-                {submit_variant_button}
-                {submit_button}
-                
-                {submit_delete_button}
+
 
             </div>
         </div>

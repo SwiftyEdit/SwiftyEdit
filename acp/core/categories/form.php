@@ -14,6 +14,7 @@ if(is_int($get_cat_id)) {
     $cat_sort = $get_category['cat_sort'];
     $cat_thumbnail = $get_category['cat_thumbnail'];
     $cat_description = $get_category['cat_description'];
+    $cat_hash = $get_category['cat_hash'];
 
 } else {
     $btn_submit_text = $lang['save'];
@@ -87,6 +88,10 @@ $form_tpl .= se_print_form_input($input_text_priority);
 $form_tpl .= se_print_form_input($input_select_language);
 $form_tpl .= se_print_form_input($input_select_thumbnail);
 $form_tpl .= se_print_form_input($input_text_description);
+
+if($cat_hash != '') {
+    $form_tpl .= '<input type="hidden" name="cat_hash" value="'.$cat_hash.'">';
+}
 
 $form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-primary" name="save_category" value="'.$form_mode.'">'.$btn_submit_text.'</button>';

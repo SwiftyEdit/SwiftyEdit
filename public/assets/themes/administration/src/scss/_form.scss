@@ -6,6 +6,19 @@
 	}
 }
 
+.sidebar-actions {
+	background: var(--bs-widget-bg);
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid var(--bs-border-color);
+	.form-mode {
+		opacity: 0.8;
+		font-size: 0.9rem;
+		text-align: right;
+		margin-bottom: 5px;
+	}
+}
+
 
 /* fieldset */
 

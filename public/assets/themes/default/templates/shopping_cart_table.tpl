@@ -11,7 +11,8 @@
         <tr>
             <td>{$item.nbr}</td>
             <td>
-                <small class="text-muted">{$item.product_number}</small> <a href="{$item.slug}" title="{$item.slug}">{$item.title}</a>
+                <small class="text-muted">{$item.product_number}</small> <a href="{$item.slug}"
+                                                                            title="{$item.slug}">{$item.title}</a>
                 <div class="sc-items-options">{$item.options}</div>
                 {if $item.options_comment != ""}
                     <div class="sc-items-options-comment">{$item.options_comment_label}:<br>{$item.options_comment}
@@ -20,13 +21,23 @@
 
                 <div class="row">
                     <div class="col-6">
-                        <div class="p-1">
-                            <p class="h6">{$lang_price_single}</p>
-                            {if $price_mode == 2 || $price_mode == 3}
-                                <p><small class="text-muted">{$lang_label_net}:</small> {$currency} {$item.price_net_single_format}</p>
-                            {/if}
-                            <p class="mb-1"><small class="text-muted">{$lang_label_gross}:</small> {$currency} {$item.price_gross_single_format}</p>
-                        </div>
+                        <p class="h6">{$lang_price_single}</p>
+                        {if $price_mode == 1}
+                            <p class="mb-1">
+                                <small class="text-muted">{$lang_label_gross}
+                                    :</small> {$currency} {$item.price_gross_single_format}
+                            </p>
+                        {/if}
+                        {if $price_mode == 2}
+                            <p><small class="text-muted">{$lang_label_net}
+                                    :</small> {$currency} {$item.price_net_single_format}</p>
+                            <p class="mb-1"><small class="text-muted">{$lang_label_gross}
+                                    :</small> {$currency} {$item.price_gross_single_format}</p>
+                        {/if}
+                        {if $price_mode == 3}
+                            <p><small class="text-muted">{$lang_label_net}
+                                    :</small> {$currency} {$item.price_net_single_format}</p>
+                        {/if}
                     </div>
                     <div class="col-2">
                         {$lang_label_tax}
@@ -69,13 +80,27 @@
     {/foreach}
 
     <tr>
-        <td colspan="2" class="text-end">{$lang_price_subtotal}</td>
+        <td colspan="2" class="text-end">{$lang_price_subtotal} <small class="text-muted">{$lang_label_net}</small></td>
+        <td class="text-end">{$currency} {$cart_price_subtotal_net}</td>
+        <td></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="text-end">{$lang_label_plus_tax}</td>
+        <td class="text-end">{$currency} {$cart_included_taxes}</td>
+        <td></td>
+    </tr>
+
+
+
+    <tr>
+        <td colspan="2" class="text-end">{$lang_price_subtotal} <small class="text-muted">{$lang_label_gross}</small></td>
         <td class="text-end">{$currency} {$cart_price_subtotal}</td>
         <td></td>
     </tr>
 
     <tr>
-        <td colspan="2" class="text-end">{$lang_shipping_costs}</td>
+        <td colspan="2" class="text-end">{$lang_label_shipping}</td>
         <td class="text-end">{$currency} {$cart_shipping_costs}</td>
         <td></td>
     </tr>
@@ -86,7 +111,7 @@
                 {foreach $payment_methods as $pm}
                     <div class="form-check">
                         <input type="radio" class="form-check-input" name="set_payment" value="{$pm.key}"
-                               id="id_{$pm.key}" autocomplete="off" {$checked_{$pm.key}}>
+                               id="id_{$pm.key}" autocomplete="off" {$checked_{$pm.key}} onchange="this.form.submit()">
                         <label class="form-check-label" for="id_{$pm.key}">{$pm.title} ({$currency} {$pm.cost})</label>
                     </div>
                 {/foreach}
@@ -97,7 +122,7 @@
         <td></td>
     </tr>
 
-    <tr>
+    <tr class="border-top">
         <td colspan="2" class="text-end">{$lang_price_total}</td>
         <td class="text-end">{$currency} {$cart_price_total}</td>
         <td></td>
@@ -123,6 +148,11 @@
 </div>
 {/if}
 
+{if $max_order_value_msg != ''}
+<div class="alert alert-info">
+    {$max_order_value_msg}
+</div>
+{/if}
 
 {if $show_request_form == 1}
     {include file='shopping_cart_form.tpl'}

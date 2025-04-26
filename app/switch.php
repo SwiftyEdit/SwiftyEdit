@@ -58,7 +58,7 @@ $submenu = array();
 
 $mainmenu = show_mainmenu();
 $submenu = show_menu($current_page_sort);
-$bcmenu = breadcrumbs_menu($current_page_sort);
+$bcmenu = breadcrumbs_menu();
 
 /* shortcodes will be replaced in text_parser */
 $shortcodes = se_get_shortcodes();
@@ -449,6 +449,10 @@ if($p == 'search' OR $page_contents['page_permalink'] == 'suche/' OR $page_conte
 /* forgotten password */
 if($p == "password" OR $page_contents['page_type_of_use'] == 'password') {
 	include 'password.php';
+}
+
+if($p == "unlock" OR $page_contents['page_type_of_use'] == 'unlock_account') {
+    include 'unlock_account.php';
 }
 
 

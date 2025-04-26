@@ -18,7 +18,7 @@ or experimental:
 
                     {if $groups.input_type == 1}
                         <div class="card-header fw-bold">
-                            {$groups.title}
+                            {$groups.title} {$groups.input_type}
                             {if $groups.description != ""}
                                 <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
                             {/if}
@@ -37,13 +37,13 @@ or experimental:
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
                                     <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title} - {$item.hash}</span></label>
+                                                title="{$item.description}">{$item.title}</span></label>
                                 </div>
                             {/foreach}
                         </div>
-                    {else}
+                    {elseif $groups.input_type == 2}
                         <div class="card-header fw-bold">
-                            {$groups.title}
+                            {$groups.title} {$groups.input_type}
                             {if $groups.description != ""}
                                 <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
                             {/if}
@@ -56,15 +56,59 @@ or experimental:
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
                                     <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title} - {$item.hash}</span></label>
+                                                title="{$item.description}">{$item.title}</span></label>
                                 </div>
                             {/foreach}
                         </div>
+                    {else}
+
+                    {* range input *}
+                    <div class="card-header fw-bold">
+                        {$groups.title} {$groups.input_type}
+                        {if $groups.description != ""}
+                            <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
+                        {/if}
+                    </div>
+                    <div class="card-body">
+                        <div class="slider-container">
+
+                            {assign var="min" value="{$smarty.session.ranges.{$groups.id}.min}"}
+                            {assign var="max" value="{$smarty.session.ranges.{$groups.id}.max}"}
+
+
+                            {if $min == '' or $max == ''}
+                                {foreach $groups.items as $item}
+                                    {if $item@first}
+                                        <input type="hidden" class="minValue" name="ranges[{$groups.id}][min]" value="{$item.title}">
+                                    {/if}
+                                    {if $item@last}
+                                        <input type="hidden" class="maxValue" name="ranges[{$groups.id}][max]" value="{$item.title}">
+                                    {/if}
+                                {/foreach}
+                            {else}
+                                <input type="hidden" class="minValue" name="ranges[{$groups.id}][min]" value="{$min}">
+                                <input type="hidden" class="maxValue" name="ranges[{$groups.id}][max]" value="{$max}">
+                            {/if}
+
+
+                            {foreach $groups.items as $item}
+                                {$values_{$groups.id}[] = {$item.title}}
+                            {/foreach}
+
+                            <input type="hidden" class="slider-values" value="{$values_{$groups.id}|join:","}">
+
+                            <div class="slider"></div>
+
+                            <p class="text-center"><small><span class="rangeDisplay">{$min} - {$max}</span></small></p>
+                        </div>
+                    </div>
+
                     {/if}
 
                 </div>
             {/foreach}
             <input type="hidden" name="set_custom_filters" value="send">
+            <input type="submit" name="set_custom_filters" value="{$lang_filter}" class="btn btn-secondary">
             {$hidden_csrf_token}
         </form>
     </div>

@@ -32,22 +32,6 @@ $mod_slug = '';
 
 const SE_SECTION = "frontend";
 
-if(empty($_SESSION['token'])) {
-    $_SESSION['token'] = md5(uniqid(rand(), TRUE));
-    $_SESSION['token_time'] = time();
-}
-
-$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-
-/* stop all $_POST actions if csrf token is empty or invalid */
-if(!empty($_POST)) {
-    if(empty($_POST['csrf_token'])) {
-        die('Error: CSRF Token is empty');
-    }
-    if($_POST['csrf_token'] !== $_SESSION['token']) {
-        die('Error: CSRF Token is invalid');
-    }
-}
 
 /**
  * if there is no database config we start the installer
@@ -68,6 +52,17 @@ if(!is_file('../config_database.php') && !is_file("$se_db_content")) {
  */
 
 require SE_ROOT.'/app/database.php';
+
+if(empty($_SESSION['token'])) {
+    se_generate_token();
+}
+
+$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+
+/* stop all $_POST actions if csrf token is empty or invalid */
+if(!empty($_POST)) {
+    se_validate_token($_POST['csrf_token']);
+}
 
 /**
  * maintenance mode
@@ -141,6 +136,7 @@ $a_allowed_p = [
     'register',
     'account',
     'profile',
+    'unlock',
     'search',
     'sitemap',
     'logout',
@@ -400,7 +396,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register') {
+    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register' || $p == 'unlock') {
         $show_posts = false;
     }
 

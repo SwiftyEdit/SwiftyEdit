@@ -6,6 +6,9 @@ group: backend
 priority: 220
 ---
 
+Da sich die Funktionsweise nicht von den Snippets unterschieden hat, 
+wurden die Shortcodes in SwiftyEdit 2.0 entfernt.
+
 # Shortcodes verwalten, erstellen oder bearbeiten
 
 <kbd>Backend</kbd> <kbd>Inhalte</kbd> <kbd>Shortcodes</kbd>

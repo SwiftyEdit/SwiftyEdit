@@ -14,7 +14,9 @@
 
                 {foreach $product_show_images as $img => $value}
                 <div class="col-3">
-                    <a href="{$value.media_file}" title="{$value.media_title}"><img src="{$value.media_thumb}" alt="{$value.media_alt}" class="img-fluid"></a>
+                    <a href="{$value.media_file}" title="{$value.media_title}" class="lightbox">
+                        <img src="{$value.media_file}" alt="{$value.media_alt}" class="img-fluid">
+                    </a>
                 </div>
                 {/foreach}
 
@@ -69,8 +71,8 @@
                             {$file_upload_message}
                         </div>
                     {/if}
-                        <div class="mt-2">
-                            <hr>
+                        <div class="mt-2 pt-2 d-flex border-top">
+                            <input type="number" name="amount" value="{$product_amount}" {$product_order_quantity_min} {$product_order_quantity_max} class="form-control form-control-lg w-25 me-1">
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
                         </div>
                         <input type="hidden" name="product_href" value="{$product_href}">
@@ -112,6 +114,9 @@
                 {/if}
                 {if $text_additional5_label != ""}
                     <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#tab_additional5">{$text_additional5_label}</a>
+                {/if}
+                {if $text_scope_of_delivery != ""}
+                    <a class="nav-link" aria-selected="false" data-bs-toggle="tab" href="#sod">{$lang_label_scope_of_delivery}</a>
                 {/if}
             </div>
         </nav>
@@ -176,6 +181,11 @@
             {if $text_additional5_label != ""}
                 <div class="tab-pane fade" id="tab_additional5" role="tabpanel">
                     {$text_additional5}
+                </div>
+            {/if}
+            {if $text_scope_of_delivery != ""}
+                <div class="tab-pane fade" id="sod" role="tabpanel">
+                    {$text_scope_of_delivery}
                 </div>
             {/if}
         </div>

@@ -17,6 +17,8 @@ $cols = array(
     "user_nick" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "user_psw" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_psw_hash" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "user_failed_logins"  => 'INTEGER NOT NULL DEFAULT 0',
+    "user_unlock_code" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_groups" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_avatar" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "user_mail" => "VARCHAR(100) NOT NULL DEFAULT ''",
@@ -52,5 +54,16 @@ $cols = array(
     "ba_street_nbr" => "VARCHAR(20) NOT NULL DEFAULT ''",
     "ba_zip" => "VARCHAR(20) NOT NULL DEFAULT ''",
     "ba_city" => "VARCHAR(50) NOT NULL DEFAULT ''",
-    "ba_mail" => "VARCHAR(100) NOT NULL DEFAULT ''"
+    "ba_mail" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    /* shipping / delivery address */
+    "sa_firstname" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_lastname" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_company" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_country" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_state" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_street" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_street_nbr" => "VARCHAR(20) NOT NULL DEFAULT ''",
+    "sa_zip" => "VARCHAR(20) NOT NULL DEFAULT ''",
+    "sa_city" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "sa_mail" => "VARCHAR(100) NOT NULL DEFAULT ''"
 );

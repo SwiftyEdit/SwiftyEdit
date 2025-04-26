@@ -10,7 +10,7 @@ if($_SESSION['user_nick'] == "") {
 
 	$get_my_userdata = get_my_userdata();
 
-    /* update billing and delivery data */
+    /* update billing address data */
     if(isset($_POST['update_ba_data'])) {
         foreach($_POST as $key => $val) {
             $$key = sanitizeUserInputs($val);
@@ -24,12 +24,43 @@ if($_SESSION['user_nick'] == "") {
             "ba_street_nbr" => "$ba_street_nbr",
             "ba_zip" => "$ba_zip",
             "ba_city" => "$ba_city",
-            "ba_country" => "$ba_country"
+            "ba_country" => "$ba_country",
+            "ba_tax_number" => "$ba_tax_number",
+            "ba_tax_id_number" => "$ba_tax_id_number",
+            "ba_sales_tax_id_number" => "$ba_sales_tax_id_number"
         ], [
             "user_id" => (int) $_SESSION['user_id']
         ]);
 
         if($update_ba_data->rowCount() == 1){
+            $smarty->assign("msg_status","alert alert-success",true);
+            $smarty->assign("register_message",$lang['msg_update_profile'],true);
+        } else {
+            $smarty->assign("msg_status","alert alert-danger",true);
+            $smarty->assign("register_message",$lang['msg_update_profile_error'],true);
+        }
+    }
+
+    /* update shipping address data */
+    if(isset($_POST['update_sa_data'])) {
+        foreach($_POST as $key => $val) {
+            $$key = sanitizeUserInputs($val);
+        }
+
+        $update_sa_data = $db_user->update("se_user", [
+            "sa_company" => "$sa_company",
+            "sa_firstname" => "$sa_firstname",
+            "sa_lastname" => "$sa_lastname",
+            "sa_street" => "$sa_street",
+            "sa_street_nbr" => "$sa_street_nbr",
+            "sa_zip" => "$sa_zip",
+            "sa_city" => "$sa_city",
+            "sa_country" => "$sa_country"
+        ], [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+
+        if($update_sa_data->rowCount() == 1){
             $smarty->assign("msg_status","alert alert-success",true);
             $smarty->assign("register_message",$lang['msg_update_profile'],true);
         } else {
@@ -235,14 +266,20 @@ if($_SESSION['user_nick'] == "") {
         // show select
         $smarty->assign("show_ba_country_input","select");
         $smarty->assign("ba_countries",$prefs_delivery_countries);
+        $smarty->assign("show_sa_country_input","select");
+        $smarty->assign("sa_countries",$prefs_delivery_countries);
         if($get_my_userdata['ba_country'] != '') {
-            // select the country
-            $selected_country = 'selected_'.strtolower($get_my_userdata['ba_country']);
-            $smarty->assign("$selected_country","selected");
+            $selected_ba_country = 'selected_ba_'.strtolower($get_my_userdata['ba_country']);
+            $smarty->assign("$selected_ba_country","selected");
+        }
+        if($get_my_userdata['sa_country'] != '') {
+            $selected_sa_country = 'selected_sa_'.strtolower($get_my_userdata['sa_country']);
+            $smarty->assign("$selected_sa_country","selected");
         }
     } else {
         // show input type text
         $smarty->assign("show_ba_country_input","input");
+        $smarty->assign("show_sa_country_input","input");
     }
 
 	$smarty->assign("user_nick",$_SESSION['user_nick'],true);
@@ -255,6 +292,20 @@ if($_SESSION['user_nick'] == "") {
     $smarty->assign("ba_zip",$get_my_userdata['ba_zip'],true);
     $smarty->assign("ba_city",$get_my_userdata['ba_city'],true);
     $smarty->assign("ba_country",$get_my_userdata['ba_country'],true);
+
+    // tax numbers
+    $smarty->assign("ba_tax_number",$get_my_userdata['ba_tax_number'],true);
+    $smarty->assign("ba_tax_id_number",$get_my_userdata['ba_tax_id_number'],true);
+    $smarty->assign("ba_sales_tax_id_number",$get_my_userdata['ba_sales_tax_id_number'],true);
+
+    $smarty->assign("sa_company",$get_my_userdata['sa_company'],true);
+    $smarty->assign("sa_firstname",$get_my_userdata['sa_firstname'],true);
+    $smarty->assign("sa_lastname",$get_my_userdata['sa_lastname'],true);
+    $smarty->assign("sa_street",$get_my_userdata['sa_street'],true);
+    $smarty->assign("sa_street_nbr",$get_my_userdata['sa_street_nbr'],true);
+    $smarty->assign("sa_zip",$get_my_userdata['sa_zip'],true);
+    $smarty->assign("sa_city",$get_my_userdata['sa_city'],true);
+    $smarty->assign("sa_country",$get_my_userdata['sa_country'],true);
 
     $smarty->assign("get_mail_address",$get_my_userdata['user_mail'],true);
 	$smarty->assign("get_firstname",$get_my_userdata['user_firstname'],true);

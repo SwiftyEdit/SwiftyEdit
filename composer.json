@@ -25,6 +25,7 @@
     "phpmailer/phpmailer": "^v6.9.1",
     "smarty/smarty": "^v5.4.3",
     "mustangostang/spyc": "^0.6.3",
+    "paypal/paypal-checkout-sdk": "1.0.2",
     "guzzlehttp/guzzle": "^7.8.1",
     "ezyang/htmlpurifier": "^v4.18.0"
   }

@@ -169,6 +169,34 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $slug = se_clean_permalink($_POST['slug']);
     }
 
+    if($_POST['main_catalog_slug'] == "default") {
+        //get a target page by page_type_of_use and language
+        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_type_of_use" => "display_product",
+                "page_language" => $product_lang
+            ]
+        ]);
+        // if we have no page for display_products, find another catalog page
+        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_posts_types[~]" => "p",
+                "page_language" => $product_lang
+            ]
+        ]);
+    } else {
+        $main_catalog_slug = se_clean_permalink($_POST['main_catalog_slug']);
+    }
+
+    if(is_numeric($edit_id)) {
+        $filename = str_replace("/", "", $slug) . '-' . $edit_id . '.html';
+
+        // rss url
+        if ($_POST['rss_url'] == "") {
+            $rss_url = $se_base_url . $main_catalog_slug . $filename;
+        }
+    }
+
     $categories = '';
     if(isset($_POST['categories'])) {
         $categories = implode("<->", $_POST['categories']);

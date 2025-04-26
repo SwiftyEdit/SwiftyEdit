@@ -2,6 +2,7 @@
 
 $writer_uri = '/admin/shop/write/';
 $form_header_mode = $lang['btn_new'];
+$my_user_presets = se_get_my_presets();
 
 $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">'.$lang['save'].'</button>';
 $btn_update = '';
@@ -16,8 +17,8 @@ if(is_numeric($lastSegment)) {
     $get_product_id = (int) $lastSegment;
     $form_mode = $get_product_id;
     $btn_submit_text = $lang['update'];
-    $form_header_mode = 'Edit: '.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $form_header_mode = $lang['edit'].' #'.$get_product_id;
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
     $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
@@ -25,8 +26,8 @@ if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
     $form_mode = $get_product_id;
     $btn_submit_text = $lang['update'];
-    $form_header_mode = 'Edit: '.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $form_header_mode = $lang['edit'].' #'.$get_product_id;
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
     $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
@@ -34,7 +35,7 @@ if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $get_product_id = (int) $_POST['duplicate_id'];
     $form_mode = 'new';
     $btn_submit_text = $lang['duplicate'];
-    $form_header_mode = 'Duplicate: '.$get_product_id;
+    $form_header_mode = $lang['duplicate'].' #'.$get_product_id;
     $submit_variant_btn = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="'.$get_product_id.'">'.$lang['submit_variant'].'</button>';
 }
 
@@ -57,9 +58,32 @@ if(is_int($get_product_id)) {
 }
 
 
+if(!is_array($product_data)) {
+    $product_data = [];
+    $product_data['product_amount'] = 1;
+}
 
+// select main catalog page
+$all_catalog_pages = [];
+$all_catalog_pages = $db_content->select("se_pages","page_permalink",[
+    "page_posts_types" => "p"
+]);
+array_unshift($all_catalog_pages, "default");
 
+$product_main_catalog_slug = '';
+if(isset($product_data['main_catalog_slug'])) {
+    $product_main_catalog_slug = $product_data['main_catalog_slug'];
+}
 
+$select_main_catalog_page  = '<select name="main_catalog_slug" class="custom-select form-control">';
+foreach($all_catalog_pages as $permalink) {
+    $label = $permalink;
+    if($permalink == 'default') {
+        $label = $lang['label_use_default'];
+    }
+    $select_main_catalog_page .= "<option value='$permalink'".($product_main_catalog_slug == "$permalink" ? 'selected="selected"' :'').">$label</option>";
+}
+$select_main_catalog_page .= '</select>';
 
 
 
@@ -171,6 +195,17 @@ $choose_images .= 'Loading Images ...</div>';
 $sel_status_draft = '';
 $sel_status_published = '';
 $sel_status_ghost = '';
+
+if(!isset($product_data['status'])) {
+    // new product, check if we have user presets
+    if($my_user_presets['status'] == 'p') {
+        $product_data['status'] = 1;
+    } else if($my_user_presets['status'] == 'd') {
+        $product_data['status'] = 2;
+    }
+
+}
+
 if($product_data['status'] == "2") {
     $sel_status_draft = "selected";
 } else if($product_data['status'] == "1") {
@@ -327,6 +362,12 @@ $select_tax .= '<option value="3" '.$sel_tax_3.'>'.$se_prefs['prefs_posts_produc
 $select_tax .= '</select>';
 
 /* select shipping mode */
+
+if(!isset($product_data['product_shipping_mode'])) {
+    if($my_user_presets['product_type'] == 'deliver') {
+        $product_data['product_shipping_mode'] = 2;
+    }
+}
 
 if(($product_data['product_shipping_mode'] == '1') OR ($product_data['product_shipping_mode'] == '')) {
     $sel_shipping_mode_1 = 'selected';
@@ -852,9 +893,14 @@ $form_tpl = str_replace('{text_additional_4}', $product_data['text_additional4']
 $form_tpl = str_replace('{text_label_additional_4}', $product_data['text_additional4_label'], $form_tpl);
 $form_tpl = str_replace('{text_additional_5}', $product_data['text_additional5'], $form_tpl);
 $form_tpl = str_replace('{text_label_additional_5}', $product_data['text_additional5_label'], $form_tpl);
+$form_tpl = str_replace('{label_scope_of_delivery}', $lang['label_scope_of_delivery'], $form_tpl);
+$form_tpl = str_replace('{text_scope_of_delivery}', $product_data['text_scope_of_delivery'], $form_tpl);
 $form_tpl = str_replace('{author}', $product_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $product_data['slug'], $form_tpl);
 $form_tpl = str_replace('{translation_inputs}', $translation_inputs, $form_tpl);
+
+$form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
+$form_tpl = str_replace('{select_main_catalog_page}', $select_main_catalog_page, $form_tpl);
 
 $form_tpl = str_replace('{tags}', $product_data['tags'], $form_tpl);
 $form_tpl = str_replace('{rss_url}', $product_data['rss_url'], $form_tpl);

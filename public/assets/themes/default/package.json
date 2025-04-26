@@ -12,7 +12,8 @@
     "htmx.org": "^2.0.4",
     "glightbox": "^3.3.1",
     "jquery": "^3.7.1",
-    "js-cookie": "^3.0.5"
+    "js-cookie": "^3.0.5",
+    "nouislider": "^15.8.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

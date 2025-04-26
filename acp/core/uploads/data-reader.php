@@ -1,24 +1,33 @@
 <?php
 
+/**
+ * SwiftyEdit /admin/uploads/
+ *
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $db_content
+ * @var string $languagePack
+ * @var array $se_labels
+ */
+
 $writer_uri = '/admin/uploads/edit/';
 $delete_uri = '/admin/uploads/delete/';
 $reader_uri = '/admin/uploads/read/';
 
-
 if($_REQUEST['action'] == 'list_active_searches') {
 
-    if(isset($_SESSION['uploads_text_filter']) AND $_SESSION['uploads_text_filter'] != "") {
-        unset($all_filter);
-        $all_filter = explode(" ", $_SESSION['uploads_text_filter']);
+    $btn_remove_keyword = '';
 
+    if(isset($_SESSION['uploads_text_filter']) AND $_SESSION['uploads_text_filter'] != "") {
+        $all_filter = explode(" ", $_SESSION['uploads_text_filter']);
         foreach($all_filter as $f) {
-            if($_REQUEST['rm_keyword'] == "$f") { continue; }
-            if($f == "") { continue; }
+            if ($_REQUEST['rm_keyword'] == "$f" || $f == "") { continue; }
             $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/uploads/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
         }
     }
 
-    if(isset($btn_remove_keyword)) {
+    if($btn_remove_keyword != '') {
         echo '<div class="d-inline">';
         echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
         echo '</div><hr>';

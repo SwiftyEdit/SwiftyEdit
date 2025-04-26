@@ -74,6 +74,7 @@ $btn_se_background_disabled_dark: desaturate($primary-dark,15%);
 $btn_se_background_hover_dark: lighten($primary-dark,5%);
 $btn_se_color_dark: #eee;
 $btn_se_color_active_dark: #fff;
+$btn_se_border_color_dark: lighten($btn_se_background_dark,10%);
 
 /* page status colors */
 
