@@ -200,5 +200,10 @@
   "label_sort_price_asc": "Τιμή αύξουσα",
   "label_sort_price_desc": "Φθίνουσα τιμή",
   "label_sort_topseller": "Topseller",
-  "label_sort_name": "Όνομα"
+  "label_sort_name": "Όνομα",
+  "mail_subject_order_notify": "Notification: Status for your Order",
+  "mail_subject_order_change_status_pm": "We changed the Payment Status for your Order",
+  "mail_subject_order_change_status_shipping": "We changed the Shipping Status for your Order",
+  "mail_subject_order_sent": "Your Order has been sent",
+  "mail_subject_order_changed": "We changed something in your Order"
 }

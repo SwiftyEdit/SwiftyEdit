@@ -13,27 +13,27 @@
 
 	<div class="form-group">
 		<label for="inputUsername">{$lang_label_username}</label>
-		<input type="text" class="form-control" value="{$send_username}" name="username" id="inputUsername">
+		<input type="text" class="form-control" value="{$send_username}" name="username" id="inputUsername" required>
 	</div>
 		
 	<div class="form-group">
 		<label for="inputMail1">{$lang_label_mail}</label>
-		<input type="text" class="form-control" value="{$send_mail}" name="mail" id="inputMail1">
+		<input type="text" class="form-control" value="{$send_mail}" name="mail" id="inputMail1" required>
 	</div>
 		
 	<div class="form-group">
 			<label for="inputMail2">{$lang_label_mailrepeat}</label>
-			<input type="text" class="form-control" value="{$send_mailrepeat}" name="mailrepeat" id="inputMail2">
+			<input type="text" class="form-control" value="{$send_mailrepeat}" name="mailrepeat" id="inputMail2" required>
 	</div>	
 
 	<div class="form-group">
 		<label for="inputPass1">{$lang_label_psw}</label>
-		<input type="password" class="form-control" name="psw" id="inputPass1">
+		<input type="password" class="form-control" name="psw" id="inputPass1" required>
 	</div>	
 
 	<div class="form-group">
 		<label for="inputPass2">{$lang_label_psw_repeat}</label>
-		<input type="password" class="form-control" name="psw_repeat" id="inputPass2">
+		<input type="password" class="form-control" name="psw_repeat" id="inputPass2" required>
 	</div>	
 
 </fieldset>

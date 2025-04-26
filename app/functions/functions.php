@@ -400,10 +400,11 @@ function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
  * @param array $recipient 'type', 'name' and 'mail'
  * @param integer $order the order id
  * @param string $reason this will change the subject
- * @return void
+ * @return int|string
+ * @throws Exception
  */
 
-function se_send_order_status($recipient,$order,$reason) {
+function se_send_order_status($recipient,$order,$reason): int|string {
 
     global $se_settings, $lang;
 
@@ -425,17 +426,16 @@ function se_send_order_status($recipient,$order,$reason) {
     }
 
     if($reason == 'notification') {
-        $subject = "Notification: Order status # ".$this_order['order_nbr'];
-    } else if($reason == 'change_payment_status'){
-        $subject = "We changed the Payment Status # ".$this_order['order_nbr'];
+        $subject = $lang['mail_subject_order_notify']. ' (#'.$this_order['order_nbr'].')';
+    } else if($reason == 'change_payment_status') {
+        $subject = $lang['mail_subject_order_change_status_pm']. ' (#'.$this_order['order_nbr'].')';
     } else if($reason == 'change_shipping_status') {
-        $subject = "We changed the Shipping Status # ".$this_order['order_nbr'];
+        $subject = $lang['mail_subject_order_change_status_shipping']. ' (#'.$this_order['order_nbr'].')';
     } else if($reason == 'order_confirmation') {
-        $subject = "Your Order has been sent # ".$this_order['order_nbr'];
+        $subject = $lang['mail_subject_order_sent']. ' (#'.$this_order['order_nbr'].')';
     } else {
-        $subject = "We changed something in # ".$this_order['order_nbr'];
+        $subject = $lang['mail_subject_order_changed']. ' (#'.$this_order['order_nbr'].')';
     }
-
 
     $order_invoice_address = html_entity_decode($this_order['order_invoice_address']);
 
