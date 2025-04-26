@@ -201,9 +201,9 @@
   "label_sort_price_desc": "Preis absteigend",
   "label_sort_topseller": "Topseller",
   "label_sort_name": "Name",
-  "mail_subject_order_notify": "Notification: Status for your Order",
-  "mail_subject_order_change_status_pm": "We changed the Payment Status for your Order",
-  "mail_subject_order_change_status_shipping": "We changed the Shipping Status for your Order",
-  "mail_subject_order_sent": "Your Order has been sent",
-  "mail_subject_order_changed": "We changed something in your Order"
+  "mail_subject_order_notify": "Benachrichtigung: Status Ihrer Bestellung",
+  "mail_subject_order_change_status_pm": "Wir haben den Zahlungsstatus für Ihre Bestellung geändert",
+  "mail_subject_order_change_status_shipping": "Wir haben den Versandstatus für Ihre Bestellung geändert",
+  "mail_subject_order_sent": "Ihr Auftrag wurde versandt",
+  "mail_subject_order_changed": "Wir haben etwas in Ihrer Bestellung geändert"
 }
