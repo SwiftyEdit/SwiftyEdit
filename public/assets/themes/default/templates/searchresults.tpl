@@ -5,15 +5,15 @@
 {foreach item=link from=$arr_results}
 	<div class="card mb-3 border-0">
 		<div class="row">
-			<div class="col-md-3">
-				{if $link.page_thumb != ''}
-					<img src="{$link.page_thumb}" class="img-fluid rounded">
+			<div class="col-md-2">
+				{if $link.thumb != ''}
+					<img src="{$link.thumb}" class="img-fluid rounded">
 				{/if}
 		</div>
-		<div class="col-md-9">
+		<div class="col-md-10">
 	
-			<a href="{$link.set_link}" class="stretched-link" title="{$link.page_title}">{$link.page_title}</a><br>
-			<p>{$link.page_meta_description}<br><small class="text-success">{$link.set_link}</small></p>
+			<a href="{$link.set_link}" class="stretched-link" title="{$link.title}">{$link.title}</a><br>
+			<p>{$link.description}<br><small class="text-success">{$link.set_link}</small></p>
 	</div>
 	</div>
 	</div>

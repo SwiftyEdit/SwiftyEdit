@@ -30,17 +30,46 @@ if($s != '' && $start_search == "true") {
 		$search_msg = $msg_no_search_results;
 	} else {
 		$search_msg = sprintf($lang['msg_search_results'], $cnt_result);
-		
+
+
 		for($i=0;$i<$cnt_result;$i++) {
-			$sr[$i]['set_link'] = $sr[$i]['page_url'];
-			
-			$parse_page_thumb = parse_url($sr[$i]['page_thumbnail']);
-			$page_thumb = $parse_page_thumb['path'];
 
-            $sr[$i]['page_thumb'] = $page_thumb;
+            if($sr[$i]['post_type'] == 'm') {
+                // post message
+                $sr[$i]['set_type'] = 'post';
+                $sr[$i]['title'] = $sr[$i]['post_title'];
+                $sr[$i]['description'] = $sr[$i]['post_meta_description'];
+                $sr[$i]['set_link'] = $sr[$i]['post_rss_url'];
+                $image = explode('<->',$sr[$i]['post_images']);
+                if($image[1] != "") {
+                    $sr[$i]['thumb'] = $image[1];
+                }
+            }
 
-            $sr[$i]['page_meta_description'] = $sr[$i]['page_meta_description'];
-			
+            if($sr[$i]['page_permalink'] != '') {
+                // page
+                $sr[$i]['set_type'] = 'page';
+                $sr[$i]['set_link'] = $sr[$i]['page_permalink'];
+                $page_image = explode('<->',html_entity_decode($sr[$i]['page_thumbnail']));
+                if($page_image[0] != "") {
+                    $sr[$i]['thumb'] = $page_image[0];
+                }
+                $sr[$i]['description'] = $sr[$i]['page_meta_description'];
+                $sr[$i]['title'] = $sr[$i]['page_title'];
+            }
+
+            if($sr[$i]['type'] == 'p') {
+                // product
+                $sr[$i]['set_type'] = 'product';
+                $sr[$i]['description'] = $sr[$i]['meta_description'];
+                $sr[$i]['set_link'] = $sr[$i]['rss_url'];
+
+                $image = explode('<->',$sr[$i]['images']);
+                if($image[1] != "") {
+                    $sr[$i]['thumb'] = $image[1];
+                }
+            }
+
 			
 		}
 

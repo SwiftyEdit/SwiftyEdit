@@ -574,7 +574,7 @@ function se_get_active_mods() {
 
 function se_search($query, $currentPage=1, $itemsPerPage=10) {
 	
-	global $db_content;
+	global $db_content, $db_posts;
 	
 	$query = str_replace('-', ' ', $query);
 
@@ -586,7 +586,28 @@ function se_search($query, $currentPage=1, $itemsPerPage=10) {
             ]
     ]);
 
-	return $find_pages;
+    $find_products = $db_posts->select("se_products", "*", [
+        "OR" => [
+            "title[~]" => "$query",
+            "teaser[~]" => "$query",
+            "text[~]" => "$query",
+            "text_additional1[~]" => "$query"
+        ]
+    ]);
+
+    $find_posts = $db_posts->select("se_posts", "*", [
+        "OR" => [
+            "post_title[~]" => "$query",
+            "post_teaser[~]" => "$query",
+            "post_text[~]" => "$query",
+            "post_meta_description" => "$query",
+            "post_tags" => "$query"
+        ]
+    ]);
+
+    $results = array_merge($find_pages, $find_products,$find_posts);
+
+	return $results;
 }
 
 
