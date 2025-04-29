@@ -136,7 +136,36 @@ if(isset($_POST['save_post'])) {
     $post_date_day = date("d",$post_releasedate);
 
     if($_POST['post_slug'] == "") {
-        $post_slug = "$post_date_year/$post_date_month/$post_date_day/$clean_title/";
+        $post_slug = $clean_title.'/';
+    } else {
+        $post_slug = se_clean_permalink($_POST['post_slug']);
+    }
+
+    // update rss feed
+    $target_page = $db_content->select("se_pages", "page_permalink", [
+        "AND" => [
+            "page_type_of_use" => "display_post",
+            "page_language" => $post_lang
+        ]
+    ]);
+
+    if($target_page[0] == '') {
+        $target_page = $db_content->select("se_pages", "page_permalink", [
+            "AND" => [
+                "page_posts_types[~]" => "m",
+                "page_language" => $post_lang
+            ]
+        ]);
+    }
+
+
+    if(is_numeric($post_id)) {
+        $filename = str_replace("/", "", $post_slug) . '-' . $post_id . '.html';
+
+        // rss url
+        if ($_POST['post_rss_url'] == "") {
+            $post_rss_url = $se_base_url . $target_page[0] . $filename;
+        }
     }
 
     $post_categories = '';
@@ -205,32 +234,6 @@ if(isset($_POST['save_post'])) {
         show_toast($lang['msg_success_db_changed'],'success');
     }
 
-    // update rss feed
-    $target_page = $db_content->select("se_pages", "page_permalink", [
-        "AND" => [
-            "page_type_of_use" => "display_post",
-            "page_language" => $post_lang
-        ]
-    ]);
-
-    if($target_page[0] != '') {
-        $rss_url = $se_base_url.$target_page[0].$clean_title.'-'.$post_id.'.html';
-        $db_posts->update("se_posts", [
-            "post_rss_url" => $rss_url
-        ], [
-            "post_id" => $post_id
-        ]);
-
-        /* send to rss feed */
-        if($_POST['post_rss'] == 'on') {
-            add_feed("$post_title",$_POST['post_teaser'],"$rss_url","post_$id","",$post_releasedate);
-        }
-    }
-
-
-    echo '<pre>';
-    //print_r($_POST);
-    echo '</pre>';
 }
 
 if(isset($_POST['sort_gallery_tmb'])) {
