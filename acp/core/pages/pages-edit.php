@@ -59,7 +59,11 @@ if(isset($_POST['restore_id']) && is_numeric($_POST['restore_id'])) {
     $btn_submit_text = $lang['update'];
 }
 
-$last_part_page_sort = substr($page_sort, strrpos($page_sort, '.') + 1);
+if(str_contains($page_sort, '.')) {
+    $last_part_page_sort = substr($page_sort, strrpos($page_sort, '.') + 1);
+} else {
+    $last_part_page_sort = $page_sort;
+}
 
 $input_text_page_sort = [
     "input_name" => "page_order",
