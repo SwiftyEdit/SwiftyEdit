@@ -16,8 +16,7 @@ echo '<div class="col-md-6">';
 // show existing labels
 
 echo '<div class="card p-3">';
-echo '<div id="getCategories" hx-post="'.$reader_uri.'?action=list" hx-trigger="load, changed, updated_categories from:body" hx-include="[name=\'csrf_token\']">';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+echo '<div id="getCategories" hx-get="'.$reader_uri.'?action=list" hx-trigger="load, changed, updated_categories from:body">';
 echo'</div>';
 echo'</div>';
 

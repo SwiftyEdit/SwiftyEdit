@@ -11,8 +11,7 @@ echo '</div>';
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
-echo '<div id="getProducts" class="" hx-post="'.$reader_uri.'?action=list_products" hx-trigger="load, update_products_list from:body, updated_global_filter from:body" hx-include="[name=\'csrf_token\']">';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+echo '<div id="getProducts" class="" hx-get="'.$reader_uri.'?action=list_products" hx-trigger="load, update_products_list from:body, updated_global_filter from:body">';
 echo '</div>';
 
 echo '</div>';
@@ -81,7 +80,7 @@ echo '</div>';
 echo '<div class="card">';
 echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
 echo '<div class="card-body">';
-echo '<div id="keyList" hx-post="'.$reader_uri.'?action=list_keyword_btn" hx-trigger="load, update_products_list from:body, updated_global_filter from:body" hx-include="[name=\'csrf_token\']"></div>';
+echo '<div id="keyList" hx-get="'.$reader_uri.'?action=list_keyword_btn" hx-trigger="load, update_products_list from:body, updated_global_filter from:body"></div>';
 echo '</div>';
 echo '</div>';
 

@@ -40,9 +40,8 @@
 					<div class="tab-pane h-100 fade show active" id="pages_list">
 						<div class="d-flex flex-column h-100">
 							<div id="getPages" class="p-1"
-								 hx-post="{reader_uri}?action=list_pages"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_pages"
+								 hx-trigger="load">
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">{btn_page_overview} {btn_new_page}</div>
@@ -56,8 +55,7 @@
 									</button>
 									<span id="cntCacheSize" class="input-group-text"
 										  hx-get="{reader_uri}?action=calculate_cache_size"
-										  hx-trigger="load, deleted_cache from:body"
-										  hx-include="[name='csrf_token']">
+										  hx-trigger="load, deleted_cache from:body">
 											0 KB
 									</span>
 									</div>
@@ -68,9 +66,8 @@
 					<div class="tab-pane fade h-100" id="snippets_list">
 						<div class="d-flex flex-column h-100">
 							<div id="getSnippets" class="p-1"
-								 hx-post="{reader_uri}?action=list_snippets"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_snippets"
+								 hx-trigger="load">
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -83,9 +80,8 @@
 					<div class="tab-pane fade h-100" id="post_list">
 						<div class="d-flex flex-column h-100">
 							<div id="getPosts" class="p-1"
-								 hx-post="{reader_uri}?action=list_posts"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_posts"
+								 hx-trigger="load">
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -98,9 +94,8 @@
 					<div class="tab-pane fade h-100" id="products_list">
 						<div class="d-flex flex-column h-100">
 							<div id="getProducts" class="p-1"
-								 hx-post="{reader_uri}?action=list_products"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_products"
+								 hx-trigger="load">
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -113,9 +108,8 @@
 					<div class="tab-pane fade h-100" id="events_list">
 						<div class="d-flex flex-column h-100">
 							<div id="getEvents" class="p-1"
-								 hx-post="{reader_uri}?action=list_events"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_events"
+								 hx-trigger="load">
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -143,27 +137,24 @@
 					<div class="tab-pane fade show active" id="logfile">
 						<div class="scroll-container">
 							<div id="getLogfile" class="p-1"
-								 hx-post="{reader_uri}?action=list_logfile"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_logfile"
+								 hx-trigger="load">
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade" id="alerts">
 						<div class="scroll-container">
 							<div id="getAlerts" class="p-1"
-								 hx-post="{reader_uri}?action=list_alerts"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_alerts"
+								 hx-trigger="load">
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade" id="info_table">
 						<div class="scroll-container">
 							<div id="getInfos" class="p-1"
-								 hx-post="{reader_uri}?action=list_infos"
-								 hx-trigger="load"
-								 hx-include="[name='csrf_token']">
+								 hx-get="{reader_uri}?action=list_infos"
+								 hx-trigger="load">
 							</div>
 						</div>
 					</div>
