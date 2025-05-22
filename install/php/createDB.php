@@ -131,6 +131,7 @@ $sql_events_table = se_generate_sql_query("se_events.php",$db_type);
 $sql_log_table = se_generate_sql_query("se_log.php",$db_type);
 $sql_mailbox_table = se_generate_sql_query("se_mailbox.php",$db_type);
 $sql_orders_table = se_generate_sql_query("se_orders.php",$db_type);
+$sql_delivery_areas_table = se_generate_sql_query("se_delivery_areas.php",$db_type);
 
 
 if($db_type == 'mysql') {
@@ -182,7 +183,6 @@ $footer_content = file_get_contents(__DIR__."/../contents/text_footer.txt");
 
 $time = time();
 
-
 $dbh_content->query($sql_pages_table);
 $dbh_content->query($sql_pages_cache_table);
 $dbh_content->query($sql_options_table);
@@ -198,6 +198,7 @@ $dbh_content->query($sql_log_table);
 $dbh_content->query($sql_orders_table);
 $dbh_content->query($sql_carts_table);
 $dbh_content->query($sql_filter_table);
+$dbh_content->query($sql_delivery_areas_table);
 
 /* insert two example pages */
 

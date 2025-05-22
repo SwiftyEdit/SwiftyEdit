@@ -147,12 +147,6 @@ $input_shipping_costs_cat3 = [
     "type" => "text"
 ];
 
-$input_delivery_country = [
-    "input_name" => "delivery_country",
-    "input_value" => "",
-    "label" => $lang['label_shop_add_delivery_area'],
-    "type" => "text"
-];
 
 $input_bd_address = [
     "input_name" => "prefs_business_address",
@@ -375,10 +369,7 @@ echo '<div class="tab-pane fade" id="shop-delivery" role="tabpanel" tabindex="0"
 
 echo '<div class="row">';
 echo '<div class="col-md-6">';
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-echo se_print_form_input($input_delivery_country);
-echo '<button type="submit" class="btn btn-primary" name="add_delivery_country" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>';
+echo '<div id="listDeliveryCountries" hx-get="/admin/settings/read/?show=deliveryCountriesForm" hx-trigger="load, update_deliveryCountries_list from:body">Load form ...</div>';
 echo '</div>';
 echo '<div class="col-md-6">';
 echo '<div id="listDeliveryCountries" hx-get="/admin/settings/read/?action=deliveryCountries" hx-trigger="load, update_deliveryCountries_list from:body">Load ...</div>';

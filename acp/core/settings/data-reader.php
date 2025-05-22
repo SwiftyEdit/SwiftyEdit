@@ -7,24 +7,87 @@
 
 
 if($_REQUEST['action'] == 'deliveryCountries') {
-    $get_countries = json_decode($se_settings['delivery_countries'],JSON_OBJECT_AS_ARRAY);
-    if(is_array($get_countries)) {
-        sort($get_countries);
-        $cnt_countries = count($get_countries);
-        echo '<table class="table">';
-        for($i=0;$i<$cnt_countries;$i++) {
-            echo '<tr>';
-            echo '<td>';
-            echo $get_countries[$i];
-            echo '</td>';
-            echo '<td>';
-            echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$i.'">'.$icon['trash'].'</button>';
-            echo '</td>';
-            echo '</tr>';
+
+    $get_countries = $db_content->select("se_delivery_areas", "*");
+
+    echo '<table class="table">';
+    echo '<tr>';
+    echo '<td>'.$lang['label_country'].'</td>';
+    echo '<td>'.$lang['label_status'].'</td>';
+    echo '<td>'.$lang['label_plus_tax'].'</td>';
+    echo '<td></td>';
+    echo '</tr>';
+    foreach($get_countries as $country) {
+
+        $status = '<span class="badge text-danger">'.$icon['circle'].'</span>';
+        if($country['status'] == '1') {
+            $status = '<span class="badge text-success">'.$icon['check_circle'].'</span>';
         }
-        echo '</table>';
+
+        $tax = '<span class="badge text-danger">'.$icon['circle'].'</span>';
+        if($country['tax'] == '1') {
+            $tax = '<span class="badge text-success">'.$icon['check_circle'].'</span>';
+        }
+
+        echo '<tr>';
+        echo '<td>'.$country['name'].'</td>';
+        echo '<td>'.$status.'</td>';
+        echo '<td>'.$tax.'</td>';
+        echo '<td>';
+        echo '<button class="btn btn-sm btn-default text-success" hx-get="/admin/settings/read/?edit_delivery_country='.$country['id'].'" hx-target="#deliveryCountriesForm">'.$icon['edit'].'</button>';
+        echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$country['id'].'">'.$icon['trash'].'</button>';
+        echo '</td>';
+        echo '</tr>';
     }
+    echo '</table>';
     exit;
+}
+
+if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_country']) {
+
+    $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="update">'.$lang['btn_save'].'</button>';
+
+    if(isset($_REQUEST['edit_delivery_country'])) {
+        $edit_country = (int) $_REQUEST['edit_delivery_country'];
+        $get_country = $db_content->get("se_delivery_areas", "*", ["id" => $edit_country]);
+        $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="'.$edit_country.'">'.$lang['btn_update'].'</button>';
+    }
+
+    $input_delivery_country = [
+        "input_name" => "delivery_country",
+        "input_value" => $get_country['name'] ?? '',
+        "label" => $lang['label_shop_add_delivery_area'],
+        "type" => "text"
+    ];
+
+    $input_delivery_country_status = [
+        "input_name" => "delivery_country_status",
+        "input_value" => $get_country['status'] ?? '1',
+        "label" => $lang['label_status'],
+        "options" => [
+            $lang['status_public'] => 1,
+            $lang['status_draft'] => 2
+        ],
+        "type" => "select"
+    ];
+
+    $input_delivery_country_tax = [
+        "input_name" => "delivery_country_tax",
+        "input_value" => $get_country['tax'] ?? '2',
+        "label" => $lang['label_tax'],
+        "options" => [
+            $lang['yes'] => 1,
+            $lang['no'] => 2
+        ],
+        "type" => "select"
+    ];
+
+    echo '<form id="deliveryCountriesForm" hx-post="/admin/settings/shop/write/" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+    echo se_print_form_input($input_delivery_country);
+    echo se_print_form_input($input_delivery_country_status);
+    echo se_print_form_input($input_delivery_country_tax);
+    echo $submit_btn;
+    echo '</form>';
 }
 
 if(isset($_POST['load_labels'])) {

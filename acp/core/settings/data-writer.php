@@ -67,27 +67,40 @@ if(isset($_POST['update_hide_languages'])) {
     show_toast($lang['msg_success_db_changed'],'success');
 }
 
-// write delivery settings
-if (isset($_POST['add_delivery_country'])) {
-    $get_countries = json_decode($se_settings['delivery_countries'],JSON_OBJECT_AS_ARRAY);
-    $get_countries[] = $_POST['delivery_country'];
-    $add_country = array_filter($get_countries);
-    sort($add_country);
-    $prefs_countries_json = json_encode($add_country, JSON_FORCE_OBJECT);
-    $data['prefs_delivery_countries'] = $prefs_countries_json;
-    se_write_option($data,'se');
+// save delivery area
+if (isset($_POST['send_delivery_country'])) {
+
+    $country = sanitizeUserInputs($_POST['delivery_country']);
+    $status = (int) $_POST['delivery_country_status'];
+    $tax = (int) $_POST['delivery_country_tax'];
+
+    if($_POST['send_delivery_country'] == 'save') {
+        $db_content->insert("se_delivery_areas", [
+            "name" => $country,
+            "status" => $status,
+            "tax" => $tax
+        ]);
+    } else {
+        $db_content->update("se_delivery_areas", [
+            "name" => $country,
+            "status" => $status,
+            "tax" => $tax
+        ],[
+            "id" => (int) $_POST['send_delivery_country']
+        ]);
+    }
+
+
     header( "HX-Trigger: update_deliveryCountries_list");
 }
 
 // delete delivery country
 if (isset($_POST['delete_delivery_country'])) {
     $delete_id = (int) $_POST['delete_delivery_country'];
-    $get_countries = json_decode($se_settings['delivery_countries'],JSON_OBJECT_AS_ARRAY);
-    unset($get_countries[$delete_id]);
-    $add_countries = array_values($get_countries);
-    $prefs_countries_json = json_encode($add_countries, JSON_FORCE_OBJECT);
-    $data['prefs_delivery_countries'] = $prefs_countries_json;
-    se_write_option($data,'se');
+
+    $db_content->delete("se_delivery_areas", [
+        "id" => $delete_id
+    ]);
     header( "HX-Trigger: update_deliveryCountries_list");
 }
 

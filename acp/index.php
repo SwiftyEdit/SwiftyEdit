@@ -278,7 +278,7 @@ if (isset($set_acptheme)) {
 
 
     <?php
-    include '../acp/core/templates.php';
+    include_once '../acp/core/templates.php';
     ?>
 
 </head>

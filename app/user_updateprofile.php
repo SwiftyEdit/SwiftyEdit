@@ -260,7 +260,13 @@ if($_SESSION['user_nick'] == "") {
      * billing and delivery address - countries
      * show as select if there are predefined countries or as text input if not
      */
-    $prefs_delivery_countries = json_decode($se_prefs['prefs_delivery_countries'],true);
+    $get_delivery_countries = $db_content->select("se_delivery_areas", ["name"],[
+        "status" => 1
+    ]);
+
+    foreach($get_delivery_countries as $countries) {
+        $prefs_delivery_countries[] = $countries['name'];
+    }
 
     if(is_array($prefs_delivery_countries) && count($prefs_delivery_countries) > 0) {
         // show select
