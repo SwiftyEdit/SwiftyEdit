@@ -235,11 +235,10 @@ require SE_ROOT.'app/smarty.php';
 // and themes /api/themes/theme/
 if ($requestPathParts[0] === 'api') {
     if ($requestPathParts[1] === 'se') {
-        // route for SwwiftyEdit
+        // route for SwiftyEdit
         include SE_ROOT.'/app/xhr/route.php';
     } elseif ($requestPathParts[1] === 'plugins' && isset($requestPathParts[2])) {
-        // route for plugins
-        // check if plugin is activated (in $active_mods)
+        // route for (activated) plugins
         $plugin_name = basename($requestPathParts[2]);
         if(in_array($plugin_name, $active_plugins)) {
             $plugin_xhr = SE_ROOT.'/plugins/'.$plugin_name.'/global/xhr.php';
