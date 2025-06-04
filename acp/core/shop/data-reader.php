@@ -19,7 +19,7 @@ $global_filter_languages = json_decode($_SESSION['global_filter_languages'],true
 $global_filter_status = json_decode($_SESSION['global_filter_status'],true);
 $global_filter_label = json_decode($_SESSION['global_filter_label'],true);
 
-include '../acp/core/templates.php';
+include_once '../acp/core/templates.php';
 global $lang_codes;
 
 $se_labels = se_get_labels();
