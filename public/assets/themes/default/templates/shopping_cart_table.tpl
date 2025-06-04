@@ -79,6 +79,8 @@
         </tr>
     {/foreach}
 
+    {if $checkout_error_msg == ''}
+
     <tr>
         <td colspan="2" class="text-end">{$lang_price_subtotal} <small class="text-muted">{$lang_label_net}</small></td>
         <td class="text-end">{$currency} {$cart_price_subtotal_net}</td>
@@ -100,8 +102,20 @@
     </tr>
 
     <tr>
-        <td colspan="2" class="text-end">{$lang_label_shipping}</td>
+        <td colspan="2" class="text-end">{$lang_label_shipping} <small class="text-muted">{$lang_label_net}</small></td>
         <td class="text-end">{$currency} {$cart_shipping_costs}</td>
+        <td></td>
+    </tr>
+
+        <tr>
+            <td colspan="2" class="text-end">{$lang_label_plus_tax}</td>
+            <td class="text-end">{$currency} {$cart_shipping_costs_taxes}</td>
+            <td></td>
+        </tr>
+
+    <tr>
+        <td colspan="2" class="text-end">{$lang_label_shipping}</td>
+        <td class="text-end">{$currency} {$cart_shipping_costs_total}</td>
         <td></td>
     </tr>
 
@@ -127,6 +141,8 @@
         <td class="text-end">{$currency} {$cart_price_total}</td>
         <td></td>
     </tr>
+
+    {/if}
 
 </table>
 

@@ -19,6 +19,7 @@ $shipping_costs = 0; // reset shipping costs
 $shipping_products = 0; // number of products which will be shipped
 $store_shipping_cat = 0; // reset shipping category
 $checkout_error = '';
+$tax_grouped = [];
 
 if(isset($_POST['remove_from_cart'])) {
 	$id = (int) $_POST['remove_from_cart'];
@@ -68,7 +69,7 @@ if($get_cd['ba_company'] != '') {
 /**
  * check if we have all mandatory information
  * billing address
- * firstname, lastname, street, street nbr, zip and city
+ * firstname, lastname, street, street nbr, zip, city and country
  */
 
 if($get_cd['ba_firstname'] == '' ||
@@ -76,9 +77,31 @@ if($get_cd['ba_firstname'] == '' ||
     $get_cd['ba_street'] == '' ||
     $get_cd['ba_street_nbr'] == '' ||
     $get_cd['ba_zip'] == '' ||
-    $get_cd['ba_city'] == '') {
+    $get_cd['ba_city'] == '' ||
+    $get_cd['ba_country'] == '') {
     $checkout_error = 'missing_mandatory_informations';
 }
+
+// shipping target from billing address
+$shipping_country = $get_cd['ba_country'];
+// or use shipping target from shipping address
+if($get_cd['sa_country'] != '') {
+	$shipping_country = $get_cd['sa_country'];
+}
+
+/**
+ * Check if we have predefined delivery areas.
+ * If yes, we need to check if tax is added to the shipping costs for this area
+ */
+
+$add_delivery_tax = true;
+$get_delivery_countries = $db_content->select("se_delivery_areas", "*");
+foreach($get_delivery_countries as $delivery_country) {
+    if(($shipping_country == $delivery_country['name']) && $delivery_country['tax'] == '2') {
+        $add_delivery_tax = false;
+    }
+}
+
 
 if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_admin'] != 'yes') {
     $checkout_error = 'missing_approval';
@@ -191,8 +214,12 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$price_all_net = $price_all_net+round($post_prices['net_raw'],2);
     $all_items_subtotal_net = $all_items_subtotal_net+$cart_item[$i]['price_net_raw'];
     $all_items_subtotal = $all_items_subtotal+$cart_item[$i]['price_gross_raw'];
-}
 
+    // we collect net prices; grouped by tax,
+    // to calculate taxes on delivery costs
+    $tax_grouped[$tax] = $tax_grouped[$tax]+round($post_prices['net_raw'],2);
+
+}
 
 $smarty->assign('cart_items', $cart_item);
 
@@ -225,7 +252,33 @@ if($shipping_products > 0) {
             include "$addon_root/global/index.php";
         }
     }
-	
+}
+
+$shipping_tax_split = [];
+$total_shipping_tax = 0;
+$shipping_costs_net = $shipping_costs;
+
+foreach ($tax_grouped as $tax_rate => $net_value) {
+    $part = $net_value / $all_items_subtotal_net;
+    $part_net = $part * $shipping_costs_net;
+    $tax = $part_net * ($tax_rate / 100);
+
+    $shipping_tax_split[$tax_rate] = [
+        'part' => $part,
+        'delivery_net' => $part_net,
+        'delivery_tax' => $tax,
+        'delivery_gross' => $part_net + $tax,
+    ];
+
+    $total_shipping_tax += $tax;
+}
+
+// if $add_delivery_tax == true - we ship to an Area with tax, add $total_shipping_tax to shipping costs
+
+if($add_delivery_tax == true) {
+    $shipping_costs_total = $shipping_costs_net + $total_shipping_tax;
+} else {
+    $shipping_costs_total = $shipping_costs_net;
 }
 
 $smarty->assign('payment_methods', $payment_methods);
@@ -240,7 +293,7 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 $cart_price_subtotal_net = $all_items_subtotal_net;
 $cart_price_subtotal = $all_items_subtotal;
 $cart_included_taxes = $all_items_subtotal-$all_items_subtotal_net;
-$cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs;
+$cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs_total;
 
 // check if we have a maximum order value
 if($se_prefs['prefs_posts_max_order_value'] != '') {
@@ -410,7 +463,6 @@ if($_POST['order'] == 'send') {
 
 		}
 	}
-	
 }
 
 if($checkout_error == 'missing_mandatory_informations') {
@@ -425,6 +477,8 @@ $smarty->assign("max_order_value_msg",$max_order_value_msg,true);
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);
+$smarty->assign('cart_shipping_costs_total', se_post_print_currency($shipping_costs_total), true);
+$smarty->assign('cart_shipping_costs_taxes', se_post_print_currency($total_shipping_tax), true);
 $smarty->assign('cart_payment_costs', se_post_print_currency($payment_costs), true);
 $smarty->assign('cart_price_subtotal', se_post_print_currency($cart_price_subtotal), true);
 $smarty->assign('cart_price_subtotal_net', se_post_print_currency($cart_price_subtotal_net), true);
