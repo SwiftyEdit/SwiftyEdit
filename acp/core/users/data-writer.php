@@ -18,7 +18,7 @@ if(isset($_POST['save_user'])) {
 
     foreach($_POST as $key => $val) {
         if(is_string($val)) {
-            $$key = htmlentities($val);
+            $$key = trim($val);
         }
     }
 
@@ -44,7 +44,23 @@ if(isset($_POST['save_user'])) {
         "user_street" => $user_street,
         "user_street_nbr" => $user_street_nbr,
         "user_zip" => $user_zip,
-        "user_city" => $user_city
+        "user_city" => $user_city,
+        "ba_firstname" => $ba_firstname,
+        "ba_lastname" => $ba_lastname,
+        "ba_company" => $ba_company,
+        "ba_street" => $ba_street,
+        "ba_street_nbr" => $ba_street_nbr,
+        "ba_zip" => $ba_zip,
+        "ba_city" => $ba_city,
+        "ba_country" => $ba_country,
+        "sa_firstname" => $sa_firstname,
+        "sa_lastname" => $sa_lastname,
+        "sa_company" => $sa_company,
+        "sa_street" => $sa_street,
+        "sa_street_nbr" => $sa_street_nbr,
+        "sa_zip" => $sa_zip,
+        "sa_city" => $sa_city,
+        "sa_country" => $sa_country
     ];
 
 
