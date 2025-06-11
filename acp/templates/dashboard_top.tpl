@@ -33,13 +33,19 @@
 							<sup><span id="countEvents" hx-get="/admin/counter/read/?count=events" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" data-bs-target="#user_list" data-bs-toggle="tab">
+							{tab_user}
+							<sup><span id="countUser" hx-get="/admin/counter/read/?count=users" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+						</a>
+					</li>
 				</ul>
 			</div>
 			<div class="card-body">
 				<div class="tab-content h-100">
 					<div class="tab-pane h-100 fade show active" id="pages_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getPages" class="p-1"
+							<div id="getPages" class="p-1 scroll-container"
 								 hx-get="{reader_uri}?action=list_pages"
 								 hx-trigger="load">
 							</div>
@@ -65,7 +71,7 @@
 					</div>
 					<div class="tab-pane fade h-100" id="snippets_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getSnippets" class="p-1"
+							<div id="getSnippets" class="p-1 scroll-container"
 								 hx-get="{reader_uri}?action=list_snippets"
 								 hx-trigger="load">
 							</div>
@@ -79,7 +85,7 @@
 					</div>
 					<div class="tab-pane fade h-100" id="post_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getPosts" class="p-1"
+							<div id="getPosts" class="p-1 scroll-container"
 								 hx-get="{reader_uri}?action=list_posts"
 								 hx-trigger="load">
 							</div>
@@ -93,7 +99,7 @@
 					</div>
 					<div class="tab-pane fade h-100" id="products_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getProducts" class="p-1"
+							<div id="getProducts" class="p-1 scroll-container"
 								 hx-get="{reader_uri}?action=list_products"
 								 hx-trigger="load">
 							</div>
@@ -107,7 +113,7 @@
 					</div>
 					<div class="tab-pane fade h-100" id="events_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getEvents" class="p-1"
+							<div id="getEvents" class="p-1 scroll-container"
 								 hx-get="{reader_uri}?action=list_events"
 								 hx-trigger="load">
 							</div>
@@ -115,6 +121,19 @@
 								<div class="col">
 									{btn_events_overview}
 									{btn_events_new}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade h-100" id="user_list">
+						<div class="d-flex flex-column h-100">
+							<div id="getUser" class="p-1 scroll-container"
+								 hx-get="{reader_uri}?action=list_user"
+								 hx-trigger="load">
+							</div>
+							<div class="row mt-auto g-1">
+								<div class="col">
+									{btn_user_overview}
 								</div>
 							</div>
 						</div>

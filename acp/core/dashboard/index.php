@@ -37,6 +37,9 @@ $btn_events_new = '<a href="/admin/events/new/" class="btn btn-default">'.$icon[
 $tpl_file = str_replace('{btn_events_overview}', $btn_events_overview, $tpl_file);
 $tpl_file = str_replace('{btn_events_new}', $btn_events_new, $tpl_file);
 
+$btn_user_overview = '<a href="/admin/users/" class="btn btn-default">'.$lang['overview'].'</a>';
+$tpl_file = str_replace('{btn_user_overview}', $btn_user_overview, $tpl_file);
+
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['speedometer'].' '.$lang['nav_btn_dashboard'];
 echo '<span class="ms-auto">';
