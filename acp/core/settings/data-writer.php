@@ -199,7 +199,7 @@ if (isset($_POST['update_reactions'])) {
     foreach($_POST as $key => $val) {
         $data[htmlentities($key)] = htmlentities($val);
     }
-    print_r($_POST);
+    //print_r($_POST);
 
     se_write_option($data,'se');
     show_toast($lang['msg_success_db_changed'],'success');

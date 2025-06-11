@@ -45,7 +45,7 @@ if($_REQUEST['action'] == 'deliveryCountries') {
 
 if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_country']) {
 
-    $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="update">'.$lang['btn_save'].'</button>';
+    $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="save">'.$lang['btn_save'].'</button>';
 
     if(isset($_REQUEST['edit_delivery_country'])) {
         $edit_country = (int) $_REQUEST['edit_delivery_country'];
