@@ -802,7 +802,11 @@ function se_send_order($data) {
 
 function se_recalculate_stock_sales($items) {
     global $db_posts;
-    $cnt_items = count($items);
+    $cnt_items = 0;
+    if(is_array($items)) {
+        $cnt_items = count($items);
+    }
+
 
     for($i=0;$i<$cnt_items;$i++) {
 
