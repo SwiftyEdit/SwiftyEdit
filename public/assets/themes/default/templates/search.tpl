@@ -1,11 +1,6 @@
-<div class="search_toggle">
-    <form action="{$search_uri}" method="POST" class="">
-        <div class="row">
-            <div class="col-md-12">
-                <input class="searchbox form-control" type="text" name="s" value="{$search_string}">
-            </div>
-        </div>
-        <hr class="shadow">
-        {$hidden_csrf_token}
-    </form>
-</div>
+<form action="{$search_uri}" method="POST" class="mb-3">
+    <input type="text" name="s" id="search" value="{$search_string}" class="form-control" placeholder="Suchen ..." autofocus="" autocomplete="off">
+    {$hidden_csrf_token}
+    <input type="hidden" name="languagePack" value="{$languagePack}">
+</form>
+<hr class="shadow">

@@ -8,6 +8,10 @@ if(isset($_POST['vote'])) {
 require_once SE_ROOT.'/vendor/autoload.php';
 use Smarty\Smarty;
 
+if($requestPathParts[2] === 'search') {
+    include __DIR__.'/search.php';
+}
+
 // show votings
 if($requestPathParts[2] === 'votes') {
 
