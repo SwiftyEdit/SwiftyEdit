@@ -27,7 +27,7 @@ $se_categories = se_get_categories();
 
 /**
  * list active keywords from search input
- * used in sidebar
+ * used in the sidebar
  */
 if($_REQUEST['action'] == 'list_active_searches') {
 
@@ -963,12 +963,12 @@ if(isset($_REQUEST['show_order'])) {
     echo '<div class="row">';
     echo '<div class="col-md-6">';
 
-    echo '<p>' . $get_order['order_nbr'] . '</p>';
+    echo '<p>#' . $get_order['order_nbr'] . '</p>';
     echo '<p>' . $order_time . '</p>';
-    echo '<p class="fs-3">'.se_post_print_currency($get_order['order_price_total']).'</p>';
-    echo '<p>'.$show_payment_status[$payment_status].'</p>';
+    echo '<span class="fs-4 bg-success-subtle text-success-emphasis p-2 ">'.$get_order['order_currency'].' '.se_post_print_currency($get_order['order_price_total']).'</span> ';
+    echo '<span class="p-2">'.$show_payment_status[$payment_status].'</span>';
     echo '</div>';
-    echo '<div class="col-md-6">';
+    echo '<div class="col-md-4">';
     echo $order_invoice_address;
     echo '</div>';
     echo '</div>';
@@ -985,12 +985,26 @@ if(isset($_REQUEST['show_order'])) {
             echo '</div>';
         }
         echo '</td>';
-        echo '<td>'.se_post_print_currency($order_product['price_net_raw']).'</td>';
-        echo '<td>'.$order_product['tax'].' %</td>';
-        echo '<td>'.se_post_print_currency($order_product['price_gross_raw']).'</td>';
+        echo '<td class="text-end">'.se_post_print_currency($order_product['price_net_raw']).'</td>';
+        echo '<td class="text-end">'.$order_product['tax'].' %</td>';
+        echo '<td class="text-end">'.se_post_print_currency($order_product['price_gross_raw']).'</td>';
 
         echo '</tr>';
     }
+
+    // shipping
+    echo '<tr>';
+    echo '<td colspan="4">'.$lang['label_shipping'].'</td>';
+    echo '<td class="text-end">'.se_post_print_currency($get_order['order_shipping_costs']).'</td>';
+    echo '</tr>';
+
+    // total
+    echo '<tr>';
+    echo '<td colspan="4">'.$lang['price_total'].'</td>';
+    echo '<td class="text-end">'.se_post_print_currency($get_order['order_price_total']).'</td>';
+    echo '</tr>';
+
+
     echo '</table>';
     echo '</div>';
 
