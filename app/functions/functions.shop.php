@@ -758,7 +758,8 @@ function se_send_order($data) {
 	$order_status = 1;
 	$order_status_shipping = 1;
 	$order_status_payment = 1;
-	$order_invoice_address = $data['order_invoice_address'];
+	$order_shipping_address = $data['order_shipping_address'];
+    $order_invoice_address = $data['order_invoice_address'];
     $order_invoice_mail = $data['user_mail'];
 	$order_products = $data['order_products'];
 	$order_price_total = $data['order_price_total'];
@@ -775,6 +776,7 @@ function se_send_order($data) {
 		"order_status" => "$order_status",
 		"order_status_shipping" => "$order_status_shipping",
 		"order_status_payment" => "$order_status_payment",
+        "order_shipping_address" => "$order_shipping_address",
 		"order_invoice_address" => "$order_invoice_address",
         "order_invoice_mail" => "$order_invoice_mail",
 		"order_products" => "$order_products",

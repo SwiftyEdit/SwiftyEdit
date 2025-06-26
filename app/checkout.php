@@ -9,6 +9,7 @@
  * @var array $se_prefs global project variable
  * @var array $lang global project variable
  * @var string $languagePack global project variable
+ * @var object $db_content database
  * @var object $smarty Smarty template engine
  * @var int $cache_id Smarty cache id
  */
@@ -110,6 +111,13 @@ if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_b
 $client_data .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
 $client_data .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
 $client_data .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
+$client_data .= $get_cd['ba_country'];
+
+$client_shipping_address  = $get_cd['sa_company'].'<br>';
+$client_shipping_address .= $get_cd['sa_firstname']. ' '.$get_cd['sa_lastname'].'<br>';
+$client_shipping_address .= $get_cd['sa_street']. ' '.$get_cd['sa_street_nbr'].'<br>';
+$client_shipping_address .= $get_cd['sa_zip']. ' '.$get_cd['sa_city'].'<br>';
+$client_shipping_address .= $get_cd['sa_country'];
 
 
 for($i=0;$i<$cnt_cart_items;$i++) {
@@ -422,10 +430,12 @@ if($_POST['order'] == 'send') {
 		$order_data['user_id'] = $get_cd['user_id'];
         $order_data['user_mail'] = $get_cd['user_mail'];
 		$order_data['order_invoice_address'] = $client_data;
+        $order_data['order_shipping_address'] = $client_shipping_address;
 		$order_data['order_products'] = $cart_items_str;
 		$order_data['order_price_total'] = $cart_price_total;
+        $order_data['included_taxes'] = $cart_included_taxes;
 		$order_data['order_shipping_type'] = $shipping_type;
-		$order_data['order_shipping_costs'] = $shipping_costs;
+        $order_data['order_shipping_costs'] = $shipping_costs;
 		$order_data['order_payment_type'] = $payment_addon;
 		$order_data['order_payment_costs'] = $payment_costs;
         $order_data['order_comment'] = $_POST['cart_comment'];
@@ -451,16 +461,15 @@ if($_POST['order'] == 'send') {
             $recipient['mail'] = $get_cd['user_mail'];
             $recipient['type'] = 'client';
             $reason = 'order_confirmation';
-            $send_mail = se_send_order_status($recipient,$order_id,$reason);
 
             // include after sale script from payment addon
             $aftersale_script = SE_ROOT.'/plugins/'.basename($payment_addon).'/aftersale.php';
             if(is_file($aftersale_script)) {
                 include $aftersale_script;
             }
-
             $smarty->assign("cart_alert_success",$cart_alert,true);
 
+            $send_mail = se_send_order_status($recipient,$order_id,$reason);
 		}
 	}
 }
