@@ -475,7 +475,7 @@ function se_send_order_status($recipient,$order,$reason): int|string {
     $build_html_mail = str_replace("{order_nbr}",$this_order['order_nbr'],$build_html_mail);
     $build_html_mail = str_replace("{invoice_address}",$order_invoice_address,$build_html_mail);
     $build_html_mail = str_replace("{shipping_address}",$order_shipping_address,$build_html_mail);
-    $price_total = se_post_print_currency($this_order['order_price_total']). ' '.$this_order['order_currency'];
+    $price_total = se_post_print_currency($this_order['order_price_total']);
     $build_html_mail = str_replace("{price_total}",$price_total,$build_html_mail);
 
     $order_products = json_decode($this_order['order_products'],true);

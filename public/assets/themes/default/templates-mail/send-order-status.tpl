@@ -43,16 +43,16 @@
                     <td align="right">{price_subtotal} {currency}</td>
                 </tr>
                 <tr>
-                    <td>{lang_label_shipping}</td>
+                    <td>+ {lang_label_shipping}</td>
                     <td align="right">{price_shipping} {currency}</td>
                 </tr>
                 <tr>
-                    <td>{lang_label_tax}</td>
+                    <td>+ {lang_label_tax}</td>
                     <td align="right">{included_tax} {currency}</td>
                 </tr>
                 <tr>
-                    <td>{lang_price_total}</td>
-                    <td align="right">{price_total} {currency}</td>
+                    <td><strong>{lang_price_total}</strong></td>
+                    <td align="right"><strong>{price_total} {currency}</strong></td>
                 </tr>
             </table>
         </td>
