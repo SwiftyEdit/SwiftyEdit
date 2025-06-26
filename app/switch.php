@@ -81,6 +81,10 @@ if(is_array($bcmenu)) {
 	}
 }
 
+if($page_contents['page_type_of_use'] == '404') {
+    unset($bcmenu);
+}
+
 $arr_mainmenu = [];
 $arr_subnmenu = [];
 if(is_array($mainmenu)) {
