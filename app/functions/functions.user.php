@@ -65,8 +65,7 @@ function se_add_user_to_group(int $user, int $group): void {
     $group_data = $db_user->select("se_groups","*",[
         "group_id" => $group
     ]);
-    
-    print_r($group_data);
+
 
     $users = explode(" ", $group_data['group_user']);
     if(in_array($user, $users)) {
@@ -100,7 +99,12 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
         "AND" => [
             "user_nick" => "$user",
             "user_verified" => "verified",
-            "user_unlock_code" => ""
+            'OR' => [
+                'user_unlock_code' => null,
+                'AND #Empty' => [
+                    'user_unlock_code' => ''
+                ]
+            ]
         ]
     ]);
 
