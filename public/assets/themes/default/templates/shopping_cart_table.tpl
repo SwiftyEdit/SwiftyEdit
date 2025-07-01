@@ -148,9 +148,8 @@
 
 {if $show_submit_order_form == 1}
 <div class="row mb-3">
-    <div class="col-lg-6">
-
-        <div class="card h-100">
+    <div class="col-lg-12">
+        <div class="card mb-3">
             <div class="card-header">{$lang_label_payment_method}</div>
             <div class="card-body">{$payment_message}</div>
         </div>
@@ -159,6 +158,12 @@
         <div class="card h-100">
             <div class="card-header">{$lang_label_invoice_address}</div>
             <div class="card-body">{$client_data}</div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">{$lang_label_delivery_address}</div>
+            <div class="card-body">{$shipping_address}</div>
         </div>
     </div>
 </div>

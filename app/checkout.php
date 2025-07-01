@@ -83,23 +83,60 @@ if($get_cd['ba_firstname'] == '' ||
     $checkout_error = 'missing_mandatory_informations';
 }
 
+$client_data .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
+$client_data .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
+$client_data .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
+$client_data .= $get_cd['ba_country'];
+
 // shipping target from billing address
 $shipping_country = $get_cd['ba_country'];
-// or use shipping target from shipping address
-if($get_cd['sa_country'] != '') {
-	$shipping_country = $get_cd['sa_country'];
+// or check if we have to use shipping target from shipping address
+$shipping_address_string = $get_cd['sa_company'].$get_cd['sa_firstname'].$get_cd['sa_lastname'].$get_cd['sa_street'].$get_cd['sa_street_nbr'].$get_cd['sa_zip'].$get_cd['sa_city'].$get_cd['sa_country'];
+
+if($shipping_address_string == '') {
+    // shipping address is the same as billing address
+
+    $client_shipping_address  = $get_cd['ba_company'].'<br>';
+    $client_shipping_address .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
+    $client_shipping_address .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
+    $client_shipping_address .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
+    $client_shipping_address .= $get_cd['ba_country'];
+
+} else {
+    // customer has provided delivery details
+    // check mandatory information again
+
+    if($get_cd['sa_firstname'] == '' ||
+        $get_cd['sa_lastname'] == '' ||
+        $get_cd['sa_street'] == '' ||
+        $get_cd['sa_street_nbr'] == '' ||
+        $get_cd['sa_zip'] == '' ||
+        $get_cd['sa_city'] == '' ||
+        $get_cd['sa_country'] == '') {
+        $checkout_error = 'missing_mandatory_informations';
+    }
+
+    $client_shipping_address  = $get_cd['sa_company'].'<br>';
+    $client_shipping_address .= $get_cd['sa_firstname']. ' '.$get_cd['sa_lastname'].'<br>';
+    $client_shipping_address .= $get_cd['sa_street']. ' '.$get_cd['sa_street_nbr'].'<br>';
+    $client_shipping_address .= $get_cd['sa_zip']. ' '.$get_cd['sa_city'].'<br>';
+    $client_shipping_address .= $get_cd['sa_country'];
+
+    $shipping_country = $get_cd['sa_country'];
 }
 
 /**
  * Check if we have predefined delivery areas.
- * If yes, we need to check if tax is added to the shipping costs for this area
+ * If yes, we need to check if tax is added to the products and shipping costs for this area
  */
 
 $add_delivery_tax = true;
+$add_product_tax = true;
 $get_delivery_countries = $db_content->select("se_delivery_areas", "*");
 foreach($get_delivery_countries as $delivery_country) {
     if(($shipping_country == $delivery_country['name']) && $delivery_country['tax'] == '2') {
         $add_delivery_tax = false;
+        $add_product_tax = false;
     }
 }
 
@@ -107,18 +144,6 @@ foreach($get_delivery_countries as $delivery_country) {
 if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_admin'] != 'yes') {
     $checkout_error = 'missing_approval';
 }
-
-$client_data .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
-$client_data .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
-$client_data .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
-$client_data .= $get_cd['ba_country'];
-
-$client_shipping_address  = $get_cd['sa_company'].'<br>';
-$client_shipping_address .= $get_cd['sa_firstname']. ' '.$get_cd['sa_lastname'].'<br>';
-$client_shipping_address .= $get_cd['sa_street']. ' '.$get_cd['sa_street_nbr'].'<br>';
-$client_shipping_address .= $get_cd['sa_zip']. ' '.$get_cd['sa_city'].'<br>';
-$client_shipping_address .= $get_cd['sa_country'];
-
 
 for($i=0;$i<$cnt_cart_items;$i++) {
 	
@@ -183,6 +208,10 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	} else {
 		$tax = $se_prefs['prefs_posts_products_tax_alt2'];
 	}
+
+    if($add_product_tax == false) {
+        $tax = 0;
+    }
 	
 	$cart_item[$i]['tax'] = $tax;
 
@@ -292,6 +321,7 @@ if($add_delivery_tax == true) {
 $smarty->assign('payment_methods', $payment_methods);
 $smarty->assign('payment_message', $payment_message);
 $smarty->assign('client_data', $client_data);
+$smarty->assign('shipping_address', $client_shipping_address);
 
 $cart_agree_term = se_get_textlib('cart_agree_term',$languagePack,'content');
 $smarty->assign('cart_agree_term', $cart_agree_term);
