@@ -20,6 +20,7 @@ require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
 
 $order_value = se_sanitize_price($order_data['order_price_total']);
 $order_value = str_replace(',', '.', $order_value);
+$order_value = round($order_value,2);
 $order_currency = $se_settings['posts_products_default_currency'];
 
 $paypal_settings = pp_get_settings();
