@@ -525,23 +525,26 @@ function se_update_cart_item_amount($item,$amount){
 function se_return_cart_amount() {
 	
 	global $db_content;
-	
+
 	/* check if user or visitor */
 	if(isset($_SESSION['user_id']) AND is_numeric($_SESSION['user_id'])) {
 		$cart_user_id = $_SESSION['user_id'];
 		
 		$items = $db_content->select("se_carts", ["cart_id"], [
-			"AND" => [
-				"cart_user_id" => $cart_user_id,
-				"cart_status" => "progress"
-			]
+            "AND" => [
+                "OR" => [
+                    "cart_user_id" => $cart_user_id,
+                    "cart_user_hash" => $_SESSION['token'],
+                ],
+                "cart_status" => "progress"
+            ]
 		]);
 		
 	} else {
 		$cart_user_hash = $_SESSION['token'];
 		$items = $db_content->select("se_carts", ["cart_id"], [
 			"AND" => [
-				"cart_user_hash" => $cart_user_hash,
+				"cart_user_hash" => $_SESSION['token'],
 				"cart_status" => "progress"
 			]
 		]);
@@ -561,27 +564,47 @@ function se_return_my_cart() {
 	/* check if user or visitor */
 	if(is_numeric($_SESSION['user_id'])) {
 		$cart_user_id = $_SESSION['user_id'];
+
+        // check if we have products with hash
+        $items_from_hash = $db_content->select("se_carts", "*", [
+            "AND" => [
+                "cart_user_hash" => $_SESSION['token'],
+                "cart_status" => "progress"
+            ]
+        ]);
+
+        foreach($items_from_hash as $item) {
+            $db_content->update("se_carts", [
+                "cart_user_id" => $cart_user_id
+            ],[
+                "AND" => [
+                    "cart_user_hash" => $_SESSION['token'],
+                    "cart_status" => "progress"
+                ]
+            ]);
+        }
 		
 		$items = $db_content->select("se_carts", "*", [
 			"AND" => [
-				"cart_user_id" => $cart_user_id,
+                "OR" => [
+                    "cart_user_id" => $cart_user_id,
+                    "cart_user_hash" => $_SESSION['token'],
+                ],
 				"cart_status" => "progress"
 			]
 		]);
 		
 	} else {
-		$cart_user_hash = $_SESSION['token'];
+
 		$items = $db_content->select("se_carts", "*", [
 			"AND" => [
-				"cart_user_hash" => $cart_user_hash,
+				"cart_user_hash" => $_SESSION['token'],
 				"cart_status" => "progress"
 			]
 		]);
 	}
-	
-	
+
 	return $items;
-	
 }
 
 /**
