@@ -55,8 +55,8 @@ if(isset($_POST['dl_p_file']) OR isset($_POST['dl_p_file_ext'])) {
 }
 
 /**
- * download customers uploads
- * we do not provide a preview but the customer can download his files
+ * download customers' uploads
+ * we do not provide a preview, but the customer can download his files
  */
 
 if(isset($_POST['download_user_file'])) {
@@ -167,7 +167,21 @@ for($i=0;$i<$cnt_orders;$i++) {
     if(is_array($order_products)) {
 	    $cnt_order_products = count($order_products);
     }
-	//print_r($order_products);
+
+    $payment_plugin = '';
+    $pm_plugin_str = '';
+    if($get_orders[$i]['order_status_payment'] == '1') {
+        // unpaid order
+        $order_data['order_nbr'] = $get_orders[$i]['order_nbr'];
+        $order_data['order_price_total'] = $get_orders[$i]['order_price_total'];
+
+        $payment_plugin = basename($get_orders[$i]['order_payment_type']);
+        $payment_plugin_file = SE_ROOT.'plugins/'.$payment_plugin.'/aftersale_listing.php';
+        if(is_file($payment_plugin_file)) {
+            include $payment_plugin_file;
+        }
+        $order_item[$i]['payment_plugin_str'] = $pm_plugin_str;
+    }
 	
 	$products_str = '';
     $products = array();
