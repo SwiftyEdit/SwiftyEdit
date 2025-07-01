@@ -21,6 +21,7 @@ $cols = array(
   "user_id"  => 'INTEGER(12)',
   "order_nbr"  => "VARCHAR(25) NOT NULL DEFAULT ''",
   "order_time"  => 'INTEGER(12)',
+  "order_shipping_address"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "order_invoice_address"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "order_invoice_mail"  => "VARCHAR(100) NOT NULL DEFAULT ''",
   "order_status"  => 'INTEGER(12)',

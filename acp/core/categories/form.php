@@ -1,7 +1,7 @@
 <?php
 
 $writer_uri = '/admin/categories/write/';
-include '../acp/core/templates.php';
+include_once '../acp/core/templates.php';
 
 if(is_int($get_cat_id)) {
     $btn_submit_text = $lang['update'];

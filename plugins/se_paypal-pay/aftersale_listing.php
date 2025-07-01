@@ -2,7 +2,8 @@
 
 /**
  * PayPal Plugin
- * aftersale file
+ * include file for customers' order list
+ * return payment button if order is not paid yet
  *
  * @var array $order_data
  * @var array $se_settings
@@ -14,15 +15,7 @@ use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 
-
-
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
-
-$order_value = se_sanitize_price($order_data['order_price_total']);
-$order_value = str_replace(',', '.', $order_value);
-$order_value = round($order_value,2);
-$order_currency = $se_settings['posts_products_default_currency'];
-
 $paypal_settings = pp_get_settings();
 
 if($paypal_settings['paypal_mode'] == 'live') {
@@ -41,9 +34,12 @@ if($paypal_settings['paypal_mode'] == 'live') {
 
 $client = new PayPalHttpClient($environment);
 
-
-$cart_test = print_r($order_data, true);
 $reference_id = $order_data['order_nbr'];
+
+$order_value = se_sanitize_price($order_data['order_price_total']);
+$order_value = str_replace(',', '.', $order_value);
+$order_value = round($order_value,2);
+$order_currency = $se_settings['posts_products_default_currency'];
 
 $request = new OrdersCreateRequest();
 $request->prefer('return=representation');
@@ -60,7 +56,7 @@ $request->body = [
         "return_url" => $paypal_return_url,
         "cancel_url" => $paypal_cancel_url,
         "brand_name" => $se_settings['pagename'],
-        "landing_page" => "LOGIN",  // oder "BILLING"
+        "landing_page" => "LOGIN",
         "user_action" => "PAY_NOW"
     ]
 ];
@@ -68,13 +64,13 @@ $request->body = [
 try {
     $response = $client->execute($request);
 } catch (HttpException $ex) {
-    $response_string = "ERROR: " . $ex->getMessage();
+    $response_str = "ERROR: " . $ex->getMessage();
 }
 
 foreach ($response->result->links as $link) {
     if ($link->rel === 'approve') {
-        $response_string = '<p><a class="btn btn-info w-100" href="' . $link->href . '">'.$lang['btn_pay_with_paypal'].'</a></p>';
+        $response_str = '<p><a class="btn btn-info w-100" href="' . $link->href . '">'.$lang['btn_pay_with_paypal'].'</a></p>';
     }
 }
 
-$cart_alert = $response_string;
+$pm_plugin_str = $response_str;

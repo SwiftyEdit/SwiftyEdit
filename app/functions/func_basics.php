@@ -565,6 +565,111 @@ function se_get_active_mods() {
 }
 
 
+function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
+
+    global $db_content;
+
+    $str = str_replace('-', ' ', $str);
+
+    $where = 'WHERE (page_language LIKE ? AND (page_status = ? OR page_status = ?)) AND (
+            page_content LIKE ? OR page_title LIKE ? OR page_meta_description LIKE ? OR page_meta_keywords LIKE ?)';
+
+    $countSql = "SELECT COUNT(*) FROM se_pages $where";
+
+    $countParams = [
+        $lang, "public", "ghost", "%$str%","%$str%","%$str%","%$str%"
+    ];
+
+    $countSth = $db_content->pdo->prepare($countSql);
+    $countSth->execute($countParams);
+    $totalResults = $countSth->fetchColumn();
+
+    $pages_sql = "SELECT * FROM se_pages
+        $where
+        ORDER BY 
+            page_permalink LIKE ? DESC,
+            page_meta_keywords = ? DESC,
+            page_meta_keywords LIKE ? DESC,
+            page_meta_keywords LIKE ? DESC,
+            page_content LIKE ? DESC,
+            page_priority DESC
+        LIMIT ?
+        OFFSET ?
+        ";
+
+    $pages_params = [
+        $lang, "public", "ghost", "%$str%","%$str%","%$str%","%$str%",
+        "%$str%", "%$str%","$str","$str%","%$str%",20,0
+    ];
+
+    $sth = $db_content->pdo->prepare($pages_sql);
+    $sth->execute($pages_params);
+
+    $pages = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    $return = [
+        "totalResults" => $totalResults,
+        "pages" => $pages
+    ];
+
+    return $return;
+}
+
+function se_search_products($str,$lang,$currentPage=1,$itemsPerPage=10) {
+    global $db_posts;
+    $str = str_replace('-', ' ', $str);
+
+    $where = 'WHERE (product_lang LIKE ? AND (status = ? OR status = ?)) AND (
+            title LIKE ? OR teaser LIKE ? OR text LIKE ? OR 
+            text_additional1 LIKE ? OR text_additional2 LIKE ? OR text_additional3 LIKE ?
+            OR text_additional4 LIKE ? OR text_additional5 LIKE ?
+            OR meta_description LIKE ?)';
+
+    $countSql = "SELECT COUNT(*) FROM se_products $where";
+
+    $countParams = [
+        $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%"
+    ];
+
+    $countSth = $db_posts->pdo->prepare($countSql);
+    $countSth->execute($countParams);
+    $totalResults = $countSth->fetchColumn();
+
+    $offset = (int) $itemsPerPage*($currentPage-1);
+
+    $products_sql = "SELECT * FROM se_products
+        $where
+        ORDER BY 
+            slug LIKE ? DESC,
+            tags = ? DESC,
+            tags LIKE ? DESC,
+            tags LIKE ? DESC,
+            text LIKE ? DESC,
+            priority DESC
+        LIMIT ?
+        OFFSET ?
+        ";
+
+    $products_params = [
+        $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%",
+        "%$str%", "%$str%","$str","$str%","%$str%",$itemsPerPage,$offset
+    ];
+
+    $sth = $db_posts->pdo->prepare($products_sql);
+    $sth->execute($products_params);
+
+    $products = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    $return = [
+        "totalResults" => $totalResults,
+        "products" => $products
+    ];
+
+    return $return;
+
+}
+
+
 /**
  * @param $query
  * @param $currentPage
@@ -574,19 +679,93 @@ function se_get_active_mods() {
 
 function se_search($query, $currentPage=1, $itemsPerPage=10) {
 	
-	global $db_content;
+	global $db_content, $db_posts, $languagePack;
+
 	
 	$query = str_replace('-', ' ', $query);
 
-    $find_pages = $db_content->select("se_pages", "*", [
+    /*
+     * find pages
+     * filter: status public and ghost
+     * filter: language
+     * */
+
+    $pages_sql = "SELECT * FROM se_pages
+        WHERE (page_language LIKE ? AND (page_status = ? OR page_status = ?)) AND (
+            page_content LIKE ? OR page_title LIKE ? OR page_meta_description LIKE ? OR page_meta_keywords LIKE ?)
+        ORDER BY 
+            page_permalink LIKE ? DESC,
+            page_meta_keywords = ? DESC,
+            page_meta_keywords LIKE ? DESC,
+            page_meta_keywords LIKE ? DESC,
+            page_content LIKE ? DESC,
+            page_priority DESC
+        LIMIT ?
+        OFFSET ?
+        ";
+
+    $pages_params = [
+        $languagePack, "public", "ghost", "%$query%","%$query%","%$query%","%$query%",
+        "%$query%", "%$query%","$query","$query%","%$query%",20,0
+    ];
+
+    $sth = $db_content->pdo->prepare($pages_sql);
+    $sth->execute($pages_params);
+
+    $find_pages = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $find_products = $db_posts->select("se_products", "*", [
         "OR" => [
-                "page_content[~]" => "$query",
-                "page_title[~]" => "$query",
-                "page_description[~]" => "$query"
-            ]
+            "title[~]" => "$query",
+            "teaser[~]" => "$query",
+            "text[~]" => "$query",
+            "text_additional1[~]" => "$query"
+        ],
+        "AND" => [
+            "status" => 1,
+            "product_lang" => $languagePack
+        ]
     ]);
 
-	return $find_pages;
+    $find_posts = $db_posts->select("se_posts", "*", [
+        "OR" => [
+            "post_title[~]" => "$query",
+            "post_teaser[~]" => "$query",
+            "post_text[~]" => "$query",
+            "post_meta_description" => "$query",
+            "post_tags" => "$query"
+        ],
+        "AND" => [
+            "post_status" => 1,
+            "post_lang" => $languagePack
+        ]
+    ]);
+
+    $find_events = $db_posts->select("se_events", "*", [
+        "OR" => [
+            "title[~]" => "$query",
+            "teaser[~]" => "$query",
+            "text[~]" => "$query",
+            "meta_description" => "$query",
+            "tags" => "$query"
+        ],
+        "AND" => [
+            "status" => 1,
+            "event_lang" => $languagePack
+        ]
+    ]);
+
+    //$results = array_merge($find_pages, $find_products,$find_posts);
+
+    $results = [
+      "pages" => $find_pages,
+      "products" => $find_products,
+      "posts" => $find_posts,
+      "events" => $find_events
+    ];
+
+	return $results;
 }
 
 

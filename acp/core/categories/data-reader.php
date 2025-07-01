@@ -16,6 +16,10 @@ if($_REQUEST['action'] == 'list') {
             $cats['cat_id'] => $cats['cat_hash']
         ];
 
+        $hx_vals = [
+            "csrf_token"=> $_SESSION['token']
+        ];
+
         $flag = '<img src="'.return_language_flag_src($cats['cat_lang']).'" width="15">';
 
         $show_thumb = '';
@@ -33,6 +37,7 @@ if($_REQUEST['action'] == 'list') {
                             hx-post="/admin/categories/write/"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="none"
+                            hx-vals=\''.json_encode($hx_vals).'\'
                             >'.$icon['trash_alt'].'</button>';
 
         echo '<tr id="id_'.$cats['cat_hash'].'">';
@@ -44,7 +49,7 @@ if($_REQUEST['action'] == 'list') {
         echo '</td>';
         echo '<td class="text-end">';
         echo $delete_btn;
-        echo '<button hx-post="/admin/categories/read/" hx-swap="innerHTML" hx-target="#categoryForm" class="btn btn-default btn-sm text-success" name="open_category" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button> ';
+        echo '<button hx-post="/admin/categories/read/" hx-swap="innerHTML" hx-target="#categoryForm" hx-vals=\''.json_encode($hx_vals).'\' class="btn btn-default btn-sm text-success" name="open_category" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button> ';
         echo '</td>';
         echo '</tr>';
 

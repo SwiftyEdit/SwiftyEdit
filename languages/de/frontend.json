@@ -124,7 +124,7 @@
   "msg_no_products_found": "Keine Produkte gefunden",
   "msg_no_entries_found": "Keine Einträge gefunden",
   "msg_search_undersized": "Die Abfrage muss mindestens 3 Zeichen lang sein.",
-  "msg_search_results": "Die Anfrage hat %d übereinstimmen:",
+  "msg_search_results": "Es wurden %d Ergebnisse gefunden:",
   "msg_search_no_results": "Ihre Suche lieferte keine Ergebnisse",
   "label_payment_completed": "Zahlungsvorgang erfolgreich abgeschlossen!",
   "msg_payment_completed": "Vielen Dank für Ihre Bestellung. Die Zahlung wurde abgeschlossen.",

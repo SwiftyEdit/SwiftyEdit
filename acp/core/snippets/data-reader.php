@@ -101,6 +101,10 @@ if($_REQUEST['action'] == 'list_snippets') {
 
     $nbr_pages = ceil($snippet_data_cnt/$nbr_show_items);
 
+    $hx_vals = [
+        "csrf_token"=> $_SESSION['token']
+    ];
+
     echo '<div class="card p-3">';
 
     echo '<div class="d-flex justify-content-end">';
@@ -108,7 +112,7 @@ if($_REQUEST['action'] == 'list_snippets') {
     echo se_print_pagination('/admin/snippets/write/',$nbr_pages,$_SESSION['pagination_snippets_page']);
     echo '</div>';
     echo '<div class="ps-3">';
-    echo '<input type="number" class="form-control" hx-post="/admin/snippets/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
+    echo '<input type="number" class="form-control" hx-post="/admin/snippets/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-vals=\''.json_encode($hx_vals).'\' name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
     echo '</div>';
     echo '</div>';
     echo '<table class="table table-sm table-striped table-hover">';

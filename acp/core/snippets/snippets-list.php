@@ -12,8 +12,7 @@ $writer_uri = '/admin/snippets/write/';
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
-echo '<div id="getSnippets" class="" hx-post="'.$reader_uri.'?action=list_snippets" hx-trigger="load, update_snippet_list from:body, updated_global_filter from:body" hx-include="[name=\'csrf_token\']">';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+echo '<div id="getSnippets" class="" hx-get="'.$reader_uri.'?action=list_snippets" hx-trigger="load, update_snippet_list from:body, updated_global_filter from:body">';
 echo '</div>';
 
 echo '</div>';

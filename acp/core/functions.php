@@ -311,39 +311,6 @@ function se_flatten_array(array $array) {
 
 
 
-
-
-/**
- * format time and date
- * formatting is set in preferences
- * @param integer $timestring
- * @return string
- */
- 
- function se_format_datetime($timestring): string {
-	 
-	 global $lang;
-     global $se_prefs;
-
-     $timestring = (int) $timestring;
-	 
-	 $date = date($se_prefs['prefs_dateformat'],$timestring);
-	 
-	 if($date == date($se_prefs['prefs_dateformat'], time())) {
-		 $str_date = $lang['today'];
-	 } else if($date == date($se_prefs['prefs_dateformat'], time() - (24 * 60 * 60))) {
-		 $str_date = $lang['yesterday'];
-	 } else {
-		 $str_date = $date;
-	 }
-	 
-	 $time = date($se_prefs['prefs_timeformat'],$timestring);
- 
-	 return $str_date. ' ' .$time;
- }
-
-
-
 /**
  * converting bytes to KB, MB, GB
  * Snippet from PHP Share: http://www.phpshare.org

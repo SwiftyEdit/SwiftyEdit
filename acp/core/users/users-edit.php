@@ -54,6 +54,13 @@ $input_ba_firstname = [
     "type" => "text"
 ];
 
+$input_sa_firstname = [
+    "input_name" => "sa_firstname",
+    "input_value" => $sa_firstname,
+    "label" => $lang['label_firstname'],
+    "type" => "text"
+];
+
 $input_lastname = [
     "input_name" => "user_lastname",
     "input_value" => $user_lastname,
@@ -64,6 +71,13 @@ $input_lastname = [
 $input_ba_lastname = [
     "input_name" => "ba_lastname",
     "input_value" => $ba_lastname,
+    "label" => $lang['label_lastname'],
+    "type" => "text"
+];
+
+$input_sa_lastname = [
+    "input_name" => "sa_lastname",
+    "input_value" => $sa_lastname,
     "label" => $lang['label_lastname'],
     "type" => "text"
 ];
@@ -82,6 +96,13 @@ $input_ba_mail = [
     "type" => "text"
 ];
 
+$input_sa_mail = [
+    "input_name" => "sa_mail",
+    "input_value" => $sa_mail,
+    "label" => $lang['label_mail'],
+    "type" => "text"
+];
+
 $input_company = [
     "input_name" => "user_company",
     "input_value" => $user_company,
@@ -92,6 +113,13 @@ $input_company = [
 $input_ba_company = [
     "input_name" => "ba_company",
     "input_value" => $ba_company,
+    "label" => $lang['label_company'],
+    "type" => "text"
+];
+
+$input_sa_company = [
+    "input_name" => "sa_company",
+    "input_value" => $sa_company,
     "label" => $lang['label_company'],
     "type" => "text"
 ];
@@ -110,6 +138,13 @@ $input_ba_street = [
     "type" => "text"
 ];
 
+$input_sa_street = [
+    "input_name" => "sa_street",
+    "input_value" => $sa_street,
+    "label" => $lang['label_street'],
+    "type" => "text"
+];
+
 $input_street_nbr = [
     "input_name" => "user_street_nbr",
     "input_value" => $user_street_nbr,
@@ -120,6 +155,13 @@ $input_street_nbr = [
 $input_ba_street_nbr = [
     "input_name" => "ba_street_nbr",
     "input_value" => $ba_street_nbr,
+    "label" => $lang['label_nr'],
+    "type" => "text"
+];
+
+$input_sa_street_nbr = [
+    "input_name" => "sa_street_nbr",
+    "input_value" => $sa_street_nbr,
     "label" => $lang['label_nr'],
     "type" => "text"
 ];
@@ -138,6 +180,13 @@ $input_ba_zip = [
     "type" => "text"
 ];
 
+$input_sa_zip = [
+    "input_name" => "sa_zip",
+    "input_value" => $sa_zip,
+    "label" => $lang['label_zip'],
+    "type" => "text"
+];
+
 $input_city = [
     "input_name" => "user_city",
     "input_value" => $user_city,
@@ -152,6 +201,34 @@ $input_ba_city = [
     "type" => "text"
 ];
 
+$input_sa_city = [
+    "input_name" => "sa_city",
+    "input_value" => $sa_city,
+    "label" => $lang['label_town'],
+    "type" => "text"
+];
+
+$input_country = [
+    "input_name" => "user_country",
+    "input_value" => $user_country,
+    "label" => $lang['label_country'],
+    "type" => "text"
+];
+
+$input_ba_country = [
+    "input_name" => "ba_country",
+    "input_value" => $ba_country,
+    "label" => $lang['label_country'],
+    "type" => "text"
+];
+
+$input_sa_country = [
+    "input_name" => "sa_country",
+    "input_value" => $sa_country,
+    "label" => $lang['label_country'],
+    "type" => "text"
+];
+
 $input_ba_tax_id = [
     "input_name" => "ba_tax_id_number",
     "input_value" => $ba_tax_id_number,
@@ -159,9 +236,23 @@ $input_ba_tax_id = [
     "type" => "text"
 ];
 
+$input_sa_tax_id = [
+    "input_name" => "sa_tax_id_number",
+    "input_value" => $sa_tax_id_number,
+    "label" => $lang['label_tax_id_number'],
+    "type" => "text"
+];
+
 $input_ba_tax_number = [
     "input_name" => "ba_tax_number",
     "input_value" => $ba_tax_number,
+    "label" => $lang['label_tax_number'],
+    "type" => "text"
+];
+
+$input_sa_tax_number = [
+    "input_name" => "sa_tax_number",
+    "input_value" => $sa_tax_number,
     "label" => $lang['label_tax_number'],
     "type" => "text"
 ];
@@ -370,7 +461,7 @@ $form_tpl .= '</div>'; // tab-pane
 $form_tpl .= '<div class="tab-pane fade" id="contact-tab">';
 
 $form_tpl .= '<div class="row">';
-$form_tpl .= '<div class="col-md-6">';
+$form_tpl .= '<div class="col-md-4">';
 
 $form_tpl .= '<div class="card">';
 $form_tpl .= '<div class="card-header">'.$lang['legend_adress_fields'].'</div>';
@@ -383,26 +474,44 @@ $form_tpl .= se_print_form_input($input_street);
 $form_tpl .= se_print_form_input($input_street_nbr);
 $form_tpl .= se_print_form_input($input_zip);
 $form_tpl .= se_print_form_input($input_city);
+$form_tpl .= se_print_form_input($input_country);
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
 $form_tpl .= '</div>';
-$form_tpl .= '<div class="col-md-6">';
+$form_tpl .= '<div class="col-md-4">';
 
 $form_tpl .= '<div class="card">';
 $form_tpl .= '<div class="card-header">'.$lang['label_billing_address'].'</div>';
 $form_tpl .= '<div class="card-body">';
 $form_tpl .= se_print_form_input($input_ba_firstname);
 $form_tpl .= se_print_form_input($input_ba_lastname);
-$form_tpl .= se_print_form_input($input_ba_mail);
 $form_tpl .= se_print_form_input($input_ba_company);
 $form_tpl .= se_print_form_input($input_ba_street);
 $form_tpl .= se_print_form_input($input_ba_street_nbr);
 $form_tpl .= se_print_form_input($input_ba_zip);
 $form_tpl .= se_print_form_input($input_ba_city);
+$form_tpl .= se_print_form_input($input_ba_country);
 $form_tpl .= '<hr>';
 $form_tpl .= se_print_form_input($input_ba_tax_id);
 $form_tpl .= se_print_form_input($input_ba_tax_number);
+$form_tpl .= '</div>';
+$form_tpl .= '</div>';
+
+$form_tpl .= '</div>';
+$form_tpl .= '<div class="col-md-4">';
+
+$form_tpl .= '<div class="card">';
+$form_tpl .= '<div class="card-header">'.$lang['label_delivery_address'].'</div>';
+$form_tpl .= '<div class="card-body">';
+$form_tpl .= se_print_form_input($input_sa_firstname);
+$form_tpl .= se_print_form_input($input_sa_lastname);
+$form_tpl .= se_print_form_input($input_sa_company);
+$form_tpl .= se_print_form_input($input_sa_street);
+$form_tpl .= se_print_form_input($input_sa_street_nbr);
+$form_tpl .= se_print_form_input($input_sa_zip);
+$form_tpl .= se_print_form_input($input_sa_city);
+$form_tpl .= se_print_form_input($input_sa_country);
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 

@@ -32,6 +32,7 @@ if(!empty($_POST) && $_POST['csrf_token'] !== $_SESSION['token']) {
 require 'core/icons.php';
 require_once 'core/functions.php';
 require_once '../app/functions/functions.php';
+include_once '../acp/core/templates.php';
 
 $se_get_preferences = se_get_preferences();
 

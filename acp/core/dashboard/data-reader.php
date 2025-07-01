@@ -2,14 +2,12 @@
 
 // dashboard data reader
 
-/**
- * pages
- */
+// pages
 
 if($_REQUEST['action'] == 'list_pages') {
     $getPages = $db_content->select("se_pages", ["page_id", "page_linkname", "page_title", "page_meta_description", "page_lastedit", "page_lastedit_from", "page_status"], [
         "ORDER" => ["page_lastedit" => "DESC"],
-        "LIMIT" => 5
+        "LIMIT" => 10
     ]);
 
     echo '<table class="table table-sm">';
@@ -29,9 +27,7 @@ if($_REQUEST['action'] == 'list_pages') {
     exit;
 }
 
-/**
- * snippets
- */
+// snippets
 
 if($_REQUEST['action'] == 'list_snippets') {
 
@@ -40,7 +36,7 @@ if($_REQUEST['action'] == 'list_snippets') {
             "snippet_type[~]" => ["snippet","snippet_core"]
         ],
         "ORDER" => ["snippet_lastedit" => "DESC"],
-        "LIMIT" => 5
+        "LIMIT" => 10
     ]);
 
     echo '<table class="table table-sm">';
@@ -66,9 +62,7 @@ if($_REQUEST['action'] == 'list_snippets') {
     exit;
 }
 
-/**
- * posts
- */
+// posts
 
 if($_REQUEST['action'] == 'list_posts') {
 
@@ -101,9 +95,8 @@ if($_REQUEST['action'] == 'list_posts') {
     echo '</table>';
 }
 
-/**
- * products
- */
+
+// products
 
 if($_REQUEST['action'] == 'list_products') {
 
@@ -134,9 +127,7 @@ if($_REQUEST['action'] == 'list_products') {
     echo '</table>';
 }
 
-/**
- * events
- */
+// events
 
 if($_REQUEST['action'] == 'list_events') {
 
@@ -167,12 +158,9 @@ if($_REQUEST['action'] == 'list_events') {
     echo '</table>';
 }
 
-/**
- * comments
- */
+// comments
 
 if($_REQUEST['action'] == 'list_comments') {
-    echo 'COMMENTS';
     $get_comments = $db_content->select("se_comments", ["comment_id", "comment_author", "comment_type", "comment_text", "comment_time"], [
         "ORDER" => ["comment_lastedit" => "DESC"],
         "LIMIT" => 5
@@ -180,17 +168,29 @@ if($_REQUEST['action'] == 'list_comments') {
     print_r($get_comments);
 }
 
-/**
- * user
- */
+// user
 
 if($_REQUEST['action'] == 'list_user') {
-    echo 'USERES';
     $get_user = $db_user->select("se_user", ["user_id", "user_nick", "user_firstname", "user_lastname", "user_mail", "user_registerdate"], [
         "ORDER" => ["user_id" => "DESC"],
         "LIMIT" => 5
     ]);
-    print_r($get_user);
+
+    echo '<table class="table table-sm">';
+    foreach($get_user as $user) {
+        echo '<tr>';
+        echo '<td class="text-nowrap">'.se_format_datetime($user['user_registerdate']).'</td>';
+        echo '<td class="w-100"><h6 class="mb-0">'.$user['user_nick'].'</h6><small>'.$user['user_mail'].'</small></td>';
+        echo '<td>';
+        echo '<form action="/admin/users/edit/" method="post">';
+        echo '<button class="btn btn-default" name="user_id" value="'.$user['user_id'].'">'.$icon['edit'].'</button>';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';
+
 }
 
 /**

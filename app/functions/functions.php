@@ -410,6 +410,7 @@ function se_send_order_status($recipient,$order,$reason): int|string {
 
     $order_id = (int) $order;
     $this_order = se_get_order_details($order_id);
+    $tax_grouped = [];
 
     if($recipient['type'] == 'client') {
         // get client data
@@ -427,21 +428,37 @@ function se_send_order_status($recipient,$order,$reason): int|string {
 
     if($reason == 'notification') {
         $subject = $lang['mail_subject_order_notify']. ' (#'.$this_order['order_nbr'].')';
+        $salutation = se_get_textlib("mail_salutation_order_notify","$lang","content");
     } else if($reason == 'change_payment_status') {
         $subject = $lang['mail_subject_order_change_status_pm']. ' (#'.$this_order['order_nbr'].')';
+        $salutation = se_get_textlib("mail_salutation_order_change_status_pm","$lang","content");
     } else if($reason == 'change_shipping_status') {
         $subject = $lang['mail_subject_order_change_status_shipping']. ' (#'.$this_order['order_nbr'].')';
+        $salutation = se_get_textlib("mail_salutation_change_status_shipping","$lang","content");
     } else if($reason == 'order_confirmation') {
         $subject = $lang['mail_subject_order_sent']. ' (#'.$this_order['order_nbr'].')';
+        $salutation = se_get_textlib("mail_salutation_order_confirmation","$lang","content");
     } else {
         $subject = $lang['mail_subject_order_changed']. ' (#'.$this_order['order_nbr'].')';
+        $salutation = se_get_textlib("mail_salutation_order_changed'","$lang","content");
     }
 
     $order_invoice_address = html_entity_decode($this_order['order_invoice_address']);
+    $order_shipping_address = html_entity_decode($this_order['order_shipping_address']);
 
     $mail_data['body_tpl'] = 'send-order-status.tpl';
     $mail_data['subject'] = $subject;
     $mail_data['salutation'] = $subject;
+    if($salutation != "") {
+        $mail_data['salutation'] = $salutation;
+    }
+
+    $order_time = date("H:i",$this_order['order_time']);
+    $order_date = date("d.m.Y",$this_order['order_time']);
+
+    $mail_data['salutation'] = str_replace("{order_nbr}",$this_order['order_nbr'],$mail_data['salutation']);
+    $mail_data['salutation'] = str_replace("{order_time}",$order_time,$mail_data['salutation']);
+    $mail_data['salutation'] = str_replace("{order_date}",$order_date,$mail_data['salutation']);
 
     $build_html_mail = se_build_html_file($mail_data);
 
@@ -457,7 +474,8 @@ function se_send_order_status($recipient,$order,$reason): int|string {
     }
     $build_html_mail = str_replace("{order_nbr}",$this_order['order_nbr'],$build_html_mail);
     $build_html_mail = str_replace("{invoice_address}",$order_invoice_address,$build_html_mail);
-    $price_total = se_post_print_currency($this_order['order_price_total']). ' '.$this_order['order_currency'];
+    $build_html_mail = str_replace("{shipping_address}",$order_shipping_address,$build_html_mail);
+    $price_total = se_post_print_currency($this_order['order_price_total']);
     $build_html_mail = str_replace("{price_total}",$price_total,$build_html_mail);
 
     $order_products = json_decode($this_order['order_products'],true);
@@ -468,20 +486,35 @@ function se_send_order_status($recipient,$order,$reason): int|string {
     $products_str .= '<td>#</td>';
     $products_str .= '<td>'.$lang['label_product_info'].'</td>';
     $products_str .= '<td>'.$lang['label_product_amount'].'</td>';
-    $products_str .= '<td>'.$lang['label_price'].' ('.$lang['label_gross'].')</td>';
+    $products_str .= '<td>'.$lang['label_price'].' ('.$lang['label_net'].')</td>';
+    $products_str .= '<td>'.$lang['label_tax'].'</td>';
     $products_str .= '</tr>';
     for($i=0;$i<$cnt_order_products;$i++) {
         $products_str .= '<tr>';
         $products_str .= '<td>'.$order_products[$i]['product_number'].'</td>';
         $products_str .= '<td>'.$order_products[$i]['title'];
         $products_str .= '<p>'.$order_products[$i]['options'].'</p>';
-        $products_str .= '<p>'.$order_products[$i]['options_comment_label'].': '.$order_products[$i]['options_comment'].'</p>';
+        if($order_products[$i]['options_comment'] != '') {
+            $products_str .= '<p>' . $order_products[$i]['options_comment_label'] . ': ' . $order_products[$i]['options_comment'] . '</p>';
+        }
         $products_str .= '</td>';
         $products_str .= '<td>'.$order_products[$i]['amount'].'</td>';
-        $products_str .= '<td>'.se_post_print_currency($order_products[$i]['price_gross_raw']).' '.$this_order['order_currency'].'</td>';
+        $products_str .= '<td>'.se_post_print_currency($order_products[$i]['price_net_raw']).' '.$this_order['order_currency'].'</td>';
+        $products_str .= '<td>'.$order_products[$i]['tax'].' %</td>';
         $products_str .= '</tr>';
+
+        $all_items_subtotal_net = $all_items_subtotal_net+$order_products[$i]['price_net_raw'];
     }
     $products_str .= '</table>';
+
+    $included_taxes = $this_order['order_price_total']-($all_items_subtotal_net+$this_order['order_shipping_costs']);
+
+    $build_html_mail = str_replace("{price_subtotal}",se_post_print_currency($all_items_subtotal_net),$build_html_mail);
+    $build_html_mail = str_replace("{price_shipping}",se_post_print_currency($this_order['order_shipping_costs']),$build_html_mail);
+    $build_html_mail = str_replace("{included_tax}",se_post_print_currency($included_taxes),$build_html_mail);
+    $build_html_mail = str_replace("{currency}",$this_order['order_currency'],$build_html_mail);
+    $build_html_mail = str_replace("{order_user_comment}",$this_order['order_user_comment'],$build_html_mail);
+
 
     $build_html_mail = str_replace("{order_products}",$products_str,$build_html_mail);
 

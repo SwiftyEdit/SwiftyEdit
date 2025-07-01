@@ -25,6 +25,12 @@ if($_REQUEST['count'] == 'products') {
     exit;
 }
 
+if($_REQUEST['count'] == 'orders') {
+    $count = $db_content->count("se_orders");
+    echo se_covert_big_int($count);
+    exit;
+}
+
 if($_REQUEST['count'] == 'events') {
     $count = $db_posts->count("se_events");
     echo se_covert_big_int($count);

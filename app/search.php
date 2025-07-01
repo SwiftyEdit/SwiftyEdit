@@ -24,39 +24,83 @@ if($msg_no_search_results == '') {
 
 if($s != '' && $start_search == "true") {
 
-	$sr = se_search($s,1,10);
-	$cnt_result = count($sr);
-	if($cnt_result < 1) {
-		$search_msg = $msg_no_search_results;
-	} else {
-		$search_msg = sprintf($lang['msg_search_results'], $cnt_result);
-		
-		for($i=0;$i<$cnt_result;$i++) {
-			$sr[$i]['set_link'] = $sr[$i]['page_url'];
-			
-			$parse_page_thumb = parse_url($sr[$i]['page_thumbnail']);
-			$page_thumb = $parse_page_thumb['path'];
 
-            $sr[$i]['page_thumb'] = $page_thumb;
+    $prodLimit = 5;
+    $currentPage = 1;
 
-            $sr[$i]['page_meta_description'] = $sr[$i]['page_meta_description'];
-			
-			
-		}
+    if(isset($_REQUEST['next_page'])) {
+        $currentPage = (int) $_REQUEST['next_page'];
+    }
+    if(isset($_REQUEST['prev_page'])) {
+        $currentPage = (int) $_REQUEST['prev_page'];
+    }
 
-	}
+    if($currentPage < 1) {
+        $currentPage = 1;
+    }
+
+    $nextPage = $currentPage + 1;
+    $prevPage = $currentPage - 1;
+
+    $get_pages = se_search_pages("$s", "$languagePack");
+    $get_products = se_search_products("$s","$languagePack",$currentPage,$prodLimit);
+
+    $cnt_pages = ceil($get_products['totalResults'] / $prodLimit);
+    if($currentPage >= $cnt_pages) {
+        $currentPage = $cnt_pages;
+        $nextPage = $currentPage;
+    }
+
+    if($get_products['totalResults'] > $prodLimit) {
+        // show products pagination
+        $smarty->assign('show_prod_pagination', "true");
+        $smarty->assign('next_page_nbr', "$nextPage");
+        $smarty->assign('prev_page_nbr', "$prevPage");
+    }
+
+    $x = 0;
+    foreach($get_pages['pages'] as $page) {
+
+        $thumbs = [];
+        $thumbs = explode('&lt;-&gt;',$page['page_thumbnail']);
+        if($thumbs[0] != '') {
+            $pages[$x]['thumbnail_src'] = $thumbs[0];
+        }
+
+        $pages[$x]['title'] = $page['page_title'];
+        $pages[$x]['description'] = $page['page_meta_description'];
+        $pages[$x]['href'] = '/'.$page['page_permalink'];
+        $pages[$x]['url'] = $page['page_permalink'];
+        $x++;
+    }
+    $smarty->assign('pages', $pages, true);
+
+    $x=0;
+
+    foreach($get_products['products'] as $product) {
+
+        $url = $product['main_catalog_slug'].$product['slug'];
+
+        $thumbs = [];
+        $thumbs = explode('<->',$product['images']);
+        if($thumbs[1] != '') {
+            $products[$x]['thumbnail_src'] = $thumbs[1];
+        }
+
+
+        $products[$x]['title'] = $product['title'];
+        $products[$x]['description'] = $product['meta_description'];
+        $products[$x]['href'] = '/'.$url;
+        $products[$x]['url'] = $url;
+        $x++;
+    }
+    $smarty->assign('products', $products, true);
+
+    $smarty->assign('pages_total', $get_pages['totalResults'], true);
+    $smarty->assign('products_total', $get_products['totalResults'], true);
+
 }
 
-
-$page_title = $lang['headline_searchresults'] . ' '.$s;
-
-
-$smarty->assign('page_title', $page_title, true);
-$smarty->assign('arr_results', $sr, true);
-
-$smarty->assign('headline_searchresults', $lang['headline_searchresults'], true);
-
-$smarty->assign('msg_searchresults', $search_msg, true);
 $smarty->assign('search_string', $s, true);
 $search_tpl = $smarty->fetch("search.tpl");
 $output = $smarty->fetch("searchresults.tpl");

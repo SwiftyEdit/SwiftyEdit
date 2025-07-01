@@ -59,7 +59,7 @@ if(!preg_match("/^[a-zA-Z0-9-_]{2,20}$/",$username)) {
 
 
 //check existing usernames
-$all_usernames_array = get_all_usernames("$se_db_user");
+$all_usernames_array = get_all_usernames();
 
 foreach ($all_usernames_array as $entry) {
     if($username == $entry['user_nick']) {
@@ -187,7 +187,3 @@ if($send_data == 'true') {
 	$smarty->assign("send_nr",$nr,true);
 	$smarty->assign("about_you",$about_you,true);
 }
-
-
-
-?>

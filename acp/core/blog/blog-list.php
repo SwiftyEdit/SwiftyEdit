@@ -11,8 +11,7 @@ $writer_uri = '/admin/blog/write/';
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
-echo '<div id="getPosts" class="" hx-post="'.$reader_uri.'?action=list_posts" hx-trigger="load, update_posts_list from:body, updated_global_filter from:body" hx-include="[name=\'csrf_token\']">';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+echo '<div id="getPosts" class="" hx-get="'.$reader_uri.'?action=list_posts" hx-trigger="load, update_posts_list from:body, updated_global_filter from:body">';
 echo '</div>';
 
 echo '</div>';

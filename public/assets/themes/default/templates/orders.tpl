@@ -26,6 +26,9 @@
 					{else}
 					<span class="text-success">{$lang_status_payment_paid}</span><br>
 				{/if}
+				{if $order.payment_plugin_str != ""}
+					{$order.payment_plugin_str}
+				{/if}
 				{if $order.status_shipping == '1'}
 					{$lang_status_shipping_open}
 				{else}

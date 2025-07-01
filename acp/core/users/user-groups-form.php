@@ -1,7 +1,7 @@
 <?php
 
 $writer_uri = '/admin/users/write/';
-include '../acp/core/templates.php';
+include_once '../acp/core/templates.php';
 
 echo '<div id="formResponse"></div>';
 

@@ -10,9 +10,15 @@ echo '</div>';
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
-echo '<div id="getOrders" class="" hx-post="/admin/shop/read/?action=list_orders" hx-trigger="load, update_orders_list from:body" hx-include="[name=\'csrf_token\']">';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-echo '</div>';
+$hx_vals = [
+    "csrf_token"=> $_SESSION['token']
+];
+
+echo '<div id="getOrders" 
+            hx-post="/admin/shop/read/?action=list_orders"
+            hx-trigger="load, update_orders_list from:body"
+            hx-vals=\''.json_encode($hx_vals).'\'">
+            </div>';
 
 echo '</div>';
 echo '<div class="col-md-3">';

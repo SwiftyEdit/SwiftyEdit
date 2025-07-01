@@ -758,7 +758,8 @@ function se_send_order($data) {
 	$order_status = 1;
 	$order_status_shipping = 1;
 	$order_status_payment = 1;
-	$order_invoice_address = $data['order_invoice_address'];
+	$order_shipping_address = $data['order_shipping_address'];
+    $order_invoice_address = $data['order_invoice_address'];
     $order_invoice_mail = $data['user_mail'];
 	$order_products = $data['order_products'];
 	$order_price_total = $data['order_price_total'];
@@ -775,6 +776,7 @@ function se_send_order($data) {
 		"order_status" => "$order_status",
 		"order_status_shipping" => "$order_status_shipping",
 		"order_status_payment" => "$order_status_payment",
+        "order_shipping_address" => "$order_shipping_address",
 		"order_invoice_address" => "$order_invoice_address",
         "order_invoice_mail" => "$order_invoice_mail",
 		"order_products" => "$order_products",
@@ -802,7 +804,11 @@ function se_send_order($data) {
 
 function se_recalculate_stock_sales($items) {
     global $db_posts;
-    $cnt_items = count($items);
+    $cnt_items = 0;
+    if(is_array($items)) {
+        $cnt_items = count($items);
+    }
+
 
     for($i=0;$i<$cnt_items;$i++) {
 
