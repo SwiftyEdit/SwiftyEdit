@@ -85,6 +85,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
             maxInput.value = values[1].replace('+', ''); // Save without “+”
             rangeDisplay.textContent = values[0] + ' - ' + values[1]; // With optional “+”
         });
+        var lastValue = null;
+        slider.noUiSlider.on('set', function(values) {
+            var form = slider.closest('form');
+            if (values[0] !== lastValue) {
+                lastValue = values[0];
+                form.submit();
+            }
+        });
+
     });
 
 });

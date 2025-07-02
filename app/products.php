@@ -108,12 +108,12 @@ if(isset($_REQUEST['remove_filter'])) {
 }
 
 // set filter from $_POST
-if(isset($_POST['set_custom_filters'])) {
+if(isset($_REQUEST['set_custom_filters'])) {
 
-    $sf_radios = $_POST['sf_radio'];
+    $sf_radios = $_REQUEST['sf_radio'];
     // loop through all radios and unset them from session
-    if(is_array($_POST['all_radios'])) {
-        foreach($_POST['all_radios'] as $radios) {
+    if(is_array($_REQUEST['all_radios'])) {
+        foreach($_REQUEST['all_radios'] as $radios) {
             if (($key = array_search($radios, $_SESSION[$custom_filter_key])) !== false) {
                 unset($_SESSION[$custom_filter_key][$key]);
             }
@@ -128,9 +128,9 @@ if(isset($_POST['set_custom_filters'])) {
         }
     }
 
-    foreach($_POST['all_checks'] as $checkboxes) {
+    foreach($_REQUEST['all_checks'] as $checkboxes) {
 
-        $sf_checkboxes = $_POST['sf_checkbox'];
+        $sf_checkboxes = $_REQUEST['sf_checkbox'];
         if(!is_array($sf_checkboxes)) {
             // no checkboxes are checked
             if (($key = array_search($checkboxes, $_SESSION[$custom_filter_key])) !== false) {
@@ -386,11 +386,13 @@ foreach($all_categories as $cats) {
  * pagination
  * for example /my-page/p/3/ or /my-page/my-category/p/3/
  */
-if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p') {
+if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_REQUEST['page'])) {
 
     $status_404 = false;
 
-    if(is_numeric($array_mod_slug[1])) {
+    if(isset($_REQUEST['page'])) {
+        $products_start = (int) $_REQUEST['page'];
+    } else if(is_numeric($array_mod_slug[1])) {
         $products_start = $array_mod_slug[1];
     } else if(is_numeric($array_mod_slug[2])) {
         $products_start = $array_mod_slug[2];
