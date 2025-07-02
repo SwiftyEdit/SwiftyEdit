@@ -392,10 +392,10 @@ function se_validate_token($token): void {
     $token =  htmlspecialchars($token);
 
     if(empty($token)) {
-        die('Error: CSRF Token is empty');
+        header('Location: /');
     }
     if($token !== $_SESSION['token']) {
-        die('Error: CSRF Token is invalid');
+        header('Location: /');
     }
 
 }
