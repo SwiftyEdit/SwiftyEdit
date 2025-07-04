@@ -19,26 +19,48 @@ include_once 'functions.pages.php';
 include_once 'functions.snippets.php';
 
 /**
- * get active preferences
+ * Retrieves all active system preferences
+ *
+ * This function is a core component for loading system configuration.
+ * It fetches all active settings for the "se" module from the database.
+ * Typically used during system initialization or whenever configuration
+ * data is needed.
+ *
+ * @return array An array containing all active settings from the database.
+ *               The structure matches the database schema of the se_options table.
+ *               Returns an empty array if no settings are found.
+ *
+ * @global object $db_content Database connection object
  */
- 
-function se_get_preferences() {
-	
-	global $db_content;
-	
-	$prefs = $db_content->select("se_options", "*", [
-		"option_module" => "se"
-	]);
 
-	return $prefs;
+function se_get_preferences(): array
+{
+
+    global $db_content;
+
+    $prefs = $db_content->select("se_options", "*", [
+        "option_module" => "se"
+    ]);
+
+    return $prefs;
 }
 
 
 /**
- * get the legal pages
+ * Retrieves all legal pages from the database
+ *
+ * Returns all pages that are marked as legal documents, such as
+ * imprint, privacy policy and other legal content.
+ * Results are filtered by the current language setting.
+ *
+ * @return array Array of legal pages containing page_linkname, page_title,
+ *               page_permalink and page_type_of_use for each page
+ *
+ * @global object $db_content Database connection object
+ * @global string $languagePack Current active language code
  */
- 
-function se_get_legal_pages() {
+function se_get_legal_pages(): array
+{
 	global $db_content;
 	global $languagePack;
 	
@@ -74,16 +96,16 @@ function se_get_media_data($filename,$lang=NULL) {
 
 
 /**
- * get data from se_media
- * by id
+ * Retrieves media entry from database by its ID
  *
+ * @param int $id Media entry ID
+ * @return array|false Media data array or false if not found
  */
-
-function se_get_media_data_by_id($id) {
+function se_get_media_data_by_id($id): bool|array
+{
 
     global $db_content;
     $media_data = $db_content->get("se_media","*",[
-
         "media_id" => $id
     ]);
 
