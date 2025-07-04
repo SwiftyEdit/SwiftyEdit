@@ -170,7 +170,7 @@ for($i=0;$i<$cnt_orders;$i++) {
 
     $payment_plugin = '';
     $pm_plugin_str = '';
-    if($get_orders[$i]['order_status_payment'] == '1') {
+    if($get_orders[$i]['order_status_payment'] == '1' AND $get_orders[$i]['order_price_total'] > 0) {
         // unpaid order
         $order_data['order_nbr'] = $get_orders[$i]['order_nbr'];
         $order_data['order_price_total'] = $get_orders[$i]['order_price_total'];

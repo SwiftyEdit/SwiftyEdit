@@ -446,9 +446,14 @@ function se_posts_calc_price($price,$tax,$amount=1) {
     $price_single_net = round($price,8);
     $price_sum_net = $price_single_net*$amount;
 
-    $price_single_gross = $price_single_net * ($tax+100)/100;
-    $price_single_gross = round($price_single_gross,2);
-    $price_sum_gross = $price_single_gross*$amount;
+    if($tax != '0') {
+        $price_single_gross = $price_single_net * ($tax + 100) / 100;
+        $price_single_gross = round($price_single_gross, 2);
+        $price_sum_gross = $price_single_gross * $amount;
+    } else {
+        $price_single_gross = $price_single_net;
+        $price_sum_gross = $price_sum_net;
+    }
 
 	$prices['gross'] = se_post_print_currency($price_sum_gross);
 	$prices['net'] = se_post_print_currency($price_sum_net);

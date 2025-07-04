@@ -134,3 +134,7 @@ _config_database.php
 !/public/assets/lang/*
 
 /acp/core/update/download/*
+
+secrets.json
+test-results/
+/node_modules/

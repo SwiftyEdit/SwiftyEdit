@@ -9,10 +9,9 @@ or experimental:
 <a class="list-group-item list-group-item-action {$item.class}" href="?add_filter={$item.id}">{$item.title}</a>
 *}
 
-
 {if is_array($product_filter) }
     <div class="mb-2">
-        <form action="{$form_action}" method="POST">
+        <form action="{$form_action}" method="GET">
             {foreach $product_filter as $groups}
                 <div class="card mb-1">
 
@@ -108,8 +107,6 @@ or experimental:
                 </div>
             {/foreach}
             <input type="hidden" name="set_custom_filters" value="send">
-            <input type="submit" name="set_custom_filters" value="{$lang_filter}" class="btn btn-secondary">
-            {$hidden_csrf_token}
         </form>
     </div>
     {if $reset_filter_link}

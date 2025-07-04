@@ -1,0 +1,17 @@
+{
+  "name": "swiftyedit",
+  "version": "2.0.0",
+  "description": "SwiftyEdit Content Management System",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.53.2"
+  }
+}
