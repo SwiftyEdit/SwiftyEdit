@@ -356,6 +356,10 @@ if($p == "posts") {
 	include 'posts.php';
 }
 
+if($p == 'tagged') {
+    include 'tagged.php';
+}
+
 /* start download from /content/files/ */
 if(isset($_POST['download'])) {
     include 'download.php';

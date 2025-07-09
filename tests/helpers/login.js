@@ -15,7 +15,6 @@ exports.loginAsUser = async function (page) {
 
     // Submit the form
     await Promise.all([
-        page.waitForNavigation({ waitUntil: 'networkidle' }), // wait for redirect
         page.click('input[type="submit"][name="login"]')      // precise selector
     ]);
 

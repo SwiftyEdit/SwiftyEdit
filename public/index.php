@@ -7,145 +7,27 @@
  * support@SwiftyEdit.com
  */
 
-ini_set("url_rewriter.tags", '');
-session_start();
-error_reporting(0);
-header("X-Frame-Options: SAMEORIGIN");
-
-$se_start_time = microtime(true);
-
-require '../vendor/autoload.php';
-use Smarty\Smarty;
-/**
- * include the default config file
- * @var string $languagePack
- * @var array $se_page_types
- */
-require '../config.php';
-
-/* resets */
-$prepend_head_code = '';
-$append_head_code = '';
-$prepend_body_code = '';
-$append_body_code = '';
-$mod_slug = '';
-
-const SE_SECTION = "frontend";
-
-
-/**
- * if there is no database config we start the installer
- * @var string $se_db_content SQLite file from config.php or /content/config.php
- * @var string $database_host is set in config_database
- */
-
-if(!is_file('../config_database.php') && !is_file("$se_db_content")) {
-    header("location: /install/");
-    die();
-}
-
-/**
- * connect the database
- * @var string $db_content
- * @var string $db_user
- * @var string $db_posts
- */
-
-require SE_ROOT.'/app/database.php';
-
-if(empty($_SESSION['token'])) {
-    se_generate_token();
-}
-
-$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-
-/* stop all $_POST actions if csrf token is empty or invalid */
-if(!empty($_POST)) {
-    se_validate_token($_POST['csrf_token']);
-}
-
-/**
- * maintenance mode
- */
-
-if(is_file(SE_ROOT . "/maintenance.html")) {
-    header("location:" . SE_INCLUDE_PATH . "/maintenance.html");
-    die("We'll be back soon.");
-}
-
-
-/**
- * get the preferences
- * @var array $se_prefs generate for global use
- * the most important for the frontend are
- * default information and/or metas
- * $se_prefs['prefs_pagename'] $se_prefs['prefs_pagetitle'] $se_prefs['prefs_pagesubtitle'] $se_prefs['prefs_pagedescription'] $se_prefs['prefs_pagefavicon']
- * language
- * $se_prefs['prefs_default_language']
- * user management
- * $se_prefs['prefs_userregistration'] $se_prefs['prefs_showloginform']
- * templates
- * $se_prefs['prefs_template'] $se_prefs['prefs_template_layout'] $se_prefs['prefs_template_stylesheet']
- */
-
-$se_get_preferences = se_get_preferences();
-
-foreach ($se_get_preferences as $k => $v) {
-    $key = $se_get_preferences[$k]['option_key'];
-    $value = $se_get_preferences[$k]['option_value'];
-    $se_prefs[$key] = $value;
-    /* without the 'prefs_' prefix $se_prefs['pagetitle'] */
-    if(substr($key,0,6) == 'prefs_') {
-        $short_key = substr($key,6);
-        $se_prefs[$short_key] = $value; // old
-        $se_settings[$short_key] = $value; // new
-    }
-}
-
-
-if($se_prefs['prefs_dateformat'] == '') {
-    $se_prefs['prefs_dateformat'] = 'Y-m-d';
-}
-
-if($se_prefs['prefs_timeformat'] == '') {
-    $se_prefs['prefs_timeformat'] = 'H:i:s';
-}
-
-if ($se_prefs['prefs_timezone'] != '') {
-    date_default_timezone_set($se_prefs['prefs_timezone']);
-}
-
-/**
- * include the language file
- * @var string $lang_sign en or de ...
- * @var string $lang_desc english or deutsch ...
- */
-$lang_dir = $se_prefs['prefs_default_language'];
-require SE_ROOT.'languages/'.$lang_dir.'/index.php';
-$languagePack = $lang_sign;
-
-if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator") {
-    $_SESSION['se_admin_helpers'] = array();
-}
+require_once __DIR__.'/../app/bootstrap.php';
 
 
 /**
  * reserved $_GET['p'] parameters
  */
 $a_allowed_p = [
-    'register',
     'account',
-    'profile',
-    'unlock',
-    'search',
-    'sitemap',
-    'logout',
-    'password',
+    'checkout',
+    'display_event',
     'display_post',
     'display_product',
-    'display_event',
-    'checkout',
-    'orders'
+    'logout',
+    'orders',
+    'password',
+    'profile',
+    'register',
+    'search',
+    'sitemap',
+    'tagged',
+    'unlock'
 ];
 
 /*
@@ -219,7 +101,7 @@ for($i=0;$i<$cnt_active_mods;$i++) {
     }
 }
 
-require SE_ROOT."languages/index.php";
+
 
 if($swifty_slug == '/' OR $swifty_slug == '') {
     list($page_contents,$se_nav) = se_get_content('portal','page_sort');
@@ -230,10 +112,10 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
 require SE_ROOT.'app/smarty.php';
 
 
-// xhr routes for core /api/se/
-// and plugins /api/plugins/plugin/
-// and themes /api/themes/theme/
-if ($requestPathParts[0] === 'api') {
+// xhr routes for core /xhr/se/
+// and plugins /xhr/plugins/plugin/
+// and themes /xhr/themes/theme/
+if ($requestPathParts[0] === 'xhr' OR $requestPathParts[0] === 'api') {
     if ($requestPathParts[1] === 'se') {
         // route for SwiftyEdit
         include SE_ROOT.'/app/xhr/route.php';
@@ -341,14 +223,6 @@ if($page_contents['page_type_of_use'] == 'orders') {
 }
 
 
-/* build absolute URL */
-if($se_prefs['prefs_cms_ssl_domain'] != '') {
-    $se_base_url = $se_prefs['prefs_cms_ssl_domain'] . $se_prefs['prefs_cms_base'];
-} else {
-    $se_base_url = $se_prefs['prefs_cms_domain'] . $se_prefs['prefs_cms_base'];
-}
-
-
 /* if is set page_redirect, we can stop here and go straight to the desired location */
 if($page_contents['page_redirect'] != '') {
     include_once 'app/tracker.php';
@@ -395,7 +269,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register' || $p == 'unlock') {
+    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register' || $p == 'unlock' || $p == 'tagged') {
         $show_posts = false;
     }
 
@@ -448,24 +322,19 @@ if(isset($user_logout) && ($user_logout != '')) {
     $smarty->assign('msg_content', $output);
 }
 
-/* get permalink for orders page */
-$orders_page = se_get_type_of_use_pages('orders');
-if($orders_page == NULL OR $orders_page['page_permalink'] == '') {
-    $orders_uri = '/orders/';
-} else {
-    $orders_uri = '/'.$orders_page['page_permalink'];
-}
 
-$smarty->assign('orders_uri', $orders_uri);
 
 
 if($se_prefs['prefs_posts_products_cart'] == 2 OR $se_prefs['prefs_posts_products_cart'] == 3) {
-    /* add product to the shopping cart */
+
+    $smarty->assign('show_shopping_cart',true);
+
+    // add product to the shopping cart
     if(isset($_POST['add_to_cart'])) {
         $se_cart = se_add_to_cart();
     }
 
-    /* get permalink for shopping cart */
+    // get permalink for shopping cart
     $checkout_page = se_get_type_of_use_pages('checkout');
     if($checkout_page['page_permalink'] == '') {
         $sc_uri = '/checkout/';
@@ -474,16 +343,9 @@ if($se_prefs['prefs_posts_products_cart'] == 2 OR $se_prefs['prefs_posts_product
     }
 
     $smarty->assign('shopping_cart_uri', $sc_uri);
-
-    /* amount of items in the shopping cart */
-    $cnt_items = se_return_cart_amount();
-    if($cnt_items > 0) {
-        $smarty->assign('cnt_shopping_cart_items', $cnt_items);
-    }
 }
 
 
-require '../app/user_management.php';
 require '../app/switch.php';
 
 if(is_file($themes_path.'/'.$se_template.'/php/options.php')) {

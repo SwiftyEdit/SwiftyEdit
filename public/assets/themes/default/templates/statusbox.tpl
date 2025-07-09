@@ -3,6 +3,11 @@
         <div class="card-header">{$status_msg} <b>{$smarty.session.user_nick}</b></div>
 
         <div class="list-group list-group-flush">
+
+            {if link_acp != ''}
+                <a href="{$link_acp}" class="list-group-item link-admin">{$lang_button_acp}</a>
+            {/if}
+
             <a href="{$link_profile}" class="list-group-item link-profile">{$lang_button_profile}</a>
 
             {if orders_uri != ''}
