@@ -56,7 +56,7 @@ if(isset($_POST['delete_event'])) {
     ]);
 
     if($delete->rowCount() > 0) {
-        show_toast($lang['msg_post_deleted'],'success');
+        show_toast($lang['msg_success_entry_delete'],'success');
         record_log($_SESSION['user_nick'],"delete event id: $del_id","8");
         header( "HX-Trigger: update_events_list");
     }
