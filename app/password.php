@@ -44,7 +44,13 @@ if($_POST['ask_for_psw']) {
 			]);
 		
 		/* generate the message */
-		$email_msg = str_replace("{USERNAME}","$user_nick",$lang['forgotten_psw_mail_info']);
+
+        $email_content = se_get_textlib("account_reset_psw","$languagePack",'content');
+        if($email_content == '') {
+            $email_content = $lang['forgotten_psw_mail_info'];
+        }
+
+		$email_msg = str_replace("{USERNAME}","$user_nick",$email_content);
 		$email_msg = str_replace("{RESET_LINK}","$reset_link",$email_msg);
 
         $mail_data['tpl'] = 'mail.tpl';
