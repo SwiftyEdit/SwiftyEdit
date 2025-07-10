@@ -28,6 +28,8 @@
   "sorting": "Tri en cours",
   "ascending": "Ascendant",
   "descending": "Descendant",
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
   "images": "Images",
   "files": "Fichiers",
   "filename": "Nom du fichier",
