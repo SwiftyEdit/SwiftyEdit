@@ -32,10 +32,14 @@
             </div>
         </div>
 
-        {if $cnt_shopping_cart_items != ''}
+        {if $show_shopping_cart == true}
             <div class="shopping-cart-container">
                 <a href="{$shopping_cart_uri}" title="{$lang_label_shopping_cart}">
-                    <i class="bi bi-basket-fill"></i> {$cnt_shopping_cart_items}
+                    <i class="bi bi-basket-fill"></i>
+                <span id="shopping-cart-trigger"
+                 hx-get="/api/se/shopping-cart-trigger/"
+                 hx-trigger="load, update_user_status from:body"
+                 hx-swap="innerHTML">0</span>
                 </a>
             </div>
         {/if}

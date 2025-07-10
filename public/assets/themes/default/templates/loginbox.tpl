@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card-header">{$legend_login}</div>
         <div class="card-body">
-            <form action="{$smarty.server.SCRIPT_NAME}?p={$p}" method="POST">
+            <form hx-post="/xhr/se/login/" hx-target="#user-box" hx-indicator=".htmx-indicator" method="POST">
 
                 <div class="form-group">
                     <label for="username">{$label_username}</label>
@@ -25,6 +25,11 @@
                            value="{$button_login}">
                 </div>
 
+                <div class="d-flex align-items-center htmx-indicator">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    <span class="sr-only">Loading...</span>
+                </div>
+
                 {if $failed_login != ''}
                     <div class="alert alert-danger my-1">
                         {$failed_login}
@@ -33,11 +38,13 @@
 
                 <p>{$show_forgotten_psw_link}</p>
                 {$hidden_csrf_token}
+
             </form>
 
 			{if $show_register_link != ''}
             	<p>{$msg_register}<br>{$show_register_link}</p>
 			{/if}
         </div>
+
     </div>
 {/nocache}

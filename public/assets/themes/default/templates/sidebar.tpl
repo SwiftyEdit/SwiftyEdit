@@ -4,8 +4,12 @@
 
 {$se_snippet_sidebar_text}
 
-{nocache}
-    {$login_box nocache}
-    {$status_box nocache}
-{/nocache}
+<div id="user-box"
+     hx-get="/xhr/se/statusbox/"
+     hx-trigger="load, update_user_status"
+     hx-swap="innerHTML">
+    Lade...
+</div>
+
+
 {include file='admin_helpers.tpl'}

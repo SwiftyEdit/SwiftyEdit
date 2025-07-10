@@ -101,7 +101,7 @@ if(isset($_POST['delete_post'])) {
     ]);
 
     if($delete->rowCount() > 0) {
-        show_toast($lang['msg_post_deleted'],'success');
+        show_toast($lang['msg_success_entry_delete'],'success');
         record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
         header( "HX-Trigger: update_posts_list");
     }
@@ -234,6 +234,26 @@ if(isset($_POST['save_post'])) {
         show_toast($lang['msg_success_db_changed'],'success');
     }
 
+}
+
+if(isset($_POST['rfixed'])) {
+    $post_id = (int) $_POST['rfixed'];
+    $db_posts->update("se_posts", [
+        "post_fixed" => 2
+    ],[
+        "post_id" => $post_id
+    ]);
+    header( "HX-Trigger: update_posts_list");
+}
+
+if(isset($_POST['sfixed'])) {
+    $post_id = (int) $_POST['sfixed'];
+    $db_posts->update("se_posts", [
+        "post_fixed" => 1
+    ],[
+        "post_id" => $post_id
+    ]);
+    header( "HX-Trigger: update_posts_list");
 }
 
 if(isset($_POST['sort_gallery_tmb'])) {

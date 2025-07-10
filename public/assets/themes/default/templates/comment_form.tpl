@@ -4,7 +4,7 @@
 
     <p class="h3">{$comment_form_title}</p>
     <p>{$comment_form_intro}</p>
-    <form hx-post="/api/se/comments/" hx-target="#commentFormResponse">
+    <form hx-post="/xhr/se/comments/" hx-target="#commentFormResponse">
         <div class="form-group">
             <label for="input_name">{$label_name}</label>
             <input type="text" class="form-control" id="input_name" name="input_name" value="{$input_name}" readonly>

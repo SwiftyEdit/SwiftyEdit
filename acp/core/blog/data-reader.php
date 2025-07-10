@@ -186,7 +186,7 @@ if($_REQUEST['action'] == 'list_posts') {
         } else {
             $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="sfixed" value="'.$post['post_id'].'">'.$icon['star_outline'].'</button>';
         }
-        $icon_fixed_form .= $hidden_csrf_token;
+        $icon_fixed_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $icon_fixed_form .= '</form>';
 
         if($post['post_status'] == '2') {
@@ -243,7 +243,7 @@ if($_REQUEST['action'] == 'list_posts') {
         $prio_form  = '<form hx-post="/admin/blog/write/" hx-swap="beforeend" hx-target="body">';
         $prio_form .= '<input type="number" name="post_priority" value="'.$post['post_priority'].'" class="form-control" style="max-width:100px">';
         $prio_form .= '<input type="hidden" name="prio_id" value="'.$post['post_id'].'">';
-        $prio_form .= $hidden_csrf_token;
+        $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $prio_form .= '</form>';
 
         $published_date = '<span title="'.$lang['label_data_submited'].'">'.$icon['save'].': '.se_format_datetime($post['post_date']).'</span>';
@@ -290,6 +290,7 @@ if($_REQUEST['action'] == 'list_posts') {
         $delete_btn = '<button name="delete_post" value="'.$post['post_id'].'" class="btn btn-sm btn-default text-danger" 
                             hx-post="/admin/blog/write/"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
+                            hx-include="[name=\'csrf_token\']"
                             hx-swap="beforeend"
                             hx-target="body"
                             >'.$icon['trash_alt'].'</button>';
