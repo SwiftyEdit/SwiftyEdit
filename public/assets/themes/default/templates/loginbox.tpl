@@ -27,7 +27,7 @@
 
                 <div class="d-flex align-items-center htmx-indicator">
                     <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                    <span class="sr-only">Loading...</span>
+                    <span class="sr-only">{$lang_loading}</span>
                 </div>
 
                 {if $failed_login != ''}

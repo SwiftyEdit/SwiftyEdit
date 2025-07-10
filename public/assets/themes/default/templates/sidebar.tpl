@@ -8,7 +8,11 @@
      hx-get="/xhr/se/statusbox/"
      hx-trigger="load, update_user_status"
      hx-swap="innerHTML">
-    Lade...
+    <div class="d-flex align-items-center htmx-indicator">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+        <span class="sr-only">{$lang_loading}</span>
+    </div>
+
 </div>
 
 
