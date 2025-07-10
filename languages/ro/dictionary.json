@@ -28,6 +28,8 @@
   "sorting": "Sortare",
   "ascending": "Crescător",
   "descending": "Descrescător",
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
   "images": "Imagini",
   "files": "Fișiere",
   "filename": "Nume fișier",
