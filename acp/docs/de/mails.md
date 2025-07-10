@@ -32,6 +32,18 @@ Ersetzungen:
 * `{USERNAME}` der Benutzername
 * `{RESET_LINK}` die (absolute) URL um das Zurücksetzen zu bestätigen
 
+## Passwort wurde zurückgesetzt
+
+Sobald der Benutzer den Aktivierungslink geklickt hat, wird eine E-Mail mit dem neuen Passwort gesendet.
+
+Übersetzungen:
+* Text: `forgotten_psw_mail_update` oder das Snippet `mail_psw_updated`
+* Betreff: `forgotten_psw_mail_subject`
+
+Ersetzungen:
+* `{USERNAME}` der Benutzername
+* `{temp_psw}` das erzeugte Passwort
+
 ## Bestellungen (Warenkorb senden)
 
 Sobald ein Benutzer eine Bestellung abgesendet hat, bekommt er eine Bestellbestätigung.
