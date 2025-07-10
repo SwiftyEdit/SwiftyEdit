@@ -10,6 +10,7 @@ $routes = [
     'vote' => 'ajax.votings.php',
     'votes' => 'votes.php',
     'login' => 'login.php',
+    'password-reset' => 'password-reset.php',
     'statusbox' => 'statusbox.php',
     'search' => 'search.php',
     'shopping-cart-trigger' => 'shopping-cart-trigger.php',
