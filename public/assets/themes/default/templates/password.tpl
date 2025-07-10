@@ -1,5 +1,9 @@
 <div id="reset-alert"></div>
 
+<div>
+    {$alert_reset}
+</div>
+
 <h3>{$forgotten_psw}</h3>
 
 <p class="lead">{$forgotten_psw_intro}</p>
