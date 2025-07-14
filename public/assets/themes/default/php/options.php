@@ -117,7 +117,7 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
 		 "linkedin" => "LinkedIn (URL)",
 		 "slack" => "Slack (URL)",
 		 "twitch" => "Twitch (URL)",
-		 "twitter" => "Twitter Account (URL)",
+		 "x" => "X Account (URL)",
 		 "youtube" => "YouTube (URL)"
 	 );
 	

@@ -195,6 +195,7 @@ if($_REQUEST['action'] == 'list_themes') {
         echo '<div class="col-md-4">';
         $theme_poster = '/themes/'.$template.'/images/preview.png';
         echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
+        echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
         echo '</div>';
         echo '</div>';
 
