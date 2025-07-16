@@ -336,6 +336,11 @@ $variants = array();
 if($product_data['type'] == 'v') {
     // this product is a variant of 'parent_id'
     $variants = se_get_product_variants($product_data['parent_id']);
+
+    $parent_product = se_get_product_data($product_data['parent_id']);
+    $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
+    $smarty->assign('page_canonical_url', $canonical_url);
+
 } else {
     $variants = se_get_product_variants($product_data['id']);
 }
