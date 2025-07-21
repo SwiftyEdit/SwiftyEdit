@@ -5,8 +5,8 @@ echo $icon['comments'].' '.$lang['nav_btn_comments'];
 echo '</div>';
 
 
-$reader_uri = '/admin/inbox/read/';
-$writer_uri = '/admin/inbox/write/';
+$reader_uri = '/admin/xhr/inbox/read/';
+$writer_uri = '/admin/xhr/inbox/write/';
 
 echo '<div id="inbox-response"></div>';
 

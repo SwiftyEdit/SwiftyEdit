@@ -28,6 +28,8 @@
   "sorting": "Ταξινόμηση",
   "ascending": "Αύξουσα",
   "descending": "Φθίνουσα",
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
   "images": "Εικόνες",
   "files": "Αρχεία",
   "filename": "Όνομα Αρχείου",

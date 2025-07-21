@@ -28,6 +28,8 @@
   "sorting": "Sortowanie",
   "ascending": "Rosnąco",
   "descending": "Malejąco",
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
   "images": "Obrazki",
   "files": "Pliki",
   "filename": "Nazwa pliku",

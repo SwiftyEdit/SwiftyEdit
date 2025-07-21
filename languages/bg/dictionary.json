@@ -28,6 +28,8 @@
   "sorting": "Сортиране",
   "ascending": "Възходящ ред",
   "descending": "Низходящ",
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
   "images": "Изображения",
   "files": "Файлове",
   "filename": "Име на файл",

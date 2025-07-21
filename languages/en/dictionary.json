@@ -31,6 +31,8 @@
   "ascending": "Ascending",
   "descending": "Descending",
 
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
 
   "images": "Images",
   "files": "Files",

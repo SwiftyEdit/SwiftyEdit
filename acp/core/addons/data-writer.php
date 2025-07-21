@@ -30,7 +30,7 @@ if(isset($_POST['save_default_layout'])) {
     se_write_option($data,'se');
     record_log($_SESSION['user_nick'],"edit system design <b>$prefs_template</b>","6");
     se_delete_smarty_cache('all');
-    show_toast($lang['msg_data_updated'],'success');
+    show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: update_themes_list");
 }
 
@@ -61,4 +61,9 @@ if(isset($_POST['deactivate_addon'])) {
     ]);
     mods_check_in();
     header( "HX-Trigger: update_plugins_list");
+}
+
+if(isset($_POST['save_theme_options'])) {
+    se_write_theme_options($_POST);
+    show_toast($lang['msg_success_db_changed'],'success');
 }

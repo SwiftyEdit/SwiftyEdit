@@ -28,6 +28,8 @@
   "sorting": "Sıralama",
   "ascending": "Artan",
   "descending": "Azalan",
+  "loading": "Loading ...",
+  "loading_data": "Loading data ...",
   "images": "Görseller",
   "files": "Özel",
   "filename": "Dosya adı",

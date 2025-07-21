@@ -1,7 +1,7 @@
 <?php
 
-$reader_uri = '/admin/shop/read/';
-$writer_uri = '/admin/shop/write/';
+$reader_uri = '/admin/xhr/shop/read/';
+$writer_uri = '/admin/xhr/shop/write/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_price_groups'];

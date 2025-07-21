@@ -5,7 +5,7 @@
  */
 
 
-require 'header.php';
+require_once 'header.php';
 
 
 $writer = match (true) {
@@ -21,12 +21,12 @@ $writer = match (true) {
     str_starts_with($_REQUEST['query'], 'events/') => 'core/events/data-writer.php',
     str_starts_with($_REQUEST['query'], 'users/') => 'core/users/data-writer.php',
     str_starts_with($_REQUEST['query'], 'inbox/') => 'core/inbox/data-writer.php',
-    str_starts_with($_REQUEST['query'], 'xhr/') => 'core/xhr/data-writer.php',
+    str_starts_with($_REQUEST['query'], 'widgets/') => 'core/widgets/data-writer.php',
     default => ''
 };
 
 if($writer != '') {
-    include $writer;
+    include_once $writer;
     exit;
 }
 

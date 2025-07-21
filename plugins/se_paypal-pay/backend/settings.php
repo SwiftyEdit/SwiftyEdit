@@ -20,7 +20,7 @@ echo '<div id="response"></div>';
 echo '<div class="row">';
 echo '<div class="col-md-9">';
 
-echo '<form hx-post="/admin/addons/plugin/se_paypal-pay/write/" hx-target="#response" method="POST">';
+echo '<form hx-post="/admin/xhr/addons/plugin/se_paypal-pay/write/" hx-target="#response" method="POST">';
 
 echo '<div class="mb-3">';
 echo '<label class="form-label">Additional Costs</label>';
@@ -154,7 +154,7 @@ $hx_vals = [
     "csrf_token"=> $_SESSION['token']
 ];
 
-echo '<div id="paypalTests" class="my-3 alert alert-info" hx-vals=\''.json_encode($hx_vals).'\' hx-post="/admin/addons/plugin/se_paypal-pay/read/?show=paypal_tests" hx-trigger="load">Loading data ...</div>';
+echo '<div id="paypalTests" class="my-3 alert alert-info" hx-vals=\''.json_encode($hx_vals).'\' hx-post="/admin/xhr/addons/plugin/se_paypal-pay/read/?show=paypal_tests" hx-trigger="load">Loading data ...</div>';
 
 echo '</div>'; // collapseTesting
 

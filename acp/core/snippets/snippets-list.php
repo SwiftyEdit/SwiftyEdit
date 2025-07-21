@@ -5,8 +5,8 @@ echo $icon['card_heading'].' '.$lang['nav_btn_snippets'].'  '.se_print_docs_link
 echo '<a href="/admin/snippets/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
 echo '</div>';
 
-$reader_uri = '/admin/snippets/read/';
-$writer_uri = '/admin/snippets/write/';
+$reader_uri = '/admin/xhr/snippets/read/';
+$writer_uri = '/admin/xhr/snippets/write/';
 
 
 echo '<div class="row">';

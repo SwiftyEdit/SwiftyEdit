@@ -19,7 +19,7 @@ if(isset($_GET['file'])) {
       <h5 class="modal-title">'.$lang['btn_docs'].'</h5>
     </div>
     <div class="modal-body" style="height: 70vh">
-    <div class="h-100" id="showModalContent" hx-get="/admin/docs/read/?show_file='.$file.'&section='.$section.'" hx-trigger="load">
+    <div class="h-100" id="showModalContent" hx-get="/admin/xhr/docs/read/?show_file='.$file.'&section='.$section.'" hx-trigger="load">
     </div> 
     </div>
     <div class="modal-footer">

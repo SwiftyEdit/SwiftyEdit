@@ -1,7 +1,7 @@
 <?php
 
 $all_mods = se_get_all_addons();
-$writer_uri = '/admin/pages/write/';
+$writer_uri = '/admin/xhr/pages/write/';
 
 $q = pathinfo($_REQUEST['query']);
 
@@ -291,7 +291,7 @@ if(is_array($array_images)) {
 }
 
 $choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= '<div id="imgWidget" hx-post="/admin/xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
 $input_select_page_categories_mode = [
@@ -889,9 +889,9 @@ $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
 $form_tpl .= '<div class="d-flex justify-content">';
-$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 if($form_mode != 'new') {
-    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
+    $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
 }
 $form_tpl .= '</div>';
 
@@ -908,5 +908,5 @@ echo $form_tpl;
 
 // show older snapshots from this page
 if(is_numeric($get_page_id)) {
-    echo '<div id="timeWarp" hx-get="/admin/pages/read/?snapshots=' . $get_page_id . '" hx-trigger="load, updated_pages from:body">Loading Snapshots ...</div>';
+    echo '<div id="timeWarp" hx-get="/admin/xhr/pages/read/?snapshots=' . $get_page_id . '" hx-trigger="load, updated_pages from:body">Loading Snapshots ...</div>';
 }

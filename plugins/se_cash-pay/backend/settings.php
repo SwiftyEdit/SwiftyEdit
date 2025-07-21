@@ -8,7 +8,7 @@ if(is_file($pm_prefs_file)) {
 echo '<div id="response"></div>';
 echo '<div class="card p-3">';
 
-echo '<form hx-post="/admin/addons/plugin/se_cash-pay/write/" hx-target="#response" method="POST">';
+echo '<form hx-post="/admin/xhr/addons/plugin/se_cash-pay/write/" hx-target="#response" method="POST">';
 
 echo '<div class="mb-3">';
 echo '<label class="form-label">Additional Costs</label>';

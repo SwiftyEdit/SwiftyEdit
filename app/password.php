@@ -58,8 +58,8 @@ if($_GET['token'] != "") {
 	$psw_message = $lang['msg_forgotten_psw_step2'];
 	
 	if($psw_message != "") {
-		$smarty->assign("msg_status","alert alert-info");
-		$smarty->assign("psw_message","$psw_message");
+        $smarty->assign("alert_text","$psw_message");
+        $alert_reset = $smarty->fetch('alert/alert-success.tpl');
 	}
 
 
@@ -77,6 +77,7 @@ $smarty->assign("forgotten_psw_intro","$lang[forgotten_psw_intro]");
 $smarty->assign("label_mail","$lang[label_mail]");
 $smarty->assign("button_send","$lang[button_send]");
 $smarty->assign("legend_ask_for_psw","$lang[legend_ask_for_psw]");
+$smarty->assign("alert_reset","$alert_reset");
 
 $output = $smarty->fetch("password.tpl");
 $smarty->assign('page_content', $output);

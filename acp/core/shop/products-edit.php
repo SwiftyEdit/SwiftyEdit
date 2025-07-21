@@ -1,10 +1,10 @@
 <?php
 
-$writer_uri = '/admin/shop/write/';
+$writer_uri = '/admin/xhr/shop/write/';
 $form_header_mode = $lang['btn_new'];
 $my_user_presets = se_get_my_presets();
 
-$btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">'.$lang['save'].'</button>';
+$btn_save = '<button type="submit" hx-trigger="click" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">'.$lang['save'].'</button>';
 $btn_update = '';
 $btn_delete = '';
 $submit_variant_btn = '';
@@ -18,8 +18,8 @@ if(is_numeric($lastSegment)) {
     $form_mode = $get_product_id;
     $btn_submit_text = $lang['update'];
     $form_header_mode = $lang['edit'].' #'.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
 if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
@@ -27,8 +27,8 @@ if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $form_mode = $get_product_id;
     $btn_submit_text = $lang['update'];
     $form_header_mode = $lang['edit'].' #'.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
+    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" x-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
 if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
@@ -36,7 +36,7 @@ if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $form_mode = 'new';
     $btn_submit_text = $lang['duplicate'];
     $form_header_mode = $lang['duplicate'].' #'.$get_product_id;
-    $submit_variant_btn = '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="'.$get_product_id.'">'.$lang['submit_variant'].'</button>';
+    $submit_variant_btn = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="'.$get_product_id.'">'.$lang['submit_variant'].'</button>';
 }
 
 if(is_int($get_product_id)) {
@@ -188,7 +188,7 @@ if(is_array($array_images)) {
 }
 
 $choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= '<div id="imgWidget" hx-post="/admin/xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
 /* status | draft or published */
@@ -550,7 +550,7 @@ if(is_array($get_prod_accessories)) {
 
 $prod_related_dropper = '<div id="prodDropper_r" class="sortable_target target_products list-group mb-3">'.$draggable_related.'</div>';
 $prod_accessories_dropper = '<div id="prodDropper_a" class="sortable_target target_products list-group mb-3">'.$draggable_accessories.'</div>';
-$prod_sel_widget = '<div id="prodWidget" hx-post="/admin/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
+$prod_sel_widget = '<div id="prodWidget" hx-post="/admin/xhr/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
 $prod_sel_widget .= '<div id="fake" class="sortable_source"><div></div></div>';
 /* product options */
 

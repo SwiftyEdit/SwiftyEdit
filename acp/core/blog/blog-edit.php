@@ -1,7 +1,7 @@
 <?php
 
-$writer_uri = '/admin/blog/write/';
-$reader_uri = '/admin/blog/read/';
+$writer_uri = '/admin/xhr/blog/write/';
+$reader_uri = '/admin/xhr/blog/read/';
 
 if(is_numeric($_POST['post_id'])) {
     $post_id = (int) $_POST['post_id'];
@@ -270,9 +270,9 @@ $form_tpl = str_replace('{modal_upload_form}', $form_upload_tpl, $form_tpl);
 
 
 if($mode == 'new') {
-    $submit_btn = '<button type="submit" hx-post="/admin/blog/write/" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
+    $submit_btn = '<button type="submit" hx-post="/admin/xhr/blog/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
 } else {
-    $submit_btn = '<button type="submit" hx-post="/admin/blog/write/" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button';
+    $submit_btn = '<button type="submit" hx-post="/admin/xhr/blog/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button';
 }
 
 // replace all entries from $lang
@@ -332,7 +332,7 @@ if(is_array($array_images)) {
 }
 
 $choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= '<div id="imgWidget" hx-post="/admin/xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
 $form_tpl = str_replace('{post_type}', $post_type_form, $form_tpl);

@@ -5,7 +5,7 @@
 */
 
 
-require 'header.php';
+require_once 'header.php';
 
 $reader = match (true) {
     str_contains($_REQUEST['query'], 'pages/') => 'core/pages/data-reader.php',
@@ -20,8 +20,8 @@ $reader = match (true) {
     str_contains($_REQUEST['query'], 'dashboard/') => 'core/dashboard/data-reader.php',
     str_contains($_REQUEST['query'], 'uploads/') => 'core/uploads/data-reader.php',
     str_contains($_REQUEST['query'], 'update/') => 'core/update/data-reader.php',
-    str_contains($_REQUEST['query'], 'counter/') => 'core/xhr/counters.php',
-    str_contains($_REQUEST['query'], 'widgets/') => 'core/xhr/widgets.php',
+    str_contains($_REQUEST['query'], 'counter/') => 'core/widgets/counters.php',
+    str_contains($_REQUEST['query'], 'widgets/') => 'core/widgets/widgets.php',
     str_contains($_REQUEST['query'], 'docs/') => 'core/docs/data-reader.php',
     str_contains($_REQUEST['query'], 'addons/') => 'core/addons/data-reader.php',
     default => ''
@@ -29,6 +29,6 @@ $reader = match (true) {
 
 
 if($reader != '') {
-    include $reader;
+    include_once $reader;
     exit;
 }

@@ -1,6 +1,6 @@
 <?php
 
-$reader_uri = '/admin/users/read/';
+$reader_uri = '/admin/xhr/users/read/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['users'].' '.$lang['nav_btn_user_groups'];

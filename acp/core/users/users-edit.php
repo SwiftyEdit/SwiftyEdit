@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/users/write/';
+$writer_uri = '/admin/xhr/users/write/';
 
 if(isset($_POST['user_id']) && is_numeric($_POST['user_id'])) {
     $get_user_id = (int) $_POST['user_id'];
@@ -590,7 +590,7 @@ $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
 $form_tpl .= '<div class="card p-2">';
-$form_tpl .= '<button class="btn btn-primary" hx-post="'.$writer_uri.'" hx-swap="innerHTML" hx-target="#formResponse" name="save_user" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+$form_tpl .= '<button class="btn btn-primary" hx-post="'.$writer_uri.'" hx-trigger="click" hx-swap="innerHTML" hx-target="#formResponse" name="save_user" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 
 $form_tpl .= '</div>';
 

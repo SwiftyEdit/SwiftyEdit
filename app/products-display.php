@@ -336,6 +336,11 @@ $variants = array();
 if($product_data['type'] == 'v') {
     // this product is a variant of 'parent_id'
     $variants = se_get_product_variants($product_data['parent_id']);
+
+    $parent_product = se_get_product_data($product_data['parent_id']);
+    $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
+    $smarty->assign('page_canonical_url', $canonical_url);
+
 } else {
     $variants = se_get_product_variants($product_data['id']);
 }
@@ -344,8 +349,11 @@ $cnt_variants = count($variants);
 if($cnt_variants > 1) {
     $var = array();
     foreach($variants as $k => $v) {
-        $var[$k]['title'] = $v['title'];
-        $var[$k]['teaser'] = se_return_words_str(html_entity_decode($v['teaser']),10);
+
+        $var[$k]['title'] = $v['product_variant_title'] != '' ? $v['product_variant_title'] : $v['title'];
+        $var[$k]['teaser'] = $v['product_variant_description'] != '' ? $v['product_variant_description'] : $v['teaser'];
+
+        $var[$k]['teaser'] = se_return_words_str(html_entity_decode($var[$k]['teaser']),10);
         $product_images = explode("<->",$v['images']);
         if ($product_images[1] != "") {
             $var[$k]['image'] = str_replace('../images/', '/images/', $product_images[1]);

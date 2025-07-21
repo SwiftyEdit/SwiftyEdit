@@ -6,7 +6,7 @@ $get_image = base64_encode(file_get_contents($addon_image_src));
 
 echo '<div class="row">';
 echo '<div class="col-md-9">';
-echo '<div id="" hx-get="/admin/addons/plugin/se_paypal-pay/read/?show=paypal" hx-trigger="load">Loading data ...</div>';
+echo '<div id="" hx-get="/admin/xhr/addons/plugin/se_paypal-pay/read/?show=paypal" hx-trigger="load">Loading data ...</div>';
 echo '</div>';
 echo '<div class="col-md-3">';
 
