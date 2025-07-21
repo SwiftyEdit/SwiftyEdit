@@ -1,7 +1,7 @@
 <?php
 
-$writer_uri = '/admin/snippets/edit/';
-$duplicate_uri = '/admin/snippets/duplicate/';
+$writer_uri = '/admin/xhr/snippets/edit/';
+$duplicate_uri = '/admin/xhr/snippets/duplicate/';
 
 // show list of keywords (search)
 if($_REQUEST['action'] == 'list_active_searches') {
@@ -12,7 +12,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
         foreach($all_filter as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/snippets/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/xhr/snippets/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
         }
     }
 
@@ -109,10 +109,10 @@ if($_REQUEST['action'] == 'list_snippets') {
 
     echo '<div class="d-flex justify-content-end">';
     echo '<div>';
-    echo se_print_pagination('/admin/snippets/write/',$nbr_pages,$_SESSION['pagination_snippets_page']);
+    echo se_print_pagination('/admin/xhr/snippets/write/',$nbr_pages,$_SESSION['pagination_snippets_page']);
     echo '</div>';
     echo '<div class="ps-3">';
-    echo '<input type="number" class="form-control" hx-post="/admin/snippets/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-vals=\''.json_encode($hx_vals).'\' name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
+    echo '<input type="number" class="form-control" hx-post="/admin/xhr/snippets/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-vals=\''.json_encode($hx_vals).'\' name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
     echo '</div>';
     echo '</div>';
     echo '<table class="table table-sm table-striped table-hover">';
@@ -162,12 +162,12 @@ if($_REQUEST['action'] == 'list_snippets') {
         // images
         $snippet_images = explode('<->',$snippet['snippet_images']);
 
-        $edit_button  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
+        $edit_button  = '<form action="/admin/snippets/edit/" method="post" class="d-inline">';
         $edit_button .= '<button class="btn btn-sm btn-default text-success" name="snippet_id" value="'.$snippet_id.'">'.$icon['edit'].'</button>';
         $edit_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $edit_button .=  '</form>';
 
-        $duplicate_button  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
+        $duplicate_button  = '<form action="/admin/snippets/duplicate/" method="post" class="d-inline">';
         $duplicate_button .= '<button class="btn btn-sm btn-default" name="duplicate_id" value="'.$snippet_id.'">'.$icon['copy'].'</button>';
         $duplicate_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $duplicate_button .=  '</form>';
@@ -217,9 +217,9 @@ if($_GET['action'] == 'list_keywords') {
     foreach($get_keywords as $k => $v) {
         $k = trim($k);
         if(str_contains($_SESSION['snippets_keyword_filter'],$k)) {
-            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/snippets/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/xhr/snippets/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         } else {
-            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/snippets/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/xhr/snippets/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         }
     }
     echo '</div>';

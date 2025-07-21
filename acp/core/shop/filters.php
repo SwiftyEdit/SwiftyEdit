@@ -1,6 +1,6 @@
 <?php
 
-$reader_uri = '/admin/shop/read/';
+$reader_uri = '/admin/xhr/shop/read/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_shop'];

@@ -11,9 +11,9 @@
  * @var array $se_labels
  */
 
-$writer_uri = '/admin/uploads/edit/';
-$delete_uri = '/admin/uploads/delete/';
-$reader_uri = '/admin/uploads/read/';
+$writer_uri = '/admin/xhr/uploads/edit/';
+$delete_uri = '/admin/xhr/uploads/delete/';
+$reader_uri = '/admin/xhr/uploads/read/';
 
 if($_REQUEST['action'] == 'list_active_searches') {
 

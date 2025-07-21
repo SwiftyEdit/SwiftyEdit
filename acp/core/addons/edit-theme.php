@@ -21,7 +21,7 @@ if(is_array($theme_options)) {
 
     $theme_data = se_get_theme_options($theme);
 
-    echo '<form hx-post="/admin/addons/write/" hx-target="body" hx-swap="beforeend">';
+    echo '<form hx-post="/admin/xhr/addons/write/" hx-target="body" hx-swap="beforeend">';
     echo '<div class="card mb-3">';
     echo '<div class="card-header">'.$theme.'</div>';
 

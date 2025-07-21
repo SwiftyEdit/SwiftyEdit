@@ -9,7 +9,7 @@ if($_REQUEST['action'] == 'list_active_searches_comments') {
         foreach($all_filter_orders as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_comments" value="'.$f.'" hx-post="/admin/inbox/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_comments" value="'.$f.'" hx-post="/admin/xhr/inbox/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
         }
         if(isset($btn_remove_keyword)) {
             echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
@@ -106,21 +106,21 @@ if($_REQUEST['action'] == 'list_comments') {
         echo '<div class="row">';
         echo '<div class="col-md-9">';
         if($comment['comment_type'] == 'p') {
-            echo '<div hx-get="/admin/inbox/read/?get_page_title='.$comment_relation_id.'" hx-trigger="load">Loading page data ...</div>';
+            echo '<div hx-get="/admin/xhr/inbox/read/?get_page_title='.$comment_relation_id.'" hx-trigger="load">Loading page data ...</div>';
         }
 
         if($comment['comment_type'] == 'b') {
-            echo '<div hx-get="/admin/inbox/read/?get_post_title='.$comment_relation_id.'" hx-trigger="load">Loading post data ...</div>';
+            echo '<div hx-get="/admin/xhr/inbox/read/?get_post_title='.$comment_relation_id.'" hx-trigger="load">Loading post data ...</div>';
         }
 
         echo '</div>';
         echo '<div class="col-md-3 text-end">';
 
         echo '<div class="btn-group me-2">';
-        echo '<button hx-get="/admin/inbox/read/?open_comment='.$comment_id.'" hx-target="#comment-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#comment-modal" class="btn btn-sm btn-default">'.$icon['edit'].'</button>';
-        echo '<button hx-post="/admin/inbox/write/" name="change_status" value="'.$comment_id.'" hx-swap="none" class="btn btn-sm btn-default '.$btn_status_class.'">'.$status_icon.'</button>';
+        echo '<button hx-get="/admin/xhr/inbox/read/?open_comment='.$comment_id.'" hx-target="#comment-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#comment-modal" class="btn btn-sm btn-default">'.$icon['edit'].'</button>';
+        echo '<button hx-post="/admin/xhr/inbox/write/" hx-trigger="click" hx-trigger="click" name="change_status" value="'.$comment_id.'" hx-swap="none" class="btn btn-sm btn-default '.$btn_status_class.'">'.$status_icon.'</button>';
         echo '</div>';
-        echo '<button hx-post="/admin/inbox/write/" name="delete_comment" value="'.$comment_id.'" hx-target="#inbox-response" class="btn btn-sm btn-default text-danger">'.$icon['trash_alt'].'</button>';
+        echo '<button hx-post="/admin/xhr/inbox/write/" hx-trigger="click" hx-trigger="click" name="delete_comment" value="'.$comment_id.'" hx-target="#inbox-response" class="btn btn-sm btn-default text-danger">'.$icon['trash_alt'].'</button>';
         echo '</div>';
         echo '</div>';
 
@@ -152,7 +152,7 @@ if(isset($_REQUEST['open_comment'])) {
 
     echo '<div id="response"></div>';
 
-    echo '<form hx-post="/admin/inbox/write/" hx-target="#response" method="POST">';
+    echo '<form hx-post="/admin/xhr/inbox/write/" hx-target="#response" method="POST">';
     echo '<div class="form-group">';
     echo '<label>'.$lang['label_name'].'</label>';
     echo '<input type="text" class="form-control" name="comment_author" value="'.$get_comment['comment_author'].'">';

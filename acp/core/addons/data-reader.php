@@ -63,14 +63,16 @@ if($_REQUEST['action'] == 'list_plugins') {
         $vals = ['csrf_token' => $_SESSION['token']];
 
         $delete_btn = '<button name="delete_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger" 
-                            hx-post="/admin/addons/write/"
+                            hx-post="/admin/xhr/addons/write/"
+                            hx-trigger="click"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-vals=\''.json_encode($vals).'\'
                             hx-swap="none"
                             >'.$icon['trash_alt'].'</button>';
 
         $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-default text-success"
-                                hx-post="/admin/addons/write/"
+                                hx-post="/admin/xhr/addons/write/"
+                                hx-trigger="click"
                                 hx-vals=\''.json_encode($vals).'\'
                                 hx-swap="none"
                                 >'.$lang['btn_addon_enable'].'</button>';
@@ -78,7 +80,8 @@ if($_REQUEST['action'] == 'list_plugins') {
         foreach($se_addons as $a) {
             if($k == $a['addon_dir']) {
                 $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger"
-                                hx-post="/admin/addons/write/"
+                                hx-post="/admin/xhr/addons/write/"
+                                hx-trigger="click"
                                 hx-vals=\''.json_encode($vals).'\'
                                 hx-swap="none"
                                 >'.$lang['btn_addon_disable'].'</button>';
@@ -155,7 +158,7 @@ if($_REQUEST['action'] == 'list_themes') {
         echo '<div class="row">';
         echo '<div class="col-md-8">';
 
-        echo '<form hx-post="/admin/addons/write/" hx-swap="none">';
+        echo '<form hx-post="/admin/xhr/addons/write/" hx-swap="none">';
 
         echo '<label>Layout</label>';
         echo '<select name="select_template" class="form-control image-picker">';

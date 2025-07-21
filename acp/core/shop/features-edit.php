@@ -11,7 +11,8 @@ echo '</div>';
 
 $mode = 'new';
 $submit_btn = '<button 
-                hx-post="/admin/shop/write/"
+                hx-post="/admin/xhr/shop/write/"
+                hx-trigger="click"
                 hx-swap="none"
                 hx-include="[name=\'csrf_token\']"
                 name="save_feature"
@@ -33,7 +34,8 @@ if(is_numeric($_POST['features-form'])) {
     $feature_priority = $feature_data['snippet_priority'];
     $feature_lang = $feature_data['snippet_lang'];
     $submit_btn = '<button 
-                hx-post="/admin/shop/write/"
+                hx-post="/admin/xhr/shop/write/"
+                hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
                 name="save_feature"

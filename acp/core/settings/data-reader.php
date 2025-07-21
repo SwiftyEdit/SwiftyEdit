@@ -34,8 +34,8 @@ if($_REQUEST['action'] == 'deliveryCountries') {
         echo '<td>'.$status.'</td>';
         echo '<td>'.$tax.'</td>';
         echo '<td>';
-        echo '<button class="btn btn-sm btn-default text-success" hx-get="/admin/settings/read/?edit_delivery_country='.$country['id'].'" hx-target="#deliveryCountriesForm">'.$icon['edit'].'</button>';
-        echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$country['id'].'">'.$icon['trash'].'</button>';
+        echo '<button class="btn btn-sm btn-default text-success" hx-get="/admin/xhr/settings/read/?edit_delivery_country='.$country['id'].'" hx-target="#deliveryCountriesForm">'.$icon['edit'].'</button>';
+        echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin/xhr/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$country['id'].'">'.$icon['trash'].'</button>';
         echo '</td>';
         echo '</tr>';
     }
@@ -82,7 +82,7 @@ if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_coun
         "type" => "select"
     ];
 
-    echo '<form id="deliveryCountriesForm" hx-post="/admin/settings/shop/write/" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+    echo '<form id="deliveryCountriesForm" hx-post="/admin/xhr/settings/shop/write/" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
     echo se_print_form_input($input_delivery_country);
     echo se_print_form_input($input_delivery_country_status);
     echo se_print_form_input($input_delivery_country_tax);

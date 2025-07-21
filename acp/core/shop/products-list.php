@@ -1,7 +1,7 @@
 <?php
 
-$reader_uri = '/admin/shop/read/';
-$writer_uri = '/admin/shop/write/';
+$reader_uri = '/admin/xhr/shop/read/';
+$writer_uri = '/admin/xhr/shop/write/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_shop'];
@@ -60,8 +60,8 @@ echo '</div>';
 echo '<div class="col-md-4">';
 echo '<label class="form-label">&nbsp;</label>';
 echo '<div class="btn-group d-flex">';
-echo '<button hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-swap="none" name="sorting_products_dir" value="ASC" title="'.$lang['btn_sort_asc'].'" class="btn btn-default w-100 '.$sel_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
-echo '<button hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-swap="none" name="sorting_products_dir" value="DESC" title="'.$lang['btn_sort_desc'].'" class="btn btn-default w-100 '.$sel_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
+echo '<button hx-post="'.$writer_uri.'" hx-trigger="click" hx-include="[name=\'csrf_token\']" hx-swap="none" name="sorting_products_dir" value="ASC" title="'.$lang['btn_sort_asc'].'" class="btn btn-default w-100 '.$sel_value['sort_asc'].'">'.$icon['arrow_up'].'</button> ';
+echo '<button hx-post="'.$writer_uri.'" hx-trigger="click" hx-include="[name=\'csrf_token\']" hx-swap="none" name="sorting_products_dir" value="DESC" title="'.$lang['btn_sort_desc'].'" class="btn btn-default w-100 '.$sel_value['sort_desc'].'">'.$icon['arrow_down'].'</button>';
 echo '</div>';
 echo '</div>';
 echo '</div>';

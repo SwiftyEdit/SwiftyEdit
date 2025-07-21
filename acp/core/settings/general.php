@@ -4,8 +4,8 @@ error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
 echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</div>';
 
 
-$writer_uri = '/admin/settings/general/write/';
-$reader_uri = '/admin/settings/general/read/';
+$writer_uri = '/admin/xhr/settings/general/write/';
+$reader_uri = '/admin/xhr/settings/general/read/';
 
 $input_page_name = [
     "input_name" => "prefs_pagename",

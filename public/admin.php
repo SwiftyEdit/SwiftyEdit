@@ -1,40 +1,38 @@
 <?php
-
-/**
- * SwiftyEdit - backend routing
- *
- * include data writer or
- * include backend or
- * include login
- */
-
 session_start();
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED);
 
-if($_SESSION['user_class'] == 'administrator') {
+// Fallback für $query, falls $_GET['query'] nicht zuverlässig gesetzt wird
+$query = $_GET['query'] ?? null;
 
-    if(str_contains($_REQUEST['query'] , '/read/')){
-        include '../acp/data_reader.php';
-        exit;
+if (!$query && isset($_SERVER['REQUEST_URI'])) {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (preg_match('#^/admin(?:/)?(.*)$#', $path, $matches)) {
+        $query = $matches[1] ?? '';
+        $_GET['query'] = $query;
+        $_REQUEST['query'] = $query;
     }
-
-    if(str_contains($_REQUEST['query'] , '/write/')){
-        include '../acp/data_writer.php';
-        exit;
-    }
-
-    if(str_contains($_REQUEST['query'] , '/delete/')){
-        include '../acp/data_writer.php';
-        exit;
-    }
-
-    if(str_contains($_REQUEST['query'] , 'upload/')){
-        include '../acp/core/xhr/upload.php';
-        exit;
-    }
-
-
-    include '../acp/index.php';
-} else {
-    include '../acp/login.php';
 }
+
+// Wenn kein Query vorhanden ist (z. B. Aufruf von /admin/ direkt)
+if (empty($query)) {
+    if ($_SESSION['user_class'] === 'administrator') {
+        // Admin eingeloggt → Weiterleitung ins Dashboard
+        header('Location: /admin/dashboard/');
+        exit;
+    } else {
+        // Nicht eingeloggt → Login anzeigen
+        include '../acp/login.php';
+        exit;
+    }
+}
+
+// Wenn eingeloggt als Admin → lade Admin-Routing
+if ($_SESSION['user_class'] === 'administrator') {
+    include '../acp/index.php';
+    exit;
+}
+
+// Nicht Admin → Login anzeigen
+include '../acp/login.php';
+exit;

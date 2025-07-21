@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/snippets/write/';
+$writer_uri = '/admin/xhr/snippets/write/';
 
 $q = pathinfo($_REQUEST['query']);
 
@@ -165,7 +165,7 @@ if(is_array($array_images)) {
 }
 
 $choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= '<div id="imgWidget" hx-post="/admin/xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
 // checkboxes for labels

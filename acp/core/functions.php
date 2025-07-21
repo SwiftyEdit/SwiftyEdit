@@ -5,6 +5,50 @@ include_once 'functions_cache.php';
 include_once 'functions_shop.php';
 
 
+/**
+ * Sends a plain text response and terminates script execution.
+ *
+ * @param string $data
+ * @param int $statusCode
+ * @return never
+ */
+function se_plain_response($data, int $statusCode = 200) {
+    http_response_code($statusCode);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo $data;
+    exit;
+}
+
+/**
+ * Sends an HTML response and terminates script execution.
+ *
+ * @param string $html        The HTML content to send.
+ * @param int    $statusCode  Optional HTTP status code (default: 200).
+ *
+ * @return never
+ */
+function se_html_response($html, int $statusCode = 200) {
+    http_response_code($statusCode);
+    header('Content-Type: text/html; charset=utf-8');
+    echo $html;
+    exit;
+}
+
+/**
+ * Sends a JSON response and terminates script execution.
+ *
+ * @param array $data         The associative array to encode as JSON.
+ * @param int   $statusCode   Optional HTTP status code (default: 200).
+ *
+ * @return never
+ */
+function se_json_response(array $data, int $statusCode = 200) {
+    http_response_code($statusCode);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data);
+    exit;
+}
+
 
 /**
  * get all installed language files
@@ -1086,7 +1130,7 @@ function se_list_gallery_thumbs($gid) {
 
 		$thumbs .= '<div class="tmb">';
 		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb_src.'" class="img-fluid"></div>';
-        $thumbs .= '<form hx-post="/admin/blog/write/">';
+        $thumbs .= '<form hx-post="/admin/xhr/blog/write/">';
 		$thumbs .= '<div class="tmb-actions d-flex btn-group">';
 		$thumbs .= '<button type="submit" name="sort_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
 		$thumbs .= '<button type="submit" name="delete_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
@@ -1315,7 +1359,7 @@ function se_parse_docs_file($file): array {
             '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" hx-get="/admin/docs/read/?file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
+                $link = '<a class="" hx-get="/admin/xhr/docs/read/?file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
                 return $link;
             },
             $content
@@ -1360,7 +1404,7 @@ function se_print_docs_link(string $file, string $text = null, string $section =
 
     $link = '<button data-bs-toggle="modal"
                     data-bs-target="#helpModal"
-                        hx-get="/admin/docs/read/"
+                        hx-get="/admin/xhr/docs/read/"
                         hx-vals=\'{"file":"' . $file . '","section":"' . $section . '"}\'
                         hx-target="#helpModal"
                         hx-trigger="click"
@@ -1520,14 +1564,14 @@ function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,
 
     // jump to the first page
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link ms-1" hx-post="'.$url.'"  name="'.$post_name.'" value="0"><i class="bi bi-arrow-bar-left"></i></button>';
+    $pagination .= '<button class="page-link ms-1" hx-post="'.$url.'"  hx-trigger="click" name="'.$post_name.'" value="0"><i class="bi bi-arrow-bar-left"></i></button>';
     $pagination .= '</li>';
 
     // jump to the previous page
     $previous_page = max($active_page - 1, 0);
 
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.$previous_page.'"><i class="bi bi-arrow-left-short"></i></button>';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" hx-trigger="click" name="'.$post_name.'" value="'.$previous_page.'"><i class="bi bi-arrow-left-short"></i></button>';
     $pagination .= '</li>';
 
     // loop
@@ -1546,18 +1590,18 @@ function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,
             $active = 'active';
         }
         $pagination .= '<li class="page-item">';
-        $pagination .= '<button class="page-link '.$active.'" hx-post="'.$url.'" name="'.$post_name.'" value="'.$i.'" hx-swap="none">'.($i+1).'</button>';
+        $pagination .= '<button class="page-link '.$active.'" hx-post="'.$url.'" hx-trigger="click" name="'.$post_name.'" value="'.$i.'" hx-swap="none">'.($i+1).'</button>';
         $pagination .= '</li>';
     }
 
     // jump to the next page
     $next_page = min($active_page + 1, $pages - 1);
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.$next_page.'" hx-swap="none"><i class="bi bi-arrow-right-short"></i></button>';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" hx-trigger="click" name="'.$post_name.'" value="'.$next_page.'" hx-swap="none"><i class="bi bi-arrow-right-short"></i></button>';
     $pagination .= '</li>';
     // jump to the last page
     $pagination .= '<li class="page-item">';
-    $pagination .= '<button class="page-link" hx-post="'.$url.'" name="'.$post_name.'" value="'.($pages-1).'" hx-swap="none"><i class="bi bi-arrow-bar-right"></i></button>';
+    $pagination .= '<button class="page-link" hx-post="'.$url.'" hx-trigger="click" name="'.$post_name.'" value="'.($pages-1).'" hx-swap="none"><i class="bi bi-arrow-bar-right"></i></button>';
     $pagination .= '</li>';
 
     $pagination .= '</ul>';

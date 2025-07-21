@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/users/write/';
+$writer_uri = '/admin/xhr/users/write/';
 include_once '../acp/core/templates.php';
 
 echo '<div id="formResponse"></div>';
@@ -12,7 +12,8 @@ if(isset($_POST['open_user_group']) && is_numeric($_POST['open_user_group'])) {
     $btn_submit_text = $lang['update'];
     $btn_reset = '<a href="/admin/users/groups/" class="btn btn-default ms-auto">'.$lang['reset'].'</a>';
     $btn_delete = '<button name="delete_user_group" value="'.$get_group_id.'" class="btn btn-default text-danger" 
-                            hx-post="/admin/users/write/"
+                            hx-post="/admin/xhr/users/write/"
+                            hx-trigger="click"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="none"
                             >'.$icon['trash_alt'].'</button>';
@@ -112,7 +113,7 @@ $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
 $form_tpl .= '<div class="d-flex">';
-$form_tpl .= '<button class="btn btn-success" hx-post="'.$writer_uri.'" hx-swap="innerHTML" hx-target="#formResponse" name="save_user_group" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+$form_tpl .= '<button class="btn btn-success" hx-post="'.$writer_uri.'" hx-trigger="click" hx-swap="innerHTML" hx-target="#formResponse" name="save_user_group" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 $form_tpl .= $btn_reset;
 $form_tpl .= $btn_delete;
 $form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

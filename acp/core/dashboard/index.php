@@ -1,5 +1,5 @@
 <?php
-$reader_uri = '/admin/dashboard/read/';
+$reader_uri = '/admin/xhr/dashboard/read/';
 
 $tpl_file = file_get_contents('../acp/templates/dashboard_top.tpl');
 $tpl_file = str_replace('{reader_uri}', $reader_uri, $tpl_file);

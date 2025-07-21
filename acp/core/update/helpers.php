@@ -18,7 +18,7 @@ echo 'This tool searches the entire database for the character string <code>../c
 echo '</div>';
 
 
-echo '<button class="btn btn-default text-danger m-1" hx-post="/admin/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_content">Update page, snippets and categories</button>';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin/xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_content">Update page, snippets and categories</button>';
 
-echo '<button class="btn btn-default text-danger m-1" hx-post="/admin/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_posts">Update posts, products and events</button>';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin/xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_posts">Update posts, products and events</button>';
 echo '<div id="response" class="p-3"></div>';

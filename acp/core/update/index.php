@@ -61,7 +61,7 @@ echo '<div class="card h-100">';
 echo '<div class="card-header">'.$icon['server'].'  SwiftyEdit Server</div>';
 echo '<div class="card-body">';
 
-echo '<div id="" class="" hx-get="/admin/update/read/?action=read_versions" hx-trigger="load">';
+echo '<div id="" class="" hx-get="/admin/xhr/update/read/?action=read_versions" hx-trigger="load">';
 echo '<div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span>';
 echo '</div>';
 
@@ -72,6 +72,6 @@ echo '</div>';
 echo '</div>';
 
 
-echo '<div id="" class="" hx-get="/admin/update/read/?action=check_download" hx-trigger="load, update_downloads_list from:body">';
+echo '<div id="" class="" hx-get="/admin/xhr/update/read/?action=check_download" hx-trigger="load, update_downloads_list from:body">';
 echo '<div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span>';
 echo '</div>';
