@@ -1,5 +1,3 @@
-# SwiftyEdit
-
 RewriteEngine On
 RewriteBase /
 
@@ -9,7 +7,8 @@ RewriteRule ^galleries/(.*)$ assets/galleries/$1 [L]
 RewriteRule ^files/(.*)$ assets/files/$1 [L]
 RewriteRule ^themes/(.*)$ assets/themes/$1 [L]
 
-
+RewriteRule ^rss/(.*)$ rss.php?type=$1 [L,QSA]
+RewriteRule ^admin/xhr/(.*)$ admin_xhr.php?query=$1 [L,QSA]
 RewriteRule ^admin/(.*)$ admin.php?query=$1 [L,QSA]
 RewriteRule ^install/(.*)$ install.php?query=$1 [L,QSA]
 
