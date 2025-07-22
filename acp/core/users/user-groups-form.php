@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/xhr/users/write/';
+$writer_uri = '/admin-xhr/users/write/';
 include_once '../acp/core/templates.php';
 
 echo '<div id="formResponse"></div>';
@@ -12,7 +12,7 @@ if(isset($_POST['open_user_group']) && is_numeric($_POST['open_user_group'])) {
     $btn_submit_text = $lang['update'];
     $btn_reset = '<a href="/admin/users/groups/" class="btn btn-default ms-auto">'.$lang['reset'].'</a>';
     $btn_delete = '<button name="delete_user_group" value="'.$get_group_id.'" class="btn btn-default text-danger" 
-                            hx-post="/admin/xhr/users/write/"
+                            hx-post="/admin-xhr/users/write/"
                             hx-trigger="click"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="none"

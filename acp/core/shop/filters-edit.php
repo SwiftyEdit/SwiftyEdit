@@ -14,7 +14,7 @@ if(isset($_POST['edit_group'])) {
             "filter_id" => $edit_group_id
         ]);
         $submit_btn = '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
@@ -22,7 +22,7 @@ if(isset($_POST['edit_group'])) {
                 value="'.$edit_group_id.'"
                 class="btn btn-success">'.$lang['btn_update'].'</button>';
         $delete_btn = '<button
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
@@ -35,7 +35,7 @@ if(isset($_POST['edit_group'])) {
         $mode = 'new';
         $delete_btn = '';
         $submit_btn = '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
@@ -182,7 +182,7 @@ if(isset($_POST['edit_value'])) {
             $filter_hash = uniqid();
         }
         $submit_btn = '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
@@ -190,7 +190,7 @@ if(isset($_POST['edit_value'])) {
                 value="'.$edit_value_id.'"
                 class="btn btn-success">'.$lang['btn_update'].'</button>';
         $delete_btn = '<button
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
@@ -203,7 +203,7 @@ if(isset($_POST['edit_value'])) {
         $mode = 'new';
         $delete_btn = '';
         $submit_btn = '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"
@@ -284,7 +284,7 @@ if(isset($_POST['edit_value'])) {
         echo '<div class="card-header">' . $lang['nav_btn_products'] . '</div>';
         echo '<div class="card-body">';
         echo '<div class="scroll-container">';
-        echo '<div id="loadingProducts" hx-get="/admin/xhr/shop/read/?show=products_by_filter&filter_id=' . $edit_value_id . '" hx-trigger="load">Loading data ...</div>';
+        echo '<div id="loadingProducts" hx-get="/admin-xhr/shop/read/?show=products_by_filter&filter_id=' . $edit_value_id . '" hx-trigger="load">Loading data ...</div>';
         echo '</div>';
         echo '</div>';
         echo '</div>';

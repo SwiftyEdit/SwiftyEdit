@@ -38,7 +38,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
         foreach($all_filter_products as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey" value="'.$f.'" hx-post="/admin/xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
         }
         if(isset($btn_remove_keyword)) {
             echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
@@ -55,7 +55,7 @@ if($_REQUEST['action'] == 'list_active_searches_orders') {
         foreach($all_filter_orders as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_orders" value="'.$f.'" hx-post="/admin/xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_orders" value="'.$f.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
         }
         if(isset($btn_remove_keyword)) {
             echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
@@ -74,9 +74,9 @@ if($_REQUEST['action'] == 'list_keyword_btn') {
     foreach($get_keywords as $k => $v) {
         $k = trim($k);
         if(str_contains($_SESSION['products_keyword_filter'],$k)) {
-            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         } else {
-            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         }
     }
     echo '</div>';
@@ -306,7 +306,7 @@ if($_REQUEST['action'] == 'list_products') {
         }
 
         // fix button
-        $icon_fixed_form = '<form hx-post="/admin/xhr/shop/write/" method="POST" class="form-inline">';
+        $icon_fixed_form = '<form hx-post="/admin-xhr/shop/write/" method="POST" class="form-inline">';
         if($product['fixed'] == '1') {
             $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="rfixed" value="'.$product['id'].'">'.$icon['star'].'</button>';
         } else {
@@ -316,7 +316,7 @@ if($_REQUEST['action'] == 'list_products') {
         $icon_fixed_form .= '</form>';
 
         // priority form
-        $prio_form  = '<form hx-post="/admin/xhr/shop/write/" hx-trigger="keyup changed delay:1s" method="POST" class="no-enter">';
+        $prio_form  = '<form hx-post="/admin-xhr/shop/write/" hx-trigger="keyup changed delay:1s" method="POST" class="no-enter">';
         $prio_form .= '<input type="number" name="priority" value="'.$product['priority'].'" class="form-control" style="max-width:150px">';
         $prio_form .= '<input type="hidden" name="prio_id" value="'.$product['id'].'">';
         $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
@@ -448,7 +448,7 @@ if($_REQUEST['action'] == 'list_price_groups') {
             echo '<td>'.$status_volume_discounts.'</td>';
             echo '<td class="text-end">';
             echo '<form>';
-            echo '<button hx-post="/admin/xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
+            echo '<button hx-post="/admin-xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
             echo '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
             echo $hidden_csrf_token;
             echo '</form>';
@@ -564,7 +564,7 @@ if($show_form) {
     echo '<form>';
     echo $form_tpl;
     echo '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="none"
                 hx-include="[name=\'csrf_token\']"
@@ -589,7 +589,7 @@ if($_REQUEST['action'] == 'list_categories') {
         }
 
         echo '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="none"
                 hx-include="[name=\'csrf_token\']"
@@ -907,13 +907,13 @@ if($_REQUEST['action'] == 'list_orders') {
         $dropdown .= '<button class="btn btn-default dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">'.$icon['edit'].'</button>';
         $dropdown .= '<ul class="dropdown-menu">';
         $dropdown .= '<li><span class="dropdown-item-text opacity-50">Payment</span></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/xhr/shop/write/" hx-trigger="click" name="set_payment" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_open'].'</button></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/xhr/shop/write/" hx-trigger="click" name="set_payment" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_paid'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_payment" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_open'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_payment" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_paid'].'</button></li>';
         $dropdown .= '<li><hr class="dropdown-divider"></li>';
         $dropdown .= '<li><span class="dropdown-item-text opacity-50">Order Status</span></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/xhr/shop/write/" hx-trigger="click" name="set_order_status" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_received'].'</button></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/xhr/shop/write/" hx-trigger="click" name="set_order_status" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_completed'].'</button></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin/xhr/shop/write/" hx-trigger="click" name="set_order_status" value="3" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_canceled'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_received'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_completed'].'</button></li>';
+        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="3" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_canceled'].'</button></li>';
         $dropdown .= '</ul>';
         $dropdown .= '</div>';
 
@@ -925,7 +925,7 @@ if($_REQUEST['action'] == 'list_orders') {
         echo '<td>'.se_post_print_currency($order['order_price_total']).' ('.$show_payment_status[$payment_status].')</td>';
         echo '<td>'.$show_order_status[$order_status].'</td>';
         echo '<td><div class="btn-group">'.$dropdown.' ';
-        echo '<button hx-get="/admin/xhr/shop/orders/read/?show_order='.$order['id'].'" hx-target="#order-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">'.$icon['info_circle'].'</button>';
+        echo '<button hx-get="/admin-xhr/shop/orders/read/?show_order='.$order['id'].'" hx-target="#order-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">'.$icon['info_circle'].'</button>';
         echo '</div></td>';
         echo '</tr>';
     }

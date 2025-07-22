@@ -1,7 +1,7 @@
 <?php
 
-$reader_uri = '/admin/xhr/shop/read/';
-$writer_uri = '/admin/xhr/shop/write/';
+$reader_uri = '/admin-xhr/shop/read/';
+$writer_uri = '/admin-xhr/shop/write/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_shop'].' / '.$lang['nav_btn_orders'];
@@ -15,7 +15,7 @@ $hx_vals = [
 ];
 
 echo '<div id="getOrders" 
-            hx-post="/admin/xhr/shop/read/?action=list_orders"
+            hx-post="/admin-xhr/shop/read/?action=list_orders"
             hx-trigger="load, update_orders_list from:body"
             hx-vals=\''.json_encode($hx_vals).'\'">
             </div>';

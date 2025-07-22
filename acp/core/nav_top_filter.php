@@ -42,7 +42,7 @@ echo '<div class="offcanvas-body">';
 
 echo '<div id="globalFilterResponse"></div>';
 
-echo '<form hx-post="/admin/xhr/widgets/write/" hx-target="#globalFilterResponse" hx-swap="innerHTML" id="globalFilterForm">';
+echo '<form hx-post="/admin-xhr/widgets/write/" hx-target="#globalFilterResponse" hx-swap="innerHTML" id="globalFilterForm">';
 
 
 /* status */

@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/xhr/shop/write/';
+$writer_uri = '/admin-xhr/shop/write/';
 $form_header_mode = $lang['btn_new'];
 $my_user_presets = se_get_my_presets();
 
@@ -188,7 +188,7 @@ if(is_array($array_images)) {
 }
 
 $choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin/xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= '<div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
 /* status | draft or published */
@@ -550,7 +550,7 @@ if(is_array($get_prod_accessories)) {
 
 $prod_related_dropper = '<div id="prodDropper_r" class="sortable_target target_products list-group mb-3">'.$draggable_related.'</div>';
 $prod_accessories_dropper = '<div id="prodDropper_a" class="sortable_target target_products list-group mb-3">'.$draggable_accessories.'</div>';
-$prod_sel_widget = '<div id="prodWidget" hx-post="/admin/xhr/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
+$prod_sel_widget = '<div id="prodWidget" hx-post="/admin-xhr/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
 $prod_sel_widget .= '<div id="fake" class="sortable_source"><div></div></div>';
 /* product options */
 

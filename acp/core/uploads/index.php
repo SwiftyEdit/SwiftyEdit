@@ -1,7 +1,7 @@
 <?php
 
-$reader_uri = '/admin/xhr/uploads/read/';
-$writer_uri = '/admin/xhr/uploads/write/';
+$reader_uri = '/admin-xhr/uploads/read/';
+$writer_uri = '/admin-xhr/uploads/write/';
 
 $q = pathinfo($_REQUEST['query']);
 

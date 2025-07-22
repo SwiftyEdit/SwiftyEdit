@@ -184,11 +184,11 @@ if($_REQUEST['action'] == 'list_pages') {
     echo '<div class="card p-3">';
     echo '<div class="d-flex justify-content-end">';
     echo '<div>';
-    echo se_print_pagination('/admin/xhr/pages/write/',$nbr_pag_pages,$_SESSION['pagination_get_pages']);
+    echo se_print_pagination('/admin-xhr/pages/write/',$nbr_pag_pages,$_SESSION['pagination_get_pages']);
     echo '</div>';
     echo '<div class="ps-3">';
     echo '<div class="input-group mb-3">';
-    echo '<input type="number" class="form-control" hx-post="/admin/xhr/pages/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name=\'csrf_token\']" name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
+    echo '<input type="number" class="form-control" hx-post="/admin-xhr/pages/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name=\'csrf_token\']" name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
     echo '<span class="input-group-text" id="basic-addon2"> / '.$pages_data_cnt.'</span>';
     echo '</div>';
     echo '</div>';
@@ -212,7 +212,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
         foreach($all_filter as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
         }
     }
 
@@ -236,9 +236,9 @@ if($_REQUEST['action'] == 'list_keyword_btn') {
     foreach($get_keywords as $k => $v) {
         $k = trim($k);
         if(str_contains($_SESSION['pages_keyword_filter'],$k)) {
-            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin/xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         } else {
-            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin/xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
+            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
         }
     }
     echo '</div>';
@@ -266,7 +266,7 @@ if($_REQUEST['action'] == 'list_page_types') {
             $classes .= ' active';
         }
         $vals = ['csrf_token' => $_SESSION['token']];
-        echo '<button class=" '.$classes.'" name="filter_type" value="'.$types.'" hx-post="/admin/xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>';
+        echo '<button class=" '.$classes.'" name="filter_type" value="'.$types.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>';
         echo '<div class="me-auto">'.$name.'</div>';
         if($cnt_page_types[$types] < 1) {
             echo '<span class="badge text-bg-danger">0</span>';
@@ -474,7 +474,7 @@ function se_list_pages($data) {
             $duplicate_button = '';
         }
 
-        $info_button = '<a class="btn btn-sm btn-default flex-fill" hx-get="/admin/xhr/pages/read/" hx-vals=\'{"page_info":"'.$page_id.'"}\' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">'.$icon['info_circle'].'</a>';
+        $info_button = '<a class="btn btn-sm btn-default flex-fill" hx-get="/admin-xhr/pages/read/" hx-vals=\'{"page_info":"'.$page_id.'"}\' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">'.$icon['info_circle'].'</a>';
         $arr_checked_admins = explode(",",$page_authorized_users);
         if(in_array($_SESSION['user_nick'], $arr_checked_admins)) {
             $edit_button = $btn_edit_tpl;

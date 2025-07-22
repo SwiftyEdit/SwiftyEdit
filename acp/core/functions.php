@@ -1130,7 +1130,7 @@ function se_list_gallery_thumbs($gid) {
 
 		$thumbs .= '<div class="tmb">';
 		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb_src.'" class="img-fluid"></div>';
-        $thumbs .= '<form hx-post="/admin/xhr/blog/write/">';
+        $thumbs .= '<form hx-post="/admin-xhr/blog/write/">';
 		$thumbs .= '<div class="tmb-actions d-flex btn-group">';
 		$thumbs .= '<button type="submit" name="sort_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
 		$thumbs .= '<button type="submit" name="delete_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
@@ -1359,7 +1359,7 @@ function se_parse_docs_file($file): array {
             '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" hx-get="/admin/xhr/docs/read/?file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
+                $link = '<a class="" hx-get="/admin-xhr/docs/read/?file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
                 return $link;
             },
             $content
@@ -1404,7 +1404,7 @@ function se_print_docs_link(string $file, string $text = null, string $section =
 
     $link = '<button data-bs-toggle="modal"
                     data-bs-target="#helpModal"
-                        hx-get="/admin/xhr/docs/read/"
+                        hx-get="/admin-xhr/docs/read/"
                         hx-vals=\'{"file":"' . $file . '","section":"' . $section . '"}\'
                         hx-target="#helpModal"
                         hx-trigger="click"

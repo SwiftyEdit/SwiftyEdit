@@ -58,7 +58,7 @@ if($_GET['show'] == 'paypal_tests') {
 
     $client = new PayPalHttpClient($environment);
 
-    echo '<form hx-post="/admin/xhr/addons/plugin/se_paypal-pay/read/?show=paypal_tests" method="post">';
+    echo '<form hx-post="/admin-xhr/addons/plugin/se_paypal-pay/read/?show=paypal_tests" method="post">';
 
 
     echo '<div class="input-group mb-3">';
@@ -152,7 +152,7 @@ if($_GET['show'] == 'docs_nav') {
             $active = 'active';
         }
 
-        $hx_get = '/admin/xhr/addons/plugin/se_paypal-pay/read/?show=docs_content&file='.basename($sorted_parsed_files[$k]['file']);
+        $hx_get = '/admin-xhr/addons/plugin/se_paypal-pay/read/?show=docs_content&file='.basename($sorted_parsed_files[$k]['file']);
         $hx_target = '#docsContent';
 
         $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';

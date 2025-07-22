@@ -33,7 +33,7 @@
  */
 
 session_start();
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+error_reporting(0);
 const SE_SECTION = "backend";
 
 require '../vendor/autoload.php';

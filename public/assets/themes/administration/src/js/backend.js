@@ -52,7 +52,6 @@ document.addEventListener('htmx:afterRequest', function(evt) {
 
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
-htmx.logAll();
 
 htmx.onLoad(function(content) {
 
@@ -199,7 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
         target: '.dropper-form',
     })
     uppy.use(XHRUpload, {
-        endpoint: '/admin/xhr/widgets/upload/'
+        endpoint: '/admin-xhr/widgets/upload/',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
 
     uppy.on('complete', (result) => {

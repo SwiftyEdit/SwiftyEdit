@@ -36,7 +36,7 @@ echo '<div class="card">';
 
 echo '<div id="response"></div>';
 
-echo '<form hx-post="/admin/xhr/users/write/" hx-target="#response">';
+echo '<form hx-post="/admin-xhr/users/write/" hx-target="#response">';
 
 echo '<div class="card">';
 echo '<div class="card-header">'.$lang['label_settings'].'</div>';

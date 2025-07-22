@@ -31,8 +31,8 @@ if($_GET['action'] == 'check_download') {
             echo '<div class="row">';
             echo '<div class="col-md-4">'.$download.'</div>';
             echo '<div class="col-md-8 text-end">';
-            echo '<button class="btn btn-default text-success" hx-post="/admin/xhr/update/write/" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="install_update" value="'.$download.'">'.$icon['sync_alt'].' Install</button>';
-            echo '<button class="btn btn-danger" hx-post="/admin/xhr/update/write/" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="remove_download" value="'.$download.'">'.$icon['trash_alt'].' Delete</button>';
+            echo '<button class="btn btn-default text-success" hx-post="/admin-xhr/update/write/" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="install_update" value="'.$download.'">'.$icon['sync_alt'].' Install</button>';
+            echo '<button class="btn btn-danger" hx-post="/admin-xhr/update/write/" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="remove_download" value="'.$download.'">'.$icon['trash_alt'].' Delete</button>';
             echo '</div>';
             echo '</div>';
         }

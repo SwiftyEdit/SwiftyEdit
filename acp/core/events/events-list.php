@@ -5,8 +5,8 @@ echo $icon['calendar_event'].' '.$lang['nav_btn_events'];
 echo '<a href="/admin/events/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
 echo '</div>';
 
-$reader_uri = '/admin/xhr/events/read/';
-$writer_uri = '/admin/xhr/events/write/';
+$reader_uri = '/admin-xhr/events/read/';
+$writer_uri = '/admin-xhr/events/write/';
 
 echo '<div class="row">';
 echo '<div class="col-md-9">';

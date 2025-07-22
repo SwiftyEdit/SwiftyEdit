@@ -136,7 +136,7 @@ if($_REQUEST['action'] == "list_usergroups") {
             $count = count($group_user);
         }
 
-        echo '<button hx-post="/admin/xhr/users/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#groupForm" class="list-group-item list-group-item-action d-flex" name="open_user_group" value="'.$group['group_id'].'">';
+        echo '<button hx-post="/admin-xhr/users/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#groupForm" class="list-group-item list-group-item-action d-flex" name="open_user_group" value="'.$group['group_id'].'">';
         echo $group['group_name'];
         echo '<span class="badge text-bg-secondary ms-auto">'.$count.'</span>';
         echo '</button>';
@@ -152,7 +152,7 @@ if($_REQUEST['action'] == "list_active_searches") {
         foreach($all_filter as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/xhr/users/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/users/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
         }
     }
 

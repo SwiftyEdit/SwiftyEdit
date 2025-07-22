@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
+//error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 const SE_SECTION = "backend";
 require '../vendor/autoload.php';
 use Medoo\Medoo;

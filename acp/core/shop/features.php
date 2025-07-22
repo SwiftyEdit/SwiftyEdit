@@ -1,7 +1,7 @@
 <?php
 
-$reader_uri = '/admin/xhr/shop/read/';
-$writer_uri = '/admin/xhr/shop/write/';
+$reader_uri = '/admin-xhr/shop/read/';
+$writer_uri = '/admin-xhr/shop/write/';
 
 
 echo '<div class="subHeader d-flex align-items-center">';

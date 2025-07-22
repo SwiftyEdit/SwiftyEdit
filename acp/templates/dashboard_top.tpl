@@ -6,37 +6,37 @@
 					<li class="nav-item">
 						<a class="nav-link active" href="#" data-bs-target="#pages_list" data-bs-toggle="tab">
 							{tab_pages}
-							<sup><span id="countPages" hx-get="/admin/xhr/counter/read/?count=pages" hx-trigger="load" class="badge bg-secondary"></span></sup>
+							<sup><span id="countPages" hx-get="/admin-xhr/counter/read/?count=pages" hx-trigger="load" class="badge bg-secondary"></span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#snippets_list" data-bs-toggle="tab">
 							{tab_snippets}
-							<sup><span id="countPages" hx-get="/admin/xhr/counter/read/?count=snippets" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup><span id="countPages" hx-get="/admin-xhr/counter/read/?count=snippets" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#post_list" data-bs-toggle="tab">
 							{tab_blog}
-							<sup><span id="countPosts" hx-get="/admin/xhr/counter/read/?count=posts" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup><span id="countPosts" hx-get="/admin-xhr/counter/read/?count=posts" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#products_list" data-bs-toggle="tab">
 							{tab_products}
-							<sup><span id="countProducts" hx-get="/admin/xhr/counter/read/?count=products" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup><span id="countProducts" hx-get="/admin-xhr/counter/read/?count=products" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#events_list" data-bs-toggle="tab">
 							{tab_events}
-							<sup><span id="countEvents" hx-get="/admin/xhr/counter/read/?count=events" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup><span id="countEvents" hx-get="/admin-xhr/counter/read/?count=events" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#user_list" data-bs-toggle="tab">
 							{tab_user}
-							<sup><span id="countUser" hx-get="/admin/xhr/counter/read/?count=users" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup><span id="countUser" hx-get="/admin-xhr/counter/read/?count=users" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 				</ul>
@@ -53,7 +53,7 @@
 								<div class="col">{btn_page_overview} {btn_new_page}</div>
 								<div class="col-3">
 									<div class="input-group">
-									<button hx-post="/admin/xhr/widgets/write/"
+									<button hx-post="/admin-xhr/widgets/write/"
 											hx-trigger="click"
 											hx-swap="none"
 											hx-include="[name='csrf_token']"
