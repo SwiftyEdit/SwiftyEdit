@@ -83,7 +83,7 @@
 
 <div class="container p-3">
 <div class="card p-3">
-<div id="listGalThumbs" hx-get="/admin/xhr/blog/read/?gallery_thumbs={post_id}" hx-trigger="load, update_gallery_thumbs from:body">Loading thumbnails ...</div>
+<div id="listGalThumbs" hx-get="/admin-xhr/blog/read/?gallery_thumbs={post_id}" hx-trigger="load, update_gallery_thumbs from:body">Loading thumbnails ...</div>
 </div>
 </div>
 

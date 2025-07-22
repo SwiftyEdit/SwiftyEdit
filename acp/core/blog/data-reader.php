@@ -12,7 +12,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
         foreach($all_filter as $f) {
             if($_REQUEST['rm_keyword'] == "$f") { continue; }
             if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/xhr/blog/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/blog/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
         }
     }
 
@@ -37,7 +37,7 @@ if($_REQUEST['action'] == 'list_categories') {
         }
 
         echo '<button 
-                hx-post="/admin/xhr/blog/write/"
+                hx-post="/admin-xhr/blog/write/"
                 hx-trigger="click"
                 hx-swap="none"
                 hx-include="[name=\'csrf_token\']"
@@ -71,7 +71,7 @@ if($_REQUEST['action'] == 'list_post_types') {
         }
 
         echo '<button 
-                hx-post="/admin/xhr/blog/write/"
+                hx-post="/admin-xhr/blog/write/"
                 hx-trigger="click"
                 hx-swap="none"
                 hx-include="[name=\'csrf_token\']"
@@ -182,7 +182,7 @@ if($_REQUEST['action'] == 'list_posts') {
         $icon_fixed = '';
         $draft_class = '';
 
-        $icon_fixed_form = '<form hx-post="/admin/xhr/blog/write/">';
+        $icon_fixed_form = '<form hx-post="/admin-xhr/blog/write/">';
         if($post['post_fixed'] == '1') {
             $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="rfixed" value="'.$post['post_id'].'">'.$icon['star'].'</button>';
         } else {
@@ -242,7 +242,7 @@ if($_REQUEST['action'] == 'list_posts') {
             }
         }
 
-        $prio_form  = '<form hx-post="/admin/xhr/blog/write/" hx-swap="beforeend" hx-target="body">';
+        $prio_form  = '<form hx-post="/admin-xhr/blog/write/" hx-swap="beforeend" hx-target="body">';
         $prio_form .= '<input type="number" name="post_priority" value="'.$post['post_priority'].'" class="form-control" style="max-width:100px">';
         $prio_form .= '<input type="hidden" name="prio_id" value="'.$post['post_id'].'">';
         $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
@@ -290,7 +290,7 @@ if($_REQUEST['action'] == 'list_posts') {
         }
 
         $delete_btn = '<button name="delete_post" value="'.$post['post_id'].'" class="btn btn-sm btn-default text-danger" 
-                            hx-post="/admin/xhr/blog/write/"
+                            hx-post="/admin-xhr/blog/write/"
                             hx-trigger="click"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-include="[name=\'csrf_token\']"

@@ -1,8 +1,5 @@
 <?php
 
-//prohibit unauthorized access
-require __DIR__.'/access.php';
-
 echo '<nav class="navbar navbar-custom">';
 echo '<div class="container-fluid px-0">';
 echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="caret_left">'.$icon['caret_left'].'</span> <span class="caret_right">'.$icon['caret_right'].'</span></a>';
@@ -14,7 +11,7 @@ echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="
 
 echo '<button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">';
 echo 'Filter ';
-echo '<span hx-get="/admin/xhr/counter/read/?count=count_global_filters" hx-trigger="load, updated_global_filter from:body" class="badge bg-primary">0</span>';
+echo '<span hx-get="/admin-xhr/counter/read/?count=count_global_filters" hx-trigger="load, updated_global_filter from:body" class="badge bg-primary">0</span>';
 echo '</button>';
 
 
@@ -59,7 +56,7 @@ echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()"
 </button>';
 
 echo '<button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" 
-hx-get="/admin/xhr/docs/read/?file=index.md"
+hx-get="/admin-xhr/docs/read/?file=index.md"
 hx-target="#helpModal"
 hx-trigger="click">'.$icon['question_circle'].' '.$lang['btn_help'].'</button>';
 

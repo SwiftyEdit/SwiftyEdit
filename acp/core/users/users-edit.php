@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/xhr/users/write/';
+$writer_uri = '/admin-xhr/users/write/';
 
 if(isset($_POST['user_id']) && is_numeric($_POST['user_id'])) {
     $get_user_id = (int) $_POST['user_id'];

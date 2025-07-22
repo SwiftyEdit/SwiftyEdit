@@ -2,8 +2,8 @@
 
 echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['labels'].'</div>';
 
-$writer_uri = '/admin/xhr/settings/labels/write/';
-$reader_uri = '/admin/xhr/settings/labels/read/';
+$writer_uri = '/admin-xhr/settings/labels/write/';
+$reader_uri = '/admin-xhr/settings/labels/read/';
 
 echo '<div id="getLabels" class="card p-3" hx-post="'.$reader_uri.'" hx-trigger="load, changed, updated_labels from:body" hx-include="[name=\'csrf_token\']" hx-vals=\'{"load_labels": "labels"}\'>';
 echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

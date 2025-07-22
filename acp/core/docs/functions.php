@@ -40,7 +40,7 @@ function show_sysdocs_index() {
             $active = 'active';
         }
 
-        $hx_get = '/admin/xhr/docs/read/?file='.$sorted_parsed_files[$k]['file'];
+        $hx_get = '/admin-xhr/docs/read/?file='.$sorted_parsed_files[$k]['file'];
         $hx_target = '#helpModal';
 
         $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
@@ -77,7 +77,7 @@ function show_themedocs_index() {
                 $active = 'active';
             }
 
-            $hx_get = '/admin/xhr/docs/read/?file='.$theme_readme_file;
+            $hx_get = '/admin-xhr/docs/read/?file='.$theme_readme_file;
             $hx_target = '#helpModal';
 
             $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
@@ -115,7 +115,7 @@ function show_plugins_index() {
                 $active = 'active';
             }
 
-            $hx_get = '/admin/xhr/docs/read/?file='.$plugin_readme_file;
+            $hx_get = '/admin-xhr/docs/read/?file='.$plugin_readme_file;
             $hx_target = '#helpModal';
 
             $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';

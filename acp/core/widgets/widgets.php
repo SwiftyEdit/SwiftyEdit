@@ -125,7 +125,7 @@ if($_REQUEST['widget'] == 'img-select') {
     echo '<div class="p-1">';
     echo '<div class="row g-2">';
     echo '<div class="col-md-6">';
-    echo '<div class="input-group" hx-post="/admin/xhr/widgets/read/?change_filter" hx-params="media_widget_text_filter,csrf_token" hx-trigger="input changed delay:500ms" hx-swap="none">';
+    echo '<div class="input-group" hx-post="/admin-xhr/widgets/read/?change_filter" hx-params="media_widget_text_filter,csrf_token" hx-trigger="input changed delay:500ms" hx-swap="none">';
     echo '<span class="input-group-text"><i class="bi bi-search"></i></span>';
     echo '<input type="text" class="form-control no-enter" name="media_widget_text_filter" value="'.$_SESSION['media_widget_text_filter'].'">';
     echo '</div>';
@@ -152,7 +152,7 @@ if($_REQUEST['widget'] == 'img-select') {
         }
     }
 
-    echo '<select class="form-control" hx-post="/admin/xhr/widgets/read/?change_filter" hx-params="sorting_media_widget,csrf_token" name="sorting_media_widget" hx-trigger="change" hx-swap="none">';
+    echo '<select class="form-control" hx-post="/admin-xhr/widgets/read/?change_filter" hx-params="sorting_media_widget,csrf_token" name="sorting_media_widget" hx-trigger="change" hx-swap="none">';
     echo '<option value="media_id_desc" '.$selected_media_id_desc.'>Newest first</option>';
     echo '<option value="media_id_asc" '.$selected_media_id_asc.'>Oldest first</option>';
     echo '<option value="media_file_asc" '.$selected_media_file_asc.'>A-Z</option>';
@@ -201,7 +201,7 @@ if($_REQUEST['widget'] == 'img-select') {
     $pagination_classes = [
         'class_pagination' => 'pagination-sm justify-content-center mb-0'
         ];
-    echo se_print_pagination('/admin/xhr/widgets/read/?widget=img-select',$nbr_pages,$_SESSION['pagination_image_widget'],'6',$pagination_classes,'pagination_img_widget');
+    echo se_print_pagination('/admin-xhr/widgets/read/?widget=img-select',$nbr_pages,$_SESSION['pagination_image_widget'],'6',$pagination_classes,'pagination_img_widget');
     echo '</div>';
     echo '</div>';
     exit;
@@ -287,7 +287,7 @@ if($_REQUEST['widget'] == 'product-select') {
 
     echo '<div class="input-group my-1">';
     echo '<span class="input-group-text"><i class="bi bi-search"></i></span>';
-    echo '<input type="text" class="form-control no-enter" hx-post="/admin/xhr/widgets/read/?change_filter" hx-params="product_widget_text_filter,csrf_token" hx-trigger="keyup changed delay:500ms" hx-swap="none" name="product_widget_text_filter" value="'.$_SESSION['product_widget_text_filter'].'">';
+    echo '<input type="text" class="form-control no-enter" hx-post="/admin-xhr/widgets/read/?change_filter" hx-params="product_widget_text_filter,csrf_token" hx-trigger="keyup changed delay:500ms" hx-swap="none" name="product_widget_text_filter" value="'.$_SESSION['product_widget_text_filter'].'">';
     echo '</div>';
     echo '<div class="scroll-container p-0 mb-2">';
     echo '<div class="sortable_source list-group list-group-flush">';
@@ -309,7 +309,7 @@ if($_REQUEST['widget'] == 'product-select') {
     $pagination_classes = [
         'class_pagination' => 'pagination-sm justify-content-center mb-0'
     ];
-    echo se_print_pagination('/admin/xhr/widgets/read/?widget=product-select',$nbr_pages,$_SESSION['pagination_product_widget'],'6',$pagination_classes,'pagination_products');
+    echo se_print_pagination('/admin-xhr/widgets/read/?widget=product-select',$nbr_pages,$_SESSION['pagination_product_widget'],'6',$pagination_classes,'pagination_products');
 
     echo '</div>';
     exit;

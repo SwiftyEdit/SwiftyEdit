@@ -1,7 +1,7 @@
 <?php
 
-$writer_uri = '/admin/xhr/events/write/';
-$reader_uri = '/admin/xhr/events/read/';
+$writer_uri = '/admin-xhr/events/write/';
+$reader_uri = '/admin-xhr/events/read/';
 
 if(is_numeric($_POST['id'])) {
     $id = (int) $_POST['id'];
@@ -201,9 +201,9 @@ $input_select_guestlist = se_print_form_input($select_guestlist_mode);
 $input_select_rss = se_print_form_input($select_rss);
 
 if($mode == 'new') {
-    $submit_btn = '<button type="submit" hx-post="/admin/xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
+    $submit_btn = '<button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
 } else {
-    $submit_btn = '<button type="submit" hx-post="/admin/xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button';
+    $submit_btn = '<button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button';
 }
 
 /* image widget */
@@ -226,7 +226,7 @@ if(is_array($array_images)) {
 }
 
 $choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin/xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
+$choose_images .= '<div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
 

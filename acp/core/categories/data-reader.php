@@ -34,7 +34,7 @@ if($_REQUEST['action'] == 'list') {
         }
 
         $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-sm btn-default text-danger" 
-                            hx-post="/admin/xhr/categories/write/"
+                            hx-post="/admin-xhr/categories/write/"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
                             hx-swap="none"
                             hx-vals=\''.json_encode($hx_vals).'\'
@@ -49,7 +49,7 @@ if($_REQUEST['action'] == 'list') {
         echo '</td>';
         echo '<td class="text-end">';
         echo $delete_btn;
-        echo '<button hx-post="/admin/xhr/categories/read/" hx-swap="innerHTML" hx-target="#categoryForm" hx-vals=\''.json_encode($hx_vals).'\' class="btn btn-default btn-sm text-success" name="open_category" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button> ';
+        echo '<button hx-post="/admin-xhr/categories/read/" hx-swap="innerHTML" hx-target="#categoryForm" hx-vals=\''.json_encode($hx_vals).'\' class="btn btn-default btn-sm text-success" name="open_category" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button> ';
         echo '</td>';
         echo '</tr>';
 

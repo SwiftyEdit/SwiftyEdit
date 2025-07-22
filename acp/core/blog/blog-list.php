@@ -5,8 +5,8 @@ echo $icon['files'].' '.$lang['nav_btn_blog'];
 echo '<a href="/admin/blog/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
 echo '</div>';
 
-$reader_uri = '/admin/xhr/blog/read/';
-$writer_uri = '/admin/xhr/blog/write/';
+$reader_uri = '/admin-xhr/blog/read/';
+$writer_uri = '/admin-xhr/blog/write/';
 
 echo '<div class="row">';
 echo '<div class="col-md-9">';

@@ -11,7 +11,7 @@ echo '</div>';
 
 $mode = 'new';
 $submit_btn = '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="none"
                 hx-include="[name=\'csrf_token\']"
@@ -34,7 +34,7 @@ if(is_numeric($_POST['options-form'])) {
     $option_priority = $option_data['snippet_priority'];
     $option_lang = $option_data['snippet_lang'];
     $submit_btn = '<button 
-                hx-post="/admin/xhr/shop/write/"
+                hx-post="/admin-xhr/shop/write/"
                 hx-trigger="click"
                 hx-swap="beforeend"
                 hx-include="[name=\'csrf_token\']"

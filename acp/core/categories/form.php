@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/xhr/categories/write/';
+$writer_uri = '/admin-xhr/categories/write/';
 include_once '../acp/core/templates.php';
 
 if(is_int($get_cat_id)) {

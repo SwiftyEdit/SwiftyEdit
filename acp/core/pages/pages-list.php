@@ -7,8 +7,8 @@ echo $icon['file'].' '.$lang['nav_btn_pages'];
 echo '<a href="/admin/pages/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
 echo '</div>';
 
-$reader_uri = '/admin/xhr/pages/read/';
-$writer_uri = '/admin/xhr/pages/write/';
+$reader_uri = '/admin-xhr/pages/read/';
+$writer_uri = '/admin-xhr/pages/write/';
 
 if(!isset($_SESSION['show_page_type'])) {
     $_SESSION['show_page_type'] = 'sorted';

@@ -1,20 +1,43 @@
 <?php
 session_start();
-error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED);
+error_reporting(0);
 
-// Sicherheit: nur Administratoren
+// administrators only
 if ($_SESSION['user_class'] !== 'administrator') {
     http_response_code(403);
     echo 'Forbidden';
     exit;
 }
 
-// Fallback für IONOS oder andere, falls $_GET['query'] nicht zuverlässig funktioniert
+// Fallback if $_GET[‘query’] does not work properly
 $query = $_GET['query'] ?? null;
-if (!$query && isset($_SERVER['REQUEST_URI'])) {
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    if (preg_match('#^/admin/xhr/(.*)$#', $path, $matches)) {
-        $query = $matches[1];
+if (!$query) {
+    // 1. Evaluate REQUEST_URI
+    if (isset($_SERVER['REQUEST_URI'])) {
+        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $path = preg_replace('#//+#', '/', $path); // doppelte Slashes entfernen
+        if (preg_match('#^/admin(?:/)?(.*)$#', $path, $matches)) {
+            $query = $matches[1] ?? '';
+        }
+    }
+
+    // 2. PATH_INFO as backup
+    if (!$query && !empty($_SERVER['PATH_INFO'])) {
+        $query = ltrim($_SERVER['PATH_INFO'], '/');
+    }
+
+    // 3. Evaluate query string
+    if (!$query && isset($_SERVER['QUERY_STRING'])) {
+        parse_str($_SERVER['QUERY_STRING'], $output);
+        if (isset($output['query'])) {
+            $query = $output['query'];
+        }
+    }
+
+    // Save result in superglobals
+    if ($query !== null) {
+        $_GET['query'] = $query;
+        $_REQUEST['query'] = $query;
     }
 }
 
@@ -24,21 +47,21 @@ if (!$query) {
     exit;
 }
 
-// Optionale Prüfung auf HTMX/XHR
-/*
-$isHtmx = isset($_SERVER['HTTP_HX_REQUEST']) || (
+// check, if it is a XHR
+
+$isXhr = isset($_SERVER['HTTP_HX_REQUEST']) || (
         isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
         strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
     );
 
-if (!$isHtmx) {
+if (!$isXhr) {
     http_response_code(400);
-    echo 'Invalid XHR request';
+    echo 'Invalid XHR request ';
     exit;
 }
-*/
 
-// Routing anhand von Query
+
+// Routing based on query
 if (str_contains($query, '/read/')) {
     include '../acp/data_reader.php';
     exit;

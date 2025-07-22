@@ -3,7 +3,7 @@
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
 echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_shop'].'</div>';
 
-$writer_uri = '/admin/xhr/settings/general/write/';
+$writer_uri = '/admin-xhr/settings/general/write/';
 
 $input_entries_per_page = [
     "input_name" => "prefs_products_per_page",
@@ -369,10 +369,10 @@ echo '<div class="tab-pane fade" id="shop-delivery" role="tabpanel" tabindex="0"
 
 echo '<div class="row">';
 echo '<div class="col-md-6">';
-echo '<div id="listDeliveryCountries" hx-get="/admin/xhr/settings/read/?show=deliveryCountriesForm" hx-trigger="load, update_deliveryCountries_list from:body">Load form ...</div>';
+echo '<div id="listDeliveryCountries" hx-get="/admin-xhr/settings/read/?show=deliveryCountriesForm" hx-trigger="load, update_deliveryCountries_list from:body">Load form ...</div>';
 echo '</div>';
 echo '<div class="col-md-6">';
-echo '<div id="listDeliveryCountries" hx-get="/admin/xhr/settings/read/?action=deliveryCountries" hx-trigger="load, update_deliveryCountries_list from:body">Load ...</div>';
+echo '<div id="listDeliveryCountries" hx-get="/admin-xhr/settings/read/?action=deliveryCountries" hx-trigger="load, update_deliveryCountries_list from:body">Load ...</div>';
 echo '</div>';
 echo '</div>';
 

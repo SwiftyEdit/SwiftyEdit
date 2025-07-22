@@ -8,7 +8,7 @@ if(is_file($pm_prefs_file)) {
 
 echo '<div id="response"></div>';
 echo '<div class="card p-3">';
-echo '<form hx-post="/admin/xhr/addons/plugin/se_invoice-pay/write/" hx-target="#response" method="POST">';
+echo '<form hx-post="/admin-xhr/addons/plugin/se_invoice-pay/write/" hx-target="#response" method="POST">';
 echo '<div class="mb-3">';
 echo '<label class="form-label">Additional Costs</label>';
 echo '<input class="form-control" type="text" name="invoice_pay_additional_costs" value="'.$addon_payment_prefs['addon_additional_costs'].'">';
