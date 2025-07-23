@@ -1017,3 +1017,30 @@ if(isset($_REQUEST['show_order'])) {
   </div>
 </div>';
 }
+
+if(isset($_REQUEST['calc_orders_canceled'])) {
+
+    $result = 0;
+    $orders = $db_content->select("se_orders","*", [
+        "order_status" => 3
+    ]);
+
+    foreach($orders as $order) {
+       $result = $result+$order['order_price_total'];
+    }
+
+    echo se_post_print_currency($result);
+    exit;
+}
+
+if(isset($_REQUEST['calc_orders_all'])) {
+    $result = 0;
+    $orders = $db_content->select("se_orders","*");
+
+    foreach($orders as $order) {
+        $result = $result+$order['order_price_total'];
+    }
+
+    echo se_post_print_currency($result);
+    exit;
+}
