@@ -4,7 +4,7 @@ function compare_versions() {
 
     global $lang, $icon, $se_environment, $remote_versions_array, $se_base_url;
 
-    $hx_writer_url = '/admin/update/write/';
+    $hx_writer_url = '/admin-xhr/update/write/';
     $hx_vals = ['csrf_token' => $_SESSION['token']];
 
     // read version.json
