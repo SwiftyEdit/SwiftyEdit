@@ -169,7 +169,7 @@ if($_REQUEST['action'] == 'list') {
 
     $nbr_pages = ceil($media_data_cnt/$nbr_show_items);
 
-    echo se_print_pagination('/admin/uploads/write/',$nbr_pages,$_SESSION['pagination_page']);
+    echo se_print_pagination('/admin-xhr/uploads/write/',$nbr_pages,$_SESSION['pagination_page']);
 
     echo '<div class="row">';
 

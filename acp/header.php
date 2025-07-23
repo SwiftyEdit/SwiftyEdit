@@ -5,7 +5,7 @@ use Medoo\Medoo;
 
 const SE_SECTION = "backend";
 
-if($_SESSION['user_class'] != "administrator"){
+if($_SESSION['user_class'] !== "administrator"){
     header("location:../../index.php");
     die("PERMISSION DENIED!");
 }
