@@ -18,6 +18,7 @@ import Sortable from 'sortablejs';
 window.Sortable = Sortable;
 
 import './components/products';
+import './components/count_chars';
 import 'htmx.org';
 
 import '@selectize/selectize/dist/js/selectize.min';

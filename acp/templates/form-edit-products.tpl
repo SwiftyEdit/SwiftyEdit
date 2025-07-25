@@ -526,7 +526,7 @@
                             </div>
                             <div class="form-group">
                                 <label>{label_description}</label>
-                                <textarea class='form-control' rows="4"
+                                <textarea class='form-control count-chars' rows="4"
                                           name="meta_description">{meta_description}</textarea>
                             </div>
                             <div class="form-group">
