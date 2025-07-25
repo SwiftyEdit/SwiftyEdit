@@ -61,12 +61,14 @@ if(isset($_REQUEST['reset_filter'])) {
     $_SESSION[$custom_filter_key] = array();
     $_SESSION[$custom_range_filter_key] = array();
     unset($_SESSION['ranges']);
+    $reset_pagination = true;
 }
 
 
 // add filter by filter_hash (experimental)
 // example /your-page/?filter=67dbcfd0b66ff-67dbcfe2a1185
 if(isset($_GET['filter'])) {
+    $reset_pagination = true;
     $get_filter = sanitizeUserInputs($_GET['filter']);
     $get_filter_array = explode('-', $get_filter);
     foreach($get_filter_array as $v) {
@@ -84,6 +86,7 @@ if(isset($_GET['filter'])) {
 // add filter by filter_id (experimental)
 // example /your-page/?add_filter=2-7
 if(isset($_REQUEST['add_filter'])) {
+    $reset_pagination = true;
     $get_filters = explode("-",$_REQUEST['add_filter']);
     foreach($get_filters as $filter) {
         $set_filter = (int) $filter;
@@ -97,6 +100,7 @@ if(isset($_REQUEST['add_filter'])) {
 // remove filter by id
 // example /your-page/?remove_filter=2-7
 if(isset($_REQUEST['remove_filter'])) {
+    $reset_pagination = true;
     $get_filters = explode("-",$_REQUEST['remove_filter']);
     foreach($get_filters as $filter) {
         $remove_filter = (int) $filter;
@@ -110,6 +114,7 @@ if(isset($_REQUEST['remove_filter'])) {
 // set filter from $_POST
 if(isset($_REQUEST['set_custom_filters'])) {
 
+    $reset_pagination = true;
     $sf_radios = $_REQUEST['sf_radio'];
     // loop through all radios and unset them from session
     if(is_array($_REQUEST['all_radios'])) {
@@ -225,6 +230,7 @@ $products_filter['custom_filter'] = $custom_filter;
 $products_filter['custom_range_filter'] = $custom_range_filter;
 
 if(isset($_POST['sort_by'])) {
+    $reset_pagination = true;
     if($_POST['sort_by'] == 'ts') {
         $_SESSION['products_sort_by'] = 'ts';
     } else if($_POST['sort_by'] == 'name') {
@@ -385,6 +391,7 @@ foreach($all_categories as $cats) {
 /**
  * pagination
  * for example /my-page/p/3/ or /my-page/my-category/p/3/
+ * check $reset_pagination = true;
  */
 if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_REQUEST['page'])) {
 
@@ -392,6 +399,8 @@ if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_REQUEST['pa
 
     if(isset($_REQUEST['page'])) {
         $products_start = (int) $_REQUEST['page'];
+    } else if($reset_pagination == true) {
+        $products_start = 1;
     } else if(is_numeric($array_mod_slug[1])) {
         $products_start = $array_mod_slug[1];
     } else if(is_numeric($array_mod_slug[2])) {
@@ -400,6 +409,7 @@ if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_REQUEST['pa
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");
         header("Connection: close");
+        exit;
     }
 }
 

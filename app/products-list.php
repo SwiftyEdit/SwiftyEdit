@@ -398,6 +398,7 @@ $smarty->assign('products', $get_products);
 $smarty->assign('show_products_list', $show_products_list);
 $smarty->assign('product_filter', $product_filter);
 
+$smarty->assign('nbr_products', $cnt_filter_products);
 $smarty->assign('show_pagination', $show_pagination);
 $smarty->assign('disable_prev_link', $disable_prev_link);
 $smarty->assign('disable_next_link', $disable_next_link);
