@@ -67,7 +67,7 @@ if($_REQUEST['action'] == 'select_directory') {
 
     $disk = $_SESSION['disk'] ?? $path_img;
 
-    echo '<form hx-post="/admin/uploads/write/" hx-swap="none" hx-trigger="change, click" method="POST" class="d-inline">';
+    echo '<form hx-post="/admin-xhr/uploads/write/" hx-swap="none" hx-trigger="change, click" method="POST" class="d-inline">';
 
     echo '<select name="selected_folder" class="form-control custom-select">';
     echo '<optgroup label="'.$lang['images'].'">';
@@ -93,7 +93,7 @@ if($_REQUEST['action'] == 'select_directory') {
 
 // show input for new directories
 if($_REQUEST['action'] == 'input_new_directory') {
-    echo '<form hx-post="/admin/uploads/write/" hx-swap="none" method="POST">';
+    echo '<form hx-post="/admin-xhr/uploads/write/" hx-swap="none" method="POST">';
     echo '<div class="input-group">';
     echo '<input type="text" name="new_folder" class="form-control">';
     echo '<div class="input-group-append">';
@@ -223,7 +223,7 @@ if($_REQUEST['action'] == 'list') {
     echo '</div>';
 
     if($_SESSION['disk'] != 'assets/images' AND $_SESSION['disk'] != 'assets/files' AND $_SESSION['disk'] != '') {
-        $delete_dir_btn = '<form hx-post="/admin/uploads/write/" hx-confirm="' . $lang['msg_confirm_delete_directory'] . '" hx-swap="none" class="mt-3 text-end">';
+        $delete_dir_btn = '<form hx-post="/admin-xhr/uploads/write/" hx-confirm="' . $lang['msg_confirm_delete_directory'] . '" hx-swap="none" class="mt-3 text-end">';
         $delete_dir_btn .= '<button name="delete_dir" value="' . $_SESSION['disk'] . '" class="btn btn-danger">';
         $delete_dir_btn .= $icon['trash_alt'] . ' ' . $_SESSION['disk'];
         $delete_dir_btn .= '</button>';
