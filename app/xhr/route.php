@@ -10,6 +10,7 @@ $routes = [
     'vote' => 'ajax.votings.php',
     'votes' => 'votes.php',
     'login' => 'login.php',
+    'orders' => 'orders.php',
     'password-reset' => 'password-reset.php',
     'statusbox' => 'statusbox.php',
     'search' => 'search.php',
@@ -26,5 +27,5 @@ if (isset($routes[$xhr_path])) {
     exit;
 } else {
     http_response_code(404);
-    exit("XHR-Endpunkt nicht gefunden: $xhr_path");
+    exit();
 }
