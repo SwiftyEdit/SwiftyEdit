@@ -3,6 +3,11 @@
 	<head>
 		{$prepend_head_code}
 		{include file='head.tpl'}
+
+		{if $json_ld != ""}
+		<script type="application/ld+json">{$json_ld}</script>
+		{/if}
+
 		{$append_head_code}
 	</head>
 	
