@@ -331,6 +331,11 @@ if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
 /* show or hide categories */
 $smarty->assign('page_categories_mode', $page_contents['page_categories_mode']);
 
+/* start download from public/assets/files/ */
+if(isset($_POST['download'])) {
+    include 'download.php';
+}
+
 /* show checkout */
 if($p == "checkout") {
 	include 'checkout.php';
@@ -358,11 +363,6 @@ if($p == "posts") {
 
 if($p == 'tagged') {
     include 'tagged.php';
-}
-
-/* start download from /content/files/ */
-if(isset($_POST['download'])) {
-    include 'download.php';
 }
 
 

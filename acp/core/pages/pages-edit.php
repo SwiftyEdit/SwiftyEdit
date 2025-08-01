@@ -218,6 +218,7 @@ $input_text_page_title = [
 $input_text_page_meta_description = [
     "input_name" => "page_meta_description",
     "input_value" => $get_page['page_meta_description'],
+    "input_classes" => "form-control count-chars",
     "label" => $lang['label_description'],
     "type" => "textarea"
 ];

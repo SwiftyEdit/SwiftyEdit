@@ -159,6 +159,11 @@ function tpl_form_input_textarea(array $data) {
         $editor_classes = 'mceEditor textEditor switchEditor';
     }
 
+
+    if($data['input_classes'] != '') {
+        $editor_classes .= ' '.$data['input_classes'];
+    }
+
     global $bs_form_input_textarea;
 
 

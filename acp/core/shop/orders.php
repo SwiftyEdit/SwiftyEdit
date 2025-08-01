@@ -39,4 +39,19 @@ echo '<div class="pt-1" hx-get="'.$reader_uri.'?action=list_active_searches_orde
 
 echo '</div>';
 echo '</div>';
+
+echo '<div class="card mb-2">';
+echo '<ul class="list-group list-group-flush">';
+echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
+echo '<div class="me-auto">'.$lang['total'].'</div>';
+echo '<span class="badge text-bg-primary rounded-pill" hx-get="/admin-xhr/shop/read/?calc_orders_all" hx-trigger="load, update_orders_list from:body">0,00</span>';
+echo '</li>';
+echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
+echo '<div class="me-auto">'.$lang['status_order_canceled'].'</div>';
+echo '<span class="badge text-bg-danger rounded-pill" hx-get="/admin-xhr/shop/read/?calc_orders_canceled" hx-trigger="load, update_orders_list from:body">0,00</span>';
+echo '</li>';
+echo '</ul>';
+echo '</div>';
+
+
 echo '</div>';

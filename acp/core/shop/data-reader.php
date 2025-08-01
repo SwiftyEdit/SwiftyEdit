@@ -205,7 +205,7 @@ if($_REQUEST['action'] == 'list_products') {
     $nbr_pages = ceil($products_data_cnt/$nbr_show_items);
 
     echo '<div class="card p-3">';
-    echo se_print_pagination('/admin/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
+    echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
 
     echo '<table class="table table-striped table-hover">';
 
@@ -879,7 +879,7 @@ if($_REQUEST['action'] == 'list_orders') {
     $nbr_pages = ceil($orders_data_cnt/$nbr_show_items);
 
     echo '<div class="card p-3">';
-    echo se_print_pagination('/admin/shop/write/',$nbr_pages,$_SESSION['pagination_orders'],'10','','pagination_orders');
+    echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_orders'],'10','','pagination_orders');
 
     $show_order_status = [
         "1" => $lang['status_order_received'],
@@ -1016,4 +1016,31 @@ if(isset($_REQUEST['show_order'])) {
     </div>
   </div>
 </div>';
+}
+
+if(isset($_REQUEST['calc_orders_canceled'])) {
+
+    $result = 0;
+    $orders = $db_content->select("se_orders","*", [
+        "order_status" => 3
+    ]);
+
+    foreach($orders as $order) {
+       $result = $result+$order['order_price_total'];
+    }
+
+    echo se_post_print_currency($result);
+    exit;
+}
+
+if(isset($_REQUEST['calc_orders_all'])) {
+    $result = 0;
+    $orders = $db_content->select("se_orders","*");
+
+    foreach($orders as $order) {
+        $result = $result+$order['order_price_total'];
+    }
+
+    echo se_post_print_currency($result);
+    exit;
 }

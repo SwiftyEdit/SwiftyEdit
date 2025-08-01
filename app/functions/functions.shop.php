@@ -914,7 +914,8 @@ function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
 			],
 			"ORDER" => [
                 $sort['key'] => $sort['direction']
-			]
+			],
+            "LIMIT" => [$start,$limit]
 		]);
 		
 	} else if($user == 'all') {

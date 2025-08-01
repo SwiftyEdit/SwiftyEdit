@@ -81,7 +81,7 @@ function se_add_user_to_group(int $user, int $group): void {
 }
 
 /**
- * @param string $user
+ * @param string $user username or e-mail
  * @param string $psw
  * @param $acp
  * @param $remember
@@ -95,25 +95,44 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     global $db_user, $se_settings, $se_failed_logins_limit;
 
-    $hash = $db_user->get("se_user", ["user_psw_hash"], [
-        "AND" => [
-            "user_nick" => "$user",
-            "user_verified" => "verified",
-            'OR' => [
-                'user_unlock_code' => null,
-                'AND #Empty' => [
-                    'user_unlock_code' => ''
+    if (filter_var($user, FILTER_VALIDATE_EMAIL)) {
+        $user_data = $db_user->get("se_user", ["user_nick","user_psw_hash"], [
+            "AND" => [
+                "user_mail" => "$user",
+                "user_verified" => "verified",
+                'OR' => [
+                    'user_unlock_code' => null,
+                    'AND #Empty' => [
+                        'user_unlock_code' => ''
+                    ]
                 ]
             ]
-        ]
-    ]);
+        ]);
+        $user_nick = $user_data['user_nick'];
+        $hash = $user_data['user_psw_hash'];
+    } else {
+        $user_data = $db_user->get("se_user", ["user_psw_hash"], [
+            "AND" => [
+                "user_nick" => "$user",
+                "user_verified" => "verified",
+                'OR' => [
+                    'user_unlock_code' => null,
+                    'AND #Empty' => [
+                        'user_unlock_code' => ''
+                    ]
+                ]
+            ]
+        ]);
+        $user_nick = $user;
+        $hash = $user_data['user_psw_hash'];
+    }
 
-    if(password_verify($psw, $hash['user_psw_hash'])) {
+    if(password_verify($psw, $hash)) {
         /* valid psw */
 
         $result = $db_user->get("se_user", "*", [
             "AND" => [
-                "user_nick" => "$user",
+                "user_nick" => "$user_nick",
                 "user_verified" => "verified"
             ]
         ]);
@@ -148,11 +167,11 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
         $db_user->update("se_user",[
             "user_failed_logins" => 0
         ],[
-            "user_nick" => $user
+            "user_nick" => $user_nick
         ]);
 
         if($_SESSION['user_class'] == 'administrator') {
-            record_log("$user","admin logged in",1);
+            record_log("$user_nick","admin logged in",1);
         }
 
 
@@ -164,7 +183,7 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
     } else {
 
         if(is_numeric($se_failed_logins_limit)) {
-            se_handle_failed_logins($user);
+            se_handle_failed_logins($user_nick);
         }
         session_destroy();
         return "failed";

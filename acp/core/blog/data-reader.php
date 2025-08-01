@@ -164,7 +164,7 @@ if($_REQUEST['action'] == 'list_posts') {
     $nbr_pages = ceil($posts_data_cnt/$nbr_show_items);
 
     echo '<div class="card p-3">';
-    echo se_print_pagination('/admin/blog/write/',$nbr_pages,$_SESSION['pagination_posts_page']);
+    echo se_print_pagination('/admin-xhr/blog/write/',$nbr_pages,$_SESSION['pagination_posts_page']);
 
     echo '<table class="table">';
     echo '<tr>';

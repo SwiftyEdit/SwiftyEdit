@@ -34,7 +34,7 @@
 					</div>
 					<div class="form-group">
 						<label>{label_description}</label>
-						<textarea class='form-control' rows="4" name="post_meta_description">{post_meta_description}</textarea>
+						<textarea class='form-control count-chars' rows="4" name="post_meta_description">{post_meta_description}</textarea>
 					</div>
 					<div class="form-group">
 						<label>{label_keywords}</label>

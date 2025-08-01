@@ -62,7 +62,7 @@ if($_REQUEST['action'] == "list_users") {
     $nbr_pages = ceil($users_data_cnt/$nbr_show_items);
 
     echo '<div class="card p-3">';
-    echo se_print_pagination('/admin/users/write/',$nbr_pages,$_SESSION['pagination_users_page']);
+    echo se_print_pagination('/admin-xhr/users/write/',$nbr_pages,$_SESSION['pagination_users_page']);
 
     echo '<table class="table table-striped table-hover table-sm">';
     echo '<tr>';

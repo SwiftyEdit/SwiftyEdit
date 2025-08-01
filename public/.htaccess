@@ -1,8 +1,6 @@
 RewriteEngine On
 RewriteBase /
 
-
-
 RewriteRule ^images/(.*)$ assets/images/$1 [L]
 RewriteRule ^images_tmb/(.*)$ assets/images_tmb/$1 [L]
 RewriteRule ^galleries/(.*)$ assets/galleries/$1 [L]

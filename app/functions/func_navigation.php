@@ -183,6 +183,10 @@ function breadcrumbs_menu(): array {
 
     $x=0;
     foreach ($parts as $index => $part) {
+
+        if($part == 'p') { continue; } // pagination
+        if(is_numeric($part)) { continue; } // pagination
+
         $path .= '/' . $part;
         $label = urldecode($part);
         $title = $label;
@@ -195,6 +199,10 @@ function breadcrumbs_menu(): array {
 
         if($get_page_info['page_linkname'] != '') {
             $label = $get_page_info['page_linkname'];
+        }
+
+        if (mb_strlen($label) > 25) {
+            $label = mb_substr($label, 0, 25 - 1) . '…';
         }
 
         if($get_page_info['page_title'] != '') {

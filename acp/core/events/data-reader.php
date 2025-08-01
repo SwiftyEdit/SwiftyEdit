@@ -94,7 +94,7 @@ if($_REQUEST['action'] == 'list_events') {
 
     $nbr_pages = ceil($events_data_cnt/$nbr_show_items);
 
-    echo se_print_pagination('/admin/events/write/',$nbr_pages,$_SESSION['pagination_events_page']);
+    echo se_print_pagination('/admin-xhr/events/write/',$nbr_pages,$_SESSION['pagination_events_page']);
 
     echo '<table class="table table-sm table-hover">';
     echo '<thead><tr>';

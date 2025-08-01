@@ -80,7 +80,7 @@ if($_REQUEST['action'] == 'list_comments') {
     $nbr_pages = ceil($comments_data_cnt/$nbr_show_items);
 
     echo '<div class="card p-3">';
-    echo se_print_pagination('/admin/inbox/write/',$nbr_pages,$_SESSION['pagination_comments'],'10','','pagination_comments');
+    echo se_print_pagination('/admin-xhr/inbox/write/',$nbr_pages,$_SESSION['pagination_comments'],'10','','pagination_comments');
 
     foreach($comments_data as $comment) {
 

@@ -56,7 +56,7 @@
 					</div>
 					<div class="mb-3">
 						<label for="inputMetaDescription" class="form-label">{label_description}</label>
-						<textarea id="inputMetaDescription" class='form-control' rows="4" name="post_meta_description">{post_meta_description}</textarea>
+						<textarea id="inputMetaDescription" class='form-control count-chars' rows="4" name="post_meta_description">{post_meta_description}</textarea>
 					</div>
 					<div class="mb-3">
 						<label class="form-label">{label_keywords}</label>

@@ -495,6 +495,21 @@ if(isset($_POST['get_attachment'])) {
     }
 }
 
+$page_json_ld = [
+    "@context" => "https://schema.org/",
+    "@type" => "Product",
+    "name" => html_entity_decode($product_data['meta_title']),
+    "image" => rtrim($se_base_url, '/') . $first_product_img_src,
+    "description" => html_entity_decode($product_data['meta_description']),
+    "sku" => $product_data['product_number'],
+    "offers" => [
+        "@type" => "Offer",
+        "url" => $se_base_url.$target_page.$product_data['slug'],
+        "priceCurrency" => $product_data['product_currency'],
+        "price" => strip_tags($post_price_net)
+    ]
+];
+
 $smarty->assign('page_title', html_entity_decode($product_data['meta_title']));
 $smarty->assign('page_meta_description', html_entity_decode($product_data['meta_description']));
 $smarty->assign('page_meta_keywords', html_entity_decode($product_data['tags']));

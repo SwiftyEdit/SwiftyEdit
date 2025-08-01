@@ -35,6 +35,10 @@ const SE_CONTENT = SE_ROOT . "data";
 const SE_PUBLIC = SE_ROOT . "public";
 const SE_ACP = "admin";
 
+// url path for administration
+$se_admin_url_path = '/admin/';
+$se_admin_xhr_url_path = '/admin-xhr/';
+
 
 /* database files if we use sqlite */
 $se_db_content = SE_CONTENT . "/database/content.sqlite3";
