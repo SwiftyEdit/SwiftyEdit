@@ -240,11 +240,9 @@ if(!empty($page_contents['page_modul'])) {
     include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/index.php';
 }
 
-$page_json_ld = [
-    "@context" => "https://schema.org/",
-    "@type" => "WebPage",
-    "name" => html_entity_decode($page_contents['page_title']),
-    "url" => $se_base_url.$page_contents['page_permalink']
+$structuredDataContext = [
+    'type' => 'WebPage',
+    'data' => $page_contents
 ];
 
 

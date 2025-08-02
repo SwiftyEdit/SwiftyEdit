@@ -1,6 +1,12 @@
 <?php
 
-/* defaultTheme options */
+/**
+ * default Theme options
+ * @var object $smarty
+ * @var string $se_base_url
+ * @var string $first_product_img_src
+ * @var string $target_page
+ */
 
 if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
 
@@ -101,12 +107,46 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
   }
 
 
+  // $structuredDataContext
+    if (!empty($structuredDataContext['type']) && !empty($structuredDataContext['data'])) {
+        switch ($structuredDataContext['type']) {
+            case 'Product':
+                $data = $structuredDataContext['data'];
+                $page_json_ld = [
+                    "@context" => "https://schema.org",
+                    "@type" => "Product",
+                    "name" => html_entity_decode($data['meta_title']) ?? '',
+                    "image" => rtrim($se_base_url, '/') . $first_product_img_src ?? [],
+                    "description" => html_entity_decode($product_data['meta_description']) ?? '',
+                    "sku" => $data['product_number'] ?? '',
+                    "offers" => [
+                        "@type" => "Offer",
+                        "priceCurrency" => $data['product_currency'],
+                        "price" => $data['product_price_gross'] ?? '',
+                        "availability" => "https://schema.org/" . ($data['product_availability'] ?? 'InStock'),
+                        "url" => $se_base_url.$target_page.$product_data['slug'] ?? ''
+                    ]
+                ];
+                break;
 
- 
-} elseif(defined('SE_SECTION') && SE_SECTION == 'backend') {
+            case 'WebPage':
+                $data = $structuredDataContext['data'];
+                $page_json_ld = [
+                    "@context" => "https://schema.org",
+                    "@type" => "WebPage",
+                    "name" => $data['paget_title'] ?? '',
+                    "description" => $data['page_meta_description'] ?? '',
+                    "url" => $se_base_url.$data['page_permalink'] ?? ''
+                ];
+                break;
+        }
+    }
+
+
+} elseif(defined('SE_SECTION') && SE_SECTION === 'backend') {
 
 	/**
-	 * Theme options for acp > system > layout & design
+	 * Theme options for /admin/addons/theme/default/
 	 */
 
 	 $theme_options = array(
@@ -120,7 +160,4 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
 		 "x" => "X Account (URL)",
 		 "youtube" => "YouTube (URL)"
 	 );
-	
 }
-
-?>

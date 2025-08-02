@@ -495,19 +495,11 @@ if(isset($_POST['get_attachment'])) {
     }
 }
 
-$page_json_ld = [
-    "@context" => "https://schema.org/",
-    "@type" => "Product",
-    "name" => html_entity_decode($product_data['meta_title']),
-    "image" => rtrim($se_base_url, '/') . $first_product_img_src,
-    "description" => html_entity_decode($product_data['meta_description']),
-    "sku" => $product_data['product_number'],
-    "offers" => [
-        "@type" => "Offer",
-        "url" => $se_base_url.$target_page.$product_data['slug'],
-        "priceCurrency" => $product_data['product_currency'],
-        "price" => strip_tags($post_price_net)
-    ]
+$product_data['product_price_gross'] = strip_tags($post_price_gross); // we need this for $structuredDataContext only
+
+$structuredDataContext = [
+    'type' => 'Product',
+    'data' => $product_data
 ];
 
 $smarty->assign('page_title', html_entity_decode($product_data['meta_title']));
