@@ -939,6 +939,8 @@ $form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod
 $form_tpl = str_replace('{link}', $product_data['link'], $form_tpl);
 
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
+$form_tpl = str_replace('{product_ean}', $product_data['product_ean'], $form_tpl);
+$form_tpl = str_replace('{product_mpn}', $product_data['product_mpn'], $form_tpl);
 $form_tpl = str_replace('{product_manufacturer}', $product_data['product_manufacturer'], $form_tpl);
 $form_tpl = str_replace('{product_price_manufacturer}', $product_data['product_price_manufacturer'], $form_tpl);
 
@@ -948,6 +950,7 @@ $form_tpl = str_replace('{product_currency}', $product_currency, $form_tpl);
 $form_tpl = str_replace('{product_price_label}', $product_data['product_price_label'], $form_tpl);
 $form_tpl = str_replace('{product_amount}', $product_data['product_amount'], $form_tpl);
 $form_tpl = str_replace('{product_unit}', $product_data['product_unit'], $form_tpl);
+$form_tpl = str_replace('{product_unit_content}', $product_data['product_unit_content'], $form_tpl);
 $form_tpl = str_replace('{product_price_net}', $product_price_net, $form_tpl);
 $form_tpl = str_replace('{select_tax}', $select_tax, $form_tpl);
 $form_tpl = str_replace('{select_shipping_mode}', $select_shipping_mode, $form_tpl);

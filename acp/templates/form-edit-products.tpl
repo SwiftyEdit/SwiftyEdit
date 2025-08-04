@@ -194,6 +194,18 @@
                                                value="{product_number}">
                                     </div>
                                 </div>
+
+                                <div class="col-md-4">
+                                    <label>EAN</label>
+                                    <input class='form-control' name="product_ean" type="text"
+                                           value="{product_ean}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>MPN</label>
+                                    <input class='form-control' name="product_mpn" type="text"
+                                           value="{product_mpn}">
+                                </div>
+
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{label_product_manufacturer}</label>
@@ -209,6 +221,13 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{label_url}</label>
+                                        <input class='form-control' name="product_url" type="text" value="{product_url}">
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="row">
@@ -218,13 +237,6 @@
                                         <label>{label_product_supplier}</label>
                                         <input class='form-control' name="product_supplier" type="text"
                                                value="{product_supplier}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-8">
-                                    <div class="form-group">
-                                        <label>{label_url}</label>
-                                        <input class='form-control' name="product_url" type="text" value="{product_url}">
                                     </div>
                                 </div>
 
@@ -267,30 +279,6 @@
                         <div class="tab-pane fade" id="prices_delivery">
 
                             <div class="row">
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>{label_product_currency}</label>
-                                        <input class='form-control' name="product_currency" type="text"
-                                               value="{product_currency}">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>{label_product_price_label}</label>
-                                        <input class='form-control' name="product_price_label" type="text"
-                                               value="{product_price_label}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <div class="mb-1">
-                                <label>{label_product_price_group}</label>
-                                {select_price_group}
-                            </div>
-
-                            <div class="row">
 
                                 <div class="col-md-2">
                                     <div class="form-group">
@@ -308,23 +296,46 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{label_product_unit_content}</label>
+                                        <input class='form-control' name="product_unit_content" type="text"
+                                               value="{product_unit_content}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{label_product_price_label}</label>
+                                        <input class='form-control' name="product_price_label" type="text"
+                                               value="{product_price_label}">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-2">
+                                    <div class="">
+                                        <label>{label_product_currency}</label>
+                                        <input class='form-control' name="product_currency" type="text"
+                                               value="{product_currency}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="">
                                         <label>{label_product_price} {label_product_net}</label>
                                         <input class='form-control prod_price_net' id="price" name="product_price_net" type="text"
                                                value="{product_price_net}">
                                     </div>
                                 </div>
-
                                 <div class="col-md-2">
                                     <div class="">
                                         <label>{label_product_tax}</label>
                                         {select_tax}
                                     </div>
                                 </div>
-
-
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="">
                                         <label>{label_product_price} {label_product_gross}</label>
                                         <input class='form-control prod_price_gross' id="price_total" name="product_price_gross"
@@ -335,6 +346,13 @@
 
                             <!-- show volume dicounts if we edit a existing product -->
                             {show_price_volume_discount}
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <label>{label_product_price_group}</label>
+                                {select_price_group}
+                            </div>
 
                             <hr>
 
