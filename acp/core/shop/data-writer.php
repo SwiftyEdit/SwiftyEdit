@@ -321,6 +321,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 if(isset($_POST['save_price'])) {
     $group_title = sanitizeUserInputs($_POST['title']);
     $unit = sanitizeUserInputs($_POST['unit']);
+    $unit_content = sanitizeUserInputs($_POST['unit_content']);
     $price_net = sanitizeUserInputs($_POST['price_net']);
     $price_net = str_replace('.', '', $price_net);
 
@@ -357,6 +358,7 @@ if(isset($_POST['save_price'])) {
             "hash" => $hash,
             "amount" => $amount,
             "unit" => $unit,
+            "unit_content" => $unit_content,
             "tax" => $tax,
             "price_net" => $price_net,
             "price_volume_discount" => $product_price_volume_discount
@@ -364,6 +366,7 @@ if(isset($_POST['save_price'])) {
         $edit_id = $db_posts->id();
         record_log($_SESSION['user_nick'], "create new price group", "1");
         header( "HX-Trigger: update_price_groups");
+        exit;
     }
     // update data
     if(is_numeric($_POST['id'])) {
@@ -372,6 +375,7 @@ if(isset($_POST['save_price'])) {
             "title" => $group_title,
             "amount" => $amount,
             "unit" => $unit,
+            "unit_content" => $unit_content,
             "tax" => $tax,
             "price_net" => $price_net,
             "price_volume_discount" => $product_price_volume_discount
@@ -380,6 +384,7 @@ if(isset($_POST['save_price'])) {
         ]);
         $edit_id = $id;
         header( "HX-Trigger: update_price_groups");
+        exit;
     }
 }
 

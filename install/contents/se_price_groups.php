@@ -12,6 +12,7 @@ $cols = array(
     "hash" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "unit" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "unit_content" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "amount" => 'INTEGER(100)',
     "tax" => 'INTEGER(12)',
     "price_net" => "VARCHAR(100) NOT NULL DEFAULT ''",

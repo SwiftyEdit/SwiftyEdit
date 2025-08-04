@@ -448,8 +448,8 @@ if($_REQUEST['action'] == 'list_price_groups') {
             echo '<td>'.$status_volume_discounts.'</td>';
             echo '<td class="text-end">';
             echo '<form>';
-            echo '<button hx-post="/admin-xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
-            echo '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
+            echo '<button type="button" hx-post="/admin-xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
+            echo '<button type="button" hx-post="/admin-xhr/shop/write/" class="btn btn-default btn-sm text-danger" name="delete" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
             echo $hidden_csrf_token;
             echo '</form>';
             echo '</td>';
@@ -459,6 +459,7 @@ if($_REQUEST['action'] == 'list_price_groups') {
 
 
     }
+    exit;
 }
 
 if($_REQUEST['action'] == 'show_price_groups_form') {
@@ -545,6 +546,7 @@ if($show_form) {
     $form_tpl = str_replace('{title}', $price_group['title'], $form_tpl);
     $form_tpl = str_replace('{amount}', $price_group['amount'], $form_tpl);
     $form_tpl = str_replace('{unit}', $price_group['unit'], $form_tpl);
+    $form_tpl = str_replace('{unit_content}', $price_group['unit_content'], $form_tpl);
     $form_tpl = str_replace('{price_net}', $price_group['price_net'], $form_tpl);
     $form_tpl = str_replace('{select_tax}', $select_tax, $form_tpl);
     $form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
@@ -570,7 +572,7 @@ if($show_form) {
                 hx-include="[name=\'csrf_token\']"
                 name="save_price"
                 value="'.$price_group_id.'"
-                class="list-group-item list-group-item-action">'.$btn_name.'</button>';
+                class="btn btn-default">'.$btn_name.'</button>';
     echo '</form>';
 
 }
