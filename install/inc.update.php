@@ -157,7 +157,7 @@ if(is_array($wins)) {
 }
 
 echo '<a href="/install/" class="btn btn-primary me-1">Reload</a>';
-echo '<a href="/admin/" class="btn btn-primary">ACP</a>';
+echo '<a href="/admin/dashboard/" class="btn btn-primary">Backend</a>';
 
 
 if(is_file('../maintenance.html')) {
