@@ -199,13 +199,13 @@
 
 
     {if is_array($show_variants)}
-        <div class="card mb-3">
+        <div class="card mb-3 variants-picker">
             <div class="card-header">{$lang_label_product_variants}</div>
             <div class="card-body">
                 <div class="row row-cols-4 mb-3">
                     {foreach $show_variants as $product => $value}
                         <div class="col mb-2">
-                            <div class="card h-100">
+                            <div class="card h-100 {$value.class}">
                                 {if $value.image != ""}
                                 <img src="{$value.image}" class="card-img-top" alt="{$value.title}"
                                      title="{$value.title}">

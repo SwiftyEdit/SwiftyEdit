@@ -149,3 +149,9 @@
     }
   }
 }
+
+.variants-picker {
+  .card.active {
+    opacity: 0.75;
+  }
+}
