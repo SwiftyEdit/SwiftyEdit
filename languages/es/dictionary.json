@@ -53,6 +53,8 @@
   "status.user.verified": "Verificado",
   "status.user.waiting": "Esperando",
   "status.user.paused": "Pausado",
+  "product.type.main": "Main product",
+  "product.type.variant": "Variant",
   "snippets": "Fragmentos",
   "no_snippet_selected": "Ningún Snippet seleccionado",
   "labels": "Etiquetas",
