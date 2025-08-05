@@ -122,6 +122,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $parent_id = (int) $_POST['save_variant'];
     }
 
+    $product_variant_type = (int) $_POST['product_variant_type'];
+
 
     $product_accessories = '';
     if(isset($_POST['picker_1'])) {

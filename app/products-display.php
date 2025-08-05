@@ -364,7 +364,18 @@ if($cnt_variants > 1) {
         }
 
         $product_slug = basename($v['slug']);
-        $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
+        if($product_data['product_variant_type'] == 2 OR $parent_product['product_variant_type'] == 2) {
+            // link with params
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug".'/?v=' . $v['id'];
+        } else {
+            // link to a page
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
+        }
+
+        if($v['type'] == 'p') {
+            // link to the main product
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page.$product_slug.'/';
+        }
 
         $var[$k]['class'] = '';
         if($v['id'] == $product_data['id']) {

@@ -460,6 +460,9 @@
                                 <div class="card-body">
                                     <div class="tab-content my-2">
                                         <div class="tab-pane fade show active" id="variants">
+
+                                            <div class="row">
+                                                <div class="col">
                                             <div class="form-group">
                                                 <label>{label_title}</label>
                                                 <input class='form-control' name="product_variant_title" type="text"
@@ -470,7 +473,11 @@
                                                 <textarea class='form-control' rows="4"
                                                           name="product_variant_description">{product_variant_description}</textarea>
                                             </div>
-                                            {variants_list}
+                                                </div>
+
+                                            {variant_controls}
+
+                                            </div>
                                         </div>
                                         <div class="tab-pane fade" id="cross_selling">
                                             <div class="row">

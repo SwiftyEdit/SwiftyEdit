@@ -298,7 +298,15 @@ if($_REQUEST['action'] == 'list_products') {
             $edit_variant_select .= '<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['label_product_variants'].' ('.$cnt_variants.')</button>';
             $edit_variant_select .= '<ul class="dropdown-menu">';
             foreach($variants as $variant) {
-                $edit_variant_select .= '<li><button class="dropdown-item" name="product_id" value="'.$variant['id'].'" type="submit">'.$variant['id'].' '.$variant['title'].'</button></li>';
+
+                $show_title = $variant['product_variant_title'] ?: $variant['title'];
+
+
+                if($product_id !== $variant['id']) {
+                    $show_title = '<i class="bi bi-arrow-return-right"></i> #'.$variant['id'].' '.$show_title;
+                }
+
+                $edit_variant_select .= '<li><button class="dropdown-item" name="product_id" value="'.$variant['id'].'" type="submit">'.$show_title.'</button></li>';
             }
             $edit_variant_select .= '</ul>';
             $edit_variant_select .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
@@ -375,7 +383,7 @@ if($_REQUEST['action'] == 'list_products') {
         $show_items_price .= '</div>';
 
         echo '<tr class="'.$add_row_class.'">';
-        echo '<td>'.$product['id'].'</td>';
+        echo '<td>#'.$product['id'].'</td>';
         echo '<td>'.$icon_fixed_form.'</td>';
         echo '<td>'.$prio_form.'</td>';
         echo '<td>'.$show_thumb.'</td>';

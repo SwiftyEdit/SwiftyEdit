@@ -274,7 +274,7 @@ if($_SESSION['products_sort_by'] == 'name') {
 
 $products_filter['sort_by'] = $_SESSION['products_sort_by'];
 
-/* get the product id from url */
+// get the product id from url
 if(substr("$mod_slug", -5) == '.html') {
     $file_parts = explode("-", $mod_slug);
     $get_product_id = (int) basename(end($file_parts));
@@ -287,7 +287,7 @@ if(substr("$mod_slug", -5) == '.html') {
     $display_mode = 'show_product';
 }
 
-/* check if $mod_slug is a product slug */
+// check if $mod_slug is a product slug
 $get_data_from_slug = se_get_product_data_by_slug($mod_slug);
 if(is_array($get_data_from_slug)) {
     $get_product_id = (int) $get_data_from_slug['id'];
@@ -296,7 +296,16 @@ if(is_array($get_data_from_slug)) {
     if(is_array($product_data)){
         $status_404 = false;
     }
+    $display_mode = 'show_product';
+}
 
+// check if we have to display a variant
+if(isset($_REQUEST['v']) && (is_numeric($_REQUEST['v']))) {
+    $get_product_id = (int) $_REQUEST['v'];
+    $product_data = se_get_product_data($get_product_id);
+    if(is_array($product_data)){
+        $status_404 = false;
+    }
     $display_mode = 'show_product';
 }
 
