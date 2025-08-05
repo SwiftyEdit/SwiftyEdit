@@ -53,6 +53,8 @@
   "status.user.verified": "Verificat",
   "status.user.waiting": "Aşteptare",
   "status.user.paused": "Pauză",
+  "product.type.main": "Main product",
+  "product.type.variant": "Variant",
   "snippets": "Snippet-uri",
   "no_snippet_selected": "Niciun snippet selectat",
   "labels": "Etichete",
