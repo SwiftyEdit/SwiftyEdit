@@ -17,7 +17,7 @@ if(isset($_GET['filter']) && is_numeric($_GET['filter'])) {
             "filter[~]" => ':"' . $get_filter . '"',
             "status" => "1",
             "type" => "p",
-            "categories" => $cat_array,
+            "categories[~]" => $cat_array
         ]
     ]);
 
