@@ -53,6 +53,8 @@
   "status.user.verified": "Проверени",
   "status.user.waiting": "Изчакване",
   "status.user.paused": "На пауза",
+  "product.type.main": "Main product",
+  "product.type.variant": "Variant",
   "snippets": "Snippets",
   "no_snippet_selected": "Не е избран фрагмент",
   "labels": "Labels",
