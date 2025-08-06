@@ -372,9 +372,11 @@ if($cnt_variants > 1) {
             $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
         }
 
+        $var[$k]['type'] = 'v';
         if($v['type'] == 'p') {
             // link to the main product
             $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page.$product_slug.'/';
+            $var[$k]['type'] = 'p';
         }
 
         $var[$k]['class'] = '';
