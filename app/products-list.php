@@ -389,27 +389,30 @@ foreach ($get_products as $k => $post) {
 
 if($status_404 == true) {
     $show_404 = "true";
+    header("HTTP/1.0 404 Not Found");
+    header("Status: 404 Not Found");
+} else {
+
+    $form_action = '/' . $swifty_slug . $mod_slug;
+    $smarty->assign('form_action', $form_action);
+    $smarty->assign('product_cnt', $cnt_filter_products);
+    $smarty->assign('products', $get_products);
+    $smarty->assign('show_products_list', $show_products_list);
+    $smarty->assign('product_filter', $product_filter);
+
+    $smarty->assign('nbr_products', $cnt_filter_products);
+    $smarty->assign('show_pagination', $show_pagination);
+    $smarty->assign('disable_prev_link', $disable_prev_link);
+    $smarty->assign('disable_next_link', $disable_next_link);
+    if (isset($pagination)) {
+        $smarty->assign('pagination', $pagination);
+    }
+
+    $smarty->assign('show_shopping_cart', $show_shopping_cart);
+    $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
+    $smarty->assign('btn_read_more', $lang['btn_open_product']);
+
+    $products_page = $smarty->fetch("products-list.tpl", $cache_id);
+    $smarty->assign('page_content', $products_page, true);
+    $smarty->assign('categories', $categories);
 }
-
-$form_action = '/' . $swifty_slug . $mod_slug;
-$smarty->assign('form_action', $form_action);
-$smarty->assign('product_cnt', $cnt_filter_products);
-$smarty->assign('products', $get_products);
-$smarty->assign('show_products_list', $show_products_list);
-$smarty->assign('product_filter', $product_filter);
-
-$smarty->assign('nbr_products', $cnt_filter_products);
-$smarty->assign('show_pagination', $show_pagination);
-$smarty->assign('disable_prev_link', $disable_prev_link);
-$smarty->assign('disable_next_link', $disable_next_link);
-if(isset($pagination)) {
-    $smarty->assign('pagination', $pagination);
-}
-
-$smarty->assign('show_shopping_cart', $show_shopping_cart);
-$smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
-$smarty->assign('btn_read_more', $lang['btn_open_product']);
-
-$products_page = $smarty->fetch("products-list.tpl", $cache_id);
-$smarty->assign('page_content', $products_page, true);
-$smarty->assign('categories', $categories);
