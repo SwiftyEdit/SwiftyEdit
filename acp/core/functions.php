@@ -558,57 +558,111 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 }
 
 
-
-
-
 /**
- * Generate XML Sitemap
+ * @param string $mode
+ * @return void
  */
+function se_generate_xml_sitemap($mode): void
+{
 
-function generate_xml_sitemap() {
+    global $se_base_url,$db_content,$db_posts,$target_page;
 
-	global $se_base_url;
-	global $db_content;
-    global $se_prefs;
-	
-	$file = SE_PUBLIC."/sitemap.xml";
-	$tpl_sitemap = file_get_contents('../acp/templates/sitemap.tpl');
-	$tpl_sitemap_urlset = file_get_contents('../acp/templates/sitemap_urlset.tpl');
+    if($mode == '') { return; }
 
-		$results = $db_content->select("se_pages", "*", [
-			"AND" => [
-				"page_status[!]" => ["draft","private","ghost"],
-                "page_meta_robots[!~]" => ["AND" => ["noindex", "none","noarchive"]]
-			],
-			"ORDER" => [
-				"page_lastedit" => "DESC"
-			]
-		]);
-		
-		$cnt_results = count($results);
+    $se_base_url = rtrim($se_base_url, '/');
 
-		/* generate content for xml file */	
-		$url_set = "";
-		
-		for($i=0;$i<$cnt_results;$i++) {
+    $file_sitemap_index = SE_PUBLIC."/sitemap.xml";
+    $file_sitemap_pages = SE_PUBLIC . "/sitemap-pages.xml";
+    $file_sitemap_products = SE_PUBLIC . "/sitemap-products.xml";
+    $file_sitemap_posts = SE_PUBLIC . "/sitemap-posts.xml";
 
-			$page_permalink = $results[$i]['page_permalink'];
-			$page_lastedit = date("Y-m-d",$results[$i]['page_lastedit']);
-			
-			$link = $se_base_url . $page_permalink;
-			
-			$link = str_replace("/acp","",$link);
-			
-			$url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
-			$url_set = str_replace('{lastmod}', $page_lastedit, $url_set);
-			$url_set_list .= $url_set."\r\n";			
-		}
+    $tpl_sitemap = file_get_contents('../acp/templates/sitemap.tpl');
+    $tpl_sitemap_urlset = file_get_contents('../acp/templates/sitemap_urlset.tpl');
 
-		$sitemap = str_replace('{url_set}', $url_set_list, $tpl_sitemap);	
-		file_put_contents($file, $sitemap, LOCK_EX);
+    // create index
+    $lastmod = date("Y-m-d",time());
+    $tpl_sitemap_index = file_get_contents('../acp/templates/sitemap-index.tpl');
+
+    $tpl_sitemap_index = str_replace('{lastmod}', $lastmod, $tpl_sitemap_index);
+    $tpl_sitemap_index = str_replace('{se_base_url}', $se_base_url, $tpl_sitemap_index);
+    file_put_contents($file_sitemap_index, $tpl_sitemap_index, LOCK_EX);
+
+    if ($mode == 'pages') {
+
+        $pages_data = $db_content->select("se_pages", "*", [
+            "AND" => [
+                "page_status[!]" => ["draft", "private", "ghost"],
+                "page_meta_robots[!~]" => ["AND" => ["noindex", "none", "noarchive"]]
+            ],
+            "ORDER" => [
+                "page_lastedit" => "DESC"
+            ]
+        ]);
+
+        $url_set_list = '';
+        foreach ($pages_data as $page) {
+            $page_lastedit = date("Y-m-d", $page['page_lastedit']);
+            $link = $se_base_url.'/'.$page['page_permalink'];
+
+            $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
+            $url_set = str_replace('{lastmod}', $page_lastedit, $url_set);
+            $url_set_list .= $url_set . "\r\n";
+        }
+
+        $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
+        file_put_contents($file_sitemap_pages, $sitemap_data, LOCK_EX);
+    }
+
+    if ($mode == 'products') {
+
+        $products_data = $db_posts->select("se_products", "*", [
+            "AND" => [
+                "type" => "p",
+                "status" => "1"
+            ],
+            "ORDER" => [
+                "lastedit" => "DESC"
+            ]
+        ]);
+
+        $url_set_list = '';
+        foreach ($products_data as $product) {
+            $product_lastedit = date("Y-m-d", $product['lastedit']);
+            $link = $se_base_url.'/'.$product['main_catalog_slug'].$product['slug'];
+            $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
+            $url_set = str_replace('{lastmod}', $product_lastedit, $url_set);
+            $url_set_list .= $url_set . "\r\n";
+        }
+
+        $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
+        file_put_contents($file_sitemap_products, $sitemap_data, LOCK_EX);
+    }
+
+    if ($mode == 'posts') {
+        $posts_data = $db_posts->select("se_posts", "*", [
+            "AND" => [
+                "post_type" => ["m", "g", "i","v","f"],
+                "post_status" => "1"
+            ],
+            "ORDER" => [
+                "post_lastedit" => "DESC"
+            ]
+        ]);
+
+        $url_set_list = '';
+        foreach ($posts_data as $post) {
+            $post_lastedit = date("Y-m-d", $post['post_lastedit']);
+            $link = $se_base_url.'/'.$target_page[0].$post['post_slug'];
+            $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
+            $url_set = str_replace('{lastmod}', $post_lastedit, $url_set);
+            $url_set_list .= $url_set . "\r\n";
+        }
+        $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
+        file_put_contents($file_sitemap_posts, $sitemap_data, LOCK_EX);
+
+    }
 
 }
-
 
 
 

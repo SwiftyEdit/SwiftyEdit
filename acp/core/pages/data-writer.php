@@ -129,7 +129,7 @@ if(isset($_POST['delete_page'])) {
 
     if($del_page->rowCount() > 0) {
         record_log($_SESSION['user_nick'],"deleted page id: $delete_id","10");
-        generate_xml_sitemap();
+        se_generate_xml_sitemap('pages');
         show_toast($lang['msg_success_page_deleted'],'success');
     }
 

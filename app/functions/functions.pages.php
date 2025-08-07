@@ -201,7 +201,7 @@ function se_save_page($data) {
     if($cnt_changes->rowCount() > 0) {
         $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>","5");
-        generate_xml_sitemap();
+        se_generate_xml_sitemap('pages');
         show_toast($lang['msg_success_page_saved'],'success');
     } else {
         show_toast($lang['msg_error_page_saved'],'danger');
@@ -246,7 +246,7 @@ function se_update_page($data,$id) {
     if($cnt_changes->rowCount() > 0) {
         $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;","5");
-        generate_xml_sitemap();
+        se_generate_xml_sitemap('pages');
         show_toast($lang['msg_success_page_saved'],'success');
     } else {
         show_toast($lang['msg_error_page_saved'],'danger');

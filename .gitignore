@@ -27,6 +27,9 @@ composer.phar
 *.zip
 
 sitemap.xml
+sitemap-pages.xml
+sitemap-posts.xml
+sitemap-products.xml
 
 #/content/**/*
 /content/config.php

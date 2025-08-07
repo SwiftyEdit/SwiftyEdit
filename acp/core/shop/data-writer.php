@@ -279,6 +279,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
+    se_generate_xml_sitemap('products');
+
     /* get all $cols */
 
     require SE_ROOT.'install/contents/se_products.php';
