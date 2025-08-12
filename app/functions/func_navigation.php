@@ -8,12 +8,11 @@
  * @return	array
  */
 
-function show_mainmenu() {
+function show_mainmenu(): array
+{
 
-	global $se_nav;
-	global $current_page_sort;
-	global $se_defs;
-	
+	global $se_nav,$current_page_sort,$se_defs;
+
 	$count_result = count($se_nav);
 	
 	for($i=0;$i<$count_result;$i++) {
@@ -45,16 +44,20 @@ function show_mainmenu() {
 		
 			if(left_string($current_page_sort) == left_string($menu[$i]['page_sort']) ) {
 				$menu[$i]['link_status'] = $se_defs['main_nav_class_active'];
-				define('se_MAIN_CAT', clean_filename($se_nav[$i]['page_linkname']));
-				define('se_TOC_HEADER', $menu[$i]['page_linkname']);
+                $se_toc_header = $menu[$i]['page_linkname'];
+                $se_main_cat = clean_filename($se_nav[$i]['page_linkname']);
 			}
 		
 			/* generate the main menu */
 			$menu[$i]['link'] = SE_INCLUDE_PATH . "/" . $se_nav[$i]['page_permalink'];
 		}
 	}
-	
-	return $menu;
+
+    return [
+        'menu' => $menu,
+        'se_main_cat' => $se_main_cat,
+        'se_toc_header' => $se_toc_header
+    ];
 
 } // eol func show_menu
 

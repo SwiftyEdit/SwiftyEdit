@@ -56,7 +56,8 @@ if(!isset($page_meta_description)) {
 $mainmenu = array();
 $submenu = array();
 
-$mainmenu = show_mainmenu();
+$get_main_menu = show_mainmenu();
+$mainmenu = $get_main_menu['menu'];
 $submenu = show_menu($current_page_sort);
 $bcmenu = breadcrumbs_menu();
 
@@ -112,13 +113,13 @@ $smarty->assign('arr_bcmenue', $bcmenu);
 /* submenu only if $submenu != empty */
 if(is_array($submenu) && count($submenu) >= 1) {
 	$smarty->assign('arr_submenue', $arr_subnmenu);
-	$smarty->assign('legend_toc', text_parser(se_TOC_HEADER));
+	$smarty->assign('legend_toc', text_parser($get_main_menu['se_toc_header']));
 }
 
 if($page_contents['page_sort'] == 'portal' OR $p == '') {
-	$smarty->assign('homelink_status', "$se_defs[main_nav_class_active]");
+	$smarty->assign('homelink_status', $se_defs['main_nav_class_active']);
 } else {
-	$smarty->assign('homelink_status', "$se_defs[main_nav_class]");
+	$smarty->assign('homelink_status', $se_defs['main_nav_class']);
 }
 
 $smarty->assign('body_template', $se_template_layout);
