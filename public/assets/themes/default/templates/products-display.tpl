@@ -190,17 +190,17 @@
             {/if}
         </div>
 
-
-
-
-
     </div>
-
 
 
     {if is_array($show_variants)}
         <div class="card mb-3 variants-picker">
-            <div class="card-header">{$lang_label_product_variants}</div>
+            <div class="card-header d-flex justify-content-between">
+                <div>{$lang_label_product_variants}</div>
+                {if $product_lowest_price_gross}
+                <div>{$lang_price_tag_label_from} {$product_currency} {$product_lowest_price_gross}</div>
+                {/if}
+            </div>
             <div class="card-body">
                 <div class="row row-cols-4 mb-3">
                     {foreach $show_variants as $product => $value}

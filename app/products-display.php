@@ -343,6 +343,14 @@ if($product_data['type'] == 'v') {
 
 } else {
     $variants = se_get_product_variants($product_data['id']);
+    $get_lowest_price_net = se_get_product_lowest_price($product_data['id']);
+    if($get_lowest_price_net != '') {
+        $lowest_post_prices = se_posts_calc_price($get_lowest_price_net,$tax);
+        $product_lowest_price_net = strip_tags($lowest_post_prices['net']);
+        $product_lowest_price_gross = strip_tags($lowest_post_prices['gross']);
+        $smarty->assign('product_lowest_price_net', $product_lowest_price_net);
+        $smarty->assign('product_lowest_price_gross', $product_lowest_price_gross);
+    }
 }
 
 $cnt_variants = count($variants);
@@ -509,7 +517,9 @@ if(isset($_POST['get_attachment'])) {
 }
 
 $product_data['product_price_gross'] = strip_tags($post_price_gross); // we need this for $structuredDataContext only
-
+if($product_lowest_price_gross != '') {
+    $product_data['product_price_gross'] = $product_lowest_price_gross;
+}
 $structuredDataContext = [
     'type' => 'Product',
     'data' => $product_data

@@ -318,6 +318,57 @@ function se_get_product_variants($id) {
     return $products;
 }
 
+/**
+ * get the lowest price for a product
+ * check volume discount, also
+ *
+ * @param integer $id
+ * @return string|void
+ */
+function se_get_product_lowest_price(int $id) {
+    global $db_posts;
+
+    $variants = [];
+    $variants = se_get_product_variants($id);
+    if(count($variants) < 1) { return; }
+
+    $variant_prices = [];
+    foreach($variants as $variant) {
+        $variant_price = $db_posts->get("se_products",["product_price_net","product_price_volume_discount"],[
+            "AND" => [
+                "id" => $variant['id'],
+                "status" => 1
+            ]
+        ]);
+        if($variant_price > 0) {
+            $variant_prices[] = $variant_price;
+        }
+    }
+
+    $allPrices = [];
+    foreach ($variant_prices as $product) {
+        // Convert base price to float
+        $basePrice = floatval(str_replace(',', '.', $product['product_price_net']));
+        $allPrices[] = $basePrice;
+
+        // If there are volume discounts, decode JSON and collect prices
+        if (!empty($product['product_price_volume_discount'])) {
+            $discounts = json_decode($product['product_price_volume_discount'], true);
+            if (is_array($discounts)) {
+                foreach ($discounts as $entry) {
+                    $discountPrice = floatval(str_replace(',', '.', $entry['price']));
+                    $allPrices[] = $discountPrice;
+                }
+            }
+        }
+    }
+
+    $product_price_net = min($allPrices);
+    $product_price_net = str_replace('.', ',', $product_price_net);
+
+    return $product_price_net;
+}
+
 
 
 /**
