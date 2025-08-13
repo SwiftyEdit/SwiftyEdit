@@ -328,45 +328,51 @@ function se_get_product_variants($id) {
 function se_get_product_lowest_price(int $id) {
     global $db_posts;
 
-    $variants = [];
     $variants = se_get_product_variants($id);
-    if(count($variants) < 1) { return; }
+    if (count($variants) < 1) {
+        return null; // kein Produkt gefunden
+    }
 
-    $variant_prices = [];
-    foreach($variants as $variant) {
-        $variant_price = $db_posts->get("se_products",["product_price_net","product_price_volume_discount"],[
+    $allPrices = [];
+
+    foreach ($variants as $variant) {
+        $product = $db_posts->get("se_products", ["product_price_net", "product_price_volume_discount"], [
             "AND" => [
                 "id" => $variant['id'],
                 "status" => 1
             ]
         ]);
-        if($variant_price > 0) {
-            $variant_prices[] = $variant_price;
+
+        if (!$product || !isset($product['product_price_net'])) {
+            continue; // invalid data
         }
-    }
 
-    $allPrices = [];
-    foreach ($variant_prices as $product) {
-        // Convert base price to float
+        // Add base price
         $basePrice = floatval(str_replace(',', '.', $product['product_price_net']));
-        $allPrices[] = $basePrice;
+        if ($basePrice > 0) {
+            $allPrices[] = $basePrice;
+        }
 
-        // If there are volume discounts, decode JSON and collect prices
+        // Add volume discounts
         if (!empty($product['product_price_volume_discount'])) {
             $discounts = json_decode($product['product_price_volume_discount'], true);
             if (is_array($discounts)) {
                 foreach ($discounts as $entry) {
                     $discountPrice = floatval(str_replace(',', '.', $entry['price']));
-                    $allPrices[] = $discountPrice;
+                    if ($discountPrice > 0) {
+                        $allPrices[] = $discountPrice;
+                    }
                 }
             }
         }
     }
 
-    $product_price_net = min($allPrices);
-    $product_price_net = str_replace('.', ',', $product_price_net);
+    if (empty($allPrices)) {
+        return null; // No prices found
+    }
 
-    return $product_price_net;
+    $lowestPrice = min($allPrices);
+    return str_replace('.', ',', $lowestPrice);
 }
 
 
