@@ -340,6 +340,7 @@ if($product_data['type'] == 'v') {
     $parent_product = se_get_product_data($product_data['parent_id']);
     $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
     $smarty->assign('page_canonical_url', $canonical_url);
+    $smarty->assign('product_type', "v");
 
 } else {
     $variants = se_get_product_variants($product_data['id']);
@@ -351,6 +352,7 @@ if($product_data['type'] == 'v') {
         $smarty->assign('product_lowest_price_net', $product_lowest_price_net);
         $smarty->assign('product_lowest_price_gross', $product_lowest_price_gross);
     }
+    $smarty->assign('product_type', "p");
 }
 
 $cnt_variants = count($variants);
