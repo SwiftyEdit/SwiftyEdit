@@ -516,10 +516,13 @@ if(isset($_POST['get_attachment'])) {
     }
 }
 
-$product_data['product_price_gross'] = strip_tags($post_price_gross); // we need this for $structuredDataContext only
+// we need this for $structuredDataContext only
+$product_data['product_price_gross'] = strip_tags($post_price_gross);
 if($product_lowest_price_gross != '') {
     $product_data['product_price_gross'] = $product_lowest_price_gross;
 }
+$product_data['product_price_gross'] = str_replace(".","",$product_data['product_price_gross']);
+
 $structuredDataContext = [
     'type' => 'Product',
     'data' => $product_data
