@@ -522,6 +522,7 @@ if($product_lowest_price_gross != '') {
     $product_data['product_price_gross'] = $product_lowest_price_gross;
 }
 $product_data['product_price_gross'] = str_replace(".","",$product_data['product_price_gross']);
+$product_data['product_price_gross'] = str_replace(",",".",$product_data['product_price_gross']);
 
 $structuredDataContext = [
     'type' => 'Product',
