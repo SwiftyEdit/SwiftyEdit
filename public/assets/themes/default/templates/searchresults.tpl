@@ -11,7 +11,7 @@
 						</div>
 					{/if}
 					<div class="col">
-						<h6>{$page.title}</h6>
+						<h5 class="mb-1">{$page.title}</h5>
 						<p>{$page.description}</p>
 						<a href="{$page.href}" class="stretched-link"> </a>
 					</div>
@@ -41,8 +41,12 @@
 						</div>
 					{/if}
 					<div class="col">
-						<h6>{$product.title}</h6>
-						<p>{$product.description}</p>
+						<h5 class="mb-1">{$product.title}</h5>
+						<p>
+							{if $product.number}
+							<span class="border rounded p-1 text-secondary small">{$product.number}</span>
+							{/if}
+							{$product.description}</p>
 						<a href="{$product.href}" class="stretched-link"> </a>
 					</div>
 				</div>
