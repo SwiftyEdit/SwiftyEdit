@@ -303,7 +303,7 @@ function se_get_product_data_by_slug($slug) {
 function se_get_product_variants($id) {
     global $db_posts;
 
-    $get_columns = ["id","title","teaser","images","slug","product_variant_title","product_variant_description"];
+    $get_columns = ["id","type","title","teaser","images","slug","product_variant_title","product_variant_description"];
 
     $main_product = $db_posts->select("se_products", $get_columns, [
         "id" => $id
@@ -316,6 +316,63 @@ function se_get_product_variants($id) {
     $products = array_merge($main_product, $variants);
 
     return $products;
+}
+
+/**
+ * get the lowest price for a product
+ * check volume discount, also
+ *
+ * @param integer $id
+ * @return string|void
+ */
+function se_get_product_lowest_price(int $id) {
+    global $db_posts;
+
+    $variants = se_get_product_variants($id);
+    if (count($variants) < 1) {
+        return null; // kein Produkt gefunden
+    }
+
+    $allPrices = [];
+
+    foreach ($variants as $variant) {
+        $product = $db_posts->get("se_products", ["product_price_net", "product_price_volume_discount"], [
+            "AND" => [
+                "id" => $variant['id'],
+                "status" => 1
+            ]
+        ]);
+
+        if (!$product || !isset($product['product_price_net'])) {
+            continue; // invalid data
+        }
+
+        // Add base price
+        $basePrice = floatval(str_replace(',', '.', $product['product_price_net']));
+        if ($basePrice > 0) {
+            $allPrices[] = $basePrice;
+        }
+
+        // Add volume discounts
+        if (!empty($product['product_price_volume_discount'])) {
+            $discounts = json_decode($product['product_price_volume_discount'], true);
+            if (is_array($discounts)) {
+                foreach ($discounts as $entry) {
+                    $discountPrice = floatval(str_replace(',', '.', $entry['price']));
+                    if ($discountPrice > 0) {
+                        $allPrices[] = $discountPrice;
+                    }
+                }
+            }
+        }
+    }
+
+    if (empty($allPrices)) {
+        return null; // No prices found
+    }
+
+    $lowestPrice = min($allPrices);
+    return str_replace('.', ',', $lowestPrice);
 }
 
 

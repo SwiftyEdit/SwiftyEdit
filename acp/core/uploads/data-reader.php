@@ -23,7 +23,7 @@ if($_REQUEST['action'] == 'list_active_searches') {
         $all_filter = explode(" ", $_SESSION['uploads_text_filter']);
         foreach($all_filter as $f) {
             if ($_REQUEST['rm_keyword'] == "$f" || $f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin/uploads/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
+            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/uploads/write/" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
         }
     }
 

@@ -7,14 +7,14 @@ $xhr_path = trim($xhr_path, '/');
 
 $routes = [
     'comments' => 'comments.php',
+    'counter' => 'counter.php',
     'vote' => 'ajax.votings.php',
     'votes' => 'votes.php',
     'login' => 'login.php',
     'orders' => 'orders.php',
     'password-reset' => 'password-reset.php',
     'statusbox' => 'statusbox.php',
-    'search' => 'search.php',
-    'shopping-cart-trigger' => 'shopping-cart-trigger.php',
+    'search' => 'search.php'
 ];
 
 if (!preg_match('#^[a-z0-9\-_]+$#i', $xhr_path)) {

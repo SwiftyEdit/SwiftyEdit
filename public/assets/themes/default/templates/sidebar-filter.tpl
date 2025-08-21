@@ -9,6 +9,14 @@ or experimental:
 <a class="list-group-item list-group-item-action {$item.class}" href="?add_filter={$item.id}">{$item.title}</a>
 *}
 
+{assign var="cat_hashes_array" value=[]}
+
+{foreach $categories as $category}
+    {append var="cat_hashes_array" value=$category.cat_hash}
+{/foreach}
+
+{assign var="cat_hashes" value=","|implode:$cat_hashes_array}
+
 {if is_array($product_filter) }
     <div class="mb-2">
         <form action="{$form_action}" method="GET">
@@ -17,7 +25,7 @@ or experimental:
 
                     {if $groups.input_type == 1}
                         <div class="card-header fw-bold">
-                            {$groups.title} {$groups.input_type}
+                            {$groups.title}
                             {if $groups.description != ""}
                                 <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
                             {/if}
@@ -36,13 +44,15 @@ or experimental:
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
                                     <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title}</span></label>
+                                                title="{$item.description}">{$item.title}</span>
+                                        <span class="text-muted small ms-1">(<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
+                                    </label>
                                 </div>
                             {/foreach}
                         </div>
                     {elseif $groups.input_type == 2}
                         <div class="card-header fw-bold">
-                            {$groups.title} {$groups.input_type}
+                            {$groups.title}
                             {if $groups.description != ""}
                                 <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
                             {/if}
@@ -55,7 +65,10 @@ or experimental:
                                            value="{$item.id}" id="sf_id_{$item.id}"
                                            onchange="this.form.submit()" {$item.checked}>
                                     <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title}</span></label>
+                                                title="{$item.description}">{$item.title}</span>
+                                        <span class="text-muted small ms-1">(<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
+                                        </span>
+                                    </label>
                                 </div>
                             {/foreach}
                         </div>

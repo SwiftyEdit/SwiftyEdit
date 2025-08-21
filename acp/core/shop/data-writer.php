@@ -122,6 +122,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $parent_id = (int) $_POST['save_variant'];
     }
 
+    $product_variant_type = (int) $_POST['product_variant_type'];
+
 
     $product_accessories = '';
     if(isset($_POST['picker_1'])) {
@@ -277,6 +279,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
+    se_generate_xml_sitemap('products');
+
     /* get all $cols */
 
     require SE_ROOT.'install/contents/se_products.php';
@@ -321,6 +325,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 if(isset($_POST['save_price'])) {
     $group_title = sanitizeUserInputs($_POST['title']);
     $unit = sanitizeUserInputs($_POST['unit']);
+    $unit_content = sanitizeUserInputs($_POST['unit_content']);
     $price_net = sanitizeUserInputs($_POST['price_net']);
     $price_net = str_replace('.', '', $price_net);
 
@@ -357,6 +362,7 @@ if(isset($_POST['save_price'])) {
             "hash" => $hash,
             "amount" => $amount,
             "unit" => $unit,
+            "unit_content" => $unit_content,
             "tax" => $tax,
             "price_net" => $price_net,
             "price_volume_discount" => $product_price_volume_discount
@@ -364,6 +370,7 @@ if(isset($_POST['save_price'])) {
         $edit_id = $db_posts->id();
         record_log($_SESSION['user_nick'], "create new price group", "1");
         header( "HX-Trigger: update_price_groups");
+        exit;
     }
     // update data
     if(is_numeric($_POST['id'])) {
@@ -372,6 +379,7 @@ if(isset($_POST['save_price'])) {
             "title" => $group_title,
             "amount" => $amount,
             "unit" => $unit,
+            "unit_content" => $unit_content,
             "tax" => $tax,
             "price_net" => $price_net,
             "price_volume_discount" => $product_price_volume_discount
@@ -380,6 +388,7 @@ if(isset($_POST['save_price'])) {
         ]);
         $edit_id = $id;
         header( "HX-Trigger: update_price_groups");
+        exit;
     }
 }
 

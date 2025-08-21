@@ -623,12 +623,12 @@ function se_search_products($str,$lang,$currentPage=1,$itemsPerPage=10) {
             title LIKE ? OR teaser LIKE ? OR text LIKE ? OR 
             text_additional1 LIKE ? OR text_additional2 LIKE ? OR text_additional3 LIKE ?
             OR text_additional4 LIKE ? OR text_additional5 LIKE ?
-            OR meta_description LIKE ?)';
+            OR meta_title LIKE ? OR meta_description LIKE ? OR product_number LIKE ?)';
 
     $countSql = "SELECT COUNT(*) FROM se_products $where";
 
     $countParams = [
-        $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%"
+        $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%"
     ];
 
     $countSth = $db_posts->pdo->prepare($countSql);
@@ -652,7 +652,7 @@ function se_search_products($str,$lang,$currentPage=1,$itemsPerPage=10) {
 
     $products_params = [
         $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%",
-        "%$str%", "%$str%","$str","$str%","%$str%",$itemsPerPage,$offset
+        "%$str%", "%$str%","$str","$str%","%$str%","%$str%","%$str%",$itemsPerPage,$offset
     ];
 
     $sth = $db_posts->pdo->prepare($products_sql);

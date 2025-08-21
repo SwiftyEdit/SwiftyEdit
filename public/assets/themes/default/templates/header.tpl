@@ -37,7 +37,7 @@
                 <a href="{$shopping_cart_uri}" title="{$lang_label_shopping_cart}">
                     <i class="bi bi-basket-fill"></i>
                 <span id="shopping-cart-trigger"
-                 hx-get="/api/se/shopping-cart-trigger/"
+                 hx-get="/xhr/se/counter/?sc_items"
                  hx-trigger="load, update_user_status from:body"
                  hx-swap="innerHTML">0</span>
                 </a>

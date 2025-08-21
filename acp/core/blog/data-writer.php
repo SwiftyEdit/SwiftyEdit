@@ -210,6 +210,8 @@ if(isset($_POST['save_post'])) {
     $post_meta_title = se_return_clean_value($post_meta_title);
     $post_meta_description = se_return_clean_value($post_meta_description);
 
+    se_generate_xml_sitemap('posts');
+
     // get all $cols
     require SE_ROOT.'install/contents/se_posts.php';
     foreach($cols as $k => $v) {

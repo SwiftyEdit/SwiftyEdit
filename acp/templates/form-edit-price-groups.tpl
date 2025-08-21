@@ -20,18 +20,29 @@
     </div>
     <div class="col-md-4">
         <div class="mb-1">
-            <label>{label_product_tax}</label>
-            {select_tax}
+            <label>{label_product_unit_content}</label>
+            <input class='form-control' name="unit_content" type="text"
+                   value="{unit_content}">
         </div>
     </div>
-    <div class="col-md-6">
+
+</div>
+<div class="row">
+
+    <div class="col-md-5">
         <div class="">
             <label>{label_product_price} {label_product_net}</label>
             <input class='form-control prod_price_net' id="price" name="price_net" type="text"
                    value="{price_net}">
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-2">
+        <div class="mb-1">
+            <label>{label_product_tax}</label>
+            {select_tax}
+        </div>
+    </div>
+    <div class="col-md-5">
         <div class="">
             <label>{label_product_price} {label_product_gross}</label>
             <input class='form-control prod_price_gross' id="price_total" name="price_gross"

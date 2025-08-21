@@ -59,6 +59,9 @@
   "status.user.waiting": "Waiting",
   "status.user.paused": "Paused",
 
+  "product.type.main": "Main product",
+  "product.type.variant": "Variant",
+
   "snippets": "Snippets",
   "no_snippet_selected": "No Snippet selected",
   "labels": "Labels",

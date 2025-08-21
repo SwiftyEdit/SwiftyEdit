@@ -601,11 +601,33 @@ if((isset($product_data['id'])) && (is_numeric($product_data['id']))) {
     $cnt_variants = count($variants);
 }
 
-$edit_variant_btn = '';
+$variant_controls = '';
 if($cnt_variants > 1) {
+    // $product_data['id'] is a main product, inject variant controls
+    $variant_controls = '<div class="col-md-4">';
+
+    $checked_var_type_parameter = ($product_data['product_variant_type'] == 2) ? 'checked' : '';
+    $checked_var_type_page      = ($product_data['product_variant_type'] == 2) ? '' : 'checked';
+
+    // create input radios for selecting variant handling (type page or parameter)
+    $variant_controls .= '<p>'.$lang['label_product_variant_type'].'</p>';
+    $variant_controls .= '<div class="form-check">';
+    $variant_controls .= '<input class="form-check-input" type="radio" name="product_variant_type" value="1" id="variantPage" '.$checked_var_type_page.'>';
+    $variant_controls .= '<label class="form-check-label" for="variantPage">'.$lang['label_product_variant_type_page'].' <span class="ms-3 form-text">product-5.html</span></label>';
+    $variant_controls .= '</div>';
+    $variant_controls .= '<div class="form-check">';
+    $variant_controls .= '<input class="form-check-input" type="radio" name="product_variant_type" value="2" id="variantParameter" '.$checked_var_type_parameter.'>';
+    $variant_controls .= '<label class="form-check-label" for="variantParameter">'.$lang['label_product_variant_type_parameter'].' <span class="ms-3 form-text">product/?c=black</span></label>';
+    $variant_controls .= '</div><hr>';
+
+    // create buttons to edit variants
+    $variant_controls .= '<p>'.$lang['label_product_variants'].'<p>';
     foreach($variants as $variant) {
-        $variants_list .= '<button class="btn btn-default btn-sm" type="submit" name="edit_id" value="'.$variant['id'].'">'.$icon['edit'].' '.$variant['title'].' (#: '.$variant['id'].')</button> ';
+        if($variant['id'] == $product_data['id']) {continue;} // skip the product which is itself
+        $variant_controls .= '<button class="btn btn-default btn-sm" type="submit" name="edit_id" value="'.$variant['id'].'">'.$icon['edit'].' '.$variant['title'].' (#: '.$variant['id'].')</button> ';
     }
+
+    $variant_controls .= '</div>';
 }
 
 $product_price_manufacturer = $product_data['product_price_manufacturer'];
@@ -922,7 +944,7 @@ $form_tpl = str_replace('{select_comments}', $select_comments, $form_tpl);
 $form_tpl = str_replace('{select_votings}', $select_votings, $form_tpl);
 
 $form_tpl = str_replace('{list_products_filter}', $filter_list, $form_tpl);
-$form_tpl = str_replace('{variants_list}', $variants_list, $form_tpl);
+$form_tpl = str_replace('{variant_controls}', $variant_controls, $form_tpl);
 $form_tpl = str_replace('{product_variant_title}', $product_data['product_variant_title'], $form_tpl);
 $form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);
 $form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
@@ -939,6 +961,8 @@ $form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod
 $form_tpl = str_replace('{link}', $product_data['link'], $form_tpl);
 
 $form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
+$form_tpl = str_replace('{product_ean}', $product_data['product_ean'], $form_tpl);
+$form_tpl = str_replace('{product_mpn}', $product_data['product_mpn'], $form_tpl);
 $form_tpl = str_replace('{product_manufacturer}', $product_data['product_manufacturer'], $form_tpl);
 $form_tpl = str_replace('{product_price_manufacturer}', $product_data['product_price_manufacturer'], $form_tpl);
 
@@ -948,6 +972,7 @@ $form_tpl = str_replace('{product_currency}', $product_currency, $form_tpl);
 $form_tpl = str_replace('{product_price_label}', $product_data['product_price_label'], $form_tpl);
 $form_tpl = str_replace('{product_amount}', $product_data['product_amount'], $form_tpl);
 $form_tpl = str_replace('{product_unit}', $product_data['product_unit'], $form_tpl);
+$form_tpl = str_replace('{product_unit_content}', $product_data['product_unit_content'], $form_tpl);
 $form_tpl = str_replace('{product_price_net}', $product_price_net, $form_tpl);
 $form_tpl = str_replace('{select_tax}', $select_tax, $form_tpl);
 $form_tpl = str_replace('{select_shipping_mode}', $select_shipping_mode, $form_tpl);

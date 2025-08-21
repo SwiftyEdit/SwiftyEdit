@@ -289,36 +289,9 @@ foreach ($get_products as $k => $post) {
         }
     }
 
-    // check if we have cheaper price from variants
-    // check volume discounts, also
-    $variant_prices = [];
-    if($cnt_variants > 1) {
-        foreach($variants as $variant) {
-            $variant_prices[] = $db_posts->get("se_products",["product_price_net","product_price_volume_discount"],[
-               "id" => $variant['id']
-            ]);
-        }
-
-        $allPrices = [];
-        foreach ($variant_prices as $product) {
-            // Convert base price to float
-            $basePrice = floatval(str_replace(',', '.', $product['product_price_net']));
-            $allPrices[] = $basePrice;
-
-            // If there are volume discounts, decode JSON and collect prices
-            if (!empty($product['product_price_volume_discount'])) {
-                $discounts = json_decode($product['product_price_volume_discount'], true);
-                if (is_array($discounts)) {
-                    foreach ($discounts as $entry) {
-                        $discountPrice = floatval(str_replace(',', '.', $entry['price']));
-                        $allPrices[] = $discountPrice;
-                    }
-                }
-            }
-        }
-
-        $product_price_net = min($allPrices);
-        $product_price_net = str_replace('.', ',', $product_price_net);
+    // check if we have lower price from variants
+    $product_price_net = se_get_product_lowest_price($get_products[$k]['id']);
+    if($product_price_net != '') {
         $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
     }
 
@@ -389,27 +362,30 @@ foreach ($get_products as $k => $post) {
 
 if($status_404 == true) {
     $show_404 = "true";
+    header("HTTP/1.0 404 Not Found");
+    header("Status: 404 Not Found");
+} else {
+
+    $form_action = '/' . $swifty_slug . $mod_slug;
+    $smarty->assign('form_action', $form_action);
+    $smarty->assign('product_cnt', $cnt_filter_products);
+    $smarty->assign('products', $get_products);
+    $smarty->assign('show_products_list', $show_products_list);
+    $smarty->assign('product_filter', $product_filter);
+
+    $smarty->assign('nbr_products', $cnt_filter_products);
+    $smarty->assign('show_pagination', $show_pagination);
+    $smarty->assign('disable_prev_link', $disable_prev_link);
+    $smarty->assign('disable_next_link', $disable_next_link);
+    if (isset($pagination)) {
+        $smarty->assign('pagination', $pagination);
+    }
+
+    $smarty->assign('show_shopping_cart', $show_shopping_cart);
+    $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
+    $smarty->assign('btn_read_more', $lang['btn_open_product']);
+
+    $products_page = $smarty->fetch("products-list.tpl", $cache_id);
+    $smarty->assign('page_content', $products_page, true);
+    $smarty->assign('categories', $categories);
 }
-
-$form_action = '/' . $swifty_slug . $mod_slug;
-$smarty->assign('form_action', $form_action);
-$smarty->assign('product_cnt', $cnt_filter_products);
-$smarty->assign('products', $get_products);
-$smarty->assign('show_products_list', $show_products_list);
-$smarty->assign('product_filter', $product_filter);
-
-$smarty->assign('nbr_products', $cnt_filter_products);
-$smarty->assign('show_pagination', $show_pagination);
-$smarty->assign('disable_prev_link', $disable_prev_link);
-$smarty->assign('disable_next_link', $disable_next_link);
-if(isset($pagination)) {
-    $smarty->assign('pagination', $pagination);
-}
-
-$smarty->assign('show_shopping_cart', $show_shopping_cart);
-$smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
-$smarty->assign('btn_read_more', $lang['btn_open_product']);
-
-$products_page = $smarty->fetch("products-list.tpl", $cache_id);
-$smarty->assign('page_content', $products_page, true);
-$smarty->assign('categories', $categories);

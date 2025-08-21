@@ -90,6 +90,7 @@ if($s != '' && $start_search == "true") {
 
         $products[$x]['title'] = $product['title'];
         $products[$x]['description'] = $product['meta_description'];
+        $products[$x]['number'] = $product['product_number'];
         $products[$x]['href'] = '/'.$url;
         $products[$x]['url'] = $url;
         $x++;
