@@ -118,19 +118,23 @@ function move_new_files($source) {
     }
 
 
-    /* at first, the install folder */
+    // at first, the /install/ directory
     rmdir_recursive('../install');
     copy_recursive($sources_path.$sources_dir."/install","../install");
 
-    /* payment addons */
+    // update htaccess file
+    update_htaccess_file();
+
+    // payment addons
     copy_recursive($sources_path.$sources_dir."/plugins/se_invoice-pay","../plugins/se_invoice-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/se_cash-pay","../plugins/se_cash-pay");
+    copy_recursive($sources_path.$sources_dir."/plugins/se_paypal-pay","../plugins/se_paypal-pay");
 
     if(!is_array($new_files)) {
         $_SESSION['protocol'] .= "ERROR can not scan target files<|>";
     }
 
-    /* now copy the other files and directories */
+    // now copy the other files and directories
     foreach($new_files as $value) {
 
         if(str_contains("$value","/install/")) { continue; }
@@ -299,4 +303,46 @@ function update_database() {
         $existing_cols = get_columns("$database","$table_name");
 
     }
+}
+
+function update_htaccess_file(): void
+{
+    $htaccessFile = SE_ROOT . '/public/.htaccess';
+    $templateFile = SE_ROOT . '/install/contents/_htaccess.txt';
+
+    // Load current and template
+    $current  = file_exists($htaccessFile) ? file_get_contents($htaccessFile) : '';
+    $template = file_exists($templateFile) ? file_get_contents($templateFile) : '';
+
+    if ($template === false || $template === '') {
+        die("No template core rules found.\n");
+    }
+
+    // Markers
+    $startMarker   = "# --- SwiftyEdit core (do not edit) ---";
+    $endCoreMarker = "# --- END SwiftyEdit core ---";
+
+    // --- Extract "core-only" section from template (start..END core, without user marker) ---
+    $tStart = strpos($template, $startMarker);
+    $tEnd   = strpos($template, $endCoreMarker);
+    if ($tStart === false || $tEnd === false) {
+        // Fallback: template is unexpected → use full template for fresh writes
+        file_put_contents($htaccessFile, $template);
+        return;
+    }
+    $coreFromTemplate = substr($template, $tStart, $tEnd - $tStart + strlen($endCoreMarker));
+
+    // --- Update path ---
+    if (str_contains($current, $startMarker) && str_contains($current, $endCoreMarker)) {
+        // Replace only the existing core block
+        $cStart = strpos($current, $startMarker);
+        $cEnd   = strpos($current, $endCoreMarker) + strlen($endCoreMarker);
+
+        $newContent = substr_replace($current, $coreFromTemplate, $cStart, $cEnd - $cStart);
+    } else {
+        // Fresh or unmarked file → write full template as-is (includes user marker once)
+        $newContent = $template;
+    }
+
+    file_put_contents($htaccessFile, $newContent);
 }

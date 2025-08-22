@@ -25,6 +25,16 @@ $mod_slug = '';
 
 const SE_SECTION = "frontend";
 
+require_once SE_ROOT . '/app/functions.php';
+require_once SE_ROOT . '/app/functions/functions.php';
+
+$publicPath   = SE_ROOT.'/public/'; // usually /public/
+$templatePath = SE_ROOT . '/install/contents/_htaccess.txt';
+
+if (!se_ensure_htaccess_exists($publicPath, $templatePath)) {
+    die("SwiftyEdit requires a .htaccess file. Please create it manually in /public/");
+}
+
 /**
  * if there is no database config we start the installer
  * @var string $se_db_content SQLite file from config.php or /content/config.php

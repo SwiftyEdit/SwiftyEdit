@@ -69,3 +69,37 @@ function se_format_datetime($timestring): string {
 
     return $str_date. ' ' .$time;
 }
+
+
+
+
+/**
+ * Ensure .htaccess exists by copying from template.
+ *
+ * @param string $publicPath Path to the public directory
+ * @param string $templatePath Path to the htaccess template file
+ * @return bool Returns true if .htaccess exists or was created, false otherwise
+ */
+function se_ensure_htaccess_exists(string $publicPath, string $templatePath): bool
+{
+    $htaccessFile = rtrim($publicPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '.htaccess';
+
+    // Already exists → nothing to do
+    if (file_exists($htaccessFile)) {
+        return true;
+    }
+
+    // No template → fail
+    if (!file_exists($templatePath)) {
+        error_log("[SwiftyEdit] Missing htaccess template at: $templatePath");
+        return false;
+    }
+
+    // Try to copy
+    if (@copy($templatePath, $htaccessFile)) {
+        return true;
+    } else {
+        error_log("[SwiftyEdit] Could not copy htaccess template. Check file permissions.");
+        return false;
+    }
+}

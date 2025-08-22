@@ -91,13 +91,16 @@ if($modus == "update") {
 				include("inc.update.php");
 			} else {
 				echo '<h3 class="text-center">Choose your Language ...</h3><hr>';
-				echo '<div class="row">';
-				echo '<div class="col-md-6">';
-				echo '<p class="text-center"><a href="index.php?l=de"><img src="'.return_language_flag_src('de').'" class="img-rounded"><br>DE</a></p>';
+                echo '<div class="row">';
+                echo '<div class="col-md-4 text-center">';
+                echo '<a href="index.php?l=en" class="btn btn-lg btn-outline-primary w-100"><span class="fs-3">EN</span><br>English</a>';
 				echo '</div>';
-				echo '<div class="col-md-6">';
-				echo '<p class="text-center"><a href="index.php?l=en"><img src="'.return_language_flag_src('en').'" class="img-rounded"><br>EN</a></p>';
-				echo '</div>';
+                echo '<div class="col-md-4 text-center">';
+                echo '<a href="index.php?l=es" class="btn btn-lg btn-outline-primary w-100"><span class="fs-3">ES</span><br>Español</a>';
+                echo '</div>';
+                echo '<div class="col-md-4 text-center">';
+                echo '<a href="index.php?l=de" class="btn btn-lg btn-outline-primary w-100"><span class="fs-3">DE</span><br>Deutsch</a>';
+                echo '</div>';
 				echo '</div>';
 			}
 			?>
