@@ -1,5 +1,5 @@
+# --- SwiftyEdit core (do not edit) ---
 RewriteEngine On
-RewriteBase /
 
 RewriteRule ^images/(.*)$ assets/images/$1 [L]
 RewriteRule ^images_tmb/(.*)$ assets/images_tmb/$1 [L]
@@ -15,3 +15,5 @@ RewriteRule ^install/(.*)$ install.php?query=$1 [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?query=$1 [L,QSA]
+# --- END SwiftyEdit core ---
+# --- User custom rules (safe to edit) ---

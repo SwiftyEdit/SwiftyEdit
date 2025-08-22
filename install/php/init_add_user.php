@@ -36,39 +36,40 @@ if(isset($_POST['check_user_data'])) {
 	}
 	
 }
-
-echo '<fieldset>';
-
-echo '<legend>'.$lang['label_add_user'].'</legend>';
-
-echo '<div class="alert alert-info">';
-echo '<p>'.$lang['description_add_user'].'</p>';
-echo '</div>';
-
 echo '<form action="index.php" method="POST">';
-echo '<div class="form-group">';
-echo '<label>'.$lang['username'].' <small>(A-Za-z0-9)</small></label>';
+echo '<div class="card">';
+
+echo '<h5 class="card-header">'.$lang['label_add_user'].'</h5>';
+echo '<div class="card-body">';
+echo '<div class="alert alert-info">'.$lang['description_add_user'].'</div>';
+
+
+echo '<div class="mb-2">';
+echo '<label class="form-label">'.$lang['username'].' <small>(A-Za-z0-9) / (min 2, max 20)</small></label>';
 echo '<input type="text" class="form-control" name="username" value="'.$_SESSION['temp_username'].'">';
 echo '</div>';
 
-echo '<div class="form-group">';
-echo '<label>'.$lang['email'].'</label>';
+echo '<div class="mb-2">';
+echo '<label class="form-label">'.$lang['email'].'</label>';
 echo '<input type="mail" class="form-control" name="mail" value="'.$_SESSION['temp_usermail'].'">';
 echo '</div>';
 
-echo '<div class="form-group">';
-echo '<label>'.$lang['password'].'</label>';
+echo '<div class="mb-2">';
+echo '<label class="form-label">'.$lang['password'].'</label>';
 echo '<input type="password" class="form-control" name="psw" value="'.$_SESSION['temp_userpsw'].'">';
-echo '<small class="help-text">'.$lang['password_help_text'].'</small>';
+echo '<div class="form-text">'.$lang['password_help_text'].'</div>';
 echo '</div>';
 
-echo '<hr>';
+echo '</div>';
+
+echo '<div class="card-footer">';
 
 if((in_array('error', $checked_user_data) OR $_SESSION['temp_username'] == '')) {
-	echo '<input type="submit" class="btn btn-info" name="check_user_data" value="'.$lang['btn_enter_user'].'">';
+    echo '<input type="submit" class="btn btn-info" name="check_user_data" value="'.$lang['btn_enter_user'].'">';
 } else {
-	echo '<input type="submit" class="btn btn-success" name="step3" value="'.$lang['next_step'].'">';
+    echo '<input type="submit" class="btn btn-success" name="step3" value="'.$lang['next_step'].'">';
 }
+echo '</div>';
 
+echo '</div>';
 echo '</form>';
-echo '</fieldset>';

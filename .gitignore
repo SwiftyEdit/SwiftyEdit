@@ -141,3 +141,4 @@ _config_database.php
 secrets.json
 test-results/
 /node_modules/
+public/.htaccess
