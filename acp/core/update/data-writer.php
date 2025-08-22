@@ -13,7 +13,15 @@ if(isset($_POST['helper_update_table'])) {
 if(isset($_POST['load_update_data'])) {
 
     if($_POST['load_update_data'] == 'alpha') {
-        $remote_file = basename($_POST['file']);
+        $remote_file = 'alpha/'.basename($_POST['file']);
+    }
+
+    if($_POST['load_update_data'] == 'beta') {
+        $remote_file = 'beta/'.basename($_POST['file']);
+    }
+
+    if($_POST['load_update_data'] == 'stable') {
+        $remote_file = 'beta/'.basename($_POST['file']);
     }
 
     $source_file = 'https://swiftyedit.net/releases/v2/files/'.$remote_file;
