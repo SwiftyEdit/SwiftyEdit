@@ -32,12 +32,13 @@ se_increase_product_hits($get_product_id);
 // get the product-page by 'type_of_use' and $languagePack
 // we need this if we link to product variants
 // if $swifty_slug is not equal, we set a canonical link
-$target_page = $db_content->get("se_pages", "page_permalink", [
-    "AND" => [
-        "page_type_of_use" => "display_product",
-        "page_language" => $page_contents['page_language']
-    ]
-]);
+
+foreach ($cached_url_data as $page) {
+    if ($page['page_language'] === $page_contents['page_language'] && $page['page_type_of_use'] === 'display_product') {
+        $target_page = $page['page_permalink'];
+        break;
+    }
+}
 
 if ($target_page == '') {
     $target_page = $swifty_slug;

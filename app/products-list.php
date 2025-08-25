@@ -27,15 +27,16 @@
  */
 
 // get the product-page by 'type_of_use' and $languagePack
-$target_page = $db_content->select("se_pages", "page_permalink", [
-    "AND" => [
-        "page_type_of_use" => "display_product",
-        "page_language" => $page_contents['page_language']
-    ]
-]);
 
-if(!isset($target_page[0]) OR $target_page[0] == '') {
-    $target_page[0] = $swifty_slug;
+foreach ($cached_url_data as $page) {
+    if ($page['page_language'] === $page_contents['page_language'] && $page['page_type_of_use'] === 'display_product') {
+        $get_target_page = $page['page_permalink'];
+        break;
+    }
+}
+
+if(!isset($get_target_page) OR $get_target_page == '') {
+    $get_target_page = $swifty_slug;
 }
 
 $sql_start = ($products_start * $products_limit) - $products_limit;
@@ -173,9 +174,9 @@ foreach ($get_products as $k => $post) {
     }
 
     $post_filename = basename($get_products[$k]['slug']);
-    $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$post_filename-" . $get_products[$k]['id'] . ".html";
+    $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $get_target_page . "$post_filename-" . $get_products[$k]['id'] . ".html";
     if($get_products[$k]['slug'] != '') {
-        $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . $get_products[$k]['slug'];
+        $get_products[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $get_target_page . $get_products[$k]['slug'];
     }
 
     $post_releasedate = date($se_prefs['prefs_dateformat'], $get_products[$k]['releasedate']);
