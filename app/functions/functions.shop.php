@@ -439,10 +439,15 @@ function se_increase_downloads_hits($product_id) {
 
 function se_increase_product_hits($product_id) {
 
-    global $db_posts;
+    global $db_posts,$se_bot_list;
 
     if(!is_numeric($product_id)) {
-        return false;
+        return;
+    }
+
+    // User-Agent
+    if (se_is_bot()) {
+        return;
     }
 
     $product_data_hits = $db_posts->get("se_products","hits", [
@@ -451,7 +456,7 @@ function se_increase_product_hits($product_id) {
 
     $product_data_hits = ((int) $product_data_hits)+1;
 
-    $update = $db_posts->update("se_products", [
+    $db_posts->update("se_products", [
         "hits" => $product_data_hits
     ],[
         "id" => $product_id

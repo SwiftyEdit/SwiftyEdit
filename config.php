@@ -106,6 +106,12 @@ $se_limit_groups = '';
 $se_limit_categories = '';
 $se_limit_labels = '';
 
+$se_bot_list = [
+    'googlebot','bingbot','slurp','duckduckbot','baiduspider',
+    'yandex','sogou','exabot','facebot','ia_archiver',
+    'semrush','ahrefs','mj12bot'
+];
+
 
 if(is_file(SE_CONTENT . '/config.php')) {
 	include SE_CONTENT . '/config.php';

@@ -399,3 +399,19 @@ function se_validate_token($token): void {
     }
 
 }
+
+/**
+ * Checks if the current user agent matches any known search engine bot from the global bot list.
+ *
+ * @return bool Returns true if the user agent matches a bot, false otherwise.
+ */
+function se_is_bot(): bool {
+    global $se_bot_list;
+    $ua = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
+    foreach ($se_bot_list as $bot) {
+        if (str_contains($ua, strtolower($bot))) {
+            return true;
+        }
+    }
+    return false;
+}
