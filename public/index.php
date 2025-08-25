@@ -65,17 +65,18 @@ $requestPathParts = explode('/', trim($swifty_slug, '/'));
 $active_mods = se_get_active_mods();
 $cnt_active_mods = count($active_mods);
 
-/**
- * get existing url from cache file
- * @var array $existing_url
- */
 
-if(is_file(SE_CONTENT . '/cache/active_urls.php')) {
-    include SE_CONTENT . '/cache/active_urls.php';
+// get existing urls from the cache file
+$cache_file_active_urls = SE_CONTENT . '/cache/active_urls.json';
+if(file_exists($cache_file_active_urls)) {
+    $cached_url_data = json_decode(file_get_contents($cache_file_active_urls), true);
 }
 $query_is_cached = false;
-if(in_array("$query", (array) $existing_url)) {
-    $query_is_cached = true;
+foreach($cached_url_data as $cached_url) {
+    if ($cached_url['page_permalink'] === $query) {
+        $query_is_cached = true;
+        break;
+    }
 }
 
 /**

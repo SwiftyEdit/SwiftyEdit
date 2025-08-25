@@ -211,25 +211,25 @@ function se_get_stylesheets($theme){
  * check in active modules and pages with posts
  * generate array from pages containing a module or post categories
  * and from addon_dir -> content.sqlite3
- * store in ... cache/active_mods.php
+ * store in ... cache/active_addons.json
  */
 
 function mods_check_in() {
 	
 	global $db_content;
-	
-	$pages = array();
-	$mods = array();
-	$m = array();
+
+    $m = [];
 
 	$mods = $db_content->select("se_addons", "addon_dir", [
 	    "addon_type" => ["module","plugin"]
 	]);
-	
-	for($i=0;$i<count($mods);$i++) {
-		$m[]['page_modul'] = $mods[$i];
-		$m[]['page_permalink'] = 'NULL';
-	}
+
+    foreach ($mods as $mod) {
+        $m[] = [
+            'page_modul' => $mod,
+            'page_permalink' => 'NULL'
+        ];
+    }
 		
 	$pages = $db_content->select("se_pages", ["page_modul","page_permalink","page_posts_categories","page_type_of_use"]);	
 	$items = array_merge($pages, $m);
@@ -261,15 +261,18 @@ function mods_check_in() {
 			$string .= "\$active_mods[$x]['page_modul'] = \"" . $items[$i]['page_modul'] . "\";\n";
 			$string .= "\$active_mods[$x]['page_permalink'] = \"" . $items[$i]['page_permalink'] . "\";\n";			
 			$x++;
+
+            $data[] = [
+                'page_modul' => $items[$i]['page_modul'],
+                'page_permalink' => $items[$i]['page_permalink']
+            ];
+
 		}
 	
 	}
-	
-	$str = "<?php\n$string\n?>";
-		
-	$file = SE_ROOT . "/data/cache/active_mods.php";
-	file_put_contents($file, $str, LOCK_EX);
 
+    $file = SE_CONTENT . "/cache/active_addons.json";
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 /**

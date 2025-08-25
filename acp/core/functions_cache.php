@@ -36,30 +36,27 @@ function se_delete_smarty_cache($cache_id): void {
 /**
  * cache all saved url paths
  * generate array from pages where permalink is not empty
- * store in ... cache/active_urls.php
+ * store in ... cache/active_urls.json
  */
 
 function cache_url_paths() {
 
 	global $db_content;
-	
-	$result = $db_content->select("se_pages", "*");	
-	$count_result = count($result);
-	
-	$x = 0;
-	$string = "\$existing_url = array();\n";
-	for($i=0;$i<$count_result;$i++) {
-		
-		if($result[$i]['page_permalink'] != "") {
-			$string .= "\$existing_url[$x] = \"" . $result[$i]['page_permalink'] . "\";\n";
-			$x++;
-		}
-	}
-	
-	$str = "<?php\n$string\n?>";
-	$file = SE_CONTENT . "/cache/active_urls.php";
-	file_put_contents($file, $str, LOCK_EX);
+
+    $pages = $db_content->select("se_pages", "*", [
+        "page_permalink[!]" => ""
+    ]);
+
+    $data = [];
+    foreach($pages as $page) {
+        $data[] = [
+            'page_id' => $page['page_id'],
+            'page_language' => $page['page_language'],
+            'page_permalink' => $page['page_permalink'],
+            'page_type_of_use' => $page['page_type_of_use']
+        ];
+    }
+
+    $file = SE_CONTENT . "/cache/active_urls.json";
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
-
-
-?>
