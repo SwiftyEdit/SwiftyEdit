@@ -50,7 +50,7 @@ function se_get_preferences(): array
  * Retrieves all legal pages from the database
  *
  * Returns all pages that are marked as legal documents, such as
- * imprint, privacy policy and other legal content.
+ * imprint, privacy policy, and other legal content.
  * Results are filtered by the current language setting.
  *
  * @return array Array of legal pages containing page_linkname, page_title,
@@ -609,83 +609,193 @@ function se_build_html_file($data) {
  */
 
 
-function se_get_textlib($name,$lang,$type) {
 
-	global $db_content;
-	global $languagePack;
-	
-	if($lang == '') {
-		$lang = $languagePack;
-	}
+/**
+ * Retrieves a snippet by name, language, and type.
+ *
+ * @param string $name The name/identifier of the snippet
+ * @param string $lang The language of the snippet (empty string uses default)
+ * @param string $type The return type: 'all', 'content', 'tpl', or empty for raw data
+ *
+ * @return mixed The snippet data, rendered template, or empty string if not found
+ *
+ * @since 2.0.0
+ */
+function se_get_snippet($name, $lang, $type) {
+    global $db_content, $languagePack;
 
-    $lang = htmlentities($lang);
-    $name = htmlentities($name);
-
-	// get snippet data, from cache or from database
-
-    $cache_file = SE_ROOT.'data/cache/snippets/'.$name.'_'.$lang.'.json';
-
-    if (file_exists($cache_file)) {
-        $textlibData = json_decode(file_get_contents($cache_file), true);
-    } else {
-        $textlibData = $db_content->get("se_snippets", "*", [
-            "AND" => [
-                "snippet_name" => "$name",
-                "snippet_lang" => "$lang"
-            ]
-        ]);
+    // Input validation
+    if (empty($name)) {
+        return '';
     }
 
-    /* no snippet found - try without language */
-    if(!is_array($textlibData)) {
-        $textlibData = $db_content->get("se_snippets", "*", [
-            "snippet_name" => "$name"
-        ]);
+    // Set default language
+    if (empty($lang)) {
+        $lang = $languagePack ?? 'en';
     }
 
-	if($type == 'all') {
-		return $textlibData;
-	}
-	
-	if($type == 'content') {
-		return $textlibData['snippet_content'];
-	}
-	
-	if($type == 'tpl') {
-		
-		foreach($textlibData as $k => $v) {
-	   		$$k = stripslashes($v);
-		}
-		
-		$get_tpl_file = SE_ROOT.'/public/themes/default/templates/snippet.tpl';
-		
-		if($snippet_theme != '' AND $snippet_theme != 'use_standard') {
-			$get_tpl_file = SE_ROOT.'/public/themes/'.$snippet_theme.'/templates/'.$snippet_template;
-		}
+    // Sanitize inputs
+    $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+    $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
-		if(is_file("$get_tpl_file")) {
-			$tpl_file = file_get_contents($get_tpl_file);
-			
-			$snippet_thumbnail_array = explode("<->", $snippet_images);
-			if(count($snippet_thumbnail_array) > 0) {
-				foreach($snippet_thumbnail_array as $img) {
-					$img = str_replace('../content/', '/content/', $img);
-					$tpl_file = str_replace('{$snippet_img_src}',$img,$tpl_file);						
-				}
-			}
-			
-			$tpl_file = str_replace('{$snippet_title}',$snippet_title,$tpl_file);
-			$tpl_file = str_replace('{$snippet_text}',$snippet_content,$tpl_file);
-			$tpl_file = str_replace('{$snippet_teaser}',$snippet_teaser,$tpl_file);
-			$tpl_file = str_replace('{$snippet_classes}',$snippet_classes,$tpl_file);
-			$tpl_file = str_replace('{$snippet_url}',$snippet_permalink,$tpl_file);
-			$tpl_file = str_replace('{$snippet_url_name}',$snippet_permalink_name,$tpl_file);
-			$tpl_file = str_replace('{$snippet_url_title}',$snippet_permalink_title,$tpl_file);
-			$tpl_file = str_replace('{$snippet_url_classes}',$snippet_permalink_classes,$tpl_file);
-			return $tpl_file;
-		}
-	}
-    return '';
+    // Get snippet data from cache or database
+    $snippetData = se_get_snippet_data($name, $lang);
+
+    // No snippet found - try without language
+    if (!is_array($snippetData)) {
+        $snippetData = se_get_snippet_data($name);
+    }
+
+    // Still no data found
+    if (!is_array($snippetData)) {
+        return '';
+    }
+
+    // Return based on type
+    switch ($type) {
+        case 'content':
+            return $snippetData['snippet_content'] ?? '';
+
+        case 'tpl':
+            return se_render_snippet_template($snippetData);
+
+        case 'all':
+        default:
+            return $snippetData;
+    }
+}
+
+/**
+ * Retrieves snippet data from cache or database.
+ *
+ * @param string $name The snippet name
+ * @param string|null $lang The language (optional)
+ * @return array|false The snippet data or false if not found
+ */
+function se_get_snippet_data($name, $lang = null) {
+    global $db_content;
+
+    // Build cache filename
+    $cache_suffix = $lang ? '_' . $lang : '';
+    $cache_file = SE_ROOT . 'data/cache/snippets/' . $name . $cache_suffix . '.json';
+
+    // Try cache first
+    if (file_exists($cache_file) && is_readable($cache_file)) {
+        $content = file_get_contents($cache_file);
+        if ($content !== false) {
+            $data = json_decode($content, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $data;
+            }
+        }
+    }
+
+    // Fallback to database
+    $conditions = ["snippet_name" => $name];
+    if ($lang !== null) {
+        $conditions["snippet_lang"] = $lang;
+    }
+
+    try {
+        return $db_content->get("se_snippets", "*", $conditions);
+    } catch (Exception $e) {
+        error_log("Error fetching snippet: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Renders a snippet using its template.
+ *
+ * @param array $snippetData The snippet data
+ * @return string The rendered template or empty string
+ */
+function se_render_snippet_template($snippetData) {
+    if (!is_array($snippetData)) {
+        return '';
+    }
+
+    // Extract variables safely
+    $snippet_theme = $snippetData['snippet_theme'] ?? '';
+    $snippet_template = $snippetData['snippet_template'] ?? 'snippet.tpl';
+
+    // Determine template file path
+    $template_path = SE_ROOT . '/public/themes/default/templates/snippet.tpl';
+
+    if (!empty($snippet_theme) && $snippet_theme !== 'use_standard') {
+        $custom_path = SE_ROOT . '/public/themes/' . $snippet_theme . '/templates/' . $snippet_template;
+        if (file_exists($custom_path) && is_readable($custom_path)) {
+            $template_path = $custom_path;
+        }
+    }
+
+    // Load template
+    if (!file_exists($template_path) || !is_readable($template_path)) {
+        return '';
+    }
+
+    $template_content = file_get_contents($template_path);
+    if ($template_content === false) {
+        return '';
+    }
+
+    // Process template replacements
+    $template_content = se_process_template_replacements($template_content, $snippetData);
+
+    return $template_content;
+}
+
+/**
+ * Processes template variable replacements.
+ *
+ * @param string $template The template content
+ * @param array $data The snippet data
+ * @return string The processed template
+ */
+function se_process_template_replacements($template, $data) {
+    // Handle images
+    if (!empty($data['snippet_images'])) {
+        $images = explode("<->", $data['snippet_images']);
+        foreach ($images as $img) {
+            if (!empty($img)) {
+                $img = str_replace('../content/', '/content/', $img);
+                $template = str_replace('{$snippet_img_src}', htmlspecialchars($img, ENT_QUOTES, 'UTF-8'), $template);
+                break; // Only replace first occurrence
+            }
+        }
+    }
+
+    // Define replacement mappings
+    $replacements = [
+        '{$snippet_title}' => $data['snippet_title'] ?? '',
+        '{$snippet_text}' => $data['snippet_content'] ?? '',
+        '{$snippet_teaser}' => $data['snippet_teaser'] ?? '',
+        '{$snippet_classes}' => $data['snippet_classes'] ?? '',
+        '{$snippet_url}' => $data['snippet_permalink'] ?? '',
+        '{$snippet_url_name}' => $data['snippet_permalink_name'] ?? '',
+        '{$snippet_url_title}' => $data['snippet_permalink_title'] ?? '',
+        '{$snippet_url_classes}' => $data['snippet_permalink_classes'] ?? '',
+    ];
+
+    // Apply replacements with proper escaping
+    foreach ($replacements as $placeholder => $value) {
+        // Strip slashes and escape for HTML output
+        $safe_value = htmlspecialchars(stripslashes($value), ENT_QUOTES, 'UTF-8');
+        $template = str_replace($placeholder, $safe_value, $template);
+    }
+
+    return $template;
+}
+
+/**
+ * Legacy function - deprecated.
+ *
+ * @deprecated 2.0.0 Use se_get_snippet() instead
+ * @see se_get_snippet()
+ */
+function se_get_textlib($name, $lang, $type) {
+    error_log('DEPRECATED: se_get_textlib() is deprecated since SwiftyEdit 2.0.0. Use se_get_snippet() instead.');
+    return se_get_snippet($name, $lang, $type);
 }
 
 /**
