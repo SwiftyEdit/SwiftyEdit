@@ -618,13 +618,23 @@ function se_get_textlib($name,$lang,$type) {
 		$lang = $languagePack;
 	}
 
-	/* get snippet by name and lang */
-	$textlibData = $db_content->get("se_snippets", "*", [
-		"AND" => [
-			"snippet_name" => "$name",
-			"snippet_lang" => "$lang"
-		]
-	]);
+    $lang = htmlentities($lang);
+    $name = htmlentities($name);
+
+	// get snippet data, from cache or from database
+
+    $cache_file = SE_ROOT.'data/cache/snippets/'.$name.'_'.$lang.'.json';
+
+    if (file_exists($cache_file)) {
+        $textlibData = json_decode(file_get_contents($cache_file), true);
+    } else {
+        $textlibData = $db_content->get("se_snippets", "*", [
+            "AND" => [
+                "snippet_name" => "$name",
+                "snippet_lang" => "$lang"
+            ]
+        ]);
+    }
 
     /* no snippet found - try without language */
     if(!is_array($textlibData)) {
