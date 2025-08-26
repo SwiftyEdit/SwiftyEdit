@@ -18,6 +18,7 @@
  * @var array $se_prefs global preferences
  * @var string $se_base_url the base url
  * @var array $page_contents
+ * @var array $cached_url_data
  */
 
 

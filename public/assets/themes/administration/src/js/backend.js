@@ -34,6 +34,8 @@ import '@uppy/dashboard/dist/style.css'
 import 'print-js/dist/print'
 import 'print-js/dist/print.css'
 
+import './components/tooltips';
+
 function registerElements() {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))

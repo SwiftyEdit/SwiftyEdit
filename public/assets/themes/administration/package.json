@@ -24,7 +24,8 @@
     "@uppy/xhr-upload": "^4.3.3",
     "@uppy/dashboard": "^4.3.4",
     "@uppy/form": "^4.1.1",
-    "print-js": "^1.6.0"
+    "print-js": "^1.6.0",
+    "@floating-ui/dom": "^1.7.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",

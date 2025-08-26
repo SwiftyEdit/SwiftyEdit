@@ -1468,25 +1468,29 @@ function se_print_docs_link(string $file, string $text = null, string $section =
 
 /**
  * @param string $file
- * @param string|null $text
+ * @param string|null $trigger_text
  * @return string
  */
-function se_print_docs_tip(string $file, string $text = null) :string {
+function se_print_docs_tip(string $file, string $trigger_text = null) :string {
     global $icon, $languagePack;
 
-    if ($text == null or $text == 'icon') {
-        $text = $icon['question_circle'];
+    if ($trigger_text == null or $trigger_text == 'icon') {
+        $trigger_text = $icon['question_circle'];
     }
 
     $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.$file;
     $show_file = se_parse_docs_file($doc_filepath);
+    $id = uniqid('help-');
 
-    $tooltip = '<span 
-                    class="d-inline-block"
-                    data-bs-toggle="popover"
-                    data-bs-title="'.$show_file['title'].'" data-bs-content="'.$show_file['content'].'"
-                    data-bs-html="true"
-                    data-bs-trigger="hover">'.$text.'</span>';
+    $tooltip = '<span data-help-template="'.$id.'">'.$trigger_text.'</span>';
+    $tooltip .= '<template id="'.$id.'">
+  <div class="tooltip-body">
+    <div class="tooltip-title"><h5>'.$show_file['title'].'</h5></div>
+    <div class="tooltip-content">'.$show_file['content'].'</div>
+    <div class="tooltip-arrow" data-arrow></div>
+  </div>
+</template>';
+
 
     return $tooltip;
 }
