@@ -1,13 +1,15 @@
+$tooltip-base-size: 11px;
+
 .se-tooltip {
   position: absolute;
   width: 450px;
   max-width: 100%;
   background: var(--bs-widget-bg-600);
   color: var(--bs-widget-text-color);
-  border: 1px solid var(--bs-widget-bg-200);
+  border: 2px solid var(--bs-widget-bg-200);
   border-radius: $border-radius;
   padding: 0;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
   z-index: 2000;
 
   /* interaktiv + smooth show/hide */
@@ -17,27 +19,43 @@
   transition: opacity .12s ease, visibility 0s linear .12s;
 
   .tooltip-title {
+    z-index: +1;
     background: var(--bs-widget-bg-400);
     padding: 5px 10px;
-    h5 {
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+    h6 {
+      opacity: 0.5;
       margin: 0;
     }
   }
   .tooltip-content {
+    z-index: +1;
     padding: 5px 10px;
-    max-height: 70vh;
+    max-height: 60vh;
     overflow-y: auto;
+    background: var(--bs-widget-bg-600);
+
+    font-size: $tooltip-base-size;
+
+    h1 { font-size: $tooltip-base-size * 1.80; }
+    h2 { font-size: $tooltip-base-size * 1.64; }
+    h3 { font-size: $tooltip-base-size * 1.45; }
+    h4 { font-size: $tooltip-base-size * 1.27; }
+    h5 { font-size: $tooltip-base-size * 1.09; }
+    h6 { font-size: $tooltip-base-size * 1; }
+
   }
 
 }
 
 .tooltip-arrow {
+  z-index: -1;
   position: absolute;
   width: 10px;
   height: 10px;
   background: var(--bs-widget-bg-200);
   transform: rotate(45deg);
-  z-index: -1;
 }
 
 .arrow-top {
@@ -61,9 +79,4 @@
   visibility: visible;
   pointer-events: auto;
   transition: opacity .12s ease;
-}
-
-.se-tooltip a {
-  //color: #0d6efd;
-  text-decoration: underline;
 }
