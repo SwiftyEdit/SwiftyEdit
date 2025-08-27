@@ -5,12 +5,30 @@ group: tips
 priority: 0
 ---
 
-### Status
+## Öffentlich
 
-| Status        | Beschreibung                                                                                         |
-|---------------|------------------------------------------------------------------------------------------------------|
-| Öffentlich    | Die Seiten sind für alle sichtbar                                                                    |
-| Unsichtbar    | Die Seite ist sichtbar für alle wird aber nicht in Navigationen, der Sitemap oder der Suche gelistet |
-| Privat        | Nur Administratoren oder freigegebene Benutzergruppen können die Seite einsehen                      |
-| Entwurf       | Nur Administratoren können die Seite einsehen                                                        |
-| Weiterleitung | Die Seite kann nicht aufgerufen werden, da sie sofort auf eine andere Adresse weiterleitet           |
+ - Diese Seiten sind für alle sichtbar und können aufgerufen werden.
+ - Diese Seiten werden automatisch in die Sitemap übernommen und erscheinen bei Bedarf in der Navigation.
+
+## Unsichtbar
+
+ - Diese Seiten können von jedem aufgerufen werden, der die URL kennt.
+ - In der Navigation werden unsichtbare Seiten nicht angezeigt.
+ - Außerdem werden diese Seiten in die Sitemap geschrieben.
+
+## Privat
+
+ - Nur Administratoren oder Benutzer aus einer freigegeben Benutzergruppe können diese Seiten aufrufen.
+ - Kein Eintrag in der Sitemap
+ - Nicht in der Navigation
+
+## Entwurf
+
+ - Nur Administratoren können diese Seiten aufrufen.
+ - Kein Eintrag in der Sitemap
+ - Nicht in der Navigation
+
+## Weiterleitung
+
+ - Diesen Status kann man nicht auswählen, er erscheint automatisch, sobald man im Abschnitt Weiterleitungen etwas einträgt.
+

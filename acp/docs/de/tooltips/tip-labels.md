@@ -9,4 +9,4 @@ priority: 0
 
 Labels helfen Dir dabei, wenn Du eine große Zahl an Datensätzen organisieren musst.
 
-Du kannst in den Einstellungen beliebig viele Labels anlegen.
+Du kannst in den <a href="/admin/settings/labels/">Einstellungen</a> beliebig viele Labels anlegen.
