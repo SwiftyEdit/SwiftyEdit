@@ -1485,7 +1485,7 @@ function se_print_docs_tip(string $file, string $trigger_text = null) :string {
     $tooltip = '<span data-help-template="'.$id.'">'.$trigger_text.'</span>';
     $tooltip .= '<template id="'.$id.'">
   <div class="tooltip-body">
-    <div class="tooltip-title"><h5>'.$show_file['title'].'</h5></div>
+    <div class="tooltip-title"><h6>'.$show_file['title'].'</h6></div>
     <div class="tooltip-content">'.$show_file['content'].'</div>
     <div class="tooltip-arrow" data-arrow></div>
   </div>
