@@ -83,10 +83,14 @@ if(isset($_POST['sorting_products_dir'])) {
 }
 
 // delete product
+// if there are variants, delete them, too
 if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
     $delete_id = (int) $_POST['delete_product'];
-    $cnt_changes = $db_posts->delete("se_products",[
-        "id" => $delete_id
+    $cnt_changes = $db_posts->delete("se_products", [
+        "OR" => [
+            "id" => $delete_id,
+            "parent_id" => $delete_id
+        ]
     ]);
 
     if(($cnt_changes->rowCount()) > 0) {
