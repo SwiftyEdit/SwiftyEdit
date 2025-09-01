@@ -15,12 +15,14 @@ if(isset($_POST['pagination_orders'])) {
 
 // text search in products
 if(isset($_POST['products_text_filter'])) {
+    $_SESSION['pagination_products_page'] = 0;
     $_SESSION['products_text_filter'] = $_SESSION['products_text_filter'] . ' ' . sanitizeUserInputs($_POST['products_text_filter']);
     header( "HX-Trigger: update_products_list");
 }
 
 // text search in orders
 if(isset($_POST['orders_text_filter'])) {
+    $_SESSION['pagination_orders'] = 0;
     $_SESSION['orders_text_filter'] = $_SESSION['orders_text_filter'] . ' ' . sanitizeUserInputs($_POST['orders_text_filter']);
     header( "HX-Trigger: update_orders_list");
 }
