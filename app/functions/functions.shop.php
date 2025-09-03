@@ -261,39 +261,122 @@ function se_get_products($start,$limit,$filter) {
     return $entries;
 }
 
+
+function se_getProductCachePath($id, $lang) {
+    $baseDir = SE_CONTENT . '/cache/products';
+    $range   = floor($id / 1000) * 1000; // 1542 → 1000
+
+    $dir = $baseDir . '/' . str_pad($range, 3, '0', STR_PAD_LEFT);
+
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    return $dir . '/' . $id . '-' . $lang . '.json';
+}
+
 /**
  * @param $id
  * @return mixed
  */
 
-function se_get_product_data($id) {
+function se_get_product_data($id, $lang = null) {
 
-    global $db_posts;
+    global $db_posts,$se_settings,$languagePack;
 
+    $lang = $lang ?: $languagePack;
+
+    // try cache first
+    if($se_settings['products_cache'] == 1) {
+
+        $cacheFile = se_getProductCachePath($id, $lang);
+        if (file_exists($cacheFile)) {
+            $data = json_decode(file_get_contents($cacheFile), true);
+            if ($data) {
+                $data['read_from'] = 'cache';
+                return $data;
+            }
+        }
+
+    }
+
+    // get data from database
     $data = $db_posts->get("se_products","*", [
         "id" => $id
     ]);
 
-    return $data;
+    if ($data) {
+        $data['read_from'] = 'database';
+        return $data;
+    }
+
+    return null; // Product doesn't exists
 }
 
 /**
  * @param $slug
- * @return mixed
+ * @param $lang
+ * @param $variantId
+ * @return mixed|null
  */
-function se_get_product_data_by_slug($slug) {
-    global $db_posts;
-    global $languagePack;
+function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mixed
+{
+    global $languagePack, $db_posts, $se_settings;
 
-    $data = $db_posts->get("se_products","*", [
+    $lang = $lang ?: $languagePack;
+
+    // normalize slug, add slash if needed
+    $slug = rtrim($slug, "/") . "/";
+
+    if($se_settings['products_cache'] == 1) {
+
+        $mapFile = SE_CONTENT . '/cache/products/slug-map-' . $lang . '.json';
+        if (file_exists($mapFile)) {
+            $map = json_decode(file_get_contents($mapFile), true);
+            if ($map && isset($map[$slug])) {
+                $productIds = (array)$map[$slug];
+
+                // if $variantId exists in map
+                if ($variantId !== null && in_array($variantId, $productIds)) {
+                    $productId = $variantId;
+                } else {
+                    // Fallback: first ID
+                    $productId = $productIds[0];
+                }
+
+                // 2. check product cache
+                $cacheFile = se_getProductCachePath($productId, $lang);
+                if (file_exists($cacheFile)) {
+                    $data = json_decode(file_get_contents($cacheFile), true);
+                    $data['read_from'] = 'cache';
+                    return $data;
+                }
+            }
+        }
+
+    }
+
+    // get product from database
+    $where = [
         "AND" => [
             "slug" => $slug,
-            "product_lang" => $languagePack
-            ]
-    ]);
+            "product_lang" => $lang
+        ]
+    ];
+    if ($variantId !== null) {
+        $where["AND"]["id"] = $variantId;
+    }
 
-    return $data;
+    $data = $db_posts->get("se_products", "*", $where);
+
+    if ($data) {
+        $data['read_from'] = 'database';
+        return $data;
+    }
+
+    return null; // Product doesn't exists
 }
+
 
 /**
  * @param $id integer id of the main product

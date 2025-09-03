@@ -47,3 +47,238 @@ function se_get_all_products() {
     $products = $db_posts->select("se_products",["id","title","product_lang"]);
     return $products;
 }
+
+function se_prepareProductData($data, $id = null) {
+
+    global $languagePack,$se_base_url,$db_content;
+
+    foreach($data as $key => $val) {
+        if(is_string($val)) {
+            $$key = @htmlspecialchars($val, ENT_QUOTES);
+        }
+    }
+
+    $releasedate = time();
+    $lastedit = time();
+    $lastedit_from = $_SESSION['user_nick'];
+    $priority = (int) $data['priority'];
+    $type = 'p';
+
+    if(!isset($data['product_lang'])) {
+        $data['product_lang'] = $languagePack;
+    }
+
+    if(isset($data['type'])) {
+        $type = clean_filename($data['type']);
+    }
+
+    if(isset($data['save_variant'])) {
+        $type = 'v';
+        $modus = 'save_variant';
+        $parent_id = (int) $data['save_variant'];
+    }
+
+    $product_variant_type = (int) $data['product_variant_type'];
+
+    $product_accessories = '';
+    if(isset($data['picker_1'])) {
+        $product_accessories = json_encode($data['picker_1'],JSON_FORCE_OBJECT);
+    }
+    $product_related = '';
+    if(isset($data['picker_2'])) {
+        $product_related = json_encode($data['picker_2'], JSON_FORCE_OBJECT);
+    }
+
+    $product_options = json_encode($data['option_keys'],JSON_FORCE_OBJECT);
+    $filter = json_encode($data['product_filter'],JSON_FORCE_OBJECT);
+
+    // translation url
+    $translation_urls = '';
+    if(is_array($data['translation_url'])) {
+        foreach($data['translation_url'] as $k => $v) {
+            $t_urls[$k] = se_clean_permalink($v);
+        }
+        $translation_urls = json_encode($t_urls,JSON_UNESCAPED_UNICODE);
+    }
+
+    if (isset($data['file_attachment_user']) && $data['file_attachment_user'] == '2'){
+        $file_attachment_user = 2;
+    } else {
+        $file_attachment_user = 1;
+    }
+
+    if($data['date'] == "") {
+        $date = time();
+    }
+
+    if($data['releasedate'] != "") {
+        $releasedate = strtotime($data['releasedate']);
+    }
+
+    $clean_title = clean_filename($data['title']);
+    $date_year = date("Y",$releasedate);
+    $date_month = date("m",$releasedate);
+    $date_day = date("d",$releasedate);
+
+    if($data['slug'] == "") {
+        $slug = $clean_title.'/';
+    } else {
+        $slug = se_clean_permalink($data['slug']);
+    }
+
+    if($data['main_catalog_slug'] == "default") {
+        //get a target page by page_type_of_use and language
+        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_type_of_use" => "display_product",
+                "page_language" => $data['product_lang']
+            ]
+        ]);
+        // if we have no page for display_products, find another catalog page
+        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_posts_types[~]" => "p",
+                "page_language" => $data['product_lang']
+            ]
+        ]);
+    } else {
+        $main_catalog_slug = se_clean_permalink($data['main_catalog_slug']);
+    }
+
+    if(is_numeric($id)) {
+        $filename = str_replace("/", "", $slug) . '-' . $id . '.html';
+        // rss url
+        if ($data['rss_url'] == "") {
+            $rss_url = $se_base_url . $main_catalog_slug . $filename;
+        }
+    }
+
+    $categories = '';
+    if(isset($data['categories'])) {
+        $categories = implode("<->", $data['categories']);
+    }
+
+    // images
+    $images = '';
+    if(isset($data['picker_0'])) {
+        $product_images_string = implode("<->", $data['picker_0']);
+        $product_images_string = "<->$product_images_string<->";
+        $images = $product_images_string;
+    }
+
+    // prices
+    $product_price_net = se_sanitize_price($data['product_price_net']);
+    $product_price_manufacturer = se_sanitize_price($data['product_price_manufacturer']);
+
+    // labels
+    $product_labels = '';
+    if(isset($data['labels'])) {
+        $labels = implode(",", $data['labels']);
+    }
+
+    // fixed?
+    $fixed = 2;
+    if(isset($data['fixed']) AND $data['fixed'] == 'fixed') {
+        $fixed = 1;
+    }
+
+    $priority = (int) $data['priority'];
+
+    // stock mode
+    $product_stock_mode = 2;
+    if(isset($data['product_ignore_stock']) AND $data['product_ignore_stock'] == 1) {
+        // ignore stock
+        $product_stock_mode = 1;
+    }
+
+    $product_order_quantity_min = (int) $data['product_order_quantity_min'];
+    $product_order_quantity_max = (int) $data['product_order_quantity_max'];
+
+    // metas
+    if($data['meta_title'] == '') {
+        $meta_title = $data['title'];
+    } else {
+        $meta_title = $data['meta_title'];
+    }
+    if($data['meta_description'] == '') {
+        $meta_description = strip_tags($data['teaser']);
+    } else {
+        $meta_description = $data['meta_description'];
+    }
+
+    $meta_title = se_return_clean_value($meta_title);
+    $meta_description = se_return_clean_value($meta_description);
+
+    // variants title and description
+    if($data['product_variant_title'] == '') {
+        $product_variant_title = $data['title'];
+    }
+    if($data['product_variant_description'] == '') {
+        $product_variant_description = $meta_description;
+    }
+
+    // volume discounts
+    if(isset($data['product_vd_amount'])) {
+        $cnt_vd_prices = count($data['product_vd_amount']);
+        for($i=0;$i<$cnt_vd_prices;$i++) {
+
+            if($data['product_vd_amount'][$i] == '') {
+                continue;
+            }
+
+            $vd_price[] = [
+                'amount' => (int) $data['product_vd_amount'][$i],
+                'price' => se_sanitize_price($data['product_vd_price'][$i])
+            ];
+
+        }
+        $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
+    }
+
+    // get all columns from the installer template
+    require SE_ROOT.'install/contents/se_products.php';
+    // build SQL string -> f.e. "releasedate" => $releasedate,
+    foreach($cols as $k => $v) {
+        if($k == 'id') {continue;}
+        $value = $$k;
+        $inputs[$k] = "$value";
+    }
+
+    return $inputs;
+
+}
+
+
+function se_updateProductCache($id, $data, $updateSlugMap = true) {
+    $file = se_getProductCachePath($id, $data['product_lang']);
+    $data['id'] = $id;
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+    if ($updateSlugMap) {
+        se_updateSlugMap($data['product_lang']);
+    }
+}
+
+function se_updateSlugMap($lang) {
+    global $db_posts;
+
+    if (!is_dir(SE_CONTENT . '/cache/products')) {
+        mkdir(SE_CONTENT . '/cache/products', 0777, true);
+    }
+
+    $products = $db_posts->select("se_products", ["id","slug"], ["product_lang" => $lang]);
+
+    $data = [];
+
+    foreach($products as $product) {
+        $url = $product['slug'];
+        if (!isset($data[$url])) {
+            $data[$url] = [];
+        }
+        $data[$url][] = $product['id']; // IDs sammeln
+    }
+
+    $file = SE_CONTENT . '/cache/products/slug-map-'.$lang.'.json';
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
