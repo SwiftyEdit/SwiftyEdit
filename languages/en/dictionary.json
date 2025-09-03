@@ -58,6 +58,10 @@
   "status.user.verified": "Verified",
   "status.user.waiting": "Waiting",
   "status.user.paused": "Paused",
+  "status.on": "on",
+  "status.off": "off",
+  "status.active": "active",
+  "status.inactive": "inactive",
 
   "product.type.main": "Main product",
   "product.type.variant": "Variant",
