@@ -207,7 +207,7 @@ if($_REQUEST['action'] == 'list_products') {
     echo '<div class="card p-3">';
     echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
 
-    echo '<table class="table table-striped table-hover">';
+    echo '<table class="table table-striped">';
 
     echo '<thead><tr>';
     echo '<th scope="col" style="width: 35px;">#</th>';
@@ -298,6 +298,14 @@ if($_REQUEST['action'] == 'list_products') {
             $show_thumb = '<div class="show-thumb" style="background-image: url(/themes/administration/images/no-image.png);">';
         }
 
+        $show_slug = $icon['link'].' ';
+        if($product['main_catalog_slug'] != '') {
+            $show_slug .= '<span class="text-success">'.$product['main_catalog_slug'].'</span>';
+        }
+        if($product['slug'] != '') {
+            $show_slug .= '<span class="text-success">'.$product['slug'].'</span>';
+        }
+
         // variants
         $variants = [];
         $variants = se_get_product_variants($product_id);
@@ -306,15 +314,17 @@ if($_REQUEST['action'] == 'list_products') {
         $edit_variant_collapse = '';
         if($cnt_variants > 1) {
 
-            $edit_variant_collapse = '<div><a class="btn btn-default btn-sm" 
+            $edit_variant_collapse = '<div style="margin-top:-25px;" class="text-center">
+                                        <a class="btn btn-default btn-sm" 
                                             data-bs-toggle="collapse" 
-                                            href="#collapseVariants" 
+                                            href="#collapseVariants'.$product_id.'" 
                                             role="button" 
                                             aria-expanded="false" 
-                                            aria-controls="collapseVariants"
-                                            >'.$lang['label_product_variants'].' ('.($cnt_variants-1).')</a></div>';
-            $edit_variant_collapse .= '<div class="collapse" id="collapseVariants">';
-            $edit_variant_collapse .= '<table class="table table-sm">';
+                                            aria-controls="collapseVariants'.$product_id.'"
+                                            >'.$lang['label_product_variants'].' ('.($cnt_variants-1).') 
+                                            <span class="toggle">'.$icon['caret_down'].'</span></a></div>';
+            $edit_variant_collapse .= '<div class="collapse" id="collapseVariants'.$product_id.'">';
+            $edit_variant_collapse .= '<table class="table table-sm mt-1">';
 
             foreach($variants as $variant) {
 
@@ -340,7 +350,7 @@ if($_REQUEST['action'] == 'list_products') {
                 $edit_variant_collapse .= '<td>#'.$variant['id'].'</td>';
                 $edit_variant_collapse .= '<td>'.$show_title.'</td>';
                 $edit_variant_collapse .= '<td>'.$trimmed_description.'</td>';
-                $edit_variant_collapse .= '<td>'.$btn_edit_variant.' '.$btn_duplicate_variant.'</td>';
+                $edit_variant_collapse .= '<td class="text-end">'.$btn_edit_variant.' '.$btn_duplicate_variant.'</td>';
                 $edit_variant_collapse .= '</tr>';
             }
 
@@ -423,16 +433,23 @@ if($_REQUEST['action'] == 'list_products') {
         echo '<td>'.$prio_form.'</td>';
         echo '<td>'.$show_thumb.'</td>';
         echo '<td>';
-        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' '.$add_label.'</h6>'.$trimmed_teaser.'<br>'.$show_items_dates;
+        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' '.$add_label.'</h6>';
+        echo $trimmed_teaser.'<br>'.$show_items_dates;
+        echo '<p class="mb-0"><small>'.$show_slug.'</small></p>';
         echo $label;
         echo $categories;
-        if($edit_variant_collapse != '') {
-            echo $edit_variant_collapse;
-        }
         echo '</td>';
         echo '<td style="width:150px;">'.$show_items_price.'</td>';
         echo '<td style="width:100px;" class="text-nowrap text-end">'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
         echo '</tr>';
+
+        if($edit_variant_collapse != '') {
+            echo '<tr class="'.$add_row_class.'">';
+            echo '<td colspan="7">';
+            echo $edit_variant_collapse;
+            echo '</td>';
+            echo '</tr>';
+        }
     }
 
     echo '</table>';
