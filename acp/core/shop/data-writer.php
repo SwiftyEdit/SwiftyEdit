@@ -106,199 +106,6 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
 // save or update products
 if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
-    /*
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $$key = @htmlspecialchars($val, ENT_QUOTES);
-        }
-    }
-
-    $releasedate = time();
-    $lastedit = time();
-    $lastedit_from = $_SESSION['user_nick'];
-    $priority = (int) $_POST['priority'];
-    $type = 'p';
-
-    if(isset($_POST['type'])) {
-        $type = clean_filename($_POST['type']);
-    }
-
-    if(isset($_POST['save_variant'])) {
-        $type = 'v';
-        $modus = 'save_variant';
-        $parent_id = (int) $_POST['save_variant'];
-    }
-
-    $product_variant_type = (int) $_POST['product_variant_type'];
-
-
-    $product_accessories = '';
-    if(isset($_POST['picker_1'])) {
-        $product_accessories = json_encode($_POST['picker_1'],JSON_FORCE_OBJECT);
-    }
-    $product_related = '';
-    if(isset($_POST['picker_2'])) {
-        $product_related = json_encode($_POST['picker_2'], JSON_FORCE_OBJECT);
-    }
-    $product_options = json_encode($_POST['option_keys'],JSON_FORCE_OBJECT);
-    $filter = json_encode($_POST['product_filter'],JSON_FORCE_OBJECT);
-
-    // translation url
-    $translation_urls = '';
-    if(is_array($_POST['translation_url'])) {
-        foreach($_POST['translation_url'] as $k => $v) {
-            $t_urls[$k] = se_clean_permalink($v);
-        }
-        $translation_urls = json_encode($t_urls,JSON_UNESCAPED_UNICODE);
-    }
-
-    if (isset($_POST['file_attachment_user']) && $_POST['file_attachment_user'] == '2'){
-        $file_attachment_user = 2;
-    } else {
-        $file_attachment_user = 1;
-    }
-
-    if($_POST['date'] == "") {
-        $date = time();
-    }
-    if($_POST['releasedate'] != "") {
-        $releasedate = strtotime($_POST['releasedate']);
-    }
-
-
-    $clean_title = clean_filename($_POST['title']);
-    $date_year = date("Y",$releasedate);
-    $date_month = date("m",$releasedate);
-    $date_day = date("d",$releasedate);
-
-
-    if($_POST['slug'] == "") {
-        $slug = $clean_title.'/';
-    } else {
-        $slug = se_clean_permalink($_POST['slug']);
-    }
-
-    if($_POST['main_catalog_slug'] == "default") {
-        //get a target page by page_type_of_use and language
-        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
-            "AND" => [
-                "page_type_of_use" => "display_product",
-                "page_language" => $product_lang
-            ]
-        ]);
-        // if we have no page for display_products, find another catalog page
-        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
-            "AND" => [
-                "page_posts_types[~]" => "p",
-                "page_language" => $product_lang
-            ]
-        ]);
-    } else {
-        $main_catalog_slug = se_clean_permalink($_POST['main_catalog_slug']);
-    }
-
-    if(is_numeric($edit_id)) {
-        $filename = str_replace("/", "", $slug) . '-' . $edit_id . '.html';
-
-        // rss url
-        if ($_POST['rss_url'] == "") {
-            $rss_url = $se_base_url . $main_catalog_slug . $filename;
-        }
-    }
-
-    $categories = '';
-    if(isset($_POST['categories'])) {
-        $categories = implode("<->", $_POST['categories']);
-    }
-
-    $images = '';
-    if(isset($_POST['picker_0'])) {
-        $product_images_string = implode("<->", $_POST['picker_0']);
-        $product_images_string = "<->$product_images_string<->";
-        $images = $product_images_string;
-    }
-
-    $product_price_net = se_sanitize_price($_POST['product_price_net']);
-    $product_price_manufacturer = se_sanitize_price($_POST['product_price_manufacturer']);
-
-
-    $product_labels = '';
-    if(isset($_POST['labels'])) {
-        $labels = implode(",", $_POST['labels']);
-    }
-
-
-    $fixed = 2;
-    if(isset($_POST['fixed']) AND $_POST['fixed'] == 'fixed') {
-        $fixed = 1;
-    }
-
-    $priority = (int) $_POST['priority'];
-
-
-    $product_stock_mode = 2;
-    if(isset($_POST['product_ignore_stock']) AND $_POST['product_ignore_stock'] == 1) {
-        // ignore stock
-        $product_stock_mode = 1;
-    }
-
-    $product_order_quantity_min = (int) $_POST['product_order_quantity_min'];
-    $product_order_quantity_max = (int) $_POST['product_order_quantity_max'];
-
-
-    if($_POST['meta_title'] == '') {
-        $meta_title = $_POST['title'];
-    } else {
-        $meta_title = $_POST['meta_title'];
-    }
-    if($_POST['meta_description'] == '') {
-        $meta_description = strip_tags($_POST['teaser']);
-    } else {
-        $meta_description = $_POST['meta_description'];
-    }
-
-    $meta_title = se_return_clean_value($meta_title);
-    $meta_description = se_return_clean_value($meta_description);
-
-
-    if($_POST['product_variant_title'] == '') {
-        $product_variant_title = $_POST['title'];
-    }
-    if($_POST['product_variant_description'] == '') {
-        $product_variant_description = $meta_description;
-    }
-
-    // volume discounts
-    if(isset($_POST['product_vd_amount'])) {
-        $cnt_vd_prices = count($_POST['product_vd_amount']);
-        for($i=0;$i<$cnt_vd_prices;$i++) {
-
-            if($_POST['product_vd_amount'][$i] == '') {
-                continue;
-            }
-
-            $vd_price[] = [
-                'amount' => (int) $_POST['product_vd_amount'][$i],
-                'price' => se_sanitize_price($_POST['product_vd_price'][$i])
-            ];
-
-        }
-        $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
-    }
-
-
-
-    require SE_ROOT.'install/contents/se_products.php';
-    // build sql string -> f.e. "releasedate" => $releasedate,
-    foreach($cols as $k => $v) {
-        if($k == 'id') {continue;}
-        $value = $$k;
-        $inputs[$k] = "$value";
-    }
-
-    */
-
-
     if(is_numeric($_POST['save_product']))	{
         $id = (int) $_POST['save_product'];
         $prepared_data = se_prepareProductData($_POST,$id);
@@ -663,4 +470,26 @@ if(isset($_POST['set_order_status'])) {
         "id" => $order_id
     ]);
     header( "HX-Trigger: update_orders_list");
+}
+
+if(isset($_POST['products_cache'])) {
+
+   if($_POST['products_cache'] == 'update') {
+
+       $products = $db_posts->select("se_products", "*", [
+           "status" => ['1','3']
+       ]);
+       foreach ($products as $product) {
+           $prepared = se_prepareProductData($product);
+           se_updateProductCache($product['id'], $prepared);
+       }
+       echo '<div class="alert alert-info my-1">Cache files updated</div>';
+       exit;
+   }
+
+    if($_POST['products_cache'] == 'clear') {
+        $nbr_deleted_files = se_clearProductCache();
+        echo '<div class="alert alert-info my-1">Cache files deleted ('.$nbr_deleted_files.')</div>';
+        exit;
+    }
 }

@@ -155,7 +155,7 @@ function se_prepareProductData($data, $id = null) {
 
     $categories = '';
     if(isset($data['categories'])) {
-        $categories = implode("<->", $data['categories']);
+        $categories = implode("<->", (array) $data['categories']);
     }
 
     // images
@@ -173,7 +173,7 @@ function se_prepareProductData($data, $id = null) {
     // labels
     $product_labels = '';
     if(isset($data['labels'])) {
-        $labels = implode(",", $data['labels']);
+        $labels = implode(",", (array) $data['labels']);
     }
 
     // fixed?
@@ -250,6 +250,12 @@ function se_prepareProductData($data, $id = null) {
 
 
 function se_updateProductCache($id, $data, $updateSlugMap = true) {
+    if($id == '' OR $data['product_lang'] == '') {
+        return; // we need the id and lang
+    }
+    if($data['status'] == '2' OR $data['product_lang'] == '') {
+        return; // no cache for drafts
+    }
     $file = se_getProductCachePath($id, $data['product_lang']);
     $data['id'] = $id;
     file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -282,3 +288,26 @@ function se_updateSlugMap($lang) {
     file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
+function se_clearProductCache() {
+
+    $cacheDir = SE_CONTENT . '/cache/products/';
+    if (!is_dir($cacheDir)) {
+        return 0;
+    }
+
+    $count = 0;
+
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($cacheDir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($iterator as $file) {
+        if ($file->isFile() && $file->getExtension() === 'json') {
+            unlink($file->getPathname());
+            $count++;
+        }
+    }
+
+    return $count; // Anzahl gelöschter Dateien
+}

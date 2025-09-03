@@ -113,7 +113,22 @@ echo '</div>';
 echo '</div>';
 
 
+echo '<div class="card mb-2">';
+echo '<div class="card-header">Cache</div>';
+echo '<div class="card-body">';
 
+$vals = ['csrf_token' => $_SESSION['token']];
+echo '<div class="btn-group d-flex">';
+echo '<button hx-post="'.$writer_uri.'" hx-target="#cacheResponse" hx-vals=\''.json_encode($vals).'\' hx-indicator=".htmx-indicator" class="btn btn-default w-100" name="products_cache" value="clear" title="'.$lang['btn_clear_cache'].'">'.$icon['trash'].' '.$lang['btn_delete_cache'].'</button>';
+echo '<button hx-post="'.$writer_uri.'" hx-target="#cacheResponse" hx-vals=\''.json_encode($vals).'\' hx-indicator=".htmx-indicator" class="btn btn-default w-100" name="products_cache" value="update" title="'.$lang['btn_clear_cache'].'">'.$icon['arrow_clockwise'].' '.$lang['btn_update'].'</button>';
+echo '</div>';
+
+echo '<div id="cacheResponse">';
+echo '<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+echo '</div>';
+
+echo '</div>';
+echo '</div>';
 
 echo '</div>';
 echo '</div>';
