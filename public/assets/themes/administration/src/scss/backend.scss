@@ -365,7 +365,7 @@ hr.shadow-line:after {
 /* containers */
 
 .scroll-container {
-  height:350px;
+  max-height:350px;
   overflow:auto;
   padding:5px;
   background: var(--bs-widget-bg);
