@@ -106,6 +106,7 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
 // save or update products
 if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
+    /*
     foreach($_POST as $key => $val) {
         if(is_string($val)) {
             $$key = @htmlspecialchars($val, ENT_QUOTES);
@@ -220,21 +221,21 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
     $product_price_net = se_sanitize_price($_POST['product_price_net']);
     $product_price_manufacturer = se_sanitize_price($_POST['product_price_manufacturer']);
 
-    /* labels */
+
     $product_labels = '';
     if(isset($_POST['labels'])) {
         $labels = implode(",", $_POST['labels']);
     }
 
-    /* fix on top */
+
     $fixed = 2;
     if(isset($_POST['fixed']) AND $_POST['fixed'] == 'fixed') {
-        $post_fixed = 1;
+        $fixed = 1;
     }
 
     $priority = (int) $_POST['priority'];
 
-    /* stock mode */
+
     $product_stock_mode = 2;
     if(isset($_POST['product_ignore_stock']) AND $_POST['product_ignore_stock'] == 1) {
         // ignore stock
@@ -244,7 +245,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
     $product_order_quantity_min = (int) $_POST['product_order_quantity_min'];
     $product_order_quantity_max = (int) $_POST['product_order_quantity_max'];
 
-    /* metas */
+
     if($_POST['meta_title'] == '') {
         $meta_title = $_POST['title'];
     } else {
@@ -259,7 +260,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);
 
-    /* variants title and description */
+
     if($_POST['product_variant_title'] == '') {
         $product_variant_title = $_POST['title'];
     }
@@ -285,9 +286,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
-    se_generate_xml_sitemap('products');
 
-    /* get all $cols */
 
     require SE_ROOT.'install/contents/se_products.php';
     // build sql string -> f.e. "releasedate" => $releasedate,
@@ -297,16 +296,21 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $inputs[$k] = "$value";
     }
 
+    */
+
+
     if(is_numeric($_POST['save_product']))	{
         $id = (int) $_POST['save_product'];
-        $db_posts->update("se_products", $inputs, [
+        $prepared_data = se_prepareProductData($_POST,$id);
+        $db_posts->update("se_products", $prepared_data, [
             "id" => $id
         ]);
         $form_header_message = $lang['msg_success_db_changed'];
         show_toast($lang['msg_success_db_changed'],'success');
         record_log($_SESSION['user_nick'],"updated product id: $id","6");
     } else if(is_numeric($_POST['save_variant'])) {
-        $db_posts->insert("se_products", $inputs);
+        $prepared_data = se_prepareProductData($_POST);
+        $db_posts->insert("se_products", $prepared_data);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
@@ -314,7 +318,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         record_log($_SESSION['user_nick'],"new product variant id: $id","6");
 
     } else {
-        $db_posts->insert("se_products", $inputs);
+        $prepared_data = se_prepareProductData($_POST);
+        $db_posts->insert("se_products", $prepared_data);
         $id = $db_posts->id();
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
@@ -324,6 +329,11 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         header( "HX-Redirect: /admin/shop/edit/$id/");
     }
 
+    // create cache files
+    // cache file for the product, rebuild slug map
+
+    se_updateProductCache($id, $prepared_data);
+    se_generate_xml_sitemap('products');
 
 }
 
