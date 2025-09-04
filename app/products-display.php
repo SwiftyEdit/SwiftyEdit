@@ -577,5 +577,7 @@ $smarty->assign('label_delivery_time', $lang['label_product_delivery_time']);
 $smarty->assign('product_delivery_time_title', $get_delivery_text['snippet_title']);
 $smarty->assign('product_delivery_time_text', $get_delivery_text['snippet_content']);
 
+$smarty->assign('data_source', $product_data['data_source']); // cache or database
+
 $products_page = $smarty->fetch("products-display.tpl", $cache_id);
 $smarty->assign('page_content', $products_page, true);

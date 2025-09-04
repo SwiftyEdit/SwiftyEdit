@@ -293,7 +293,7 @@ function se_get_product_data($id, $lang = null) {
         if (file_exists($cacheFile)) {
             $data = json_decode(file_get_contents($cacheFile), true);
             if ($data) {
-                $data['read_from'] = 'cache';
+                $data['data_source'] = 'cache';
                 return $data;
             }
         }
@@ -306,7 +306,7 @@ function se_get_product_data($id, $lang = null) {
     ]);
 
     if ($data) {
-        $data['read_from'] = 'database';
+        $data['data_source'] = 'database';
         return $data;
     }
 
@@ -348,7 +348,7 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
                 $cacheFile = se_getProductCachePath($productId, $lang);
                 if (file_exists($cacheFile)) {
                     $data = json_decode(file_get_contents($cacheFile), true);
-                    $data['read_from'] = 'cache';
+                    $data['data_source'] = 'cache';
                     return $data;
                 }
             }
@@ -370,7 +370,7 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
     $data = $db_posts->get("se_products", "*", $where);
 
     if ($data) {
-        $data['read_from'] = 'database';
+        $data['data_source'] = 'database';
         return $data;
     }
 

@@ -52,53 +52,116 @@ function se_prepareProductData($data, $id = null) {
 
     global $languagePack,$se_base_url,$db_content;
 
-    foreach($data as $key => $val) {
-        if(is_string($val)) {
-            $$key = @htmlspecialchars($val, ENT_QUOTES);
-        }
-    }
-
-    $releasedate = time();
-    $lastedit = time();
-    $lastedit_from = $_SESSION['user_nick'];
-    $priority = (int) $data['priority'];
-    $type = 'p';
-
     if(!isset($data['product_lang'])) {
         $data['product_lang'] = $languagePack;
     }
 
-    if(isset($data['type'])) {
-        $type = clean_filename($data['type']);
+    $type = 'p';
+    $releasedate = time();
+    $lastedit = time();
+
+    if (!empty($data['context']) && $data['context'] === 'cache') {
+        // generate cache files, copy data from database
+        foreach ($data as $key => $val) {
+            $$key = $val;
+        }
+    } else {
+        // data from backend
+        foreach ($data as $key => $val) {
+            if (is_string($val)) {
+                $$key = @htmlspecialchars($val, ENT_QUOTES);
+            }
+        }
+
+        // images
+        $images = '';
+        if(isset($data['picker_0'])) {
+            $product_images_string = implode("<->", $data['picker_0']);
+            $product_images_string = "<->$product_images_string<->";
+            $images = $product_images_string;
+        }
+
+        $product_accessories = '';
+        if(isset($data['picker_1'])) {
+            $product_accessories = json_encode($data['picker_1'],JSON_FORCE_OBJECT);
+        }
+        $product_related = '';
+        if(isset($data['picker_2'])) {
+            $product_related = json_encode($data['picker_2'], JSON_FORCE_OBJECT);
+        }
+
+        $product_options = json_encode($data['option_keys'],JSON_FORCE_OBJECT);
+        $filter = json_encode($data['product_filter'],JSON_FORCE_OBJECT);
+
+        if(isset($data['type'])) {
+            $type = clean_filename($data['type']);
+        }
+
+        $priority = (int) $data['priority'];
+        $product_variant_type = (int) $data['product_variant_type'];
+
+        // translation url
+        $translation_urls = '';
+        if(is_array($data['translation_url'])) {
+            foreach($data['translation_url'] as $k => $v) {
+                $t_urls[$k] = se_clean_permalink($v);
+            }
+            $translation_urls = json_encode($t_urls,JSON_UNESCAPED_UNICODE);
+        }
+
+        $clean_title = clean_filename($data['title']);
+
+        if($data['slug'] == "") {
+            $slug = $clean_title.'/';
+        } else {
+            $slug = se_clean_permalink($data['slug']);
+        }
+
+        $categories = '';
+        if(isset($data['categories'])) {
+            $categories = implode("<->", (array) $data['categories']);
+        }
+
+        // prices
+        $product_price_net = se_sanitize_price($data['product_price_net']);
+        $product_price_manufacturer = se_sanitize_price($data['product_price_manufacturer']);
+
+        // labels
+        $product_labels = '';
+        if(isset($data['labels'])) {
+            $labels = implode(",", (array) $data['labels']);
+        }
+
+        // fixed?
+        $fixed = 2;
+        if(isset($data['fixed']) AND $data['fixed'] == 'fixed') {
+            $fixed = 1;
+        }
+
+        $priority = (int) $data['priority'];
+
+        // stock mode
+        $product_stock_mode = 2;
+        if(isset($data['product_ignore_stock']) AND $data['product_ignore_stock'] == 1) {
+            // ignore stock
+            $product_stock_mode = 1;
+        }
+
+        $product_order_quantity_min = (int) $data['product_order_quantity_min'];
+        $product_order_quantity_max = (int) $data['product_order_quantity_max'];
+
+        // metas
+        $meta_title = $data['meta_title'] ?: $data['title'];
+        $meta_description = $data['meta_description'] ?: strip_tags($data['teaser']);
+        $lastedit_from = $_SESSION['user_nick'];
     }
+
+
 
     if(isset($data['save_variant'])) {
         $type = 'v';
         $modus = 'save_variant';
         $parent_id = (int) $data['save_variant'];
-    }
-
-    $product_variant_type = (int) $data['product_variant_type'];
-
-    $product_accessories = '';
-    if(isset($data['picker_1'])) {
-        $product_accessories = json_encode($data['picker_1'],JSON_FORCE_OBJECT);
-    }
-    $product_related = '';
-    if(isset($data['picker_2'])) {
-        $product_related = json_encode($data['picker_2'], JSON_FORCE_OBJECT);
-    }
-
-    $product_options = json_encode($data['option_keys'],JSON_FORCE_OBJECT);
-    $filter = json_encode($data['product_filter'],JSON_FORCE_OBJECT);
-
-    // translation url
-    $translation_urls = '';
-    if(is_array($data['translation_url'])) {
-        foreach($data['translation_url'] as $k => $v) {
-            $t_urls[$k] = se_clean_permalink($v);
-        }
-        $translation_urls = json_encode($t_urls,JSON_UNESCAPED_UNICODE);
     }
 
     if (isset($data['file_attachment_user']) && $data['file_attachment_user'] == '2'){
@@ -107,24 +170,24 @@ function se_prepareProductData($data, $id = null) {
         $file_attachment_user = 1;
     }
 
-    if($data['date'] == "") {
-        $date = time();
+
+    if($data['date'] != "") {
+        if (ctype_digit($data['date'])) {
+            $date = (int) $data['date'];
+        } else {
+            $date = strtotime($data['date']);
+        }
     }
 
     if($data['releasedate'] != "") {
-        $releasedate = strtotime($data['releasedate']);
+        if (ctype_digit($data['releasedate'])) {
+            $releasedate = (int) $data['releasedate'];
+        } else {
+            $releasedate = strtotime($data['releasedate']);
+        }
     }
 
-    $clean_title = clean_filename($data['title']);
-    $date_year = date("Y",$releasedate);
-    $date_month = date("m",$releasedate);
-    $date_day = date("d",$releasedate);
 
-    if($data['slug'] == "") {
-        $slug = $clean_title.'/';
-    } else {
-        $slug = se_clean_permalink($data['slug']);
-    }
 
     if($data['main_catalog_slug'] == "default") {
         //get a target page by page_type_of_use and language
@@ -153,58 +216,7 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
-    $categories = '';
-    if(isset($data['categories'])) {
-        $categories = implode("<->", (array) $data['categories']);
-    }
 
-    // images
-    $images = '';
-    if(isset($data['picker_0'])) {
-        $product_images_string = implode("<->", $data['picker_0']);
-        $product_images_string = "<->$product_images_string<->";
-        $images = $product_images_string;
-    }
-
-    // prices
-    $product_price_net = se_sanitize_price($data['product_price_net']);
-    $product_price_manufacturer = se_sanitize_price($data['product_price_manufacturer']);
-
-    // labels
-    $product_labels = '';
-    if(isset($data['labels'])) {
-        $labels = implode(",", (array) $data['labels']);
-    }
-
-    // fixed?
-    $fixed = 2;
-    if(isset($data['fixed']) AND $data['fixed'] == 'fixed') {
-        $fixed = 1;
-    }
-
-    $priority = (int) $data['priority'];
-
-    // stock mode
-    $product_stock_mode = 2;
-    if(isset($data['product_ignore_stock']) AND $data['product_ignore_stock'] == 1) {
-        // ignore stock
-        $product_stock_mode = 1;
-    }
-
-    $product_order_quantity_min = (int) $data['product_order_quantity_min'];
-    $product_order_quantity_max = (int) $data['product_order_quantity_max'];
-
-    // metas
-    if($data['meta_title'] == '') {
-        $meta_title = $data['title'];
-    } else {
-        $meta_title = $data['meta_title'];
-    }
-    if($data['meta_description'] == '') {
-        $meta_description = strip_tags($data['teaser']);
-    } else {
-        $meta_description = $data['meta_description'];
-    }
 
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);

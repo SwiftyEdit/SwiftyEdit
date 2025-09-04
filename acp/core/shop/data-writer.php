@@ -480,6 +480,7 @@ if(isset($_POST['products_cache'])) {
            "status" => ['1','3']
        ]);
        foreach ($products as $product) {
+           $product['context'] = 'cache';
            $prepared = se_prepareProductData($product);
            se_updateProductCache($product['id'], $prepared);
        }
