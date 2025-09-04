@@ -10,9 +10,9 @@
  * @var string $se_base_url
  */
 
+
 if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 
-    $status_msg = $lang['msg_login_true'];
     $link_logout = '/logout';
 
     $typeof_profile = se_get_type_of_use_pages('profile');
@@ -37,8 +37,6 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
     }
 
     $smarty->assign('orders_uri', $orders_uri);
-
-    $smarty->assign('status_msg', $status_msg,true);
     $smarty->assign('link_profile', $link_profile);
     $smarty->assign('href_profile', $link_profile);
     $smarty->assign("link_acp","$link_acp");
@@ -46,7 +44,6 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
     $smarty->assign('lang_button_orders', $lang['button_orders']);
     $smarty->assign("link_logout","$link_logout");
     $smarty->assign('lang_button_logout', $lang['button_logout']);
-
     $smarty->assign('lang_button_acp', $lang['button_acp']);
     $smarty->assign('lang_button_edit_page', $lang['button_acp_edit_page']);
 
@@ -56,6 +53,11 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 
     if(!isset($status_msg)) {
         $status_msg = '';
+    }
+
+    $login_error = '';
+    if(isset($_GET['error']) && $_GET['error'] === 'login_failed') {
+        $smarty->assign('login_error', $lang['msg_login_false']);
     }
 
     if(isset($se_settings['userregistration']) AND $se_settings['userregistration'] == "yes") {
@@ -90,6 +92,7 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
         $smarty->assign("button_login",$lang['button_login']);
         $smarty->assign('status_msg', $status_msg);
         $smarty->assign('label_remember_me', $lang['label_remember_me']);
+
         $smarty->display('loginbox.tpl');
     }
 }
