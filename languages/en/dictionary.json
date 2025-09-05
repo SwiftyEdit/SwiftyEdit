@@ -19,10 +19,8 @@
   "close": "Close",
   "thumbnail": "Thumbnail",
   "uploads": "Uploads",
-
   "status.new": "New",
   "status.edit": "Edit",
-
   "low": "low",
   "high": "high",
   "fixed": "fixed",
@@ -30,10 +28,8 @@
   "sorting": "Sorting",
   "ascending": "Ascending",
   "descending": "Descending",
-
   "loading": "Loading ...",
   "loading_data": "Loading data ...",
-
   "images": "Images",
   "files": "Files",
   "filename": "Filename",
@@ -42,7 +38,6 @@
   "notes": "Notes",
   "no_image": "No image",
   "use_no_image": "Use no image",
-
   "status.public": "Public",
   "status.ghost": "Invisible",
   "status.private": "Private",
@@ -62,23 +57,18 @@
   "status.off": "off",
   "status.active": "active",
   "status.inactive": "inactive",
-
   "product.type.main": "Main product",
   "product.type.variant": "Variant",
-
   "snippets": "Snippets",
   "no_snippet_selected": "No Snippet selected",
   "labels": "Labels",
   "categories": "Categories",
-
   "overview": "Overview",
-
   "label.date": "Date",
   "label.password": "Password",
   "label.password_reset": "Reset Password",
   "label.products": "Products",
-
-  "d01":"Monday",
+  "d01": "Monday",
   "d02": "Tuesday",
   "d03": "Wednesday",
   "d04": "Thursday",
@@ -88,7 +78,6 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "tomorrow": "Tomorrow",
-
   "m01": "January",
   "m02": "February",
   "m03": "March",
