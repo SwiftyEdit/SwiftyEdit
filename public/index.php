@@ -63,7 +63,7 @@ $swifty_slug = $query;
 $requestPathParts = explode('/', trim($swifty_slug, '/'));
 
 $active_mods = se_get_active_mods();
-$cnt_active_mods = count($active_mods);
+$cnt_active_mods = is_array($active_mods) ? count($active_mods) : 0;
 
 
 // get existing urls from the cache file
