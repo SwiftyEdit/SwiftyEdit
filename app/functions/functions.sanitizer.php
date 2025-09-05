@@ -371,11 +371,17 @@ function se_sanitize_page_inputs($data) {
  * @return mixed|string
  */
 function se_sanitize_lang_input(string $lang): mixed {
-    $allowedLanguages = ["en", "de", "es", "fr", "gr", "it", "pl", "ro", "tr"];
-    if (!in_array($lang, $allowedLanguages)) {
-        $lang = '';
+    // Nur Bindestriche erlauben, Unterstriche sofort raus
+    if (strpos($lang, '_') !== false) {
+        return '';
     }
-    return $lang;
+
+    // Language[-REGION][-variant]
+    if (preg_match('/^[a-z]{2}(?:-[A-Z]{2}(?:-[a-z0-9]+)?)?$/', $lang)) {
+        return $lang;
+    }
+
+    return '';
 }
 
 function se_generate_token() {
