@@ -1,0 +1,2 @@
+<h1>Your account has been successfully activated.</h1>
+<p>You can now log in with your access data.</p>

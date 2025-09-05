@@ -1,0 +1,8 @@
+<h2>Access denied</h2>
+<p>Unfortunately, you do not have access to this page. Reasons for this may include:</p>
+<ul>
+  <li>The page is password protected.</li>
+  <li>It is only accessible to registered users or certain user groups.</li>
+  <li>Your permissions are currently insufficient.</li>
+</ul>
+<p>Please log in to check whether you can view the content, or contact the administrator.</p>

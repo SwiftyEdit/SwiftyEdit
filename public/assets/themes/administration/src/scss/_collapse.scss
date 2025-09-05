@@ -1,0 +1,12 @@
+.btn[aria-expanded="true"] {
+  .toggle {
+    display: inline-block;
+    transform: rotate(-180deg);
+    transition: all 0.2s linear;
+  }
+}
+.btn[aria-expanded="false"] {
+  .toggle {
+    display: inline-block;
+  }
+}

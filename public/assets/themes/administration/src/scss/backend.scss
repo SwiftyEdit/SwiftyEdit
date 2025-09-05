@@ -9,9 +9,11 @@ $color-mode-type: data;
 @import '../../node_modules/bootstrap-icons/font/bootstrap-icons';
 
 @import "addons";
+@import "collapse";
 @import "pages";
 @import "cards";
 @import "table";
+@import "tooltips";
 @import "form";
 @import "sidebar";
 @import "badge";
@@ -363,7 +365,7 @@ hr.shadow-line:after {
 /* containers */
 
 .scroll-container {
-  height:350px;
+  max-height:350px;
   overflow:auto;
   padding:5px;
   background: var(--bs-widget-bg);

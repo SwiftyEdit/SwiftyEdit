@@ -2,6 +2,13 @@
     <div class="card">
         <div class="card-header">{$legend_login}</div>
         <div class="card-body">
+
+            {if $login_error}
+                <div class="alert alert-danger mb-3" role="alert">
+                     {$login_error}
+                </div>
+            {/if}
+
             <form hx-post="/xhr/se/login/" hx-target="#user-box" hx-indicator=".htmx-indicator" method="POST">
 
                 <div class="form-group">

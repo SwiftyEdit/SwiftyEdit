@@ -6,4 +6,10 @@ if(isset($_POST['remember_me'])) {
 }
 
 $login = se_user_login($_POST['login_name'],$_POST['login_psw'],$acp=FALSE,$remember);
-header( "HX-Trigger: update_user_status");
+
+if($login === 'failed') {
+    header('HX-Location: {"path":"/xhr/se/statusbox/?error=login_failed","target":"#user-box","swap":"innerHTML"}');
+} else {
+    // success, reload the status box
+    header("HX-Trigger: update_user_status");
+}

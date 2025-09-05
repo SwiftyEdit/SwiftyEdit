@@ -143,12 +143,20 @@ if(isset($_POST['save_snippet'])) {
         "snippet_permalink_classes" => $snippet_permalink_classes
     ];
 
+    // check for cache directory
+    if(!is_dir(SE_CONTENT . '/cache/snippets')) {
+        mkdir(SE_CONTENT . '/cache/snippets', 0777, true);
+    }
+
+    // cache snippet as JSON in /cache/snippets/$snippet_name+$lang
+    $file = SE_CONTENT . '/cache/snippets/'.$snippet_name.'_'.$snippet_lang.'.json';
+    file_put_contents($file, json_encode($insert_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
     // create new snippet
     if($_POST['save_snippet'] == 'new') {
         $data = $db_content->insert("se_snippets", $insert_data);
         $new_id = $db_content->id();
         show_toast($lang['msg_success_new_record'],'success');
-
         header( 'HX-REDIRECT: /admin/snippets/edit/'.$new_id.'/');
     }
 

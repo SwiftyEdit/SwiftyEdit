@@ -18,6 +18,7 @@
  * @var array $se_prefs global preferences
  * @var string $se_base_url the base url
  * @var array $page_contents
+ * @var array $cached_url_data
  */
 
 
@@ -32,12 +33,13 @@ se_increase_product_hits($get_product_id);
 // get the product-page by 'type_of_use' and $languagePack
 // we need this if we link to product variants
 // if $swifty_slug is not equal, we set a canonical link
-$target_page = $db_content->get("se_pages", "page_permalink", [
-    "AND" => [
-        "page_type_of_use" => "display_product",
-        "page_language" => $page_contents['page_language']
-    ]
-]);
+
+foreach ($cached_url_data as $page) {
+    if ($page['page_language'] === $page_contents['page_language'] && $page['page_type_of_use'] === 'display_product') {
+        $target_page = $page['page_permalink'];
+        break;
+    }
+}
 
 if ($target_page == '') {
     $target_page = $swifty_slug;
@@ -574,6 +576,8 @@ $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
 $smarty->assign('label_delivery_time', $lang['label_product_delivery_time']);
 $smarty->assign('product_delivery_time_title', $get_delivery_text['snippet_title']);
 $smarty->assign('product_delivery_time_text', $get_delivery_text['snippet_content']);
+
+$smarty->assign('data_source', $product_data['data_source']); // cache or database
 
 $products_page = $smarty->fetch("products-display.tpl", $cache_id);
 $smarty->assign('page_content', $products_page, true);

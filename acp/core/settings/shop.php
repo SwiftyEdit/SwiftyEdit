@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @var $icon array
+ * @var $lang array
+ * @var $se_settings array
+ * @var $bs_row_col3 string template
+ */
+
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
 echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_shop'].'</div>';
 
@@ -22,6 +29,17 @@ $input_select_sorting = [
         $lang['label_product_sorting_name'] => 3,
         $lang['label_product_sorting_price'].' / '.$lang['ascending'] => 4,
         $lang['label_product_sorting_price'].' / '.$lang['descending'] => 5
+    ],
+    "type" => "select"
+];
+
+$input_select_product_cache = [
+    "input_name" => "prefs_products_cache",
+    "input_value" => $se_settings['products_cache'],
+    "label" => "Cache",
+    "options" => [
+        $lang['status_on'] => 1,
+        $lang['status_off'] => 2
     ],
     "type" => "select"
 ];
@@ -178,8 +196,14 @@ echo '<div class="tab-pane fade show active" id="shop-general" role="tabpanel" t
 
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 
-echo se_print_form_input($input_entries_per_page);
-echo se_print_form_input($input_select_sorting);
+$input_modes = [
+    se_print_form_input($input_entries_per_page),
+    se_print_form_input($input_select_sorting),
+    se_print_form_input($input_select_product_cache),
+];
+
+echo str_replace(['{col1}','{col2}','{col3}'],$input_modes,$bs_row_col3);
+
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
 

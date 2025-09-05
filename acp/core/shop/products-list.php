@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @var $icon array
+ * @var $hidden_csrf_token string
+ * @var $lang array
+ */
+
 $reader_uri = '/admin-xhr/shop/read/';
 $writer_uri = '/admin-xhr/shop/write/';
 
@@ -67,20 +73,60 @@ echo '</div>';
 echo '</div>';
 
 
-echo '</div>';
-echo '</div>';
 
-echo '<div class="card mb-2">';
-echo '<div class="card-header">'.$lang['label_categories'].'</div>';
+
+
+echo '<div class="accordion" id="accordionSidebar">';
+echo '<div class="accordion-item">';
+echo '<div class="accordion-header">';
+echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategories" aria-expanded="false" aria-controls="collapseOne">'.$lang['label_categories'].'</button>';
+echo '</div>';
+echo '<div id="collapseCategories" class="accordion-collapse collapse" data-bs-parent="#accordionSidebar">';
+echo '<div class="accordion-body p-0">';
+
 echo '<div class="scroll-container p-0">';
 echo '<div id="keyList" hx-get="'.$reader_uri.'?action=list_categories" hx-trigger="load, update_products_list from:body, updated_global_filter from:body"></div>';
 echo '</div>';
+
+echo '</div>'; // accordion-body
+echo '</div>'; // collapse
+echo '</div>'; // item
+echo '<div class="accordion-item">';
+echo '<div class="accordion-header">';
+echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKeys" aria-expanded="false" aria-controls="collapseOne">'.$lang['label_keywords'].'</button>';
+echo '</div>';
+echo '<div id="collapseKeys" class="accordion-collapse collapse" data-bs-parent="#accordionSidebar">';
+echo '<div class="accordion-body p-0">';
+
+echo '<div class="scroll-container p-0">';
+echo '<div id="keyList" hx-get="'.$reader_uri.'?action=list_keyword_btn" hx-trigger="load, update_products_list from:body, updated_global_filter from:body"></div>';
 echo '</div>';
 
-echo '<div class="card">';
-echo '<div class="card-header">'.$lang['label_keywords'].'</div>';
+echo '</div>'; // accordion-body
+echo '</div>'; // collapse
+echo '</div>'; // item
+
+
+echo '</div>'; // accordion
+
+echo '</div>';
+echo '</div>';
+
+
+echo '<div class="card mb-2">';
+echo '<div class="card-header">Cache</div>';
 echo '<div class="card-body">';
-echo '<div id="keyList" hx-get="'.$reader_uri.'?action=list_keyword_btn" hx-trigger="load, update_products_list from:body, updated_global_filter from:body"></div>';
+
+$vals = ['csrf_token' => $_SESSION['token']];
+echo '<div class="btn-group d-flex">';
+echo '<button hx-post="'.$writer_uri.'" hx-target="#cacheResponse" hx-vals=\''.json_encode($vals).'\' hx-indicator=".htmx-indicator" class="btn btn-default w-100" name="products_cache" value="clear" title="'.$lang['btn_clear_cache'].'">'.$icon['trash'].' '.$lang['btn_delete_cache'].'</button>';
+echo '<button hx-post="'.$writer_uri.'" hx-target="#cacheResponse" hx-vals=\''.json_encode($vals).'\' hx-indicator=".htmx-indicator" class="btn btn-default w-100" name="products_cache" value="update" title="'.$lang['btn_clear_cache'].'">'.$icon['arrow_clockwise'].' '.$lang['btn_update'].'</button>';
+echo '</div>';
+
+echo '<div id="cacheResponse">';
+echo '<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>';
+echo '</div>';
+
 echo '</div>';
 echo '</div>';
 

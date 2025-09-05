@@ -125,7 +125,6 @@ if($page_contents['page_sort'] == 'portal' OR $p == '') {
 $smarty->assign('body_template', $se_template_layout);
 
 
-$snippet_footer = se_get_textlib('footer_text',"$languagePack",'all');
 $all_snippets = se_get_all_snippets();
 $cnt_snippets = count($all_snippets);
 $matched_snippets = array();

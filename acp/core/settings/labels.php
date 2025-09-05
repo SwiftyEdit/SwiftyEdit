@@ -5,12 +5,15 @@ echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang
 $writer_uri = '/admin-xhr/settings/labels/write/';
 $reader_uri = '/admin-xhr/settings/labels/read/';
 
-echo '<div id="getLabels" class="card p-3" hx-post="'.$reader_uri.'" hx-trigger="load, changed, updated_labels from:body" hx-include="[name=\'csrf_token\']" hx-vals=\'{"load_labels": "labels"}\'>';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+echo '<div id="getLabels" class="card p-3" hx-get="'.$reader_uri.'" hx-trigger="load, changed, updated_labels from:body" hx-vals=\'{"load_labels": "labels"}\'>';
+echo '<span class="sr-only">Loading...</span>';
 echo'</div>';
 
 echo '<hr>';
 
+echo '<div class="card">';
+echo '<div class="card-header">'.$lang['new'].' ...</div>';
+echo '<div class="card-body">';
 echo '<form id="create_label" name="create_label" hx-post="'.$writer_uri.'" hx-target="#getLabels" hx-on::after-request="this.reset()">';
 echo '<div class="row">';
 echo '<div class="col-md-4">';
@@ -31,5 +34,7 @@ echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</div>';
 echo '</div>';
 echo '</form>';
+echo '</div>';
+echo '</div>';
 
 

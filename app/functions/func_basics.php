@@ -549,19 +549,17 @@ function get_left_string($string,$separator) {
 
 /**
  * get all active mods
- * from cached file /cache/active_mods.php
+ * from the cache file /cache/active_addons.json
  */
 
 function se_get_active_mods() {
+
+    $cache_file_active_addons = SE_CONTENT . '/cache/active_addons.json';
+    if(file_exists($cache_file_active_addons)) {
+        $active_addons = json_decode(file_get_contents($cache_file_active_addons), true);
+    }
 	
-	$active_mods = array();
-	$cached_mods = SE_CONTENT . "/cache/active_mods.php";
-	
-	if(is_file($cached_mods)) {
-		include $cached_mods;
-	}
-	
-	return $active_mods;	
+	return $active_addons;
 }
 
 
@@ -778,7 +776,7 @@ function se_search($query, $currentPage=1, $itemsPerPage=10) {
 
 function se_increase_pageimpression($id) {
 
-    global $db_content;
+    global $db_content,$se_bot_list;
 
     if(!is_int($id)) {
         return;
@@ -788,27 +786,21 @@ function se_increase_pageimpression($id) {
         return;
     }
 
-    $counter = $db_content->get("se_pages", "page_hits",
-        [
-            "page_id" => $id
-        ]);
-
-
-    if($counter != '') {
-        $set_counter = (int) $counter + 1;
-
-        $db_content->update("se_pages", [
-            "page_hits" => $set_counter
-        ],[
-            "page_id" => $id
-        ]);
+    // User-Agent
+    if (se_is_bot()) {
+        return;
     }
 
-    if($counter == '' OR $counter == NULL) {
-        $db_content->update("se_pages", [
-            "page_hits" => 1
-        ],[
+    $counter = $db_content->get("se_pages", "page_hits", [
             "page_id" => $id
         ]);
-    }
+
+
+    $set_counter = ($counter !== '' && $counter !== null) ? ((int)$counter + 1) : 1;
+
+    $db_content->update("se_pages", [
+        "page_hits" => $set_counter
+    ], [
+        "page_id" => $id
+    ]);
 }

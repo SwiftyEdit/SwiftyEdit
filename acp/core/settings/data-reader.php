@@ -90,13 +90,12 @@ if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_coun
     echo '</form>';
 }
 
-if(isset($_POST['load_labels'])) {
+if(isset($_GET['load_labels'])) {
 
 
-    $writer_uri = '/admin/settings/labels/write/';
+    $writer_uri = '/admin-xhr/settings/labels/write/';
     $se_labels = se_get_labels();
     $cnt_labels = count($se_labels);
-
 
     for($i=0;$i<$cnt_labels;$i++) {
         echo '<form>';
@@ -133,7 +132,5 @@ if(isset($_POST['load_labels'])) {
         echo '</form>';
 
     }
-
-
-
+    exit;
 }

@@ -207,7 +207,17 @@ if($_REQUEST['action'] == 'list_products') {
     echo '<div class="card p-3">';
     echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
 
-    echo '<table class="table table-striped table-hover">';
+    echo '<table class="table table-striped">';
+
+    echo '<thead><tr>';
+    echo '<th scope="col" style="width: 35px;">#</th>';
+    echo '<th scope="col" style="width: 35px;">'.$icon['star'].'</th>';
+    echo '<th scope="col" style="width: 120px;">'.$lang['label_priority'].'</th>';
+    echo '<th scope="col" style="width: 30px;">'.$lang['label_image'].'</th>';
+    echo '<th scope="col" class="w-auto">'.$lang['label_description'].'</th>';
+    echo '<th scope="col" style="width: 150px;">'.$lang['label_price'].'</th>';
+    echo '<th scope="col" style="width: 50px;"> </th>';
+    echo '</tr></thead>';
 
     foreach($products_data as $product) {
 
@@ -261,6 +271,7 @@ if($_REQUEST['action'] == 'list_products') {
         $get_categories = explode('<->',$product['categories']);
         $categories = '';
         if($product['categories'] != '') {
+            $categories = '<p>';
             foreach($get_categories as $cats) {
 
                 foreach($se_categories as $cat) {
@@ -271,6 +282,7 @@ if($_REQUEST['action'] == 'list_products') {
                 }
                 $categories .= '<span class="text-muted small" title="'.$cat_description.'">'.$icon['tags'].' '.$cat_title.'</span> ';
             }
+            $categories .= '</p>';
         }
 
         // thumbnail
@@ -286,45 +298,78 @@ if($_REQUEST['action'] == 'list_products') {
             $show_thumb = '<div class="show-thumb" style="background-image: url(/themes/administration/images/no-image.png);">';
         }
 
+        $show_slug = $icon['link'].' ';
+        if($product['main_catalog_slug'] != '') {
+            $show_slug .= '<span class="text-success">'.$product['main_catalog_slug'].'</span>';
+        }
+        if($product['slug'] != '') {
+            $show_slug .= '<span class="text-success">'.$product['slug'].'</span>';
+        }
+
         // variants
         $variants = [];
         $variants = se_get_product_variants($product_id);
         $cnt_variants = count($variants);
 
-        $edit_variant_select = '';
+        $edit_variant_collapse = '';
         if($cnt_variants > 1) {
-            $edit_variant_select = '<form class="mt-2" action="/admin/shop/edit/" method="POST">';
-            $edit_variant_select .= '<div class="dropdown">';
-            $edit_variant_select .= '<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'.$lang['label_product_variants'].' ('.$cnt_variants.')</button>';
-            $edit_variant_select .= '<ul class="dropdown-menu">';
+
+            $edit_variant_collapse = '<div style="margin-top:-25px;" class="text-center">
+                                        <a class="btn btn-default btn-sm" 
+                                            data-bs-toggle="collapse" 
+                                            href="#collapseVariants'.$product_id.'" 
+                                            role="button" 
+                                            aria-expanded="false" 
+                                            aria-controls="collapseVariants'.$product_id.'"
+                                            >'.$lang['label_product_variants'].' ('.($cnt_variants-1).') 
+                                            <span class="toggle">'.$icon['caret_down'].'</span></a></div>';
+            $edit_variant_collapse .= '<div class="collapse" id="collapseVariants'.$product_id.'">';
+            $edit_variant_collapse .= '<table class="table table-sm mt-1">';
+
             foreach($variants as $variant) {
 
                 $show_title = $variant['product_variant_title'] ?: $variant['title'];
+                $show_description = $variant['product_variant_description'] ?: $variant['teaser'];
+                $trimmed_description = se_return_first_chars($show_description,100);
 
-
-                if($product_id !== $variant['id']) {
-                    $show_title = '<i class="bi bi-arrow-return-right"></i> #'.$variant['id'].' '.$show_title;
+                if($product_id == $variant['id']) {
+                    continue;
                 }
 
-                $edit_variant_select .= '<li><button class="dropdown-item" name="product_id" value="'.$variant['id'].'" type="submit">'.$show_title.'</button></li>';
+                $btn_edit_variant  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
+                $btn_edit_variant .= '<button class="btn btn-default btn-sm text-success" name="product_id" value="'.$variant['id'].'">'.$icon['edit'].'</button>';
+                $btn_edit_variant .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+                $btn_edit_variant .= '</form>';
+
+                $btn_duplicate_variant  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
+                $btn_duplicate_variant .= '<button class="btn btn-default btn-sm" name="duplicate_id" value="'.$product_id.'">'.$icon['copy'].'</button>';
+                $btn_duplicate_variant .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+                $btn_duplicate_variant .= '</form>';
+
+                $edit_variant_collapse .= '<tr>';
+                $edit_variant_collapse .= '<td>#'.$variant['id'].'</td>';
+                $edit_variant_collapse .= '<td>'.$show_title.'</td>';
+                $edit_variant_collapse .= '<td>'.$trimmed_description.'</td>';
+                $edit_variant_collapse .= '<td class="text-end">'.$btn_edit_variant.' '.$btn_duplicate_variant.'</td>';
+                $edit_variant_collapse .= '</tr>';
             }
-            $edit_variant_select .= '</ul>';
-            $edit_variant_select .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-            $edit_variant_select .= '</form>';
+
+            $edit_variant_collapse .= '</table>';
+            $edit_variant_collapse .= '</div>';
         }
 
         // fix button
         $icon_fixed_form = '<form hx-post="/admin-xhr/shop/write/" method="POST" class="form-inline">';
         if($product['fixed'] == '1') {
-            $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="rfixed" value="'.$product['id'].'">'.$icon['star'].'</button>';
+            $icon_fixed_form .= '<button type="submit" class="btn btn-primary w-100" name="rfixed" value="'.$product['id'].'">'.$icon['star'].'</button>';
         } else {
-            $icon_fixed_form .= '<button type="submit" class="btn btn-link w-100" name="sfixed" value="'.$product['id'].'">'.$icon['star_outline'].'</button>';
+            $icon_fixed_form .= '<button type="submit" class="btn btn-default w-100" name="sfixed" value="'.$product['id'].'">'.$icon['star_outline'].'</button>';
         }
         $icon_fixed_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $icon_fixed_form .= '</form>';
 
         // priority form
-        $prio_form  = '<form hx-post="/admin-xhr/shop/write/" hx-trigger="keyup changed delay:1s" method="POST" class="no-enter">';
+        $prio_form  = '<form hx-post="/admin-xhr/shop/write/" hx-trigger="keyup changed delay:1s,keydown[key==\'Enter\']" method="POST" class="no-enter">';
         $prio_form .= '<input type="number" name="priority" value="'.$product['priority'].'" class="form-control" style="max-width:150px">';
         $prio_form .= '<input type="hidden" name="prio_id" value="'.$product['id'].'">';
         $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
@@ -383,21 +428,28 @@ if($_REQUEST['action'] == 'list_products') {
         $show_items_price .= '</div>';
 
         echo '<tr class="'.$add_row_class.'">';
-        echo '<td>#'.$product['id'].'</td>';
+        echo '<td><label class="col-form-label">#'.$product['id'].'</label></td>';
         echo '<td>'.$icon_fixed_form.'</td>';
         echo '<td>'.$prio_form.'</td>';
         echo '<td>'.$show_thumb.'</td>';
         echo '<td>';
-        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' '.$add_label.'</h6>'.$trimmed_teaser.'<br>'.$show_items_dates;
+        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' '.$add_label.'</h6>';
+        echo $trimmed_teaser.'<br>'.$show_items_dates;
+        echo '<p class="mb-0"><small>'.$show_slug.'</small></p>';
         echo $label;
         echo $categories;
-        if($edit_variant_select != '') {
-            echo $edit_variant_select;
-        }
         echo '</td>';
-        echo '<td>'.$show_items_price.'</td>';
-        echo '<td class="text-nowrap">'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
+        echo '<td style="width:150px;">'.$show_items_price.'</td>';
+        echo '<td style="width:100px;" class="text-nowrap text-end">'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
         echo '</tr>';
+
+        if($edit_variant_collapse != '') {
+            echo '<tr class="'.$add_row_class.'">';
+            echo '<td colspan="7">';
+            echo $edit_variant_collapse;
+            echo '</td>';
+            echo '</tr>';
+        }
     }
 
     echo '</table>';

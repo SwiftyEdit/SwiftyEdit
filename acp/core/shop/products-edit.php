@@ -714,9 +714,9 @@ $show_price_volume_discount .= '</div>';
 
 
 /* select delivery time */
-
+// get all snippets where name starts with 'shop_delivery_time'
 $snippets_delivery_time = $db_content->select("se_snippets", "*", [
-    "snippet_name" => "shop_delivery_time"
+    "snippet_name[~]" => "shop_delivery_time%"
 ]);
 
 $snippet_select_delivery_time = '<select class="form-control custom-select" name="product_delivery_time">';
