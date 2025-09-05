@@ -12,7 +12,7 @@ Das System benötigt keine außergewöhnlichen Komponenten.
 
 * PHP 8.3+
 * aktiviertes PDO/SQLite Modul - PDO/SQLite ist normalerweise standardmäßig aktiviert. Falls nicht musst Du bei Deinem Webhoster nachfragen.
-* MySQL (empfohlen) falls Du nicht die komplette Installation auf SQLite betreiben möchtest.
+* MySQL (empfohlen), falls Du nicht die komplette Installation auf SQLite betreiben möchtest.
 
 ## SwiftyEdit installieren
 

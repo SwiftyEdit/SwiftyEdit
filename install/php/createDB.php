@@ -168,18 +168,23 @@ $dbh_user->insert("se_user", [
  * get basic contents
  */
 
-
 $portal_content = file_get_contents(__DIR__."/../contents/text_welcome_en.txt");
 $email_confirm_content = file_get_contents(__DIR__."/../contents/text_email_confirm_en.txt");
 $agreement_content = file_get_contents(__DIR__."/../contents/text_agreement_en.txt");
+$account_confirm_content = file_get_contents(__DIR__."/../contents/text_account_confirm_en.txt");
+$no_access_content = file_get_contents(__DIR__."/../contents/text_no_access_en.txt");
 if($_SESSION['lang'] == 'de') {
     $portal_content = file_get_contents(__DIR__."/../contents/text_welcome_de.txt");
     $email_confirm_content = file_get_contents(__DIR__."/../contents/text_email_confirm_de.txt");
     $agreement_content = file_get_contents(__DIR__."/../contents/text_agreement_de.txt");
+    $account_confirm_content = file_get_contents(__DIR__."/../contents/text_account_confirm_de.txt");
+    $no_access_content = file_get_contents(__DIR__."/../contents/text_no_access_de.txt");
 }
 
 $example_content = file_get_contents(__DIR__."/../contents/text_example.txt");
 $footer_content = file_get_contents(__DIR__."/../contents/text_footer.txt");
+
+
 
 $time = time();
 
@@ -242,228 +247,100 @@ $dbh_content->insert("se_pages", [
 	"page_meta_robots" => "all"
 ]);
 
-/* insert preferences */
+// insert preferences
 
-$dbh_content->insert("se_options", [
-	[
-		"option_key" => "prefs_pagename",
-		"option_value" => "SwiftyEdit",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_pagetitle",
-		"option_value" => "SwiftyEdit CMS",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_pagesubtitle",
-		"option_value" => "Content Management System",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_template",
-		"option_value" => "default",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_template_layout",
-		"option_value" => "layout_default.tpl",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_showloginform",
-		"option_value" => "yes",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_template_stylesheet",
-		"option_value" => "../styles/default/css/default.css",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_rss_time_offset",
-		"option_value" => 86400,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_cms_domain",
-		"option_value" => "$prefs_cms_domain",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_cms_ssl_domain",
-		"option_value" => "$prefs_cms_ssl_domain",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_cms_base",
-		"option_value" => "$prefs_cms_base",
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_default_language",
-		"option_value" => $_SESSION['lang'],
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_nbr_page_versions",
-		"option_value" => 25,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_acp_session_lifetime",
-		"option_value" => 86400,
-		"option_module" => "se"
-	], [
-        "option_key" => "prefs_posts_entries_per_page",
-        "option_value" => 10,
+$initSettings = [
+    "prefs_pagename" => "SwiftyEdit",
+    "prefs_pagetitle" => "SwiftyEdit CMS",
+    "prefs_pagesubtitle" => "Content Management System",
+    "prefs_template" => "default",
+    "prefs_template_layout" => "layout_default.tpl",
+    "prefs_template_stylesheet" => "../styles/default/css/default.css",
+    "prefs_showloginform" => "yes",
+    "prefs_rss_time_offset" => 86400,
+    "prefs_cms_domain" => "$prefs_cms_domain",
+    "prefs_cms_ssl_domain" => "$prefs_cms_ssl_domain",
+    "prefs_cms_base" => "$prefs_cms_base",
+    "prefs_default_language" => $_SESSION['lang'],
+    "prefs_nbr_page_versions" => 25,
+    "prefs_acp_session_lifetime" => 86400,
+    "prefs_posts_entries_per_page" => 10,
+    "prefs_products_per_page" => 10,
+    "prefs_posts_event_time_offset" => 86400,
+    "prefs_comments_mode" => 3,
+    "prefs_comments_authorization" => 1,
+    "prefs_comments_max_entries" => 100,
+    "prefs_comments_autoclose" => 604800,
+    "prefs_comments_max_level" => 3,
+    "prefs_pagesort_minlength" => 3,
+    "prefs_maximagewidth" => 1024,
+    "prefs_maximageheight" => 1024,
+    "prefs_maxtmbwidth" => 350,
+    "prefs_maxtmbheight" => 350,
+    "prefs_maxfilesize" => 2500,
+    "prefs_publisher_mode" => "no",
+    "prefs_timezone" => "",
+    "prefs_dateformat" => "d.m.Y",
+    "prefs_timeformat" => "H:i",
+    "prefs_posts_url_pattern" => "by_filename",
+    "prefs_posts_default_guestlist" => 1,
+    "prefs_posts_default_votings" => 1,
+    "prefs_posts_products_default_tax" => 19,
+    "prefs_posts_products_tax_alt1" => 7,
+    "prefs_posts_products_tax_alt2" => 0,
+    "prefs_posts_products_default_currency" => "EUR",
+    "prefs_userregistration" => "no",
+    "prefs_usertemplate" => "off",
+    "prefs_smarty_cache_lifetime" => 0,
+    "prefs_smarty_cache" => 0,
+    "prefs_smarty_compile_check" => 0,
+    "prefs_posts_products_cart" => 1,
+    "prefs_posts_order_mode" => 1,
+    "prefs_products_cache" => 2,
+    "prefs_posts_price_mode" => 1,
+    "prefs_posts_price_visibility" => 1,
+    "prefs_mailer_type" => "mail",
+    "prefs_shipping_costs_mode" => 1
+];
+
+$insertData = array_map(function($key, $value) {
+    return [
+        "option_key" => $key,
+        "option_value" => $value,
         "option_module" => "se"
-    ],[
-		"option_key" => "prefs_products_per_page",
-		"option_value" => 10,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_posts_event_time_offset",
-		"option_value" => 86400,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_comments_mode",
-		"option_value" => 3,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_comments_authorization",
-		"option_value" => 1,
-		"option_module" => "se"
-	], [
-        "option_key" => "prefs_comments_max_entries",
-        "option_value" => 100,
-        "option_module" => "se"
-    ], [
-		"option_key" => "prefs_comments_autoclose",
-		"option_value" => 604800,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_comments_max_level",
-		"option_value" => 3,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_pagesort_minlength",
-		"option_value" => 3,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_maximagewidth",
-		"option_value" => 1024,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_maximageheight",
-		"option_value" => 1024,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_maxtmbwidth",
-		"option_value" => 350,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_maxtmbheight",
-		"option_value" => 350,
-		"option_module" => "se"
-	], [
-		"option_key" => "prefs_maxfilesize",
-		"option_value" => 2500,
-		"option_module" => "se"
-	], [
-        "option_key" => "prefs_publisher_mode",
-        "option_value" => "no",
-        "option_module" => "se"
-    ], [
-        "option_key" => "prefs_timezone",
-        "option_value" => "",
-        "option_module" => "se"
-    ], [
-        "option_key" => "prefs_dateformat",
-        "option_value" => "d.m.Y",
-        "option_module" => "se"
-    ], [
-        "option_key" => "prefs_timeformat",
-        "option_value" => "H:i",
-        "option_module" => "se"
-    ], [
-        "option_key" => "prefs_posts_url_pattern",
-        "option_value" => "by_filename",
-        "option_module" => "se"
-    ], [
-        "option_key" => "prefs_posts_default_guestlist",
-        "option_value" => 1,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_posts_default_votings",
-        "option_value" => 1,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_posts_products_default_tax",
-        "option_value" => 19,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_posts_products_tax_alt1",
-        "option_value" => 7,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_posts_products_tax_alt2",
-        "option_value" => 0,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_posts_products_default_currency",
-        "option_value" => "EUR",
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_userregistration",
-        "option_value" => "no",
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_usertemplate",
-        "option_value" => "off",
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_smarty_cache_lifetime",
-        "option_value" => 0,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_smarty_cache",
-        "option_value" => 0,
-        "option_module" => "se"
-    ],[
-        "option_key" => "prefs_smarty_compile_check",
-        "option_value" => 0,
-        "option_module" => "se"
-    ]
-]);
+    ];
+}, array_keys($initSettings), $initSettings);
+
+$dbh_content->insert("se_options", $insertData);
 
 
 
 
 
-/* insert snippets */
+// insert snippets
 
-$dbh_content->insert("se_snippets", [
-	[
-		"snippet_name" => "footer_text",
-		"snippet_content" => "$footer_content",
-		"snippet_lang" => $_SESSION['lang'],
-		"snippet_type" => "snippet_core",
+$initSnippets = [
+    "footer_text" => $footer_content,
+    "agreement_text" => $agreement_content,
+    "account_confirm" => $account_confirm_content,
+    "account_confirm_mail" => $email_confirm_content,
+    "no_access" => $no_access_content
+];
+
+$time = time();
+$language = $_SESSION['lang'];
+
+$insertSnippetData = array_map(function($name, $content) use ($language, $time) {
+    return [
+        "snippet_name" => $name,
+        "snippet_content" => $content,
+        "snippet_lang" => $language,
+        "snippet_type" => "snippet_core",
         "snippet_lastedit" => $time
-	],[
-		"snippet_name" => "agreement_text",
-		"snippet_content" => "$agreement_content",
-		"snippet_lang" => $_SESSION['lang'],
-		"snippet_type" => "snippet_core",
-        "snippet_lastedit" => $time
-	],[
-		"snippet_name" => "account_confirm",
-		"snippet_content" => "<p>Dein Account wurde erfolgreich freigeschaltet.</p>",
-		"snippet_lang" => $_SESSION['lang'],
-		"snippet_type" => "snippet_core",
-        "snippet_lastedit" => $time
-	],[
-		"snippet_name" => "account_confirm_mail",
-		"snippet_content" => "$email_confirm_content",
-		"snippet_lang" => $_SESSION['lang'],
-		"snippet_type" => "snippet_core",
-        "snippet_lastedit" => $time
-	],[
-		"snippet_name" => "no_access",
-		"snippet_content" => "Zugriff verweigert...",
-		"snippet_lang" => $_SESSION['lang'],
-		"snippet_type" => "snippet_core",
-        "snippet_lastedit" => $time
-	]
-]);
+    ];
+}, array_keys($initSnippets), $initSnippets);
 
+$dbh_content->insert("se_snippets", $insertSnippetData);
 
 
 /* posts table */

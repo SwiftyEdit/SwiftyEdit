@@ -1,0 +1,8 @@
+<h2>Zugriff verweigert</h2>
+<p>Du hast leider keinen Zugriff auf diese Seite. Gründe können sein:</p>
+<ul>
+  <li>Die Seite ist passwortgeschützt.</li>
+  <li>Sie ist nur für registrierte Benutzer oder bestimmte Benutzergruppen zugänglich.</li>
+  <li>Deine Berechtigungen reichen aktuell nicht aus.</li>
+</ul>
+<p>Bitte melde dich an, um zu prüfen, ob du die Inhalte sehen kannst, oder kontaktiere den Administrator.</p>
