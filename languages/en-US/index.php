@@ -1,10 +1,8 @@
 <?php
 
 /**
- * language file | english
+ * language file | english US
  */
 
-$lang_sign = "en";
+$lang_sign = "en-US";
 $lang_desc = "English";
-
-?>
