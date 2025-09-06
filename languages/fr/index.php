@@ -4,7 +4,7 @@
  * language file | english
  */
 
-$lang_sign = "fr";
-$lang_desc = "French";
+$lang_sign = "en";
+$lang_desc = "English";
 
 ?>
