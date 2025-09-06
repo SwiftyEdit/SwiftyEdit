@@ -1,5 +1,6 @@
 files:
   - source: /languages/en/
     ignore:
-      - '*png'
+      - '*.png'
+      - 'index.php'
     translation: /languages/%two_letters_code%/%original_file_name%
