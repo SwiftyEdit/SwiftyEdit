@@ -1,10 +1,8 @@
 <?php
 
 /**
- * language file | english
+ * language file | bulgarian
  */
 
 $lang_sign = "bg";
 $lang_desc = "Bulgarian";
-
-?>
