@@ -6,7 +6,8 @@
  * global variables
  * @var array $lang from language files
  * @var string $languagePack
- * @var string $lang_sign
+ * @var string $lang_sign from languages/%lang%/inde.php
+ * @var string $lang_desc from languages/%lang%/inde.php
  * @var array $icon from icons.php
  * @var array $se_prefs preferences
  *
@@ -136,9 +137,8 @@ $all_langs = get_all_languages();
 $all_hooks = se_get_all_hooks();
 
 /**
- * read the preferences
- * OLD: do not use the old $prefs_default_language
- * NEW: use $se_prefs['default_language']
+ * read the settings
+ * example use: $se_settings['default_language']
  */
 
 $se_get_preferences = se_get_preferences();
@@ -158,15 +158,15 @@ foreach ($se_get_preferences as $k => $v) {
     }
 }
 
-if ($se_prefs['prefs_timezone'] != '') {
-    date_default_timezone_set($se_prefs['prefs_timezone']);
+if ($se_settings['timezone'] != '') {
+    date_default_timezone_set($se_settings['timezone']);
 }
 
 /* set language */
 
 if (!isset($_SESSION['lang'])) {
-    if ($se_prefs['prefs_default_language'] != '') {
-        $_SESSION['lang'] = $se_prefs['prefs_default_language'];
+    if ($se_settings['default_language'] != '') {
+        $_SESSION['lang'] = $se_settings['default_language'];
     } else {
         $_SESSION['lang'] = $languagePack;
     }
@@ -192,8 +192,8 @@ require SE_ROOT.'/languages/index.php';
  * $default_lang_code (string) the default language code
  */
 
-if ($se_prefs['prefs_default_language'] != '') {
-    include SE_ROOT.'/languages/' . $se_prefs['prefs_default_language'] . '/index.php';
+if ($se_settings['default_language'] != '') {
+    include SE_ROOT.'/languages/' . $se_settings['default_language'] . '/index.php';
     $default_lang_code = $lang_sign; // de|en|es ...
 }
 
@@ -202,8 +202,8 @@ if ($se_prefs['prefs_default_language'] != '') {
  * hide languages from $prefs_deactivated_languages
  * all active languages are stored in $active_lang
  */
-if (isset($se_prefs['prefs_deactivated_languages']) AND $se_prefs['prefs_deactivated_languages'] != '') {
-    $arr_lang_deactivated = json_decode($se_prefs['prefs_deactivated_languages']);
+if (isset($se_settings['deactivated_languages']) AND $se_settings['deactivated_languages'] != '') {
+    $arr_lang_deactivated = json_decode($se_settings['deactivated_languages']);
 }
 
 foreach ($all_langs as $l) {
@@ -231,10 +231,10 @@ foreach($lang_codes as $l) {
 }
 
 /* build absolute URL */
-if ($se_prefs['prefs_cms_ssl_domain'] != '') {
-    $se_base_url = $se_prefs['prefs_cms_ssl_domain'] . $se_prefs['prefs_cms_base'];
+if ($se_settings['cms_ssl_domain'] != '') {
+    $se_base_url = $se_settings['cms_ssl_domain'] . $se_settings['cms_base'];
 } else {
-    $se_base_url = $se_prefs['prefs_cms_domain'] . $se_prefs['prefs_cms_base'];
+    $se_base_url = $se_settings['cms_domain'] . $se_settings['cms_base'];
 }
 
 if (!isset($_COOKIE['acptheme'])) {
@@ -261,17 +261,19 @@ if (isset($set_acptheme)) {
 
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $languagePack; ?>" data-bs-theme="auto">
+<html lang="<?php echo htmlentities($languagePack); ?>" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
-    <title>ACP | <?php echo $se_base_url ?></title>
+    <title>SwiftyEdit / <?php echo htmlentities($se_section); ?></title>
 
-    <link rel="icon" type="image/x-icon" href="images/favicon.ico"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="/themes/administration/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
 
     <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2025-04-23" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
-        const languagePack = "<?php echo $languagePack; ?>";
+        const languagePack = "<?php echo htmlentities($languagePack); ?>";
         let ace_theme;
         let tinymce_skin;
         ace_theme = 'chrome';
