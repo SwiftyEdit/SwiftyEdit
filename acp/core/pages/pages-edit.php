@@ -68,7 +68,7 @@ if(str_contains($page_sort, '.')) {
 $input_text_page_sort = [
     "input_name" => "page_order",
     "input_value" => $last_part_page_sort,
-    "label" => $lang['label_pages_position'],
+    "label" => $lang['label_pages_position'].' '.se_print_docs_tip("tip-page-position.md"),
     "type" => "text"
 ];
 
