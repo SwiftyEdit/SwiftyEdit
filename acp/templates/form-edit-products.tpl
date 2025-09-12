@@ -460,13 +460,20 @@
                                 <div class="card-body">
                                     <div class="tab-content my-2">
                                         <div class="tab-pane fade show active" id="variants">
-
+                                            <span class="float-end">{variant_tooltip}</span>
                                             <div class="row">
                                                 <div class="col">
                                             <div class="form-group">
                                                 <label>{label_title}</label>
-                                                <input class='form-control' name="product_variant_title" type="text"
+                                                <div class="input-group">
+                                                    <div class="input-group-text p-0 border-0">
+                                                    <input type="color" class="form-control-color radius-0"
+                                                           name="product_variant_color" value="{product_variant_color}"
+                                                           title="Choose your color">
+                                                    </div>
+                                                    <input class='form-control' name="product_variant_title" type="text"
                                                        value="{product_variant_title}">
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label>{label_description}</label>
