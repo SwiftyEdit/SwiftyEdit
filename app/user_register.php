@@ -1,16 +1,12 @@
 <?php
 
 /**
- * prohibit unauthorized access
+ * @var array $se_settings
  */
 
 //error_reporting(E_ALL ^E_NOTICE ^E_DEPRECATED);
 
-if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
-	die ('<h2>Direct File Access Prohibited</h2>');
-}
-
-if($se_prefs['prefs_userregistration'] != 'yes') {
+if($se_settings['userregistration'] != 'yes') {
 	die("unauthorized access");
 }
 
@@ -89,7 +85,6 @@ if($send_data == 'true') {
 	$user_verified = 'waiting';
     $user_verified_by_admin = 'no';
 	$drm_string = '';
-	$psw_string = md5("$psw$username");
 	$user_psw_hash = password_hash($psw, PASSWORD_DEFAULT);
 	$user_activationkey = random_text('alnum',32);
 	$activation_url = $se_base_url."account/?user=$username&al=$user_activationkey";
@@ -135,7 +130,7 @@ if($send_data == 'true') {
 	]);	
 	
 	/* generate the message */
-	$email_msg = se_get_textlib("account_confirm_mail","$languagePack",'content');
+	$email_msg = se_get_snippet("account_confirm_mail","$languagePack",'content');
 	$email_msg = str_replace("{USERNAME}","$username",$email_msg);
 	$email_msg = str_replace("{SITENAME}","$prefs_pagetitle",$email_msg);
 	$email_msg = str_replace("{ACTIVATIONLINK}","$user_activationlink",$email_msg);
