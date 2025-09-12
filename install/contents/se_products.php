@@ -101,6 +101,7 @@ $cols = array(
     "product_options_comment_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_variant_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_variant_description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_variant_color" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "product_variant_type" => 'INTEGER(12)',
     "product_shipping_mode" => 'INTEGER(12)',
     "product_shipping_cat" => 'INTEGER(12)',
