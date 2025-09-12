@@ -159,8 +159,23 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
                 "time" => "$time"
             ]);
 
-            setcookie("identifier",$identifier,time()+(3600*24*365),"/","$se_base_url");
-            setcookie("securitytoken",$securitytoken,time()+(3600*24*365),"/","$se_base_url");
+            setcookie("identifier", $identifier, [
+                'expires' => time() + (3600 * 24 * 365),
+                'path' => '/',
+                'domain' => '',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+            setcookie("securitytoken", $securitytoken, [
+                'expires' => time() + (3600 * 24 * 365),
+                'path' => '/',
+                'domain' => '',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+
         }
 
         // reset failed logins

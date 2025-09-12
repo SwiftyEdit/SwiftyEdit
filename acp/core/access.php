@@ -61,9 +61,23 @@ if(($_SESSION['user_class'] != 'administrator') && isset($_COOKIE['identifier'])
 			],[
 			"identifier" => $identifier
 		]);
-		
-		setcookie("identifier",$identifier,time()+(3600*24*365)); //1 Jahr Gültigkeit
-		setcookie("securitytoken",$new_securitytoken,time()+(3600*24*365)); //1 Jahr Gültigkeit
+
+        setcookie("identifier", $identifier, [
+            'expires' => time() + (3600 * 24 * 365),
+            'path' => '/',
+            'domain' => '',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+        setcookie("securitytoken", $new_securitytoken, [
+            'expires' => time() + (3600 * 24 * 365),
+            'path' => '/',
+            'domain' => '',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
 
 		$user_data = $db_user->select("se_user","*",[
 			"user_id" => $token_row['user_id']
