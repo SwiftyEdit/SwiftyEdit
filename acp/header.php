@@ -81,7 +81,7 @@ if (isset($_GET['set_lang'])) {
 if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
-
+require SE_ROOT.'/languages/'.$languagePack.'/index.php';
 require SE_ROOT.'languages/index.php';
 
 /**

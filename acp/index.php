@@ -6,8 +6,9 @@
  * global variables
  * @var array $lang from language files
  * @var string $languagePack
- * @var string $lang_sign from languages/%lang%/inde.php
- * @var string $lang_desc from languages/%lang%/inde.php
+ * @var string $lang_sign from languages/%lang%/index.php
+ * @var string $lang_desc from languages/%lang%/index.php
+ * @var string $languagePackFallback from languages/%lang%/index.php
  * @var array $icon from icons.php
  * @var array $se_prefs preferences
  *
@@ -184,7 +185,7 @@ if (isset($_SESSION['lang'])) {
 }
 
 $languagePack = $purifier->purify($languagePack);
-
+require SE_ROOT.'/languages/'.$languagePack.'/index.php';
 require SE_ROOT.'/languages/index.php';
 
 

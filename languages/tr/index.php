@@ -6,3 +6,4 @@
 
 $lang_sign = "tr";
 $lang_desc = "Turkish";
+$languagePackFallback = 'en';
