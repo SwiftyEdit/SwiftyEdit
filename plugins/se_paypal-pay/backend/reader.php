@@ -126,43 +126,44 @@ if($_GET['show'] == 'docs_nav') {
 
     $docsfiles = glob($docs_root.'/*.md');
 
-    foreach($docsfiles as $doc) {
-        // skip tooltips
-        if (str_starts_with(basename($doc), 'tip-')) {
-            continue;
-        }
+       foreach($docsfiles as $doc) {
+           // skip tooltips
+           if (str_starts_with(basename($doc), 'tip-')) {
+               continue;
+           }
 
-        $parsed_file = se_parse_docs_file($doc);
-        $parsed_files[] = [
-            "title" => $parsed_file['header']['title'],
-            "priority" => $parsed_file['header']['priority'],
-            "btn" => $parsed_file['header']['btn'],
-            "file" => $doc
-        ];
-    }
+           $parsed_file = se_parse_docs_file($doc);
+           $parsed_files[] = [
+               "title" => $parsed_file['header']['title'],
+               "priority" => $parsed_file['header']['priority'],
+               "btn" => $parsed_file['header']['btn'],
+               "file" => $doc
+           ];
+       }
 
-    $sorted_parsed_files = se_array_multisort($parsed_files, 'priority', SORT_ASC);
+       $sorted_parsed_files = se_array_multisort($parsed_files, 'priority', SORT_ASC);
 
-    $list = '<div class="card mb-3">';
-    $list .= '<div class="list-group list-group-flush">';
-    foreach($sorted_parsed_files as $k => $v) {
+       $list = '<div class="card mb-3">';
+       $list .= '<div class="list-group list-group-flush">';
+       foreach($sorted_parsed_files as $k => $v) {
 
-        $active = '';
-        if($doc_filepath == $sorted_parsed_files[$k]['file']) {
-            $active = 'active';
-        }
+           $active = '';
+           if($doc_filepath == $sorted_parsed_files[$k]['file']) {
+               $active = 'active';
+           }
 
-        $hx_get = '/admin-xhr/addons/plugin/se_paypal-pay/read/?show=docs_content&file='.basename($sorted_parsed_files[$k]['file']);
-        $hx_target = '#docsContent';
+           $hx_get = '/admin-xhr/addons/plugin/se_paypal-pay/read/?show=docs_content&file='.basename($sorted_parsed_files[$k]['file']);
+           $hx_target = '#docsContent';
 
-        $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
-        $list .= $sorted_parsed_files[$k]['btn'];
-        $list .= '</button>';
+           $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
+           $list .= $sorted_parsed_files[$k]['btn'];
+           $list .= '</button>';
 
-    }
-    $list .= '</div>';
-    $list .= '</div>';
-    echo $list;
+       }
+       $list .= '</div>';
+       $list .= '</div>';
+       echo $list;
+       exit;
 }
 
 if($_GET['show'] == 'docs_content') {
@@ -173,5 +174,6 @@ if($_GET['show'] == 'docs_content') {
         $parsed_file = se_parse_docs_file(SE_ROOT.'/plugins/se_paypal-pay/docs/'.$languagePack.'/'.$df);
         echo $parsed_file['content'];
     }
+    exit;
 }
 
