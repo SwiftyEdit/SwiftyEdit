@@ -236,6 +236,8 @@ function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality
     if($imgt == 'imagewebp') {
         $old_image	= $imgcreatefrom("$img");
         $new_image	= imagecreatetruecolor($new_width, $new_height);
+        imagealphablending($new_image, false);
+        imagesavealpha($new_image, true);
         imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
         imagewebp($new_image,"$name",$quality);
         imagedestroy($new_image);
