@@ -5,6 +5,23 @@
  *
  * https://www.SwiftyEdit.com
  * support@SwiftyEdit.com
+ *
+ *
+ * @var object $smarty
+ * @var array $se_settings
+ * @var array $se_page_types
+ * @var string $languagePack
+ * @var string $themes_path
+ * @var string $se_template
+ * @var string $se_base_url
+ * @var int $se_start_time
+ * @var string $prepend_head_code
+ * @var string $prepend_body_code
+ * @var string $append_head_code
+ * @var string $append_body_code
+ * @var string $page_json_ld
+ * @var string $cache_id
+ *
  */
 
 require_once __DIR__.'/../app/bootstrap.php';
@@ -114,8 +131,8 @@ require SE_ROOT.'app/smarty.php';
 
 
 // xhr routes for core /xhr/se/
-// and plugins /xhr/plugins/plugin/
-// and themes /xhr/themes/theme/
+// and plugins /xhr/plugins/{plugin}/
+// and themes /xhr/themes/{theme}/
 if ($requestPathParts[0] === 'xhr' OR $requestPathParts[0] === 'api') {
     if ($requestPathParts[1] === 'se') {
         // route for SwiftyEdit
@@ -255,8 +272,8 @@ foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
 }
 
-foreach($se_prefs as $key => $val) {
-    $smarty->assign("$key", $val);
+foreach($se_settings as $key => $val) {
+    $smarty->assign("prefs_$key", $val);
 }
 
 /**
@@ -273,7 +290,8 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    if($p == 'password' || $p == 'profile' || $p == 'orders' || $p == 'account' || $p == 'register' || $p == 'unlock' || $p == 'tagged') {
+    $restricted_pages = ['password', 'profile', 'orders', 'account', 'register', 'unlock', 'tagged', 'checkout'];
+    if (in_array($p, $restricted_pages)) {
         $show_posts = false;
     }
 
@@ -329,7 +347,7 @@ if(isset($user_logout) && ($user_logout != '')) {
 
 
 
-if($se_prefs['prefs_posts_products_cart'] == 2 OR $se_prefs['prefs_posts_products_cart'] == 3) {
+if($se_settings['posts_products_cart'] == 2 OR $se_settings['posts_products_cart'] == 3) {
 
     $smarty->assign('show_shopping_cart',true);
 
@@ -412,8 +430,8 @@ if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator"
     }
 }
 
-if($se_prefs['prefs_maintenance_code'] != '') {
-    if($_POST['maintenance-access-code'] == $se_prefs['prefs_maintenance_code']) {
+if($se_settings['maintenance_code'] != '') {
+    if($_POST['maintenance-access-code'] == $se_settings['maintenance_code']) {
         $_SESSION['access_to_maintenance'] = 'permitted';
     }
     if($_SESSION['access_to_maintenance'] == 'permitted') {
