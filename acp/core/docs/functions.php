@@ -3,12 +3,12 @@
 
 function show_sysdocs_index() {
 
-    global $Parsedown, $doc_filepath;
+    global $Parsedown, $doc_filepath, $languagePackFallback;
     $languagePack = $_SESSION['lang'];
 
     $docs_root = '../acp/docs/en/*.md';
-    if(is_dir('../acp/docs/'.$languagePack)) {
-        $docs_root = '../acp/docs/'.$languagePack;
+    if(is_dir('../acp/docs/'.$languagePackFallback)) {
+        $docs_root = '../acp/docs/'.$languagePackFallback;
     }
     $docsfiles = glob($docs_root.'/*.md');
 

@@ -1,5 +1,5 @@
 <?php
-
+//error_reporting(E_ALL);
 $writer_uri = '/admin-xhr/shop/write/';
 $form_header_mode = $lang['btn_new'];
 $my_user_presets = se_get_my_presets();
@@ -897,6 +897,8 @@ $form_tpl = str_replace('{product_labels}', $checkbox_set_labels, $form_tpl);
 $form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
 $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
 
+$form_tpl = str_replace('{variant_tooltip}', se_print_docs_tip("tip-product-variants.md"), $form_tpl);
+
 /* user inputs */
 
 $form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
@@ -947,6 +949,7 @@ $form_tpl = str_replace('{list_products_filter}', $filter_list, $form_tpl);
 $form_tpl = str_replace('{variant_controls}', $variant_controls, $form_tpl);
 $form_tpl = str_replace('{product_variant_title}', $product_data['product_variant_title'], $form_tpl);
 $form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);
+$form_tpl = str_replace('{product_variant_color}', $product_data['product_variant_color'], $form_tpl);
 $form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
 $form_tpl = str_replace('{product_options_comment_label}', $product_data['product_options_comment_label'], $form_tpl);
 

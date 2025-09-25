@@ -212,11 +212,11 @@ if(isset($_POST['post_attachment'])) {
 switch ($display_mode) {
     case "list_posts_category":
     case "list_posts":
-        include 'posts-list.php';
+        include __DIR__.'/posts-list.php';
         break;
     case "show_post":
-        include 'posts-display.php';
+        include __DIR__.'/posts-display.php';
         break;
     default:
-        include 'posts-list.php';
+        include __DIR__.'/posts-list.php';
 }

@@ -107,11 +107,11 @@ if($page_contents['page_type_of_use'] == 'display_event' AND $get_event_id == ''
 switch ($display_mode) {
     case "list_events_category":
     case "list_events":
-        include 'events-list.php';
+        include __DIR__.'/events-list.php';
         break;
     case "show_event":
-        include 'events-display.php';
+        include __DIR__.'/events-display.php';
         break;
     default:
-        include 'events-list.php';
+        include __DIR__.'/events-list.php';
 }

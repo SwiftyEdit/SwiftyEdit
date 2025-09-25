@@ -103,3 +103,24 @@ function se_ensure_htaccess_exists(string $publicPath, string $templatePath): bo
         return false;
     }
 }
+
+function se_isAjaxRequest() {
+    // HTMX
+    if (isset($_SERVER['HTTP_HX_REQUEST']) && $_SERVER['HTTP_HX_REQUEST'] === 'true') {
+        return true;
+    }
+
+    // XMLHttpRequest
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        return true;
+    }
+
+    // Fetch API with JSON Accept
+    if (isset($_SERVER['HTTP_ACCEPT']) &&
+        strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+        return true;
+    }
+
+    return false;
+}

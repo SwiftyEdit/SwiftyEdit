@@ -6,3 +6,4 @@
 
 $lang_sign = "bg";
 $lang_desc = "Bulgarian";
+$languagePackFallback = 'en';

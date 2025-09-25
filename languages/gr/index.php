@@ -6,3 +6,4 @@
 
 $lang_sign = "gr";
 $lang_desc = "Greek";
+$languagePackFallback = 'en';

@@ -1472,13 +1472,13 @@ function se_print_docs_link(string $file, string $text = null, string $section =
  * @return string
  */
 function se_print_docs_tip(string $file, string $trigger_text = null) :string {
-    global $icon, $languagePack;
+    global $icon, $languagePackFallback;
 
     if ($trigger_text == null or $trigger_text == 'icon') {
         $trigger_text = $icon['question_circle'];
     }
 
-    $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.$file;
+    $doc_filepath = '../acp/docs/'.$languagePackFallback.'/tooltips/'.$file;
     $show_file = se_parse_docs_file($doc_filepath);
     $id = uniqid('help-');
 

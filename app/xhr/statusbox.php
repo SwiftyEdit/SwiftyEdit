@@ -10,6 +10,14 @@
  * @var string $se_base_url
  */
 
+// check if it's an ajax request
+$isHtmxRequest = se_isAjaxRequest();
+
+if (!$isHtmxRequest) {
+    // redirect
+    header('Location: /');
+    exit;
+}
 
 if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 

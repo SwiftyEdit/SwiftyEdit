@@ -2,7 +2,7 @@
 
 /**
  * global variables
- * @var string $languagePack
+ * @var string $languagePackFallback
  * @var array $lang
  */
 
@@ -45,14 +45,14 @@ if(isset($_GET['show_file'])) {
 
     // swiftyedit docs
     if(str_contains($show_file, '../acp/docs/')) {
-        $doc_filepath = '../acp/docs/'.$languagePack.'/'.basename($show_file);
+        $doc_filepath = '../acp/docs/'.$languagePackFallback.'/'.basename($show_file);
     }
     // single file - swiftyedit docs
     if(!str_contains($show_file, '/')) {
         if(str_starts_with($show_file, 'tip-')) {
-            $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.basename($show_file);
+            $doc_filepath = '../acp/docs/'.$languagePackFallback.'/tooltips/'.basename($show_file);
         } else {
-            $doc_filepath = '../acp/docs/' . $languagePack . '/' . basename($show_file);
+            $doc_filepath = '../acp/docs/' . $languagePackFallback . '/' . basename($show_file);
         }
     }
 

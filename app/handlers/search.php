@@ -13,11 +13,11 @@ $start_search = "true";
 $s = sanitizeUserInputs($_REQUEST['s']);
 
 if($s != '' && strlen($s) < 3) {
-	$start_search = "false";
-	$search_msg = $lang['msg_search_undersized'];
+    $start_search = "false";
+    $search_msg = $lang['msg_search_undersized'];
 }
 
-$msg_no_search_results = se_get_textlib('no_search_results',$languagePack,'content');
+$msg_no_search_results = se_get_snippet('no_search_results',$languagePack,'content');
 if($msg_no_search_results == '') {
     $msg_no_search_results = $lang['msg_search_no_results'];
 }

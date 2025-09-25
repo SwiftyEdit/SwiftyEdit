@@ -7,7 +7,6 @@
  * @var object $db_content medoo database object
  */
 
-
 $download_file = basename($_POST['file']);
 $get_target_file = '../files/'.$download_file;
 
@@ -25,10 +24,10 @@ $update_file = $db_content->update("se_media", [
 ]);
 
 /* we take the filepath from the database, so we have no trouble if someone trying to inject evil filepath */
-$download_file = str_replace('../files/','/files/',$target_file['media_file']);
+$download_file = SE_PUBLIC.'/assets'.str_replace('../files/','/files/',$target_file['media_file']);
 
 if(is_file($download_file)) {
-    /*
+
     header('Content-Description: File Transfer');
     header('Content-Type: ' . mime_content_type($download_file));
     header('Content-Disposition: attachment; filename="'.basename($download_file).'"');
@@ -37,6 +36,6 @@ if(is_file($download_file)) {
     header('Pragma: public');
     header('Content-Length: ' . filesize($download_file));
     readfile($download_file);
-    */
+
     exit;
 }

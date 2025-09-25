@@ -179,12 +179,20 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
+    if($date == '') {
+        $date = time();
+    }
+
     if($data['releasedate'] != "") {
         if (ctype_digit($data['releasedate'])) {
             $releasedate = (int) $data['releasedate'];
         } else {
             $releasedate = strtotime($data['releasedate']);
         }
+    }
+
+    if($releasedate == '') {
+        $releasedate = time();
     }
 
 
@@ -220,6 +228,7 @@ function se_prepareProductData($data, $id = null) {
 
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);
+    $product_variant_color = se_return_clean_value($data['product_variant_color']);
 
     // variants title and description
     if($data['product_variant_title'] == '') {

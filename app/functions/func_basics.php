@@ -613,59 +613,93 @@ function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
     return $return;
 }
 
-function se_search_products($str,$lang,$currentPage=1,$itemsPerPage=10) {
-    global $db_posts;
-    $str = str_replace('-', ' ', $str);
 
-    $where = 'WHERE (product_lang LIKE ? AND (status = ? OR status = ?)) AND (
-            title LIKE ? OR teaser LIKE ? OR text LIKE ? OR 
-            text_additional1 LIKE ? OR text_additional2 LIKE ? OR text_additional3 LIKE ?
-            OR text_additional4 LIKE ? OR text_additional5 LIKE ?
-            OR meta_title LIKE ? OR meta_description LIKE ? OR product_number LIKE ?)';
+function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
+    global $db_posts; // object that contains ->pdo (PDO instance)
 
-    $countSql = "SELECT COUNT(*) FROM se_products $where";
+    // Normalize input
+    $str = trim($str);
+    if ($str === '') {
+        return ["totalResults" => 0, "products" => []];
+    }
 
-    $countParams = [
-        $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%"
+    // Two variants of the search term: original + without dashes
+    $searchVariants = [$str];
+    if (strpos($str, '-') !== false) {
+        $searchVariants[] = str_replace('-', ' ', $str);
+    }
+
+    // Fields to search in
+    $searchFields = [
+        "title","teaser","text",
+        "text_additional1","text_additional2","text_additional3",
+        "text_additional4","text_additional5",
+        "meta_title","meta_description","product_number"
     ];
 
+    // Build OR conditions dynamically
+    $orParts = [];
+    $searchParams = [];
+    foreach ($searchFields as $f) {
+        foreach ($searchVariants as $variant) {
+            $orParts[] = "$f LIKE ?";
+            $searchParams[] = "%" . $variant . "%";
+        }
+    }
+    $orSql = implode(" OR ", $orParts);
+
+    // WHERE
+    $where = "(product_lang = ? AND (status = ? OR status = ?)) AND ($orSql)";
+
+    // COUNT query
+    $countSql = "SELECT COUNT(*) FROM se_products WHERE $where";
+    $countParams = array_merge([$lang, "1", "3"], $searchParams);
     $countSth = $db_posts->pdo->prepare($countSql);
     $countSth->execute($countParams);
-    $totalResults = $countSth->fetchColumn();
+    $totalResults = (int) $countSth->fetchColumn();
 
-    $offset = (int) $itemsPerPage*($currentPage-1);
+    // Pagination
+    $offset = (int) $itemsPerPage * (max(1, (int)$currentPage) - 1);
 
-    $products_sql = "SELECT * FROM se_products
-        $where
-        ORDER BY 
-            slug LIKE ? DESC,
-            tags = ? DESC,
-            tags LIKE ? DESC,
-            tags LIKE ? DESC,
-            text LIKE ? DESC,
-            priority DESC
-        LIMIT ?
-        OFFSET ?
-        ";
+    // SELECT with CASE relevance
+    $productsSql = "
+        SELECT *,
+            (CASE
+                WHEN slug = ? THEN 5
+                WHEN slug LIKE ? THEN 4
+                WHEN title LIKE ? THEN 3
+                WHEN text LIKE ? THEN 2
+                ELSE 1
+            END) AS relevance
+        FROM se_products
+        WHERE $where
+        ORDER BY relevance DESC, priority DESC
+        LIMIT ? OFFSET ?
+    ";
 
-    $products_params = [
-        $lang, "1", "3", "%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%","%$str%",
-        "%$str%", "%$str%","$str","$str%","%$str%","%$str%","%$str%",$itemsPerPage,$offset
-    ];
+    // CASE placeholders (4x)
+    $like = "%" . $str . "%";
+    $caseParams = [$str, $like, $like, $like];
 
-    $sth = $db_posts->pdo->prepare($products_sql);
-    $sth->execute($products_params);
+    // Complete parameter list
+    $productsParams = array_merge(
+        $caseParams,
+        [$lang, "1", "3"],
+        $searchParams,
+        [$itemsPerPage, $offset]
+    );
 
+    // Execute
+    $sth = $db_posts->pdo->prepare($productsSql);
+    $sth->execute($productsParams);
     $products = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-    $return = [
+    return [
         "totalResults" => $totalResults,
         "products" => $products
     ];
-
-    return $return;
-
 }
+
 
 
 /**

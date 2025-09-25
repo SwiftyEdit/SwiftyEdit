@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var array $lang
+ */
+
 const INSTALLER = TRUE;
 require_once __DIR__.'/functions.php';
 require_once '../install/php/functions.php';
@@ -12,35 +16,46 @@ if(isset($_POST['helper_update_table'])) {
 // load data from swiftyedit.net
 if(isset($_POST['load_update_data'])) {
 
+    $get_filename = basename($_POST['file']);
+
     if($_POST['load_update_data'] == 'alpha') {
-        $remote_file = 'alpha/'.basename($_POST['file']);
+        $remote_file = 'alpha/'.$get_filename;
     }
 
     if($_POST['load_update_data'] == 'beta') {
-        $remote_file = 'beta/'.basename($_POST['file']);
+        $remote_file = 'beta/'.$get_filename;
     }
 
     if($_POST['load_update_data'] == 'stable') {
-        $remote_file = 'beta/'.basename($_POST['file']);
+        $remote_file = 'beta/'.$get_filename;
     }
 
     $source_file = 'https://swiftyedit.net/releases/v2/files/'.$remote_file;
 
     $download_dir = __DIR__.'/download/';
+    if (!is_writable($download_dir)) {
+        echo '<div class="alert alert-warning">Download dir not writable!</div>';
+    }
     $extract_dir = __DIR__.'/download/extract';
-    mkdir("$extract_dir",0777,true);
+    if(!is_dir("$extract_dir")) {
+        mkdir("$extract_dir", 0777, true);
+    }
 
     if(is_dir("$extract_dir")) {
-        copy("$source_file","$download_dir/$remote_file");
+        if(copy("$source_file","$download_dir/$get_filename")) {
+            echo '<div class="alert alert-info">Download complete. File: '.basename($get_filename).'</div>';
+        } else {
+            echo '<div class="alert alert-warning">Error: cannot copy file</div>';
+        }
     }
 
     $archive = new ZipArchive;
-    if($archive->open("$download_dir/$remote_file") === TRUE) {
+    if($archive->open("$download_dir/$get_filename") === TRUE) {
         $archive->extractTo("$extract_dir");
         $archive->close();
-        echo '<div class="alert alert-info">Download complete. File: '.basename($remote_file).'</div>';
+        echo '<div class="alert alert-info">Files extracted from: '.basename($get_filename).'</div>';
     } else {
-        echo '<div class="alert alert-warning">Error: can not open zip file</div>';
+        echo '<div class="alert alert-warning">Error: cannot open zip file</div>';
     }
     header( "HX-Trigger: update_downloads_list");
     exit;
