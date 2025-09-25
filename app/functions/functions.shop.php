@@ -833,15 +833,21 @@ function se_get_payment_methods(): array {
 
             $key = clean_filename($payment_addon);
             $addon_data = se_get_payment_method_data($payment_addon);
+
+            if (!is_array($addon_data)) {
+                error_log("se_get_payment_method_data returned non-array for: " . $payment_addon);
+                continue;
+            }
+
             $costs = se_reformat_payment_costs($addon_data['addon_additional_costs']);
-            $snippet_data = se_get_textlib($addon_data['addon_snippet_cart'],$languagePack,'all');
+            $snippet_data = se_get_snippet($addon_data['addon_snippet_cart'],$languagePack,'all');
 
             $payment_methods[$key] = [
                 "addon" => $payment_addon,
                 "key" => $key,
                 "cost" => $costs,
-                "title" => $snippet_data['snippet_title'],
-                "snippet" => $snippet_data['snippet_content'],
+                "title" => $snippet_data['snippet_title'] ?? '',
+                "snippet" => $snippet_data['snippet_content'] ?? '',
                 "checked" => ""
             ];
 

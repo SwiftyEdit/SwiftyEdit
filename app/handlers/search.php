@@ -13,8 +13,8 @@ $start_search = "true";
 $s = sanitizeUserInputs($_REQUEST['s']);
 
 if($s != '' && strlen($s) < 3) {
-	$start_search = "false";
-	$search_msg = $lang['msg_search_undersized'];
+    $start_search = "false";
+    $search_msg = $lang['msg_search_undersized'];
 }
 
 $msg_no_search_results = se_get_snippet('no_search_results',$languagePack,'content');
