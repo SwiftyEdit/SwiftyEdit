@@ -1,9 +1,20 @@
 <?php
 
-// dashboard data reader
+/**
+ * dashboard data reader
+ *
+ * @var object $db_content
+ * @var object $db_user
+ * @var object $db_posts
+ * @var string $db_type
+ * @var array $se_page_types
+ * @var array $se_settings
+ * @var array $lang
+ * @var array $icon
+ */
+
 
 // pages
-
 if($_REQUEST['action'] === 'list_pages') {
     $getPages = $db_content->select("se_pages", [
         "page_id", "page_linkname", "page_title",
@@ -268,8 +279,7 @@ if($_REQUEST['action'] === 'list_alerts') {
         SE_PUBLIC.'/assets/files/',
         SE_PUBLIC.'/assets/images/',
         SE_ROOT.'/data/database/content.sqlite3',
-        SE_ROOT.'/data/database/user.sqlite3',
-        SE_ROOT.'/data/database/index.sqlite3'
+        SE_ROOT.'/data/database/user.sqlite3'
     );
 
     foreach($writable_items as $f) {

@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @var array $lang
+ * @var array $icon
+ */
+
 $reader_uri = '/admin-xhr/dashboard/read/';
 
 $tpl_file = file_get_contents('../acp/templates/dashboard_top.tpl');
