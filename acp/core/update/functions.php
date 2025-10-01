@@ -19,8 +19,8 @@ function compare_versions() {
     $update_stable = '';
     if($se_version['build'] < $remote_versions_array['version']['stable']['build']) {
         $filename_stable = basename($remote_versions_array['version']['stable']['file']);
-        $hx_vals += ["file" => "$filename_stable"];
-        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="stable">'.$lang['btn_choose_this_update'].'</button>';
+        $hx_vals_stable = $hx_vals + ["file" => "$filename_stable"];
+        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_stable).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="stable">'.$lang['btn_choose_this_update'].'</button>';
         $update_stable = $lang['update_msg_stable'];
     } else {
         echo '<button class="btn btn-default" disabled>'.$lang['btn_choose_this_update'].'</button>';
@@ -33,8 +33,8 @@ function compare_versions() {
     $update_beta = '';
     if($se_version['build'] < $remote_versions_array['version']['beta']['build']) {
         $filename_beta = basename($remote_versions_array['version']['beta']['file']);
-        $hx_vals += ["file" => "$filename_beta"];
-        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="beta">'.$lang['btn_choose_this_update'].'</button>';
+        $hx_vals_beta = $hx_vals + ["file" => "$filename_beta"];
+        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_beta).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="beta">'.$lang['btn_choose_this_update'].'</button>';
         $update_beta = $lang['update_msg_beta'];
     } else {
         echo '<button class="btn btn-default" disabled>'.$lang['btn_choose_this_update'].'</button>';
@@ -48,16 +48,16 @@ function compare_versions() {
     echo '<div class="w-50">';
     if($se_version['build'] < $remote_versions_array['version']['alpha']['build']) {
         $filename_alpha = basename($remote_versions_array['version']['alpha']['file']);
-        $hx_vals += ["file" => "$filename_alpha"];
-        echo '<button class="btn btn-default btn-sm w-100" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].'</button>';
+        $hx_vals_alpha = $hx_vals + ["file" => "$filename_alpha"];
+        echo '<button class="btn btn-default btn-sm w-100" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_alpha).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].'</button>';
         $update_alpha = $lang['update_msg_alpha'];
     } else {
         echo '<button class="btn btn-default btn-sm w-100" disabled>'.$lang['btn_choose_this_update'].'</button>';
     }
     if($se_environment == 'd') {
         $filename_alpha = basename($remote_versions_array['version']['alpha']['file']);
-        $hx_vals += ["file" => "$filename_alpha"];
-        echo '<button class="btn btn-default btn-sm w-100 mt-1" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
+        $hx_vals_alpha = $hx_vals + ["file" => "$filename_alpha"];
+        echo '<button class="btn btn-default btn-sm w-100 mt-1" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_alpha).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
     }
     echo '</div>';
 
