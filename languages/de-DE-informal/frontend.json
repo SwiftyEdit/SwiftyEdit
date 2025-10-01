@@ -201,6 +201,7 @@
   "label_sort_price_desc": "Preis absteigend",
   "label_sort_topseller": "Topseller",
   "label_sort_name": "Name",
+  "label_sort_relevance": "Relevanz",
   "mail_subject_order_notify": "Benachrichtigung: Status deiner Bestellung",
   "mail_subject_order_change_status_pm": "Wir haben den Zahlungsstatus für deine Bestellung geändert",
   "mail_subject_order_change_status_shipping": "Wir haben den Versandstatus für deine Bestellung geändert",

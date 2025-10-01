@@ -201,6 +201,7 @@
   "label_sort_price_desc": "Prezzo decrescente",
   "label_sort_topseller": "Topseller",
   "label_sort_name": "Nome",
+  "label_sort_relevance": "Rilevanza",
   "mail_subject_order_notify": "Notification: Status for your Order",
   "mail_subject_order_change_status_pm": "We changed the Payment Status for your Order",
   "mail_subject_order_change_status_shipping": "We changed the Shipping Status for your Order",
