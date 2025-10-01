@@ -1,5 +1,10 @@
 <div class="post-product">
 
+    {if isset($smarty.session.last_shop_url)}
+        <a href="{$smarty.session.last_shop_url}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left-short"></i> {$lang_button_back}
+        </a>
+    {/if}
 
     <div class="row">
 

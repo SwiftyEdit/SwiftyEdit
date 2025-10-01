@@ -1,47 +1,75 @@
 <div id="article_list_header">
-    <div class="row mb-3">
-        <div class="col-md-8 col-sm-12">
-            <form action="{$form_action}" method="POST" class="d-inline">
-                <div class="btn-group mb-3" role="group">
-                    <button type="submit" name="sort_by" value="ts" class="btn btn-outline-primary {$class_sort_topseller}">{$lang_label_sort_topseller}</button>
-                    <button type="submit" name="sort_by" value="name" class="btn btn-outline-primary {$class_sort_name}">{$lang_label_sort_name}</button>
-                    <button type="submit" name="sort_by" value="pasc" class="btn btn-outline-primary {$class_sort_price_asc}" title="{$lang_label_sort_price_asc}">{$lang_label_price} <i class="bi bi-sort-numeric-down"></i></button>
-                    <button type="submit" name="sort_by" value="pdesc" class="btn btn-outline-primary {$class_sort_price_desc}" title="{$lang_label_sort_price_desc}">{$lang_label_price} <i class="bi bi-sort-numeric-down-alt"></i></button>
-                </div>
-                {$hidden_csrf_token}
-            </form>
-        </div>
-        <div class="col-md-4 col-sm-12">
 
-            <div class="text-end">
-            {$nbr_products} {$lang_label_products}
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <div>
+            <div class="btn-group" role="group" title="{$lang_sort}">
+                <a href="{$sort_urls.default}"
+                   class="btn btn-sm btn-outline-secondary {if !$class_sort_name && !$class_sort_topseller && !$class_sort_price_asc && !$class_sort_price_desc}active{/if}">
+                    {$lang_label_sort_relevance}
+                </a>
+                <a href="{$sort_urls.name}"
+                   class="btn btn-sm btn-outline-secondary {$class_sort_name}">
+                    A-Z
+                </a>
+                <a href="{$sort_urls.pasc}"
+                   class="btn btn-sm btn-outline-secondary {$class_sort_price_asc}">
+                    {$lang_label_price} ↑
+                </a>
+                <a href="{$sort_urls.pdesc}"
+                   class="btn btn-sm btn-outline-secondary {$class_sort_price_desc}">
+                    {$lang_label_price} ↓
+                </a>
+                <a href="{$sort_urls.ts}"
+                   class="btn btn-sm btn-outline-secondary {$class_sort_topseller}">
+                    {$lang_label_sort_topseller}
+                </a>
             </div>
-            {if $show_pagination == true}
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-md-end justify-content-sm-center">
-                    {if $disable_prev_link == true}
-                        <li class="page-item disabled">
-                    {else}
-                        <li class="page-item">
-                    {/if}
-                        <a href="{$pag_prev_href}" aria-label="Previous" class="page-link"><span aria-hidden="true">&laquo;</span></a>
+        </div>
+        <div>
+            {$nbr_products} {$lang_label_products}
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        {if $has_active_filters}
+            <div class="active-filters-bar">
+                <div class="filter-tags">
+                    {foreach $active_filter_tags as $tag}
+                        <a href="{$tag.remove_url}" class="btn btn-sm btn-outline-secondary">
+                            <span class="filter-remove"><i class="bi bi-x-circle"></i></span>
+                            <span class="filter-label small">{$tag.filter_title}:</span>
+                            <span class="filter-value">{$tag.display}</span>
+                        </a>
+                    {/foreach}
+
+                    {* "Alle zurücksetzen" Link *}
+                    <a href="{$page_slug}" class="clear-all-filters btn btn-sm btn-outline-secondary">
+                        {$lang_reset}
+                    </a>
+                </div>
+            </div>
+        {/if}
+        {if $show_pagination}
+            <div class="flex-fill">
+            <nav aria-label="Pagination" class="mt-4">
+                <ul class="pagination pagination-sm justify-content-end">
+                    <li class="page-item {if $disable_prev_link}disabled{/if}">
+                        <a class="page-link" href="{$filter_base_url}{$pag_prev_href}">«</a>
                     </li>
-                    {foreach $pagination as $pag}
-                        <li class="page-item {$pag.active_class}">
-                            <a href="{$pag.href}" class="page-link">{$pag.nbr}</a>
+
+                    {foreach $pagination as $page}
+                        <li class="page-item {$page.active_class}">
+                            <a class="page-link" href="{$filter_base_url}{$page.href}">{$page.nbr}</a>
                         </li>
                     {/foreach}
-                    {if $disable_next_link == true}
-                        <li class="page-item disabled">
-                    {else}
-                        <li class="page-item">
-                    {/if}
-                        <a href="{$pag_next_href}" class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+
+                    <li class="page-item {if $disable_next_link}disabled{/if}">
+                        <a class="page-link" href="{$filter_base_url}{$pag_next_href}">»</a>
                     </li>
                 </ul>
             </nav>
-            {/if}
-        </div>
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -129,24 +157,23 @@
 {/if}
 
 <div class="product-list-footer">
-    {if $show_pagination == true}
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            <li>
-                <a href="{$pag_prev_href}" aria-label="Previous" class="page-link"><span
-                            aria-hidden="true">&laquo;</span></a>
-            </li>
-            {foreach $pagination as $pag}
-                <li class="page-item {$pag.active_class}">
-                    <a href="{$pag.href}" class="page-link">{$pag.nbr}</a>
+    {if $show_pagination}
+        <nav aria-label="Pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {if $disable_prev_link}disabled{/if}">
+                    <a class="page-link" href="{$filter_base_url}{$pag_prev_href}">«</a>
                 </li>
-            {/foreach}
-            <li>
-                <a href="{$pag_next_href}" class="page-link" aria-label="Next"><span
-                            aria-hidden="true">&raquo;</span></a>
-            </li>
-        </ul>
-    </nav>
-    {/if}
 
+                {foreach $pagination as $page}
+                    <li class="page-item {$page.active_class}">
+                        <a class="page-link" href="{$filter_base_url}{$page.href}">{$page.nbr}</a>
+                    </li>
+                {/foreach}
+
+                <li class="page-item {if $disable_next_link}disabled{/if}">
+                    <a class="page-link" href="{$filter_base_url}{$pag_next_href}">»</a>
+                </li>
+            </ul>
+        </nav>
+    {/if}
 </div>

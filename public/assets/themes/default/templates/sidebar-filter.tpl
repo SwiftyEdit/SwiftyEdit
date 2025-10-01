@@ -1,131 +1,84 @@
-{*
-Custom filters a set in the backend > shop > filter
-@param array $product_filter
-You can display filters as links or in a form
-example for links:
-<a class="list-group-item list-group-item-action {$item.class}" href="?remove_filter={$item.id}">{$item.title}</a>
-or experimental:
-<a class="list-group-item list-group-item-action {$item.class}" href="?filter={$item.hash}">{$item.title}</a>
-<a class="list-group-item list-group-item-action {$item.class}" href="?add_filter={$item.id}">{$item.title}</a>
-*}
+{* templates/products-list.tpl - Filter Sidebar *}
 
-{assign var="cat_hashes_array" value=[]}
+{if is_array($product_filter)}
+<aside class="shop-sidebar">
 
-{foreach $categories as $category}
-    {append var="cat_hashes_array" value=$category.cat_hash}
-{/foreach}
+    {foreach $product_filter as $filter_group}
+        <div class="card mb-1">
+            <div class="card-header fw-bold">
+            {$filter_group.title}
 
-{assign var="cat_hashes" value=","|implode:$cat_hashes_array}
+            {if $filter_group.description}
+                <span data-bs-toggle="tooltip" data-bs-title="{$filter_group.description}" data-bs-html="true">
+                    <i class="bi-info-circle"></i>
+                </span>
+            {/if}
+            </div>
 
-{if is_array($product_filter) }
-    <div class="mb-2">
-        <form action="{$form_action}" method="GET">
-            {foreach $product_filter as $groups}
-                <div class="card mb-1">
 
-                    {if $groups.input_type == 1}
-                        <div class="card-header fw-bold">
-                            {$groups.title}
-                            {if $groups.description != ""}
-                                <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
-                            {/if}
-                        </div>
-                        <div class="card-body">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="sf_radio[{$groups.id}][]" value="all"
-                                       id="sf_id_all{$groups.id}" checked onchange="this.form.submit()">
-                                <label class="form-check-label" for="sf_id_all{$groups.id}">{$lang_btn_all}</label>
-                            </div>
+            {* Radio Buttons (input_type = 1) *}
+            {if $filter_group.input_type == 1}
+                <div class="card-body">
 
-                            {foreach $groups.items as $item}
-                                <div class="form-check">
-                                    <input type="hidden" name="all_radios[]" value="{$item.id}">
-                                    <input class="form-check-input" type="radio" name="sf_radio[{$groups.id}][]"
-                                           value="{$item.id}" id="sf_id_{$item.id}"
-                                           onchange="this.form.submit()" {$item.checked}>
-                                    <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title}</span>
-                                        <span class="text-muted small ms-1">(<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
-                                    </label>
-                                </div>
-                            {/foreach}
-                        </div>
-                    {elseif $groups.input_type == 2}
-                        <div class="card-header fw-bold">
-                            {$groups.title}
-                            {if $groups.description != ""}
-                                <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
-                            {/if}
-                        </div>
-                        <div class="card-body">
-                            {foreach $groups.items as $item}
-                                <div class="form-check">
-                                    <input type="hidden" name="all_checks[]" value="{$item.id}">
-                                    <input class="form-check-input" type="checkbox" name="sf_checkbox[]"
-                                           value="{$item.id}" id="sf_id_{$item.id}"
-                                           onchange="this.form.submit()" {$item.checked}>
-                                    <label class="form-check-label" for="sf_id_{$item.id}"><span
-                                                title="{$item.description}">{$item.title}</span>
-                                        <span class="text-muted small ms-1">(<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
-                                        </span>
-                                    </label>
-                                </div>
-                            {/foreach}
-                        </div>
-                    {else}
+                    <a href="{$filter_group.clear_url}"
+                       class="filter-option text-decoration-none {if !$filter_group.has_active}active{/if}">
+                        <i class="bi bi-circle{if !$filter_group.has_active}-fill{/if} me-2"></i>
+                        {$lang_btn_all}
+                    </a>
 
-                    {* range input *}
-                    <div class="card-header fw-bold">
-                        {$groups.title} {$groups.input_type}
-                        {if $groups.description != ""}
-                            <span data-bs-toggle="tooltip" data-bs-title="{$groups.description}" data-bs-html="true"><i class="bi-info-circle"></i></span>
+                    {foreach $filter_group.items as $item}
+                        {if $item.slug != ''}
+                            <a href="{$item.filter_url}"
+                               class="filter-option d-block py-1 text-decoration-none {if $item.checked}active fw-bold{/if}">
+                                <i class="bi bi-circle{if $item.checked}-fill{/if} me-2"></i>
+                                {$item.title}
+                                <span class="text-muted small ms-1">
+                                    (<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
+                                </span>
+                            </a>
                         {/if}
-                    </div>
-                    <div class="card-body">
-                        <div class="slider-container">
-
-                            {assign var="min" value="{$smarty.session.ranges.{$groups.id}.min}"}
-                            {assign var="max" value="{$smarty.session.ranges.{$groups.id}.max}"}
-
-
-                            {if $min == '' or $max == ''}
-                                {foreach $groups.items as $item}
-                                    {if $item@first}
-                                        <input type="hidden" class="minValue" name="ranges[{$groups.id}][min]" value="{$item.title}">
-                                    {/if}
-                                    {if $item@last}
-                                        <input type="hidden" class="maxValue" name="ranges[{$groups.id}][max]" value="{$item.title}">
-                                    {/if}
-                                {/foreach}
-                            {else}
-                                <input type="hidden" class="minValue" name="ranges[{$groups.id}][min]" value="{$min}">
-                                <input type="hidden" class="maxValue" name="ranges[{$groups.id}][max]" value="{$max}">
-                            {/if}
-
-
-                            {foreach $groups.items as $item}
-                                {$values_{$groups.id}[] = {$item.title}}
-                            {/foreach}
-
-                            <input type="hidden" class="slider-values" value="{$values_{$groups.id}|join:","}">
-
-                            <div class="slider"></div>
-
-                            <p class="text-center"><small><span class="rangeDisplay">{$min} - {$max}</span></small></p>
-                        </div>
-                    </div>
-
-                    {/if}
-
+                    {/foreach}
                 </div>
-            {/foreach}
-            <input type="hidden" name="set_custom_filters" value="send">
-        </form>
-    </div>
-    {if $reset_filter_link}
-        <div class="mb-2">
-            <a class="btn btn-secondary btn-sm" href="{$form_action}?reset_filter">{$lang_reset}</a>
-        </div>
-    {/if}
+            {/if}
 
+            {* Checkboxes (input_type = 2) *}
+            {if $filter_group.input_type == 2}
+                <div class="card-body">
+                    {foreach $filter_group.items as $item}
+                        {if $item.slug != ''}
+                            <a href="{$item.filter_url}"
+                               class="filter-option d-block py-1 text-decoration-none {if $item.checked}active fw-bold{/if}">
+                                <i class="bi bi-{if $item.checked}check-{/if}square me-2"></i>
+                                {$item.title}
+                                <span class="text-muted small ms-1">
+                                    (<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
+                                </span>
+                            </a>
+                        {/if}
+                    {/foreach}
+                </div>
+            {/if}
+
+            {* Range Slider (input_type = 3) *}
+            {if $filter_group.input_type == 3}
+                <div class="filter-range">
+                    <div id="range-{$filter_group.slug}"
+                         class="range-slider mb-3"
+                         data-filter-slug="{$filter_group.slug}"
+                         data-min="{$filter_group.range_min}"
+                         data-max="{$filter_group.range_max}"
+                         data-current-min="{$filter_group.current_min}"
+                         data-current-max="{$filter_group.current_max}">
+                    </div>
+
+                    <div class="range-display text-center">
+                <span id="range-{$filter_group.slug}-display" class="badge bg-secondary">
+                    {$filter_group.current_min} - {$filter_group.current_max}
+                </span>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    {/foreach}
+</aside>
 {/if}

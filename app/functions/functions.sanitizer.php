@@ -421,3 +421,42 @@ function se_is_bot(): bool {
     }
     return false;
 }
+
+/**
+ * generate a slug from string,
+ * for example, from a product title
+ *
+ * @param string $title
+ * @param string $fallback
+ * @return string
+ */
+function se_generate_slug(string $title, string $fallback = 'unknown'): string
+{
+    $slug = strtolower(trim($title));
+
+    // Replace German umlauts and ß
+    $slug = str_replace(
+        ['ä', 'ö', 'ü', 'ß'],
+        ['ae', 'oe', 'ue', 'ss'],
+        $slug
+    );
+
+    // Transliterate (fallback for other chars)
+    $slug = iconv('UTF-8', 'ASCII//TRANSLIT', $slug);
+
+    // Replace everything that's not a-z or 0-9 with "-"
+    $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+
+    // Collapse multiple dashes
+    $slug = preg_replace('/-+/', '-', $slug);
+
+    // Trim dashes
+    $slug = trim($slug, '-');
+
+    // Fallback if empty
+    if ($slug === '' || $slug === false) {
+        $slug = $fallback;
+    }
+
+    return $slug;
+}

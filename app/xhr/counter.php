@@ -4,6 +4,7 @@
  * @var object $db_posts
  */
 
+// count product filters
 if(isset($_GET['filter']) && is_numeric($_GET['filter'])) {
 
     $get_filter = (int) $_GET['filter'];
@@ -25,6 +26,7 @@ if(isset($_GET['filter']) && is_numeric($_GET['filter'])) {
     exit;
 }
 
+// count items in the shopping cart
 if(isset($_GET['sc_items'])) {
     echo se_return_cart_amount();
     exit;
