@@ -20,6 +20,7 @@ composer.phar
 /data/cache/templates_c/*
 /data/config.php
 /data/includes/*
+/dist/
 
 # Database files and generated content #
 *.sqlite
@@ -32,60 +33,10 @@ sitemap-pages.xml
 sitemap-posts.xml
 sitemap-products.xml
 
-#/content/**/*
-/content/config.php
-/content/avatars/*
-/content/cache/active_mods.php
-/content/cache/active_urls.php
-/content/cache/cache_keywords.html
-/content/cache/cache_lastedit.php
-/content/cache/templates_c/*
-/content/files/*
-/content/galleries/*
-/content/images/*
-/content/images_tmb/*
-/content/modules/*
-/content/plugins/*
-!/content/plugins/index.html
-/content/SQLite/*
-/content/uploads/*
-!/content/uploads/index.html
-
-# payment addons
-!/content/modules/se_cash.pay/*
-!/content/modules/se_cash.pay/**/*
-/content/modules/se_cash.pay/pm_config.php
-!/content/modules/se_invoice.pay/*
-!/content/modules/se_invoice.pay/**/*
-/content/modules/se_invoice.pay/pm_config.php
 
 !index.html
 
-# styles, except default #
-#/styles/**/*
-/styles/default/.DS_Store
-/styles/default/node_modules
-/styles/default/node_modules/*
-/styles/default/node_modules/**/*
-/styles/default/config.codekit3
-
-#!/styles/default/*
-#!/styles/default/**/*
-!/styles/default/php/*
-!/styles/default/dist/*
-!/styles/default/templates/*
-!/styles/default/templates/posts/*
-!/styles/default/templates/comments/*
-!/styles/default/templates-mail/*
-
 config_database.php
-
-/content/SQLite/.DS_Store
-acp/theme/config.codekit3
-acp/theme/node_modules/*
-acp/theme/node_modules/**/*
-acp/theme/dist/*
-_config_database.php
 
 /plugins/*/*
 !/plugins/se_cash-pay/*
@@ -135,10 +86,9 @@ _config_database.php
 !/public/assets/themes/default/templates/comments/*
 !/public/assets/themes/default/templates-mail/*
 
-!/public/assets/lang/*
-
 /acp/core/update/download/*
 
+dev.env
 secrets.json
 test-results/
 /node_modules/
