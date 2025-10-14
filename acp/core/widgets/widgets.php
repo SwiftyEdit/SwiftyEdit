@@ -1,5 +1,10 @@
 <?php
-//error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
+
+/**
+ * @var object $db_content
+ * @var object $db_posts
+ * @var array $lang
+ */
 
 if(isset($_POST['pagination_img_widget'])) {
     $_SESSION['pagination_image_widget'] = (int) $_POST['pagination_img_widget'];
@@ -239,7 +244,7 @@ if($_REQUEST['widget'] == 'product-select') {
     $filter_base = [
         "AND" => [
             "id[>]" => 0,
-            "type[~]" => "p"
+            "type" => ["p","v"]
         ]
     ];
 
@@ -278,7 +283,7 @@ if($_REQUEST['widget'] == 'product-select') {
 
     $products_data_cnt = $db_posts->count("se_products", $db_where);
 
-    $products_data = $db_posts->select("se_products",["id","product_lang","title"],
+    $products_data = $db_posts->select("se_products",["id","product_lang","title","type"],
         $db_where+$db_order+$db_limit
     );
 
@@ -299,8 +304,8 @@ if($_REQUEST['widget'] == 'product-select') {
 
         echo '<div class="list-group-item draggable" data-id="'.$product_id.'">';
         echo '<img src="'.$flag_src.'" alt="'.$flag_src.'" width="15"> ';
+        echo ' <code>#'.$product_id.'</code> '.htmlentities($product['product_number']);
         echo htmlentities($product['title']);
-        echo ' [#'.$product_id.'] '.htmlentities($product['product_number']);
         echo '</div>';
     }
     echo '</div>';
