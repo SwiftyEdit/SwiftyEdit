@@ -21,6 +21,7 @@ $shipping_products = 0; // number of products which will be shipped
 $store_shipping_cat = 0; // reset shipping category
 $checkout_error = '';
 $tax_grouped = [];
+$tax_sum = [];
 
 if(isset($_POST['remove_from_cart'])) {
 	$id = (int) $_POST['remove_from_cart'];
@@ -179,10 +180,7 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 		}
 	}
 
-    /**
-     * check, if we need a file from customer
-     */
-
+     // check if we need a file from the customer
     $cart_item[$i]['need_upload'] = '';
     if($this_item['file_attachment_user'] == 2) {
         $cart_item[$i]['need_upload'] = 'true';
@@ -239,22 +237,25 @@ for($i=0;$i<$cnt_cart_items;$i++) {
     }
 
 
-	$post_prices = se_posts_calc_price($product_price_net,$tax,$cart_item[$i]['amount']);
-    $cart_item[$i]['price_net_single_format'] = $post_prices['net_single'];
-    $cart_item[$i]['price_gross_single_format'] = $post_prices['gross_single'];
-    $cart_item[$i]['price_net_format'] = $post_prices['net'];
-	$cart_item[$i]['price_gross_format'] = $post_prices['gross'];
-	$cart_item[$i]['price_net_raw'] = $post_prices['net_raw'];
-	$cart_item[$i]['price_gross_raw'] = $post_prices['gross_raw'];
+	$item_prices = se_posts_calc_price($product_price_net,$tax,$cart_item[$i]['amount']);
+    $cart_item[$i]['price_net_single_format'] = $item_prices['net_single'];
+    $cart_item[$i]['price_gross_single_format'] = $item_prices['gross_single'];
+    $cart_item[$i]['price_net_format'] = $item_prices['net'];
+	$cart_item[$i]['price_gross_format'] = $item_prices['gross'];
+	$cart_item[$i]['price_net_raw'] = $item_prices['net_raw'];
+	$cart_item[$i]['price_gross_raw'] = $item_prices['gross_raw'];
 	$cart_item[$i]['price_net'] = $this_item['product_price_net'];
 	
-	$price_all_net = $price_all_net+round($post_prices['net_raw'],2);
+	$price_all_net = $price_all_net+round($item_prices['net_raw'],2);
     $all_items_subtotal_net = $all_items_subtotal_net+$cart_item[$i]['price_net_raw'];
     $all_items_subtotal = $all_items_subtotal+$cart_item[$i]['price_gross_raw'];
 
+    // collect items taxes
+    $tax_sum[$i] = $cart_item[$i]['price_net_raw'] * ($tax / 100);
+
     // we collect net prices; grouped by tax,
     // to calculate taxes on delivery costs
-    $tax_grouped[$tax] = $tax_grouped[$tax]+round($post_prices['net_raw'],2);
+    $tax_grouped[$tax] = $tax_grouped[$tax]+round($item_prices['net_raw'],2);
 
 }
 
@@ -323,14 +324,18 @@ $smarty->assign('payment_message', $payment_message);
 $smarty->assign('client_data', $client_data);
 $smarty->assign('shipping_address', $client_shipping_address);
 
-$cart_agree_term = se_get_textlib('cart_agree_term',$languagePack,'content');
+$cart_agree_term = se_get_snippet('cart_agree_term',$languagePack,'content');
 $smarty->assign('cart_agree_term', $cart_agree_term);
 
 
 /* calculate subtotal and total */
 $cart_price_subtotal_net = $all_items_subtotal_net;
-$cart_price_subtotal = $all_items_subtotal;
-$cart_included_taxes = $all_items_subtotal-$all_items_subtotal_net;
+$cart_included_taxes = 0;
+foreach ($tax_sum as $tax) {
+    $cart_included_taxes += $tax;
+}
+
+$cart_price_subtotal = $cart_price_subtotal_net+$cart_included_taxes;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs_total;
 
 // check if we have a maximum order value
@@ -341,7 +346,7 @@ if($se_prefs['prefs_posts_max_order_value'] != '') {
         // switch to request mode
         // overwrite $se_prefs['prefs_posts_order_mode']
         $se_prefs['prefs_posts_order_mode'] = 2;
-        $max_order_value_msg = se_get_textlib('cart_max_order_value',$languagePack,'content');
+        $max_order_value_msg = se_get_snippet('cart_max_order_value',$languagePack,'content');
     }
 }
 
@@ -477,7 +482,7 @@ if($_POST['order'] == 'send') {
 		
 		if($order_id > 0) {
 
-            $cart_alert = se_get_textlib('cart_order_sent',$languagePack,'content');
+            $cart_alert = se_get_snippet('cart_order_sent',$languagePack,'content');
             if($cart_alert == '') {
                 $cart_alert = $lang['msg_order_send'];
             }
