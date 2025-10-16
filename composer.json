@@ -27,6 +27,16 @@
     "mustangostang/spyc": "^0.6.3",
     "paypal/paypal-checkout-sdk": "1.0.2",
     "guzzlehttp/guzzle": "^7.8.1",
-    "ezyang/htmlpurifier": "^v4.18.0"
+    "ezyang/htmlpurifier": "^v4.18.0",
+    "twig/twig": "^3.0"
+  },
+  "scripts": {
+    "buildclean": "rm -rf dist && rm -f ./dist/*.zip",
+    "buildprepare": "bash build_prepare.sh",
+    "build": [
+      "@buildclean",
+      "@buildprepare"
+    ]
   }
+
 }

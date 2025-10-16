@@ -2,8 +2,10 @@
 
 echo '<nav class="navbar navbar-custom">';
 echo '<div class="container-fluid px-0">';
-echo '<a href="#" id="toggleNav" class="me-auto" title="Dashboard"><span class="caret_left">'.$icon['caret_left'].'</span> <span class="caret_right">'.$icon['caret_right'].'</span></a>';
+echo '<a href="#" id="toggleNav" class="me-3" title="Dashboard"><span class="caret_left">'.$icon['caret_left'].'</span> <span class="caret_right">'.$icon['caret_right'].'</span></a>';
 
+
+echo '<div class="opacity-25 me-auto">'.htmlentities($_SERVER['SERVER_NAME']).'</div>';
 
 /**
  * Filter modal

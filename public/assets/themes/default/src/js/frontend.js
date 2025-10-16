@@ -38,62 +38,54 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     registerElements()
 
-    document.querySelectorAll('.slider-container').forEach(container => {
-        var slider = container.querySelector('.slider');
-        var minInput = container.querySelector('.minValue');
-        var maxInput = container.querySelector('.maxValue');
-        var rangeDisplay = container.querySelector('.rangeDisplay');
-        var rawValues = container.querySelector('.slider-values').value.split(',');
+    const rangeSliders = document.querySelectorAll('.range-slider');
 
-        // clean up the values: Only numbers + optional sign
-        function cleanValue(value) {
-            let match = value.match(/^[+-]?\d+/); // Erlaubt nur Zahlen mit optionalem +/-
-            return match ? parseInt(match[0], 10) : null;
-        }
+    rangeSliders.forEach(function(slider) {
+        const filterSlug = slider.dataset.filterSlug;
+        const min = parseFloat(slider.dataset.min);
+        const max = parseFloat(slider.dataset.max);
+        const currentMin = parseFloat(slider.dataset.currentMin);
+        const currentMax = parseFloat(slider.dataset.currentMax);
 
-        noUiSlider.cssClasses.target += ' range-slider';
-
-        // Save adjusted values as numbers
-        var values = rawValues.map(cleanValue).filter(v => v !== null); // Entfernt ungültige Werte
-
-        var min = Math.min(...values);
-        var max = Math.max(...values);
-        var step = values.length > 1 ? Math.abs(values[1] - values[0]) : 1;
-
+        // Initialize noUiSlider
         noUiSlider.create(slider, {
-            start: [parseInt(minInput.value), parseInt(maxInput.value)],
+            start: [currentMin, currentMax],
             connect: true,
             range: {
                 'min': min,
                 'max': max
             },
-            step: step,
-            tooltips: true,
+            step: (max - min) / 10, // Adjust step as needed
             format: {
-                to: function(value) {
-                    let rounded = Math.round(value);
-                    return rounded >= 0 ? `+${rounded}` : rounded.toString(); // Optional “+” for positive values
+                to: function (value) {
+                    return Math.round(value);
                 },
-                from: function(value) {
-                    return Number(value.replace('+', '')); // Remove “+” when converting back
+                from: function (value) {
+                    return Number(value);
                 }
             }
         });
 
-        slider.noUiSlider.on('update', function(values) {
-            minInput.value = values[0].replace('+', ''); // Save without “+”
-            maxInput.value = values[1].replace('+', ''); // Save without “+”
-            rangeDisplay.textContent = values[0] + ' - ' + values[1]; // With optional “+”
-        });
-        var lastValue = null;
-        slider.noUiSlider.on('set', function(values) {
-            var form = slider.closest('form');
-            if (values[0] !== lastValue) {
-                lastValue = values[0];
-                form.submit();
-            }
+        // Update display on change
+        const display = document.getElementById('range-' + filterSlug + '-display');
+
+        slider.noUiSlider.on('update', function (values) {
+            display.textContent = values[0] + ' - ' + values[1];
         });
 
+        // Update URL on slider release
+        slider.noUiSlider.on('change', function (values) {
+            const minValue = values[0];
+            const maxValue = values[1];
+
+            // Build new URL with range filter
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set(filterSlug, minValue + '-' + maxValue);
+            urlParams.delete('page'); // Reset pagination
+
+            // Redirect to new URL
+            window.location.search = urlParams.toString();
+        });
     });
 
 });

@@ -818,6 +818,13 @@ if($_REQUEST['action'] == 'list_filters') {
         $group_id = $v['filter_id'];
         $group_prio = $v['filter_priority'];
         $group_categories = explode(",",$v['filter_categories']);
+        $group_slug = $v['filter_slug'];
+
+        if($group_slug == '') {
+            // add missing slug
+            $slug = se_generate_slug($group_title);
+            $db_content->update("se_filter",["filter_slug" => $slug],["filter_id" => $group_id]);
+        }
 
         $type = '';
         if($v['filter_input_type'] == '1') {
@@ -854,6 +861,13 @@ if($_REQUEST['action'] == 'list_filters') {
         echo '<td>';
         echo '<form action="/admin/shop/filters/edit/" method="post" class="d-inline">';
         foreach($get_filter_items as $item) {
+
+            if($item['filter_slug'] == '') {
+                // add missing slug
+                $item_slug = se_generate_slug($item['filter_title']);
+                $db_content->update("se_filter",["filter_slug" => $item_slug],["filter_id" => $item['filter_id']]);
+            }
+
             echo '<button type="submit" name="edit_value" value="'.$item['filter_id'].'" class="btn btn-sm btn-default me-1">';
             echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> ';
             echo $item['filter_title'];

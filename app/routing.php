@@ -52,6 +52,28 @@ if($query == 'logout' OR (isset($_GET['goto']) && ($_GET['goto'] == 'logout'))) 
     $query = '/';
 }
 
+
+// Remove embedded query strings from the path
+if (str_contains($query, '?')) {
+    list($clean_path, $embedded_params) = explode('?', $query, 2);
+    parse_str($embedded_params, $extra_params);
+
+    // Merge embedded params into $_GET (without overwriting existing)
+    foreach ($extra_params as $key => $value) {
+        if (!isset($_GET[$key])) {
+            $_GET[$key] = $value;
+        }
+    }
+
+    $query = $clean_path;
+    $_GET['query'] = $clean_path; // Update for consistency
+}
+
+// Ensure query is set
+if (empty($query)) {
+    $query = '/';
+}
+
 $swifty_slug = $query;
 $requestPathParts = explode('/', trim($swifty_slug, '/'));
 
@@ -71,7 +93,6 @@ foreach($cached_url_data as $cached_url) {
         break;
     }
 }
-
 
 // loop through installed modules
 for($i=0;$i<$cnt_active_mods;$i++) {

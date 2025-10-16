@@ -16,6 +16,7 @@ $cols = array(
     "filter_id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
     "filter_parent_id" => "INTEGER(12)",
     "filter_hash"  => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "filter_slug"  => "VARCHAR(255) NOT NULL DEFAULT ''",
     "filter_lang"  => "VARCHAR(255) NOT NULL DEFAULT ''",
     "filter_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "filter_description" => "VARCHAR(255) NOT NULL DEFAULT ''",

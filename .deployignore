@@ -1,0 +1,70 @@
+# Version- and deploycontrol
+.git
+.github
+.gitignore
+.gitattributes
+.deployignore
+
+
+node_modules
+composer.lock
+composer.json
+composer.phar
+package.json
+package-lock.json
+yarn.lock
+
+# Test and developer files
+tests
+test
+phpunit.xml
+phpunit.xml.dist
+secrets.json
+test-results
+dev.env
+build_prepare.sh
+
+# IDE- and system files
+.idea
+.vscode
+*.log
+.DS_Store
+*.swp
+*.bak
+
+# configs
+.env
+.env.local
+config.local.php
+*config.php
+crowdin.yml
+
+# Cache and builds
+cache
+tmp
+temp
+dist
+build
+sitemap*.xml
+*.sqlite3
+
+# other
+*.zip
+README.md
+LICENSE
+
+#data directory
+/data/*
+
+# Plugins
+/plugins/*
+
+# Public, Assets and Themes
+/public/.htaccess
+/public/assets/*
+/public/assets/files/*
+/public/assets/galleries/*
+/public/assets/images/*
+/public/assets/images_tmb/*
+/public/assets/uploads/*
+/public/assets/themes/*

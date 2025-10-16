@@ -347,6 +347,7 @@ if(isset($_POST['save_filter_group'])) {
     $filter_title = se_return_clean_value($_POST['filter_title']);
     $filter_description = $_POST['filter_description'];
     $filter_lang = $_POST['filter_lang'];
+    $filter_slug = se_generate_slug($filter_title);
 
     if(is_array($_POST['filter_cats'])) {
         $filter_cats = implode(",", $_POST['filter_cats']);
@@ -359,6 +360,7 @@ if(isset($_POST['save_filter_group'])) {
         "filter_input_type" =>  $filter_input_type,
         "filter_priority" => $filter_priority,
         "filter_title" =>  $filter_title,
+        "filter_slug" =>  $filter_slug,
         "filter_description" =>  $filter_description,
         "filter_lang" =>  $filter_lang,
         "filter_categories" => $filter_cats
@@ -390,11 +392,13 @@ if(isset($_POST['save_filter_value'])) {
     $filter_description = $_POST['filter_description'];
     $filter_parent_id = $_POST['filter_parent_id'];
     $filter_hash = $_POST['filter_hash'];
+    $filter_slug = se_generate_slug($_POST['filter_title']);
 
     $insert_data = [
         "filter_type" =>  $filter_type,
         "filter_priority" => $filter_priority,
         "filter_title" =>  $filter_title,
+        "filter_slug" =>  $filter_slug,
         "filter_description" =>  $filter_description,
         "filter_parent_id" => $filter_parent_id,
         "filter_hash" => $filter_hash

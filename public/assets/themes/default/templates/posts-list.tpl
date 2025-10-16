@@ -35,11 +35,8 @@
     <div class="post-list-entry post-list-{$value.post_type} {$value.post_css_classes}">
         {$value.draft_message}
 
-
-
         {* post type message *}
         {if $value.post_type == "m"}
-
             <div class="row">
                 {if $value.post_tmb_src != ""}
                     <div class="col-md-4">
