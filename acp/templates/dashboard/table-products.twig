@@ -1,0 +1,19 @@
+<table class="table table-sm">
+    {% for product in get_products %}
+        <tr>
+            <td class="text-nowrap">{{ product.lastedit_formatted }}</td>
+            <td class="w-100">
+                <h6 class="mb-0">{{ product.title }}</h6>
+                <small>{{ product.teaser_trimmed }}</small>
+            </td>
+            <td>
+                <form action="/admin/shop/edit/" method="post">
+                    <button class="btn btn-default" name="product_id" value="{{ product.id }}">
+                        {{ icon.edit|raw }}
+                    </button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

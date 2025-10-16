@@ -1,0 +1,19 @@
+<table class="table table-sm">
+    {% for event in get_events %}
+        <tr>
+            <td class="text-nowrap">{{ event.lastedit_formatted }}</td>
+            <td class="w-100">
+                <h6 class="mb-0">{{ event.title }}</h6>
+                <small>{{ event.teaser_trimmed }}</small>
+            </td>
+            <td>
+                <form action="/admin/events/edit/" method="post">
+                    <button class="btn btn-default" name="id" value="{{ event.id }}">
+                        {{ icon.edit|raw }}
+                    </button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

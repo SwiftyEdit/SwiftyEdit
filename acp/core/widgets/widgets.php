@@ -1,25 +1,28 @@
 <?php
 
+use Twig\Environment;
+
 /**
  * @var object $db_content
  * @var object $db_posts
  * @var array $lang
+ * @var Environment $twig
  */
 
-if(isset($_POST['pagination_img_widget'])) {
-    $_SESSION['pagination_image_widget'] = (int) $_POST['pagination_img_widget'];
-    header( "HX-Trigger: update_image_widget");
+if (isset($_POST['pagination_img_widget'])) {
+    $_SESSION['pagination_image_widget'] = (int)$_POST['pagination_img_widget'];
+    header("HX-Trigger: update_image_widget");
     exit;
 }
 
-if(isset($_POST['pagination_products'])) {
-    $_SESSION['pagination_product_widget'] = (int) $_POST['pagination_products'];
-    header( "HX-Trigger: update_product_widget");
+if (isset($_POST['pagination_products'])) {
+    $_SESSION['pagination_product_widget'] = (int)$_POST['pagination_products'];
+    header("HX-Trigger: update_product_widget");
     exit;
 }
 
 
-if(isset($_REQUEST['change_filter'])) {
+if (isset($_REQUEST['change_filter'])) {
 
     if (isset($_POST['media_widget_text_filter'])) {
         $_SESSION['media_widget_text_filter'] = sanitizeUserInputs($_POST['media_widget_text_filter']);
@@ -29,7 +32,7 @@ if(isset($_REQUEST['change_filter'])) {
 
     if (isset($_POST['product_widget_text_filter'])) {
         $_SESSION['product_widget_text_filter'] = sanitizeUserInputs($_POST['product_widget_text_filter']);
-        header( "HX-Trigger: update_product_widget");
+        header("HX-Trigger: update_product_widget");
         exit;
     }
 
@@ -56,24 +59,24 @@ if(isset($_REQUEST['change_filter'])) {
  * drag and drop image widget
  * select and sort images
  */
-if($_REQUEST['widget'] == 'img-select') {
+if ($_REQUEST['widget'] == 'img-select') {
 
-    if(!isset($_SESSION['image_picker_id'])) {
+    if (!isset($_SESSION['image_picker_id'])) {
         $_SESSION['image_picker_id'] = uniqid();
     }
     $image_picker_id = $_SESSION['image_picker_id'];
 
     $order_by = 'media_id';
     $order_direction = 'ASC';
-    $limit_start = (int) $_SESSION['pagination_image_widget'] ?? 0;
+    $limit_start = (int)$_SESSION['pagination_image_widget'] ?? 0;
     $nbr_show_items = 25;
 
     $match_str = $_SESSION['media_widget_text_filter'] ?? '';
     $order_key = $_SESSION['sorting_media_widget'] ?? $order_by;
     $order_direction = $_SESSION['sorting_media_widget_direction'] ?? $order_direction;
 
-    if($limit_start > 0) {
-        $limit_start = ($limit_start*$nbr_show_items);
+    if ($limit_start > 0) {
+        $limit_start = ($limit_start * $nbr_show_items);
     }
 
     $filter_base = [
@@ -84,10 +87,12 @@ if($_REQUEST['widget'] == 'img-select') {
     ];
 
     $filter_by_str = array();
-    if($match_str != '') {
-        $this_filter = explode(" ",$match_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
+    if ($match_str != '') {
+        $this_filter = explode(" ", $match_str);
+        foreach ($this_filter as $f) {
+            if ($f == "") {
+                continue;
+            }
             $filter_by_str = [
                 "OR" => [
                     "media_file[~]" => "%$f%",
@@ -102,7 +107,7 @@ if($_REQUEST['widget'] == 'img-select') {
 
 
     $db_where = [
-        "AND" => $filter_base+$filter_by_str
+        "AND" => $filter_base + $filter_by_str
     ];
     $db_order = [
         "ORDER" => [
@@ -115,100 +120,58 @@ if($_REQUEST['widget'] == 'img-select') {
 
     $media_data_cnt = $db_content->count("se_media", $db_where);
 
-    $media_data = $db_content->select("se_media","*",
-        $db_where+$db_order+$db_limit
+    $media_data = $db_content->select("se_media", "*",
+        $db_where + $db_order + $db_limit
     );
 
-    $nbr_pages = ceil($media_data_cnt/$nbr_show_items);
+    $nbr_pages = ceil($media_data_cnt / $nbr_show_items);
+
+    // Sorting
+    $sorting_selected = $_SESSION['sorting_media_widget'] . '_' . $_SESSION['sorting_media_widget_direction'];
+    $sorting_selected = strtolower($sorting_selected);
 
 
-    echo '<div class="card">';
-    echo '<div class="card-header">Uploads</div>';
-
-    echo '<div class="card-body p-0">';
-
-    echo '<div class="p-1">';
-    echo '<div class="row g-2">';
-    echo '<div class="col-md-6">';
-    echo '<div class="input-group" hx-post="/admin-xhr/widgets/read/?change_filter" hx-params="media_widget_text_filter,csrf_token" hx-trigger="input changed delay:500ms" hx-swap="none">';
-    echo '<span class="input-group-text"><i class="bi bi-search"></i></span>';
-    echo '<input type="text" class="form-control no-enter" name="media_widget_text_filter" value="'.$_SESSION['media_widget_text_filter'].'">';
-    echo '</div>';
-    echo '</div>';
-    echo '<div class="col-md-6">';
-
-
-    $selected_media_id_asc = '';
-    $selected_media_id_desc = '';
-    $selected_media_file_asc = '';
-    $selected_media_file_desc = '';
-
-    if($_SESSION['sorting_media_widget'] == 'media_id') {
-        if($_SESSION['sorting_media_widget_direction'] == 'ASC') {
-            $selected_media_id_asc = 'selected';
-        } else {
-            $selected_media_id_desc = 'selected';
-        }
-    } else if($_SESSION['sorting_media_widget'] == 'media_file') {
-        if($_SESSION['sorting_media_widget_direction'] == 'ASC') {
-            $selected_media_file_asc = 'selected';
-        } else {
-            $selected_media_file_desc = 'selected';
-        }
-    }
-
-    echo '<select class="form-control" hx-post="/admin-xhr/widgets/read/?change_filter" hx-params="sorting_media_widget,csrf_token" name="sorting_media_widget" hx-trigger="change" hx-swap="none">';
-    echo '<option value="media_id_desc" '.$selected_media_id_desc.'>Newest first</option>';
-    echo '<option value="media_id_asc" '.$selected_media_id_asc.'>Oldest first</option>';
-    echo '<option value="media_file_asc" '.$selected_media_file_asc.'>A-Z</option>';
-    echo '<option value="media_file_desc" '.$selected_media_file_desc.'>Z-A</option>';
-    echo '</select>';
-
-    echo '</div>';
-    echo '</div>';
-    echo '</div>';
-
-    echo '<div class="scroll-container p-0">';
-    echo '<div class="sortable_source list-group list-group-flush">';
-
-    foreach ($media_data as $image) {
-
+    foreach ($media_data as &$image) {
         $img_filename = se_filter_filepath(basename($image['media_file']));
-        $img_filename_short = se_return_first_chars($img_filename,20);
-        $image_src = se_filter_filepath($image['media_file']);
-        $image_src = str_replace("../","/",$image_src);
-        $image_title = sanitizeUserInputs($image['media_title']);
-        $image_tmb_name = se_filter_filepath($image['media_thumb']);
-        $image_upload_time = se_format_datetime($image['media_upload_time']);
+        $image['img_filename_short'] = se_return_first_chars($img_filename, 20);
 
-        if(file_exists($image_tmb_name)) {
+        $image_src = se_filter_filepath($image['media_file']);
+        $image['image_src'] = str_replace("../", "/", $image_src);
+
+        $image['image_title'] = sanitizeUserInputs($image['media_title']);
+        $image['image_upload_time'] = se_format_datetime($image['media_upload_time']);
+
+        // Preview ermitteln
+        $image_tmb_name = se_filter_filepath($image['media_thumb']);
+        if (file_exists($image_tmb_name)) {
             $preview = $image_tmb_name;
         } else {
-            $preview = $image_src;
+            $preview = $image['image_src'];
         }
-
-        $preview = str_replace("../","/",$preview);
-
-
-        echo '<div class="list-group-item d-flex align-items-start draggable" data-id="'.$image_src.'">';
-        echo '<div class="d-flex flex-row gap-2">';
-        echo '<div class="rounded-circle flex-shrink-0" style="width:64px;height:64px;background-image:url('.$preview.');background-size:cover;"></div>';
-        echo '<div class="text-muted small">'.$image_title.$img_filename_short.'<br>'.$image_upload_time.'</div>';
-        echo '</div>';
-        echo '</div>';
-
-
+        $image['preview'] = str_replace("../", "/", $preview);
     }
-    echo '</div>';
-    echo '</div>';
-    echo '</div>';
-    echo '<div class="card-footer">';
+
+    // Pagination
     $pagination_classes = [
         'class_pagination' => 'pagination-sm justify-content-center mb-0'
-        ];
-    echo se_print_pagination('/admin-xhr/widgets/read/?widget=img-select',$nbr_pages,$_SESSION['pagination_image_widget'],'6',$pagination_classes,'pagination_img_widget');
-    echo '</div>';
-    echo '</div>';
+    ];
+    $pagination = se_print_pagination(
+        '/admin-xhr/widgets/read/?widget=img-select',
+        $nbr_pages,
+        $_SESSION['pagination_image_widget'],
+        '6',
+        $pagination_classes,
+        'pagination_img_widget'
+    );
+
+
+    echo $twig->render('widgets/select-img.twig', [
+        'media_widget_text_filter' => $_SESSION['media_widget_text_filter'],
+        'sorting_selected' => $sorting_selected,
+        'media_data' => $media_data,
+        'pagination' => $pagination
+    ]);
+
     exit;
 }
 
@@ -216,43 +179,45 @@ if($_REQUEST['widget'] == 'img-select') {
  * select products
  * used for accessories and similar products
  */
-if($_REQUEST['widget'] == 'product-select') {
+if ($_REQUEST['widget'] == 'product-select') {
 
     echo '<div class="card">';
-    echo '<div class="card-header">'.$lang['label_products'].'</div>';
+    echo '<div class="card-header">' . $lang['label_products'] . '</div>';
 
     echo '<div class="card-body p-0">';
 
-    if(!isset($_SESSION['prod_picker_id'])) {
+    if (!isset($_SESSION['prod_picker_id'])) {
         $_SESSION['prod_picker_id'] = uniqid();
     }
     $prod_picker_id = $_SESSION['prod_picker_id'];
 
     $order_by = 'id';
     $order_direction = 'ASC';
-    $limit_start = (int) $_SESSION['pagination_product_widget'] ?? 0;
+    $limit_start = (int)$_SESSION['pagination_product_widget'] ?? 0;
     $nbr_show_items = 25;
 
     $match_str = $_SESSION['product_widget_text_filter'] ?? '';
     $order_key = $_SESSION['sorting_product_widget'] ?? $order_by;
     $order_direction = $_SESSION['sorting_product_widget_direction'] ?? $order_direction;
 
-    if($limit_start > 0) {
-        $limit_start = ($limit_start*$nbr_show_items);
+    if ($limit_start > 0) {
+        $limit_start = ($limit_start * $nbr_show_items);
     }
 
     $filter_base = [
         "AND" => [
             "id[>]" => 0,
-            "type" => ["p","v"]
+            "type" => ["p", "v"]
         ]
     ];
 
     $filter_by_str = array();
-    if($match_str != '') {
-        $this_filter = explode(" ",$match_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
+    if ($match_str != '') {
+        $this_filter = explode(" ", $match_str);
+        foreach ($this_filter as $f) {
+            if ($f == "") {
+                continue;
+            }
             $filter_by_str = [
                 "OR" => [
                     "title[~]" => "%$f%",
@@ -268,9 +233,8 @@ if($_REQUEST['widget'] == 'product-select') {
         }
     }
 
-
     $db_where = [
-        "AND" => $filter_base+$filter_by_str
+        "AND" => $filter_base + $filter_by_str
     ];
     $db_order = [
         "ORDER" => [
@@ -283,40 +247,35 @@ if($_REQUEST['widget'] == 'product-select') {
 
     $products_data_cnt = $db_posts->count("se_products", $db_where);
 
-    $products_data = $db_posts->select("se_products",["id","product_lang","title","type"],
-        $db_where+$db_order+$db_limit
+    $products_data = $db_posts->select("se_products", ["id", "product_lang", "title", "type"],
+        $db_where + $db_order + $db_limit
     );
 
-    $nbr_pages = ceil($products_data_cnt/$nbr_show_items);
+    $nbr_pages = ceil($products_data_cnt / $nbr_show_items);
 
-
-    echo '<div class="input-group my-1">';
-    echo '<span class="input-group-text"><i class="bi bi-search"></i></span>';
-    echo '<input type="text" class="form-control no-enter" hx-post="/admin-xhr/widgets/read/?change_filter" hx-params="product_widget_text_filter,csrf_token" hx-trigger="keyup changed delay:500ms" hx-swap="none" name="product_widget_text_filter" value="'.$_SESSION['product_widget_text_filter'].'">';
-    echo '</div>';
-    echo '<div class="scroll-container p-0 mb-2">';
-    echo '<div class="sortable_source list-group list-group-flush">';
-
-    foreach($products_data as $product) {
-
-        $flag_src = return_language_flag_src($product['product_lang']);
-        $product_id = (int) $product['id'];
-
-        echo '<div class="list-group-item draggable" data-id="'.$product_id.'">';
-        echo '<img src="'.$flag_src.'" alt="'.$flag_src.'" width="15"> ';
-        echo ' <code>#'.$product_id.'</code> '.htmlentities($product['product_number']);
-        echo htmlentities($product['title']);
-        echo '</div>';
+    foreach ($products_data as &$product) {
+        $product['product_id'] = (int)$product['id'];
+        $product['flag_src'] = return_language_flag_src($product['product_lang']);
+        $product['product_number'] = htmlentities($product['product_number']);
+        $product['title'] = htmlentities($product['title']);
     }
-    echo '</div>';
-    echo '</div>';
 
     $pagination_classes = [
         'class_pagination' => 'pagination-sm justify-content-center mb-0'
     ];
-    echo se_print_pagination('/admin-xhr/widgets/read/?widget=product-select',$nbr_pages,$_SESSION['pagination_product_widget'],'6',$pagination_classes,'pagination_products');
+    $pagination = se_print_pagination(
+        '/admin-xhr/widgets/read/?widget=product-select',
+        $nbr_pages,
+        $_SESSION['pagination_product_widget'],
+        '6',
+        $pagination_classes,
+        'pagination_products'
+    );
 
-    echo '</div>';
+    echo $twig->render('widgets/select-products.twig', [
+        'product_widget_text_filter' => $_SESSION['product_widget_text_filter'],
+        'products_data' => $products_data,
+        'pagination' => $pagination
+    ]);
     exit;
-
 }

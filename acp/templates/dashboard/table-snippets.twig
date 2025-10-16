@@ -1,0 +1,22 @@
+<table class="table table-sm">
+    {% for snippet in get_snippets %}
+        <tr>
+            <td class="text-nowrap">{{ snippet.snippet_se_format_datetime }}</td>
+            <td class="w-100">
+                <h6>
+                    <span class="badge text-bg-secondary">{{ snippet.snippet_name }}</span>
+                    {{ snippet.snippet_title }}
+                </h6>
+                <small>{{ snippet.snippet_content_preview|raw }}</small>
+            </td>
+            <td>
+                <form action="/admin/snippets/edit/" method="post">
+                    <button class="btn btn-default" name="snippet_id" value="{{ snippet.snippet_id }}">
+                        {{ icon.edit|raw }}
+                    </button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

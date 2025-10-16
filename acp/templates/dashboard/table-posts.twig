@@ -1,0 +1,19 @@
+<table class="table table-sm">
+    {% for post in get_posts %}
+        <tr>
+            <td class="text-nowrap">{{ post.post_lastedit_formatted }}</td>
+            <td class="w-100">
+                <h6 class="mb-0">{{ post.post_title }}</h6>
+                <small>{{ post.post_teaser_trimmed }}</small>
+            </td>
+            <td>
+                <form action="/admin/blog/edit/" method="post">
+                    <button class="btn btn-default" name="post_id" value="{{ post.post_id }}">
+                        {{ icon.edit|raw }}
+                    </button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
