@@ -28,6 +28,14 @@ function registerElements() {
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 }
 
+function adjustQuantity(step) {
+    const input = document.getElementById('quantity');
+    input.stepUp(step);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+window.adjustQuantity = adjustQuantity;
+
 document.addEventListener('DOMContentLoaded', function(event) {
     const lightbox = GLightbox({
         selector: '.lightbox',
