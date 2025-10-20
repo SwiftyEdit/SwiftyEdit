@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * @var array $lang
+ * @var object $db_posts
+ * @var string $query - the current url
+ */
+
 //error_reporting(E_ALL);
 $writer_uri = '/admin-xhr/shop/write/';
 $form_header_mode = $lang['btn_new'];
@@ -55,6 +62,11 @@ if(is_int($get_product_id)) {
 } else {
     $btn_submit_text = $lang['save'];
     $form_mode = 'new';
+}
+
+if($product_data['type'] == 'v') {
+    // hide the submit as variant button
+    $submit_variant_btn = '';
 }
 
 
