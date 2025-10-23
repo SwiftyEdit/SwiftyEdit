@@ -1,3 +1,13 @@
+{*
+ If additional mandatory fields are specified in the backend settings,
+ these fields must also be included in the form, otherwise registration will not be possible.
+ It is important that the form fields have the same name attribute value as the mandatory field name.
+
+ example
+ if you select the field user_firstname as additional required field:
+ <input type="text" class="form-control" value="{$user_firstname}" name="user_firstname" id="inputUserFirstName" required>
+ *}
+
 {nocache}
 <h2>{$lang_legend_register}</h2>
 <div class="{$msg_status}">
@@ -34,7 +44,7 @@
 	<div class="form-group">
 		<label for="inputPass2">{$lang_label_psw_repeat}</label>
 		<input type="password" class="form-control" name="psw_repeat" id="inputPass2" required>
-	</div>	
+	</div>
 
 </fieldset>
 

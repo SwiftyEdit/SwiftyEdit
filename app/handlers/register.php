@@ -2,6 +2,15 @@
 /**
  * User Registration Handler
  * SwiftyEdit CMS
+ *
+ * @var array $se_settings
+ * @var array $se_db_user
+ * @var array $page_contents
+ * @var array $lang
+ * @var string $cache_id
+ * @var string $languagePack
+ * @var string $se_base_url
+ * @var object $smarty
  */
 
 // Set form URL
@@ -13,7 +22,7 @@ if($page_contents['page_permalink'] != '') {
 }
 
 // Check if registration is enabled
-if($se_prefs['prefs_userregistration'] != "yes") {
+if($se_settings['userregistration'] != "yes") {
     $smarty->assign("msg_title",$lang['legend_register']);
     $smarty->assign("msg_text",$lang['msg_register_intro_disabled']);
     $output = $smarty->fetch("status_message.tpl",$cache_id);
@@ -22,7 +31,7 @@ if($se_prefs['prefs_userregistration'] != "yes") {
 }
 
 // Include agreement text
-$agreement_txt = se_get_textlib("agreement_text", $languagePack,'content');
+$agreement_txt = se_get_snippet("agreement_text", $languagePack,'content');
 $smarty->assign("agreement_text",$agreement_txt);
 
 // Process registration form if submitted
@@ -38,6 +47,17 @@ if($_POST['send_registerform']) {
     // Process all incoming data -> strip_tags and limit to 200 characters
     foreach($_POST as $key => $val) {
         $$key = strip_tags(substr($val, 0, 200));
+    }
+
+    // check required fields from settings
+    if($se_settings['required_fields_registration'] != '') {
+        $required_fields = json_decode($se_settings['required_fields_registration']);
+        foreach($required_fields as $field) {
+            if($_POST[$field] == '') {
+                $send_data = "false";
+                $register_message .= $lang['msg_register_requiredfields'].' ('.$field.')<br>';
+            }
+        }
     }
 
     // Validation: Accept terms
