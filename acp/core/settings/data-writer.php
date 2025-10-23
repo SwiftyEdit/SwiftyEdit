@@ -172,8 +172,12 @@ if (isset($_POST['update_email'])) {
 // write user settings
 if (isset($_POST['update_user'])) {
     foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
+        if(is_string($val)) {
+            $data[htmlentities($key)] = htmlentities($val);
+        }
     }
+
+    $data['prefs_required_fields_registration'] = json_encode($_POST['required_fields']);
 
     $data['prefs_showloginform'] = 'no';
     if(isset($_POST['prefs_showloginform'])) {

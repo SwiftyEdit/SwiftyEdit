@@ -110,6 +110,7 @@ echo '</a>';
 echo '<div class="collapse '.($se_section == "settings" ? 'show' :'').'" id="sidebarPrefs">';
 echo '<ul>';
 echo '<li><a class="sidebar-nav '.($subinc == "general" ? 'sidebar-nav-active' :'').'" href="/admin/settings/">'.$icon['dot'].' '.$lang['nav_btn_general'].'</a></li>';
+echo '<li><a class="sidebar-nav '.($subinc == "user" ? 'sidebar-nav-active' :'').'" href="/admin/settings/user/">'.$icon['dot'].' '.$lang['nav_btn_user'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "posts" ? 'sidebar-nav-active' :'').'" href="/admin/settings/posts/">'.$icon['dot'].' '.$lang['nav_btn_posts'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "shop" ? 'sidebar-nav-active' :'').'" href="/admin/settings/shop/">'.$icon['dot'].' '.$lang['nav_btn_shop'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "events" ? 'sidebar-nav-active' :'').'" href="/admin/settings/events/">'.$icon['dot'].' '.$lang['nav_btn_events'].'</a></li>';
