@@ -42,7 +42,7 @@
                         <div class="price-tag-label">{$product_price_label}</div>
                     </div>
                     <div class="price-tag-inner">
-                        {$product_currency} {$product_price_tag} <span class="product-amount">{$product_amount}</span> <span class="product-unit">{$product_unit}</span>
+                        {$product_currency} <span id="price-display">{$product_price_tag}</span> <span class="product-amount">{$product_amount}</span> <span class="product-unit">{$product_unit}</span>
                     </div>
                     <div class="price-tag-note">{$product_tax_label}</div>
                 </div>
@@ -77,7 +77,19 @@
                         </div>
                     {/if}
                         <div class="mt-2 pt-2 d-flex border-top">
-                            <input type="number" name="amount" value="{$product_amount}" {$product_order_quantity_min} {$product_order_quantity_max} class="form-control form-control-lg w-25 me-1">
+                            <div class="input-group w-25">
+                            <button type="button" class="btn btn-outline-secondary" onclick="adjustQuantity(-1)">−</button>
+                            <input type="number"
+                                   id="quantity"
+                                   name="amount"
+                                   value="{$product_amount}" {$product_order_quantity_min} {$product_order_quantity_max}
+                                   class="form-control form-control-lg"
+                                   hx-get="/xhr/se/products/?calc=price&product_id={$product_id}"
+                                   hx-target="#price-display"
+                                   hx-trigger="keyup changed delay:500ms, input"
+                            >
+                            <button type="button" class="btn btn-outline-secondary" onclick="adjustQuantity(1)">+</button>
+                            </div>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
                         </div>
                         <input type="hidden" name="product_href" value="{$product_href}">

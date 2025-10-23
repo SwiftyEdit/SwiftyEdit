@@ -1583,7 +1583,7 @@ function se_get_product_filter($lang = 'de') {
     $filters = $db_content->select('se_filter', '*', [
         'filter_lang' => $lang,
         'filter_parent_id' => NULL,
-        'ORDER' => ['filter_priority' => 'ASC']
+        'ORDER' => ['filter_priority' => 'DESC']
     ]);
 
     $result = [];
@@ -1592,7 +1592,7 @@ function se_get_product_filter($lang = 'de') {
         // Load filter items for this group
         $items = $db_content->select('se_filter', '*', [
             'filter_parent_id' => $filter_group['filter_id'],
-            'ORDER' => ['filter_priority' => 'ASC']
+            'ORDER' => ['filter_priority' => 'DESC']
         ]);
 
         $filter_items = [];

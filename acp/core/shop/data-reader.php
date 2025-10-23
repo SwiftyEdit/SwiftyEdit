@@ -342,7 +342,7 @@ if($_REQUEST['action'] == 'list_products') {
                 $btn_edit_variant .= '</form>';
 
                 $btn_duplicate_variant  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
-                $btn_duplicate_variant .= '<button class="btn btn-default btn-sm" name="duplicate_id" value="'.$product_id.'">'.$icon['copy'].'</button>';
+                $btn_duplicate_variant .= '<button class="btn btn-default btn-sm" name="duplicate_id" value="'.$variant['id'].'">'.$icon['copy'].'</button>';
                 $btn_duplicate_variant .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
                 $btn_duplicate_variant .= '</form>';
 
