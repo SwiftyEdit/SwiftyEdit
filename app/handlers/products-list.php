@@ -9,8 +9,8 @@
  * @var array $cached_url_data
  * @var array $lang
  * @var string $cache_id
- *
  * @var object $smarty
+ * @var string $se_base_url
  */
 
 
@@ -20,6 +20,7 @@ $products_limit = (int) $se_settings['products_per_page'];
 if($products_limit == '' || $products_limit < 1) {
     $products_limit = 10;
 }
+$canonical_url = '';
 
 $str_status = '1';
 if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
@@ -130,8 +131,15 @@ foreach ($product_filter as $group_key => $filter_group) {
     }
 }
 
-// Generate active filter tags for display ("wegklick-buttons")
+// Generate active filter tags for display ("reset-buttons")
 $active_filter_tags = se_get_active_filter_tags($parsed_filters['active_filters'], $filter_base_url);
+
+// Set canonical URL if there are active filters
+$canonical_url = '';
+if(is_array($active_filter_tags) && count($active_filter_tags) > 0) {
+    $canonical_url = rtrim($se_base_url,"/").$filter_base_url;
+    $smarty->assign('page_canonical_url', $canonical_url);
+}
 
 // Assign to Smarty
 $smarty->assign('product_filter', $product_filter);
