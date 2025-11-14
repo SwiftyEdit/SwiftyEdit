@@ -605,7 +605,7 @@ foreach ($get_products as $k => $post) {
     $get_products[$k]['product_author'] = $get_products[$k]['author'];
 
     /* item status */
-    if (isset($get_products[$k]['post_status']) AND $get_products[$k]['post_status'] == '2') {
+    if (isset($get_products[$k]['status']) AND $get_products[$k]['status'] == '2') {
         $get_products[$k]['draft_message'] = '<div class="alert alert-draft"><small>' . $lang['post_is_draft'] . '</small></div>';
         $get_products[$k]['product_css_classes'] = 'draft';
     }
@@ -675,4 +675,5 @@ if($status_404 == true) {
     $products_page = $smarty->fetch("products-list.tpl", $cache_id);
     $smarty->assign('page_content', $products_page, true);
     $smarty->assign('categories', $categories);
+    $smarty->assign('cat_hashes', $page_contents['page_posts_categories']);
 }
