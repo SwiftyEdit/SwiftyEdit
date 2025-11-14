@@ -38,3 +38,18 @@ hr {
   background: rgba(0,0,0,0.10);
   padding: 15px;
 }
+
+.toggle {
+  a {
+    display: flex;
+    text-decoration: none;
+  }
+  span {
+    transition: all 0.3s ease-in-out;
+  }
+  a[aria-expanded="true"] {
+    span {
+      rotate: 180deg;
+    }
+  }
+}
