@@ -115,9 +115,13 @@ echo '<div class="col-md-6">';
 echo '<div class="card">';
 echo '<div class="card-header">'.$lang['legend_required_fields'].'</div>';
 echo '<div class="card-body scroll-container">';
-$required_fields_registration = [];
+
 if($se_settings['required_fields_registration'] != '') {
     $required_fields_registration = json_decode($se_settings['required_fields_registration']);
+}
+
+if (!is_array($required_fields_registration)) {
+    $required_fields_registration = [];
 }
 
 /**
