@@ -11,9 +11,7 @@ Thumbs.db
 .idea/*
 composer.phar
 /lib/vendor
-/core/vendor
 /vendor/*
-/cache/*
 /data/cache/*
 /data/cache/cache/*
 /data/cache/snippets/*
@@ -82,6 +80,7 @@ config_database.php
 !/public/assets/themes/default/php/*
 !/public/assets/themes/default/dist/*
 !/public/assets/themes/default/templates/*
+!/public/assets/themes/default/templates/profile/*
 !/public/assets/themes/default/templates/posts/*
 !/public/assets/themes/default/templates/comments/*
 !/public/assets/themes/default/templates-mail/*

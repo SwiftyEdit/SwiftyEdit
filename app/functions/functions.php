@@ -953,7 +953,7 @@ function se_upload_avatar($file,$username) {
     }
 
     $uploads_dir = SE_PUBLIC."/assets/avatars";
-	$max_width = 100;
+	$max_width = 512;
 		
 	$tmp_name = $file['avatar']['tmp_name'];
 	$new_name = md5($username);

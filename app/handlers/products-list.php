@@ -9,8 +9,8 @@
  * @var array $cached_url_data
  * @var array $lang
  * @var string $cache_id
- *
  * @var object $smarty
+ * @var string $se_base_url
  */
 
 
@@ -20,6 +20,7 @@ $products_limit = (int) $se_settings['products_per_page'];
 if($products_limit == '' || $products_limit < 1) {
     $products_limit = 10;
 }
+$canonical_url = '';
 
 $str_status = '1';
 if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
@@ -130,8 +131,15 @@ foreach ($product_filter as $group_key => $filter_group) {
     }
 }
 
-// Generate active filter tags for display ("wegklick-buttons")
+// Generate active filter tags for display ("reset-buttons")
 $active_filter_tags = se_get_active_filter_tags($parsed_filters['active_filters'], $filter_base_url);
+
+// Set canonical URL if there are active filters
+$canonical_url = '';
+if(is_array($active_filter_tags) && count($active_filter_tags) > 0) {
+    $canonical_url = rtrim($se_base_url,"/").$filter_base_url;
+    $smarty->assign('page_canonical_url', $canonical_url);
+}
 
 // Assign to Smarty
 $smarty->assign('product_filter', $product_filter);
@@ -597,7 +605,7 @@ foreach ($get_products as $k => $post) {
     $get_products[$k]['product_author'] = $get_products[$k]['author'];
 
     /* item status */
-    if (isset($get_products[$k]['post_status']) AND $get_products[$k]['post_status'] == '2') {
+    if (isset($get_products[$k]['status']) AND $get_products[$k]['status'] == '2') {
         $get_products[$k]['draft_message'] = '<div class="alert alert-draft"><small>' . $lang['post_is_draft'] . '</small></div>';
         $get_products[$k]['product_css_classes'] = 'draft';
     }
@@ -667,4 +675,5 @@ if($status_404 == true) {
     $products_page = $smarty->fetch("products-list.tpl", $cache_id);
     $smarty->assign('page_content', $products_page, true);
     $smarty->assign('categories', $categories);
+    $smarty->assign('cat_hashes', $page_contents['page_posts_categories']);
 }
