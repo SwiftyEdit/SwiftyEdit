@@ -28,7 +28,8 @@
     "paypal/paypal-checkout-sdk": "1.0.2",
     "guzzlehttp/guzzle": "^7.8.1",
     "ezyang/htmlpurifier": "^v4.18.0",
-    "twig/twig": "^3.0"
+    "twig/twig": "^3.0",
+    "ext-pdo": "*"
   },
   "scripts": {
     "buildclean": "rm -rf dist && rm -f ./dist/*.zip",

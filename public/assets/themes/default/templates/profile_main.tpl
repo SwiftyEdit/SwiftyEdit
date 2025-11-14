@@ -6,280 +6,67 @@
 
 <h2>{$lang_headline_editprofile} ({$user_nick})</h2>
 
-<form class="form-horizontal" id="form_address" action="{$form_url}" method="POST">
-	<div class="card mb-3">
-		<div class="card-header">{$lang_legend_adress_fields}</div>
-		<div class="card-body">
-			<div class="row mb-3">
-				<div class="col-6">
-					<label for="firstname">{$lang_label_firstname}</label>
-					<input type="text" class="form-control" id="firstname" value="{$get_firstname}" name="s_firstname">
-				</div>
-
-				<div class="col-6">
-					<label for="lastname">{$lang_label_lastname}</label>
-					<input type="text" class="form-control" id="lastname" value="{$get_lastname}" name="s_lastname">
-				</div>
-			</div>
-
-			<div class="row mb-3">
-				<div class="col-9">
-					<label for="street">{$lang_label_street}</label>
-					<input type="text" class="form-control" id="street" value="{$get_street}" name="s_street">
-				</div>
-
-				<div class="col-3">
-					<label for="streetnbr">{$lang_label_nr}</label>
-					<input type="text" class="form-control" id="streetnbr" value="{$get_nr}" name="s_nr">
-				</div>
-			</div>
-
-			<div class="row mb-3">
-				<div class="col-3">
-					<label for="zip">{$lang_label_zip}</label>
-					<input type="text" class="form-control" id="zip" value="{$get_zip}" name="s_zip">
-				</div>
-
-				<div class="col-9">
-					<label for="city">{$lang_label_town}</label>
-					<input type="text" class="form-control" id="city" value="{$get_city}" name="s_city">
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label for="about">{$lang_label_about_you}</label>
-				<textarea class="form-control" id="about" rows="4" name="about_you">{$send_about}</textarea>
-			</div>
-		</div>
-		<div class="card-footer">
-			<input class="btn btn-primary" type="submit" name="update_address_data" value="{$lang_button_update}">
-		</div>
-	</div>
-	{$hidden_csrf_token}
-</form>
-
-{* billing address *}
-<form class="form-horizontal" id="form_ba_address" action="{$form_url}" method="POST">
-	<div class="card mb-3">
-		<div class="card-header">{$lang_label_billing_address}</div>
-		<div class="card-body">
-			<div class="row mb-3">
-			<div class="col-6">
-				<label for="ba_company">{$lang_label_company}</label>
-				<input type="text" class="form-control" id="ba_company" value="{$ba_company}" name="ba_company">
-			</div>
-			</div>
-				<div class="row mb-3">
-			<div class="col-6">
-				<label for="ba_firstname">{$lang_label_firstname}</label>
-				<input type="text" class="form-control" id="ba_firstname" value="{$ba_firstname}" name="ba_firstname">
-			</div>
-			<div class="col-6">
-				<label for="ba_lastname">{$lang_label_lastname}</label>
-				<input type="text" class="form-control" id="ba_lastname" value="{$ba_lastname}" name="ba_lastname">
-			</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-9">
-					<label for="ba_street">{$lang_label_street}</label>
-					<input type="text" class="form-control" id="ba_street" value="{$ba_street}" name="ba_street">
-				</div>
-
-				<div class="col-3">
-					<label for="ba_street_nbr">{$lang_label_nr}</label>
-					<input type="text" class="form-control" id="ba_street_nbr" value="{$ba_street_nbr}" name="ba_street_nbr">
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-3">
-					<label for="ba_zip">{$lang_label_zip}</label>
-					<input type="text" class="form-control" id="ba_zip" value="{$ba_zip}" name="ba_zip">
-				</div>
-				<div class="col-9">
-					<label for="ba_city">{$lang_label_town}</label>
-					<input type="text" class="form-control" id="ba_city" value="{$ba_city}" name="ba_city">
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col">
-				<label for="ba_country">{$lang_label_country}</label>
-				{if $show_ba_country_input == "input"}
-					<input type="text" class="form-control" id="ba_country" value="{$ba_country}" name="ba_country">
-				{else}
-					<select class="form-control" name="ba_country" id="ba_country">
-						<option value="">{$lang_label_please_select}</option>
-					{foreach $ba_countries as $country}
-						<option value="{$country}" {$selected_ba_{$country|strtolower}}>{$country}</option>
-					{/foreach}
-					</select>
-				{/if}
-				</div>
-			</div>
-
-		</div>
-		<div class="card-footer">
-			<input class="btn btn-primary" type="submit" name="update_ba_data" value="{$lang_button_update}">
-		</div>
-	</div>
-
-	{$hidden_csrf_token}
-</form>
-
-	{* shipping address *}
-	<form class="form-horizontal" id="form_sa_address" action="{$form_url}" method="POST">
-		<div class="card mb-3">
-			<div class="card-header">{$lang_label_delivery_address}</div>
-			<div class="card-body">
-				<div class="row mb-3">
-					<div class="col-6">
-						<label for="sa_company">{$lang_label_company}</label>
-						<input type="text" class="form-control" id="sa_company" value="{$sa_company}" name="sa_company">
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-6">
-						<label for="sa_firstname">{$lang_label_firstname}</label>
-						<input type="text" class="form-control" id="sa_firstname" value="{$sa_firstname}" name="sa_firstname">
-					</div>
-					<div class="col-6">
-						<label for="sa_lastname">{$lang_label_lastname}</label>
-						<input type="text" class="form-control" id="sa_lastname" value="{$sa_lastname}" name="sa_lastname">
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-9">
-						<label for="sa_street">{$lang_label_street}</label>
-						<input type="text" class="form-control" id="sa_street" value="{$sa_street}" name="sa_street">
-					</div>
-
-					<div class="col-3">
-						<label for="sa_street_nbr">{$lang_label_nr}</label>
-						<input type="text" class="form-control" id="sa_street_nbr" value="{$sa_street_nbr}" name="sa_street_nbr">
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-3">
-						<label for="sa_zip">{$lang_label_zip}</label>
-						<input type="text" class="form-control" id="sa_zip" value="{$sa_zip}" name="sa_zip">
-					</div>
-					<div class="col-9">
-						<label for="sa_city">{$lang_label_town}</label>
-						<input type="text" class="form-control" id="sa_city" value="{$sa_city}" name="sa_city">
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col">
-						<label for="sa_country">{$lang_label_country}</label>
-						{if $show_sa_country_input == "input"}
-							<input type="text" class="form-control" id="sa_country" value="{$sa_country}" name="sa_country">
-						{else}
-							<select class="form-control" name="sa_country" id="sa_country">
-								<option value="">{$lang_label_please_select}</option>
-								{foreach $sa_countries as $country}
-									<option value="{$country}" {$selected_sa_{$country|strtolower}}>{$country}</option>
-								{/foreach}
-							</select>
-						{/if}
-					</div>
-				</div>
-
-			</div>
-			<div class="card-footer">
-				<input class="btn btn-primary" type="submit" name="update_sa_data" value="{$lang_button_update}">
-			</div>
-		</div>
-
-		{$hidden_csrf_token}
-	</form>
-
-<form class="form-horizontal" id="form_psw_data" action="{$form_url}" method="POST">
-	<div class="card mb-3">
-	<div class="card-header">{$lang_legend_access_data} ({$lang_label_psw})</div>
-	<div class="card-body">
-		<div class="row mb-3">
-			<div class="col-6">
-				<label for="psw">{$lang_label_psw}</label>
-				<input type="password" class="form-control" id="psw" value="" name="s_psw">
-			</div>
-
-			<div class="col-6">
-				<label for="psw_repeat">{$lang_label_psw_repeat}</label>
-				<input type="password" class="form-control" id="psw_repeat" value="" name="s_psw_repeat">
-				<p class="help-block">{$msg_edit_psw}</p>
-			</div>
-		</div>
-	</div>
-	<div class="card-footer">
-		<input class="btn btn-primary" type="submit" name="update_psw_data" value="{$lang_button_update}">
-	</div>
-	</div>
-	{$hidden_csrf_token}
-</form>
-
-<form class="form-horizontal" id="form_email_data" action="{$form_url}" method="POST">
-
-<div class="card">
-	<div class="card-header">{$lang_legend_access_data} ({$lang_label_mail} / {$get_mail_address})</div>
-	<div class="card-body">
-
-		<div class="row">
-
-			<div class="col-6">
-		<label for="mail">{$lang_label_mail}</label>
-		<input type="text" class="form-control" id="mail" value="" name="set_mail">
-	</div>
-
-			<div class="col-6">
-		<label for="mail_repeat">{$lang_label_mailrepeat}</label>
-		<input type="text" class="form-control" id="mail_repeat" value="" name="set_mail_repeat">
-		<p class="help-block">{$msg_edit_mail}</p>
-	</div>
-		</div>
-	
-
-	</div>
-	<div class="card-footer">
-		<input class="btn btn-primary" type="submit" name="update_email_data" value="{$lang_button_update}">
-	</div>
+<div id="password-response"></div>
+<div id="" hx-get="/xhr/se/profile/?password" hx-trigger="load, changed_password">
+    Loading ...
 </div>
-	{$hidden_csrf_token}
-</form>
 
+ <div id="mail-response"></div>
+ <div id="" hx-get="/xhr/se/profile/?mail" hx-trigger="load, changed_mail_temp">
+     <div class="spinner-border" role="status">
+         <span class="visually-hidden">Loading...</span>
+     </div>
+</div>
+
+<div id="address-response"></div>
+<div id="" hx-get="/xhr/se/profile/?address" hx-trigger="load, changed_address">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div id="address-ba-response"></div>
+<div id="" hx-get="/xhr/se/profile/?address-ba" hx-trigger="load, changed_address_ba">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div id="address-sa-response"></div>
+<div id="" hx-get="/xhr/se/profile/?address-sa" hx-trigger="load, changed_address_sa">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 <hr>
 
 
-
-<!-- Avatar -->
-<form id="profileform" action="{$form_url}" method="post" enctype="multipart/form-data">
-
-	<div class="card mb-3">
-		<div class="card-header">{$lang_legend_avatar}</div>
-		<div class="card-body">
-	<div class="row">
-		<div class="col-9">
-			<div class="mb-3">
-				<label for="formFile" class="form-label">{$lang_msg_avatar}</label>
-				<input class="form-control"name="avatar" type="file" size="50">
-			</div>
-			<hr>
-			<div class="mb-3">
-				<input class="btn btn-primary" type="submit" name="upload_avatar" value="{$lang_button_save}">
-				{if isset($avatar_url)}
-					<input class="btn btn-danger" type="submit" name="delete_avatar" value="{$link_avatar_delete_text}">
-				{/if}
-			</div>
-			
-		</div>
-		<div class="col-3 text-center">
-			<img src="{$avatar_url}" class="img-fluid rounded-circle" alt="" title="">
-		</div>
-	</div>
+<div class="row">
+    <div class="col-md-9">
+        <div id="avatar-response"></div>
+        <div id="" hx-get="/xhr/se/profile/?avatar" hx-trigger="load">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div id="" hx-get="/xhr/se/profile/?show_avatar" hx-trigger="load, changed_avatar from:body">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <button name="delete_avatar"
+                hx-post="/xhr/se/profile/"
+                hx-include="[name='csrf_token']"
+                hx-swap="none">
+            {$lang_delete}
+        </button>
+    </div>
 
 </div>
-</div>
-	{$hidden_csrf_token}
-</form>
+
 
 
 <hr>
@@ -293,7 +80,7 @@
 <legend>{$lang_legend_delete_account}</legend>
 <p>{$lang_msg_delete_account}</p>
 
-<input class="btn btn-danger btn-small" type="submit" onclick="return confirm('{$msg_confirm_delete_account}')" name="delete_my_account" value="{$lang_button_delete}">
+<input class="btn btn-danger btn-small" type="submit" onclick="return confirm('{$lang_msg_confirm_delete_account}')" name="delete_my_account" value="{$lang_button_delete}">
 </fieldset>
 	{$hidden_csrf_token}
 </form>

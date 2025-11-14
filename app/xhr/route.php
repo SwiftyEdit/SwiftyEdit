@@ -15,7 +15,8 @@ $routes = [
     'password-reset' => 'password-reset.php',
     'products' => 'products.php',
     'statusbox' => 'statusbox.php',
-    'search' => 'search.php'
+    'search' => 'search.php',
+    'profile' => 'profile.php'
 ];
 
 if (!preg_match('#^[a-z0-9\-_]+$#i', $xhr_path)) {
