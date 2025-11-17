@@ -87,7 +87,7 @@ if($s != '' && $start_search == "true") {
             $products[$x]['thumbnail_src'] = $thumbs[1];
         }
 
-
+        $products[$x]['id'] = $product['id'];
         $products[$x]['title'] = $product['title'];
         $products[$x]['description'] = $product['meta_description'];
         $products[$x]['number'] = $product['product_number'];

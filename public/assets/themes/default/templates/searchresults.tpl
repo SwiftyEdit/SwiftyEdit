@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-md-6">
-		<h6>Pages {$pages_total}</h6>
+		<h6>{$lang_label_pages} {$pages_total}</h6>
 
 		{foreach $pages as $page}
 			<div class="card border-top-0 border-start-0 border-end-0 mb-3">
@@ -21,7 +21,7 @@
 	</div>
 	<div class="col-md-6">
 
-		<h6>Products {$products_total}</h6>
+		<h6>{$lang_label_products} {$products_total}</h6>
 
 		{if $show_prod_pagination}
 			<form action="{$search_uri}" method="POST" class="text-end mb-3">
@@ -42,11 +42,22 @@
 					{/if}
 					<div class="col">
 						<h5 class="mb-1">{$product.title}</h5>
-						<p>
-							{if $product.number}
-							<span class="border rounded p-1 text-secondary small">{$product.number}</span>
-							{/if}
-							{$product.description}</p>
+                        <div class="d-flex flex-row">
+                            <div class="flex-grow-1">
+                                <p>
+                                    {if $product.number}
+                                        <span class="border rounded p-1 text-secondary small">{$product.number}</span>
+                                    {/if}
+                                    {$product.description}</p>
+                            </div>
+                            <div>
+                                <div hx-get="/xhr/se/products/?calc=true&product_id={$product.id}" hx-trigger="load" class="text-end">
+                                    <div class="spinner-border spinner-border-sm float-start me-2" role="status"></div>
+                                    <small>{$lang_label_price} ...</small>
+                                </div>
+                            </div>
+                        </div>
+
 						<a href="{$product.href}" class="stretched-link"> </a>
 					</div>
 				</div>
