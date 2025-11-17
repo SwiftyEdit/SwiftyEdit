@@ -93,9 +93,11 @@
                 <!-- pricetag -->
                 {if $value.product_pricetag_mode !== 2}
                 <div class="price-tag price-tag-fix">
-                    <div class="clearfix">
-                        <div class="price-tag-label">{$post_product_price_label}</div>
-                    </div>
+                    {if $value.product_price_label != ''}
+                        <div class="clearfix">
+                            <div class="price-tag-label">{$value.product_price_label}</div>
+                        </div>
+                    {/if}
                     <div class="price-tag-inner">
                         <div class="price">{$value.price_tag_label_from} {$value.price_tag}</div>
                         {$value.product_currency} <span class="product-amount">{$value.product_amount}</span> <span class="product-unit">{$value.product_unit}</span>
