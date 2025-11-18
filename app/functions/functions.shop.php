@@ -817,7 +817,7 @@ function se_get_product_lowest_price(int $id) {
 
     $variants = se_get_product_variants($id);
     if (count($variants) < 1) {
-        return null; // kein Produkt gefunden
+        return null; // no product found
     }
 
     $allPrices = [];

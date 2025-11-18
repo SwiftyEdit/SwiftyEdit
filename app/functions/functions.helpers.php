@@ -71,6 +71,14 @@ function se_format_datetime($timestring): string {
 }
 
 
+/**
+ * convert comma separated number to float
+ * @param string $number
+ * @return float
+ */
+function se_commaToFloat($number) {
+    return floatval(str_replace(',', '.', $number));
+}
 
 
 /**
