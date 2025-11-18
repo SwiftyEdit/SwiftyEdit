@@ -538,15 +538,6 @@ foreach ($get_products as $k => $post) {
     }
 
 
-    // tax
-    if ($product_tax == '1') {
-        $tax = $se_settings['posts_products_default_tax'];
-    } else if ($product_tax == '2') {
-        $tax = $se_settings['posts_products_tax_alt1'];
-    } else {
-        $tax = $se_settings['posts_products_tax_alt2'];
-    }
-
     // price
     if($get_products[$k]['product_price_group'] != '' AND $get_products[$k]['product_price_group'] != 'null') {
 
@@ -561,22 +552,24 @@ foreach ($get_products as $k => $post) {
         $product_volume_discounts = $get_products[$k]['product_price_volume_discount'];
     }
 
-    $get_products[$k]['price_tag_label_from'] = '';
-    if($product_volume_discounts != 'null') {
-        // if we have volume discounts, show the cheapest
-        $product_volume_discounts_array = json_decode($product_volume_discounts, true);
-        if(is_array($product_volume_discounts_array)) {
-            $priceValues = array_map(fn($p) => (float)str_replace(',', '.', $p['price']), $product_volume_discounts_array);
-            $product_price_net = min($priceValues);
-            $product_price_net = str_replace('.', ',', $product_price_net);
-            $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
-        }
+    // tax
+    if ($product_tax == '1') {
+        $tax = $se_settings['posts_products_default_tax'];
+    } else if ($product_tax == '2') {
+        $tax = $se_settings['posts_products_tax_alt1'];
+    } else {
+        $tax = $se_settings['posts_products_tax_alt2'];
     }
 
+    $get_products[$k]['price_tag_label_from'] = '';
+
     // check if we have lower price from variants
-    $product_price_net = se_get_product_lowest_price($get_products[$k]['id']);
-    if($product_price_net != '') {
-        $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
+    $product_get_lowest_price = se_get_product_lowest_price($get_products[$k]['id']);
+    if($product_get_lowest_price !== null) {
+        if(se_commaToFloat($product_get_lowest_price) < se_commaToFloat($product_price_net)) {
+            $get_products[$k]['price_tag_label_from'] = $lang['price_tag_label_from'];
+        }
+        $product_price_net = $product_get_lowest_price;
     }
 
     $post_prices = se_posts_calc_price($product_price_net, $tax);
