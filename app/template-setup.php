@@ -437,11 +437,6 @@ $smarty->assign('se_start_time', $se_start_time,true);
 $smarty->assign('se_end_time', $se_end_time,true);
 $smarty->assign('se_pageload_time', $se_pageload_time,true);
 
-if(is_array($page_json_ld)) {
-    $json_ld = json_encode($page_json_ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    $smarty->assign('json_ld', $json_ld,true);
-}
-
 $smarty->assign('prepend_head_code', $prepend_head_code);
 $smarty->assign('append_head_code', $append_head_code);
 $smarty->assign('prepend_body_code', $prepend_body_code);

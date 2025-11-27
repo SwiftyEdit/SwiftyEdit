@@ -8,7 +8,6 @@
  * @var string $se_base_url
  */
 
-error_reporting(E_ALL);
 $get_my_userdata = get_my_userdata();
 
 // Assign all language variables to template

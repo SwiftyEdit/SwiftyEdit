@@ -132,6 +132,11 @@ if(is_file($themes_path.'/'.$se_template.'/php/options.php')) {
     include $themes_path.'/'.$se_template.'/php/options.php';
 }
 
+if(is_array($page_json_ld)) {
+    $json_ld = json_encode($page_json_ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $smarty->assign('json_ld', $json_ld,true);
+}
+
 // Display the template
 if($se_settings['maintenance_code'] != '') {
     if($_POST['maintenance-access-code'] == $se_settings['maintenance_code']) {
