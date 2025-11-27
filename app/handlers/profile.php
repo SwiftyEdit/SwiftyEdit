@@ -3,7 +3,6 @@
  * Profile Management Handler
  * SwiftyEdit CMS
  */
-error_reporting(E_ALL);
 
 // Check if user is logged in
 if($_SESSION['user_nick'] == "") {
