@@ -98,6 +98,13 @@ $input_select_reactions = [
     "type" => "select"
 ];
 
+$input_blacklist_usernames = [
+    "input_name" => "prefs_blacklist_usernames",
+    "input_value" => $se_settings['blacklist_usernames'],
+    "label" => 'Blacklist (user names)',
+    "type" => "textarea"
+];
+
 echo '<div class="card p-3">';
 
 echo '<h5 class="heading-line">'.$lang['register'].'</h5>';
@@ -110,6 +117,7 @@ echo se_print_form_input($input_check_userregistration);
 echo se_print_form_input($input_check_login_form);
 echo se_print_form_input($input_check_user_unlock_by_admin);
 echo se_print_form_input($input_session_lifetime);
+echo se_print_form_input($input_blacklist_usernames);
 echo '</div>';
 echo '<div class="col-md-6">';
 echo '<div class="card">';
