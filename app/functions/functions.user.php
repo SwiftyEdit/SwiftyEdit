@@ -1,5 +1,5 @@
 <?php
-
+use Medoo\Medoo;
 /**
  * @param string $type all public groups
  * @return mixed
@@ -396,6 +396,72 @@ function get_my_userdata() {
 
     return $user_data;
 }
+
+function se_email_exists($email): bool {
+    global $db_user;
+    // check database for existing username
+    $sql = 'SELECT COUNT(*) FROM se_user WHERE LOWER(user_mail) = LOWER(?)';
+    $stmt = $db_user->pdo->prepare($sql);
+    $stmt->execute([strtolower($email)]);
+    $count = $stmt->fetchColumn();
+    $exists = ($count > 0);
+
+    if($exists) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * @param $username
+ * @return bool
+ */
+function se_is_valid_username($username): bool
+{
+    if(!preg_match("/^[a-zA-Z0-9-_]{2,20}$/",$username)) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @param $username
+ * @return bool
+ */
+function se_username_exists($username): bool
+{
+    global $db_user, $se_settings;
+
+    $check_usernames = [];
+
+    // add blacklist usernames if configured
+    if (!empty($se_settings['blacklist_usernames'])) {
+        $check_usernames = array_map('trim', explode(',', $se_settings['blacklist_usernames'])); // comments in English
+    }
+
+    $needle = strtolower(trim($username));
+    foreach ($check_usernames as $user) {
+        if (strtolower(trim($user)) === $needle) {
+            return true;
+        }
+    }
+
+    // check database for existing username
+    $sql = 'SELECT COUNT(*) FROM se_user WHERE LOWER(user_nick) = LOWER(?)';
+    $stmt = $db_user->pdo->prepare($sql);
+    $stmt->execute([strtolower($username)]);
+    $count = $stmt->fetchColumn();
+    $exists = ($count > 0);
+
+    if($exists) {
+        return true;
+    }
+
+    return false;
+}
+
 
 /**
  * @return mixed

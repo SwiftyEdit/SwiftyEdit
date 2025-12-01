@@ -6,6 +6,7 @@ $xhr_path = $requestPathParts[2] ?? '';
 $xhr_path = trim($xhr_path, '/');
 
 $routes = [
+    'checks' => 'checks.php',
     'comments' => 'comments.php',
     'counter' => 'counter.php',
     'vote' => 'ajax.votings.php',

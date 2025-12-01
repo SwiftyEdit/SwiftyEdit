@@ -97,23 +97,15 @@ if($_POST['send_registerform']) {
     }
 
     // Check for existing usernames
-    $all_usernames_array = get_all_usernames();
-    foreach ($all_usernames_array as $entry) {
-        if($username == $entry['user_nick']) {
-            $send_data = "false";
-            $register_message .= $lang['msg_register_existinguser'].'<br>';
-            break;
-        }
+    if(se_username_exists($username) === true) {
+        $send_data = "false";
+        $register_message .= $lang['msg_register_existinguser'].'<br>';
     }
 
     // Check for existing email addresses
-    $all_usermail_array = get_all_usermail("$se_db_user");
-    foreach ($all_usermail_array as $entry) {
-        if($mail == $entry['user_mail']) {
-            $send_data = "false";
-            $register_message .= $lang['msg_register_existingusermail'].'<br>';
-            break;
-        }
+    if(se_email_exists($mail) === true) {
+        $send_data = "false";
+        $register_message .= $lang['msg_register_existingusermail'].'<br>';
     }
 
     // Create new account if validation passed
