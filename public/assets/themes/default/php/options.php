@@ -149,15 +149,56 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
 	 * Theme options for /admin/addons/theme/default/
 	 */
 
-	 $theme_options = array(
-		 "discord" => "Discord (URL)",
-		 "facebook" => "Facebook Page or Account (URL)",
-		 "github" => "GitHub (URL)",
-		 "instagram" => "Instagram (URL)",
-		 "linkedin" => "LinkedIn (URL)",
-		 "slack" => "Slack (URL)",
-		 "twitch" => "Twitch (URL)",
-		 "x" => "X Account (URL)",
-		 "youtube" => "YouTube (URL)"
-	 );
+    $theme_options = [
+        "discord" => [
+            "label" => "Discord (URL)",
+            "type"  => "text"
+        ],
+        "facebook" => [
+            "label" => "Facebook Page or Account (URL)",
+            "type"  => "text"
+        ],
+        "github" => [
+            "label" => "GitHub (URL)",
+            "type"  => "text"
+        ],
+        "instagram" => [
+            "label" => "Instagram (URL)",
+            "type"  => "text"
+        ],
+        "linkedin" => [
+            "label" => "LinkedIn (URL)",
+            "type"  => "text"
+        ],
+        "slack" => [
+            "label" => "Slack (URL)",
+            "type"  => "text"
+        ],
+        "twitch" => [
+            "label" => "Twitch (URL)",
+            "type"  => "text"
+        ],
+        "x" => [
+            "label" => "X Account (URL)",
+            "type"  => "text"
+        ],
+        "youtube" => [
+            "label" => "YouTube (URL)",
+            "type"  => "text"
+        ],
+        "include_tracking" => [
+            "label" => "Include Tracking Code",
+            "type"  => "checkbox"
+        ],
+        "theme_style" => [
+            "label" => "Theme Style",
+            "type"  => "select",
+            "options" => [
+                "light" => "Light",
+                "dark" => "Dark",
+                "auto" => "Auto"
+            ]
+        ],
+    ];
+
 }

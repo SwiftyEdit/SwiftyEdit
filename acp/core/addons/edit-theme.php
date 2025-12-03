@@ -30,20 +30,41 @@ if(is_array($theme_options)) {
 
     foreach($theme_options as $key => $value) {
 
+        $post_key = 'theme_'.$key;
+
         $this_value = '';
         $get_key = '';
-        $get_key = array_search("theme_$key", array_column($theme_data, 'theme_label'));
+        $get_key = array_search("$post_key", array_column($theme_data, 'theme_label'));
         if(is_numeric($get_key)) {
             $this_value = $theme_data[$get_key]['theme_value'];
         }
 
+        if($value['type'] === 'text') {
+            echo '<div class="mb-3">';
+            echo '<label class="form-label">'.$value['label'].'</label>';
+            echo '<input type="text" name="'.$post_key.'" value="'.$this_value.'" class="form-control">';
+            echo '</div>';
+        }
 
+        if ($value['type'] === 'checkbox') {
+            $checked = ($this_value == "1") ? "checked" : "";
+            echo '<div class="form-check my-3">';
+            echo '<input class="form-check-input" type="checkbox" name="'.$post_key.'" value="1" '.$checked.'>';
+            echo '<label class="form-check-label">'.$value['label'].'</label>';
+            echo '</div>';
+        }
 
-        echo '<div class="mb-3">';
-        echo '<label class="form-label">'.$value.'</label>';
-        echo '<input type="text" name="theme_'.$key.'" value="'.$this_value.'" class="form-control">';
-        echo '</div>';
-
+        if ($value['type'] === 'select') {
+            echo '<div class="mb-3">';
+            echo '<label>'.$value['label'].'</label>';
+            echo '<select class="form-select" name="'.$post_key.'">';
+            foreach ($value['options'] as $optValue => $optLabel) {
+                $selected = ($optValue == $this_value) ? "selected" : "";
+                echo "<option value=\"$optValue\" $selected>$optLabel</option>";
+            }
+            echo "</select>";
+            echo '</div>';
+        }
     }
 
     echo '</div>';
