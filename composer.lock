@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ae462cde04f8ccf14a291d6e7c1c059",
+    "content-hash": "1e4905752e97950f66a7eb4ee7ed4874",
     "packages": [
         {
             "name": "catfan/medoo",
@@ -956,16 +956,16 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v5.6.0",
+            "version": "v5.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "1fc41e385da8a27a87bec5914392ab662a7bb8ec"
+                "reference": "73da7e90f302175a570662fcb0ba41f57b7a92ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/1fc41e385da8a27a87bec5914392ab662a7bb8ec",
-                "reference": "1fc41e385da8a27a87bec5914392ab662a7bb8ec",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/73da7e90f302175a570662fcb0ba41f57b7a92ab",
+                "reference": "73da7e90f302175a570662fcb0ba41f57b7a92ab",
                 "shasum": ""
             },
             "require": {
@@ -1020,7 +1020,7 @@
             "support": {
                 "forum": "https://github.com/smarty-php/smarty/discussions",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v5.6.0"
+                "source": "https://github.com/smarty-php/smarty/tree/v5.7.0"
             },
             "funding": [
                 {
@@ -1028,7 +1028,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-03T21:22:25+00:00"
+            "time": "2025-11-19T21:36:38+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -1518,7 +1518,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "ext-pdo": "*"
+    },
     "platform-dev": {},
     "platform-overrides": {
         "php": "8.0"
