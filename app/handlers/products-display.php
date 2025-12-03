@@ -34,26 +34,30 @@ se_increase_product_hits($get_product_id);
 // we need this if we link to product variants
 // if $swifty_slug is not equal, we set a canonical link
 
+$target_page = '';
 foreach ($cached_url_data as $page) {
     if ($page['page_language'] === $page_contents['page_language'] && $page['page_type_of_use'] === 'display_product') {
         $target_page = $page['page_permalink'];
         break;
     }
 }
-
-if ($target_page == '') {
+if ($target_page === '') {
     $target_page = $swifty_slug;
 }
 
-if ($target_page != $swifty_slug) {
+$canonical_url = '';
+
+if (!empty($product_data['main_catalog_slug']) && $product_data['main_catalog_slug'] !== 'default') {
+    $canonical_url = $se_base_url.$product_data['main_catalog_slug'].$product_data['slug'];
+} elseif ($target_page !== $swifty_slug && $target_page !== '') {
+    // fallback: target page (when different from swifty slug)
     $canonical_url = $se_base_url.$target_page.$product_data['slug'];
-    $smarty->assign('page_canonical_url', $canonical_url);
+} else {
+    // final fallback: self (swifty_slug + product slug)
+    $canonical_url = $se_base_url.$swifty_slug.$product_data['slug'];
 }
 
-if($mod_slug != $product_data['slug']) {
-    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
-    $smarty->assign('page_canonical_url', $canonical_url);
-}
+$smarty->assign('page_canonical_url', $canonical_url);
 
 // get price from price groups or from products data
 if($product_data['product_price_group'] != '' AND $product_data['product_price_group'] != 'null') {
