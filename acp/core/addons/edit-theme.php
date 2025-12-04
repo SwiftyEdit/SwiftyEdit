@@ -13,9 +13,11 @@ echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['plugin'].' <a href="/admin/addons/">'.$lang['nav_btn_addons'].'</a>';
 echo '</div>';
 
+echo '<div class="row">';
+echo '<div class="col-md-6">';
+
 $theme_include_file = $this_theme_root.'/php/options.php';
 include $theme_include_file;
-
 
 if(is_array($theme_options)) {
 
@@ -26,7 +28,6 @@ if(is_array($theme_options)) {
     echo '<div class="card-header">'.$theme.'</div>';
 
     echo '<div class="card-body">';
-
 
     foreach($theme_options as $key => $value) {
 
@@ -69,13 +70,28 @@ if(is_array($theme_options)) {
 
     echo '</div>';
 
-
     echo '<div class="card-footer">';
     echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
     echo '<input type="hidden" name="theme" value="'.$theme.'">';
     echo '<input type="submit" name="save_theme_options" value="'.$lang['save'].'" class="btn btn-success">';
     echo '</div>';
+    echo '</div>';
     echo '</form>';
-
-
 }
+
+echo '</div>';
+echo '<div class="col-md-6">';
+echo '<div class="card mb-3">';
+echo '<div class="card-header">readme</div>';
+echo '<div class="card-body">';
+if(file_exists($this_theme_root.'/readme.md')) {
+    $Parsedown = new Parsedown();
+    $readme_content = file_get_contents($this_theme_root.'/readme.md');
+    $parsed_content = $Parsedown->text("$readme_content");
+    echo $parsed_content;
+}
+echo '</div>';
+echo '</div>';
+
+echo '</div>';
+echo '</div>';
