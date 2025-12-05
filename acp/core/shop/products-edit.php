@@ -67,6 +67,7 @@ if(is_int($get_product_id)) {
 if($product_data['type'] == 'v') {
     // hide the submit as variant button
     $submit_variant_btn = '';
+    $form_header_mode .= ' ('.$lang['product_type_variant'].')';
 }
 
 
