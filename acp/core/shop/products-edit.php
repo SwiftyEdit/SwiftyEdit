@@ -67,6 +67,9 @@ if(is_int($get_product_id)) {
 if($product_data['type'] == 'v') {
     // hide the submit as variant button
     $submit_variant_btn = '';
+    $form_header_mode .= ' ('.$lang['product_type_variant'].')';
+} else {
+    $form_header_mode .= ' ('.$lang['product_type_main'].')';
 }
 
 
@@ -636,11 +639,20 @@ if($cnt_variants > 1) {
     $variant_controls .= '<p>'.$lang['label_product_variants'].'<p>';
     foreach($variants as $variant) {
         if($variant['id'] == $product_data['id']) {continue;} // skip the product which is itself
-        $variant_controls .= '<button class="btn btn-default btn-sm" type="submit" name="edit_id" value="'.$variant['id'].'">'.$icon['edit'].' '.$variant['title'].' (#: '.$variant['id'].')</button> ';
+        $variant_controls .= '<a href="/admin/shop/edit/'.$variant['id'].'/" class="btn btn-default btn-sm mb-1" ">'.$icon['edit'].' '.$variant['title'].' (#'.$variant['id'].')</a> ';
     }
 
     $variant_controls .= '</div>';
 }
+
+
+if($product_data['type'] == 'v') {
+    $variant_controls = '<div class="col-md-4">';
+    $variant_controls .= '<p>'.$lang['product_type_main'].'<p>';
+    $variant_controls .= '<a href="/admin/shop/edit/'.$product_data['parent_id'].'/" class="btn btn-default btn-sm" ">'.$icon['edit'].' '.$lang['btn_edit'].' (#'.$product_data['parent_id'].')</a> ';
+    $variant_controls .= '</div>';
+}
+
 
 $product_price_manufacturer = $product_data['product_price_manufacturer'];
 if($product_price_manufacturer == '') {
