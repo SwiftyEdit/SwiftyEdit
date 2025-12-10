@@ -33,13 +33,6 @@
 <meta property="og:image" content="{$thumbs}">
 {/foreach}
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="{$se_page_url}">
-<meta property="twitter:title" content="{$page_title}">
-<meta property="twitter:description" content="{$page_meta_description|htmlentities}">
-<meta property="twitter:image" content="{$page_thumbnail}">
-
 <!-- CSS -->
 <link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/default.css" />
 
