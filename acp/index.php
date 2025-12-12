@@ -135,7 +135,6 @@ $all_plugins = se_get_all_addons();
 $se_labels = se_get_labels();
 $cnt_labels = count($se_labels);
 $all_langs = get_all_languages();
-$all_hooks = se_get_all_hooks();
 
 /**
  * read the settings
@@ -230,6 +229,47 @@ foreach($lang_codes as $l) {
         $active_lang[$l]['flag'] = 'data:image/png;base64,'.$encoded_flag;
     }
 }
+
+require_once SE_ROOT . 'app/hooks/hooks-meta.php';
+require_once SE_ROOT . 'app/hooks/hooks-map-helper.php';
+require_once SE_ROOT . 'app/hooks/hooks-backend.php';
+
+
+
+// hooks - register meta information
+foreach ($all_plugins as $pluginDir => $pluginData) {
+    $metaPath = SE_ROOT . 'plugins/' . $pluginDir . '/hooks-backend/meta.php';
+    if (!is_file($metaPath)) {
+        continue;
+    }
+
+    // Load meta array from plugin file
+    $meta = require $metaPath;
+
+    // Skip invalid meta definitions
+    if (!is_array($meta)) {
+        continue;
+    }
+
+    // Register meta under plugin name (directory)
+    se_register_backend_hook_meta($pluginDir, $meta);
+}
+
+// Load backend hook handlers for all plugins
+foreach ($all_plugins as $pluginDir => $pluginData) {
+    $backendHooksPath = SE_ROOT . 'plugins/' . $pluginDir . '/hooks-backend';
+    if (!is_dir($backendHooksPath)) {
+        continue;
+    }
+
+    foreach (glob($backendHooksPath . '/*.php') as $hookFile) {
+        if (basename($hookFile) === 'meta.php') {
+            continue;
+        }
+        require_once $hookFile;
+    }
+}
+
 
 /* build absolute URL */
 if ($se_settings['cms_ssl_domain'] != '') {

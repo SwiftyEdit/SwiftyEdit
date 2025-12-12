@@ -365,3 +365,14 @@
     </div>
 </div>
 {/if}
+
+{foreach from=$product_plugin_actions item=action}
+    {if $action.type == 'button'}
+        <button type="submit"
+                name="{$action.name|escape}"
+                value="{$action.value|escape}"
+                class="{$action.class|escape}">
+            {$action.label|escape}
+        </button>
+    {/if}
+{/foreach}

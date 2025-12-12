@@ -6,7 +6,6 @@
  * @var string $query - the current url
  */
 
-//error_reporting(E_ALL);
 $writer_uri = '/admin-xhr/shop/write/';
 $form_header_mode = $lang['btn_new'];
 $my_user_presets = se_get_my_presets();
@@ -35,7 +34,7 @@ if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $btn_submit_text = $lang['update'];
     $form_header_mode = $lang['edit'].' #'.$get_product_id;
     $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" x-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
+    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
 if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
@@ -334,17 +333,46 @@ $translation_inputs .= '</div>';
 
 // hooks
 
-$product_update_hooks = se_get_hook('product_updated');
-if (count($product_update_hooks) > 0) {
+$productHooks    = se_get_backend_hooks('product.');
+$productHookMeta = se_get_backend_hook_meta('product.');
 
-    $list_product_update_hooks = '<div class="card">';
+if (!empty($productHookMeta)) {
+    $x = 0;
+    $list_product_update_hooks .= '<div class="card">';
     $list_product_update_hooks .= '<div class="card-header">Hooks</div>';
     $list_product_update_hooks .= '<ul class="list-group list-group-flush">';
-    foreach ($product_update_hooks as $hook) {
-        $list_product_update_hooks .= '<li class="list-group-item">';
-        $list_product_update_hooks .= $hook;
-        $list_product_update_hooks .= '</ul>';
+
+    foreach ($productHookMeta as $hookName => $entries) {
+        foreach ($entries as $entryIndex => $meta) {
+            if (!is_array($meta)) {
+                continue;
+            }
+
+            $x++;
+            $id = 'hookid' . $x;
+
+            // Name: hooks[hookName][entryIndex]
+            $inputName = 'hooks['
+                . htmlspecialchars($hookName, ENT_QUOTES) . ']['
+                . (int)$entryIndex . ']';
+
+            $list_product_update_hooks .= '<li class="list-group-item">';
+            $list_product_update_hooks .= '<div class="mb-1 form-check">';
+            $list_product_update_hooks .= '<input type="checkbox" class="form-check-input"'
+                . ' name="' . $inputName . '"'
+                . ' value="1"'
+                . ' id="' . $id . '"> ';
+            $list_product_update_hooks .= '<label class="form-check-label" for="' . $id . '">';
+            $list_product_update_hooks .= '<code>' . htmlspecialchars($meta['plugin']) . '</code>';
+            $list_product_update_hooks .= '<span class="p-1">'
+                . htmlspecialchars($meta['label'] ?? '')
+                . '</span>';
+            $list_product_update_hooks .= '</label>';
+            $list_product_update_hooks .= '</div>';
+            $list_product_update_hooks .= '</li>';
+        }
     }
+
     $list_product_update_hooks .= '</ul>';
     $list_product_update_hooks .= '</div>';
 }

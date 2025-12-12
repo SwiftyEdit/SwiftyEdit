@@ -18,10 +18,11 @@ There are two types of addons: Plugins and Themes.
 Differently from SwiftyEdit version 1, all plugins must adhere to a specific folder structure:
 
 - Plugin [d]
-  - backend [d]
+  - backend [d] (optional)
   - frontend [d] (optional)
     - index.php
-  - hooks [d] (optional)
+  - hooks-backend [d] (optional)
+  - hooks-frontend [d] (optional)
   - lang [d] (optional)
   - aftersale.php
   - info.json

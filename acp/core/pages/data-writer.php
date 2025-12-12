@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ * /
+
 // pagination
 if(isset($_POST['pagination'])) {
     $_SESSION['pagination_get_pages'] = (int) $_POST['pagination'];
@@ -156,16 +162,23 @@ if(isset($_POST['save_page'])) {
     mods_check_in();
     cache_url_paths();
 
-    // run hooks
-    if (isset($_POST['send_hook'])) {
-        if (is_array($_POST['send_hook'])) {
-            se_run_hooks($_POST['send_hook'],$_POST);
-        }
+// build hook context
+    $context = [
+        'page_id' => $page_id,
+        'data'    => $_POST,
+        'user_id' => $_SESSION['user_id'],
+    ];
+
+// selected hooks from POST (or empty array)
+    $selectedHooks = $_POST['hooks']['page.updated'] ?? [];
+
+// run only selected callbacks for this hook
+    if (!empty($selectedHooks)) {
+        se_do_backend_hook_selected('page.updated', $selectedHooks, $context);
     }
 
     // delete the smarty cache for this page
     se_delete_smarty_cache(md5($_POST['page_permalink']));
-    show_toast($lang['msg_success_db_changed'],'success');
 
     if(is_numeric($new_page_id)) {
         header( "HX-Redirect: /admin/pages/edit/$new_page_id/");

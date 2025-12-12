@@ -1,5 +1,11 @@
 <?php
-//error_reporting(E_ALL);
+
+/**
+ * global variables
+ * @var object $db_posts
+ * @var object $db_content
+ * @var array $lang
+ */
 
 // pagination
 if(isset($_POST['pagination'])) {
@@ -141,6 +147,21 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
     se_updateProductCache($id, $prepared_data);
     se_generate_xml_sitemap('products');
+
+    // build hook context
+    $context = [
+        'product_id' => $id,
+        'data'    => $_POST,
+        'user_id' => $_SESSION['user_id'],
+    ];
+
+    // selected hooks from POST (or empty array)
+    $selectedHooks = $_POST['hooks']['product.updated'] ?? [];
+
+    // run only selected callbacks for this hook
+    if (!empty($selectedHooks)) {
+        se_do_backend_hook_selected('product.updated', $selectedHooks, $context);
+    }
 
 }
 

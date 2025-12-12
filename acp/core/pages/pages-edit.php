@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ */
+
 $all_mods = se_get_all_addons();
 $writer_uri = '/admin-xhr/pages/write/';
 
@@ -729,19 +735,47 @@ foreach($all_mods as $k => $v) {
 
 $form_tpl .= '</div>';
 $form_tpl .= '<div class="col-md-6">';
-// show hooks, if available
 
-$page_update_hooks = se_get_hook('page_updated');
-if (count($page_update_hooks) > 0) {
+$pageHooks    = se_get_backend_hooks('page.');
+$pageHookMeta = se_get_backend_hook_meta('page.');
 
+if (!empty($pageHookMeta)) {
+    $x = 0;
     $form_tpl .= '<div class="card">';
     $form_tpl .= '<div class="card-header">Hooks</div>';
     $form_tpl .= '<ul class="list-group list-group-flush">';
-    foreach ($page_update_hooks as $hook) {
-        $form_tpl .= '<li class="list-group-item">';
-        $form_tpl .= $hook;
-        $form_tpl .= '</ul>';
+
+    foreach ($pageHookMeta as $hookName => $entries) {
+        foreach ($entries as $entryIndex => $meta) {
+            if (!is_array($meta)) {
+                continue;
+            }
+
+            $x++;
+            $id = 'hookid' . $x;
+
+            // Name: hooks[hookName][entryIndex]
+            $inputName = 'hooks['
+                . htmlspecialchars($hookName, ENT_QUOTES) . ']['
+                . (int)$entryIndex . ']';
+
+            $form_tpl .= '<li class="list-group-item">';
+            $form_tpl .= '<div class="mb-1 form-check">';
+            $form_tpl .= '<input type="checkbox" class="form-check-input"'
+                . ' name="' . $inputName . '"'
+                . ' value="1"'
+                . ' id="' . $id . '"> ';
+            $form_tpl .= '<label class="form-check-label" for="' . $id . '">';
+            $form_tpl .= '<code>' . htmlspecialchars($meta['plugin']) . '</code>';
+            $form_tpl .= '<span class="p-1">'
+                . htmlspecialchars($meta['label'] ?? '')
+                . '</span>';
+            $form_tpl .= '</label>';
+            $form_tpl .= '</div>';
+            $form_tpl .= '</li>';
+        }
     }
+
     $form_tpl .= '</ul>';
     $form_tpl .= '</div>';
 }
