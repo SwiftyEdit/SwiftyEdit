@@ -47,6 +47,11 @@ if (!$query) {
     exit;
 }
 
+if (str_contains($query, 'images/')) {
+    include '../acp/core/widgets/image.php';
+    exit;
+}
+
 // check, if it is a XHR
 
 $isXhr = isset($_SERVER['HTTP_HX_REQUEST']) || (
