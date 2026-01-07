@@ -1373,8 +1373,7 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
  */
 function se_parse_docs_file($file): array {
 
-    global $languagePack;
-    $Parsedown = new Parsedown();
+    global $languagePack,$Parsedown;
 
     if(is_file($file)) {
         $src = file_get_contents($file);
@@ -1497,6 +1496,37 @@ function se_print_docs_tip(string $file, string $trigger_text = null) :string {
 
 
     return $tooltip;
+}
+
+/**
+ * @param $key
+ * @param string|null $trigger
+ * @return string
+ */
+
+function se_return_tooltip($key,string $trigger = null) :string {
+    global $lang,$languagePackFallback,$icon;
+
+    if ($trigger == null or $trigger == 'icon') {
+        $trigger = $icon['question_circle'];
+    }
+    $tt_text = '';
+    if(isset($lang[$key])) {
+        $tt_text = $lang[$key];
+    }
+
+    $id = uniqid('help-');
+
+    $tooltip = '<span data-help-template="'.$id.'">'.$trigger.'</span>';
+    $tooltip .= '<template id="'.$id.'">
+  <div class="tooltip-body">
+    <div class="tooltip-content">'.$tt_text.'</div>
+    <div class="tooltip-arrow" data-arrow></div>
+  </div>
+</template>';
+
+    return $tooltip;
+
 }
 
 

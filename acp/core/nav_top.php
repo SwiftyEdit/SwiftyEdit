@@ -58,7 +58,7 @@ echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()"
 </button>';
 
 echo '<button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" 
-hx-get="/admin-xhr/docs/read/?file=index.md"
+hx-get="/admin-xhr/docs/read/?file=start"
 hx-target="#helpModal"
 hx-trigger="click">'.$icon['question_circle'].' '.$lang['btn_help'].'</button>';
 

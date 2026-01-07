@@ -949,7 +949,7 @@ $form_tpl = str_replace('{product_labels}', $checkbox_set_labels, $form_tpl);
 $form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
 $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
 
-$form_tpl = str_replace('{variant_tooltip}', se_print_docs_tip("tip-product-variants.md"), $form_tpl);
+$form_tpl = str_replace('{variant_tooltip}', se_print_docs_link("05-00-shop.md"), $form_tpl);
 
 /* user inputs */
 

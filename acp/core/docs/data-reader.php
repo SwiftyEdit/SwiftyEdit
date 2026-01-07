@@ -2,6 +2,7 @@
 
 /**
  * global variables
+ * @var string $languagePack
  * @var string $languagePackFallback
  * @var array $lang
  */
@@ -12,6 +13,10 @@ if(isset($_GET['file'])) {
 
     $file = se_filter_filepath($_GET['file']);
     $section = se_filter_filepath($_GET['section']);
+
+    if($_GET['file'] == 'start') {
+        $file = '01-00-introduction.md';
+    }
 
     echo '<div class="modal-dialog modal-xl modal-dialog-centered">
   <div class="modal-content">
@@ -32,27 +37,28 @@ if(isset($_GET['file'])) {
 if(isset($_GET['show_file'])) {
 
     // possible path
-    // ../acp/docs/{lang}/filename.md
+    // ../docs/{version}/{lang}/filename.md
     // ../public/assets/themes/{theme}/docs/{lang}/filename.md
     // ../public/assets/themes/{theme}/readme.md
     // ../plugins/{plugin}/docs/{lang}/filename.md
     // ../plugins/{plugin}/readme.md
 
-    $Parsedown = new Parsedown();
+    $Parsedown = new ParsedownExtra();
 
     $show_file = se_filter_filepath($_GET['show_file']);
     $section = se_filter_filepath($_GET['section']);
+    $docs_version = 'v2';
 
     // swiftyedit docs
-    if(str_contains($show_file, '../acp/docs/')) {
-        $doc_filepath = '../acp/docs/'.$languagePackFallback.'/'.basename($show_file);
+    if(str_contains($show_file, '../docs/')) {
+        $doc_filepath = '../docs/'.$docs_version.'/'.$languagePack.'/'.basename($show_file);
     }
     // single file - swiftyedit docs
     if(!str_contains($show_file, '/')) {
         if(str_starts_with($show_file, 'tip-')) {
-            $doc_filepath = '../acp/docs/'.$languagePackFallback.'/tooltips/'.basename($show_file);
+            $doc_filepath = '../docs/'.$docs_version.'/'.$languagePack.'/tooltips/'.basename($show_file);
         } else {
-            $doc_filepath = '../acp/docs/' . $languagePackFallback . '/' . basename($show_file);
+            $doc_filepath = '../docs/'.$docs_version.'/'.$languagePack.'/'. basename($show_file);
         }
     }
 

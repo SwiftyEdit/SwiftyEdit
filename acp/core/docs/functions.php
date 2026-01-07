@@ -1,58 +1,78 @@
 <?php
 
-
 function show_sysdocs_index() {
-
     global $Parsedown, $doc_filepath, $languagePackFallback;
     $languagePack = $_SESSION['lang'];
 
-    $docs_root = '../acp/docs/en/*.md';
-    if(is_dir('../acp/docs/'.$languagePackFallback)) {
-        $docs_root = '../acp/docs/'.$languagePackFallback;
+    $docs_root = '../docs/v2/en/*.md';
+    if (is_dir('../docs/v2/'.$languagePack)) {
+        $docs_root = '../docs/v2/'.$languagePack;
     }
     $docsfiles = glob($docs_root.'/*.md');
 
-
-    foreach($docsfiles as $doc) {
-        // skip tooltips
-        if (str_starts_with(basename($doc), 'tip-')) {
-            continue;
-        }
+    $parsed_files = [];
+    foreach ($docsfiles as $doc) {
+        if (str_starts_with(basename($doc), 'tip-')) continue;
 
         $parsed_file = se_parse_docs_file($doc);
         $parsed_files[] = [
             "title" => $parsed_file['header']['title'],
             "priority" => $parsed_file['header']['priority'],
             "btn" => $parsed_file['header']['btn'],
-            "file" => $doc
+            "file" => basename($doc),
+            "fullpath" => $doc,
+            "level" => get_doc_level_universal(basename($doc))
         ];
     }
 
-    $sorted_parsed_files = se_array_multisort($parsed_files, 'priority', SORT_ASC);
+    usort($parsed_files, function($a, $b) {
+        return strnatcmp($a['file'], $b['file']);
+    });
 
     $list = '<div class="card mb-3">';
     $list .= '<div class="card-header"><h6>SwiftyEdit</h6></div>';
     $list .= '<div class="list-group list-group-flush">';
-    foreach($sorted_parsed_files as $k => $v) {
 
-        $active = '';
-        if($doc_filepath == $sorted_parsed_files[$k]['file']) {
-            $active = 'active';
-        }
+    foreach ($parsed_files as $item) {
+        $active = ($doc_filepath === $item['fullpath']) ? 'active' : '';
+        $hx_get = '/admin-xhr/docs/read/?file=' . $item['fullpath'];
 
-        $hx_get = '/admin-xhr/docs/read/?file='.$sorted_parsed_files[$k]['file'];
-        $hx_target = '#helpModal';
+        $class = 'list-group-level-'.$item['level'];
 
-        $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
-        $list .= $sorted_parsed_files[$k]['btn'];
+        $list .= '<button class="list-group-item list-group-item-action '.$class.' ' . $active . '" 
+                  hx-get="' . $hx_get . '" hx-target="#helpModal"
+                  title="' . $item['title'] . '">';
+        $list .= $item['btn'];
         $list .= '</button>';
-
     }
+
     $list .= '</div>';
     $list .= '</div>';
 
     return $list;
 }
+
+function get_doc_level_universal($filename) {
+    preg_match_all('/(\d{2})-/', $filename, $matches);
+
+    if (empty($matches[1])) {
+        return 0;
+    }
+
+    $blocks = $matches[1];
+    $level = 0;
+
+    // Count non-zero blocks after the first
+    for ($i = 1; $i < count($blocks); $i++) {
+        if ((int)$blocks[$i] > 0) {
+            $level++;
+        }
+    }
+
+    return $level;
+}
+
+
 
 
 function show_themedocs_index() {
