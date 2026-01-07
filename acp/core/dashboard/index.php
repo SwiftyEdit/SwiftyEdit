@@ -49,7 +49,7 @@ $tpl_file = str_replace('{btn_user_overview}', $btn_user_overview, $tpl_file);
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['speedometer'].' '.$lang['nav_btn_dashboard'];
 echo '<span class="ms-auto">';
-echo se_print_docs_link('dashboard.md');
+echo se_print_docs_link('01-02-basics.md#dashboard');
 echo '</span>';
 echo '</div>';
 

@@ -242,6 +242,56 @@ document.addEventListener("keydown", function (event) {
 });
 
 
+
+
+
+// English comment: Intercept doc links inside modal
+document.addEventListener('click', function (e) {
+    const container = document.querySelector('#showModalContent');
+    if (!container || !container.contains(e.target)) return;
+
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+
+    const href = a.getAttribute('href') || '';
+    if (/^https?:\/\//i.test(href)) return;
+
+    e.preventDefault();
+
+    let file = href;
+    let section = '';
+
+    const hashIndex = href.indexOf('#');
+    if (hashIndex !== -1) {
+        file = href.substring(0, hashIndex);
+        section = href.substring(hashIndex + 1);
+    }
+
+    const url = '/admin-xhr/docs/read/?show_file='
+        + encodeURIComponent(file)
+        + '&section='
+        + encodeURIComponent(section);
+
+    htmx.ajax('GET', url, { target: '#showModalContent' });
+});
+
+
+// English comment: Scroll to section after docs load via htmx
+document.addEventListener('htmx:afterOnLoad', function (e) {
+    const target = e.detail.target;
+    if (!target || target.id !== 'showModalContent') return;
+
+    const url = new URL(e.detail.xhr.responseURL, window.location.origin);
+    const section = url.searchParams.get('section');
+    if (!section) return;
+
+    const el = target.querySelector('#' + CSS.escape(section));
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+
 $(function() {
 
 

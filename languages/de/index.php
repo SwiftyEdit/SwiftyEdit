@@ -6,4 +6,4 @@
 
 $lang_sign = "de";
 $lang_desc = "Deutsch";
-$languagePackFallback = 'de';
+$languagePackFallback = 'en';

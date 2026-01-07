@@ -21,7 +21,8 @@
   },
   "require": {
     "catfan/medoo": "^2.1.12",
-    "erusev/parsedown": "^1.8.0-beta-7",
+    "erusev/parsedown": "^1.7",
+    "erusev/parsedown-extra": "^0.8",
     "phpmailer/phpmailer": "^v6.10.0",
     "smarty/smarty": "^v5.4.3",
     "mustangostang/spyc": "^0.6.3",

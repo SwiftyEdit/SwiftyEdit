@@ -139,6 +139,7 @@ $canonical_url = '';
 if(is_array($active_filter_tags) && count($active_filter_tags) > 0) {
     $canonical_url = rtrim($se_base_url,"/").$filter_base_url;
     $smarty->assign('page_canonical_url', $canonical_url);
+    $smarty->assign('page_meta_robots', "noindex, follow");
 }
 
 // Assign to Smarty

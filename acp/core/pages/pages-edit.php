@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ */
+
 $all_mods = se_get_all_addons();
 $writer_uri = '/admin-xhr/pages/write/';
 
@@ -68,7 +74,7 @@ if(str_contains($page_sort, '.')) {
 $input_text_page_sort = [
     "input_name" => "page_order",
     "input_value" => $last_part_page_sort,
-    "label" => $lang['label_pages_position'].' '.se_print_docs_tip("tip-page-position.md"),
+    "label" => $lang['label_pages_position'].' '.se_print_docs_link("02-00-pages.md#sorting"),
     "type" => "text"
 ];
 
@@ -148,7 +154,7 @@ foreach($se_page_types as $types) {
 $input_select_page_type = [
     "input_name" => "page_type_of_use",
     "input_value" => $page_type_of_use,
-    "label" => $lang['label_pages_type_of_use'] . ' '. se_print_docs_tip("tip-page-type-of-use.md"),
+    "label" => $lang['label_pages_type_of_use'] . ' '. se_print_docs_link("02-00-pages.md#page-usage"),
     "options" => $type_options,
     "type" => "select"
 ];
@@ -248,7 +254,7 @@ $status_options = [
 $input_select_page_status = [
     "input_name" => "page_status",
     "input_value" => $page_status,
-    "label" => $lang['label_status'].' ' .se_print_docs_tip('tip-page-status.md'),
+    "label" => $lang['label_status'].' ' .se_print_docs_link('02-00-pages.md#page-status'),
     "options" => $status_options,
     "type" => "select"
 ];
@@ -514,7 +520,7 @@ $form_tpl .= str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3)
 
 $form_tpl .= se_print_form_input($input_select_page_type);
 
-$form_tpl .= '<div class="heading-line">'.$lang['label_redirect'].' &nbsp; '.se_print_docs_tip("tip-page-redirects.md").'</div>';
+$form_tpl .= '<div class="heading-line">'.$lang['label_redirect'].' &nbsp; '.se_print_docs_link("02-00-pages.md#redirects").'</div>';
 
 $form_tpl .= se_print_form_input($input_text_page_shortlink);
 $form_tpl .= se_print_form_input($input_text_page_funnel_urls);
@@ -729,19 +735,47 @@ foreach($all_mods as $k => $v) {
 
 $form_tpl .= '</div>';
 $form_tpl .= '<div class="col-md-6">';
-// show hooks, if available
 
-$page_update_hooks = se_get_hook('page_updated');
-if (count($page_update_hooks) > 0) {
+$pageHooks    = se_get_backend_hooks('page.');
+$pageHookMeta = se_get_backend_hook_meta('page.');
 
+if (!empty($pageHookMeta)) {
+    $x = 0;
     $form_tpl .= '<div class="card">';
     $form_tpl .= '<div class="card-header">Hooks</div>';
     $form_tpl .= '<ul class="list-group list-group-flush">';
-    foreach ($page_update_hooks as $hook) {
-        $form_tpl .= '<li class="list-group-item">';
-        $form_tpl .= $hook;
-        $form_tpl .= '</ul>';
+
+    foreach ($pageHookMeta as $hookName => $entries) {
+        foreach ($entries as $entryIndex => $meta) {
+            if (!is_array($meta)) {
+                continue;
+            }
+
+            $x++;
+            $id = 'hookid' . $x;
+
+            // Name: hooks[hookName][entryIndex]
+            $inputName = 'hooks['
+                . htmlspecialchars($hookName, ENT_QUOTES) . ']['
+                . (int)$entryIndex . ']';
+
+            $form_tpl .= '<li class="list-group-item">';
+            $form_tpl .= '<div class="mb-1 form-check">';
+            $form_tpl .= '<input type="checkbox" class="form-check-input"'
+                . ' name="' . $inputName . '"'
+                . ' value="1"'
+                . ' id="' . $id . '"> ';
+            $form_tpl .= '<label class="form-check-label" for="' . $id . '">';
+            $form_tpl .= '<code>' . htmlspecialchars($meta['plugin']) . '</code>';
+            $form_tpl .= '<span class="p-1">'
+                . htmlspecialchars($meta['label'] ?? '')
+                . '</span>';
+            $form_tpl .= '</label>';
+            $form_tpl .= '</div>';
+            $form_tpl .= '</li>';
+        }
     }
+
     $form_tpl .= '</ul>';
     $form_tpl .= '</div>';
 }
@@ -883,7 +917,7 @@ for($i=0;$i<$cnt_labels;$i++) {
 
 
 $form_tpl .= '<div class="my-2">';
-$form_tpl .= '<label>'.$lang['labels'].' '.se_print_docs_tip('tip-labels.md').'</label>';
+$form_tpl .= '<label>'.$lang['labels'].' '.se_print_docs_link('08-00-settings.md#labels','','labels').'</label>';
 $form_tpl .= '<div class="p-3">';
 $form_tpl .= $checkbox_set_labels;
 $form_tpl .= '</div>';

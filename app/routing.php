@@ -124,12 +124,30 @@ foreach($active_mods as $mods) {
     $clean_mods[] = $mods['page_modul'];
 }
 
-if(is_array($clean_mods)) {
-    $clean_mods = array_unique($clean_mods);
+require_once SE_ROOT . 'app/hooks/hooks-frontend.php';
 
-    foreach ($clean_mods as $mod_dir) {
-        if (is_file(SE_ROOT . '/plugins/' . $mod_dir . '/global/index.php')) {
-            include_once SE_ROOT . '/plugins/' . $mod_dir . '/global/index.php';
+if(is_array($clean_mods)) {
+    $activeplugins = array_unique($clean_mods);
+
+    foreach ($activeplugins as $pluginName) {
+        $pluginIndex = SE_ROOT . 'plugins/' . $pluginName . '/index.php';
+        if (is_file($pluginIndex)) {
+            require_once $pluginIndex;
         }
     }
+
+    // Load frontend hook handlers for all active plugins
+    foreach ($activeplugins as $pluginName) {
+        $frontendHooksPath = SE_ROOT . 'plugins/' . $pluginName . '/hooks-frontend';
+
+        if (!is_dir($frontendHooksPath)) {
+            continue;
+        }
+
+        foreach (glob($frontendHooksPath . '/*.php') as $hookFile) {
+            // Each file registers callbacks via se_add_frontend_hook(...)
+            require_once $hookFile;
+        }
+    }
+
 }

@@ -27,6 +27,22 @@ if(!is_array($product_data)){
     $show_404 = "true";
 }
 
+$product_data = se_apply_frontend_filters('product.display.before', $product_data, [
+    'product'    => $product_data,
+    'product_id' => $product_data['id'] ?? null,
+    'user'       => $currentUser ?? null,
+]);
+
+
+$productActions = [];
+$productActions = se_apply_frontend_filters('product.display.actions', $productActions, [
+    'product_id' => $product_data['id'] ?? null,
+    'product'    => $product_data,
+    'user'       => $currentUser ?? null,
+]);
+
+$smarty->assign('product_plugin_actions', $productActions);
+
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);
 
@@ -585,3 +601,9 @@ $smarty->assign('data_source', $product_data['data_source']); // cache or databa
 
 $products_page = $smarty->fetch("products-display.tpl", $cache_id);
 $smarty->assign('page_content', $products_page, true);
+
+se_do_frontend_hook('product.display.after', [
+    'product_id' => $product_data['id'] ?? null,
+    'product'    => $product_data,
+    'user'       => $currentUser ?? null,
+]);
