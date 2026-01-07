@@ -1,33 +1,28 @@
 ---
-title: Addons
-description: Create and/or install addons for SwiftyEdit
-btn: Addons
+title: Plugins
+description: The plugin system
+btn: Plugins
 group: developer
-priority: 100
+priority: 200
 ---
 
-# SwiftyEdit Addons
-
-There are two types of addons: Plugins and Themes.
-
-- Plugins are stored in the directory `/plugins/`
-- Themes are in the directory `/public/assets/themes/`
+Plugins are stored in the directory `/plugins/`
 
 ## The anatomy of a plugin
 
 Differently from SwiftyEdit version 1, all plugins must adhere to a specific folder structure:
 
 - Plugin [d]
-  - backend [d] (optional)
-  - frontend [d] (optional)
-    - index.php
-  - hooks-backend [d] (optional)
-  - hooks-frontend [d] (optional)
-  - lang [d] (optional)
-  - aftersale.php
-  - info.json
-  - poster.png (optional)
-  - readme.md
+    - backend [d] (optional)
+    - frontend [d] (optional)
+        - index.php
+    - hooks-backend [d] (optional)
+    - hooks-frontend [d] (optional)
+    - lang [d] (optional)
+    - aftersale.php
+    - info.json
+    - poster.png (optional)
+    - readme.md
 
 ### Tipps
 

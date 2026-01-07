@@ -24,4 +24,3 @@ register. The most important event data is...
 * and <kbd>End</kbd> Here you enter the date when the event ends.
 
 This information is responsible, among other things, for sorting your events.
-

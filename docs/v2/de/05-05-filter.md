@@ -1,9 +1,9 @@
 ---
-title: Shop Filter
-description: Produkt-Filter für das Frontend
-btn: Shop > Filter
+title: Shop - Filter
+description: Shop Filter
+btn: Filter
 group: backend
-priority: 430
+priority: 400
 ---
 
 # Produkt-Filter erstellen und verwalten
@@ -24,7 +24,7 @@ Dieser Gruppe können dann beliebig viele Werte zugeordnet werden.
 
 ## Werte
 
-Die __Werte__ sind die eigentlichen Filter. Diese kann man später im Frontend auswählen. 
+Die __Werte__ sind die eigentlichen Filter. Diese kann man später im Frontend auswählen.
 Auch hier steuert das Feld __Priorität__ die Sortierung.
 
 #### Beispiel

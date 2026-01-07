@@ -8,7 +8,7 @@ priority: 100
 
 # Technical requirements
 
-* PHP 8.1+
+* PHP 8.3+
 * enabled PDO/SQLite module - PDO/SQLite is usually enabled by default. If not you have to ask your web host.
 * MySQL (recommended) if you don't want to run the whole installation on SQLite.
 

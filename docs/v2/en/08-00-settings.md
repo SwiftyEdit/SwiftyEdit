@@ -1,7 +1,7 @@
 ---
-title: Preferences
-description: Preferences/Settings
-btn: Preferences
+title: Settings
+description: Settings
+btn: Settings
 group: backend
 priority: 900
 ---
@@ -22,15 +22,15 @@ The settings are divided into the following categories
 
 ## General
 
-Save the standard metadata here. All information can be overwritten later by individual 
+Save the standard metadata here. All information can be overwritten later by individual
 pages or products etc.
 
 ### RSS Time offset
 You can set a time offset here. This prevents posts from ending up in the RSS feed immediately.
 
 ### Number of page versions
-Every time you update a page, SwiftyEdit saves the overwritten version. 
-This allows you to switch back to an older version if you have made a mistake. 
+Every time you update a page, SwiftyEdit saves the overwritten version.
+This allows you to switch back to an older version if you have made a mistake.
 Here you can specify how many versions of a page should be saved.
 
 ## Blog
@@ -45,7 +45,7 @@ Here you will find the default settings for the event module. For example, you c
 should be activated.
 
 ## Labels
-Most entries and data in the ACP can be provided with labels. 
+Most entries and data in the Backend can be provided with labels.
 If you manage a lot of data and entries, these labels help you to keep an overview.
 
 ## Customize database

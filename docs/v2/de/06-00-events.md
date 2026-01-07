@@ -1,6 +1,6 @@
 ---
 title: Events
-description: Events erstellen oder bestehende Events bearbeiten
+description: Create events or edit existing events
 btn: Events
 group: backend
 priority: 500
@@ -9,7 +9,7 @@ priority: 500
 # Events
 
 Über das Event-Modul kannst Du Veranstaltungen bewerben bzw. Tickets anbieten.
-Auf der Übersicht bekommst Du alle bestehenden Events aufgelistet. Auf der rechten Seite findest Du Filter und 
+Auf der Übersicht bekommst Du alle bestehenden Events aufgelistet. Auf der rechten Seite findest Du Filter und
 weitere Möglichkeiten um die Liste zu sortieren. Auch vergangene Events kannst Du hier ein- bzw. ausblenden.
 
 ### Events erstellen oder bearbeiten
