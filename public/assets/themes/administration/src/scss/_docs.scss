@@ -1,0 +1,39 @@
+#helpModal {
+  table {
+    @extend .table;
+  }
+
+  .list-group-item-action button {
+    border-radius: 0;
+  }
+
+
+  [class*="list-group-level-1"] { --level: 1; }
+  [class*="list-group-level-2"] { --level: 2; }
+  [class*="list-group-level-3"] { --level: 3; }
+  [class*="list-group-level-4"] { --level: 4; }
+
+  [class*="list-group-level-"]:not(.list-group-level-0) {
+    position: relative;
+    display: block;
+    padding-left: calc(1.2em + var(--level) * 1.1em); // Text-Einrückung
+    line-height: 1.6; // optional, für Lesbarkeit
+    cursor: pointer;
+  }
+
+  [class*="list-group-level-"]:not(.list-group-level-0)::before {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(1.2em + (var(--level) - 1) * 1.1em); // Pfeil-Position proportional zur Tiefe
+    font-size: 0.9em;
+    color: currentColor; // Pfeil passt sich Textfarbe an
+    transition: transform 0.2s ease; // für Hover
+  }
+
+  [class*="list-group-level-"]:not(.list-group-level-0):hover::before {
+    transform: translateY(-50%) translateX(2px); // Pfeil bewegt sich leicht nach rechts
+  }
+
+}
