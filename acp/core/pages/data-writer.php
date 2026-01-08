@@ -4,7 +4,7 @@
  * global variables
  * @var array $lang
  * @var object $db_content
- * /
+ */
 
 // pagination
 if(isset($_POST['pagination'])) {
