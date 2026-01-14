@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * @var int $get_cat_id
+ * @var string $cat_lang
+ *
+ * global variables
+ * @var array $lang
+ * @var array $lang_codes
+ * @var array $se_settings
+ * @var object $db_content
+ */
+
 $writer_uri = '/admin-xhr/categories/write/';
 include_once '../acp/core/templates.php';
 
@@ -11,6 +22,7 @@ if(is_int($get_cat_id)) {
     ]);
 
     $cat_name = $get_category['cat_name'];
+    $cat_name_clean = $get_category['cat_name_clean'];
     $cat_sort = $get_category['cat_sort'];
     $cat_thumbnail = $get_category['cat_thumbnail'];
     $cat_description = $get_category['cat_description'];
@@ -30,6 +42,13 @@ $input_text_title = [
     "input_name" => "cat_name",
     "input_value" => $cat_name,
     "label" => $lang['label_title'],
+    "type" => "text"
+];
+
+$input_slug = [
+    "input_name" => "cat_name_clean",
+    "input_value" => $cat_name_clean,
+    "label" => $lang['label_slug'],
     "type" => "text"
 ];
 
@@ -84,10 +103,14 @@ $input_select_thumbnail = [
 $form_tpl = '<form>';
 
 $form_tpl .= se_print_form_input($input_text_title);
-$form_tpl .= se_print_form_input($input_text_priority);
-$form_tpl .= se_print_form_input($input_select_language);
-$form_tpl .= se_print_form_input($input_select_thumbnail);
 $form_tpl .= se_print_form_input($input_text_description);
+$form_tpl .= se_print_form_input($input_slug);
+
+$form_tpl .= '<div class="row">';
+$form_tpl .= '<div class="col">'.se_print_form_input($input_text_priority).'</div>';
+$form_tpl .= '<div class="col">'.se_print_form_input($input_select_language).'</div>';
+$form_tpl .= '<div class="col">'.se_print_form_input($input_select_thumbnail).'</div>';
+$form_tpl .= '</div>';
 
 if($cat_hash != '') {
     $form_tpl .= '<input type="hidden" name="cat_hash" value="'.$cat_hash.'">';
