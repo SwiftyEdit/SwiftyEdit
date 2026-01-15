@@ -6,7 +6,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "playwright install": "npx playwright install"
   },
   "keywords": [],
   "author": "",

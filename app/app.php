@@ -72,7 +72,7 @@ if($page_contents['page_redirect'] != '') {
 
 // Load plugin/module content
 if(!empty($page_contents['page_modul'])) {
-    include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/index.php';
+    include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/frontend/index.php';
 }
 
 // Include template setup and smarty configuration

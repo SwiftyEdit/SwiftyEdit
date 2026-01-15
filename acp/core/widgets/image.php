@@ -32,7 +32,7 @@ if (!in_array($extension, $allowedExtensions, true)) {
 // Base paths relative to public/
 $rootDocs = realpath(__DIR__ . '/../../../docs');
 $rootPlugins = realpath(__DIR__ . '/../../../plugins');
-$rootThemes = realpath(__DIR__ . '/assets/themes');
+$rootThemes = realpath(__DIR__ . '/../../../public/assets/themes');
 
 $basePath = null;
 $relative = '';

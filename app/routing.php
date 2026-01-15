@@ -77,7 +77,8 @@ if (empty($query)) {
 $swifty_slug = $query;
 $requestPathParts = explode('/', trim($swifty_slug, '/'));
 
-$active_mods = se_get_active_mods();
+$activated_addons = se_get_activated_addons(); // plugins manually activated in the backend
+$active_mods = se_get_active_mods(); // plugins activated manually or included in a page
 $cnt_active_mods = is_array($active_mods) ? count($active_mods) : 0;
 
 // get existing urls from the cache file
@@ -130,7 +131,7 @@ if(is_array($clean_mods)) {
     $activeplugins = array_unique($clean_mods);
 
     foreach ($activeplugins as $pluginName) {
-        $pluginIndex = SE_ROOT . 'plugins/' . $pluginName . '/index.php';
+        $pluginIndex = SE_ROOT . 'plugins/' . $pluginName . '/global/index.php';
         if (is_file($pluginIndex)) {
             require_once $pluginIndex;
         }

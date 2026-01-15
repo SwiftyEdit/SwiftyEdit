@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ * @var array $se_settings
+ * @var array $lang_codes
+ * @var string $hidden_csrf_token
+ */
+
 
 if(isset($_POST['delete'])) {
     $delete_id = (int) $_POST['delete'];
@@ -15,7 +24,11 @@ if(isset($_POST['delete'])) {
 
 if (isset($_POST['save_category'])) {
 
-    $cat_name_clean = clean_filename($_POST['cat_name']);
+    if($_POST['cat_name_clean'] == '') {
+        $cat_name_clean = clean_filename($_POST['cat_name']);
+    } else {
+        $cat_name_clean = clean_filename($_POST['cat_name_clean']);
+    }
     $cat_name = sanitizeUserInputs($_POST['cat_name']);
     $cat_lang = sanitizeUserInputs($_POST['cat_lang']);
     $cat_thumbnail = sanitizeUserInputs($_POST['cat_thumbnail']);

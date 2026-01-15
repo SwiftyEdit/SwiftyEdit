@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $db_content
+ */
 
 if($_REQUEST['action'] == 'list') {
 
@@ -24,13 +30,14 @@ if($_REQUEST['action'] == 'list') {
 
         $show_thumb = '';
 
-        if ($cats['cat_thumbnail'] != '') {
+        if (!empty($cats['cat_thumbnail']) && $cats['cat_thumbnail'] !== 'null') {
             $cat_thumb = '/'.$cats['cat_thumbnail'];
             $show_thumb = '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="<img src=\'' . $cat_thumb . '\'>">';
             $show_thumb .= '<div class="show-thumb" style="background-image: url(' . $cat_thumb . ');">';
             $show_thumb .= '</div>';
         } else {
-            $show_thumb .= '<div class="show-thumb" style="background-image: url(\'/assets/themes/administration/images/no-image.png\');">';
+            $cat_thumb = '/admin-xhr/images/?src=themes/administration/images/no-image.png';
+            $show_thumb .= '<div class="show-thumb" style="background-image: url(' . $cat_thumb . ');">';
         }
 
         $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-sm btn-default text-danger" 
@@ -45,7 +52,8 @@ if($_REQUEST['action'] == 'list') {
         echo '<td width="50">' . $show_thumb . '</td>';
         echo '<td>';
         echo '<h5 class="card-title">' . $flag . ' <small>' . $cats['cat_sort'] . '</small> | ' . $cats['cat_name'] . '</h5>';
-        echo $cats['cat_description'];
+        echo '<p>'.$cats['cat_description'].'</p>';
+        echo '<code>'.$cats['cat_name_clean'].'</code>';
         echo '</td>';
         echo '<td class="text-end">';
         echo $delete_btn;

@@ -123,9 +123,9 @@ $select_lang .= '</select>';
 
 $cats = se_get_categories();
 $cnt_cats = count($cats);
-$checkboxes_cat = '';
-$array_categories = array();
 
+$array_categories = array();
+$checkboxes_cat = '<div class="list-group">';
 for($i=0;$i<$cnt_cats;$i++) {
     $category = $cats[$i]['cat_name'];
     if(isset($product_data['categories'])) {
@@ -136,12 +136,18 @@ for($i=0;$i<$cnt_cats;$i++) {
     if(in_array($cats[$i]['cat_hash'], $array_categories)) {
         $checked = "checked";
     }
-    $checkboxes_cat .= '<div class="form-check">';
-    $checkboxes_cat .= '<input class="form-check-input" id="cat'.$i.'" type="checkbox" name="categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
-    $checkboxes_cat .= '<label class="form-check-label" for="cat'.$i.'">'.$category.' <small>('.$cats[$i]['cat_lang'].')</small></label>';
-    $checkboxes_cat .= '</div>';
-}
+    $lang_flag = '<img src="'.return_language_flag_src($cats[$i]['cat_lang']).'" width="16">';
+    $description = trim(first_words($cats[$i]['cat_description'] ?? '', 10)) ?: '...';
+    $id = (int)$cats[$i]['cat_id'];
 
+    $checkboxes_cat .= '<label class="list-group-item d-flex gap-3">';
+    $checkboxes_cat .= '<input class="form-check-input flex-shrink-0" type="checkbox" id="cat'.$i.'" name="categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
+    $checkboxes_cat .= '<span class="pt-1 form-checked-content">';
+    $checkboxes_cat .= '<strong>#'.$id.' '.$category.'</strong><small class="d-block opacity-75">'.$lang_flag.' '.$description.'</small>';
+    $checkboxes_cat .= '</span>';
+    $checkboxes_cat .= '</label>';
+}
+$checkboxes_cat .= '</div>';
 
 /* release date */
 if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
