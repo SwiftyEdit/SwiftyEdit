@@ -1,7 +1,7 @@
 ---
-title: Pages
-description: Manage all created pages
-btn: Pages
+title: Seiten
+description: Seiten erstellen, bearbeiten und verwalten
+btn: Seiten
 group: backend
 priority: 190
 ---
@@ -103,7 +103,7 @@ Das Modul <kbd>Events</kbd> aktiviert das Event-Modul und <kbd>Produkte</kbd> de
 
 SwiftyEdit verfügt für jeden Seitentyp über eine eigene URL-Struktur.
 Beispiel: /profile/ für die Profilseite oder /checkout/ für den Warenkorb.
-Wenn Sie diese Seiten/URLs anpassen möchten, können Sie einfach neue Seiten erstellen und die Nutzungsart entsprechend anpassen.
+Wenn du diese Seiten/URLs anpassen möchtest, kannst du einfach neue Seiten erstellen und die Nutzungsart entsprechend anpassen.
 
 #### Normale Seite
 
@@ -157,3 +157,32 @@ Für den Warenkorb.
 #### Bestellungen
 
 Hier kann der Benutzer seine Bestellungen einsehen.
+
+---
+
+## Sortierung der Suchergebnisse
+
+Die Suchergebnisse werden nach Relevanz sortiert. Ziel ist es, Seiten zuerst anzuzeigen, die dem Suchbegriff möglichst genau entsprechen.
+
+Dabei werden folgende Kriterien in dieser Reihenfolge berücksichtigt:
+
+1.	__URL / Permalink__<br>
+Seiten, deren URL den Suchbegriff enthält, erscheinen ganz oben in den Ergebnissen.
+2.	__Meta-Keywords (exakte Übereinstimmung)__<br>
+Seiten mit einer exakten Übereinstimmung des Suchbegriffs in den Meta-Keywords werden höher bewertet.
+3.	__Meta-Keywords (teilweise Übereinstimmung)__<br>
+Seiten, bei denen der Suchbegriff als Teil der Keywords vorkommt (z. B. Wortanfang oder Wortbestandteil), folgen danach.
+4.	__Meta-Beschreibung (Meta Description)__<br>
+Treffer in der Meta-Beschreibung werden berücksichtigt, da sie den Seiteninhalt gezielt zusammenfassen.
+5.	__Seitentitel__<br>
+Seiten, deren Titel den Suchbegriff enthält, werden zusätzlich höher eingestuft.
+6.	__Seiteninhalt__<br>
+Treffer im eigentlichen Seiteninhalt werden ebenfalls berücksichtigt, jedoch nach URL, SEO-Daten und Titel.
+7.	__Seitenpriorität__<br>
+Wenn mehrere Seiten gleich relevant sind, entscheidet die manuell vergebene Seitenpriorität.
+Seiten mit höherer Priorität erscheinen weiter oben.
+
+Kurz erklärt: Je näher der Suchbegriff an URL, SEO-Daten und Titel liegt, 
+desto relevanter ist das Ergebnis.
+Der Seiteninhalt dient als ergänzendes Kriterium.
+Bei gleicher Relevanz entscheidet die Seitenpriorität.

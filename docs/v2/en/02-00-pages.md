@@ -147,3 +147,34 @@ on which identical products are listed, you can display all products on the /det
 #### Checkout
 
 #### Orders
+
+---
+
+## Sorting search results
+
+Search results are sorted by relevance. The aim is to display pages that match the search term as closely as possible first.
+
+The following criteria are taken into account in this order:
+
+1.    __URL / permalink__<br>
+      Pages whose URL contains the search term appear at the top of the results.
+2.    __Meta keywords (exact match)__<br>
+      Pages with an exact match of the search term in the meta keywords are ranked higher.
+3.    __Meta keywords (partial match)__<br>
+      Pages where the search term appears as part of the keywords (e.g., beginning of a word or part of a word) follow next.
+4.    __Meta description__<br>
+      Hits in the meta description are taken into account because they summarize the page content in a targeted manner.
+5.    __Page title__<br>
+      Pages whose titles contain the search term are also ranked higher.
+6.    __Page content__<br>
+      Hits in the actual page content are also taken into account, but after the URL, SEO data, and title.
+7.    __Page priority__<br>
+      If several pages are equally relevant, the manually assigned page priority decides.
+      Pages with higher priority appear higher up.
+
+In short: the closer the search term is to the URL, SEO data, and title,
+the more relevant the result is.
+The page content serves as a supplementary criterion.
+If the relevance is the same, the page priority is decisive.
+
+Translated with DeepL.com (free version)
