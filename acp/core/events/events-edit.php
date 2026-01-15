@@ -63,6 +63,7 @@ if($post_data['categories'] != '') {
     $array_categories = explode("<->", $post_data['categories']);
 }
 
+$checkboxes_cat = '<div class="list-group">';
 foreach($get_categories as $cat) {
 
     $checked = '';
@@ -70,11 +71,19 @@ foreach($get_categories as $cat) {
         $checked = "checked";
     }
 
-    $checkboxes_cat .= '<div class="form-check">';
-    $checkboxes_cat .= '<input class="form-check-input" id="'.$cat['cat_hash'].'" type="checkbox" name="categories[]" value="'.$cat['cat_hash'].'" '.$checked.'>';
-    $checkboxes_cat .= '<label class="form-check-label" for="'.$cat['cat_hash'].'">'.$cat['cat_name'].' <small>('.$cat['cat_lang'].')</small></label>';
-    $checkboxes_cat .= '</div>';
+    $category = $cat['cat_name'];
+    $lang_flag = '<img src="'.return_language_flag_src($cat['cat_lang']).'" width="16">';
+    $description = trim(first_words($cat['cat_description'] ?? '', 10)) ?: '...';
+    $cat_id = (int)$cat['cat_id'];
+
+    $checkboxes_cat .= '<label class="list-group-item d-flex gap-3">';
+    $checkboxes_cat .= '<input class="form-check-input flex-shrink-0" type="checkbox" id="cat'.$cat_id.'" name="categories[]" value="'.$cat['cat_hash'].'" '.$checked.'>';
+    $checkboxes_cat .= '<span class="pt-1 form-checked-content">';
+    $checkboxes_cat .= '<strong>#'.$cat_id.' '.$category.'</strong><small class="d-block opacity-75">'.$lang_flag.' '.$description.'</small>';
+    $checkboxes_cat .= '</span>';
+    $checkboxes_cat .= '</label>';
 }
+$checkboxes_cat .= '</div>';
 
 // checkbox for fixed posts
 if($post_data['fixed'] == '1') {

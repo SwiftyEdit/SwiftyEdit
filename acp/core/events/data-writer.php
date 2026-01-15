@@ -118,6 +118,8 @@ if(isset($_POST['save_post'])) {
         $labels = implode(",", $_POST['labels']);
     }
 
+    $status = (int) $_POST['status'];
+
     /* fix on top */
 
     if($_POST['fixed'] == 'fixed') {
@@ -145,7 +147,8 @@ if(isset($_POST['save_post'])) {
     require SE_ROOT.'install/contents/se_events.php';
     // build sql string -> f.e. "releasedate" => $releasedate,
     foreach($cols as $k => $v) {
-        if($k == 'id') {continue;}
+        if ($k === 'id') continue;
+        if (!isset($$k)) continue;
         $value = $$k;
         $inputs[$k] = "$value";
     }

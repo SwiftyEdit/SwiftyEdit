@@ -3,6 +3,8 @@
 $writer_uri = '/admin/events/edit/';
 $duplicate_uri = '/admin/events/duplicate/';
 
+$se_categories = se_get_categories();
+
 if($_REQUEST['action'] == 'list_active_searches') {
     if(isset($_SESSION['events_text_filter']) AND $_SESSION['events_text_filter'] != "") {
         unset($all_filter);
@@ -166,7 +168,7 @@ if($_REQUEST['action'] == 'list_events') {
         if($post['categories'] != '') {
             foreach($get_post_categories as $cats) {
 
-                foreach($arr_categories as $cat) {
+                foreach($se_categories as $cat) {
                     if($cats == $cat['cat_hash']) {
                         $cat_title = $cat['cat_name'];
                         $cat_description = $cat['cat_description'];
