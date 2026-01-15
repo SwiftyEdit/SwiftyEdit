@@ -562,6 +562,13 @@ function se_get_active_mods() {
 	return $active_addons;
 }
 
+function se_get_activated_addons() {
+    global $db_content;
+
+    $addons = $db_content->select("se_addons", "*");
+    return $addons;
+}
+
 
 function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
 
@@ -588,7 +595,8 @@ function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
             page_permalink LIKE ? DESC,
             page_meta_keywords = ? DESC,
             page_meta_keywords LIKE ? DESC,
-            page_meta_keywords LIKE ? DESC,
+            page_meta_description LIKE ? DESC,
+            page_title LIKE ? DESC,
             page_content LIKE ? DESC,
             page_priority DESC
         LIMIT ?
@@ -596,8 +604,15 @@ function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
         ";
 
     $pages_params = [
-        $lang, "public", "ghost", "%$str%","%$str%","%$str%","%$str%",
-        "%$str%", "%$str%","$str","$str%","%$str%",20,0
+        $lang, "public", "ghost",
+        "%$str%","%$str%","%$str%","%$str%",
+        "%$str%",      // permalink
+        "$str",        // meta keywords exact
+        "$str%",       // meta keywords starts with
+        "%$str%",      // meta description
+        "%$str%",      // title
+        "%$str%",      // content
+        20, 0
     ];
 
     $sth = $db_content->pdo->prepare($pages_sql);
