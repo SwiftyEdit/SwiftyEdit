@@ -94,7 +94,7 @@ $input_text_page_classes = [
 
 $input_select_page_target = [
     "input_name" => "page_target",
-    "input_value" => $ppage_target,
+    "input_value" => $page_target,
     "label" => "target",
     "options" => ["_self" => "_self", "_blank" => "_blank", "_parent" => "_parent", "_top" => "_top"],
     "type" => "select"
@@ -281,7 +281,7 @@ $input_select_language = [
 /* image widget */
 $images = se_get_all_media_data('image');
 $images = se_unique_multi_array($images,'media_file');
-$array_images = explode("&lt;-&gt;", $page_thumbnail_array);
+$array_images = explode("<&lt;>-&gt;", $page_thumbnail);
 $draggable = '';
 if(is_array($array_images)) {
     $array_images = array_filter($array_images);
