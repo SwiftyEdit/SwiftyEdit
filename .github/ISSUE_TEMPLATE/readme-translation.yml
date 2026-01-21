@@ -2,6 +2,7 @@ name: "Translation: README"
 description: Translate or update the README to another language
 title: "[Translation] README to [Language/ISO-Code]"
 labels: ["good-first-issue", "translation", "documentation"]
+
 body:
   - type: markdown
     attributes:
@@ -18,8 +19,8 @@ body:
         - French (fr)
         - Spanish (es)
         - Other (please specify)
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     id: details
@@ -35,19 +36,20 @@ body:
       value: |
         ## Instructions
         
-        1. **File naming**: Create or update `README.[ISO-Code].md` (e.g., `README.de.md` for German).
-           GitHub auto-detects and displays it based on user language.[web:2][web:6]
+        1. **File naming**:  
+           Create or update `README.[ISO-Code].md` (e.g., `README.de.md` for German).  
+           GitHub auto-detects and displays it based on user language.
         
         2. **Process**:
            - Copy the current English `README.md` as base.
-           - Translate accurately, keep Markdown structure, images, links intact.
+           - Translate accurately, keep Markdown structure, images, and links intact.
            - For updates: Compare with latest English README and sync changes.
            - Test preview on GitHub.
         
         3. **Submit PR**:
-           - Branch: `translation/[ISO-Code]-readme` (e.g., `translation/de-readme`).
-           - PR against `main`.
-           - Mention if updating existing translation.
+           - Branch: `translation/[ISO-Code]-readme` (e.g., `translation/de-readme`)
+           - PR against `main`
+           - Mention if updating an existing translation
 
   - type: checkboxes
     id: checklist
