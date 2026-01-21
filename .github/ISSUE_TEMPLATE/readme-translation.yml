@@ -1,5 +1,5 @@
 name: "Translation Request: README"
-description: Request a new translation or an update of an existing README translation
+description: Request a new README translation or an update to an existing one
 title: "[Translation] README to [Language/ISO-Code]"
 labels: ["good-first-issue", "translation", "documentation"]
 
@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         Thanks for helping make **SwiftyEdit** more accessible! 🌍  
-        Use this issue to request a new README translation or an update to an existing one.
+        Use this issue to request a **new README translation** or an **update to an existing one**.
 
   - type: dropdown
     id: language
@@ -24,14 +24,14 @@ body:
       required: true
 
   - type: textarea
-    id: scope
+    id: request_type
     attributes:
-      label: "Translation Scope"
-      description: "Describe what should be done."
+      label: "What needs to be done?"
+      description: "Please specify whether this is a new translation or an update."
       placeholder: |
-        - New translation of README.md
-        - Update existing README.de.md to match latest English version
-        - Partial update (please specify sections)
+        Example:
+        - Create a new README.de.md based on the current English README.md
+        - Update an existing README.fr.md to match the latest English version
     validations:
       required: true
 
@@ -41,7 +41,9 @@ body:
       label: "Additional Notes (optional)"
       description: |
         Helpful context such as:
-        - Link or commit reference of the English README
-        - Existing translation file status
-        - Terminology considerations
-      placeholder: "The German README exists but is missing the last two sections added in v1.4.0."
+        - Whether a translated README already exists
+        - Reference commit or version of README.md
+        - Terminology or style considerations
+      placeholder: |
+        There is currently no German README.
+        Please base the translation on the README.md from commit abc123.
