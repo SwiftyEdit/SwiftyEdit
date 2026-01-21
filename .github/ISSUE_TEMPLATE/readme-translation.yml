@@ -1,0 +1,62 @@
+name: "Translation: README"
+description: Translate or update the README to another language
+title: "[Translation] README to [Language/ISO-Code]"
+labels: ["good-first-issue", "translation", "documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make SwiftyEdit more accessible! This is a great first contribution.
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "Target Language"
+      description: "Which language do you want to translate to or update?"
+      options:
+        - German (de)
+        - French (fr)
+        - Spanish (es)
+        - Other (please specify)
+      validations:
+        required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: "Additional Details"
+      description: "e.g., New translation or update to existing README.[ISO].md (reference commit XYZ of English README)"
+      placeholder: "This updates the existing German README to match the latest English version..."
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Instructions
+        
+        1. **File naming**: Create or update `README.[ISO-Code].md` (e.g., `README.de.md` for German).
+           GitHub auto-detects and displays it based on user language.[web:2][web:6]
+        
+        2. **Process**:
+           - Copy the current English `README.md` as base.
+           - Translate accurately, keep Markdown structure, images, links intact.
+           - For updates: Compare with latest English README and sync changes.
+           - Test preview on GitHub.
+        
+        3. **Submit PR**:
+           - Branch: `translation/[ISO-Code]-readme` (e.g., `translation/de-readme`).
+           - PR against `main`.
+           - Mention if updating existing translation.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I have read the [Contributing Guidelines](CONTRIBUTING.md)"
+          required: true
+        - label: "Translation is complete and accurate"
+          required: true
+        - label: "Markdown renders correctly (checked preview)"
+          required: true
