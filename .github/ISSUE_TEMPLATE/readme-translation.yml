@@ -1,5 +1,5 @@
-name: "Translation: README"
-description: Translate or update the README to another language
+name: "Translation Request: README"
+description: Request a new translation or an update of an existing README translation
 title: "[Translation] README to [Language/ISO-Code]"
 labels: ["good-first-issue", "translation", "documentation"]
 
@@ -7,58 +7,41 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping make SwiftyEdit more accessible! This is a great first contribution.
+        Thanks for helping make **SwiftyEdit** more accessible! 🌍  
+        Use this issue to request a new README translation or an update to an existing one.
 
   - type: dropdown
     id: language
     attributes:
       label: "Target Language"
-      description: "Which language do you want to translate to or update?"
+      description: "Which language should the README be translated into or updated for?"
       options:
         - German (de)
         - French (fr)
         - Spanish (es)
-        - Other (please specify)
+        - Other (please specify below)
     validations:
       required: true
 
   - type: textarea
-    id: details
+    id: scope
     attributes:
-      label: "Additional Details"
-      description: "e.g., New translation or update to existing README.[ISO].md (reference commit XYZ of English README)"
-      placeholder: "This updates the existing German README to match the latest English version..."
+      label: "Translation Scope"
+      description: "Describe what should be done."
+      placeholder: |
+        - New translation of README.md
+        - Update existing README.de.md to match latest English version
+        - Partial update (please specify sections)
     validations:
       required: true
 
-  - type: markdown
+  - type: textarea
+    id: notes
     attributes:
-      value: |
-        ## Instructions
-        
-        1. **File naming**:  
-           Create or update `README.[ISO-Code].md` (e.g., `README.de.md` for German).  
-           GitHub auto-detects and displays it based on user language.
-        
-        2. **Process**:
-           - Copy the current English `README.md` as base.
-           - Translate accurately, keep Markdown structure, images, and links intact.
-           - For updates: Compare with latest English README and sync changes.
-           - Test preview on GitHub.
-        
-        3. **Submit PR**:
-           - Branch: `translation/[ISO-Code]-readme` (e.g., `translation/de-readme`)
-           - PR against `main`
-           - Mention if updating an existing translation
-
-  - type: checkboxes
-    id: checklist
-    attributes:
-      label: "Checklist"
-      options:
-        - label: "I have read the [Contributing Guidelines](CONTRIBUTING.md)"
-          required: true
-        - label: "Translation is complete and accurate"
-          required: true
-        - label: "Markdown renders correctly (checked preview)"
-          required: true
+      label: "Additional Notes (optional)"
+      description: |
+        Helpful context such as:
+        - Link or commit reference of the English README
+        - Existing translation file status
+        - Terminology considerations
+      placeholder: "The German README exists but is missing the last two sections added in v1.4.0."
