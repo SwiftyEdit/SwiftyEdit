@@ -67,7 +67,7 @@ if($_REQUEST['action'] == 'select_directory') {
 
     $disk = $_SESSION['disk'] ?? $path_img;
 
-    echo '<form hx-post="/admin-xhr/uploads/write/" hx-swap="none" hx-trigger="change, click" method="POST" class="d-inline">';
+    echo '<form hx-post="/admin-xhr/uploads/write/" hx-swap="none" hx-trigger="change" method="POST" class="d-inline">';
 
     echo '<select name="selected_folder" class="form-control custom-select">';
     echo '<optgroup label="'.$lang['images'].'">';
