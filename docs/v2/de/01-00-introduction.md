@@ -6,7 +6,7 @@ group: backend
 priority: 0
 ---
 
-# SwiftyEdit Documentation
+# SwiftyEdit Dokumentation
 
 Vielen Dank, dass du dich für SwiftyEdit entschieden hast.
 
@@ -15,7 +15,7 @@ von der Einrichtung bis zur Nutzung einzelner Funktionen.
 
 Sie soll dir helfen, effizient mit SwiftyEdit zu arbeiten und Antworten auf deine Fragen zu finden.
 
-## About this documentation
+## Über diese Dokumentation
 
 Damit du immer sofort verstehst, um welchen Bereich des Backends es sich dreht, steht meistens ganz
 oben auf der Seite der Navigationspfad. Das sieht zum Beispiel so aus:
@@ -27,11 +27,11 @@ Wenn es darum geht, welche Daten du eingeben musst, beschreiben wir Formulare
 und Eingabefelder so:
 
 
-| Feld        | Typ      | Beschreibung          |
-|-------------|----------|-----------------------|
-| Username    | Text     | Name des Benutzers    |
-| Country     | Select   | Wähle dein Land       |
-| Description | Textarea | Beschreibung          |
-| File        | File     | Datei upload          |
-| Newsletter  | Checkbox | Newsletter abonieren  |
-| Gender      | Radio    | Wähle dein Geschlecht |
+| Feld         | Typ      | Beschreibung          |
+|--------------|----------|-----------------------|
+| Username     | Text     | Name des Benutzers    |
+| Land         | Select   | Wähle dein Land       |
+| Beschreibung | Textarea | Beschreibung          |
+| Upload       | File     | Datei upload          |
+| Newsletter   | Checkbox | Newsletter abonieren  |
+| Geschlecht   | Radio    | Wähle dein Geschlecht |
