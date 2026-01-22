@@ -1,42 +1,42 @@
 <div class="row gx-4">
-	<div class="col-8">
+	<div class="col col-md-6 col-lg-8">
 		<div class="card h-100">
 			<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
 					<li class="nav-item">
 						<a class="nav-link active" href="#" data-bs-target="#pages_list" data-bs-toggle="tab">
 							{tab_pages}
-							<sup><span id="countPages" hx-get="/admin-xhr/counter/read/?count=pages" hx-trigger="load" class="badge bg-secondary"></span></sup>
+							<sup class="d-none d-sm-inline"><span id="countPages" hx-get="/admin-xhr/counter/read/?count=pages" hx-trigger="load" class="badge bg-secondary"></span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#snippets_list" data-bs-toggle="tab">
 							{tab_snippets}
-							<sup><span id="countPages" hx-get="/admin-xhr/counter/read/?count=snippets" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup class="d-none d-sm-inline"><span id="countPages" hx-get="/admin-xhr/counter/read/?count=snippets" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#post_list" data-bs-toggle="tab">
 							{tab_blog}
-							<sup><span id="countPosts" hx-get="/admin-xhr/counter/read/?count=posts" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup class="d-none d-sm-inline"><span id="countPosts" hx-get="/admin-xhr/counter/read/?count=posts" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#products_list" data-bs-toggle="tab">
 							{tab_products}
-							<sup><span id="countProducts" hx-get="/admin-xhr/counter/read/?count=products" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup class="d-none d-sm-inline"><span id="countProducts" hx-get="/admin-xhr/counter/read/?count=products" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#events_list" data-bs-toggle="tab">
 							{tab_events}
-							<sup><span id="countEvents" hx-get="/admin-xhr/counter/read/?count=events" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup class="d-none d-sm-inline"><span id="countEvents" hx-get="/admin-xhr/counter/read/?count=events" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#" data-bs-target="#user_list" data-bs-toggle="tab">
 							{tab_user}
-							<sup><span id="countUser" hx-get="/admin-xhr/counter/read/?count=users" hx-trigger="load" class="badge bg-secondary">0</span></sup>
+							<sup class="d-none d-sm-inline"><span id="countUser" hx-get="/admin-xhr/counter/read/?count=users" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
 				</ul>
@@ -143,7 +143,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-4">
+	<div class="col">
 		<div class="card h-100">
 			<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
