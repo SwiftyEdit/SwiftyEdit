@@ -12,7 +12,7 @@ echo '<div class="opacity-25 me-auto">'.htmlentities($_SERVER['SERVER_NAME']).'<
  */
 
 echo '<button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">';
-echo 'Filter ';
+echo '<span class="d-none d-md-inline me-1">Filter</span>';
 echo '<span hx-get="/admin-xhr/counter/read/?count=count_global_filters" hx-trigger="load, updated_global_filter from:body" class="badge bg-primary">0</span>';
 echo '</button>';
 
@@ -44,7 +44,7 @@ if(is_file("$my_avatar_path")) {
 }
 
 echo '<div class="dropstart me-1">';
-echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$user_avatar.$_SESSION['user_nick'].'</a>';
+echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$user_avatar.'<span class="d-none d-md-inline">'.$_SESSION['user_nick'].'</span></a>';
 echo '<ul class="dropdown-menu">';
 echo '<li><a class="dropdown-item" href="/profile/">'.$lang['button_profile'].'</a></li>';
 echo '<li><a class="dropdown-item" href="/admin/users/settings/">'.$lang['nav_btn_settings'].'</a></li>';
@@ -60,7 +60,7 @@ echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()"
 echo '<button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" 
 hx-get="/admin-xhr/docs/read/?file=start"
 hx-target="#helpModal"
-hx-trigger="click">'.$icon['question_circle'].' '.$lang['btn_help'].'</button>';
+hx-trigger="click">'.$icon['question_circle'].' <span class="d-none d-md-inline">'.$lang['btn_help'].'</span></button>';
 
 echo '</div>';
 echo '</nav>';
