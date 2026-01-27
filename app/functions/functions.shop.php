@@ -581,6 +581,7 @@ function se_build_category_url($category_slug, $base_slug, $current_get = null) 
     unset($params['page']);
 
     $url = '/' . $base_slug . '/' . $category_slug . '/';
+    $url = str_replace('//', '/', $url);
     $query_string = http_build_query($params);
 
     if ($query_string) {

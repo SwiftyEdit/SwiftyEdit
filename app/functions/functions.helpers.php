@@ -132,3 +132,13 @@ function se_isAjaxRequest() {
 
     return false;
 }
+
+/**
+ * Get last slug from url
+ * @param string $input
+ * @return string
+ */
+function se_getLastSlug(string $input): string {
+    $path = parse_url($input, PHP_URL_PATH) ?? $input;
+    return pathinfo(rtrim($path, '/'), PATHINFO_BASENAME) . '/';
+}

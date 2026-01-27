@@ -27,6 +27,8 @@ if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator')
     $str_status = '1-2';
 }
 
+$page_content = $page_contents['page_content'];
+
 // Determine current base URL (with category if applicable)
 $filter_base_url = '/' . $swifty_slug;
 
@@ -250,15 +252,31 @@ $display_product_filter = array_values(array_column($display_product_filter, nul
 
 // Build category navigation WITH current filters preserved
 $categories = array();
+
+if(is_array($all_categories)) {
+    // main category
+    $categories[] = array(
+        "cat_href" => $page_contents['page_permalink'],
+        "cat_title" => $page_contents['page_title'],
+        "cat_name" => $lang['btn_all'],
+        "cat_class" => (($array_mod_slug[0] ?? '') === '') ? 'active' : '',
+        "cat_hash" => null
+    );
+}
+
 foreach($all_categories as $cats) {
     if($page_contents['page_posts_categories'] != 'all') {
         if (!in_array($cats['cat_hash'], $this_page_categories)) {
+            // skip categories that are not in the list
             continue;
         }
     }
 
-    $show_category_title = $cats['cat_description'];
+    $show_category_title = $cats['cat_title'];
+    $show_category_description = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
+    $show_category_text = $cats['cat_text'];
+    $show_category_keywords = $cats['cat_keywords'];
 
     // Build category URL with filters preserved
     $cat_href = se_build_category_url($cats['cat_name_clean'], $swifty_slug, $_GET);
@@ -271,11 +289,19 @@ foreach($all_categories as $cats) {
     $cat_class = '';
     if($cats['cat_name_clean'] == $array_mod_slug[0]) {
         $cat_class = 'active';
+
+        // replace contents and metas with category it's data
+        $page_content = text_parser(stripslashes($show_category_text));
+        $page_title = $show_category_title;
+        $page_meta_description = $show_category_description;
+        $page_meta_keywords = $show_category_keywords;
     }
 
     $categories[] = array(
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
+        "cat_description" => $show_category_description,
+        "cat_text" => $show_category_text,
         "cat_name" => $show_category_name,
         "cat_class" => $cat_class,
         "cat_hash" => $cats['cat_hash']
@@ -667,7 +693,11 @@ if($status_404 == true) {
     $smarty->assign('btn_read_more', $lang['btn_open_product']);
 
     $products_page = $smarty->fetch("products-list.tpl", $cache_id);
-    $smarty->assign('page_content', $products_page, true);
+    $smarty->assign('page_title', html_entity_decode($page_title));
+    $smarty->assign('page_meta_keywords', html_entity_decode($page_meta_keywords));
+    $smarty->assign('page_meta_description', html_entity_decode($page_meta_description));
+    $smarty->assign('products_content', $products_page, true);
+    $smarty->assign('page_content', $page_content, true);
     $smarty->assign('categories', $categories);
     $smarty->assign('cat_hashes', $page_contents['page_posts_categories']);
 }

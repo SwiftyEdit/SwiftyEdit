@@ -31,7 +31,9 @@ if (isset($_POST['save_category'])) {
     }
     $cat_name = sanitizeUserInputs($_POST['cat_name']);
     $cat_lang = sanitizeUserInputs($_POST['cat_lang']);
+    $cat_title = sanitizeUserInputs($_POST['cat_title']);
     $cat_description = sanitizeUserInputs($_POST['cat_description']);
+    $cat_keywords = sanitizeUserInputs($_POST['cat_keywords']);
     $cat_sort = (int) $_POST['cat_sort'];
 
     $cat_thumbnail = '';
@@ -57,7 +59,9 @@ if (isset($_POST['save_category'])) {
         "cat_hash" =>  $cat_hash,
         "cat_lang" =>  $cat_lang,
         "cat_sort" => $cat_sort,
+        "cat_title" => $cat_title,
         "cat_description" => $cat_description,
+        "cat_keywords" => $cat_keywords,
         "cat_text" => $_POST['cat_text'],
         "cat_thumbnail" => $cat_thumbnail
     ];

@@ -45,6 +45,8 @@ if(is_int($get_id)) {
     $cat_thumbnail = $get_category['cat_thumbnail'];
     $cat_description = $get_category['cat_description'];
     $cat_text = $get_category['cat_text'];
+    $cat_title = $get_category['cat_title'];
+    $cat_keywords = $get_category['cat_keywords'];
     $cat_hash = $get_category['cat_hash'];
 
 } else {
@@ -57,11 +59,24 @@ if($cat_lang == '') {
     $cat_lang = $se_settings['default_language'];
 }
 
-
-$input_text_title = [
+$input_text_name = [
     "input_name" => "cat_name",
     "input_value" => $cat_name,
+    "label" => $lang['label_link_name'],
+    "type" => "text"
+];
+
+$input_text_title = [
+    "input_name" => "cat_title",
+    "input_value" => $cat_title,
     "label" => $lang['label_title'],
+    "type" => "text"
+];
+
+$input_text_keywords = [
+    "input_name" => "cat_keywords",
+    "input_value" => $cat_keywords,
+    "label" => $lang['label_keywords'],
     "type" => "text"
 ];
 
@@ -160,8 +175,10 @@ $form_tpl .= '<div class="tab-pane fade show active" id="info">';
 $form_tpl .= '<div class="row">';
 $form_tpl .= '<div class="col-md-6">';
 
+$form_tpl .= se_print_form_input($input_text_name);
 $form_tpl .= se_print_form_input($input_text_title);
 $form_tpl .= se_print_form_input($input_text_description);
+$form_tpl .= se_print_form_input($input_text_keywords);
 $form_tpl .= se_print_form_input($input_slug);
 
 $form_tpl .= '</div>';

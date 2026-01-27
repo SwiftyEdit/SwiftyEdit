@@ -24,20 +24,27 @@ kannst du hier auch den Smarty Cache leeren.
 ### Kategorien {#categories}
 
 Um deine Website zu strukturieren, kannst du eine unbegrenzte Anzahl von Kategorien erstellen.
-[Seiten](02-00-pages.md), Blogbeiträge, Produkte und Veranstaltungen können diesen Kategorien zugeordnet werden.
+[Seiten](02-00-pages.md), [Blogbeiträge](04-00-blog.md), [Produkte](05-00-shop.md) und [Veranstaltungen](06-00-events.md) 
+können diesen Kategorien zugeordnet werden.
 
-Die Kategorien sind mehrsprachig.
-Das bedeutet, dass die Sprache einer Kategorie mit der Sprache des zugeordneten Datensatzes übereinstimmen muss.
+Die Kategorien sind mehrsprachig. Das bedeutet, dass die Sprache einer Kategorie mit der Sprache 
+des zugeordneten Datensatzes übereinstimmen muss.
+
+Werden auf einer Shopseite mehrere Kategorien verwendet, ersetzen die Inhalte der aktuell ausgewählten Kategorie 
+die Meta-Angaben (Title, Description, Keywords) der Seite.
 
 #### Eingabefelder
 
-| Field        | Type       | Description                                                               |
-|--------------|------------|---------------------------------------------------------------------------|
-| Titel        | `Text`     | Category title                                                            |
-| Priorität    | `Number`   | The priority (and the language) determines the sorting of the categories. |
-| Sprache      | `Select`   | The language of the category                                              |
-| Thumbnail    | `File`     | An image for this category can be selected here.                          |
-| Beschreibung | `Textarea` | The description of the category                                           |
+| Field        | Type       | Description                                                                         |
+|--------------|------------|-------------------------------------------------------------------------------------|
+| Titel        | `Text`     | Der Titel                                                                           |
+| Link-Name    | `Text`     | Wird im Frontend als Link angezeigt                                                 |
+| Priorität    | `Number`   | Die Priorität ist für die Sortierung der Kategorien verantwortlich                  |
+| Sprache      | `Select`   | Falls die Seite mehrere Sprachen unterstützt                                        |
+| Thumbnail    | `File`     | Ein oder mehrere Thumbnails.                                                        |
+| Beschreibung | `Textarea` | Die Beschreibung (Meta Description)                                                 |
+| Keywords     | `Text`     | Schlüsselwörter                                                                     |
+| Inhalt       | `wysiwyg`  | Beschreibungstext der Kategorie. Je nach Theme wird dieser im Frontend eingeblendet |
 
 ---
 
