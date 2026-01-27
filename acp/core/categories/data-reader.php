@@ -17,7 +17,6 @@ if($_REQUEST['action'] == 'list') {
 
     foreach ($all_categories as $cats) {
 
-
         $redeclare_array += [
             $cats['cat_id'] => $cats['cat_hash']
         ];
@@ -28,16 +27,21 @@ if($_REQUEST['action'] == 'list') {
 
         $flag = '<img src="'.return_language_flag_src($cats['cat_lang']).'" width="15">';
 
+        $category_images = explode('<->',$cats['cat_thumbnail']);
         $show_thumb = '';
-
-        if (!empty($cats['cat_thumbnail']) && $cats['cat_thumbnail'] !== 'null') {
-            $cat_thumb = '/'.$cats['cat_thumbnail'];
-            $show_thumb = '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="<img src=\'' . $cat_thumb . '\'>">';
-            $show_thumb .= '<div class="show-thumb" style="background-image: url(' . $cat_thumb . ');">';
-            $show_thumb .= '</div>';
-        } else {
-            $cat_thumb = '/admin-xhr/images/?src=themes/administration/images/no-image.png';
-            $show_thumb .= '<div class="show-thumb" style="background-image: url(' . $cat_thumb . ');">';
+        if(count($category_images) > 1) {
+            $x=0;
+            foreach($category_images as $img) {
+                $img = str_replace('../content/','/',$img);
+                if($img != '') {
+                    $x++;
+                    $show_thumb .= '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-title="'.$img.'" data-bs-content="<img src=\''.$img.'\'>">'.$icon['images'].'</a> ';
+                }
+                if($x>2) {
+                    $show_thumb .= '<small>(...)</small>';
+                    break;
+                }
+            }
         }
 
         $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-sm btn-default text-danger" 
@@ -47,6 +51,11 @@ if($_REQUEST['action'] == 'list') {
                             hx-vals=\''.json_encode($hx_vals).'\'
                             >'.$icon['trash_alt'].'</button>';
 
+        $edit_button  = '<form action="/admin/categories/edit/" method="post" class="d-inline">';
+        $edit_button .= '<button class="btn btn-sm btn-default text-success" name="category_id" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button>';
+        $edit_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        $edit_button .=  '</form>';
+
         echo '<tr id="id_'.$cats['cat_hash'].'">';
         echo '<td>#'.$cats['cat_id'].'</td>';
         echo '<td width="50">' . $show_thumb . '</td>';
@@ -55,31 +64,14 @@ if($_REQUEST['action'] == 'list') {
         echo '<p>'.$cats['cat_description'].'</p>';
         echo '<code>'.$cats['cat_name_clean'].'</code>';
         echo '</td>';
-        echo '<td class="text-end">';
+        echo '<td class="text-end text-nowrap">';
         echo $delete_btn;
-        echo '<button hx-post="/admin-xhr/categories/read/" hx-swap="innerHTML" hx-target="#categoryForm" hx-vals=\''.json_encode($hx_vals).'\' class="btn btn-default btn-sm text-success" name="open_category" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button> ';
+        echo $edit_button;
         echo '</td>';
         echo '</tr>';
 
     }
 
     echo '</table>';
-}
-
-if($_REQUEST['action'] == 'show_category_form') {
-    $show_form = true;
-}
-
-if(isset($_REQUEST['open_category'])) {
-
-    $get_cat_id = (int) $_REQUEST['open_category'];
-    $get_category = $db_content->get("se_categories","*",[
-        "cat_id" => "$get_cat_id"
-    ]);
-
-    $show_form = true;
-}
-
-if($show_form) {
-    include 'form.php';
+    exit;
 }

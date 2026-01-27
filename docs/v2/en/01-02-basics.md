@@ -24,20 +24,27 @@ you can also clear the Smarty cache here.
 ### Categories {#categories}
 
 To structure your site, you can create an unlimited number of categories.
-[Pages](02-00-pages.md), blog posts, products and events can be assigned to these categories.
+[Pages](02-00-pages.md), [blog posts](04-00-blog.md), [products](05-00-shop.md) and [events](06-00-events.md) 
+can be assigned to these categories.
 
-The categories are multilingual. 
-This means that the language of a category must match the language of the assigned data record.
+The categories are multilingual. This means that the language of a category must match 
+the language of the assigned data record.
+
+If multiple categories are used on a shop page, the content of the currently selected category 
+replaces the meta-information (title, description, keywords) of the page.
 
 #### Input fields
 
-| Field       | Type       | Description                                                               |
-|-------------|------------|---------------------------------------------------------------------------|
-| Title       | `Text`     | Category title                                                            |
-| Priority    | `Number`   | The priority (and the language) determines the sorting of the categories. |
-| Language    | `Select`   | The language of the category                                              |
-| Thumbnail   | `File`     | An image for this category can be selected here.                          |
-| Description | `Textarea` | The description of the category                                           |
+| Field       | Type       | Description                                                                                   |
+|-------------|------------|-----------------------------------------------------------------------------------------------|
+| Title       | `Text`     | Category title                                                                                |
+| Link-Name   | `Text`     | Displayed as a link in the frontend                                                           |
+| Priority    | `Number`   | The priority (and the language) determines the sorting of the categories.                     |
+| Language    | `Select`   | The language of the category                                                                  |
+| Thumbnail   | `File`     | An image for this category can be selected here.                                              |
+| Description | `Textarea` | The description of the category                                                               |
+| Keywords    | `Text`     | Keywords                                                                                      |
+| Inhalt      | `wysiwyg`  | Description text for the category. Depending on the theme, this is displayed in the frontend. |
 
 ---
 

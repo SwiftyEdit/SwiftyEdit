@@ -39,7 +39,7 @@ if(isset($_REQUEST['v']) && (is_numeric($_REQUEST['v']))) {
 
 // 3. Check if $mod_slug is a product slug
 if($mod_slug != '' && $display_mode == 'list_products') {
-    $get_data_from_slug = se_get_product_data_by_slug($mod_slug);
+    $get_data_from_slug = se_get_product_data_by_slug(se_getLastSlug($mod_slug));
     if (is_array($get_data_from_slug)) {
         $get_product_id = (int)$get_data_from_slug['id'];
         $product_data = $get_data_from_slug;

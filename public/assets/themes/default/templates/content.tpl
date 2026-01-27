@@ -1,4 +1,5 @@
 {$msg_content nocache}
+{$products_content}
 {$page_content}
 
 {if $show_page_comments != ''}

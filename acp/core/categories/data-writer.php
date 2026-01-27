@@ -31,9 +31,20 @@ if (isset($_POST['save_category'])) {
     }
     $cat_name = sanitizeUserInputs($_POST['cat_name']);
     $cat_lang = sanitizeUserInputs($_POST['cat_lang']);
-    $cat_thumbnail = sanitizeUserInputs($_POST['cat_thumbnail']);
+    $cat_title = sanitizeUserInputs($_POST['cat_title']);
     $cat_description = sanitizeUserInputs($_POST['cat_description']);
+    $cat_keywords = sanitizeUserInputs($_POST['cat_keywords']);
     $cat_sort = (int) $_POST['cat_sort'];
+
+    $cat_thumbnail = '';
+    if(is_array($_POST['picker_0'])) {
+        if(count($_POST['picker_0']) > 1) {
+            $cat_thumbnail = implode("<->", array_unique($_POST['picker_0']));
+        } else {
+            $st = $_POST['picker_0'];
+            $cat_thumbnail = $st[0].'<->';
+        }
+    }
 
     if($_POST['cat_hash'] != '') {
         $cat_hash = $_POST['cat_hash'];
@@ -48,14 +59,18 @@ if (isset($_POST['save_category'])) {
         "cat_hash" =>  $cat_hash,
         "cat_lang" =>  $cat_lang,
         "cat_sort" => $cat_sort,
+        "cat_title" => $cat_title,
         "cat_description" => $cat_description,
+        "cat_keywords" => $cat_keywords,
+        "cat_text" => $_POST['cat_text'],
         "cat_thumbnail" => $cat_thumbnail
     ];
 
-    // create ne category
+    // create new category
     if($_POST['save_category'] == 'new') {
         $data = $db_content->insert("se_categories", $insert_data);
         $new_id = $db_content->id();
+        header( 'HX-REDIRECT: /admin/categories/edit/'.$new_id.'/');
     }
 
     // updated category
