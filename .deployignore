@@ -51,6 +51,7 @@ sitemap*.xml
 # other
 *.zip
 README.md
+README.*.md
 LICENSE
 
 #data directory
