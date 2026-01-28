@@ -186,19 +186,18 @@ if(isset($_POST['save_price'])) {
                 continue;
             }
 
-            $amount = (int) $_POST['product_vd_amount'][$i];
-            $price = sanitizeUserInputs($_POST['product_vd_price'][$i]);
-            $price = str_replace('.', '', $price);
+            $vd_amount = (int) $_POST['product_vd_amount'][$i];
+            $vd_price_single = sanitizeUserInputs($_POST['product_vd_price'][$i]);
+            $vd_price_single = str_replace('.', '', $vd_price_single);
 
             $vd_price[] = [
-                'amount' => $amount,
-                'price' => $price
+                'amount' => $vd_amount,
+                'price' => $vd_price_single
             ];
 
         }
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
-
     // new data
     if($_POST['id'] == 'new') {
         $data = $db_posts->insert("se_prices", [
