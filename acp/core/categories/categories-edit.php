@@ -76,6 +76,7 @@ $input_text_title = [
 $input_text_keywords = [
     "input_name" => "cat_keywords",
     "input_value" => $cat_keywords,
+    "input_classes" => "form-control tags",
     "label" => $lang['label_keywords'],
     "type" => "text"
 ];
@@ -90,6 +91,7 @@ $input_slug = [
 $input_text_description = [
     "input_name" => "cat_description",
     "input_value" => $cat_description,
+    "input_classes" => "form-control count-chars",
     "label" => $lang['label_description'],
     "type" => "textarea"
 ];
