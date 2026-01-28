@@ -576,13 +576,13 @@ function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
 
     $str = str_replace('-', ' ', $str);
 
-    $where = 'WHERE (page_language LIKE ? AND (page_status = ? OR page_status = ?)) AND (
+    $where = 'WHERE (page_language LIKE ? AND page_status = ?) AND (
             page_content LIKE ? OR page_title LIKE ? OR page_meta_description LIKE ? OR page_meta_keywords LIKE ?)';
 
     $countSql = "SELECT COUNT(*) FROM se_pages $where";
 
     $countParams = [
-        $lang, "public", "ghost", "%$str%","%$str%","%$str%","%$str%"
+        $lang, "public", "%$str%","%$str%","%$str%","%$str%"
     ];
 
     $countSth = $db_content->pdo->prepare($countSql);
@@ -604,7 +604,7 @@ function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
         ";
 
     $pages_params = [
-        $lang, "public", "ghost",
+        $lang, "public",
         "%$str%","%$str%","%$str%","%$str%",
         "%$str%",      // permalink
         "$str",        // meta keywords exact
