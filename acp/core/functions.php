@@ -1,5 +1,13 @@
 <?php
 
+/**
+ *
+ * global variables
+ * @var string $lang_sign from languages/%lang%/index.php
+ * @var string $lang_desc from languages/%lang%/index.php
+ *
+ */
+
 include_once 'functions_addons.php';
 include_once 'functions_cache.php';
 include_once 'functions_shop.php';
@@ -25,7 +33,7 @@ function se_plain_response($data, int $statusCode = 200) {
  * @param string $html        The HTML content to send.
  * @param int    $statusCode  Optional HTTP status code (default: 200).
  *
- * @return never
+ * @return void
  */
 function se_html_response($html, int $statusCode = 200) {
     http_response_code($statusCode);
@@ -40,7 +48,7 @@ function se_html_response($html, int $statusCode = 200) {
  * @param array $data         The associative array to encode as JSON.
  * @param int   $statusCode   Optional HTTP status code (default: 200).
  *
- * @return never
+ * @return void
  */
 function se_json_response(array $data, int $statusCode = 200) {
     http_response_code($statusCode);
@@ -52,25 +60,28 @@ function se_json_response(array $data, int $statusCode = 200) {
 
 /**
  * get all installed language files
- * return as array
+ * @return array
  */
 
 function get_all_languages(): array {
 
     $d = SE_ROOT.'/languages/';
-
-	$cntLangs = 0;
 	$scanned_directory = array_diff(scandir($d), array('..', '.','.DS_Store'));
-	
-	foreach($scanned_directory as $lang_folder) {
-		if(is_file("$d/$lang_folder/index.php")) {
-			include $d.'/'.$lang_folder.'/index.php';
-			$arr_lang[$cntLangs]['lang_sign'] = "$lang_sign";
-			$arr_lang[$cntLangs]['lang_desc'] = "$lang_desc";
-			$arr_lang[$cntLangs]['lang_folder'] = "$lang_folder";
-			$cntLangs++;
-		}
-	}
+
+    $arr_lang = [];
+    foreach($scanned_directory as $lang_folder) {
+        $lang_file = "$d/$lang_folder/index.php";
+        if(is_file($lang_file)) {
+            $lang_data = [];
+            require $lang_file;  // $lang_sign, $lang_desc
+
+            $arr_lang[] = [
+                'lang_sign' => $lang_sign ?? '',
+                'lang_desc' => $lang_desc ?? '',
+                'lang_folder' => $lang_folder
+            ];
+        }
+    }
 	
 	return $arr_lang;
 }
@@ -105,11 +116,15 @@ function get_preferences() {
 }
 
 /**
- * write preferences
- * table se_options
+ * write preferences table se_options
+ *
+ * @param array $data
+ * @param string $module
+ * @return void
  */
 
-function se_write_option($data,$module) {
+function se_write_option($data,$module): void
+{
 	
 	global $db_content;
 
@@ -123,7 +138,7 @@ function se_write_option($data,$module) {
 			continue;
 		}
 		
-		/* check if exists */
+		// check if exists
 		$entry = $db_content->get("se_options","*", [
 			"option_key" =>  $key,
 			"option_module" => $module
@@ -131,8 +146,7 @@ function se_write_option($data,$module) {
 		
 		if($entry['option_key'] != '') {
 
-
-			$data = $db_content->update("se_options", [
+			$db_content->update("se_options", [
 				"option_value" =>  $val,
 			], [
 				"AND" => [
@@ -143,18 +157,14 @@ function se_write_option($data,$module) {
 			
 		} else {
 
-			$data = $db_content->insert("se_options", [
+			$db_content->insert("se_options", [
 				"option_value" =>  $val,
 				"option_key" => $key,
 				"option_module" => $module
 			]);
 			
 		}
-				
-		
-		
-	}	
-	
+	}
 }
 
 
@@ -169,7 +179,7 @@ function get_all_groups() {
 	global $db_user;
 	
 	$groups = $db_user->select("se_groups", "*", [
-	"ORDER" => ["group_id" => "ASC"]
+	    "ORDER" => ["group_id" => "ASC"]
 	]);
 	
 	return $groups;
@@ -232,7 +242,7 @@ function se_get_all_images($prefix='') {
 
 	$dir = "$img_path";
 	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
-	$types = array('jpg','jpeg','png','gif');
+	$types = array('jpg','jpeg','png','gif','webp');
 	
 	foreach($scan_dir as $key => $file) {
 		$suffix = substr($file, strrpos($file, '.') + 1);
@@ -246,7 +256,6 @@ function se_get_all_images($prefix='') {
 				}
 			
 				$images[] = basename($file);
-		  
 		  }
 	}
 	 return $images;
@@ -268,7 +277,7 @@ function se_get_all_images_rec($prefix='',$dir=''): array {
 	}
 	
 	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
-	$types = array('jpg','jpeg','png','gif');
+	$types = array('jpg','jpeg','png','gif','webp');
 	
 	foreach($scan_dir as $key => $file) {
 		
