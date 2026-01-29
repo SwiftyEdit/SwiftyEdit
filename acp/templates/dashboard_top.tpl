@@ -1,5 +1,5 @@
 <div class="row gx-4">
-	<div class="col col-md-6 col-lg-8">
+	<div class="col-lg-6 col-xl-8">
 		<div class="card h-100">
 			<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
@@ -51,13 +51,13 @@
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">{btn_page_overview} {btn_new_page}</div>
-								<div class="col-3">
+								<div class="col">
 									<div class="input-group">
 									<button hx-post="/admin-xhr/widgets/write/"
 											hx-trigger="click"
 											hx-swap="none"
 											hx-include="[name='csrf_token']"
-											name="delete_smarty_cache" class="btn btn-default">
+											name="delete_smarty_cache" class="btn btn-default ms-auto">
 											{label_btn_delete_cache}
 									</button>
 									<span id="cntCacheSize" class="input-group-text"
@@ -143,7 +143,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col">
+	<div class="col-lg-6 col-xl-4">
 		<div class="card h-100">
 			<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
