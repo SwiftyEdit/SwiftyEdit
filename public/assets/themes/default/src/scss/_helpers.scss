@@ -8,6 +8,7 @@ hr.hr-shadow {
   box-shadow: none;
   background: transparent;
 }
+
 hr.hr-shadow::after {
   content: "";
   margin: 0 auto;
@@ -16,12 +17,12 @@ hr.hr-shadow::after {
   display: block;
   width: 75%;
   height: 20px;
-  box-shadow: 0px 20px 10px $border-color;
+  box-shadow: 0 20px 10px $border-color;
   border-radius: 50%;
 }
 
 [data-bs-theme=dark] hr.hr-shadow::after {
-  box-shadow: 0px 20px 10px $black;
+  box-shadow: 0 20px 10px $black;
 }
 
 hr {
@@ -35,7 +36,7 @@ hr {
 .scrollBox {
   max-height: 250px;
   overflow: auto;
-  background: rgba(0,0,0,0.10);
+  background: rgba(0, 0, 0, 0.10);
   padding: 15px;
 }
 
@@ -44,9 +45,11 @@ hr {
     display: flex;
     text-decoration: none;
   }
+
   span {
     transition: all 0.3s ease-in-out;
   }
+
   a[aria-expanded="true"] {
     span {
       rotate: 180deg;
