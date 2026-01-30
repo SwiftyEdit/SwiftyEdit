@@ -7,6 +7,8 @@ function show_sysdocs_index() {
     $docs_root = '../docs/v2/en/*.md';
     if (is_dir('../docs/v2/'.$languagePack)) {
         $docs_root = '../docs/v2/'.$languagePack;
+    } else if(is_dir('../docs/v2/'.$languagePackFallback)) {
+        $docs_root = '../docs/v2/'.$languagePackFallback;
     }
     $docsfiles = glob($docs_root.'/*.md');
 
