@@ -48,18 +48,12 @@ if(isset($_GET['show_file'])) {
     $show_file = se_filter_filepath($_GET['show_file']);
     $section = se_filter_filepath($_GET['section']);
     $docs_version = 'v2';
+    $docs_root = __DIR__.'/../../../docs/'.$docs_version;
 
     // swiftyedit docs
-    if(str_contains($show_file, '../docs/')) {
-        $doc_filepath = '../docs/'.$docs_version.'/'.$languagePack.'/'.basename($show_file);
-    }
-    // single file - swiftyedit docs
-    if(!str_contains($show_file, '/')) {
-        if(str_starts_with($show_file, 'tip-')) {
-            $doc_filepath = '../docs/'.$docs_version.'/'.$languagePack.'/tooltips/'.basename($show_file);
-        } else {
-            $doc_filepath = '../docs/'.$docs_version.'/'.$languagePack.'/'. basename($show_file);
-        }
+    $doc_filepath = $docs_root.'/'.$languagePack.'/'.basename($show_file);
+    if(!is_file($doc_filepath)) {
+        $doc_filepath = $docs_root.'/'.$languagePackFallback.'/'.basename($show_file);
     }
 
     // plugins readme
