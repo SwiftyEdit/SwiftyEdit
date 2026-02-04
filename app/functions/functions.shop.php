@@ -798,7 +798,8 @@ function se_get_product_variants($id) {
     ]);
 
     $variants = $db_posts->select("se_products", $get_columns, [
-        "parent_id" => $id
+        "parent_id" => $id,
+        "ORDER" => ["priority" => "DESC","id" => "DESC"]
     ]);
 
     $products = array_merge($main_product, $variants);
