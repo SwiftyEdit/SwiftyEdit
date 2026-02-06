@@ -798,7 +798,8 @@ function se_get_product_variants($id) {
     ]);
 
     $variants = $db_posts->select("se_products", $get_columns, [
-        "parent_id" => $id
+        "parent_id" => $id,
+        "ORDER" => ["priority" => "DESC","id" => "DESC"]
     ]);
 
     $products = array_merge($main_product, $variants);
@@ -808,7 +809,7 @@ function se_get_product_variants($id) {
 
 /**
  * get the lowest price for a product
- * check volume discount, also
+ * check variants, volume discounts, and price groups
  *
  * @param integer $id
  * @return string|void
@@ -824,15 +825,39 @@ function se_get_product_lowest_price(int $id) {
     $allPrices = [];
 
     foreach ($variants as $variant) {
-        $product = $db_posts->get("se_products", ["product_price_net", "product_price_volume_discount"], [
+        $product = $db_posts->get("se_products", ["product_price_net", "product_price_volume_discount","product_price_group"], [
             "AND" => [
                 "id" => $variant['id'],
                 "status" => 1
             ]
         ]);
 
-        if (!$product || !isset($product['product_price_net'])) {
-            continue; // invalid data
+        if (!is_array($product)) {
+            continue; // Product data invalid, skip to next
+        }
+
+        if (empty($product['product_price_net']) && empty($product['product_price_group'])) {
+            continue; // Nothing to price, skip to next
+        }
+
+        if(!empty($product['product_price_group'])) {
+            // get prices from a group
+            $price_group_data = se_get_price_group_data($product['product_price_group']);
+
+            if (is_array($price_group_data) && isset($price_group_data['price_net']) && $price_group_data['price_net'] > 0) {
+                $allPrices[] = floatval(str_replace(',', '.', $price_group_data['price_net']));
+            }
+
+            if (!empty($price_group_data['price_volume_discount'])) {
+                $discounts = json_decode($price_group_data['price_volume_discount'], true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($discounts)) {
+                    foreach ($discounts as $discount) {
+                        if (is_array($discount) && isset($discount['price']) && $discount['price'] > 0) {
+                            $allPrices[] = floatval(str_replace(',', '.', $discount['price']));
+                        }
+                    }
+                }
+            }
         }
 
         // Add base price
@@ -844,11 +869,10 @@ function se_get_product_lowest_price(int $id) {
         // Add volume discounts
         if (!empty($product['product_price_volume_discount'])) {
             $discounts = json_decode($product['product_price_volume_discount'], true);
-            if (is_array($discounts)) {
+            if (json_last_error() === JSON_ERROR_NONE && is_array($discounts)) {
                 foreach ($discounts as $entry) {
-                    $discountPrice = floatval(str_replace(',', '.', $entry['price']));
-                    if ($discountPrice > 0) {
-                        $allPrices[] = $discountPrice;
+                    if (is_array($entry) && isset($entry['price']) && $entry['price'] > 0) {
+                        $allPrices[] = floatval(str_replace(',', '.', $entry['price']));
                     }
                 }
             }
