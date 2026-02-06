@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * @var array $lang
+ * @var string $languagePack
+ * @var array $icon
+ * @var array $se_settings
+ * @var array $se_labels
+ * @var array $se_upload_file_types
+ * @var array $lang_codes
+ * @var array $db_content
+ * @var array $hidden_csrf_token
+ * @var string $se_base_url
+ */
+
 $writer_uri = '/admin-xhr/blog/write/';
 $reader_uri = '/admin-xhr/blog/read/';
 
@@ -54,6 +67,29 @@ $form_tpl = file_get_contents($form_array[$post_type_form]);
 // inject the sidebar - it is in all templates the same
 $form_tpl_sidebar = file_get_contents('../acp/templates/post_options.tpl');
 $form_tpl = str_replace('{sidebar}', $form_tpl_sidebar, $form_tpl);
+
+$all_blog_pages = [];
+$all_blog_pages = $db_content->select("se_pages","page_permalink",[
+    "page_posts_types[~]" => ["m","i","g","v","l","f"]
+]);
+
+array_unshift($all_blog_pages, "default");
+
+$post_main_cat_slug = '';
+if(isset($post_data['main_category_slug'])) {
+    $post_main_cat_slug = $post_data['main_category_slug'];
+}
+
+$select_main_cat_page  = '<select name="main_category_slug" class="custom-select form-control">';
+foreach($all_blog_pages as $permalink) {
+    $label = $permalink;
+    if($permalink == 'default') {
+        $label = $lang['label_use_default'];
+    }
+    $select_main_cat_page .= "<option value='$permalink'".($post_main_cat_slug == "$permalink" ? 'selected="selected"' :'').">$label</option>";
+}
+$select_main_cat_page .= '</select>';
+
 
 // prepare form data and inputs
 
@@ -265,10 +301,10 @@ if((isset($post_data['post_type'])) && $post_data['post_type'] == 'g') {
     $form_upload_tpl = file_get_contents('../acp/templates/gallery_upload_form.tpl');
     $form_upload_tpl = str_replace('{token}',$_SESSION['token'], $form_upload_tpl);
     $form_upload_tpl = str_replace('{post_id}',$post_data['post_id'], $form_upload_tpl);
-    $form_upload_tpl = str_replace('{max_img_width}',$se_prefs['prefs_maximagewidth'], $form_upload_tpl);
-    $form_upload_tpl = str_replace('{max_tmb_width}',$se_prefs['prefs_maxtmbwidth'], $form_upload_tpl);
-    $form_upload_tpl = str_replace('{max_img_height}',$se_prefs['prefs_maximageheight'], $form_upload_tpl);
-    $form_upload_tpl = str_replace('{max_tmb_height}',$se_prefs['prefs_maxtmbheight'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_img_width}',$se_settings['maximagewidth'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_tmb_width}',$se_settings['maxtmbwidth'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_img_height}',$se_settings['maximageheight'], $form_upload_tpl);
+    $form_upload_tpl = str_replace('{max_tmb_height}',$se_settings['maxtmbheight'], $form_upload_tpl);
 
 } else {
     $form_upload_tpl = '';
@@ -300,6 +336,8 @@ $form_tpl = str_replace('{post_author}', $post_data['post_author'], $form_tpl);
 $form_tpl = str_replace('{post_source}', $post_data['post_source'], $form_tpl);
 $form_tpl = str_replace('{post_slug}', $post_data['post_slug'], $form_tpl);
 $form_tpl = str_replace('{post_tags}', $post_data['post_tags'], $form_tpl);
+$form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
+$form_tpl = str_replace('{select_main_cat_page}', $select_main_cat_page, $form_tpl);
 $form_tpl = str_replace('{post_rss_url}', $post_data['post_rss_url'], $form_tpl);
 $form_tpl = str_replace('{post_meta_title}', $post_data['post_meta_title'], $form_tpl);
 $form_tpl = str_replace('{post_meta_description}', $post_data['post_meta_description'], $form_tpl);

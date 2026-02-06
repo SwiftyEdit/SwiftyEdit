@@ -141,6 +141,25 @@ if(isset($_POST['save_post'])) {
         $post_slug = se_clean_permalink($_POST['post_slug']);
     }
 
+    if($_POST['main_category_slug'] == "default") {
+        //get a target page by page_type_of_use and language
+        $main_category_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_type_of_use" => "display_post",
+                "page_language" => $_POST['post_lang']
+            ]
+        ]);
+        // if we have no page for display_post, find another catalog page
+        $main_category_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_posts_types[~]" => "m",
+                "page_language" => $_POST['post_lang']
+            ]
+        ]);
+    } else {
+        $main_category_slug = se_clean_permalink($_POST['main_category_slug']);
+    }
+
     // update rss feed
     $target_page = $db_content->select("se_pages", "page_permalink", [
         "AND" => [
