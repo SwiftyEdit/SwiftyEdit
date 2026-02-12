@@ -9,104 +9,23 @@
  * @var string $swifty_slug
  *
  * global variables
- * @var array $se_prefs
+ * @var array $se_settings
  * @var object $db_content medoo database object
  * @var object $db_posts medoo database object
  */
 
 $time_string_now = time();
 $display_mode = 'list_posts';
+$status_404 = true;
 
-/* defaults */
-$posts_start = 0;
-$posts_limit = (int) $se_prefs['prefs_posts_entries_per_page'];
-if($posts_limit == '' || $posts_limit < 1) {
-	$posts_limit = 10;
-}
-$posts_order = 'id';
-$posts_direction = 'DESC';
-$posts_filter = array();
-
-$str_status = '1';
-if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == 'administrator') {
-	$str_status = '1-2';
-}
-
-$posts_filter['languages'] = $page_contents['page_language'];
-$posts_filter['types'] = str_replace(",","-",$page_contents['page_posts_types']);
-$posts_filter['status'] = $str_status;
-$posts_filter['categories'] = $page_contents['page_posts_categories'];
-
-
-if(substr("$mod_slug", -5) == '.html') {
+// 1. Get the post ID from URL (.html format)
+if(str_ends_with("$mod_slug", '.html')) {
     $mod_slug_array = explode("-", $mod_slug);
-	$get_post_id = (int) basename(end($mod_slug_array));
-	$display_mode = 'show_post';	
-}
-
-$all_categories = se_get_categories();
-$array_mod_slug = explode("/", $mod_slug);
-
-$this_page_categories = explode(',',$page_contents['page_posts_categories']);
-
-foreach($all_categories as $cats) {
-
-    if($page_contents['page_posts_categories'] != 'all') {
-        if (!in_array($cats['cat_hash'], $this_page_categories)) {
-            // skip this category
-            continue;
-        }
-    }
-	
-	//$this_nav_cat_item = $tpl_nav_cats_item;
-	$show_category_title = $cats['cat_description'];
-	$show_category_name = $cats['cat_name'];
-    $cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';
-
-    /* show only categories that match the language */
-    if($page_contents['page_language'] !== $cats['cat_lang']) {
-        continue;
-    }
-    $cat_class = '';
-    if($cats['cat_name_clean'] == $array_mod_slug[0]) {
-        $cat_class = 'active';
-    }
-
-    $categories[] = array(
-        "cat_href" => $cat_href,
-        "cat_title" => $show_category_title,
-        "cat_name" => $show_category_name,
-        "cat_class" => $cat_class
-    );
-
-
-	if($cats['cat_name_clean'] == $array_mod_slug[0]) {
-		// show only posts from this category
-		$posts_filter['categories'] = $cats['cat_hash'];
-		$display_mode = 'list_posts_category';
-		
-		if($array_mod_slug[1] == 'p') {
-			if(is_numeric($array_mod_slug[2])) {
-				$posts_start = $array_mod_slug[2];
-			} else {
-				header("HTTP/1.1 301 Moved Permanently");
-				header("Location: /$swifty_slug");
-				header("Connection: close");
-			}				
-		}
-	}
+    $get_post_id = (int) basename(end($mod_slug_array));
+    $display_mode = 'show_post';
 }
 
 
-/* pagination f.e. /p/2/ or /p/3/ .... */
-if($array_mod_slug[0] == 'p') {
-	if(is_numeric($array_mod_slug[1])) {
-		$posts_start = $array_mod_slug[1];
-	} else {
-		header("HTTP/1.1 301 Moved Permanently");
-		header("Location: /$swifty_slug");
-		header("Connection: close");	}
-}
 
 if($page_contents['page_type_of_use'] == 'display_post' AND $get_post_id == '') {
 	/* we are on the post display page but we have no post id

@@ -2,12 +2,107 @@
 
 /**
  * global variables
- * @var $db_content see database.php
+ * @var object $db_content see database.php
  * @var array $page_contents
  * @var array $se_prefs
  * @var array $lang
  * @var string $mod_slug
  */
+
+
+/* defaults */
+$posts_start = 0;
+$posts_limit = (int) $se_settings['posts_entries_per_page'];
+if($posts_limit == '' || $posts_limit < 1) {
+    $posts_limit = 10;
+}
+$posts_order = 'id';
+$posts_direction = 'DESC';
+$posts_filter = array();
+
+$str_status = '1';
+if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == 'administrator') {
+    $str_status = '1-2';
+}
+
+$posts_filter['languages'] = $page_contents['page_language'];
+$posts_filter['types'] = str_replace(",","-",$page_contents['page_posts_types']);
+$posts_filter['status'] = $str_status;
+$posts_filter['categories'] = $page_contents['page_posts_categories'];
+
+$all_categories = se_get_categories();
+$array_mod_slug = explode("/", $mod_slug);
+
+$this_page_categories = explode(',',$page_contents['page_posts_categories']);
+
+foreach($all_categories as $cats) {
+
+    if($page_contents['page_posts_categories'] != 'all') {
+        if (!in_array($cats['cat_hash'], $this_page_categories)) {
+            // skip this category
+            continue;
+        }
+    }
+
+    //$this_nav_cat_item = $tpl_nav_cats_item;
+    $show_category_title = $cats['cat_description'];
+    $show_category_name = $cats['cat_name'];
+    $cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';
+
+    /* show only categories that match the language */
+    if($page_contents['page_language'] !== $cats['cat_lang']) {
+        continue;
+    }
+    $cat_class = '';
+    if($cats['cat_name_clean'] == $array_mod_slug[0]) {
+        $cat_class = 'active';
+    }
+
+    $categories[] = array(
+        "cat_href" => $cat_href,
+        "cat_title" => $show_category_title,
+        "cat_name" => $show_category_name,
+        "cat_class" => $cat_class
+    );
+
+
+    if($cats['cat_name_clean'] == $array_mod_slug[0]) {
+        // show only posts from this category
+        $posts_filter['categories'] = $cats['cat_hash'];
+        $display_mode = 'list_posts_category';
+
+        if($array_mod_slug[1] == 'p') {
+            if(is_numeric($array_mod_slug[2])) {
+                $posts_start = $array_mod_slug[2];
+            } else {
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: /$swifty_slug");
+                header("Connection: close");
+            }
+        }
+    }
+}
+
+
+// Pagination
+if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_GET['page'])) {
+
+    $status_404 = false;
+
+    if(isset($_GET['page'])) {
+        $posts_start = (int) $_GET['page'];
+    } else if(is_numeric($array_mod_slug[1])) {
+        $posts_start = $array_mod_slug[1];
+    } else if(is_numeric($array_mod_slug[2])) {
+        $posts_start = $array_mod_slug[2];
+    } else {
+        header("HTTP/1.1 301 Moved Permanently");
+        header("Location: /$swifty_slug");
+        header("Connection: close");
+        exit;
+    }
+}
+
 
 // get the posting-page by 'type_of_use' and $languagePack
 $target_page = $db_content->select("se_pages", "page_permalink", [
