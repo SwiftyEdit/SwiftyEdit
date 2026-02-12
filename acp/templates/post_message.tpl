@@ -48,7 +48,28 @@
 					<div class="form-group">
 						<label>{label_keywords}</label>
 						<input type="text" class='form-control tags' name="post_tags" value="{post_tags}">
-					</div>		
+					</div>
+
+					<div class="row">
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_pages_permalink}</label>
+								<input type="text" id="disabledTextInput" class="form-control" value="{se_base_url}" disabled>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_main_category_page}</label>
+								{select_main_cat_page}
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_slug}</label>
+								<input class='form-control' name="slug" type="text" value="{post_slug}">
+							</div>
+						</div>
+					</div>
 				</div>
 				
 				<div class="tab-pane fade" id="prefs">

@@ -224,9 +224,7 @@ foreach($lang_codes as $l) {
         include $lang_file;
         $active_lang[$l]['sign'] = $lang_sign;
         $active_lang[$l]['name'] = $lang_desc;
-        $real_img_src = SE_ROOT.'/languages/' . $l . '/flag.png';
-        $encoded_flag = base64_encode(file_get_contents($real_img_src));
-        $active_lang[$l]['flag'] = 'data:image/png;base64,'.$encoded_flag;
+        $active_lang[$l]['flag'] = '/admin-xhr/images/?src=languages/' . $l . '/flag.png';
     }
 }
 

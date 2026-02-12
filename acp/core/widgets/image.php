@@ -31,6 +31,7 @@ if (!in_array($extension, $allowedExtensions, true)) {
 
 // Base paths relative to public/
 $rootDocs = realpath(__DIR__ . '/../../../docs');
+$rootLanguages = realpath(__DIR__ . '/../../../languages');
 $rootPlugins = realpath(__DIR__ . '/../../../plugins');
 $rootThemes = realpath(__DIR__ . '/../../../public/assets/themes');
 
@@ -46,6 +47,9 @@ if (str_starts_with($src, 'docs/')) {
 } elseif (str_starts_with($src, 'themes/')) {
     $basePath = $rootThemes;
     $relative = substr($src, 7); // strlen('themes/')
+} elseif (str_starts_with($src, 'languages/')) {
+    $basePath = $rootLanguages;
+    $relative = substr($src, 10); // strlen('languages/')
 } else {
     http_response_code(400);
     exit;
