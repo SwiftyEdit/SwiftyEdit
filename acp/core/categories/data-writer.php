@@ -62,6 +62,7 @@ if (isset($_POST['save_category'])) {
         "cat_title" => $cat_title,
         "cat_description" => $cat_description,
         "cat_keywords" => $cat_keywords,
+        "cat_teaser" => $_POST['cat_teaser'],
         "cat_text" => $_POST['cat_text'],
         "cat_thumbnail" => $cat_thumbnail
     ];

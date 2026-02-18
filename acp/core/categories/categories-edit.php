@@ -46,6 +46,7 @@ if(is_int($get_id)) {
     $cat_description = $get_category['cat_description'];
     $cat_text = $get_category['cat_text'];
     $cat_title = $get_category['cat_title'];
+    $cat_teaser = $get_category['cat_teaser'];
     $cat_keywords = $get_category['cat_keywords'];
     $cat_hash = $get_category['cat_hash'];
 
@@ -94,6 +95,14 @@ $input_text_description = [
     "input_classes" => "form-control count-chars",
     "label" => $lang['label_description'],
     "type" => "textarea"
+];
+
+$input_wysiwyg_teaser = [
+    "input_name" => "cat_teaser",
+    "input_value" => $cat_teaser,
+    "label" => $lang['label_teaser'],
+    "type" => "textarea",
+    "mode" => "wysiwyg"
 ];
 
 $input_wysiwyg = [
@@ -165,6 +174,7 @@ $form_tpl .= '<div class="card-header">';
 $form_tpl .= '<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">';
 $form_tpl .= '<li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">'.$lang['nav_btn_info'].'</a></li>';
 $form_tpl .= '<li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">'.$lang['label_content'].'</a></li>';
+$form_tpl .= '<li class="nav-item"><a class="nav-link" href="#metas" data-bs-toggle="tab">'.$lang['nav_btn_metas'].'</a></li>';
 $form_tpl .= '</ul>';
 
 $form_tpl .= '</div>';
@@ -179,9 +189,8 @@ $form_tpl .= '<div class="col-md-6">';
 
 $form_tpl .= se_print_form_input($input_text_name);
 $form_tpl .= se_print_form_input($input_text_title);
-$form_tpl .= se_print_form_input($input_text_description);
-$form_tpl .= se_print_form_input($input_text_keywords);
-$form_tpl .= se_print_form_input($input_slug);
+$form_tpl .= se_print_form_input($input_wysiwyg_teaser);
+
 
 $form_tpl .= '</div>';
 $form_tpl .= '<div class="col-md-6">';
@@ -195,6 +204,13 @@ $form_tpl .= '<div class="tab-pane fade" id="content">';
 $form_tpl .= se_print_form_input($input_wysiwyg);
 
 $form_tpl .= '</div>';
+
+$form_tpl .= '<div class="tab-pane fade" id="metas">';
+$form_tpl .= se_print_form_input($input_text_description);
+$form_tpl .= se_print_form_input($input_text_keywords);
+$form_tpl .= se_print_form_input($input_slug);
+$form_tpl .= '</div>';
+
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
