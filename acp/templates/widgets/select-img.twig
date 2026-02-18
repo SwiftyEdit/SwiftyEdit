@@ -36,7 +36,7 @@
             <div class="sortable_source list-group list-group-flush">
                 {% for image in media_data %}
                     <div class="list-group-item d-flex align-items-start draggable" data-id="{{ image.image_src }}">
-                        <div class="d-flex flex-row gap-2">
+                        <div class="d-flex flex-row gap-2" title="{{ image.image_src }}">
                             <div class="rounded-circle flex-shrink-0"
                                  style="width:64px;height:64px;background-image:url({{ image.preview }});background-size:cover;"></div>
                             <div class="text-muted small">
