@@ -10,6 +10,7 @@ $cols = array(
     "cat_name_clean" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cat_hash" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cat_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "cat_teaser" => "LONGTEXT NOT NULL DEFAULT ''",
     "cat_description" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cat_keywords" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cat_text" => "LONGTEXT NOT NULL DEFAULT ''",

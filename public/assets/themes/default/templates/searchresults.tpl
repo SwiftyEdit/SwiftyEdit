@@ -41,7 +41,7 @@
 						</div>
 					{/if}
 					<div class="col">
-						<h5 class="mb-1">{$product.title}</h5>
+						<h5 class="mb-1">{$product.meta_title}</h5>
                         <div class="d-flex flex-row">
                             <div class="flex-grow-1">
                                 <p>

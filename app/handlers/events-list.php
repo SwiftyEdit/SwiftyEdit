@@ -2,10 +2,31 @@
 
 /**
  * global variables
- * @var $db_content set in database.php
- * @var $se_prefs set in index.php
+ * @var object $db_content set in database.php
+ * @var object $smarty
+ * @var array $se_prefs set in index.php
+ * @var string $languagePack
+ * @var array $lang
+ * @var array $all_categories
+ * @var string $img_path
+ * @var string $se_base_url
+ * @var string $prefs_dateformat
+ * @var string $prefs_timeformat
  *
- * @var $page_contents
+ * @var array $categories
+ * @var array $page_contents
+ * @var string $page_content
+ * @var string $cache_id
+ * @var string $swifty_slug
+ * @var string $mod_slug
+ *
+ * @var int $events_start
+ * @var int $events_limit
+ * @var array $events_filter
+ * @var string $selected_category_title
+ *
+ * @var string $display_mode
+ *
  */
 
 // get the posting-page by 'type_of_use' and $languagePack
@@ -121,9 +142,10 @@ foreach ($get_events as $k => $post) {
     /* post images */
     $first_post_image = '';
     $post_images = explode("<->", $get_events[$k]['images']);
-    if ($post_images[1] != "") {
-        $get_events[$k]['event_img_src'] = '/' . $img_path . '/' . str_replace('../content/images/', '', $post_images[1]);
-    } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+    if(isset($post_images[1])) {
+        $get_events[$k]['event_img_src'] = $post_images[1];
+    } else if(in_array($se_prefs['prefs_posts_default_banner'], ["without_image", "null", null, ""], true) ||
+        empty($se_prefs['prefs_posts_default_banner'])) {
         $get_events[$k]['event_img_src'] = '';
     } else {
         $get_events[$k]['event_img_src'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
@@ -230,7 +252,7 @@ if ($display_mode == 'list_posts_category') {
 
 $form_action = '/' . $swifty_slug . $mod_slug;
 $smarty->assign('form_action', $form_action);
-$smarty->assign('events_cnt', $cnt_filter_products);
+$smarty->assign('events_cnt', $cnt_filter_events);
 $smarty->assign('events', $get_events);
 
 $smarty->assign('show_events_list', $show_events_list);

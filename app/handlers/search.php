@@ -88,11 +88,13 @@ if($s != '' && $start_search == "true") {
         }
 
         $products[$x]['id'] = $product['id'];
-        $products[$x]['title'] = $product['title'];
-        $products[$x]['description'] = $product['meta_description'];
         $products[$x]['number'] = $product['product_number'];
         $products[$x]['href'] = '/'.$url;
         $products[$x]['url'] = $url;
+        $products[$x]['description'] = $product['meta_description'];
+        $products[$x]['title'] = $product['title'];
+        $products[$x]['meta_title'] = $product['meta_title'];
+
         $x++;
     }
     $smarty->assign('products', $products, true);

@@ -40,7 +40,7 @@
                             <div class="rounded-circle flex-shrink-0"
                                  style="width:64px;height:64px;background-image:url({{ image.preview }});background-size:cover;"></div>
                             <div class="text-muted small">
-                                {{ image.image_title }}{{ image.img_filename_short }}<br>
+                                {{ image.image_title }}{{ image.img_filename_short|raw }}<br>
                                 {{ image.image_upload_time }}
                             </div>
                         </div>
