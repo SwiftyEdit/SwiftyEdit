@@ -106,7 +106,7 @@ $code-color: rgb(193, 64, 216);
 $sidebar-background: #191A1A;
 $sidebar_link_background: $primary;
 $sidebar_color: #eee;
-$sidebar_active_color: $primary;
+$sidebar_active_color: lighten($primary,15%);
 $sidebar_active_bg: darken($sidebar_background,5%);
 $sidebar_help_background: #111;
 $sidebar_help_color: #ccc;

@@ -5,7 +5,7 @@
  * this file will be replaced with every update
  *
  * you can expand/overwrite this config file
- * by adding your own config.php to SE_CONTENT_DIR (/content/config.php)
+ * by adding your own config.php to SE_CONTENT/config.php
  */
 
 

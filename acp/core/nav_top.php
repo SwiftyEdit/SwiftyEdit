@@ -1,8 +1,17 @@
 <?php
 
+/**
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var array $active_lang
+ */
+
 echo '<nav class="navbar navbar-custom">';
 echo '<div class="container-fluid px-0">';
-echo '<a href="#" id="toggleNav" class="me-3" title="Dashboard"><span class="caret_left">'.$icon['caret_left'].'</span> <span class="caret_right">'.$icon['caret_right'].'</span></a>';
+
+echo '<button class="btn btn-link me-2 d-none d-lg-inline-flex" id="sidebarToggleDesktop">'.$icon['three_dots'].'</button>';
+echo '<button class="btn btn-link me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">'.$icon['three_dots'].'</button>';
 
 
 echo '<div class="opacity-25 me-auto">'.htmlentities($_SERVER['SERVER_NAME']).'</div>';

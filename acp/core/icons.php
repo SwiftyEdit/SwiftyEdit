@@ -135,6 +135,7 @@ $icon = [
     "tags_fill" => '<i class="bi bi-tags-fill"></i>',
     "tasks" => '<i class="bi bi-list-task"></i>',
     "three_dots" => '<i class="bi bi-three-dots"></i>',
+    "three_dots_vertical" => '<i class="bi bi-three-dots-vertical"></i>',
     "thumbs_down" => '<i class="bi bi-hand-thumbs-down"></i>',
     "thumbs_up" => '<i class="bi bi-hand-thumbs-up"></i>',
     "times_circle" => '<i class="bi bi-clock"></i>',

@@ -7,7 +7,6 @@ window.jQuery = $; window.$ = $;
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/color-mode.js';
 import ClipboardJS from "clipboard";
-import './components/sidebar.js';
 
 import ace from "ace-builds/src-noconflict/ace";
 import 'ace-builds/src-noconflict/mode-html';
@@ -211,6 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
         htmx.trigger("body", "update_uploads_list");
     });
 
+    document.getElementById('sidebarToggleDesktop')
+        .addEventListener('click', function () {
+            document.getElementById('page-content')
+                .classList.toggle('sidebar-collapsed');
+        });
+
 });
 
 document.addEventListener("keydown", function (event) {
@@ -229,7 +234,7 @@ document.addEventListener("keydown", function (event) {
 
     const key = event.key.toLowerCase();
 
-    // Prüfen, ob die Tastenkombination gedrückt wurde
+    // Check whether the key combination has been pressed
     if (
         shortcuts[key] &&
         ((useCtrl && event.ctrlKey) || (useCmd && event.metaKey)) && // Ctrl für Windows, Cmd für Mac
@@ -245,7 +250,7 @@ document.addEventListener("keydown", function (event) {
 
 
 
-// English comment: Intercept doc links inside modal
+// Intercept doc links inside modal
 document.addEventListener('click', function (e) {
     const container = document.querySelector('#showModalContent');
     if (!container || !container.contains(e.target)) return;
@@ -276,7 +281,7 @@ document.addEventListener('click', function (e) {
 });
 
 
-// English comment: Scroll to section after docs load via htmx
+// Scroll to section after docs load via htmx
 document.addEventListener('htmx:afterOnLoad', function (e) {
     const target = e.detail.target;
     if (!target || target.id !== 'showModalContent') return;

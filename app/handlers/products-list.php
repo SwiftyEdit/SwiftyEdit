@@ -276,6 +276,7 @@ foreach($all_categories as $cats) {
     $show_category_description = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
     $show_category_text = $cats['cat_text'];
+    $show_category_teaser = $cats['cat_teaser'];
     $show_category_keywords = $cats['cat_keywords'];
 
     // Build category URL with filters preserved
@@ -301,6 +302,7 @@ foreach($all_categories as $cats) {
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
         "cat_description" => $show_category_description,
+        "cat_teaser" => $show_category_teaser,
         "cat_text" => $show_category_text,
         "cat_name" => $show_category_name,
         "cat_class" => $cat_class,
