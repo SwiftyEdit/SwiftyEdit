@@ -309,7 +309,7 @@ if (isset($set_acptheme)) {
     <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
 
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2025-04-23" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2026-02-19" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo htmlentities($languagePack); ?>";
@@ -326,7 +326,7 @@ if (isset($set_acptheme)) {
         }
     </script>
 
-    <script src="/themes/administration/dist/backend.js?v=2025-04-23"></script>
+    <script src="/themes/administration/dist/backend.js?v=2026-02-19"></script>
     <script src="/themes/administration/dist/tinymce/tinymce.min.js"></script>
     <script src="/themes/administration/dist/tinymce-jquery/tinymce-jquery.js"></script>
 
@@ -339,44 +339,48 @@ if (isset($set_acptheme)) {
 <body>
 
 
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas">
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <?php include '../acp/core/nav_sidebar.php'; ?>
+    </div>
+</div>
+
+<?php
+if (is_file('../maintenance.html')) {
+    echo '<div class="alert alert-danger rounded-0 m-0">';
+    echo $lang['update_msg_modus_activated'];
+    echo '</div>';
+}
+?>
+
+<div class="d-flex" id="page-content">
+
+    <nav id="sidebar" class="d-none d-lg-block">
+        <?php include '../acp/core/nav_sidebar.php'; ?>
+    </nav>
 
 
-<div id="page-content">
-
-    <?php
-    if (is_file('../maintenance.html')) {
-        echo '<div class="alert alert-danger rounded-0 m-0">';
-        echo $lang['update_msg_modus_activated'];
-        echo '</div>';
-    }
-    ?>
-
-
+    <div class="flex-grow-1 main-scrollable">
 
     <?php
     $page_header_class = 'ph-dashboard';
     if($se_section != '') {
         $page_header_class = 'ph-'.$se_section;
     }
-    echo '<div class="'.$page_header_class.' page-header">';
+    echo '<header class="'.$page_header_class.' page-header">';
     require '../acp/core/nav_top_filter.php';
     require '../acp/core/nav_top.php';
-    echo '</div>';
+    echo '</header>';
     ?>
 
 
-
-    <div id="container">
+    <div class="container-fluid py-3" id="container">
         <?php include '../acp/core/' . $maininc; ?>
-    </div>
+        <?php include '../acp/core/editors.php'; ?>
 
-    <div id="page-sidebar">
-        <div id="page-sidebar-inner">
-            <?php include '../acp/core/nav_sidebar.php'; ?>
-        </div>
-    </div>
-
-    <?php include '../acp/core/editors.php'; ?>
 
     <div id="footer">
         <p class="text-center">
@@ -388,16 +392,15 @@ if (isset($set_acptheme)) {
             ?>
         </p>
         <hr>
-        <p>
-            <img src="/themes/administration/images/swiftyedit_icon.svg" alt="se-logo" width="60px"><br>
-            <b>SwiftyEdit</b><br>
-            copyright © <?php echo date('Y'); ?>, <a href="https://swiftyedit.com/" target="_blank">SwiftyEdit.com</a>
-        </p>
+        <p><img src="/themes/administration/images/swiftyedit_icon.svg" alt="se-logo" width="60px"><br>
+            <b>SwiftyEdit</b><br>copyright © <?php echo date('Y'); ?>, <a href="https://swiftyedit.com/" target="_blank">SwiftyEdit.com</a></p>
         <p class="d-none"><?php echo microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']; ?></p>
     </div>
 
-</div>
+    </div>
 
+    </div>
+</div>
 <div class="bottom-bar">
     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
             data-bs-target="#uploadModal"><?php echo $icon['upload']; ?> Upload
