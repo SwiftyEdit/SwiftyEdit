@@ -10,8 +10,8 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 ### Version 2.0 (~Q1 2026)
 
 - [ ] Complete the Documentation
-- [ ] Integrate the  Documentation to the backend [#262](https://github.com/SwiftyEdit/SwiftyEdit/issues/262)
-- [ ] Improve the category integration in the blog module
+- [x] Integrate the Documentation to the backend [#262](https://github.com/SwiftyEdit/SwiftyEdit/issues/262)
+- [x] Improve the category integration in the blog module
 - [x] Implement a caching system for products
 - [x] Merge snippets and shortcodes
 - [x] Switch to uppy for file uploads
