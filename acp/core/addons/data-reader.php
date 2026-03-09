@@ -196,7 +196,11 @@ if($_REQUEST['action'] == 'list_themes') {
 
         echo '</div>';
         echo '<div class="col-md-4">';
-        $theme_poster = '/themes/'.$template.'/images/preview.png';
+        $theme_poster = '/themes/'.$template.'/images/icon.png';
+        $real_theme_poster = SE_PUBLIC.'/assets'.$theme_poster;
+        if (!file_exists($real_theme_poster) && !is_file($real_theme_poster) && !is_readable($real_theme_poster)) {
+            $theme_poster = '/themes/administration/images/poster-addons.png';
+        }
         echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
         echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
         echo '</div>';
