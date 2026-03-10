@@ -245,6 +245,7 @@ if(isset($_POST['save_post'])) {
         $post_id = $db_posts->id();
         record_log($_SESSION['user_nick'],"new post id: $post_id","6");
         show_toast($lang['msg_success_new_record'],'success');
+        header( "HX-Redirect: /admin/blog/edit/$post_id/");
     }
     if($_POST['save_post'] == 'update') {
         $post_id = (int) $_POST['post_id'];
