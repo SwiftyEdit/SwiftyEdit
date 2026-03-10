@@ -23,8 +23,8 @@
                             name="sorting_media_widget"
                             hx-trigger="change"
                             hx-swap="none">
-                        <option value="media_id_desc" {% if sorting_selected == 'media_id_desc' %}selected{% endif %}>Newest first</option>
-                        <option value="media_id_asc" {% if sorting_selected == 'media_id_asc' %}selected{% endif %}>Oldest first</option>
+                        <option value="media_id_desc" {% if sorting_selected == 'media_id_desc' %}selected{% endif %}>{{ lang_sort_start_newest }}</option>
+                        <option value="media_id_asc" {% if sorting_selected == 'media_id_asc' %}selected{% endif %}>{{ lang_sort_start_oldest }}</option>
                         <option value="media_file_asc" {% if sorting_selected == 'media_file_asc' %}selected{% endif %}>A-Z</option>
                         <option value="media_file_desc" {% if sorting_selected == 'media_file_desc' %}selected{% endif %}>Z-A</option>
                     </select>
