@@ -26,12 +26,14 @@ if (isset($_REQUEST['change_filter'])) {
 
     if (isset($_POST['media_widget_text_filter'])) {
         $_SESSION['media_widget_text_filter'] = sanitizeUserInputs($_POST['media_widget_text_filter']);
+        $_SESSION['pagination_image_widget'] = 0; // reset pagination
         header("HX-Trigger: update_image_widget");
         exit;
     }
 
     if (isset($_POST['product_widget_text_filter'])) {
         $_SESSION['product_widget_text_filter'] = sanitizeUserInputs($_POST['product_widget_text_filter']);
+        $_SESSION['pagination_product_widget'] = 0; // reset pagination
         header("HX-Trigger: update_product_widget");
         exit;
     }
@@ -50,6 +52,7 @@ if (isset($_REQUEST['change_filter'])) {
             $_SESSION['sorting_media_widget'] = 'media_file';
             $_SESSION['sorting_media_widget_direction'] = 'DESC';
         }
+        $_SESSION['pagination_image_widget'] = 0; // reset pagination
         header("HX-Trigger: update_image_widget");
         exit;
     }
@@ -169,7 +172,9 @@ if ($_REQUEST['widget'] == 'img-select') {
         'media_widget_text_filter' => $_SESSION['media_widget_text_filter'],
         'sorting_selected' => $sorting_selected,
         'media_data' => $media_data,
-        'pagination' => $pagination
+        'pagination' => $pagination,
+        'lang_sort_start_newest' => $lang['sort_start_newest'],
+        'lang_sort_start_oldest' => $lang['sort_start_oldest']
     ]);
 
     exit;
