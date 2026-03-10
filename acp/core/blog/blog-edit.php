@@ -15,13 +15,23 @@
 
 $writer_uri = '/admin-xhr/blog/write/';
 $reader_uri = '/admin-xhr/blog/read/';
+$mode = 'new';
+
+// check if last part of url is an id
+$path = parse_url($query, PHP_URL_PATH);
+$segments = explode('/', rtrim($path, '/'));
+$lastSegment = end($segments);
+
+if(is_numeric($lastSegment)) {
+    $post_id = (int) $lastSegment;
+    $mode = 'update';
+    $post_data = se_get_post_data($post_id);
+}
 
 if(is_numeric($_POST['post_id'])) {
     $post_id = (int) $_POST['post_id'];
     $mode = 'update';
     $post_data = se_get_post_data($post_id);
-} else {
-    $mode = 'new';
 }
 
 $post_type_form = $_SESSION['post_type_form'] ?? 'm';
