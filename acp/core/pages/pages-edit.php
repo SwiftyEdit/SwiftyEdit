@@ -837,7 +837,7 @@ foreach($get_themes as $template) {
 
 $select_template .= '</select>';
 
-$form_tpl .= '<div><label class="form-label">'.$lang['label_template'].'</label>'.$select_template.'</div>';
+$form_tpl .= '<div><label class="form-label">Theme / '.$lang['label_template'].'</label>'.$select_template.'</div>';
 
 // set password
 $form_tpl .= '<div class="my-2">';
