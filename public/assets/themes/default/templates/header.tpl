@@ -78,3 +78,11 @@
     {include file='navigation.tpl'}
 
 </header>
+
+{if $teaser_text}
+    <div id="pageTeaser">
+        <div class="container">
+        {$teaser_text}
+        </div>
+    </div>
+{/if}

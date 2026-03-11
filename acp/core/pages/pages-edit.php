@@ -590,7 +590,17 @@ if($get_page['page_template'] == 'use_standard') {
     $theme_base = SE_ROOT.'public/assets/themes/'.$get_page['page_template'];
 }
 
-$page_value_injector = $theme_base.'/php/page_values.php';
+$theme_injector_base = $theme_base.'/php';
+$theme_injectors = ['page-values.php','page_values.php'];
+$page_value_injector = null;
+
+foreach ($theme_injectors as $file) {
+    $path = $theme_injector_base . '/' . $file;
+    if (is_file($path)) {
+        $page_value_injector = $path;
+        break;
+    }
+}
 
 if(is_file("$page_value_injector")) {
     function include_page_value_file($f) {
