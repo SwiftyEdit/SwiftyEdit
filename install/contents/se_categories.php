@@ -16,5 +16,7 @@ $cols = array(
     "cat_text" => "LONGTEXT NOT NULL DEFAULT ''",
     "cat_thumbnail" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "cat_sort" => "VARCHAR(255) NOT NULL DEFAULT ''",
-    "cat_counter" => 'INTEGER(50)'
+    "cat_counter" => 'INTEGER(50)',
+    "cat_template" => "VARCHAR(50) NOT NULL DEFAULT ''",
+    "cat_template_values" => "LONGTEXT NOT NULL DEFAULT ''"
 );
