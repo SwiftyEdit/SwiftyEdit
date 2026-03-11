@@ -236,7 +236,6 @@ $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formRe
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
-$form_tpl .= '</div>';
 
 $form_tpl .= '</div>'; // sidebar-col
 $form_tpl .= '</div>'; // row

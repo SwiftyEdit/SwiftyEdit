@@ -415,4 +415,3 @@ echo '</div>'; // card
 echo '</div>';
 echo '</div>';
 echo '</div>';
-echo '</div>';
