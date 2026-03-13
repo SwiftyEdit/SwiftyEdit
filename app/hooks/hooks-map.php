@@ -33,6 +33,14 @@ return [
             'context' => ['product_id', 'product'],
         ],
 
+        // ----- Pages -----
+
+        // After the page has been rendered (tracking, recommendations, etc.)
+        'page.display.after' => [
+            'type' => 'generic',
+            'context' => ['page_data', 'query'],
+        ],
+
     ],
 
 
