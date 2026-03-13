@@ -6,6 +6,9 @@
  * @var string $se_base_url
  * @var string $first_product_img_src
  * @var string $target_page
+ *
+ * @var array $theme_values data from -> edit page - theme tab
+ * @var array $category_template_data data from -> edit category - theme tab
  */
 
 if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
@@ -142,6 +145,16 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
         }
     }
 
+    if($theme_values['teaser_text'] != '') {
+        $teaser_text = html_entity_decode($theme_values['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
+        $smarty->assign('teaser_text', $teaser_text);
+    }
+
+    // overwrite teaser text from $theme_values['teaser_text']
+    if(is_array($category_template_data) && $category_template_data['teaser_text'] != '') {
+        $teaser_text = html_entity_decode($category_template_data['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
+        $smarty->assign('teaser_text', $teaser_text);
+    }
 
 } elseif(defined('SE_SECTION') && SE_SECTION === 'backend') {
 

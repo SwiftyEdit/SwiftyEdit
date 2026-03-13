@@ -21,8 +21,3 @@ function theme_text_parser($str) {
 
 	return $str;
 }
-
-if($theme_values['teaser_text'] != '') {
-    $teaser_text = html_entity_decode($theme_values['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
-    $smarty->assign('teaser_text', $teaser_text);
-}

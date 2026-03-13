@@ -35,6 +35,17 @@ if (isset($_POST['save_category'])) {
     $cat_description = sanitizeUserInputs($_POST['cat_description']);
     $cat_keywords = sanitizeUserInputs($_POST['cat_keywords']);
     $cat_sort = (int) $_POST['cat_sort'];
+    $cat_template = sanitizeUserInputs($_POST['cat_template']);
+
+    // check for theme values from themes/$cat_template/php/category-values.php
+    $cat_template_values = '';
+    $theme_values = [];
+    if (isset($_POST['theme_values']) && is_array($_POST['theme_values'])) {
+        foreach($_POST['theme_values'] as $k => $v) {
+            $theme_values[$k] = htmlentities(stripslashes($v), ENT_QUOTES);
+        }
+        $cat_template_values = json_encode($theme_values,JSON_UNESCAPED_UNICODE);
+    }
 
     $cat_thumbnail = '';
     if(is_array($_POST['picker_0'])) {
@@ -64,10 +75,12 @@ if (isset($_POST['save_category'])) {
         "cat_keywords" => $cat_keywords,
         "cat_teaser" => $_POST['cat_teaser'],
         "cat_text" => $_POST['cat_text'],
-        "cat_thumbnail" => $cat_thumbnail
+        "cat_thumbnail" => $cat_thumbnail,
+        "cat_template" => $cat_template,
+        "cat_template_values" => $cat_template_values
     ];
 
-    // create new category
+    // create a new category
     if($_POST['save_category'] == 'new') {
         $data = $db_content->insert("se_categories", $insert_data);
         $new_id = $db_content->id();
