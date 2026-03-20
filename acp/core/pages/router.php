@@ -3,6 +3,8 @@
 /**
  * SwiftyEdit backend
  * switch file for section pages
+ *
+ * @var string $query - the current url
  */
 
 

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ * @var array $icon
+ *
+ *
+ * @var array $get_page page data
+ */
+
 $get_page_id = (int) $_GET['page_info'];
 $page_data = $db_content->get("se_pages", "*", [
     "page_id" => "$get_page_id"
@@ -87,7 +97,7 @@ echo '</div>';
 
 echo '<hr>';
 echo '<div class="btn-group d-flex justify-content-end">';
-if($_SESSION['acp_editpages'] == "allowed"){
+if (se_hasPermission('drm_acp_editpages')) {
     echo '<form action="/admin/pages/edit/" method="post" class="d-inline">';
     echo '<button class="btn btn-default" name="page_id" value="'.$page_data['page_id'].'">'.$icon['edit'].' '.$lang['edit'].'</button>';
     echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

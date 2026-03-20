@@ -115,6 +115,8 @@ if($_REQUEST['action'] == "list_users") {
         $user_avatar_path = '/assets/avatars/' . md5($user['user_nick']) . '.png';
         if(is_file("../public$user_avatar_path")) {
             $user_avatar = '<img src="'.$user_avatar_path.'" class="rounded-circle avatar" width="75" height="75">';
+        } else {
+            $user_avatar = '<img src="'.se_identicon_data_url($user['user_mail']).'" class="rounded-circle avatar" width="75" height="75">';
         }
 
         //marking admins

@@ -284,16 +284,7 @@ function se_start_user_session($ud) {
     }
 
     $arr_drm = explode("|", $ud['user_drm']);
-
-    if($arr_drm[0] == "drm_acp_pages")	{  $_SESSION['acp_pages'] = "allowed";  }
-    if($arr_drm[1] == "drm_acp_files")	{  $_SESSION['acp_files'] = "allowed";  }
-    if($arr_drm[2] == "drm_acp_user")	{  $_SESSION['acp_user'] = "allowed";  }
-    if($arr_drm[3] == "drm_acp_system")	{  $_SESSION['acp_system'] = "allowed";  }
-    if($arr_drm[4] == "drm_acp_editpages")	{  $_SESSION['acp_editpages'] = "allowed";  }
-    if($arr_drm[5] == "drm_acp_editownpages")	{  $_SESSION['acp_editownpages'] = "allowed";  }
-    if($arr_drm[6] == "drm_moderator")	{  $_SESSION['drm_moderator'] = "allowed";  }
-    if($arr_drm[7] == "drm_can_publish")	{  $_SESSION['drm_can_publish'] = "true";  }
-    if($arr_drm[8] == "drm_acp_sensitive_files")	{  $_SESSION['drm_acp_sensitive_files'] = "allowed";  }
+    $_SESSION['permissions'] = explode('|', $ud['user_drm']);
 
 }
 
@@ -328,6 +319,15 @@ function se_end_user_session() {
     return 'logout';
 
 }
+
+
+function se_hasPermission(string $permission): bool {
+    if (empty($_SESSION['permissions'])) {
+        return false;
+    }
+    return in_array($permission, $_SESSION['permissions']);
+}
+
 
 /**
  * @param integer $length
@@ -462,6 +462,94 @@ function se_username_exists($username): bool
     return false;
 }
 
+function show_identicon(string $email, int $size = 80): string {
+    $hash = md5(strtolower(trim($email)));
+
+    // Farbe aus den ersten Hash-Bytes ableiten
+    $hue = hexdec(substr($hash, 0, 2)) * 1.41; // 0–360°
+    $color = "hsl($hue, 55%, 45%)";
+    $bg    = "hsl($hue, 55%, 92%)";
+
+    // 5×5 Grid berechnen (nur linke 3 Spalten, dann spiegeln)
+    $cells = [];
+    for ($row = 0; $row < 5; $row++) {
+        for ($col = 0; $col < 3; $col++) {
+            $byte = hexdec($hash[($row * 3 + $col) + 4]);
+            $cells[$row][$col] = $byte % 2;
+        }
+        // Spiegeln: Spalte 3 = Spalte 1, Spalte 4 = Spalte 0
+        $cells[$row][3] = $cells[$row][1];
+        $cells[$row][4] = $cells[$row][0];
+    }
+
+    // SVG zusammenbauen
+    $cell = $size / 5;
+    $svg  = "<svg xmlns='http://www.w3.org/2000/svg' width='$size' height='$size'>";
+    $svg .= "<rect width='$size' height='$size' fill='$bg'/>";
+
+    for ($row = 0; $row < 5; $row++) {
+        for ($col = 0; $col < 5; $col++) {
+            if ($cells[$row][$col]) {
+                $x = $col * $cell;
+                $y = $row * $cell;
+                $svg .= "<rect x='$x' y='$y' width='$cell' height='$cell' fill='$color'/>";
+            }
+        }
+    }
+
+    $svg .= "</svg>";
+    return $svg;
+}
+
+
+/**
+ * @param string $email
+ * @param int $size
+ * @return string
+ */
+function se_show_identicon(string $email, int $size = 80): string {
+    $hash = md5(strtolower(trim($email)));
+
+    // Farbe aus den ersten Hash-Bytes ableiten
+    $hue = hexdec(substr($hash, 0, 2)) * 1.41; // 0–360°
+    $color = "hsl($hue, 55%, 45%)";
+    $bg    = "hsl($hue, 55%, 92%)";
+
+    // 5×5 Grid berechnen (nur linke 3 Spalten, dann spiegeln)
+    $cells = [];
+    for ($row = 0; $row < 5; $row++) {
+        for ($col = 0; $col < 3; $col++) {
+            $byte = hexdec($hash[($row * 3 + $col) + 4]);
+            $cells[$row][$col] = $byte % 2;
+        }
+        // Spiegeln: Spalte 3 = Spalte 1, Spalte 4 = Spalte 0
+        $cells[$row][3] = $cells[$row][1];
+        $cells[$row][4] = $cells[$row][0];
+    }
+
+    // SVG zusammenbauen
+    $cell = $size / 5;
+    $svg  = "<svg xmlns='http://www.w3.org/2000/svg' width='$size' height='$size'>";
+    $svg .= "<rect width='$size' height='$size' fill='$bg'/>";
+
+    for ($row = 0; $row < 5; $row++) {
+        for ($col = 0; $col < 5; $col++) {
+            if ($cells[$row][$col]) {
+                $x = $col * $cell;
+                $y = $row * $cell;
+                $svg .= "<rect x='$x' y='$y' width='$cell' height='$cell' fill='$color'/>";
+            }
+        }
+    }
+
+    $svg .= "</svg>";
+    return $svg;
+}
+
+function se_identicon_data_url(string $email, int $size = 80): string {
+    $svg = se_show_identicon($email, $size);
+    return 'data:image/svg+xml;base64,' . base64_encode($svg);
+}
 
 /**
  * @return mixed
