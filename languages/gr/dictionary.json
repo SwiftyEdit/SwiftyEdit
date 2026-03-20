@@ -46,6 +46,7 @@
   "status.ghost": "Αόρατο",
   "status.private": "Ιδιωτικό",
   "status.draft": "Πρόχειρο",
+  "status.deleted": "Deleted",
   "status.redirect": "Ανακατεύθυνση",
   "status.order.received": "Ελήφθη",
   "status.order.completed": "Ολοκληρώθηκε",
