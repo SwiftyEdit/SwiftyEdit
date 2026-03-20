@@ -52,6 +52,7 @@
   "status.ghost": "Invisible",
   "status.private": "Private",
   "status.draft": "Draft",
+  "status.deleted": "Deleted",
   "status.redirect": "Redirect",
   "status.order.received": "Received",
   "status.order.completed": "Completed",
