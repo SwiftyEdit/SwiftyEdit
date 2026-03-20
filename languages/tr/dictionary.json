@@ -46,6 +46,7 @@
   "status.ghost": "Görünmez",
   "status.private": "Özel",
   "status.draft": "Taslak",
+  "status.deleted": "Deleted",
   "status.redirect": "Yönlendirme:",
   "status.order.received": "Alınan",
   "status.order.completed": "Tamamlandı",
