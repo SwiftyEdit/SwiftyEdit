@@ -192,6 +192,7 @@ if(isset($_POST['users_text_filter'])) {
             $_SESSION['users_text_filter'] .= ' '. $add_text_filter;
         }
     }
+    $_SESSION['pagination_users_page'] = 0;
     header( "HX-Trigger: update_users_list");
 }
 
@@ -204,17 +205,16 @@ if(isset($_POST['rmkey'])) {
         if($f == "") { continue; }
         $_SESSION['users_text_filter'] .= "$f ";
     }
+    $_SESSION['pagination_users_page'] = 0;
     header( "HX-Trigger: update_users_list");
 }
 
 if(isset($_POST['set_status_filter'])) {
-    if($_POST['set_status_verified'] == '') {
-        if($_SESSION['set_status_verified'] == 'on') {
-            $_SESSION['set_status_verified'] = '';
-        } else {
-            $_SESSION['set_status_verified'] = 'on';
-        }
-    }
+
+    $_SESSION['set_status_filter'] = (int) $_POST['set_status_filter'];
+    $_SESSION['pagination_users_page'] = 0;
+
+    header( "HX-Trigger: update_users_list");
 }
 
 

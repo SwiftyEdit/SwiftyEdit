@@ -1,5 +1,12 @@
 <?php
-//error_reporting(E_ALL);
+
+/**
+ * global variables
+ * @var object $db_user
+ * @var array $icon
+ * @var array $lang
+ */
+
 if($_REQUEST['action'] == "list_users") {
 
     // defaults
@@ -16,11 +23,10 @@ if($_REQUEST['action'] == "list_users") {
         $limit_start = ($limit_start*$nbr_show_items);
     }
 
-    $filter_base = [
-        "AND" => [
-            "user_id[>]" => 0
-        ]
+    $conditions = [
+        "user_id[>]" => 0
     ];
+
 
     $filter_by_str = array();
     if($match_str != '') {
@@ -39,9 +45,37 @@ if($_REQUEST['action'] == "list_users") {
         }
     }
 
-    $db_where = [
-        "AND" => $filter_base+$filter_by_str
-    ];
+    // String-Filter
+    if (!empty($filter_by_str)) {
+        $conditions["OR #search"] = $filter_by_str["OR"];
+    }
+
+    // Status-Filter
+    $filter_by_status = [];
+    if (isset($_SESSION['set_status_filter'])) {
+        if ($_SESSION['set_status_filter'] == 2) {
+            $conditions["user_verified"] = "verified";
+        }
+        if ($_SESSION['set_status_filter'] == 3) {
+            $conditions["OR #unverified"] = [
+                "user_verified[!]" => "verified",
+                "user_verified #empty" => "",
+                "user_verified #empty2" => null
+            ];
+            $conditions["OR #class"] = [
+                "user_class[!]" => "deleted",
+                "user_class" => null
+            ];
+        }
+        if ($_SESSION['set_status_filter'] == 4) {
+            $conditions["user_verified"] = "paused";
+        }
+        if ($_SESSION['set_status_filter'] == 5) {
+            $conditions["user_class"] = "deleted";
+        }
+    }
+
+    $db_where = ["AND" => $conditions];
 
     $db_order = [
         "ORDER" => [
@@ -77,25 +111,24 @@ if($_REQUEST['action'] == "list_users") {
 
     foreach($users_data as $user) {
 
-        $user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle avatar" width="50" height="50" alt="no avatar image">';
+        $user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle avatar" width="75" height="75" alt="no avatar image">';
         $user_avatar_path = '/assets/avatars/' . md5($user['user_nick']) . '.png';
         if(is_file("../public$user_avatar_path")) {
-            $user_avatar = '<img src="'.$user_avatar_path.'" class="rounded-circle avatar" width="50" height="50">';
+            $user_avatar = '<img src="'.$user_avatar_path.'" class="rounded-circle avatar" width="75" height="75">';
         }
 
         //marking admins
+        $admin_img = '';
         if($user['user_class'] == "administrator"){
-            $admin_img = '<span class="text-bg-primary badge rounded-pill">'.$icon['user'].'</span>';
-        } else {
-            $admin_img = '<span class="text-bg-info badge rounded-pill">'.$icon['user'].'</span>';
+            $admin_img = '<span class="position-absolute bottom-0 start-100 translate-middle-x badge rounded bg-primary border" title="Administrator">'.$icon['star'].'</span>';
         }
 
         //status label
         $labelMap = [
-            'waiting' => 'badge rounded-pill bg-info',
-            'paused' => 'badge badge-pill bg-warning',
-            'verified' => 'badge rounded-pill bg-success',
-            '' => 'badge rounded-pill bg-danger',
+            'waiting' => 'text-info',
+            'paused' => 'text-warning',
+            'verified' => 'text-success',
+            '' => 'text-danger',
         ];
         $label = $labelMap[$user['user_verified']] ?? '';
 
@@ -103,8 +136,8 @@ if($_REQUEST['action'] == "list_users") {
 
         echo '<tr>';
         echo '<td>'.$user['user_id'].'</td>';
-        echo '<td>'.$user_avatar.'</td>';
-        echo '<td>'.$admin_img.' <span class="'.$label.'">'.$user['user_nick'].'</span></td>';
+        echo '<td><span class="position-relative d-inline-block">'.$user_avatar.$admin_img.'</span></td>';
+        echo '<td><span class="'.$label.' fs-6">'.$icon['circle_fill'].'</span> '.$user['user_nick'].'</td>';
         echo '<td>'.se_format_datetime($user['user_registerdate']).'</td>';
         echo '<td>'.$names.'</td>';
         echo '<td>'.$user['user_mail'].'</td>';
@@ -120,6 +153,38 @@ if($_REQUEST['action'] == "list_users") {
     echo '</table>';
     echo '</div>';
 
+}
+
+if($_REQUEST['action'] == "list_user_status") {
+
+    $vals = ['csrf_token' => $_SESSION['token']];
+    $writer_uri = '/admin-xhr/users/write/';
+
+    if(!isset($_SESSION['set_status_filter'])) {
+        $_SESSION['set_status_filter'] = 1;
+    }
+
+    $status_btns = [
+        '1' => '<span class="text-secondary">'.$icon['users'] .'</span> '. $lang['btn_all'],
+        '2' => '<span class="text-success">'.$icon['person_check'] .'</span> '. $lang['status_user_verified'],
+        '3' => '<span class="text-info">'.$icon['clock'] .'</span> '. $lang['status_user_waiting'],
+        '4' => '<span class="text-warning">'.$icon['person_x'] .'</span> '. $lang['status_user_paused'],
+        '5' => '<span class="text-danger">'.$icon['trash'] .'</span> '. $lang['status_deleted']
+    ];
+
+    foreach($status_btns as $k => $v) {
+
+        $class = ($k == $_SESSION['set_status_filter']) ? 'active' : '';
+
+        echo '<button type="button" class="list-group-item list-group-item-action '.$class.'"
+                hx-post="'.$writer_uri.'"
+                hx-trigger="click" 
+                hx-swap="none"
+                hx-vals=\''.json_encode($vals).'\'
+                name="set_status_filter"
+                value="'.$k.'"
+                >'.$v.'</button>';
+    }
 }
 
 if($_REQUEST['action'] == "list_usergroups") {

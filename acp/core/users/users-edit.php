@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @var object $db_user
+ * @var $lang array
+ */
+
 $writer_uri = '/admin-xhr/users/write/';
 
 if(isset($_POST['user_id']) && is_numeric($_POST['user_id'])) {
@@ -575,7 +580,7 @@ $form_tpl .= '<div class="card-body">';
 $user_avatar_path = '/assets/avatars/' . md5($user_nick) . '.png';
 
 if(is_file("../public$user_avatar_path")) {
-    $form_tpl .= '<p class="text-center"><img src="'.$user_avatar_path.'" class="rounded-circle avatar"></p>';
+    $form_tpl .= '<p class="text-center"><img src="'.$user_avatar_path.'" class="rounded-circle avatar img-fluid"></p>';
     $form_tpl .= '<div class="form-check">';
     $form_tpl .= '<input type="checkbox" name="deleteAvatar" class="form-check-input" id="avatar"><label class="form-check-label" for="avatar">' . $lang['delete'] . '</label>';
     $form_tpl .= '</div>';
