@@ -46,6 +46,7 @@
   "status.ghost": "Невидим",
   "status.private": "Частни",
   "status.draft": "Проект",
+  "status.deleted": "Deleted",
   "status.redirect": "Пренасочи",
   "status.order.received": "Приет",
   "status.order.completed": "Завършено",
