@@ -46,6 +46,7 @@
   "status.ghost": "Invisible",
   "status.private": "Privado",
   "status.draft": "Fabricación",
+  "status.deleted": "Deleted",
   "status.redirect": "Redirigir",
   "status.order.received": "Recibido",
   "status.order.completed": "Completado",
