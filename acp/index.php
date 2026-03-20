@@ -71,7 +71,6 @@ define("IMAGES_FOLDER", "$img_path");
 define("FILES_FOLDER", "$files_path");
 
 
-require '../acp/core/access.php';
 require '../acp/core/functions.php';
 
 if (!isset($_SESSION['editor_class'])) {

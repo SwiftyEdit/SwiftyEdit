@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
 
 $subinc = match (true) {
     str_starts_with($query, 'users/new/') => 'users-edit',
@@ -10,4 +11,10 @@ $subinc = match (true) {
     default => 'users-list'
 };
 
-include $subinc.'.php';
+if (!se_hasPermission('drm_acp_user')) {
+    echo '<div class="alert alert-info">';
+    echo $lang['rm_no_access'];
+    echo '</div>';
+} else {
+    include $subinc.'.php';
+}

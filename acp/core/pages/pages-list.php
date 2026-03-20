@@ -1,10 +1,17 @@
 <?php
 
-//error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
+/**
+ * global variables
+ * @var array $lang
+ * @var array $icon
+ * @var string $hidden_csrf_token
+ */
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['file'].' '.$lang['nav_btn_pages'];
-echo '<a href="/admin/pages/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
+if (se_hasPermission('drm_acp_editpages')) {
+    echo '<a href="/admin/pages/new/" class="btn btn-default text-success ms-auto">' . $icon['plus'] . ' ' . $lang['new'] . '</a>';
+}
 echo '</div>';
 
 $reader_uri = '/admin-xhr/pages/read/';

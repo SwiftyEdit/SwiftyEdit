@@ -8,13 +8,14 @@ $danger: #862b33 !default;
 $light:  #f5f5f5 !default;
 $dark: #111111 !default;
 
-$body-bg:                   #f5f5f5 !default;
+$body-bg:                   #eeeeee !default;
 $body-color:                #111111 !default;
 $body-text-align:           null !default;
 
 $link-color: $primary;
 
 $header-bg: mix($dark,$primary,65) !default;
+$teaser-bg: #e5e5e5 !default;
 $footer-bg: mix($dark,$primary,75) !default;
 
 $price-tag-bg: #ffffff !default;

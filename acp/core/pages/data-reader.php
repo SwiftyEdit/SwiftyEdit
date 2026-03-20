@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * global variables
+ * @var object $db_content
+ * @var object $db_settings
+ * @var array $icon
+ * @var array $lang
+ * @var array $se_page_types
+ * @var array $se_settings
+ *
+ */
+
 use Medoo\Medoo;
 
 $writer_uri = '/admin/pages/edit/';
@@ -464,7 +475,8 @@ function se_list_pages($data) {
         $btn_duplicate_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
         $btn_duplicate_tpl .=  '</form>';
 
-        if($_SESSION['acp_editpages'] == "allowed") {
+
+        if (se_hasPermission('drm_acp_editpages')) {
 
             $edit_button = $btn_edit_tpl;
             $duplicate_button = $btn_duplicate_tpl;

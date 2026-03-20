@@ -19,7 +19,7 @@ $subinc = match (true) {
     default => 'products-list'
 };
 
-if($_SESSION['drm_can_publish'] != "true"){
+if (!se_hasPermission('drm_can_publish')) {
     echo '<div class="alert alert-info">';
     echo $lang['rm_no_access'];
     echo '</div>';

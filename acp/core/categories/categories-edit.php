@@ -49,6 +49,8 @@ if(is_int($get_id)) {
     $cat_teaser = $get_category['cat_teaser'];
     $cat_keywords = $get_category['cat_keywords'];
     $cat_hash = $get_category['cat_hash'];
+    $cat_template = $get_category['cat_template'];
+    $cat_template_values = $get_category['cat_template_values'];
 
 } else {
     $btn_submit_text = $lang['save'];
@@ -175,6 +177,7 @@ $form_tpl .= '<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablis
 $form_tpl .= '<li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">'.$lang['nav_btn_info'].'</a></li>';
 $form_tpl .= '<li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">'.$lang['label_content'].'</a></li>';
 $form_tpl .= '<li class="nav-item"><a class="nav-link" href="#metas" data-bs-toggle="tab">'.$lang['nav_btn_metas'].'</a></li>';
+$form_tpl .= '<li class="nav-item"><a class="nav-link" href="#theme" data-bs-toggle="tab">Theme</a></li>';
 $form_tpl .= '</ul>';
 
 $form_tpl .= '</div>';
@@ -203,13 +206,48 @@ $form_tpl .= '<div class="tab-pane fade" id="content">';
 
 $form_tpl .= se_print_form_input($input_wysiwyg);
 
-$form_tpl .= '</div>';
+$form_tpl .= '</div>'; // tab-pane
 
 $form_tpl .= '<div class="tab-pane fade" id="metas">';
 $form_tpl .= se_print_form_input($input_text_description);
 $form_tpl .= se_print_form_input($input_text_keywords);
 $form_tpl .= se_print_form_input($input_slug);
 $form_tpl .= '</div>';
+
+$form_tpl .= '<div class="tab-pane fade" id="theme">';
+
+// check if this page can handle theme values
+if($cat_template == 'use_standard') {
+    // get theme from prefernces
+    $theme_base = SE_ROOT.'public/assets/themes/'.$se_settings['template'];
+} else {
+    $theme_base = SE_ROOT.'public/assets/themes/'.$cat_template;
+}
+
+$theme_injector_base = $theme_base.'/php';
+$theme_injectors = ['category-values.php','category_values.php'];
+$theme_value_injector = null;
+
+foreach ($theme_injectors as $file) {
+    $path = $theme_injector_base . '/' . $file;
+    if (is_file($path)) {
+        $theme_value_injector = $path;
+        break;
+    }
+}
+
+if(is_file("$theme_value_injector")) {
+    function include_thmee_value_file($f) {
+        ob_start();
+        include $f;
+        return ob_get_clean();
+    }
+    $form_tpl .= include_thmee_value_file($theme_value_injector);
+} else {
+    $form_tpl .= 'No injection file found';
+}
+
+$form_tpl .= '</div>'; // tab-pane
 
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
@@ -226,6 +264,31 @@ $form_tpl .= '<div class="card-body">';
 $form_tpl .= '<div class="mb-1">'.se_print_form_input($input_text_priority).'</div>';
 $form_tpl .= '<div class="mb-1">'.se_print_form_input($input_select_language).'</div>';
 
+
+// select template
+$get_themes = get_all_templates();
+$select_template = '<select id="select_template" name="cat_template"  class="form-control">';
+if($cat_template == '') {
+    $selected_standard = 'selected';
+}
+$select_template .= "<option value='use_standard' $selected_standard>$lang[label_use_default]</option>";
+foreach($get_themes as $template) {
+
+    if($template == 'administration') {continue;}
+
+    if($template == "$cat_template") {
+        $selected = 'selected';
+    }
+    $select_template .=  "<option $selected value='$template'>$template</option>";
+}
+
+$select_template .= '</select>';
+
+$form_tpl .= '<div class="mb-3">';
+$form_tpl .= '<div><label class="form-label">Theme / '.$lang['label_template'].'</label>'.$select_template.'</div>';
+$form_tpl .= '</div>';
+
+
 if($cat_hash != '') {
     $form_tpl .= '<input type="hidden" name="cat_hash" value="'.$cat_hash.'">';
 }
@@ -233,7 +296,6 @@ if($cat_hash != '') {
 $form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_category" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 
-$form_tpl .= '</div>';
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';

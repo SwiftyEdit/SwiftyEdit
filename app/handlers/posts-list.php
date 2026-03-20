@@ -4,9 +4,14 @@
  * global variables
  * @var object $db_content see database.php
  * @var array $page_contents
- * @var array $se_prefs
+ * @var array $se_settings
  * @var array $lang
  * @var string $mod_slug
+ *
+ * @var string $swifty_slug
+ * @var string $img_path
+ * @var string $cache_id
+ * @var object $smarty
  */
 
 
@@ -57,6 +62,17 @@ foreach($all_categories as $cats) {
     if($cats['cat_name_clean'] == $array_mod_slug[0]) {
         $cat_class = 'active';
     }
+
+    // get the theme name for the category it's theme values
+    $this_page_theme = $page_contents['page_template'];
+    if($page_contents['page_template'] == 'use_standard') {
+        $this_page_theme = $se_settings['template'];
+    }
+
+    if(($cats['cat_template'] == $this_page_theme) && ($cat_class == 'active')) {
+        $category_template_data = json_decode($cats['cat_template_values'],true);
+    }
+
 
     $categories[] = array(
         "cat_href" => $cat_href,
@@ -207,11 +223,11 @@ if($show_end > $cnt_filter_posts) {
 
 foreach($get_posts as $k => $post) {
 		
-	$post_releasedate = date($se_prefs['prefs_dateformat'],$get_posts[$k]['post_releasedate']);
+	$post_releasedate = date($se_settings['dateformat'],$get_posts[$k]['post_releasedate']);
 	$post_releasedate_year = date('Y',$get_posts[$k]['post_releasedate']);
 	$post_releasedate_month = date('m',$get_posts[$k]['post_releasedate']);
 	$post_releasedate_day = date('d',$get_posts[$k]['post_releasedate']);
-	$post_releasedate_time = date($se_prefs['prefs_timeformat'],$get_posts[$k]['post_releasedate']);
+	$post_releasedate_time = date($se_settings['timeformat'],$get_posts[$k]['post_releasedate']);
 
     $get_posts[$k]['btn_open_post'] = $lang['btn_read_more'];
     $form_action = '/'.$swifty_slug.$mod_slug;
@@ -225,7 +241,7 @@ foreach($get_posts as $k => $post) {
 	$post_images = explode("<->", $get_posts[$k]['post_images']);
     if(isset($post_images[1])) {
         $get_posts[$k]['post_tmb_src'] = $post_images[1];
-    } else if(in_array($se_prefs['prefs_posts_default_banner'], ["without_image", "null", null, ""], true) ||
+    } else if(in_array($se_settings['posts_default_banner'], ["without_image", "null", null, ""], true) ||
         empty($se_prefs['prefs_posts_default_banner'])) {
         $get_posts[$k]['post_tmb_src'] = '';
     } else {
@@ -373,3 +389,4 @@ $posts_page = $smarty->fetch("posts-list.tpl", $cache_id);
 $smarty->assign('page_content', $posts_page, true);
 
 $smarty->assign('categories', $categories);
+$smarty->assign('category_template_data', $category_template_data);

@@ -10,7 +10,7 @@ $subinc = match (true) {
     default => 'general'
 };
 
-if($_SESSION['acp_system'] != "allowed"){
+if (!se_hasPermission('drm_acp_system')) {
     echo '<div class="alert alert-info">';
     echo $lang['rm_no_access'];
     echo '</div>';

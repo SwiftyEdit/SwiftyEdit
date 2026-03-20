@@ -102,6 +102,17 @@ $enable-dark-mode: true;
 
 }
 
+#pageTeaser {
+  background: $teaser-bg;
+  margin-top: -1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+[data-bs-theme=dark] #pageTeaser {
+  background: $teaser-bg-dark;
+}
+
 [data-bs-theme=dark] #pageFooter {
   background: $footer-bg-dark;
 }

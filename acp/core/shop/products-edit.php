@@ -235,7 +235,7 @@ if($product_data['status'] == "2") {
 }
 
 $select_status = "<select name='status' class='form-control custom-select'>";
-if($_SESSION['drm_can_publish'] == "true") {
+if (se_hasPermission('drm_can_publish')) {
     $select_status .= '<option value="2" '.$sel_status_draft.'>'.$lang['status_draft'].'</option>';
     $select_status .= '<option value="1" '.$sel_status_published.'>'.$lang['status_public'].'</option>';
     $select_status .= '<option value="3" '.$sel_status_ghost.'>'.$lang['status_ghost'].'</option>';

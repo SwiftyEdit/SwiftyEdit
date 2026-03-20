@@ -155,3 +155,14 @@ if($se_settings['maintenance_code'] != '') {
 if(!isset($preview)) {
     include_once __DIR__.'/tracker.php';
 }
+
+se_do_frontend_hook('page.display.after', [
+    'page_data' => $page_contents,
+    'product_data' => $product_data ?? null,
+    'post_data' => $post_data ?? null,
+    'event_data' => $event_data ?? null,
+    'query' => $swifty_slug ?? null,
+    'session' => array_filter($_SESSION ?? [], function($key) {
+        return !in_array($key, ['token', 'token_time','se_admin_helpers']);  // Exclude
+    }, ARRAY_FILTER_USE_KEY)
+]);

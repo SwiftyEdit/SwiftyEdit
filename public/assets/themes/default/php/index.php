@@ -6,9 +6,13 @@
  *
  * function theme_text_parser() extends the basic text_parser()
  *
+ * @var array $page_contents
+ * @var object $smarty
+ *
  */
 
 include __DIR__.'/definitions.php';
+$theme_values = json_decode($page_contents['page_template_values'],true);
 
 function theme_text_parser($str) {
 

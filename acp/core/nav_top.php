@@ -48,8 +48,10 @@ echo '</div>';
 
 $user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
 $my_avatar_path = '/assets/avatars/' . md5($_SESSION['user_nick']) . '.png';
-if(is_file("$my_avatar_path")) {
+if(is_file(SE_PUBLIC.$my_avatar_path)) {
     $user_avatar = '<img src="'.$my_avatar_path.'" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
+} else {
+    $user_avatar = '<img src="'.se_identicon_data_url($_SESSION['user_mail']).'" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
 }
 
 echo '<div class="dropstart me-1">';

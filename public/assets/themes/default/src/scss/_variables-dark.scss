@@ -2,10 +2,11 @@
 
 $primary-dark: #405894;
 
-$body-bg-dark: mix($primary-dark,#000000,15) !default;
+$body-bg-dark: mix($primary-dark,$dark,15) !default;
 $body-color-dark: #c0bebe !default;
 
 $header-bg-dark: mix($dark,$primary-dark,75) !default;
+$teaser-bg-dark: mix($dark,$primary-dark,95) !default;
 $footer-bg-dark: $navbar-bg !default;
 
 $widget-bg-dark: darken($body-bg-dark,5) !default;

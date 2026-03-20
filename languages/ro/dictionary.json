@@ -46,6 +46,7 @@
   "status.ghost": "Invizibil",
   "status.private": "Privat",
   "status.draft": "Schiță",
+  "status.deleted": "Deleted",
   "status.redirect": "Redirecționare",
   "status.order.received": "Primit",
   "status.order.completed": "Completat",

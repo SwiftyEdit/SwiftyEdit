@@ -46,6 +46,7 @@
   "status.ghost": "Invisible",
   "status.private": "Privé",
   "status.draft": "Brouillon",
+  "status.deleted": "Deleted",
   "status.redirect": "Rediriger",
   "status.order.received": "Reçu",
   "status.order.completed": "Terminé",
