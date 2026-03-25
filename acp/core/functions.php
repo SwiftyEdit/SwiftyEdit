@@ -1448,30 +1448,27 @@ function se_parse_docs_file($file): array {
 /**
  * @param string $file
  * @param string|null $text
- * @param string|null $section
+ * @param string|null $anchor
  * @return string
  */
-function se_print_docs_link(string $file, string $text = null, string $section = null): string {
+function se_print_docs_link(string $file, string $text = null, string $anchor = null): string {
     global $icon, $lang;
-    $link = '';
     $title = $lang['label_show_help'];
 
-    if ($text == null or $text == 'icon') {
+    if ($text == null || $text == 'icon') {
         $text = $icon['question_circle'];
     }
 
-    if ($section == null or $section == '') {
-        $section = 'swiftyedit';
-    }
+    $vals = ['file' => $file . ($anchor ? '#' . $anchor : '')];
+    $hx_vals = json_encode($vals);
 
-    $link = '<button data-bs-toggle="modal"
-                    data-bs-target="#helpModal"
-                        hx-get="/admin-xhr/docs/read/"
-                        hx-vals=\'{"file":"' . $file . '","section":"' . $section . '"}\'
-                        hx-target="#helpModal"
-                        hx-trigger="click"
-                        class="btn btn-link" title="' . $title . '">' . $text . '</button>';
-    return $link;
+    return '<button data-bs-toggle="modal"
+                data-bs-target="#helpModal"
+                hx-get="/admin-xhr/docs/read/"
+                hx-vals=\'' . $hx_vals . '\'
+                hx-target="#helpModal"
+                hx-trigger="click"
+                class="btn btn-link" title="' . $title . '">' . $text . '</button>';
 }
 
 /**

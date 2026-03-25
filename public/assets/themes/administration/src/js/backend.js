@@ -40,6 +40,13 @@ function registerElements() {
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 }
 
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && event.target.classList.contains('no-enter')) {
+        event.preventDefault();
+    }
+});
+
+
 document.addEventListener('htmx:afterRequest', function(evt) {
 
     $(function() {
@@ -148,16 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     observeContainersForDraggableDivs('.sortable_target');
 
-    const noEnterFields = document.querySelectorAll('.no-enter');
-
-    noEnterFields.forEach(field => {
-        field.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-            }
-        });
-    });
-
     // handle toggle functionality
     document.querySelectorAll('.btn-toggle').forEach(button => {
 
@@ -218,39 +215,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-document.addEventListener("keydown", function (event) {
-    const shortcuts = {
-        "b": "/admin/blog/",
-        "s": "/admin/shop/",
-        "h": "/admin/dashboard/",
-        "u": "/admin/uploads/"
-    };
 
-    // Konfiguration der Tasten-Kombination
-    const useCtrl = true;
-    const useCmd = true;  // Cmd (Meta) für macOS aktivieren
-    const useShift = false;
-    const useAlt = false;
+let pendingAnchor = null;
 
-    const key = event.key.toLowerCase();
+function extractAnchor(file) {
+    const hashIndex = file.indexOf('#');
+    if (hashIndex === -1) return null;
+    return file.substring(hashIndex + 1);
+}
 
-    // Check whether the key combination has been pressed
-    if (
-        shortcuts[key] &&
-        ((useCtrl && event.ctrlKey) || (useCmd && event.metaKey)) && // Ctrl für Windows, Cmd für Mac
-        (useShift ? event.shiftKey : true) &&
-        (useAlt ? event.altKey : true)
-    ) {
-        event.preventDefault(); // Verhindert Standardaktionen
-        window.location.href = shortcuts[key];
+document.addEventListener('htmx:afterOnLoad', function (e) {
+    const target = e.detail.target;
+
+    if (target?.id === 'helpModal') {
+        const hxVals = e.detail.elt?.getAttribute('hx-vals');
+        try {
+            const file = JSON.parse(hxVals)?.file || '';
+            pendingAnchor = extractAnchor(file);
+        } catch {
+            pendingAnchor = null;
+        }
+        return;
+    }
+
+    if (target?.id === 'showModalContent' && pendingAnchor) {
+        const anchor = pendingAnchor;
+        pendingAnchor = null;
+
+        const scrollToSection = () => {
+            const el = target.querySelector('#' + CSS.escape(anchor));
+            if (!el) return;
+
+            const scrollContainer = target.querySelector('#docsScrollContainer');
+            if (scrollContainer) {
+                scrollContainer.scrollTop = el.offsetTop-16;
+            }
+        };
+
+        const modalEl = document.querySelector('#helpModal');
+        if (!modalEl) return;
+
+        if (modalEl.classList.contains('show')) {
+            scrollToSection();
+        } else {
+            modalEl.addEventListener('shown.bs.modal', scrollToSection, { once: true });
+        }
     }
 });
 
-
-
-
-
-// Intercept doc links inside modal
 document.addEventListener('click', function (e) {
     const container = document.querySelector('#showModalContent');
     if (!container || !container.contains(e.target)) return;
@@ -263,37 +275,11 @@ document.addEventListener('click', function (e) {
 
     e.preventDefault();
 
-    let file = href;
-    let section = '';
-
     const hashIndex = href.indexOf('#');
-    if (hashIndex !== -1) {
-        file = href.substring(0, hashIndex);
-        section = href.substring(hashIndex + 1);
-    }
+    const file = hashIndex !== -1 ? href.substring(0, hashIndex) : href;
+    pendingAnchor = hashIndex !== -1 ? href.substring(hashIndex + 1) : null;
 
-    const url = '/admin-xhr/docs/read/?show_file='
-        + encodeURIComponent(file)
-        + '&section='
-        + encodeURIComponent(section);
-
-    htmx.ajax('GET', url, { target: '#showModalContent' });
-});
-
-
-// Scroll to section after docs load via htmx
-document.addEventListener('htmx:afterOnLoad', function (e) {
-    const target = e.detail.target;
-    if (!target || target.id !== 'showModalContent') return;
-
-    const url = new URL(e.detail.xhr.responseURL, window.location.origin);
-    const section = url.searchParams.get('section');
-    if (!section) return;
-
-    const el = target.querySelector('#' + CSS.escape(section));
-    if (!el) return;
-
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    htmx.ajax('GET', '/admin-xhr/docs/read/?show_file=' + encodeURIComponent(file), { target: '#showModalContent' });
 });
 
 
