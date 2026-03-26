@@ -36,7 +36,7 @@ function show_sysdocs_index() {
     $list .= '<div class="list-group list-group-flush">';
 
     foreach ($parsed_files as $item) {
-        $active = ($doc_filepath === $item['fullpath']) ? 'active' : '';
+        $active = str_ends_with($doc_filepath, $item['fullpath']) ? 'active' : '';
         $hx_get = '/admin-xhr/docs/read/?file=' . $item['fullpath'];
 
         $class = 'list-group-level-'.$item['level'];

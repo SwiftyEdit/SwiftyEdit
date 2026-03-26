@@ -12,7 +12,6 @@ require_once __DIR__.'/functions.php';
 if(isset($_GET['file'])) {
 
     $file = se_filter_filepath($_GET['file']);
-    $section = se_filter_filepath($_GET['section']);
 
     if($_GET['file'] == 'start') {
         $file = '01-00-introduction.md';
@@ -24,7 +23,7 @@ if(isset($_GET['file'])) {
       <h5 class="modal-title">'.$lang['btn_docs'].'</h5>
     </div>
     <div class="modal-body" style="height: 70vh">
-    <div class="h-100" id="showModalContent" hx-get="/admin-xhr/docs/read/?show_file='.$file.'&section='.$section.'" hx-trigger="load">
+    <div class="h-100" id="showModalContent" hx-get="/admin-xhr/docs/read/?show_file='.$file.'" hx-trigger="load">
     </div> 
     </div>
     <div class="modal-footer">
@@ -46,7 +45,6 @@ if(isset($_GET['show_file'])) {
     $Parsedown = new ParsedownExtra();
 
     $show_file = se_filter_filepath($_GET['show_file']);
-    $section = se_filter_filepath($_GET['section']);
     $docs_version = 'v2';
     $docs_root = __DIR__.'/../../../docs/'.$docs_version;
 
@@ -81,7 +79,7 @@ if(isset($_GET['show_file'])) {
     echo '</div>';
     echo '<div class="d-flex h-100 w-75">';
 
-    echo '<div class="h-100 overflow-auto">';
+    echo '<div class="h-100 overflow-auto" id="docsScrollContainer">';
     if(str_ends_with($show_file, '.md')) {
         $show_file = se_parse_docs_file($doc_filepath);
         echo $show_file['content'];

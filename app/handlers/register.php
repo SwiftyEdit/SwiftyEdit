@@ -34,6 +34,28 @@ if($se_settings['userregistration'] != "yes") {
 $agreement_txt = se_get_snippet("agreement_text", $languagePack,'content');
 $smarty->assign("agreement_text",$agreement_txt);
 
+// Handle billing and delivery address countries
+$get_delivery_countries = $db_content->select("se_delivery_areas", ["name"],[
+    "status" => 1
+]);
+
+foreach($get_delivery_countries as $countries) {
+    $predefined_delivery_countries[] = $countries['name'];
+}
+
+if(is_array($predefined_delivery_countries) && count($predefined_delivery_countries) > 0) {
+    // Show select dropdown
+    $smarty->assign("show_ba_country_input","select");
+    $smarty->assign("ba_countries",$predefined_delivery_countries);
+    $smarty->assign("show_sa_country_input","select");
+    $smarty->assign("sa_countries",$predefined_delivery_countries);
+
+} else {
+    // Show input type text
+    $smarty->assign("show_ba_country_input","input");
+    $smarty->assign("show_sa_country_input","input");
+}
+
 // Process registration form if submitted
 if($_POST['send_registerform']) {
 
