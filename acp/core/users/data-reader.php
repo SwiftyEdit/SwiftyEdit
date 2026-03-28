@@ -75,6 +75,14 @@ if($_REQUEST['action'] == "list_users") {
         }
     }
 
+    // Type-Filter
+    $filter_by_type = [];
+    if (isset($_SESSION['set_user_type'])) {
+        if ($_SESSION['set_user_type'] == 2) {
+            $conditions["user_class"] = "administrator";
+        }
+    }
+
     $db_where = ["AND" => $conditions];
 
     $db_order = [
@@ -187,6 +195,34 @@ if($_REQUEST['action'] == "list_user_status") {
                 value="'.$k.'"
                 >'.$v.'</button>';
     }
+}
+
+if($_REQUEST['action'] == "list_user_types") {
+
+    $vals = ['csrf_token' => $_SESSION['token']];
+    $writer_uri = '/admin-xhr/users/write/';
+
+    if(!isset($_SESSION['set_user_type'])) {
+        $_SESSION['set_user_type'] = 1;
+    }
+
+    $types_btns = [
+        '1' => '<span class="text-secondary">'.$icon['users'] .'</span> '. $lang['btn_all'],
+        '2' => '<span class="text-success">'.$icon['star'] .'</span> Administrator',
+    ];
+
+    foreach($types_btns as $k => $v) {
+        $class = ($k == $_SESSION['set_user_type']) ? 'active' : '';
+        echo '<button type="button" class="list-group-item list-group-item-action '.$class.'"
+                hx-post="'.$writer_uri.'"
+                hx-trigger="click" 
+                hx-swap="none"
+                hx-vals=\''.json_encode($vals).'\'
+                name="set_user_type"
+                value="'.$k.'"
+                >'.$v.'</button>';
+    }
+
 }
 
 if($_REQUEST['action'] == "list_usergroups") {

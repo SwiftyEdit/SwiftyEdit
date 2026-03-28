@@ -216,9 +216,9 @@ $form_tpl .= '</div>';
 
 $form_tpl .= '<div class="tab-pane fade" id="theme">';
 
-// check if this page can handle theme values
+// check if this category can handle theme values
 if($cat_template == 'use_standard') {
-    // get theme from prefernces
+    // get theme from settings
     $theme_base = SE_ROOT.'public/assets/themes/'.$se_settings['template'];
 } else {
     $theme_base = SE_ROOT.'public/assets/themes/'.$cat_template;
@@ -268,17 +268,15 @@ $form_tpl .= '<div class="mb-1">'.se_print_form_input($input_select_language).'<
 // select template
 $get_themes = get_all_templates();
 $select_template = '<select id="select_template" name="cat_template"  class="form-control">';
-if($cat_template == '') {
-    $selected_standard = 'selected';
-}
-$select_template .= "<option value='use_standard' $selected_standard>$lang[label_use_default]</option>";
+
+$selected_standard = ($cat_template == '') ? 'selected' : '';
+
+$select_template .= '<option value="use_standard"'. $selected_standard.'>'.$lang['label_use_default'].'</option>';
 foreach($get_themes as $template) {
 
     if($template == 'administration') {continue;}
 
-    if($template == "$cat_template") {
-        $selected = 'selected';
-    }
+    $selected = ($template == $cat_template) ? 'selected' : '';
     $select_template .=  "<option $selected value='$template'>$template</option>";
 }
 

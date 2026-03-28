@@ -72,6 +72,7 @@ define("FILES_FOLDER", "$files_path");
 
 
 require '../acp/core/functions.php';
+require '../acp/core/access.php';
 
 if (!isset($_SESSION['editor_class'])) {
     $_SESSION['editor_class'] = "wysiwyg";

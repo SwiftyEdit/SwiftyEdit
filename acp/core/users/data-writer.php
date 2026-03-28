@@ -217,6 +217,14 @@ if(isset($_POST['set_status_filter'])) {
     header( "HX-Trigger: update_users_list");
 }
 
+if(isset($_POST['set_user_type'])) {
+
+    $_SESSION['set_user_type'] = (int) $_POST['set_user_type'];
+    $_SESSION['pagination_users_page'] = 0;
+
+    header( "HX-Trigger: update_users_list");
+}
+
 
 if(isset($_POST['save_my_settings'])) {
 

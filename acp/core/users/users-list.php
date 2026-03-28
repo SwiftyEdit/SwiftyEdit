@@ -40,7 +40,12 @@ echo '<div class="pt-1" hx-get="'.$reader_uri.'?action=list_active_searches" hx-
 echo '<div class="card mb-2">';
 echo '<div class="card-header">'.$lang['label_status'].'</div>';
 echo '<div class="list-group" hx-get="'.$reader_uri.'?action=list_user_status" hx-trigger="load, update_users_list from:body">';
+echo '</div>';
+echo '</div>';
 
+echo '<div class="card mb-2">';
+echo '<div class="card-header">'.$lang['label_type'].'</div>';
+echo '<div class="list-group" hx-get="'.$reader_uri.'?action=list_user_types" hx-trigger="load, update_users_list from:body">';
 echo '</div>';
 echo '</div>';
 
