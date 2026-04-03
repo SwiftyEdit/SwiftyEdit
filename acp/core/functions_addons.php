@@ -1,10 +1,9 @@
 <?php
+
 /**
- * prohibit unauthorized access
+ * @var array $lang
+ * @var array $mod
  */
-if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){ 
-	die ('<h2>Direct File Access Prohibited</h2>');
-}
 
 
 /**
@@ -35,7 +34,7 @@ function get_all_plugins() {
 
 function se_get_all_addons(): array {
 
-    $addons_root = SE_ROOT."/plugins/";
+    $addons_root = SE_PLUGINS;
     $scanned_directory = array_diff(scandir($addons_root), array('..', '.','.DS_Store'));
 
     foreach($scanned_directory as $plugin_dir) {
@@ -46,6 +45,134 @@ function se_get_all_addons(): array {
         }
     }
     return $addon_info;
+}
+
+
+function se_check_addon_update(array $addon_info): array {
+
+    // Return unknown if update_url or build is not defined
+    if(!isset($addon_info['addon']['update_url']) || !isset($addon_info['addon']['build'])) {
+        return ['status' => 'unknown'];
+    }
+
+    // Load remote info.json
+    $json = @file_get_contents($addon_info['addon']['update_url']);
+
+    if($json === false) {
+        return ['status' => 'unknown'];
+    }
+
+    $remote = json_decode($json, true);
+
+    if(!$remote || !isset($remote['versions'])) {
+        return ['status' => 'unknown'];
+    }
+
+    // Load SwiftyEdit build number
+    $se_version = json_decode(file_get_contents(SE_ROOT.'version.json'), true);
+    $se_build = $se_version['build'];
+
+    // Find most recent compatible version
+    $compatible_version = null;
+
+    foreach($remote['versions'] as $v) {
+        if($se_build >= $v['requires_build']) {
+            $compatible_version = $v;
+            break;
+        }
+    }
+
+    if($compatible_version === null) {
+        return ['status' => 'unknown'];
+    }
+
+    // Compare build numbers
+    if($compatible_version['build'] > $addon_info['addon']['build']) {
+        return [
+            'status' => 'update_available',
+            'version' => $compatible_version['version'],
+            'build' => $compatible_version['build'],
+            'download_url' => $compatible_version['download_url']
+        ];
+    }
+
+    return [
+        'status' => 'up_to_date',
+        'version' => $addon_info['addon']['version'],
+        'build' => $addon_info['addon']['build'],
+        'download_url' => null
+    ];
+}
+
+
+function se_install_plugin(string $plugin_id, string $download_url): array {
+
+    // Download ZIP to temporary file
+    $tmp_zip = tempnam(sys_get_temp_dir(), 'se_plugin_');
+    $zip_content = @file_get_contents($download_url);
+
+    if($zip_content === false) {
+        unlink($tmp_zip);
+        return ['success' => false, 'message' => 'Could not download plugin ZIP.'];
+    }
+
+    file_put_contents($tmp_zip, $zip_content);
+
+    // Open and validate ZIP
+    $zip = new ZipArchive();
+    if($zip->open($tmp_zip) !== true) {
+        unlink($tmp_zip);
+        return ['success' => false, 'message' => 'Could not open ZIP file.'];
+    }
+
+    // Validate file types – only allowed extensions
+    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3'];
+
+    for($i = 0; $i < $zip->numFiles; $i++) {
+        $filename = $zip->getNameIndex($i);
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if($ext !== '' && !in_array($ext, $allowed_extensions)) {
+            $zip->close();
+            unlink($tmp_zip);
+            return ['success' => false, 'message' => 'ZIP contains invalid file type: '.$filename];
+        }
+    }
+
+    // Determine plugin path
+    $plugin_path = SE_PLUGINS . DIRECTORY_SEPARATOR . $plugin_id;
+
+    // Create plugin directory if necessary
+    if(!is_dir($plugin_path)) {
+        mkdir($plugin_path, 0755, true);
+    }
+
+    // Extract ZIP – strip root folder, skip /data/ directory
+    for($i = 0; $i < $zip->numFiles; $i++) {
+        $filename = $zip->getNameIndex($i);
+
+        // Strip first folder
+        $relative_path = preg_replace('#^[^/]+/#', '', $filename);
+
+        // Skip empty paths, directories and /data/
+        if(empty($relative_path) || str_ends_with($relative_path, '/') || str_starts_with($relative_path, 'data/')) {
+            continue;
+        }
+
+        // Write file to target path
+        $target = $plugin_path . DIRECTORY_SEPARATOR . $relative_path;
+
+        // Create subdirectory if necessary
+        if(!is_dir(dirname($target))) {
+            mkdir(dirname($target), 0755, true);
+        }
+
+        file_put_contents($target, $zip->getFromIndex($i));
+    }
+
+    $zip->close();
+    unlink($tmp_zip);
+
+    return ['success' => true, 'message' => 'Plugin successfully installed.'];
 }
 
 /**

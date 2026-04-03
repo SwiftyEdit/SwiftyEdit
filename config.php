@@ -33,6 +33,8 @@ $se_failed_logins_limit = null;
 const SE_ROOT = __DIR__ . DIRECTORY_SEPARATOR;
 const SE_CONTENT = SE_ROOT . "data";
 const SE_PUBLIC = SE_ROOT . "public";
+const SE_PLUGINS = SE_ROOT . "plugins";
+const SE_THEMES = SE_PUBLIC . DIRECTORY_SEPARATOR . "themes";
 const SE_ACP = "admin";
 
 // url path for administration

@@ -33,6 +33,13 @@ import '../../node_modules/@uppy/dashboard/dist/style.css'
 import 'print-js/dist/print'
 import 'print-js/dist/print.css'
 
+import Prism from 'prismjs'
+import 'prismjs/components/prism-markup'
+import 'prismjs/components/prism-markup-templating'
+import 'prismjs/components/prism-php'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-css'
+
 import './components/tooltips';
 
 function registerElements() {
@@ -153,6 +160,7 @@ function observeContainersForDraggableDivs(parentSelector) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    setPrismTheme();
     observeContainersForDraggableDivs('.sortable_target');
 
     // handle toggle functionality
@@ -224,8 +232,30 @@ function extractAnchor(file) {
     return file.substring(hashIndex + 1);
 }
 
+function setPrismTheme() {
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+    let link = document.getElementById('prism-theme');
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.id = 'prism-theme';
+        document.head.appendChild(link);
+    }
+
+    link.href = isDark
+        ? '/themes/administration/dist/prismjs/prism-tomorrow.css'
+        : '/themes/administration/dist/prismjs/prism.css';
+}
+
 document.addEventListener('htmx:afterOnLoad', function (e) {
     const target = e.detail.target;
+
+    if (target?.id === 'showModalContent') {
+        requestAnimationFrame(() => {
+            Prism.highlightAllUnder(target);
+        });
+    }
 
     if (target?.id === 'helpModal') {
         const hxVals = e.detail.elt?.getAttribute('hx-vals');

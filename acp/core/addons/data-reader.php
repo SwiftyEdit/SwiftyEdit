@@ -1,6 +1,13 @@
 <?php
 //error_reporting(E_ALL);
 
+/**
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var array $se_settings
+ */
+
 if(!isset($languagePack)) {
     $languagePack = $_SESSION['lang'] ?? 'en';
 }
@@ -30,6 +37,8 @@ if($_REQUEST['action'] == 'list_plugins') {
     foreach($get_all_addons as $k => $v) {
 
         $get_image = base64_encode(file_get_contents(SE_PUBLIC.'/assets/themes/administration/images/poster-addons.png'));
+
+        $update_btn = '<div hx-get="/admin-xhr/addons/read/?check_plugin='.$k.'" hx-trigger="load"></div>';
 
         $addon_name = $v['addon']['name'];
         $addon_version = $v['addon']['version'];
@@ -89,14 +98,18 @@ if($_REQUEST['action'] == 'list_plugins') {
         }
 
         echo '<div class="card mb-1 border-bottom">';
+        echo '<div class="card-header d-flex justify-content-between align-items-center">';
+        echo '<div>'.$addon_name.' <span class="badge badge-se">'.$addon_version.'</span></div>';
+        echo $update_btn;
+        echo '</div>';
         echo '<div class="card-body">';
         echo '<div class="row">';
         echo '<div class="col-md-2">';
         echo '<img src="data:image/png;base64,'.$get_image.'" class="img-fluid rounded-circle">';
         echo '</div>';
         echo '<div class="col-md-10">';
-        echo '<h5 class="card-title">'.$addon_name.' <span class="badge badge-se">'.$addon_version.'</span></h5>';
-        echo $addon_description;
+        echo '<div id="update-response-'.$k.'"></div>';
+        echo '<div class="card-text">'.$addon_description.'</div>';
         echo '</div>';
         echo '</div>';
 
@@ -126,6 +139,46 @@ if($_REQUEST['action'] == 'list_plugins') {
         echo '</div>';
         echo '</div>';
     }
+
+    exit;
+}
+
+// check if a plugin is up to date
+if(isset($_REQUEST['check_plugin'])) {
+
+    $plugin_dir = basename($_REQUEST['check_plugin']);
+    $addon_info_file = SE_PLUGINS. DIRECTORY_SEPARATOR .$plugin_dir. DIRECTORY_SEPARATOR. 'info.json';
+
+    // load plugin info
+    $json = @file_get_contents($addon_info_file);
+    $plugin_info = json_decode($json, true);
+
+    $update_info = se_check_addon_update($plugin_info);
+
+    if($update_info['status'] == 'update_available') {
+
+        $vals = [
+            'csrf_token' => $_SESSION['token'],
+            'plugin_id' => $plugin_dir,
+            'download_url' => $update_info['download_url']
+        ];
+
+        $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success" 
+                            hx-post="/admin-xhr/addons/write/"
+                            hx-vals=\''.json_encode($vals).'\'
+                            hx-target="#update-response-'.$plugin_dir.'"
+                            >Update '.$icon['arrow_clockwise'].'</button>';
+        echo $update_btn;
+    } else if($update_info['status'] == 'up_to_date') {
+        echo '<span class="badge text-bg-success">';
+        echo 'Status: '.$icon['check_circle'];
+        echo '</span>';
+    } else {
+        echo '<span class="badge badge-se">';
+        echo 'Status: '.$icon['question_circle'];
+        echo '</span>';
+    }
+    echo '</span>';
 
     exit;
 }

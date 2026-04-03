@@ -2,6 +2,7 @@
 
   "btn.addon.enable": "Enable Addon",
   "btn.addon.disable": "Disable Addon",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "New",
   "btn.edit": "Edit",
   "btn.duplicate": "Duplicate",

@@ -67,3 +67,103 @@ if(isset($_POST['save_theme_options'])) {
     se_write_theme_options($_POST);
     show_toast($lang['msg_success_db_changed'],'success');
 }
+
+
+if(isset($_POST['get_addon_info_from_url'])) {
+
+    $url = trim($_POST['get_addon_info_from_url']);
+
+    // Only allow HTTPS
+    if(!str_starts_with($url, 'https://')) {
+        echo 'Error: Only HTTPS URLs are allowed.';
+        return;
+    }
+
+    // Automatically append info.json if not present
+    if(!str_ends_with($url, '.json')) {
+        $url = rtrim($url, '/').'/info.json';
+    }
+
+    // Load info.json
+    $json = @file_get_contents($url);
+
+    if($json === false) {
+        echo 'Error: Could not load URL.';
+        return;
+    }
+
+    // Parse JSON
+    $data = json_decode($json, true);
+
+    if(!$data || !isset($data['addon']) || !isset($data['versions'])) {
+        echo 'Error: Invalid plugin info.json';
+        return;
+    }
+
+    // Determine addon type
+    $addon_type = $data['addon']['type'] ?? null;
+
+    if($addon_type === 'plugin') {
+
+        // Load SwiftyEdit build number
+        $se_version = json_decode(file_get_contents(SE_ROOT.'version.json'), true);
+        $se_build = $se_version['build'];
+
+        // Find the most recent compatible version
+        $compatible_version = null;
+
+        foreach($data['versions'] as $v) {
+            if($se_build >= $v['requires_build']) {
+                $compatible_version = $v;
+                break;
+            }
+        }
+
+        if($compatible_version === null) {
+            echo 'Error: No compatible version found for your SwiftyEdit build ('.$se_build.').';
+            return;
+        }
+
+        // Determine plugin ID – from info.json or derive from URL
+        $plugin_id = $data['addon']['id'] ?? basename(dirname($url));
+
+        if(empty($plugin_id)) {
+            echo 'Error: Could not determine plugin ID.';
+            return;
+        }
+
+        // Install plugin
+        $result = se_install_plugin($plugin_id, $compatible_version['download_url']);
+        echo $result['message'];
+
+    } elseif($addon_type === 'theme') {
+
+        // Theme logic follows here
+
+    } else {
+        echo 'Error: Unknown addon type.';
+        return;
+    }
+}
+
+// Handle update request
+if(isset($_POST['update_addon_from_url'])) {
+
+    $plugin_id = trim($_POST['plugin_id']);
+    $download_url = trim($_POST['download_url']);
+
+    if(empty($plugin_id) || empty($download_url)) {
+        echo 'Error: Missing plugin ID or download URL.';
+        return;
+    }
+
+    // Only allow HTTPS
+    if(!str_starts_with($download_url, 'https://')) {
+        echo 'Error: Only HTTPS URLs are allowed.';
+        return;
+    }
+
+    // Update plugin
+    $result = se_install_plugin($plugin_id, $download_url);
+    echo $result['message'];
+}

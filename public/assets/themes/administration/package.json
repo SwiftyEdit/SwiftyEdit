@@ -25,7 +25,8 @@
     "@uppy/dashboard": "^5.1.1",
     "@uppy/form": "^5.1.0",
     "print-js": "^1.6.0",
-    "@floating-ui/dom": "^1.7.6"
+    "@floating-ui/dom": "^1.7.6",
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.27",
