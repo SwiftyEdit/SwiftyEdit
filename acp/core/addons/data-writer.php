@@ -132,75 +132,9 @@ if(isset($_POST['get_addon_info_from_url'])) {
             return;
         }
 
-        // Download ZIP to temporary file
-        $tmp_zip = tempnam(sys_get_temp_dir(), 'se_plugin_');
-        $zip_content = @file_get_contents($compatible_version['download_url']);
-
-        if($zip_content === false) {
-            unlink($tmp_zip);
-            echo 'Error: Could not download plugin ZIP.';
-            return;
-        }
-
-        file_put_contents($tmp_zip, $zip_content);
-
-        // Open and validate ZIP
-        $zip = new ZipArchive();
-        if($zip->open($tmp_zip) !== true) {
-            unlink($tmp_zip);
-            echo 'Error: Could not open ZIP file.';
-            return;
-        }
-
-        // Validate file types – only allowed extensions
-        $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3'];
-
-        for($i = 0; $i < $zip->numFiles; $i++) {
-            $filename = $zip->getNameIndex($i);
-            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-            if($ext !== '' && !in_array($ext, $allowed_extensions)) {
-                $zip->close();
-                unlink($tmp_zip);
-                echo 'Error: ZIP contains invalid file type: '.$filename;
-                return;
-            }
-        }
-
-        // Determine plugin path
-        $plugin_path = SE_PLUGINS . DIRECTORY_SEPARATOR . $plugin_id;
-
-        // Create plugin directory if necessary
-        if(!is_dir($plugin_path)) {
-            mkdir($plugin_path, 0755, true);
-        }
-
-        // Extract ZIP – strip root folder, skip /data/ directory
-        for($i = 0; $i < $zip->numFiles; $i++) {
-            $filename = $zip->getNameIndex($i);
-
-            // Strip first folder
-            $relative_path = preg_replace('#^[^/]+/#', '', $filename);
-
-            // Skip empty paths, directories and /data/
-            if(empty($relative_path) || str_ends_with($relative_path, '/') || str_starts_with($relative_path, 'data/')) {
-                continue;
-            }
-
-            // Write file to target path
-            $target = $plugin_path . DIRECTORY_SEPARATOR . $relative_path;
-
-            // Create subdirectory if necessary
-            if(!is_dir(dirname($target))) {
-                mkdir(dirname($target), 0755, true);
-            }
-
-            file_put_contents($target, $zip->getFromIndex($i));
-        }
-
-        $zip->close();
-        unlink($tmp_zip);
-
-        echo 'Plugin "'.$data['addon']['name'].'" (Version '.$compatible_version['version'].') successfully installed.';
+        // Install plugin
+        $result = se_install_plugin($plugin_id, $compatible_version['download_url']);
+        echo $result['message'];
 
     } elseif($addon_type === 'theme') {
 
@@ -210,4 +144,26 @@ if(isset($_POST['get_addon_info_from_url'])) {
         echo 'Error: Unknown addon type.';
         return;
     }
+}
+
+// Handle update request
+if(isset($_POST['update_addon_from_url'])) {
+
+    $plugin_id = trim($_POST['plugin_id']);
+    $download_url = trim($_POST['download_url']);
+
+    if(empty($plugin_id) || empty($download_url)) {
+        echo 'Error: Missing plugin ID or download URL.';
+        return;
+    }
+
+    // Only allow HTTPS
+    if(!str_starts_with($download_url, 'https://')) {
+        echo 'Error: Only HTTPS URLs are allowed.';
+        return;
+    }
+
+    // Update plugin
+    $result = se_install_plugin($plugin_id, $download_url);
+    echo $result['message'];
 }
