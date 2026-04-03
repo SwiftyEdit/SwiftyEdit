@@ -1430,6 +1430,12 @@ function se_parse_docs_file($file): array {
         $parsed_header = Spyc::YAMLLoadString($src_content[1]);
         $parsed_content = $Parsedown->text("$content");
 
+        $parsed_content = preg_replace_callback(
+            '/class="language-([^"]+)"/',
+            fn($m) => 'class="language-' . strtolower($m[1]) . '"',
+            $parsed_content
+        );
+
         $filemtime = filemtime($file);
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';

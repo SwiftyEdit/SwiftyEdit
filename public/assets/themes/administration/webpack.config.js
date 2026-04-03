@@ -41,7 +41,8 @@ module.exports = {
                 { from: "node_modules/ace-builds/src/mode-html.js", to: "ace/" },
                 { from: "node_modules/ace-builds/src/theme-twilight.js", to: "ace/" },
                 { from: "node_modules/ace-builds/src/theme-chrome.js", to: "ace/" },
-                { from: "src/tinymce-languages", to: "tinymce-languages/" }
+                { from: "src/tinymce-languages", to: "tinymce-languages/" },
+                { from: "node_modules/prismjs/themes/", to: "prismjs/" }
             ],
         }),
     ],
