@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Eklenti Etkinleştir",
   "btn.addon.disable": "Eklenti Etkinleştir",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Yeni",
   "btn.edit": "Düzenle",
   "btn.duplicate": "Çoğalt",
