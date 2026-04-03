@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Włącz wtyczkę",
   "btn.addon.disable": "Wyłącz wtyczkę",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Nowy",
   "btn.edit": "Edycja",
   "btn.duplicate": "Duplikuj",
