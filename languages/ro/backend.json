@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Activează Addon",
   "btn.addon.disable": "Dezactivează Addon",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Nou",
   "btn.edit": "Editare",
   "btn.duplicate": "Duplicate",
