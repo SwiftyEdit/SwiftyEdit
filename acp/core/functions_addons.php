@@ -250,12 +250,10 @@ function se_get_addons($t='module') {
  
 function se_delete_addon($addon,$type) {
 	
-	if($type == 'm') {
-		$dir = SE_CONTENT.'/modules';
-	} else if($type == 'p') {
-		$dir = SE_CONTENT.'/plugins';
-	} else if($type == 't') {
-		$dir = '../styles';
+	if($type == 'plugin') {
+		$dir = SE_PLUGINS;
+	} else if($type == 'theme') {
+		$dir = SE_THEMES;
 	}
 	
 	$remove_dir = $dir.'/'.basename($addon);

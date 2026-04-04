@@ -167,3 +167,9 @@ if(isset($_POST['update_addon_from_url'])) {
     $result = se_install_plugin($plugin_id, $download_url);
     echo $result['message'];
 }
+
+if(isset($_POST['delete_plugin'])) {
+
+    se_delete_addon($_POST['delete_plugin'],'plugin');
+    header( "HX-Trigger: update_plugins_list");
+}

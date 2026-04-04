@@ -71,7 +71,7 @@ if($_REQUEST['action'] == 'list_plugins') {
 
         $vals = ['csrf_token' => $_SESSION['token']];
 
-        $delete_btn = '<button name="delete_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger" 
+        $delete_btn = '<button name="delete_plugin" value="'.$k.'" class="btn btn-sm btn-default text-danger" 
                             hx-post="/admin-xhr/addons/write/"
                             hx-trigger="click"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
