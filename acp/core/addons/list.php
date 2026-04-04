@@ -4,6 +4,7 @@ global $languagePack;
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['plugin'].' '.$lang['nav_btn_addons'];
+echo '<a href="/admin/addons/install/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['btn_install'].'</a>';
 echo '</div>';
 
 echo '<div class="app-container">';
