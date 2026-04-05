@@ -57,7 +57,10 @@ $img_tmb_path = "assets/images_tmb";
 $files_path = "assets/files";
 $themes_path = "assets/themes";
 
-/* deactivate the addons upload function */
+/* Plugin/Addon upload - disabled by default for security reasons
+ * To enable, add the following to SE_CONTENT/config.php:
+ * $se_upload_addons = true;
+ */
 $se_upload_addons = false;
 
 

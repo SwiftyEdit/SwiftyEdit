@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ * @var bool $se_upload_addons from config.php
+ */
+
 // give the plugins the possibility to write via xhr
 $path = explode('/', $_REQUEST['query']);
 $plugin = basename($path[2]);
@@ -72,6 +79,11 @@ if(isset($_POST['save_theme_options'])) {
 // Step 1 – Load and display plugin info
 if(isset($_POST['get_addon_info_from_url'])) {
 
+    if(!$se_upload_addons) {
+        echo 'Error: Plugin installation via URL is disabled.';
+        return;
+    }
+
     $url = trim($_POST['get_addon_info_from_url']);
 
     // Only allow HTTPS
@@ -132,6 +144,11 @@ if(isset($_POST['get_addon_info_from_url'])) {
 
 // Step 2 – Install plugin
 if(isset($_POST['install_addon_from_url'])) {
+
+    if(!$se_upload_addons) {
+        echo 'Error: Plugin installation via URL is disabled.';
+        return;
+    }
 
     $url = trim($_POST['addon_url']);
 
