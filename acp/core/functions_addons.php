@@ -48,6 +48,58 @@ function se_get_all_addons(): array {
 }
 
 
+function se_load_addon_info(string $url): array {
+
+    // Load info.json
+    $json = @file_get_contents($url);
+
+    if($json === false) {
+        return ['success' => false, 'message' => 'Could not load URL.'];
+    }
+
+    // Parse JSON
+    $data = json_decode($json, true);
+
+    if(!$data || !isset($data['addon']) || !isset($data['versions'])) {
+        return ['success' => false, 'message' => 'Invalid plugin info.json'];
+    }
+
+    // Load SwiftyEdit build number
+    $se_version = json_decode(file_get_contents(SE_ROOT.'version.json'), true);
+    $se_build = $se_version['build'];
+
+    // Find the most recent compatible version
+    $compatible_version = null;
+
+    foreach($data['versions'] as $v) {
+        if($se_build >= $v['requires_build']) {
+            $compatible_version = $v;
+            break;
+        }
+    }
+
+    if($compatible_version === null) {
+        return ['success' => false, 'message' => 'No compatible version found for your SwiftyEdit build ('.$se_build.').'];
+    }
+
+    // Determine plugin ID – from info.json or derive from URL
+    $plugin_id = $data['addon']['id'] ?? basename(dirname($url));
+
+    if(empty($plugin_id)) {
+        return ['success' => false, 'message' => 'Could not determine plugin ID.'];
+    }
+
+    return [
+        'success' => true,
+        'message' => '',
+        'addon' => $data['addon'],
+        'navigation' => $data['navigation'] ?? [],
+        'addon_type' => $data['addon']['type'] ?? null,
+        'plugin_id' => $plugin_id,
+        'compatible_version' => $compatible_version
+    ];
+}
+
 function se_check_addon_update(array $addon_info): array {
 
     // Return unknown if update_url or build is not defined
