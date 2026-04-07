@@ -129,7 +129,7 @@ echo '</ul>';
 
 echo '<div class="sidebar-footer">';
 echo '<ul class="nav">';
-echo '<li class="sidebar-nav-item"><a href="/">'.$icon['home'].' '.$lang['nav_btn_homepage'].'</a></li>';
-echo '<li class="sidebar-nav-item"><a href="/?goto=logout">'.$icon['logout'].' '.$lang['nav_btn_logout'].'</a></li>';
+echo '<li class="sidebar-nav-item opacity-50"><a href="/">'.$icon['home'].' '.$lang['nav_btn_homepage'].'</a></li>';
+echo '<li class="sidebar-nav-item opacity-50"><a href="/?goto=logout">'.$icon['power'].' '.$lang['nav_btn_logout'].'</a></li>';
 echo '</ul>';
 echo '</div>';
