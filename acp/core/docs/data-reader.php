@@ -62,7 +62,11 @@ if(isset($_GET['show_file'])) {
     // theme readme
     if(str_contains($show_file, '/themes/')) {
         $theme_dir = basename(dirname($show_file));
-        $doc_filepath = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/'.basename($show_file);
+        if(str_ends_with($show_file, 'readme.md')) {
+            $doc_filepath = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/'.basename($show_file);
+        } else {
+            $doc_filepath = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/docs/'.$languagePack.'/'.basename($show_file);
+        }
     }
 
     echo '<div class="row h-100">';
