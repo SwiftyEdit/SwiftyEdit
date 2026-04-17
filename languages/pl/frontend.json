@@ -184,6 +184,7 @@
   "label_payment_method": "Metoda płatności",
   "label_invoice_address": "Adres faktury",
   "label_cart_comment": "Dodaj komentarz lub notatkę do swojego zamówienia",
+  "label_cart_request_comment": "Add comment or note to your request",
   "msg_accept_terms": "Musisz potwierdzić, że przeczytałeś i zaakceptowałeś uwagi prawne i warunki.",
   "msg_order_send": "<b>Dziękujemy bardzo!<\/b> Twoje zamówienie zostało wysłane.",
   "msg_request_send": "<b>Dziękujemy bardzo!<\/b> Twoje zapytanie zostało wysłane.",
