@@ -3,6 +3,7 @@
  * User Registration Handler
  * SwiftyEdit CMS
  *
+ * @var object $db_content
  * @var array $se_settings
  * @var array $se_db_user
  * @var array $page_contents
@@ -34,27 +35,33 @@ if($se_settings['userregistration'] != "yes") {
 $agreement_txt = se_get_snippet("agreement_text", $languagePack,'content');
 $smarty->assign("agreement_text",$agreement_txt);
 
-// Handle billing and delivery address countries
-$get_delivery_countries = $db_content->select("se_delivery_areas", ["name"],[
+
+// get all countries
+$all_countries = se_get_countries_options();
+
+// get predefined delivery countries
+$get_delivery_countries = $db_content->select("se_delivery_areas", ["code","name"],[
     "status" => 1
 ]);
 
-foreach($get_delivery_countries as $countries) {
-    $predefined_delivery_countries[] = $countries['name'];
-}
+// create an array of predefined delivery countries. F.e. ['DE','AT']
+$predefined_delivery_countries = !empty($get_delivery_countries)
+    ? array_column($get_delivery_countries, 'code')
+    : [];
 
-if(is_array($predefined_delivery_countries) && count($predefined_delivery_countries) > 0) {
-    // Show select dropdown
-    $smarty->assign("show_ba_country_input","select");
-    $smarty->assign("ba_countries",$predefined_delivery_countries);
-    $smarty->assign("show_sa_country_input","select");
-    $smarty->assign("sa_countries",$predefined_delivery_countries);
+$delivery_countries_options = array_intersect_key(
+    $all_countries,
+    array_flip($predefined_delivery_countries)
+);
 
-} else {
-    // Show input type text
-    $smarty->assign("show_ba_country_input","input");
-    $smarty->assign("show_sa_country_input","input");
-}
+$other_countries_options = array_diff_key(
+    $all_countries,
+    $delivery_countries_options
+);
+
+$smarty->assign('delivery_countries_options', $delivery_countries_options);
+$smarty->assign('other_countries_options', $other_countries_options);
+
 
 // Process registration form if submitted
 if($_POST['send_registerform']) {
@@ -228,6 +235,8 @@ if($_POST['send_registerform']) {
         $smarty->assign("send_username",$username,true);
         $smarty->assign("send_mail",$mail,true);
         $smarty->assign("send_mailrepeat",$mailrepeat,true);
+        $smarty->assign("send_psw",$_POST['psw'],true);
+        $smarty->assign("send_psw_repeat",$_POST['psw_repeat'],true);
         $smarty->assign("send_firstname",$firstname,true);
         $smarty->assign("send_name",$name,true);
         $smarty->assign("send_zip",$zip,true);

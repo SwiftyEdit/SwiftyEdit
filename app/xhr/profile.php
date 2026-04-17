@@ -20,35 +20,33 @@ foreach ($get_my_userdata as $key => $value) {
     $smarty->assign($key, $value ?? '', true);
 }
 
-// Handle billing and delivery address countries
-$get_delivery_countries = $db_content->select("se_delivery_areas", ["name"],[
+// get all countries
+$all_countries = se_get_countries_options();
+
+// get predefined delivery countries
+$get_delivery_countries = $db_content->select("se_delivery_areas", ["code","name"],[
     "status" => 1
 ]);
 
-foreach($get_delivery_countries as $countries) {
-    $predefined_delivery_countries[] = $countries['name'];
-}
+// create an array of predefined delivery countries. F.e. ['DE','AT']
+$predefined_delivery_countries = !empty($get_delivery_countries)
+    ? array_column($get_delivery_countries, 'code')
+    : [];
 
-if(is_array($predefined_delivery_countries) && count($predefined_delivery_countries) > 0) {
-    // Show select dropdown
-    $smarty->assign("show_ba_country_input","select");
-    $smarty->assign("ba_countries",$predefined_delivery_countries);
-    $smarty->assign("show_sa_country_input","select");
-    $smarty->assign("sa_countries",$predefined_delivery_countries);
+$delivery_countries_options = array_intersect_key(
+    $all_countries,
+    array_flip($predefined_delivery_countries)
+);
 
-    if($get_my_userdata['ba_country'] != '') {
-        $selected_ba_country = 'selected_ba_'.strtolower($get_my_userdata['ba_country']);
-        $smarty->assign("$selected_ba_country","selected");
-    }
-    if($get_my_userdata['sa_country'] != '') {
-        $selected_sa_country = 'selected_sa_'.strtolower($get_my_userdata['sa_country']);
-        $smarty->assign("$selected_sa_country","selected");
-    }
-} else {
-    // Show input type text
-    $smarty->assign("show_ba_country_input","input");
-    $smarty->assign("show_sa_country_input","input");
-}
+$other_countries_options = array_diff_key(
+    $all_countries,
+    $delivery_countries_options
+);
+
+$smarty->assign('selected_billing_country', $get_my_userdata['ba_country'] ?? '');
+$smarty->assign('selected_delivery_country', $get_my_userdata['sa_country'] ?? '');
+$smarty->assign('delivery_countries_options', $delivery_countries_options);
+$smarty->assign('other_countries_options', $other_countries_options);
 
 // display avatar form
 if(isset($_GET['avatar'])) {
@@ -264,6 +262,7 @@ if(isset($_POST['update_address_sa'])) {
         $smarty->assign("alert_text",$lang['msg_update_profile_error']);
         $smarty->display('alert/alert-danger.tpl');
     }
+    exit;
 }
 
 if(isset($_POST['delete_avatar'])) {

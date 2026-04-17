@@ -6,6 +6,32 @@
  example
  if you select the field user_firstname as additional required field:
  <input type="text" class="form-control" value="{$user_firstname}" name="user_firstname" id="inputUserFirstName" required>
+
+ example for country select (billing address)
+
+ 	<div class="mb-3">
+		<label for="billingCountry">{$lang_label_country}</label>
+	<select name="ba_country" class="form-control" id="billingCountry">
+		<option value="">{$lang_label_please_select}</option>
+		{if $delivery_countries_options}
+			<optgroup label="{$lang_label_country_delivery_available}">
+				{foreach $delivery_countries_options as $code => $name}
+					<option value="{$code}">{$name}</option>
+				{/foreach}
+			</optgroup>
+			<optgroup label="{$lang_label_country_delivery_on_request}">
+				{foreach $other_countries_options as $code => $name}
+					<option value="{$code}">{$name}</option>
+				{/foreach}
+			</optgroup>
+		{else}
+			{foreach $other_countries_options as $code => $name}
+				<option value="{$code}">{$name}</option>
+			{/foreach}
+		{/if}
+	</select>
+	</div>
+
  *}
 
 {nocache}
@@ -67,7 +93,7 @@
 
 	<div class="mb-3">
 		<label for="inputPass1">{$lang_label_psw}</label>
-		<input type="password" class="form-control" name="psw" id="inputPass1" required>
+		<input type="password" class="form-control" name="psw" value="{$send_psw}" id="inputPass1" required>
 	</div>	
 
 	<div class="mb-3">
@@ -75,6 +101,7 @@
 		<input type="password"
                class="form-control"
                name="psw_repeat"
+               value="{$send_psw_repeat}"
                id="inputPass2"
                hx-get="/xhr/se/checks/?check=psw_repeat"
                hx-include="[name=psw]"
