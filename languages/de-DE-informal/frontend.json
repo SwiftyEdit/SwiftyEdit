@@ -39,6 +39,8 @@
   "label_zip": "PLZ",
   "label_town": "Stadt",
   "label_country": "Land",
+  "label_country_delivery_available": "Delivery available",
+  "label_country_delivery_on_request": "Delivery on request",
   "label_please_select": "Bitte wähle dein ...",
   "label_tel": "Telefon",
   "label_fax": "Fax",
