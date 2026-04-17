@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Activer le module",
   "btn.addon.disable": "Désactiver le module",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Nouveau",
   "btn.edit": "Editer",
   "btn.duplicate": "Duplicate",

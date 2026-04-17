@@ -39,6 +39,8 @@
   "label_zip": "Zip code",
   "label_town": "Πόλη",
   "label_country": "Χώρα",
+  "label_country_delivery_available": "Delivery available",
+  "label_country_delivery_on_request": "Delivery on request",
   "label_please_select": "Παρακαλώ επιλέξτε ...",
   "label_tel": "Τηλέφωνο",
   "label_fax": "Φαξ",
