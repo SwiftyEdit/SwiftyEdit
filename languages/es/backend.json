@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Activar complemento",
   "btn.addon.disable": "Deshabilitar complemento",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Nuevo",
   "btn.edit": "Editar",
   "btn.duplicate": "Duplicar",

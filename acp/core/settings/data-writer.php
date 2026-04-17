@@ -3,6 +3,9 @@
 /**
  * global variables
  * @var array $lang
+ * @var object $db_content
+ * @var array $icon
+ * @var array $se_settings
  */
 
 
@@ -70,19 +73,33 @@ if(isset($_POST['update_hide_languages'])) {
 // save delivery area
 if (isset($_POST['send_delivery_country'])) {
 
-    $country = sanitizeUserInputs($_POST['delivery_country']);
+    if($_POST['delivery_country'] == '') {
+        header( "HX-Trigger: update_deliveryCountries_list");
+        exit;
+    }
+
+    $country_code = sanitizeUserInputs($_POST['delivery_country']);
     $status = (int) $_POST['delivery_country_status'];
     $tax = (int) $_POST['delivery_country_tax'];
 
+    $countries = se_get_countries();
+    foreach ($countries as $country) {
+        if ($country['alpha2'] == $country_code) {
+            $country_name = $country['name'];
+        }
+    }
+
     if($_POST['send_delivery_country'] == 'save') {
         $db_content->insert("se_delivery_areas", [
-            "name" => $country,
+            "code" => $country_code,
+            "name" => $country_name,
             "status" => $status,
             "tax" => $tax
         ]);
     } else {
         $db_content->update("se_delivery_areas", [
-            "name" => $country,
+            "code" => $country_code,
+            "name" => $country_name,
             "status" => $status,
             "tax" => $tax
         ],[

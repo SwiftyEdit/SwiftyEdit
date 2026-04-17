@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Разреши Адон",
   "btn.addon.disable": "Разреши Адон",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Ново",
   "btn.edit": "Редактирай",
   "btn.duplicate": "Дубликирай",

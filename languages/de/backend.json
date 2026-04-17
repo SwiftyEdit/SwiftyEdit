@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Addon aktivieren",
   "btn.addon.disable": "Addon deaktivieren",
+  "btn.addon.get_info": "Addon Informationen abrufen",
   "btn.new": "Neu",
   "btn.edit": "Bearbeiten",
   "btn.duplicate": "Duplizieren",

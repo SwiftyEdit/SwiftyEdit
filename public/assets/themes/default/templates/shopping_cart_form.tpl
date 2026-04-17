@@ -20,7 +20,7 @@
         <input class="form-control" id="requestmail" type="email" name="buyer_mail" value="{$buyer_mail}" {$readonly}>
     </div>
     <div class="mb-3">
-        <label class="form-label" for="requestcomment">{$lang_label_cart_comment}</label>
+        <label class="form-label" for="requestcomment">{$lang_label_cart_request_comment}</label>
         <textarea class="form-control" id="requestcomment" name="buyer_comment">{$buyer_comment}</textarea>
     </div>
     <button type="submit" class="btn btn-success" name="send_request" value="send">{$lang_btn_send_order_request}</button>

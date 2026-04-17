@@ -110,6 +110,7 @@ $icon = [
     "person_x" => '<i class="bi bi-person-x"></i>',
     "plugin" => '<i class="bi bi-plugin"></i>',
     "plus" => '<i class="bi bi-plus"></i>',
+    "power" => '<i class="bi bi-power"></i>',
 
     "question" => '<i class="bi bi-question"></i>',
     "question_circle" => '<i class="bi bi-question-circle"></i>',

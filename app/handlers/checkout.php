@@ -6,7 +6,7 @@
  * - send order
  *
  * global variables
- * @var array $se_prefs global project variable
+ * @var array $se_settings global project variable
  * @var array $lang global project variable
  * @var string $languagePack global project variable
  * @var object $db_content database
@@ -71,7 +71,7 @@ if($get_cd['ba_company'] != '') {
 /**
  * check if we have all mandatory information
  * billing address
- * firstname, lastname, street, street nbr, zip, city and country
+ * firstname, lastname, street, street nbr, zip, city, country
  */
 
 if($get_cd['ba_firstname'] == '' ||
@@ -135,14 +135,14 @@ $add_delivery_tax = true;
 $add_product_tax = true;
 $get_delivery_countries = $db_content->select("se_delivery_areas", "*");
 foreach($get_delivery_countries as $delivery_country) {
-    if(($shipping_country == $delivery_country['name']) && $delivery_country['tax'] == '2') {
+    if(($shipping_country == $delivery_country['code']) && $delivery_country['tax'] == '2') {
         $add_delivery_tax = false;
         $add_product_tax = false;
     }
 }
 
 
-if($se_prefs['prefs_user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_admin'] != 'yes') {
+if($se_settings['user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_admin'] != 'yes') {
     $checkout_error = 'missing_approval';
 }
 
@@ -200,11 +200,11 @@ for($i=0;$i<$cnt_cart_items;$i++) {
     }
 
 	if($product_tax == '1') {
-		$tax = $se_prefs['prefs_posts_products_default_tax'];
+		$tax = $se_settings['posts_products_default_tax'];
 	} else if($product_tax == '2') {
-		$tax = $se_prefs['prefs_posts_products_tax_alt1'];
+		$tax = $se_settings['posts_products_tax_alt1'];
 	} else {
-		$tax = $se_prefs['prefs_posts_products_tax_alt2'];
+		$tax = $se_settings['posts_products_tax_alt2'];
 	}
 
     if($add_product_tax == false) {
@@ -264,26 +264,26 @@ $smarty->assign('cart_items', $cart_item);
 /* check if we have products for shipping */
 if($shipping_products > 0) {
 	
-	if($se_prefs['prefs_shipping_costs_mode'] == 1) {
+	if($se_settings['shipping_costs_mode'] == 1) {
 		/* flatrate shipping */
 		$shipping_type = '';
-		$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_flat']);
+		$shipping_costs = str_replace(',','.',$se_settings['shipping_costs_flat']);
 	}
 
-	if($se_prefs['prefs_shipping_costs_mode'] == 2) {
+	if($se_settings['shipping_costs_mode'] == 2) {
 		/* we need to determine the highest shipping category */
 		/* it's stored in $store_shipping_cat */
 		if($store_shipping_cat == 1) {
-			$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_cat1']);
+			$shipping_costs = str_replace(',','.',$se_settings['shipping_costs_cat1']);
 		} else if($store_shipping_cat == 2) {
-			$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_cat2']);
+			$shipping_costs = str_replace(',','.',$se_settings['shipping_costs_cat2']);
 		} else {
-			$shipping_costs = str_replace(',','.',$se_prefs['prefs_shipping_costs_cat3']);
+			$shipping_costs = str_replace(',','.',$se_settings['shipping_costs_cat3']);
 		}
 	}
 
     // check for delivery plugins and maybe overwrite $shipping_costs
-    $active_delivery_addons = json_decode($se_prefs['prefs_delivery_addons'],true);
+    $active_delivery_addons = json_decode($se_settings['delivery_addons'],true);
     foreach($active_delivery_addons as $delivery_addon) {
         $addon_root = SE_ROOT.'/plugins/'.basename($delivery_addon);
         if(file_exists("$addon_root/global/index.php")) {
@@ -339,26 +339,30 @@ $cart_price_subtotal = $cart_price_subtotal_net+$cart_included_taxes;
 $cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs_total;
 
 // check if we have a maximum order value
-if($se_prefs['prefs_posts_max_order_value'] != '') {
+if($se_settings['posts_max_order_value'] != '') {
 
-    $settings_max_order_value = str_replace(',','.',$se_prefs['prefs_posts_max_order_value']);
+    $settings_max_order_value = str_replace(',','.',$se_settings['posts_max_order_value']);
     if($cart_price_subtotal > $settings_max_order_value) {
         // switch to request mode
-        // overwrite $se_prefs['prefs_posts_order_mode']
-        $se_prefs['prefs_posts_order_mode'] = 2;
+        // overwrite $se_settings['posts_order_mode']
+        $se_settings['posts_order_mode'] = 2;
         $max_order_value_msg = se_get_snippet('cart_max_order_value',$languagePack,'content');
     }
 }
 
+// If delivery areas have been specified and the user’s country is not included, only a request can be sent.
+if(!empty($get_delivery_countries) && !in_array($shipping_country, array_column($get_delivery_countries, 'code'))) {
+    $se_settings['posts_order_mode'] = 2;
+}
 
 /**
- * check prefs_posts_order_mode
+ * check settings posts_order_mode
  * 1 - order mode is active
  * 2 - buyer can only send a request
  * 3 - buyer can order or send a request
- * */
+ */
 
-if($se_prefs['prefs_posts_order_mode'] == 2 OR $se_prefs['prefs_posts_order_mode'] == 3) {
+if($se_settings['posts_order_mode'] == 2 OR $se_settings['posts_order_mode'] == 3) {
     $smarty->assign('show_request_form', 1);
 
     // if this is a registered user, fill in form details
@@ -372,7 +376,7 @@ if($se_prefs['prefs_posts_order_mode'] == 2 OR $se_prefs['prefs_posts_order_mode
     $smarty->assign('show_request_form', 0);
 }
 
-if($se_prefs['prefs_posts_order_mode'] == 1 OR $se_prefs['prefs_posts_order_mode'] == 3) {
+if($se_settings['posts_order_mode'] == 1 OR $se_settings['posts_order_mode'] == 3) {
     $smarty->assign('show_submit_order_form', 1);
 } else {
     $smarty->assign('show_submit_order_form', 0);
@@ -528,8 +532,8 @@ $smarty->assign('cart_price_subtotal', se_post_print_currency($cart_price_subtot
 $smarty->assign('cart_price_subtotal_net', se_post_print_currency($cart_price_subtotal_net), true);
 $smarty->assign('cart_included_taxes', se_post_print_currency($cart_included_taxes), true);
 $smarty->assign('cart_price_total', se_post_print_currency($cart_price_total), true);
-$smarty->assign('currency', $se_prefs['prefs_posts_products_default_currency'], true);
-$smarty->assign('price_mode', $se_prefs['prefs_posts_price_mode'], true);
+$smarty->assign('currency', $se_settings['posts_products_default_currency'], true);
+$smarty->assign('price_mode', $se_settings['posts_price_mode'], true);
 
 $cart_table = $smarty->fetch("shopping_cart.tpl",$cache_id);
 

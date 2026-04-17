@@ -1,6 +1,7 @@
 {
   "btn.addon.enable": "Ενεργοποίηση Πρόσθετου",
   "btn.addon.disable": "Απενεργοποίηση Πρόσθετου",
+  "btn.addon.get_info": "Get Addon Information",
   "btn.new": "Νέο",
   "btn.edit": "Επεξεργασία",
   "btn.duplicate": "Duplicate",

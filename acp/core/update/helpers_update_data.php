@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * global variables
+ * @var object $db_content
+ * @var object $db_posts
+ * @var object $db_user
+ */
+
 if($_POST['helper_update_table'] == 'se_content') {
     echo '<p>searching for replace in contents ...</p>';
 
@@ -75,5 +82,63 @@ if($_POST['helper_update_table'] == 'se_posts') {
     $db_posts->replace("se_events", ["text" => [ "$search" => "$replace" ]]);
     $db_posts->replace("se_events", ["images" => [ "$search" => "$replace" ]]);
     echo '<p class="text-success">Replaced <code>'. $search .'</code>  with <code>'. $replace .'</code></p>';
+    exit;
+}
+
+if($_POST['helper_update_table'] == 'se_users_country') {
+    echo '<p>Migrating country fields to ISO 3166-1 alpha-2 codes ...</p>';
+
+    $migration_map = se_get_country_migration_map();
+    $users = $db_user->select("se_user", ["user_id", "ba_country", "sa_country"]);
+
+    $updated = 0;
+    $skipped = 0;
+
+    foreach ($users as $user) {
+        $ba_country = $migration_map[$user['ba_country']] ?? $user['ba_country'];
+        $sa_country = $migration_map[$user['sa_country']] ?? $user['sa_country'];
+
+        if ($ba_country !== $user['ba_country'] || $sa_country !== $user['sa_country']) {
+            $db_user->update("se_user", [
+                "ba_country" => $ba_country,
+                "sa_country" => $sa_country,
+            ], [
+                "user_id" => $user['user_id']
+            ]);
+            $updated++;
+        } else {
+            $skipped++;
+        }
+    }
+
+    echo '<p class="text-success">Updated <code>' . $updated . '</code> users, skipped <code>' . $skipped . '</code></p>';
+    exit;
+}
+
+if($_POST['helper_update_table'] == 'se_delivery_areas_country') {
+    echo '<p>Migrating delivery areas to ISO 3166-1 alpha-2 codes ...</p>';
+
+    $migration_map = se_get_country_migration_map();
+    $areas = $db_content->select("se_delivery_areas", ["id", "name", "code"]);
+
+    $updated = 0;
+    $skipped = 0;
+
+    foreach ($areas as $area) {
+        $code = $migration_map[$area['name']] ?? null;
+
+        if ($code && $code !== $area['code']) {
+            $db_content->update("se_delivery_areas", [
+                "code" => $code,
+            ], [
+                "id" => $area['id']
+            ]);
+            $updated++;
+        } else {
+            $skipped++;
+        }
+    }
+
+    echo '<p class="text-success">Updated <code>' . $updated . '</code> delivery areas, skipped <code>' . $skipped . '</code></p>';
     exit;
 }

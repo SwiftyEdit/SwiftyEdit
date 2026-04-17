@@ -3,6 +3,9 @@
 /**
  * global
  * @var array $icon
+ * @var array $lang
+ * @var object $db_content
+ * @var array $se_settings
  */
 
 
@@ -12,6 +15,7 @@ if($_REQUEST['action'] == 'deliveryCountries') {
 
     echo '<table class="table">';
     echo '<tr>';
+    echo '<td>Code</td>';
     echo '<td>'.$lang['label_country'].'</td>';
     echo '<td>'.$lang['label_status'].'</td>';
     echo '<td>'.$lang['label_plus_tax'].'</td>';
@@ -30,6 +34,7 @@ if($_REQUEST['action'] == 'deliveryCountries') {
         }
 
         echo '<tr>';
+        echo '<td><code>'.$country['code'].'</code></td>';
         echo '<td>'.$country['name'].'</td>';
         echo '<td>'.$status.'</td>';
         echo '<td>'.$tax.'</td>';
@@ -45,6 +50,8 @@ if($_REQUEST['action'] == 'deliveryCountries') {
 
 if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_country']) {
 
+    $all_countries = se_get_countries();
+
     $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="save">'.$lang['btn_save'].'</button>';
 
     if(isset($_REQUEST['edit_delivery_country'])) {
@@ -53,11 +60,20 @@ if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_coun
         $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="'.$edit_country.'">'.$lang['btn_update'].'</button>';
     }
 
+    $country_options = [
+        $lang['label_please_select'] => ''
+    ];
+
+    foreach($all_countries as $country) {
+        $country_options[$country['name']] = $country['alpha2'];
+    }
+
     $input_delivery_country = [
         "input_name" => "delivery_country",
-        "input_value" => $get_country['name'] ?? '',
+        "input_value" => $get_country['code'] ?? '',
         "label" => $lang['label_shop_add_delivery_area'],
-        "type" => "text"
+        "options" => $country_options,
+        "type" => "select"
     ];
 
     $input_delivery_country_status = [

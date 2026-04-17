@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ * @var bool $se_upload_addons from config.php
+ */
+
 // give the plugins the possibility to write via xhr
 $path = explode('/', $_REQUEST['query']);
 $plugin = basename($path[2]);
@@ -69,7 +76,13 @@ if(isset($_POST['save_theme_options'])) {
 }
 
 
+// Step 1 – Load and display plugin info
 if(isset($_POST['get_addon_info_from_url'])) {
+
+    if(!$se_upload_addons) {
+        echo 'Error: Plugin installation via URL is disabled.';
+        return;
+    }
 
     $url = trim($_POST['get_addon_info_from_url']);
 
@@ -84,59 +97,80 @@ if(isset($_POST['get_addon_info_from_url'])) {
         $url = rtrim($url, '/').'/info.json';
     }
 
-    // Load info.json
-    $json = @file_get_contents($url);
+    $info = se_load_addon_info($url);
 
-    if($json === false) {
-        echo 'Error: Could not load URL.';
+    if(!$info['success']) {
+        echo 'Error: '.$info['message'];
         return;
     }
 
-    // Parse JSON
-    $data = json_decode($json, true);
+    if($info['addon_type'] === 'plugin') {
 
-    if(!$data || !isset($data['addon']) || !isset($data['versions'])) {
-        echo 'Error: Invalid plugin info.json';
+        $compatible_version = $info['compatible_version'];
+
+        // Display plugin info and confirm button
+        echo '<div class="card p-3 mt-3">';
+        echo '<table class="table">';
+        echo '<tr><th>Name</th><td>'.$info['addon']['name'].'</td></tr>';
+        echo '<tr><th>Author</th><td>'.$info['addon']['author'].'</td></tr>';
+        echo '<tr><th>Description</th><td>'.$info['addon']['description'].'</td></tr>';
+        echo '<tr><th>Version</th><td>'.$compatible_version['version'].' (Build '.$compatible_version['build'].')</td></tr>';
+        echo '<tr><th>Requires SwiftyEdit</th><td>>= '.$compatible_version['requires_build'].'</td></tr>';
+        echo '</table>';
+
+        $vals = json_encode([
+            'csrf_token' => $_SESSION['token'],
+            'install_addon_from_url' => 1,
+            'addon_url' => $url
+        ]);
+
+        echo '<button class="btn btn-primary"
+                hx-post="/admin-xhr/addons/write/"
+                hx-vals=\''.$vals.'\'
+                hx-target="#get-addon-response">
+                Install</button>';
+
+        echo '</div>';
+
+    } elseif($info['addon_type'] === 'theme') {
+
+        // Theme logic follows here
+
+    } else {
+        echo 'Error: Unknown addon type.';
+        return;
+    }
+}
+
+// Step 2 – Install plugin
+if(isset($_POST['install_addon_from_url'])) {
+
+    if(!$se_upload_addons) {
+        echo 'Error: Plugin installation via URL is disabled.';
         return;
     }
 
-    // Determine addon type
-    $addon_type = $data['addon']['type'] ?? null;
+    $url = trim($_POST['addon_url']);
 
-    if($addon_type === 'plugin') {
+    // Only allow HTTPS
+    if(!str_starts_with($url, 'https://')) {
+        echo 'Error: Only HTTPS URLs are allowed.';
+        return;
+    }
 
-        // Load SwiftyEdit build number
-        $se_version = json_decode(file_get_contents(SE_ROOT.'version.json'), true);
-        $se_build = $se_version['build'];
+    $info = se_load_addon_info($url);
 
-        // Find the most recent compatible version
-        $compatible_version = null;
+    if(!$info['success']) {
+        echo 'Error: '.$info['message'];
+        return;
+    }
 
-        foreach($data['versions'] as $v) {
-            if($se_build >= $v['requires_build']) {
-                $compatible_version = $v;
-                break;
-            }
-        }
+    if($info['addon_type'] === 'plugin') {
 
-        if($compatible_version === null) {
-            echo 'Error: No compatible version found for your SwiftyEdit build ('.$se_build.').';
-            return;
-        }
-
-        // Determine plugin ID – from info.json or derive from URL
-        $plugin_id = $data['addon']['id'] ?? basename(dirname($url));
-
-        if(empty($plugin_id)) {
-            echo 'Error: Could not determine plugin ID.';
-            return;
-        }
-
-        // Install plugin
-        $result = se_install_plugin($plugin_id, $compatible_version['download_url']);
+        $result = se_install_plugin($info['plugin_id'], $info['compatible_version']['download_url']);
         echo $result['message'];
 
-    } elseif($addon_type === 'theme') {
+    } elseif($info['addon_type'] === 'theme') {
 
         // Theme logic follows here
 
@@ -166,4 +200,10 @@ if(isset($_POST['update_addon_from_url'])) {
     // Update plugin
     $result = se_install_plugin($plugin_id, $download_url);
     echo $result['message'];
+}
+
+if(isset($_POST['delete_plugin'])) {
+
+    se_delete_addon($_POST['delete_plugin'],'plugin');
+    header( "HX-Trigger: update_plugins_list");
 }

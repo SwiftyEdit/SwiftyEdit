@@ -12,6 +12,7 @@ $table_name = "se_delivery_areas";
 $cols = [
     "id" => 'INTEGER(12) NOT NULL PRIMARY KEY AUTO_INCREMENT',
     "status"  => "BOOLEAN NOT NULL DEFAULT 1",
+    "code" => "VARCHAR(2) NOT NULL DEFAULT ''",
     "name" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "tax"  => "BOOLEAN NOT NULL DEFAULT 1"
 ];
