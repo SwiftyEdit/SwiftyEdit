@@ -142,3 +142,47 @@ function se_getLastSlug(string $input): string {
     $path = parse_url($input, PHP_URL_PATH) ?? $input;
     return pathinfo(rtrim($path, '/'), PATHINFO_BASENAME) . '/';
 }
+
+function se_get_countries(): array
+{
+    static $countries = null;
+
+    if ($countries === null) {
+        $countries = iterator_to_array(new League\ISO3166\ISO3166);
+    }
+
+    return $countries;
+}
+
+function se_get_country_migration_map(): array
+{
+    // Manual mappings for known special cases (typos, local languages, etc.)
+    $manual = [
+        'Deutschland'  => 'DE',
+        'Österreich'   => 'AT',
+        'Schweiz'      => 'CH',
+        'Frankreich'   => 'FR',
+        'France'       => 'FR',
+    ];
+
+    // Automatically complete using ISO 3166
+    $auto = [];
+    foreach (se_get_countries() as $country) {
+        $auto[$country['name']]  = $country['alpha2']; // 'Germany' => 'DE'
+        $auto[$country['alpha3']] = $country['alpha2']; // 'DEU' => 'DE'
+    }
+
+    // Manuelle Einträge haben Vorrang (array_merge: rechts überschreibt links)
+    return array_merge($auto, $manual);
+}
+
+function se_get_countries_options(): array
+{
+    $options = [];
+
+    foreach (se_get_countries() as $country) {
+        $options[$country['alpha2']] = $country['name'];
+    }
+
+    return $options;
+}
