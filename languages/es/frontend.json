@@ -184,7 +184,6 @@
   "label_payment_method": "Método de pago",
   "label_invoice_address": "Dirección de factura",
   "label_cart_comment": "Añadir comentario o nota a su pedido",
-  "label_cart_request_comment": "Add comment or note to your request",
   "msg_accept_terms": "Debe confirmar que ha leído y aceptado los avisos y términos legales.",
   "msg_order_send": "<b>Thank you very much!<\/b> Your order has been sent.",
   "msg_request_send": "<b>Thank you very much!<\/b> Your request was sent.",

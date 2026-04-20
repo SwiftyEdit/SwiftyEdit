@@ -50,12 +50,12 @@
                     <select name="ba_country" class="form-control" id="billingCountry">
                         <option value="">{$lang_label_please_select}</option>
                         {if $delivery_countries_options}
-                            <optgroup label="Delivery countries">
+                            <optgroup label="{$lang_label_country_delivery_available}">
                                 {foreach $delivery_countries_options as $code => $name}
                                     <option value="{$code}" {if $code === $selected_billing_country}selected{/if}>{$name}</option>
                                 {/foreach}
                             </optgroup>
-                            <optgroup label="Other countries">
+                            <optgroup label="{$lang_label_country_delivery_on_request}">
                                 {foreach $other_countries_options as $code => $name}
                                     <option value="{$code}" {if $code === $selected_billing_country}selected{/if}>{$name}</option>
                                 {/foreach}

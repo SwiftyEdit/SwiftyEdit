@@ -184,7 +184,6 @@
   "label_payment_method": "Metoda de plată",
   "label_invoice_address": "Adresa facturare",
   "label_cart_comment": "Adauga un comentariu sau o nota la comanda ta",
-  "label_cart_request_comment": "Add comment or note to your request",
   "msg_accept_terms": "Trebuie să confirmați că ați citit și ați acceptat notificările și termenii legali.",
   "msg_order_send": "<b>Mulțumim foarte mult!<\/b> Comanda ta a fost trimisă.",
   "msg_request_send": "<b>Vă mulţumim foarte mult!<\/b> Cererea dvs. a fost trimisă.",
