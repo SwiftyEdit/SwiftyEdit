@@ -1,16 +1,25 @@
 <?php
 
+/**
+ * @var object $db_user
+ * @var object $smarty
+ * @var array $lang
+ * @var array $se_settings
+ * @var string $se_base_url
+ * @var string $languagePack
+ */
+
 $mail = strip_tags($_POST['mail']);
 $send_data = 'false';
 $msg_mail_format = '';
 
-//check existing E-Mail Adresses
+//check existing E-Mail Address
 $all_usermail_array = array();
 
 if(!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
     $msg_mail_format = $lang['msg_invalid_mail_format'];
 } else {
-    $all_usermail_array = get_all_usermail($se_db_user);
+    $all_usermail_array = get_all_usermail();
 
     foreach($all_usermail_array as $entry) {
         if($mail == $entry['user_mail']) {
@@ -40,8 +49,7 @@ if($send_data == "true") {
     ]);
 
     /* generate the message */
-
-    $email_content = se_get_textlib("account_reset_psw","$languagePack",'content');
+    $email_content = se_get_snippet("account_reset_psw","$languagePack",'content');
     if($email_content == '') {
         $email_content = $lang['forgotten_psw_mail_info'];
     }
