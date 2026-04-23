@@ -13,6 +13,7 @@ $table_name = "se_posts";
 
 $cols = array(
 	"post_id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+    "post_uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
 	"post_type"  => "VARCHAR(20) NOT NULL DEFAULT ''",
 	"post_date"  => 'INTEGER(12)',
 	"post_releasedate"  => 'INTEGER(12)',

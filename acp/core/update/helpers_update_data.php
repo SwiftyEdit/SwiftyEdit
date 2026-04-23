@@ -142,3 +142,21 @@ if($_POST['helper_update_table'] == 'se_delivery_areas_country') {
     echo '<p class="text-success">Updated <code>' . $updated . '</code> delivery areas, skipped <code>' . $skipped . '</code></p>';
     exit;
 }
+
+// UUID in se_users
+if($_POST['helper_update_table'] == 'se_users_uuid') {
+    echo se_helper_fill_uuids($db_user, 'se_user', 'user_id', 'user_uuid');
+    exit;
+}
+
+// UUID in se_orders
+if($_POST['helper_update_table'] == 'se_orders_uuid') {
+    echo se_helper_fill_uuids($db_content, 'se_orders', 'id', 'uuid');
+    exit;
+}
+
+// UUID in se_products
+if($_POST['helper_update_table'] == 'se_products_uuid') {
+    echo se_helper_fill_uuids($db_posts, 'se_products', 'id', 'uuid');
+    exit;
+}

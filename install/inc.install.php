@@ -1,7 +1,8 @@
 <?php
 	
 if(!defined('INSTALLER')) {
-	die("PERMISSION DENIED!");
+    header("location:../");
+    exit;
 }
 
 foreach($_POST as $key => $val) {

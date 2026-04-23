@@ -26,6 +26,7 @@ $table_name = "se_comments";
 
 $cols = array(
   "comment_id"  => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+  "comment_uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
   "comment_parent_id"  => "INTEGER(12)",
   "comment_relation_type"  => "VARCHAR(20) NOT NULL DEFAULT ''",
   "comment_relation_id"  => "INTEGER(12)",

@@ -5,6 +5,7 @@ $table_name = "se_media";
 
 $cols = array(
   "media_id"  => 'INTEGER(12) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+  "media_uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
   "media_lang"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_type"  => "VARCHAR(255) NOT NULL DEFAULT ''",
   "media_file"  => "VARCHAR(255) NOT NULL DEFAULT ''",

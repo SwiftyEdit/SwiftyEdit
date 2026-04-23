@@ -1017,6 +1017,7 @@ function se_add_to_cart() {
 	$cart_product_price_net = $this_item['product_price_net'];
 	$cart_product_title = $this_item['title'];
 	$cart_product_number = $this_item['product_number'];
+    $cart_product_uuid = $this_item['uuid'];
 
     $cart_product_slug = '#';
     if(isset($_POST['product_href'])) {
@@ -1037,6 +1038,7 @@ function se_add_to_cart() {
 		"cart_user_hash" =>  $cart_user_hash,
 		"cart_user_id" =>  $cart_user_id,
 		"cart_product_id" =>  $cart_product_id,
+        "cart_product_uuid" =>  $cart_product_uuid,
         "cart_product_slug" =>  $cart_product_slug,
 		"cart_product_amount" =>  $cart_product_amount,
 		"cart_product_price_net" =>  $cart_product_price_net,

@@ -6,14 +6,13 @@
  */
 
 if(!defined('INSTALLER')) {
-	header("location:login.php");
-	die("PERMISSION DENIED!");
+    header("location:../");
+    exit;
 }
 
-if($_SESSION['user_class'] != "administrator"){
-	//move to login or die
-	header("location:login.php");
-	die("PERMISSION DENIED!");
+if($_SESSION['user_class'] !== "administrator"){
+	header("location:../");
+	exit;
 }
 
 copy('maintenance.html', '../maintenance.html');

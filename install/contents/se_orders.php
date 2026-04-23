@@ -18,6 +18,7 @@ $table_name = 'se_orders';
 
 $cols = array(
   "id"  => 'INTEGER(12) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+  "uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
   "user_id"  => 'INTEGER(12)',
   "order_nbr"  => "VARCHAR(25) NOT NULL DEFAULT ''",
   "order_time"  => 'INTEGER(12)',

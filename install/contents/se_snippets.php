@@ -10,6 +10,7 @@ $table_name = "se_snippets";
 
 $cols = array(
     "snippet_id" => 'INTEGER(12) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+    "snippet_uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
     "snippet_type" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "snippet_shortcode" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "snippet_name" => "VARCHAR(50) NOT NULL DEFAULT ''",

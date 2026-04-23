@@ -5,6 +5,7 @@ $table_name = "se_mailbox";
 
 $cols = array(
     "id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+    "uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
     "time_created"  => 'INTEGER(12)',
     "time_lastedit"  => 'INTEGER(12)',
     "time_send"  => 'INTEGER(12)',
