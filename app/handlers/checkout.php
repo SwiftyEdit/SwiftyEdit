@@ -151,6 +151,7 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$this_item = se_get_product_data($get_cart_items[$i]['cart_product_id']);
 
 	$cart_item[$i]['nbr'] = $i+1;
+    $cart_item[$i]['uuid'] = $this_item['uuid'];
 	$cart_item[$i]['title'] = $this_item['title'];
     $cart_item[$i]['options'] = $get_cart_items[$i]['cart_product_options'];
     $cart_item[$i]['options_comment'] = $get_cart_items[$i]['cart_product_options_comment'];
