@@ -1,8 +1,9 @@
 "use strict";
 
 import '../scss/backend.scss';
-import 'jquery';
-window.jQuery = $; window.$ = $;
+import $ from 'jquery';
+window.jQuery = $;
+window.$ = $;
 
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/color-mode.js';
