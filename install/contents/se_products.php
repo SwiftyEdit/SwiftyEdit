@@ -28,6 +28,7 @@ $table_name = "se_products";
 
 $cols = array(
     "id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+    "uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
     "type" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "linked_ids" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "parent_id"  => 'INTEGER(50)',

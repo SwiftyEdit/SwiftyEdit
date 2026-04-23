@@ -13,6 +13,7 @@ $table_name = "se_user";
 
 $cols = array(
     "user_id" => 'INTEGER(12) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+    "user_uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
     "user_class" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "user_nick" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "user_psw" => "VARCHAR(255) NOT NULL DEFAULT ''",

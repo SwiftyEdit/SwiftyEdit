@@ -14,6 +14,7 @@ $table_name = "se_events";
 
 $cols = array(
     "id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+    "uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
     "date"  => 'INTEGER(12)',
     "releasedate"  => 'INTEGER(12)',
     "lastedit"  => 'INTEGER(12)',

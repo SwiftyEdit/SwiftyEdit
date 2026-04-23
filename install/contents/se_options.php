@@ -1,9 +1,8 @@
 <?php
 	
 /**
- * database for options
- * these data will replace the se_preferences in the future
- * option_module (str) 'fc' for global preferences or f.e. 'addon.mod'
+ * database for options / settings
+ * option_module (str) 'se' for global preferences or f.e. 'addon'
  * option_key (str)
  */
  

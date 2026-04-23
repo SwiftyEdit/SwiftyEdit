@@ -57,6 +57,22 @@ However, we now use ISO 3166-1 alpha-2 codes. Here, all user accounts can be con
 echo '</div>';
 
 echo '<div class="card-footer">';
-echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_users_country">Update users</button>';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_users_country">Update Users</button>';
+echo '</div>';
+echo '</div>';
+
+
+echo '<div class="card mb-3">';
+echo '<div class="card-header"><h5>Add UUIDs if not exists</h5></div>';
+echo '<div class="card-body">';
+
+echo '<p>In earlier versions of SwiftyEdit, UUIDs weren\'t always available. You can add them here. Any existing entries will be skipped.</p>';
+
+echo '</div>';
+
+echo '<div class="card-footer">';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_users_uuid">Update Users</button>';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_orders_uuid">Update Orders</button>';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_products_uuid">Update Products</button>';
 echo '</div>';
 echo '</div>';
