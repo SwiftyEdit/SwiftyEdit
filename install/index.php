@@ -60,9 +60,10 @@ if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator"
 
 if($modus == "update") {
 	/* updates for admins only */
-	if($_SESSION['user_class'] != "administrator"){
-		die("PERMISSION DENIED!");
-	}
+    if($_SESSION['user_class'] !== "administrator"){
+        header("location:../");
+        exit;
+    }
 }
 
 ?>
