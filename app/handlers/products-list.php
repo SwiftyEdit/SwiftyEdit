@@ -664,10 +664,9 @@ foreach ($get_products as $k => $post) {
 
 }
 
-if($status_404 == true) {
-    $show_404 = "true";
-    header("HTTP/1.0 404 Not Found");
-    header("Status: 404 Not Found");
+if($status_404 === true) {
+    $error_code = 404;
+    include __DIR__.'/../error.php';
 } else {
     $form_action = '/' . $swifty_slug . $mod_slug;
 

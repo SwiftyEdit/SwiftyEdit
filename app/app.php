@@ -3,6 +3,25 @@
  * SwiftyEdit - Free, Open Source, Content Management System
  * Main Application Bootstrap
  * GNU General Public License (license.txt)
+ *
+ * variables
+ * @var array $se_settings settings from bootstrap.php
+ * @var array $requestPathParts from routing.php
+ * @var array $page_contents page data
+ * @var array $se_nav navigation data
+ * @var string $se_base_url base url
+ * @var string $se_template template name / directory
+ * @var string $themes_path path to themes
+ * @var string $cache_id cache id
+ * @var string $query query string
+ * @var string $swifty_slug swifty slug
+ * @var string $languagePack
+ * @var array $lang
+ * @var array $a_allowed_p
+ * @var object $smarty Smarty template engine
+ * @var int|null $error_code
+ * @var array $page_json_ld
+ *
  */
 
 // Bootstrap the application
@@ -56,11 +75,6 @@ if($p == "" OR $p == "portal") {
     list($page_contents,$se_nav) = se_get_content('portal','page_sort');
 }
 
-// Handle 404 page
-if($p == "404") {
-    list($page_contents,$se_nav) = se_get_content('404','type_of_use');
-}
-
 // Handle redirects
 if($page_contents['page_redirect'] != '') {
     include_once __DIR__.'/tracker.php';
@@ -104,27 +118,10 @@ foreach($valid_page_types as $handler) {
     }
 }
 
-// Handle 404
-if($p == "404") {
-    header("HTTP/1.0 404 Not Found");
-    header("Status: 404 Not Found");
 
-    if($page_contents['page_permalink'] == '') {
-        $smarty->assign('page_title', "404 Page Not Found");
-        $output = $smarty->fetch("404.tpl");
-        $smarty->assign('page_content', $output);
-    }
-    $show_404 = "false";
-}
-
-// Final 404 check
-if((in_array("$p", $a_allowed_p)) OR ($p == "")) {
-    $show_404 = "false";
-}
-
-if(isset($show_404) AND $show_404 == "true") {
-    $output = $smarty->fetch("404.tpl");
-    $smarty->assign('page_content', $output);
+// handle errors
+if ($error_code !== null) {
+    include __DIR__.'/error.php';
 }
 
 // Include theme options if available
