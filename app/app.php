@@ -118,6 +118,10 @@ foreach($valid_page_types as $handler) {
     }
 }
 
+// if we have no page id and the slug is not a valid page type, show 404
+if (empty($page_contents['page_id']) AND !in_array(rtrim($swifty_slug, '/'), $valid_page_types)) {
+    $error_code = 404;
+}
 
 // handle errors
 if ($error_code !== null) {
