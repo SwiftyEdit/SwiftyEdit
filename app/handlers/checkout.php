@@ -354,6 +354,7 @@ if($se_settings['posts_max_order_value'] != '') {
 // If delivery areas have been specified and the user’s country is not included, only a request can be sent.
 if(!empty($get_delivery_countries) && !in_array($shipping_country, array_column($get_delivery_countries, 'code'))) {
     $se_settings['posts_order_mode'] = 2;
+    $cart_error_delivery_zone = se_get_snippet('cart_error_delivery_zone',$languagePack,'content');
 }
 
 /**
@@ -410,7 +411,7 @@ if($_POST['send_request'] == 'send') {
     $recipient['name'] = sanitizeUserInputs($_POST['buyer_name']);
     $recipient['mail'] = sanitizeUserInputs($_POST['buyer_mail']);
     $comment = sanitizeUserInputs($_POST['buyer_comment']);
-    $subject = 'Order request';
+    $subject = 'Order request / '.$se_settings['pagename'];
 
     $mail_content = '<p>'.$subject.'</p>';
     $mail_content .= '<p>'.$recipient['name'].' '.$recipient['mail'].'</p>';
@@ -418,6 +419,18 @@ if($_POST['send_request'] == 'send') {
     $mail_content .= $table;
     $mail_content .= '<hr>';
     $mail_content .= $comment;
+
+    if($client_data != '') {
+        $mail_content .= '<hr>';
+        $mail_content .= '<p>'.$lang['label_invoice_address'].'</p>';
+        $mail_content .= '<p>'.$client_data.'</p>';
+    }
+
+    if($client_shipping_address != '') {
+        $mail_content .= '<hr>';
+        $mail_content .= '<p>'.$lang['label_shipping_address'].'</p>';
+        $mail_content .= '<p>'.$client_shipping_address.'</p>';
+    }
 
     if($recipient['name'] != '' AND $recipient['mail'] != '') {
         $send_request = true;
@@ -429,7 +442,7 @@ if($_POST['send_request'] == 'send') {
     }
 
     if($send_request === true) {
-        $send = se_send_mail($recipient,$subject,$mail_content);
+        $send = se_send_mail($recipient,$subject,$mail_content,true);
         if($send == 1) {
             $send_request_msg = $lang['msg_request_send'];
             $smarty->assign('send_request_msg', $send_request_msg);
@@ -523,6 +536,7 @@ if($checkout_error == 'missing_approval') {
 }
 
 $smarty->assign("max_order_value_msg",$max_order_value_msg,true);
+$smarty->assign("cart_error_delivery_zone",$cart_error_delivery_zone,true);
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);

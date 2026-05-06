@@ -175,6 +175,18 @@
 </div>
 {/if}
 
+{if $cart_error_delivery_zone != ''}
+    <div class="alert alert-info">
+        {$cart_error_delivery_zone}
+    </div>
+{/if}
+
+{if $send_request_msg != ''}
+    <div class="alert alert-{$request_msg_class}">
+        {$send_request_msg}
+    </div>
+{/if}
+
 {if $show_request_form == 1}
     {include file='shopping_cart_form.tpl'}
 {/if}
