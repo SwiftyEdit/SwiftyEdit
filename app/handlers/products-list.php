@@ -296,6 +296,17 @@ foreach($all_categories as $cats) {
         $page_title = $show_category_title;
         $page_meta_description = $show_category_description;
         $page_meta_keywords = $show_category_keywords;
+
+        // get the theme name for the category it's theme values
+        $this_page_theme = $page_contents['page_template'];
+        if($page_contents['page_template'] == 'use_standard') {
+            $this_page_theme = $se_settings['template'];
+        }
+
+        if(($cats['cat_template'] == $this_page_theme) && ($cat_class == 'active')) {
+            $category_template_data = json_decode($cats['cat_template_values'],true);
+        }
+
     }
 
     $categories[] = array(
