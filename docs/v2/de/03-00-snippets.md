@@ -39,11 +39,17 @@ in der Standard-Sprache geladen.
 
 ## Vordefinierte Snippets
 
-| Snippet                | Beschreibung                                                                                                           |
-|------------------------|------------------------------------------------------------------------------------------------------------------------|
-| `account_confirm`      | Diese Meldung wird angezeigt, sobald ein Benutzer seinen Account bestätigt hat.                                        |
-| `no_access`            | Falls ein Benutzer eine Seite aufruft, für die er keine Berechtigung besitzt, wird diese Meldung ausgegeben.           |
-| `account_confirm_mail` | Wird als E-Mail versendet damit ein Benutzer seinen Account freischalten kann. Dieses Snippet enthält einige Variablen |
+| Snippet                | Beschreibung                                                                                                                 |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| `account_confirm`      | Diese Meldung wird angezeigt, sobald ein Benutzer seinen Account bestätigt hat.                                              |
+| `no_access`            | Falls ein Benutzer eine Seite aufruft, für die er keine Berechtigung besitzt, wird diese Meldung ausgegeben.                 |
+| `account_confirm_mail` | Wird als E-Mail versendet damit ein Benutzer seinen Account freischalten kann. Dieses Snippet enthält einige Variablen       |
+| `account_reset_psw`    | Wird als E-Mail versendet wenn ein Benutzer sein Passwort zurücksetzt. Ersetzt `forgotten_psw_mail_info`aus der Sprachdatei. |
+| `cart_order_sent`      | Wird als Meldung angezeigt, sobald eine Bestellung abgesendet wurde                                                          |
+| `no_search_results`    | Wird angezeigt, wenn die Suche keine Ergebnisse liefert                                                                      |
+| `agreement_text`       | Dieser Text muss vom Benutzer akzeptiert werden, bevor er einen Account erstellen kann.                                      |
+| `cart_agree_term`      | Dieser Text muss akzeptiert werden, bevor eine Bestellung abgesendet werden kann.                                            |
+| `mail_psw_updated`     | Wird als E-Mail versendet, wenn ein Benutzer - erfolgreich - sein Passwort zurückgesetzt hat                                 |
 
 * `{USERNAME}` der Benutzername
 * `{SITENAME}` der Name der Seite (wird in den Einstellungen festgelegt)
