@@ -4,7 +4,6 @@ ini_set("url_rewriter.tags", '');
 session_start();
 error_reporting(0);
 
-
 $se_start_time = microtime(true);
 
 require '../vendor/autoload.php';
@@ -16,12 +15,13 @@ use Smarty\Smarty;
  */
 require '../config.php';
 
-/* resets */
+// resets and defaults
 $prepend_head_code = '';
 $append_head_code = '';
 $prepend_body_code = '';
 $append_body_code = '';
 $mod_slug = '';
+$error_code = null;
 
 const SE_SECTION = "frontend";
 

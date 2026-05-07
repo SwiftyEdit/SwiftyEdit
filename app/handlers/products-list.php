@@ -296,6 +296,17 @@ foreach($all_categories as $cats) {
         $page_title = $show_category_title;
         $page_meta_description = $show_category_description;
         $page_meta_keywords = $show_category_keywords;
+
+        // get the theme name for the category it's theme values
+        $this_page_theme = $page_contents['page_template'];
+        if($page_contents['page_template'] == 'use_standard') {
+            $this_page_theme = $se_settings['template'];
+        }
+
+        if(($cats['cat_template'] == $this_page_theme) && ($cat_class == 'active')) {
+            $category_template_data = json_decode($cats['cat_template_values'],true);
+        }
+
     }
 
     $categories[] = array(
@@ -664,10 +675,9 @@ foreach ($get_products as $k => $post) {
 
 }
 
-if($status_404 == true) {
-    $show_404 = "true";
-    header("HTTP/1.0 404 Not Found");
-    header("Status: 404 Not Found");
+if($status_404 === true) {
+    $error_code = 404;
+    include __DIR__.'/../error.php';
 } else {
     $form_action = '/' . $swifty_slug . $mod_slug;
 

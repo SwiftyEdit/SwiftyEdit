@@ -8,6 +8,10 @@
  * Possible URLs:
  * - Listing: /page/, /page/my-category/, /page/p/n/, /page/my-category/p/n/
  * - Show product: /page/product-slug/, /page/product-slug/?values, /page/product-title-id.html
+ *
+ * @var string $mod_slug bootstrap.php / routing.php
+ * @var array $page_contents
+ * @var object $db_content
  */
 
 $time_string_now = time();
@@ -49,6 +53,12 @@ if($mod_slug != '' && $display_mode == 'list_products') {
         }
         $display_mode = 'show_product';
     }
+}
+
+if($display_mode == 'show_product' && !is_array($product_data)) {
+    $error_code = 404;
+    include __DIR__.'/../error.php';
+    exit;
 }
 
 // Handle redirect if on display_product page but no product ID

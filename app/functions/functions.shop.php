@@ -1550,6 +1550,20 @@ function se_get_order_details($id) {
 }
 
 /**
+ * @param array $data
+ * @param string $prefix
+ * @return bool
+ */
+function se_checkout_address_complete(array $data, string $prefix): bool {
+    $required = ['firstname', 'lastname', 'street', 'street_nbr', 'zip', 'city', 'country'];
+    foreach ($required as $field) {
+        if ($data[$prefix . $field] === '') return false;
+    }
+    return true;
+}
+
+
+/**
  * @param int $type 1 or 2
  * @param string $lang en, de ...
  * @return array
