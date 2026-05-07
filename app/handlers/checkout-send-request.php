@@ -1,16 +1,37 @@
 <?php
+
+/**
+ * send order request
+ * @var object $smarty
+ * @var array $lang
+ * @var array $se_settings
+ * @var array $cart_item
+ * @var int $cnt_cart_items
+ * @var string $client_data
+ * @var string $client_shipping_address
+ * @var array $get_cd
+ */
+
 $send_request = false;
 
 /* build table from cart items */
-$table = '<table cellpadding="5">';
+$table = '<table role="presentation" border="0" cellpadding="5" cellspacing="0">';
+$table .= '<tr>';
+$table .= '<td valign="top">'.$lang['label_product_info'].'</td>';
+$table .= '<td valign="top">'.$lang['label_product_amount'].'</td>';
+$table .= '<td valign="top">'.$lang['label_price'].'</td>';
+$table .= '</tr>';
 for($i=0;$i<$cnt_cart_items;$i++) {
+
+    $product_info = '#'.$cart_item[$i]['product_number'].'<br>';
+    $product_info .= '<strong>'.$cart_item[$i]['title'].'</strong><br>';
+    $product_info .= $cart_item[$i]['options'].'<br>';
+    $product_info .= $cart_item[$i]['slug'].'<br>';
+
     $table .= '<tr>';
-    $table .= '<td valign="top">'.$lang['label_product_info'].'</td>';
-    $table .= '<td valign="top"><h5>'.$cart_item[$i]['title'].'</h5>'.$cart_item[$i]['options'].'</td>';
-    $table .= '</tr>';
-    $table .= '<tr>';
-    $table .= '<td valign="top">'.$lang['label_price'].'</td>';
-    $table .= '<td valign="top">'.$cart_item[$i]['amount'].' x '.$cart_item[$i]['price_gross_single_format'].' ('.$lang['label_gross'].')</td>';
+    $table .= '<td valign="top">'.$product_info.'</td>';
+    $table .= '<td valign="top">'.$cart_item[$i]['amount'].'</td>';
+    $table .= '<td valign="top">'.$cart_item[$i]['price_net_single_format'].' ('.$lang['label_net'].')</td>';
     $table .= '</tr>';
 }
 $table .= '</table>';
@@ -35,7 +56,7 @@ if($client_data != '') {
 
 if($client_shipping_address != '') {
     $mail_content .= '<hr>';
-    $mail_content .= '<p>'.$lang['label_shipping_address'].'</p>';
+    $mail_content .= '<p>'.$lang['label_delivery_address'].'</p>';
     $mail_content .= '<p>'.$client_shipping_address.'</p>';
 }
 
