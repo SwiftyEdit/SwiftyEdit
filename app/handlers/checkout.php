@@ -19,6 +19,8 @@ $price_all_gross = 0; // reset price gross
 $shipping_costs = 0; // reset shipping costs
 $shipping_products = 0; // number of products which will be shipped
 $store_shipping_cat = 0; // reset shipping category
+$all_items_subtotal_net = 0;
+$all_items_subtotal = 0;
 $checkout_error = '';
 $tax_grouped = [];
 $tax_sum = [];
@@ -74,20 +76,17 @@ if($get_cd['ba_company'] != '') {
  * firstname, lastname, street, street nbr, zip, city, country
  */
 
-if($get_cd['ba_firstname'] == '' ||
-    $get_cd['ba_lastname'] == '' ||
-    $get_cd['ba_street'] == '' ||
-    $get_cd['ba_street_nbr'] == '' ||
-    $get_cd['ba_zip'] == '' ||
-    $get_cd['ba_city'] == '' ||
-    $get_cd['ba_country'] == '') {
+if (!se_checkout_address_complete($get_cd, 'ba_')) {
     $checkout_error = 'missing_mandatory_informations';
 }
 
-$client_data .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
-$client_data .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
-$client_data .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
-$client_data .= $get_cd['ba_country'];
+$client_data = implode('<br>', array_filter([
+    $get_cd['ba_company'],
+    $get_cd['ba_firstname'] . ' ' . $get_cd['ba_lastname'],
+    $get_cd['ba_street'] . ' ' . $get_cd['ba_street_nbr'],
+    $get_cd['ba_zip'] . ' ' . $get_cd['ba_city'],
+    $get_cd['ba_country'],
+]));
 
 // shipping target from billing address
 $shipping_country = $get_cd['ba_country'];
@@ -96,34 +95,23 @@ $shipping_address_string = $get_cd['sa_company'].$get_cd['sa_firstname'].$get_cd
 
 if($shipping_address_string == '') {
     // shipping address is the same as billing address
-
-    $client_shipping_address  = $get_cd['ba_company'].'<br>';
-    $client_shipping_address .= $get_cd['ba_firstname']. ' '.$get_cd['ba_lastname'].'<br>';
-    $client_shipping_address .= $get_cd['ba_street']. ' '.$get_cd['ba_street_nbr'].'<br>';
-    $client_shipping_address .= $get_cd['ba_zip']. ' '.$get_cd['ba_city'].'<br>';
-    $client_shipping_address .= $get_cd['ba_country'];
-
+    $client_shipping_address = $client_data;
 } else {
     // customer has provided delivery details
-    // check mandatory information again
 
-    if($get_cd['sa_firstname'] == '' ||
-        $get_cd['sa_lastname'] == '' ||
-        $get_cd['sa_street'] == '' ||
-        $get_cd['sa_street_nbr'] == '' ||
-        $get_cd['sa_zip'] == '' ||
-        $get_cd['sa_city'] == '' ||
-        $get_cd['sa_country'] == '') {
+    $client_shipping_address = implode('<br>', array_filter([
+        $get_cd['sa_company'],
+        $get_cd['sa_firstname'] . ' ' . $get_cd['sa_lastname'],
+        $get_cd['sa_street'] . ' ' . $get_cd['sa_street_nbr'],
+        $get_cd['sa_zip'] . ' ' . $get_cd['sa_city'],
+        $get_cd['sa_country'],
+    ]));
+    $shipping_country = $get_cd['sa_country'];
+
+    // check mandatory information again
+    if (!se_checkout_address_complete($get_cd, 'sa_')) {
         $checkout_error = 'missing_mandatory_informations';
     }
-
-    $client_shipping_address  = $get_cd['sa_company'].'<br>';
-    $client_shipping_address .= $get_cd['sa_firstname']. ' '.$get_cd['sa_lastname'].'<br>';
-    $client_shipping_address .= $get_cd['sa_street']. ' '.$get_cd['sa_street_nbr'].'<br>';
-    $client_shipping_address .= $get_cd['sa_zip']. ' '.$get_cd['sa_city'].'<br>';
-    $client_shipping_address .= $get_cd['sa_country'];
-
-    $shipping_country = $get_cd['sa_country'];
 }
 
 /**
@@ -387,71 +375,11 @@ if($se_settings['posts_order_mode'] == 1 OR $se_settings['posts_order_mode'] == 
 /**
  * client has sent a request
  * send via mail to admin
- * reset shopping cart if data is sent
+ * reset shopping cart if data is sent / $cnt_cart_items = 0
  */
 
 if($_POST['send_request'] == 'send') {
-
-    $send_request = false;
-
-    /* build table from cart items */
-    $table = '<table cellpadding="5">';
-    for($i=0;$i<$cnt_cart_items;$i++) {
-        $table .= '<tr>';
-        $table .= '<td valign="top">'.$lang['label_product_info'].'</td>';
-        $table .= '<td valign="top"><h5>'.$cart_item[$i]['title'].'</h5>'.$cart_item[$i]['options'].'</td>';
-        $table .= '</tr>';
-        $table .= '<tr>';
-        $table .= '<td valign="top">'.$lang['label_price'].'</td>';
-        $table .= '<td valign="top">'.$cart_item[$i]['amount'].' x '.$cart_item[$i]['price_gross_single_format'].' ('.$lang['label_gross'].')</td>';
-        $table .= '</tr>';
-    }
-    $table .= '</table>';
-
-    $recipient['name'] = sanitizeUserInputs($_POST['buyer_name']);
-    $recipient['mail'] = sanitizeUserInputs($_POST['buyer_mail']);
-    $comment = sanitizeUserInputs($_POST['buyer_comment']);
-    $subject = 'Order request / '.$se_settings['pagename'];
-
-    $mail_content = '<p>'.$subject.'</p>';
-    $mail_content .= '<p>'.$recipient['name'].' '.$recipient['mail'].'</p>';
-    $mail_content .= '<hr>';
-    $mail_content .= $table;
-    $mail_content .= '<hr>';
-    $mail_content .= $comment;
-
-    if($client_data != '') {
-        $mail_content .= '<hr>';
-        $mail_content .= '<p>'.$lang['label_invoice_address'].'</p>';
-        $mail_content .= '<p>'.$client_data.'</p>';
-    }
-
-    if($client_shipping_address != '') {
-        $mail_content .= '<hr>';
-        $mail_content .= '<p>'.$lang['label_shipping_address'].'</p>';
-        $mail_content .= '<p>'.$client_shipping_address.'</p>';
-    }
-
-    if($recipient['name'] != '' AND $recipient['mail'] != '') {
-        $send_request = true;
-    } else {
-        $send_request = false;
-        $send_request_msg = 'Name and E-Mail';
-        $smarty->assign('send_request_msg', $send_request_msg);
-        $smarty->assign('request_msg_class', 'danger');
-    }
-
-    if($send_request === true) {
-        $send = se_send_mail($recipient,$subject,$mail_content,true);
-        if($send == 1) {
-            $send_request_msg = $lang['msg_request_send'];
-            $smarty->assign('send_request_msg', $send_request_msg);
-            $smarty->assign('request_msg_class', 'success');
-            /* remove items from se_carts */
-            se_clear_cart($get_cd['user_id']);
-            $cnt_cart_items = 0;
-        }
-    }
+    include __DIR__.'/checkout-send-request.php';
 }
 
 /**
@@ -461,70 +389,7 @@ if($_POST['send_request'] == 'send') {
  */
 
 if($_POST['order'] == 'send') {
-	
-	$send_order = true;
-
-	if($_POST['check_cart_terms'] != 'check') {
-		$send_order = false;
-		$smarty->assign("cart_alert_error",$lang['msg_accept_terms'],true);
-	}
-
-	foreach ($cart_item as $key => $array) {
-	    unset($array['price_net_format'],$array['price_gross_format'],$array['price_net']);
-	    $cart_items[$key] = $array;  
-	}
-
-	
-	/* store the order */
-	if($send_order == true) {
-		
-		$cart_items_str = json_encode($cart_items, JSON_FORCE_OBJECT);
-		
-		$order_data['user_id'] = $get_cd['user_id'];
-        $order_data['user_mail'] = $get_cd['user_mail'];
-		$order_data['order_invoice_address'] = $client_data;
-        $order_data['order_shipping_address'] = $client_shipping_address;
-		$order_data['order_products'] = $cart_items_str;
-		$order_data['order_price_total'] = $cart_price_total;
-        $order_data['included_taxes'] = $cart_included_taxes;
-		$order_data['order_shipping_type'] = $shipping_type;
-        $order_data['order_shipping_costs'] = $shipping_costs;
-		$order_data['order_payment_type'] = $payment_addon;
-		$order_data['order_payment_costs'] = $payment_costs;
-        $order_data['order_comment'] = $_POST['cart_comment'];
-        $order_data['order_nbr'] = $get_cd['user_id'].'-'.uniqid();
-		
-		$order_id = se_send_order($order_data);
-
-        se_recalculate_stock_sales($cart_items);
-		
-		if($order_id > 0) {
-
-            $cart_alert = se_get_snippet('cart_order_sent',$languagePack,'content');
-            if($cart_alert == '') {
-                $cart_alert = $lang['msg_order_send'];
-            }
-
-
-            /* remove items from se_carts */
-            se_clear_cart($order_data['user_id']);
-            $cnt_cart_items = 0;
-
-            $recipient['name'] = $get_cd['user_firstname'].' '.$get_cd['user_lastname'];
-            $recipient['mail'] = $get_cd['user_mail'];
-            $recipient['type'] = 'client';
-            $reason = 'order_confirmation';
-
-            // include after sale script from payment addon
-            $aftersale_script = SE_ROOT.'/plugins/'.basename($payment_addon).'/aftersale.php';
-            if(is_file($aftersale_script)) {
-                include $aftersale_script;
-            }
-            $smarty->assign("cart_alert_success",$cart_alert,true);
-
-            $send_mail = se_send_order_status($recipient,$order_id,$reason);
-		}
-	}
+    include __DIR__.'/checkout-send-order.php';
 }
 
 if($checkout_error == 'missing_mandatory_informations') {
