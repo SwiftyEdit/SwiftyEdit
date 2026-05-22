@@ -10,18 +10,18 @@
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "glightbox": "^3.3.1",
-    "htmx.org": "^2.0.8",
+    "htmx.org": "^2.0.10",
     "jquery": "^3.7.1",
-    "js-cookie": "^3.0.5",
+    "js-cookie": "^3.0.7",
     "nouislider": "^15.8.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.5.0",
-    "cssnano": "^7.1.7",
-    "fs-extra": "^11.3.4",
-    "sass": "^1.99.0",
-    "terser": "^5.46.1",
-    "vite": "^8.0.10"
+    "cssnano": "^7.1.9",
+    "fs-extra": "^11.3.5",
+    "sass": "^1.100.0",
+    "terser": "^5.48.0",
+    "vite": "^8.0.14"
   },
   "repository": {},
   "scripts": {
