@@ -146,6 +146,8 @@ if($se_settings['maintenance_code'] != '') {
     if($_SESSION['access_to_maintenance'] == 'permitted') {
         $smarty->display('index.tpl',$cache_id);
     } else {
+        header('HTTP/1.1 503 Service Unavailable');
+        header('Retry-After: 3600');
         $smarty->display('maintenance.tpl', $cache_id);
     }
 } else {
