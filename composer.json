@@ -15,7 +15,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "8.0"
+      "php": "8.3"
     },
     "vendor-dir": "vendor"
   },
@@ -39,7 +39,15 @@
     "build": [
       "@buildclean",
       "@buildprepare"
+    ],
+    "audit": "composer audit",
+    "outdated": "composer outdated",
+    "outdated:direct": "composer outdated --direct",
+    "licenses": "composer licenses",
+    "validate": "composer validate --strict",
+    "check": [
+      "@audit",
+      "@validate"
     ]
   }
-
 }
