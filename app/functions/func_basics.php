@@ -570,64 +570,95 @@ function se_get_activated_addons() {
 }
 
 
-function se_search_pages($str,$lang,$currentPage=1,$itemsPerPage=25) {
+function se_search_pages($str, $lang, $currentPage = 1, $itemsPerPage = 25) {
 
     global $db_content;
 
-    $str = str_replace('-', ' ', $str);
+    $str = trim($str);
+    if ($str === '') {
+        return ["totalResults" => 0, "pages" => []];
+    }
 
-    $where = 'WHERE (page_language LIKE ? AND page_status = ?) AND (
-            page_content LIKE ? OR page_title LIKE ? OR page_meta_description LIKE ? OR page_meta_keywords LIKE ?)';
+    // Two variants of the search term: original + without dashes
+    $searchVariants = [$str];
+    if (strpos($str, '-') !== false) {
+        $searchVariants[] = str_replace('-', ' ', $str);
+    }
 
-    $countSql = "SELECT COUNT(*) FROM se_pages $where";
-
-    $countParams = [
-        $lang, "public", "%$str%","%$str%","%$str%","%$str%"
+    // Fields to search in
+    $searchFields = [
+        'page_content', 'page_title',
+        'page_meta_description', 'page_meta_keywords'
     ];
 
-    $countSth = $db_content->pdo->prepare($countSql);
-    $countSth->execute($countParams);
-    $totalResults = $countSth->fetchColumn();
+    // Build OR conditions dynamically
+    $orParts = [];
+    $searchParams = [];
+    foreach ($searchFields as $field) {
+        foreach ($searchVariants as $variant) {
+            $orParts[] = "$field LIKE ?";
+            $searchParams[] = "%$variant%";
+        }
+    }
+    $orSql = implode(' OR ', $orParts);
 
-    $pages_sql = "SELECT * FROM se_pages
+    // WHERE
+    $where = "WHERE (page_language LIKE ? AND page_status = ?) AND ($orSql)";
+    $baseParams = array_merge([$lang, 'public'], $searchParams);
+
+    // COUNT
+    $countSth = $db_content->pdo->prepare("SELECT COUNT(*) FROM se_pages $where");
+    $countSth->execute($baseParams);
+    $totalResults = (int) $countSth->fetchColumn();
+
+    // Pagination
+    $offset = (int) $itemsPerPage * (max(1, (int) $currentPage) - 1);
+
+    // CASE-Relevance
+    $like = "%$str%";
+    $caseParams = [
+        $str,   // page_permalink exact
+        $like,  // page_permalink LIKE
+        $str,   // page_meta_keywords exact
+        $like,  // page_meta_keywords LIKE
+        $like,  // page_meta_description
+        $like,  // page_title
+        $like,  // page_content
+    ];
+
+    $pagesSql = "
+        SELECT *,
+            (CASE
+                WHEN page_permalink = ?           THEN 7
+                WHEN page_permalink LIKE ?        THEN 6
+                WHEN page_meta_keywords = ?       THEN 5
+                WHEN page_meta_keywords LIKE ?    THEN 4
+                WHEN page_meta_description LIKE ? THEN 3
+                WHEN page_title LIKE ?            THEN 2
+                WHEN page_content LIKE ?          THEN 1
+                ELSE 0
+            END) AS relevance
+        FROM se_pages
         $where
-        ORDER BY 
-            page_permalink LIKE ? DESC,
-            page_meta_keywords = ? DESC,
-            page_meta_keywords LIKE ? DESC,
-            page_meta_description LIKE ? DESC,
-            page_title LIKE ? DESC,
-            page_content LIKE ? DESC,
-            page_priority DESC
-        LIMIT ?
-        OFFSET ?
-        ";
+        ORDER BY relevance DESC, page_priority DESC
+        LIMIT ? OFFSET ?
+    ";
 
-    $pages_params = [
-        $lang, "public",
-        "%$str%","%$str%","%$str%","%$str%",
-        "%$str%",      // permalink
-        "$str",        // meta keywords exact
-        "$str%",       // meta keywords starts with
-        "%$str%",      // meta description
-        "%$str%",      // title
-        "%$str%",      // content
-        20, 0
-    ];
+    $pagesParams = array_merge(
+        $caseParams,
+        $baseParams,
+        [$itemsPerPage, $offset]
+    );
 
-    $sth = $db_content->pdo->prepare($pages_sql);
-    $sth->execute($pages_params);
-
+    $sth = $db_content->pdo->prepare($pagesSql);
+    $sth->execute($pagesParams);
     $pages = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-    $return = [
+    return [
         "totalResults" => $totalResults,
-        "pages" => $pages
+        "pages"        => $pages
     ];
-
-    return $return;
 }
-
 
 function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
     global $db_posts; // object that contains ->pdo (PDO instance)
