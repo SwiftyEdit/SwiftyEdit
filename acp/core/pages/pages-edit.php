@@ -115,6 +115,10 @@ $input_text_page_permalink = [
     "type" => "text"
 ];
 
+if (empty($page_canonical_url) && !empty($page_permalink)) {
+    $page_canonical_url = rtrim($se_base_url, '/') . '/' . ltrim($page_permalink, '/');
+}
+
 $input_text_page_canonical_url = [
     "input_name" => "page_canonical_url",
     "input_value" => $page_canonical_url,
