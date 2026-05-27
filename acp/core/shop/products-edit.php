@@ -83,7 +83,7 @@ $all_catalog_pages = $db_content->select("se_pages","page_permalink",[
     "page_posts_types" => "p"
 ]);
 array_unshift($all_catalog_pages, "default");
-
+sort($all_catalog_pages);
 $product_main_catalog_slug = '';
 if(isset($product_data['main_catalog_slug'])) {
     $product_main_catalog_slug = $product_data['main_catalog_slug'];
