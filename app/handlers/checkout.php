@@ -76,7 +76,7 @@ if($get_cd['ba_company'] != '') {
  * firstname, lastname, street, street nbr, zip, city, country
  */
 
-if (!se_checkout_address_complete($get_cd, 'ba_')) {
+if (!is_array($get_cd) || !se_checkout_address_complete($get_cd, 'ba_')) {
     $checkout_error = 'missing_mandatory_informations';
 }
 
@@ -109,7 +109,7 @@ if($shipping_address_string == '') {
     $shipping_country = $get_cd['sa_country'];
 
     // check mandatory information again
-    if (!se_checkout_address_complete($get_cd, 'sa_')) {
+    if (!is_array($get_cd) || !se_checkout_address_complete($get_cd, 'sa_')) {
         $checkout_error = 'missing_mandatory_informations';
     }
 }
