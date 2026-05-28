@@ -1120,3 +1120,57 @@ if(isset($_REQUEST['calc_orders_all'])) {
     echo se_post_print_currency($result);
     exit;
 }
+
+// check for missing product numbers
+if($_REQUEST['action'] == 'check_missing_sku') {
+
+    $missing_sku = $db_posts->select("se_products","*", ["product_number" => ""]);
+    $cnt_missing_sku = count($missing_sku);
+
+
+    echo '<a href="#collapse_msku" data-bs-toggle="collapse" class="btn btn-default btn-sm w-100 text-start"><span class="badge text-bg-secondary">'.$cnt_missing_sku.'</span> Missing SKU</a>';
+
+    echo '<div class="collapse card-body" id="collapse_msku">';
+    foreach($missing_sku as $item) {
+        echo '<a href="/admin/shop/edit/'.$item['id'].'/" title="'.$item['title'].'" class="btn btn-default btn-sm me-1">';
+        echo '#'.$item['id'].'';
+        echo '</a>';
+    }
+    echo '</div>';
+
+
+    exit;
+}
+
+// check for double slugs
+if($_REQUEST['action'] == 'check_double_slugs') {
+
+    $products = $db_posts->select("se_products",["id","slug","title"]);
+    $counts = array_count_values(array_column($products, 'slug'));
+    $duplicateSlugs = array_keys(array_filter($counts, fn($count) => $count > 1));
+
+    $duplicates = array_filter($products, fn($p) => in_array($p['slug'], $duplicateSlugs));
+    $cnt_duplicates = count($duplicates);
+
+    echo '<a href="#collapse_double_slugs" data-bs-toggle="collapse" class="btn btn-default btn-sm w-100 text-start"><span class="badge text-bg-secondary">'.$cnt_duplicates.'</span> Double Slugs</a>';
+    echo '<div class="collapse card-body" id="collapse_double_slugs">';
+
+    $grouped = [];
+    foreach ($duplicates as $product) {
+        $grouped[$product['slug']][] = $product;
+    }
+
+    echo '<ul class="list-group">';
+    foreach ($grouped as $slug => $products) {
+        echo '<li class="list-group-item">' . $slug . '</li>';
+        echo '<li class="list-group-item">';
+        foreach ($products as $product) {
+            echo '<a href="/admin/shop/edit/'.$product['id'].'/" title="'.$product['title'].'" class="btn btn-default btn-sm me-1">#'.$product['id'].'</a>';
+        }
+        echo '</li>';
+    }
+
+    echo '</ul>';
+    echo '</div>';
+    exit;
+}

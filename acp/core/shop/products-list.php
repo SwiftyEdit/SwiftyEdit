@@ -112,6 +112,14 @@ echo '</div>'; // accordion
 echo '</div>';
 echo '</div>';
 
+echo '<div class="card mb-2">';
+echo '<div class="card-header">Checks</div>';
+echo '<div class="card-body">';
+echo '<div id="checksMissingSKU" hx-get="'.$reader_uri.'?action=check_missing_sku" hx-trigger="load"></div>';
+echo '<div id="checksDoubleSlugs" hx-get="'.$reader_uri.'?action=check_double_slugs" hx-trigger="load"></div>';
+echo '</div>';
+echo '</div>';
+
 
 echo '<div class="card mb-2">';
 echo '<div class="card-header">Cache</div>';
