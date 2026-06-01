@@ -1128,7 +1128,7 @@ if($_REQUEST['action'] == 'check_missing_sku') {
     $cnt_missing_sku = count($missing_sku);
 
 
-    echo '<a href="#collapse_msku" data-bs-toggle="collapse" class="btn btn-default btn-sm w-100 text-start"><span class="badge text-bg-secondary">'.$cnt_missing_sku.'</span> Missing SKU</a>';
+    echo '<a href="#collapse_msku" data-bs-toggle="collapse" class="list-group-item list-group-item-action"><span class="badge text-bg-secondary">'.$cnt_missing_sku.'</span> Missing SKU</a>';
 
     echo '<div class="collapse card-body" id="collapse_msku">';
     foreach($missing_sku as $item) {
@@ -1152,7 +1152,7 @@ if($_REQUEST['action'] == 'check_double_slugs') {
     $duplicates = array_filter($products, fn($p) => in_array($p['slug'], $duplicateSlugs));
     $cnt_duplicates = count($duplicates);
 
-    echo '<a href="#collapse_double_slugs" data-bs-toggle="collapse" class="btn btn-default btn-sm w-100 text-start"><span class="badge text-bg-secondary">'.$cnt_duplicates.'</span> Double Slugs</a>';
+    echo '<a href="#collapse_double_slugs" data-bs-toggle="collapse" class="list-group-item list-group-item-action"><span class="badge text-bg-secondary">'.$cnt_duplicates.'</span> Double Slugs</a>';
     echo '<div class="collapse card-body" id="collapse_double_slugs">';
 
     $grouped = [];
@@ -1160,7 +1160,7 @@ if($_REQUEST['action'] == 'check_double_slugs') {
         $grouped[$product['slug']][] = $product;
     }
 
-    echo '<ul class="list-group">';
+    echo '<ul class="list-group list-group-flush">';
     foreach ($grouped as $slug => $products) {
         echo '<li class="list-group-item">' . $slug . '</li>';
         echo '<li class="list-group-item">';
