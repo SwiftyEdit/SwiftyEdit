@@ -508,13 +508,13 @@ if(isset($_POST['products_cache'])) {
            $prepared = se_prepareProductData($product);
            se_updateProductCache($product['id'], $prepared);
        }
-       echo '<div class="alert alert-info my-1">Cache files updated</div>';
+       echo '<span class="badge rounded-pill text-bg-success alert-auto-close">'.$icon['check'].'</span>';
        exit;
    }
 
     if($_POST['products_cache'] == 'clear') {
         $nbr_deleted_files = se_clearProductCache();
-        echo '<div class="alert alert-info my-1">Cache files deleted ('.$nbr_deleted_files.')</div>';
+        echo '<span class="badge rounded-pill text-bg-success alert-auto-close">'.$icon['check'].' ('.$nbr_deleted_files.')</span>';
         exit;
     }
 }

@@ -269,7 +269,12 @@ function se_prepareProductData($data, $id = null) {
 
 }
 
-
+/**
+ * @param $id
+ * @param $data
+ * @param $updateSlugMap
+ * @return void
+ */
 function se_updateProductCache($id, $data, $updateSlugMap = true) {
     if($id == '' OR $data['product_lang'] == '') {
         return; // we need the id and lang
@@ -309,6 +314,9 @@ function se_updateSlugMap($lang) {
     file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
+/**
+ * @return int number of deleted files
+ */
 function se_clearProductCache() {
 
     $cacheDir = SE_CONTENT . '/cache/products/';
@@ -330,5 +338,5 @@ function se_clearProductCache() {
         }
     }
 
-    return $count; // Anzahl gelöschter Dateien
+    return $count;
 }

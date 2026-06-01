@@ -204,10 +204,6 @@ function breadcrumbs_menu(): array {
             $label = $get_page_info['page_linkname'];
         }
 
-        if (mb_strlen($label) > 25) {
-            $label = mb_substr($label, 0, 25 - 1) . '…';
-        }
-
         if($get_page_info['page_title'] != '') {
             $title = $get_page_info['page_title'];
         }
