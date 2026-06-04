@@ -283,6 +283,7 @@
   "label.product.ignore_stock": "Ignore stock for this product",
   "label.product.cart_mode": "Cart mode",
   "label.product.pricetag_mod": "Price tag mode",
+  "label.product.addon_only": "Available only as an add-on",
   "label.product.snippet_price": "Choose a snippet for additional price information",
   "label.product.features": "Features",
   "label.product.options": "Options",
