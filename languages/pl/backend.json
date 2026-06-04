@@ -251,6 +251,7 @@
   "label.product.ignore_stock": "Ignoruj zapasy tego produktu",
   "label.product.cart_mode": "Tryb koszyka",
   "label.product.pricetag_mod": "Tryb etykiety z ceną",
+  "label.product.addon_only": "Available only as an add-on",
   "label.product.snippet_price": "Wybierz fragment, aby uzyskać dodatkowe informacje o cenie",
   "label.product.features": "Funkcje",
   "label.product.options": "Opcje",

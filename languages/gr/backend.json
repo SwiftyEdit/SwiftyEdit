@@ -251,6 +251,7 @@
   "label.product.ignore_stock": "Αγνόηση αποθέματος για αυτό το προϊόν",
   "label.product.cart_mode": "Λειτουργία καλαθιού",
   "label.product.pricetag_mod": "Λειτουργία ετικέτας τιμής",
+  "label.product.addon_only": "Available only as an add-on",
   "label.product.snippet_price": "Επιλέξτε ένα απόσπασμα για πρόσθετες πληροφορίες τιμών",
   "label.product.features": "Χαρακτηριστικά",
   "label.product.options": "Επιλογές",
