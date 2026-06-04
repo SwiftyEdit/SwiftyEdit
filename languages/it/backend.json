@@ -251,6 +251,7 @@
   "label.product.ignore_stock": "Ignora stock per questo prodotto",
   "label.product.cart_mode": "Modalità carrello",
   "label.product.pricetag_mod": "Modalità tag prezzo",
+  "label.product.addon_only": "Available only as an add-on",
   "label.product.snippet_price": "Scegli una snippet per ulteriori informazioni sul prezzo",
   "label.product.features": "Caratteristiche",
   "label.product.options": "Opzioni",
