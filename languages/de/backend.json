@@ -251,6 +251,7 @@
   "label.product.ignore_stock": "Lagerbestand für dieses Produkt ignorieren",
   "label.product.cart_mode": "Warenkorb Modus",
   "label.product.pricetag_mod": "Preis Tag-Modus",
+  "label.product.addon_only": "Available only as an add-on",
   "label.product.snippet_price": "Wählen Sie ein Snippet für zusätzliche Preisinformationen",
   "label.product.features": "Eigenschaften",
   "label.product.options": "Optionen",
