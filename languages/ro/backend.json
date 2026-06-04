@@ -251,6 +251,7 @@
   "label.product.ignore_stock": "Ignoră stocul acestui produs",
   "label.product.cart_mode": "Mod cos",
   "label.product.pricetag_mod": "Mod Etichetă de preț",
+  "label.product.addon_only": "Available only as an add-on",
   "label.product.snippet_price": "Alegeți un snippet pentru informații adiționale despre preț",
   "label.product.features": "Caracteristici",
   "label.product.options": "Opţiuni",
