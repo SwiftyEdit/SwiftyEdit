@@ -99,6 +99,8 @@
   "nav.btn.info": "Info",
   "nav.btn.prices": "Preise",
   "nav.btn.metas": "Metas",
+  "nav.btn.links": "Links",
+  "nav.btn.downloads": "Downloads",
 
   "nav.btn.payment_shipping": "Payment & Shipping",
   "nav.btn.delivery_areas": "Delivery areas",
