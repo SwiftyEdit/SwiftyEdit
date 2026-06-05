@@ -46,6 +46,18 @@
     width: 180px;
   }
 
+  .price-predecimal {
+    font-size: 32px;
+    font-weight: 300;
+  }
+
+  .price-decimal {
+    vertical-align: super;
+    font-size: 18px;
+    font-weight: 300;
+    text-decoration: underline;
+  }
+
 }
 
 .price-tag-note {
@@ -53,17 +65,7 @@
   color: $text-muted;
 }
 
-.price-predecimal {
-  font-size: 32px;
-  font-weight: 300;
-}
 
-.price-decimal {
-  vertical-align: super;
-  font-size: 18px;
-  font-weight: 300;
-  text-decoration: underline;
-}
 
 .product-unit,
 .product-amount {
