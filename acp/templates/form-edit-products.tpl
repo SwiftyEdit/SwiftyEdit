@@ -15,8 +15,6 @@
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#prices_delivery">{nav_btn_prices_delivery}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
-                                                href="#product">{nav_btn_product}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
                                                 href="#features">{nav_btn_features}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{nav_btn_seo}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
@@ -64,7 +62,61 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <hr>
+
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card">
+                                        <h6 class="card-header">{nav_btn_product}</h6>
+                                        <div class="card-body">
+                                            <div class="mb-1">
+                                                <label class="form-label">SKU / {label_product_number}</label>
+                                                <input class='form-control' name="product_number" type="text"
+                                                       value="{product_number}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">EAN</label>
+                                                <input class='form-control' name="product_ean" type="text"
+                                                       value="{product_ean}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">MPN</label>
+                                                <input class='form-control' name="product_mpn" type="text"
+                                                       value="{product_mpn}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card">
+                                        <h6 class="card-header">{label_product_manufacturer}</h6>
+                                        <div class="card-body">
+                                            <div class="mb-1">
+                                                <label class="form-label">{label_product_manufacturer}</label>
+                                                <input class='form-control' name="product_manufacturer" type="text"
+                                                       value="{product_manufacturer}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">{label_url}</label>
+                                                <input class='form-control' name="product_url" type="text" value="{product_url}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">{label_product_manufacturer} {label_product_price} {label_product_net}</label>
+                                                <input class='form-control' name="product_price_manufacturer" type="text"
+                                                       value="{product_price_manufacturer}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">{label_product_supplier}</label>
+                                                <input class='form-control' name="product_supplier" type="text"
+                                                       value="{product_supplier}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div> <!-- tab-pane -->
                         <div class="tab-pane fade" id="content">
 
                             <div class="card">
@@ -183,71 +235,6 @@
                             </div>
 
                         </div>
-
-                        <div class="tab-pane fade" id="product">
-
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_product_number}</label>
-                                        <input class='form-control' name="product_number" type="text"
-                                               value="{product_number}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label>EAN</label>
-                                    <input class='form-control' name="product_ean" type="text"
-                                           value="{product_ean}">
-                                </div>
-                                <div class="col-md-4">
-                                    <label>MPN</label>
-                                    <input class='form-control' name="product_mpn" type="text"
-                                           value="{product_mpn}">
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_product_manufacturer}</label>
-                                        <input class='form-control' name="product_manufacturer" type="text"
-                                               value="{product_manufacturer}">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_product_manufacturer} {label_product_price} {label_product_net}</label>
-                                        <input class='form-control' name="product_price_manufacturer" type="text"
-                                               value="{product_price_manufacturer}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_url}</label>
-                                        <input class='form-control' name="product_url" type="text" value="{product_url}">
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="row">
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{label_product_supplier}</label>
-                                        <input class='form-control' name="product_supplier" type="text"
-                                               value="{product_supplier}">
-                                    </div>
-                                </div>
-
-
-                            </div>
-
-
-
-
-
-                        </div> <!-- #product -->
 
                         <!-- downloads -->
                         <div class="tab-pane fade" id="downloads">
@@ -422,6 +409,12 @@
                                 <div class="col-md-6">
                                     <label>{label_product_cart_mode}</label>
                                     {select_product_cart_mode}
+
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" name="product_addon_only" value="1" id="addonOnly" {checkAddonOnly}>
+                                        <label class="form-check-label" for="addonOnly">{label_product_addon_only}</label>
+                                    </div>
+
                                 </div>
                                 <div class="col-md-6">
                                     <label>{label_product_pricetag_mode}</label>
@@ -488,16 +481,27 @@
                                         </div>
                                         <div class="tab-pane fade" id="cross_selling">
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     {prod_sel_widget}
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <h6>{nav_btn_accessories}</h6>
-                                                    {prod_accessories_dropper}
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <h6>{nav_btn_related}</h6>
-                                                    {prod_related_dropper}
+                                                <div class="col-md-8">
+                                                    <div class="row row-cols-3">
+                                                    <div class="col">
+                                                        <h6>{nav_btn_accessories}</h6>
+                                                        <input type="text" name="product_accessories_label" value="{product_accessories_label}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                        {prod_accessories_dropper}
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6>{nav_btn_related}</h6>
+                                                        <input type="text" name="product_related_label" value="{product_related_label}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                        {prod_related_dropper}
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6>Addons</h6>
+                                                        <input type="text" name="product_addons_label" value="{product_addons_label}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                        {prod_addons_dropper}
+                                                    </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

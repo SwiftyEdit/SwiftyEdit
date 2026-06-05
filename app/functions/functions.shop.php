@@ -1014,6 +1014,12 @@ function se_add_to_cart() {
 	
 	/* we store tax and price_net from item */
 	$this_item = se_get_product_data($cart_product_id);
+
+	/* addon-only products can only be booked as an addon, not added on their own */
+	if(($this_item['product_addon_only'] ?? '2') == 1) {
+		return 0;
+	}
+
 	$cart_product_price_net = $this_item['product_price_net'];
 	$cart_product_title = $this_item['title'];
 	$cart_product_number = $this_item['product_number'];
@@ -1037,6 +1043,7 @@ function se_add_to_cart() {
 		"cart_time" =>  $cart_time,
 		"cart_user_hash" =>  $cart_user_hash,
 		"cart_user_id" =>  $cart_user_id,
+        "cart_parent_id" =>  0,
 		"cart_product_id" =>  $cart_product_id,
         "cart_product_uuid" =>  $cart_product_uuid,
         "cart_product_slug" =>  $cart_product_slug,
@@ -1049,8 +1056,49 @@ function se_add_to_cart() {
 		"cart_product_number" =>  $cart_product_number,
 		"cart_status" =>  $cart_status
 	]);
-			
+
 	$insert_id = $db_content->id();
+
+    /* booked addons: each becomes its own cart line linked to the parent.
+       only addon ids that are actually assigned to the parent product are allowed. */
+    if(isset($_POST['product_addons']) && is_array($_POST['product_addons'])) {
+
+        $allowed_addons = array_values((array) json_decode($this_item['product_addons'] ?? '', true));
+        $booked_addons = array_intersect($_POST['product_addons'], $allowed_addons);
+
+        foreach($booked_addons as $addon_id) {
+
+            $addon_item = se_get_product_data((int) $addon_id);
+            if(empty($addon_item)) { continue; }
+
+            if($addon_item['product_tax'] == '1') {
+                $addon_tax = $se_settings['posts_products_default_tax'];
+            } else if($addon_item['product_tax'] == '2') {
+                $addon_tax = $se_settings['posts_products_tax_alt1'];
+            } else {
+                $addon_tax = $se_settings['posts_products_tax_alt2'];
+            }
+
+            $db_content->insert("se_carts", [
+                "cart_time" =>  $cart_time,
+                "cart_user_hash" =>  $cart_user_hash,
+                "cart_user_id" =>  $cart_user_id,
+                "cart_parent_id" =>  $insert_id,
+                "cart_product_id" =>  (int) $addon_id,
+                "cart_product_uuid" =>  $addon_item['uuid'],
+                "cart_product_slug" =>  $cart_product_slug,
+                "cart_product_amount" =>  $cart_product_amount,
+                "cart_product_price_net" =>  $addon_item['product_price_net'],
+                "cart_product_tax" =>  $addon_tax,
+                "cart_product_title" =>  $addon_item['title'],
+                "cart_product_options" =>  '',
+                "cart_product_options_comment" =>  '',
+                "cart_product_number" =>  $addon_item['product_number'],
+                "cart_status" =>  $cart_status
+            ]);
+        }
+    }
+
 	return $insert_id;
 }
 
@@ -1075,7 +1123,10 @@ function se_update_cart_item_amount($item,$amount){
             "cart_product_amount" => $amount
         ], [
             "AND" => [
-                "cart_id" => $item,
+                "OR" => [
+                    "cart_id" => $item,
+                    "cart_parent_id" => $item
+                ],
                 "cart_user_id" => $cart_user_id,
                 "cart_status" => "progress"
             ]
@@ -1088,7 +1139,10 @@ function se_update_cart_item_amount($item,$amount){
             "cart_product_amount" => $amount
         ], [
             "AND" => [
-                "cart_id" => $item,
+                "OR" => [
+                    "cart_id" => $item,
+                    "cart_parent_id" => $item
+                ],
                 "cart_user_hash" => $cart_user_hash,
                 "cart_status" => "progress"
             ]
@@ -1193,27 +1247,34 @@ function se_remove_from_cart($id) {
 	
 	$id = (int) $id;
 	
-	/* check if user or visitor */
+	/* check if user or visitor.
+	   removing a product also removes its booked addons (cart_parent_id = $id) */
 	if(is_numeric($_SESSION['user_id'])) {
 		$cart_user_id = $_SESSION['user_id'];
 		$data = $db_content->delete("se_carts", [
 			"AND" => [
 				"cart_user_id" => $cart_user_id,
 				"cart_status" => "progress",
-				"cart_id" => $id
+				"OR" => [
+					"cart_id" => $id,
+					"cart_parent_id" => $id
+				]
 			]
 		]);
-		
+
 	} else {
 		$cart_user_hash = $_SESSION['token'];
 		$data = $db_content->delete("se_carts", [
 			"AND" => [
 				"cart_user_hash" => $cart_user_hash,
 				"cart_status" => "progress",
-				"cart_id" => $id
+				"OR" => [
+					"cart_id" => $id,
+					"cart_parent_id" => $id
+				]
 			]
-		]);		
-		
+		]);
+
 	}
 }
 

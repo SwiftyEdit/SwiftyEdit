@@ -111,31 +111,33 @@ htmx.onLoad(function(content) {
 })
 
 // image picker - sortablejs
+const _observedTargets = new WeakSet();
+
 function observeContainersForDraggableDivs(parentSelector) {
     const parentDivs = document.querySelectorAll(parentSelector);
+    if (parentDivs.length === 0) return;
 
-    if (parentDivs.length === 0) {
-        // no container found
-        return;
-    }
+    parentDivs.forEach((parentDiv) => {
+        if (_observedTargets.has(parentDiv)) return;
+        _observedTargets.add(parentDiv);
 
-    parentDivs.forEach((parentDiv,parentIndex) => {
+        const pickerIndex = parentDiv.getAttribute('data-picker-index') ?? '0';
+
         function assignHiddenInputsToDivs() {
             const childDivs = parentDiv.querySelectorAll('div.draggable');
-
-            childDivs.forEach((div, index) => {
+            childDivs.forEach((div) => {
                 if (!div.querySelector('input[type="hidden"]')) {
                     const hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
-                    hiddenInput.name = `picker_${parentIndex}[]`;
+                    hiddenInput.name = `picker_${pickerIndex}[]`;
 
                     const dataId = div.getAttribute('data-id');
-                    hiddenInput.value = dataId ? dataId : `value_${index}`; // Fallback-Wert falls keine data-id vorhanden ist
+                    hiddenInput.value = dataId ?? '';
 
                     const deleteButton = document.createElement('button');
                     deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
                     deleteButton.className = 'btn btn-danger btn-sm d-flex ms-auto';
-                    deleteButton.onclick = function() {
+                    deleteButton.onclick = function () {
                         this.parentElement.remove();
                     };
 
@@ -143,18 +145,14 @@ function observeContainersForDraggableDivs(parentSelector) {
                     div.appendChild(deleteButton);
                 }
             });
+            parentDiv.classList.add('border', 'border-primary');
+            setTimeout(() => {
+                parentDiv.classList.remove('border', 'border-primary');
+            }, 600);
         }
 
-        // init MutationObserver
-        const observer = new MutationObserver(() => {
-            assignHiddenInputsToDivs();
-        });
-
-        // start observer
-        observer.observe(parentDiv, {
-            childList: true,
-            subtree: true,
-        });
+        const observer = new MutationObserver(assignHiddenInputsToDivs);
+        observer.observe(parentDiv, { childList: true, subtree: true });
         assignHiddenInputsToDivs();
     });
 }

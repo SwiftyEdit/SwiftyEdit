@@ -123,6 +123,10 @@ $cols = array(
     "product_related" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_accessories_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_accessories" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_addons_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_addons" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    /* 1 = product can only be booked as an addon, not on its own; 2 = normal */
+    "product_addon_only" => "INTEGER(1) NOT NULL DEFAULT 2",
     /* files */
     "file_attachment" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "file_attachment_hits" => 'INTEGER(12)',

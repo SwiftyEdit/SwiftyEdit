@@ -51,6 +51,9 @@
                     {$label_delivery_time}: <span><strong>{$product_delivery_time_title}</strong> {$product_delivery_time_text}</span>
                 </div>
                 {if $product_cart_mode != "2"}
+                {if $is_addon_only}
+                    <div class="alert alert-info mt-3">{$product_addon_only_note}</div>
+                {else}
                 <div class="mt-3">
                     <form action="{$form_action}" method="POST" class="text-start d-inline">
 
@@ -67,6 +70,23 @@
 
                         {/if}
 
+                        {if is_array($select_addons)}
+                            <!-- product addons (bookable options) -->
+                            <div class="card my-2">
+                                {if $product_addons_label != ""}
+                                <h5 class="card-header">{$product_addons_label}</h5>
+                                {/if}
+                                <ul class="list-group">
+                                {foreach $select_addons as $addon}
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" name="product_addons[]" value="{$addon.id}" id="addon_{$addon.id}">
+                                        <label class="form-check-label" for="addon_{$addon.id}">{$addon.title} <span class="text-muted">(+ {$product_currency} {$addon.price} <span class="product-amount">{$addon.amount}</span> <span class="product-unit">{$addon.unit}</span>)</span></label>
+                                    </li>
+                                {/foreach}
+                                </ul>
+                            </div>
+                        {/if}
+
                         {if $product_options_comment_label != ""}
                             <label class="form-label">{$product_options_comment_label}</label>
                             <textarea class="form-control" name="customer_options_comment"></textarea>
@@ -77,7 +97,7 @@
                         </div>
                     {/if}
                         <div class="mt-2 pt-2 d-flex border-top">
-                            <div class="input-group w-25">
+                            <div class="input-group w-25 me-1">
                             <button type="button" class="btn btn-outline-secondary" onclick="adjustQuantity(-1)">−</button>
                             <input type="number"
                                    id="quantity"
@@ -97,6 +117,7 @@
 
                     </form>
                 </div>
+                {/if}
                 {/if}
             {/if}
             <!-- pricetag end -->
@@ -244,7 +265,7 @@
 
     {if is_array($show_accessories)}
         <div class="card mb-3">
-            <div class="card-header">{$lang_label_products_accessories}</div>
+            <div class="card-header">{$label_products_accessories}</div>
             <div class="card-body">
                 <div class="row row-cols-4 mb-3">
                     {foreach $show_accessories as $product => $value}
@@ -271,7 +292,7 @@
 
     {if is_array($show_related)}
         <div class="card mb-3">
-            <div class="card-header">{$lang_label_related_products}</div>
+            <div class="card-header">{$label_related_products}</div>
             <div class="card-body">
                 <div class="row row-cols-4 mb-3">
                     {foreach $show_related as $product => $value}
