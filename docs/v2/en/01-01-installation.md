@@ -32,5 +32,4 @@ Or download the files from the website: https://swiftyedit.org/de/download/
 
 If the installation was successful, the next step is to go to the ACP.
 Just click on <kbd>Administration</kbd>.
-By the way, you can always reach the backend via the URL `example.com/acp/`.
 As of version 2, the backend can be accessed at a new address: `example.com/admin/`

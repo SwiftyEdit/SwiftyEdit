@@ -13,9 +13,12 @@ Plugins are stored in the directory `/plugins/`
 Differently from SwiftyEdit version 1, all plugins must adhere to a specific folder structure:
 
 - Plugin [d]
+    - global [d] (optional)
+        - index.php (loaded as soon as the plugin is active)
+        - xhr.php (handles XHR requests under `/xhr/plugins/{plugin}/`)
     - backend [d] (optional)
     - frontend [d] (optional)
-        - index.php
+        - index.php (page-module plugins only, replaces the page content)
     - hooks-backend [d] (optional)
     - hooks-frontend [d] (optional)
     - lang [d] (optional)
@@ -25,11 +28,12 @@ Differently from SwiftyEdit version 1, all plugins must adhere to a specific fol
     - poster.png (optional)
     - readme.md
 
-### Tipps
+### Tips
 
-- if you name your plugin with the präfix `-pay`, it is automatically recognized
+- if you name your plugin with the prefix `-pay`, it is automatically recognized
   as a payment plugin. This makes the `aftersale.php` file mandatory.
-- You can access the xhr.php file via /xhr/plugins/{plugin}/
+- XHR requests are handled by the `global/xhr.php` file, which is reachable
+  via `/xhr/plugins/{plugin}/`.
 
 ### Activated plugins
 
@@ -43,7 +47,7 @@ A plugin must be activated so that it
 
 ### When are which plugin files loaded?
 
-The following includes are possible::
+The following includes are possible:
 
 1. `/plugins/{plugin}/index.php`
 2. `/plugins/{plugin}/frontend/index.php`
@@ -95,6 +99,11 @@ in the backend and to manage updates.
   ]
 }
 ```
+
+> **Note:** Most fields are optional. In practice, the shipped plugins get by with a
+> minimal set: `name`, `version`, `author`, `description` and `navigation`. The fields
+> `id`, `type`, `build`, `versions[]`, `update_url` and `requires_build` are only needed
+> for the automatic update-check feature.
 
 ### Fields
 

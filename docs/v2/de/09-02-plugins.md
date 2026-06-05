@@ -13,9 +13,12 @@ Plugins werden im Verzeichnis `/plugins/` gespeichert.
 Anders als in SwiftyEdit Version 1 müssen alle Plugins einer bestimmten Ordnerstruktur folgen:
 
 - Plugin [d]
+  - global [d] (optional)
+    - index.php (wird geladen, sobald das Plugin aktiv ist)
+    - xhr.php (verarbeitet XHR-Anfragen unter `/xhr/plugins/{plugin}/`)
   - backend [d] (optional)
   - frontend [d] (optional)
-    - index.php
+    - index.php (nur für Seiten-Modul-Plugins, ersetzt den Seiteninhalt)
   - hooks-backend [d] (optional)
   - hooks-frontend [d] (optional)
   - lang [d] (optional)
@@ -29,7 +32,8 @@ Anders als in SwiftyEdit Version 1 müssen alle Plugins einer bestimmten Ordners
 
 - Wenn du deinem Plugin den Präfix `-pay` gibst, wird es automatisch als
   Zahlungs-Plugin erkannt. Dadurch wird die Datei `aftersale.php` zur Pflicht.
-- Die xhr.php Datei ist über `/xhr/plugins/{plugin}/` erreichbar.
+- XHR-Anfragen werden über die Datei `global/xhr.php` verarbeitet, die unter
+  `/xhr/plugins/{plugin}/` erreichbar ist.
 
 ### Aktivierte Plugins
 
@@ -95,6 +99,11 @@ im Backend anzuzeigen und Updates zu verwalten.
   ]
 }
 ```
+
+> **Hinweis:** Die meisten Felder sind optional. In der Praxis kommen die mitgelieferten
+> Plugins mit einem minimalen Satz aus: `name`, `version`, `author`, `description` und
+> `navigation`. Die Felder `id`, `type`, `build`, `versions[]`, `update_url` und
+> `requires_build` werden nur für die automatische Update-Prüfung benötigt.
 
 ### Felder
 

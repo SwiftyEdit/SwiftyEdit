@@ -44,6 +44,9 @@ return [
     ]
 ];
 ```
+The `meta.php` must return the array via `return [...]`. SwiftyEdit loads the file
+and passes it to `se_register_backend_hook_meta($plugin, $hooks)`.
+
 The hooks themselves are stored in a separate file:
 
 ```php
