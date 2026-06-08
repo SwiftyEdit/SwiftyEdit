@@ -89,6 +89,10 @@ function se_prepareProductData($data, $id = null) {
         if(isset($data['picker_2'])) {
             $product_related = json_encode($data['picker_2'], JSON_FORCE_OBJECT);
         }
+        $product_addons = '';
+        if(isset($data['picker_3'])) {
+            $product_addons = json_encode($data['picker_3'], JSON_FORCE_OBJECT);
+        }
 
         $product_options = json_encode($data['option_keys'],JSON_FORCE_OBJECT);
         $filter = json_encode($data['product_filter'],JSON_FORCE_OBJECT);
@@ -145,6 +149,12 @@ function se_prepareProductData($data, $id = null) {
         if(isset($data['product_ignore_stock']) AND $data['product_ignore_stock'] == 1) {
             // ignore stock
             $product_stock_mode = 1;
+        }
+
+        // addon-only: product can only be booked as an addon, not on its own
+        $product_addon_only = 2;
+        if(isset($data['product_addon_only']) AND $data['product_addon_only'] == 1) {
+            $product_addon_only = 1;
         }
 
         $product_order_quantity_min = (int) $data['product_order_quantity_min'];

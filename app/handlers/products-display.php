@@ -285,6 +285,11 @@ $smarty->assign('product_price_gross', $post_price_gross);
 $smarty->assign('product_price_net', $post_price_net_calculated);
 $smarty->assign('product_price_tax', $tax);
 $smarty->assign('product_currency', $product_data['product_currency']);
+
+/* addon-only products cannot be added to the cart on their own */
+$is_addon_only = (($product_data['product_addon_only'] ?? '2') == 1);
+$smarty->assign('is_addon_only', $is_addon_only);
+$smarty->assign('product_addon_only_note', $lang['msg_product_addon_only'] ?? 'Dieses Produkt ist nur als Zusatzoption zu einem anderen Produkt buchbar.');
 $smarty->assign('product_unit', $product_data['product_unit']);
 $smarty->assign('product_amount', $product_data['product_amount']);
 $smarty->assign('product_order_quantity_max', $input_max_quantity);
@@ -321,6 +326,80 @@ if(is_array($product_options)) {
 
     $smarty->assign('select_options', $select_options);
 }
+
+/* product addons (bookable options with their own price) */
+$product_addons = json_decode($product_data['product_addons'] ?? '',true);
+if(is_array($product_addons)) {
+    $select_addons = array();
+    foreach($product_addons as $addon_id) {
+
+        $addon_data = se_get_product_data((int) $addon_id);
+        if(empty($addon_data)) { continue; }
+
+        // get price from price groups or from products data
+        if($addon_data['product_price_group'] != '' AND $addon_data['product_price_group'] != 'null') {
+            $addon_price_data = se_get_price_group_data($addon_data['product_price_group']);
+            $addon_product_tax = $addon_price_data['tax'];
+            $addon_price_net = $addon_price_data['price_net'];
+        } else {
+            $addon_product_tax = $addon_data['product_tax'];
+            $addon_price_net = $addon_data['product_price_net'];
+        }
+
+        if($addon_product_tax == '1') {
+            $addon_tax = $se_prefs['prefs_posts_products_default_tax'];
+        } else if($addon_product_tax == '2') {
+            $addon_tax = $se_prefs['prefs_posts_products_tax_alt1'];
+        } else {
+            $addon_tax = $se_prefs['prefs_posts_products_tax_alt2'];
+        }
+
+        $addon_prices = se_posts_calc_price($addon_price_net,$addon_tax);
+
+        $addon_amount = $addon_data['product_amount'];
+        $addon_unit = $addon_data['product_unit'];
+
+        if ($se_prefs['prefs_posts_price_mode'] == 1) {
+            $addon_price_tag = $addon_prices['gross'];
+        } else if($se_prefs['prefs_posts_price_mode'] == 2) {
+            $addon_price_tag = $addon_prices['net'].' / '.$addon_prices['gross'];
+        } else {
+            $addon_price_tag = $addon_prices['net'];
+        }
+
+        $select_addons[] = [
+            "id" => (int) $addon_id,
+            "title" => $addon_data['title'],
+            "price" => $addon_price_tag,
+            "unit" => $addon_unit,
+            "amount" => $addon_amount
+        ];
+    }
+    if(!empty($select_addons)) {
+        $smarty->assign('select_addons', $select_addons);
+        $smarty->assign(
+            'product_addons_label',
+            !empty($product_data['product_addons_label'])
+                ? $product_data['product_addons_label']
+                : $lang['label_products_addons']
+        );
+    }
+}
+
+
+$smarty->assign(
+    'label_products_accessories',
+    !empty($product_data['product_accessories_label'])
+        ? $product_data['product_accessories_label']
+        : $lang['label_products_accessories']
+);
+
+$smarty->assign(
+    'label_related_products',
+    !empty($product_data['product_related_label'])
+        ? $product_data['product_related_label']
+        : $lang['label_related_products']
+);
 
 /**
  * user file upload

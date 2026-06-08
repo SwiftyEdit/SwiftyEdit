@@ -33,5 +33,5 @@ und Eingabefelder so:
 | Land         | Select   | Wähle dein Land       |
 | Beschreibung | Textarea | Beschreibung          |
 | Upload       | File     | Datei upload          |
-| Newsletter   | Checkbox | Newsletter abonieren  |
+| Newsletter   | Checkbox | Newsletter abonnieren |
 | Geschlecht   | Radio    | Wähle dein Geschlecht |

@@ -6,7 +6,7 @@ group: backend
 priority: 400
 ---
 
-## Optionen
+# Optionen
 
 Optionen enthalten einen Titel und mindestens zwei Werte.
 Wird einem Produkt eine Option zugewiesen, kann der Kunde beim Bestellvorgang diese Optionen wählen.

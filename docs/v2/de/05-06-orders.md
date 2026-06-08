@@ -13,7 +13,7 @@ priority: 400
 Falls eine Bestellung nicht mit einem Zahlungsplugin automatisch als bezahlt markiert wird
 (zum Beispiel Überweisung), kannst du hier nach dem Zahlungseingang die Bestellungen entsprechend markieren.
 
-Digitale Produkte können nur geladen werden, wenn die Bestellung als bzahlt markiert wurde.
+Digitale Produkte können nur geladen werden, wenn die Bestellung als bezahlt markiert wurde.
 Der Käufer kann dann die Datei auf seiner Profilseite herunterladen.
 
 ## Bestellstatus

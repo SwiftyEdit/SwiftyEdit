@@ -20,7 +20,7 @@ Falls Du einen bestehenden Eintrag bearbeiten möchtest, klicke einfach auf das 
 Du kannst für jedes Event wie gewohnt einen Titel, eine Kurzbeschreibung, ein Vorschaubild und weitere Informationen
 eintragen. Die wichtigsten Event-Daten sind ...
 
-* <kbd>Beginn</kbd> Hier gibst DU an wann das Event beginnt
+* <kbd>Beginn</kbd> Hier gibst Du an wann das Event beginnt
 * und <kbd>Ende</kbd> Hier gibst Du das Datum an, wenn das Event beendet ist.
 
 Diese Angaben sind u.a. für die Sortierung Deiner Events verantwortlich.

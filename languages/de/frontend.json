@@ -55,6 +55,7 @@
   "label_product_description": "Beschreibung",
   "label_related_products": "Verwandte Produkte",
   "label_products_accessories": "Zubehör",
+  "label_products_addons": "Zusatzprodukte",
   "label_prices_discount": "Mengenrabatt",
   "label_prices_snippet": "Hinweise zu den Preisen",
   "price_tag_label_gross": "MwSt. inbegriffen",
@@ -212,5 +213,6 @@
   "mail_subject_order_change_status_pm": "Wir haben den Zahlungsstatus für Ihre Bestellung geändert",
   "mail_subject_order_change_status_shipping": "Wir haben den Versandstatus für Ihre Bestellung geändert",
   "mail_subject_order_sent": "Ihre Bestellung wurde aufgenommen",
-  "mail_subject_order_changed": "Wir haben etwas in Ihrer Bestellung geändert"
+  "mail_subject_order_changed": "Wir haben etwas in Ihrer Bestellung geändert",
+  "mail_subject_order_request": "Bestellanfrage"
 }

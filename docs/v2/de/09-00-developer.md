@@ -17,7 +17,7 @@ Um E-Mails über das SMTP Protokoll zu senden wird eine Datei `config_smtp.php` 
 Beispiel:
 ```php
 <?php
-// data/config_smtp.php';
+// data/config_smtp.php
 $smtp_port = 587;
 $smtp_username = 'admin@example.com';
 $smtp_psw = 'example';
@@ -26,6 +26,12 @@ $smtp_encryption = 'tls';
 
 ## Themes
 
+Wie Du eigene Themes erstellst, erfährst Du im Kapitel [Themes](09-01-00-themes.md).
+
 ## Plugins
 
+Wie Du eigene Plugins erstellst, erfährst Du im Kapitel [Plugins](09-02-plugins.md).
+
 ## Hooks
+
+Wie Du Inhalte mit Hooks manipulierst, erfährst Du im Kapitel [Hooks](09-03-hooks.md).

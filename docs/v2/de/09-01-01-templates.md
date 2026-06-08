@@ -9,7 +9,7 @@ priority: 200
 # Die Templates (.tpl Dateien)
 
 Einige Templates werden direkt aus SwiftyEdit inkludiert.
-Diese Templates sollten sich also im Ordner `styles/deinTheme/templates/` befinden.
+Diese Templates sollten sich also im Ordner `public/assets/themes/{theme}/templates/` befinden.
 Falls eine Datei in Deinem Theme fehlt oder Du sie bewusst weglässt,
 lädt SwiftyEdit die Datei aus dem "default" Theme.
 

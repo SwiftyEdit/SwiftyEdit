@@ -55,6 +55,7 @@
   "label_product_description": "Descrizione",
   "label_related_products": "Prodotti correlati",
   "label_products_accessories": "Accessori",
+  "label_products_addons": "Add-on Products",
   "label_prices_discount": "Sconto quantità",
   "label_prices_snippet": "Note sui prezzi",
   "price_tag_label_gross": "IVA inclusa",
@@ -212,5 +213,6 @@
   "mail_subject_order_change_status_pm": "We changed the Payment Status for your Order",
   "mail_subject_order_change_status_shipping": "We changed the Shipping Status for your Order",
   "mail_subject_order_sent": "Your Order has been sent",
-  "mail_subject_order_changed": "We changed something in your Order"
+  "mail_subject_order_changed": "We changed something in your Order",
+  "mail_subject_order_request": "Order request"
 }

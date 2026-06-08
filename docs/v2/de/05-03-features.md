@@ -1,5 +1,5 @@
 ---
-title: Shop
+title: Shop - Features
 description: Features
 btn: Features
 group: backend

@@ -8,6 +8,8 @@ priority: 190
 
 # Seiten anlegen, bearbeiten und verwalten
 
+<kbd>Backend</kbd> <kbd>Inhalte</kbd> <kbd>Alle Seiten anzeigen</kbd>
+
 ## Geordnete Seiten {#ordered-pages}
 Die Seiten, die eine Sortierungsnummer enthalten, werden als geordnete Seiten aufgelistet.
 Diese Seiten werden automatisch in der (Haupt-)Navigation aufgeführt.
@@ -21,24 +23,26 @@ Zusätzlich gibt es natürlich eine Suchfunktion.
 
 ## Sortierung {#sorting}
 
-## Single pages
+So sortierst Du Seiten ganz einfach.
+
+### Einzelseite
 
 - Einzelseiten haben keine Sortierfunktion.
 - Sie sind nicht in der Navigation enthalten.
 - Das Eingabefeld für Position hat hier **keine** Funktion.
 
-## Portal
+### Portal
 
 - Portalseiten können auch als Startseiten bezeichnet werden.
 - Jede aktivierte oder verwendete Sprache sollte eine Portalseite haben.
 - Auch hier hat das Eingabefeld für Position **keine** Funktion.
 
-## Hauptmenü
+### Hauptmenü
 
 - Hauptmenü-Seiten erstellen, wie der Name schon sagt, einen Eintrag im Hauptmenü.
 - Das Feld „Position“ bestimmt, wo die Seite einsortiert wird.
 
-## Diese Seite ist eine Unterseite von ...
+### Diese Seite ist eine Unterseite von ...
 
 - Hier kann dem Menü eine Seite (als Unterseite) hinzugefügt werden.
 - Das Feld "Position" bestimmt auch hier wieder, an welcher Stelle die Seite einsortiert wird.
@@ -80,12 +84,13 @@ Tipp: Das Feld "Position" darf nur eine Zahl oder das Wort portal enthalten. Ode
 
 ### Aktiviere den Blog, Events oder den Shop
 
-Sobald du hier ein Modul auswählst, wird der Inhalt dieser Seite durch dieses ersetzt.
+Über die Auswahl der Beitragstypen legst Du fest, welche Einträge auf dieser Seite angezeigt werden.
+Der eigentliche Seiteninhalt wird dann durch diese Einträge ersetzt.
 
-Die Module, <kbd>Bild</kbd>, <kbd>Galerie</kbd>, <kbd>Video</kbd>,
+Die Beitragstypen <kbd>Nachricht</kbd>, <kbd>Bild</kbd>, <kbd>Galerie</kbd>, <kbd>Video</kbd>,
 <kbd>Link</kbd> und <kbd>Download</kbd> aktivieren den Blog.
 
-Das Modul <kbd>Events</kbd> aktiviert das Event-Modul und <kbd>Produkte</kbd> den Shop.
+Der Beitragstyp <kbd>Events</kbd> aktiviert das Event-Modul und <kbd>Produkte</kbd> den Shop.
 
 
 ### Status {#page-status}
@@ -96,7 +101,13 @@ Das Modul <kbd>Events</kbd> aktiviert das Event-Modul und <kbd>Produkte</kbd> de
 | Unsichtbar    | Die Seite ist für alle sichtbar, wird jedoch nicht in der Navigation, der Sitemap oder der Suche aufgeführt |
 | Privat        | Nur Administratoren oder zugelassene Benutzergruppen können die Seite anzeigen                              |
 | Entwurf       | Nur Administratoren können die Seite anzeigen                                                               |
-| Weiterleitung | Auf die Seite kann nicht zugegriffen werden, da sie sofort auf eine andere Adresse umleitet                 |
+
+
+### Weiterleitung {#redirects}
+
+Die Weiterleitung ist ein eigenes Feld (kein Status). Trägst Du hier eine Zieladresse ein,
+leitet die Seite sofort dorthin um. Den HTTP-Statuscode (z. B. 301 oder 302) kannst Du
+über das zugehörige Auswahlfeld festlegen.
 
 
 ### Nutzungsart {#page-usage}

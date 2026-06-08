@@ -207,7 +207,7 @@ if(is_array($array_images)) {
     }
 }
 
-$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
+$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3" data-picker-index="0">'.$draggable.'</div>';
 $choose_images .= '<div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
 $choose_images .= 'Loading Images ...</div>';
 
@@ -597,8 +597,28 @@ if(is_array($get_prod_accessories)) {
     }
 }
 
-$prod_related_dropper = '<div id="prodDropper_r" class="sortable_target target_products list-group mb-3">'.$draggable_related.'</div>';
-$prod_accessories_dropper = '<div id="prodDropper_a" class="sortable_target target_products list-group mb-3">'.$draggable_accessories.'</div>';
+$get_prod_addons = json_decode($product_data['product_addons'],true);
+$draggable_addons = '';
+if(is_array($get_prod_addons)) {
+    $get_prod_addons = array_filter($get_prod_addons);
+    foreach($get_prod_addons as $id) {
+
+        $show_title = $temp_prod[$id]['title'];
+        $show_lang = return_language_flag_src($temp_prod[$id]['lang']);
+
+        $draggable_addons .= '<div class="list-group-item draggable" data-id="'.$id.'">';
+        $draggable_addons .= '<div class="d-flex flex-row gap-2">';
+        $draggable_addons .= '<div class="text-muted small"><img src="'.$show_lang.'" width="15"> '.$show_title;
+        $draggable_addons .= '[#'.$id.'] '.$temp_prod[$id]['number'];
+        $draggable_addons .= '</div>';
+        $draggable_addons .= '</div>';
+        $draggable_addons .= '</div>';
+    }
+}
+
+$prod_related_dropper = '<div id="prodDropper_r" class="sortable_target target_products list-group mb-3" data-picker-index="2">'.$draggable_related.'</div>';
+$prod_accessories_dropper = '<div id="prodDropper_a" class="sortable_target target_products list-group mb-3" data-picker-index="1">'.$draggable_accessories.'</div>';
+$prod_addons_dropper = '<div id="prodDropper_addons" class="sortable_target target_products list-group mb-3" data-picker-index="3">'.$draggable_addons.'</div>';
 $prod_sel_widget = '<div id="prodWidget" hx-post="/admin-xhr/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
 $prod_sel_widget .= '<div id="fake" class="sortable_source"><div></div></div>';
 /* product options */
@@ -907,6 +927,12 @@ if($product_data['product_stock_mode'] == 1) {
     $checkIgnoreStock = '';
 }
 
+if(($product_data['product_addon_only'] ?? '2') == 1) {
+    $checkAddonOnly = 'checked';
+} else {
+    $checkAddonOnly = '';
+}
+
 $product_order_quantity_min = (int) $product_data['product_order_quantity_min'];
 $product_order_quantity_max = (int) $product_data['product_order_quantity_max'];
 if($product_order_quantity_min < 2) {
@@ -954,6 +980,8 @@ foreach($lang as $k => $v) {
 $form_tpl = str_replace('{product_labels}', $checkbox_set_labels, $form_tpl);
 $form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
 $form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
+$form_tpl = str_replace('{checkAddonOnly}', $checkAddonOnly, $form_tpl);
+$form_tpl = str_replace('{label_product_addon_only}', $lang['label_product_addon_only'], $form_tpl);
 
 $form_tpl = str_replace('{variant_tooltip}', se_print_docs_link("05-00-shop.md"), $form_tpl);
 
@@ -1014,6 +1042,10 @@ $form_tpl = str_replace('{product_options_comment_label}', $product_data['produc
 $form_tpl = str_replace('{prod_sel_widget}', $prod_sel_widget, $form_tpl);
 $form_tpl = str_replace('{prod_accessories_dropper}', $prod_accessories_dropper, $form_tpl);
 $form_tpl = str_replace('{prod_related_dropper}', $prod_related_dropper, $form_tpl);
+$form_tpl = str_replace('{prod_addons_dropper}', $prod_addons_dropper, $form_tpl);
+$form_tpl = str_replace('{product_addons_label}', $product_data['product_addons_label'], $form_tpl);
+$form_tpl = str_replace('{product_accessories_label}', $product_data['product_accessories_label'], $form_tpl);
+$form_tpl = str_replace('{product_related_label}', $product_data['product_related_label'], $form_tpl);
 
 $form_tpl = str_replace('{product_list_related}', $checkbox_related_prod, $form_tpl);
 $form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod, $form_tpl);

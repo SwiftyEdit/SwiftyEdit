@@ -55,6 +55,7 @@
   "label_product_description": "Descriere",
   "label_related_products": "Produse similare",
   "label_products_accessories": "Accesorii",
+  "label_products_addons": "Add-on Products",
   "label_prices_discount": "Reducere cantitate",
   "label_prices_snippet": "Note privind prețurile",
   "price_tag_label_gross": "cu TVA",
@@ -212,5 +213,6 @@
   "mail_subject_order_change_status_pm": "We changed the Payment Status for your Order",
   "mail_subject_order_change_status_shipping": "We changed the Shipping Status for your Order",
   "mail_subject_order_sent": "Your Order has been sent",
-  "mail_subject_order_changed": "We changed something in your Order"
+  "mail_subject_order_changed": "We changed something in your Order",
+  "mail_subject_order_request": "Order request"
 }

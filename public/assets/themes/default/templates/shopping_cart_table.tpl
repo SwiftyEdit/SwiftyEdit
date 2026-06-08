@@ -8,8 +8,8 @@
 
 
     {foreach $cart_items as $item}
-        <tr>
-            <td>{$item.nbr}</td>
+        <tr{if $item.parent_id > 0} class="sc-item-addon"{/if}>
+            <td>{if $item.parent_id == 0}{$item.nbr}{else}<i class="bi bi-arrow-return-right"></i>{/if}</td>
             <td>
                 <small class="text-muted">{$item.product_number}</small> <a href="{$item.slug}"
                                                                             title="{$item.slug}">{$item.title}</a>
@@ -45,12 +45,16 @@
                     </div>
                     <div class="col-2">
                         {$lang_label_product_amount}
+                        {if $item.parent_id == 0}
                         <form action="{$shopping_cart_uri}" method="POST">
                             <input type="number" name="cart_product_amount" value="{$item.amount}" class="form-control"
                                    onchange="this.form.submit()">
                             <input type="hidden" name="cart_item_key" value="{$item.cart_id}">
                             {$hidden_csrf_token}
                         </form>
+                        {else}
+                            <p>{$item.amount}</p>
+                        {/if}
                     </div>
                 </div>
 

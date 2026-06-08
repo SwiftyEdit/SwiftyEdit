@@ -18,7 +18,7 @@ Dieser Gruppe können dann beliebig viele Werte zugeordnet werden.
 * __Gruppenname__ gibt der Gruppe den Namen
 * __Beschreibung__ erscheint im Frontend als Tooltip
 * __Priorität__ Sorgt für die Sortierung bei mehreren Gruppen
-* __Type__ Checkbox oder Radio, entscheidet ob der Benutzer mehrere oder nur einen Wert dieser Grupe aktivieren kann.
+* __Type__ Radio, Checkbox oder Range, entscheidet ob der Benutzer nur einen Wert (Radio), mehrere Werte (Checkbox) oder einen Wertebereich (Range) dieser Gruppe aktivieren kann.
 * __Sprache__ Falls man eine mehrsprachige Website betreibt und Gruppennamen identisch sind
 * __Rubriken__ Der Filter wird im Frontend nur angezeigt, wenn er zur Kategorie passt.
 

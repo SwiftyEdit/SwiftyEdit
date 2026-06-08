@@ -23,28 +23,28 @@ The unordered pages are listed in the right column.
 You can filter the pages by status (public, invisible, private, draft) and language.
 In addition, there is the search field.
 
-## Edit pages
+## Sorting {#sorting}
 
-How to sort pages easily
+How to sort pages easily.
 
-## Single pages
+### Single page
 
 - Single pages do not have a sorting function.
 - They are not included in the navigation.
 - The Position input field has no function here.
 
-## Portal
+### Portal
 
 - Portal pages could also be described as start pages.
 - Each activated or used language should have a portal page.
 - The Position input field also has no function here.
 
-## Main menu
+### Main menu
 
 - Main menu pages, as the name suggests, create an entry in the main menu.
 - The Position field determines where the page is sorted.
 
-## This page is a subpage of ...
+### This page is a subpage of ...
 
 - Here, a page (as a subpage) can be added to the menu.
 - The value from the Position field is automatically appended to the parent page.
@@ -84,24 +84,30 @@ How to sort pages easily
 
 ### Activate the Blog, Events or the Shop
 
-As soon as you select a template here, the content of this page
-will be replaced by one of the following Modules.
+By selecting the post types here, you determine which entries are displayed on this page.
+The actual page content is then replaced by these entries.
 
-The template <kbd>message</kbd>, <kbd>image</kbd>, <kbd>gallery</kbd>, <kbd>video</kbd>,
+The post types <kbd>Message</kbd>, <kbd>Image</kbd>, <kbd>Gallery</kbd>, <kbd>Video</kbd>,
 <kbd>Link</kbd> and <kbd>Download</kbd> activate the blog.
 
-The template <kbd>Event</kbd> activates the event module and <kbd>Product</kbd> activates the shop.
+The post type <kbd>Event</kbd> activates the event module and <kbd>Product</kbd> activates the shop.
 
 
 ### Status {#page-status}
 
-| Status      | Beschreibung                                                                       |
+| Status      | Description                                                                        |
 |-------------|------------------------------------------------------------------------------------|
 | Public      | The pages are visible for all                                                      |
 | Ghost       | The page is visible to all but is not listed in navigations, the sitemap or search |
 | Private     | Only administrators or approved user groups can view the page                      |
 | Draft       | Only administrators can view the page                                              |
-| Redirection | The page cannot be accessed because it immediately redirects to another address    |
+
+
+### Redirection {#redirects}
+
+The redirection is a separate field (not a status). If you enter a target address here,
+the page immediately redirects to it. You can set the HTTP status code (e.g. 301 or 302)
+via the corresponding select field.
 
 
 ### Usage {#page-usage}
@@ -128,7 +134,12 @@ The page for search results
 
 #### Reset Password
 
+This page is used when a user needs to reset their password.
+
 #### 404 (Page not found)
+
+This page is displayed when a page cannot be found,
+i.e. when the requested URL does not exist.
 
 #### Display Posts / Products / Events
 
@@ -140,13 +151,23 @@ on which identical products are listed, you can display all products on the /det
 
 #### Imprint
 
+Used for the imprint.
+
 #### Privacy Policy
+
+Used for the privacy policy information.
 
 #### Legal
 
+For any other legal information.
+
 #### Checkout
 
+For the shopping cart.
+
 #### Orders
+
+Here the user can view their orders.
 
 ---
 
@@ -176,5 +197,3 @@ In short: the closer the search term is to the URL, SEO data, and title,
 the more relevant the result is.
 The page content serves as a supplementary criterion.
 If the relevance is the same, the page priority is decisive.
-
-Translated with DeepL.com (free version)

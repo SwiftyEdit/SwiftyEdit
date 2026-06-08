@@ -225,6 +225,7 @@ if ($_REQUEST['widget'] == 'product-select') {
             }
             $filter_by_str = [
                 "OR" => [
+                    "id[~]" => "%$f%",
                     "title[~]" => "%$f%",
                     "teaser[~]" => "%$f%",
                     "text[~]" => "%$f%",
@@ -232,7 +233,8 @@ if ($_REQUEST['widget'] == 'product-select') {
                     "text_additional2[~]" => "%$f%",
                     "text_additional3[~]" => "%$f%",
                     "text_additional4[~]" => "%$f%",
-                    "text_additional5[~]" => "%$f%"
+                    "text_additional5[~]" => "%$f%",
+                    "product_number[~]" => "%$f%"
                 ]
             ];
         }

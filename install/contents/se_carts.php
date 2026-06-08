@@ -16,6 +16,7 @@ $cols = array(
     "cart_time" => 'INTEGER(12)',
     "cart_user_hash" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "cart_user_id" => 'INTEGER(12)',
+    "cart_parent_id" => 'INTEGER(12) NOT NULL DEFAULT 0',
     "cart_product_id" => 'INTEGER(12)',
     "cart_product_uuid" => "VARCHAR(36) NOT NULL DEFAULT ''",
     "cart_product_slug" => "VARCHAR(255) NOT NULL DEFAULT ''",

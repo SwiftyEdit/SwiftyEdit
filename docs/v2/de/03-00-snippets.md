@@ -22,6 +22,22 @@ wird immer das Snippet mit der passenden Sprache in Deinen Inhalt geladen.
 Sollte das Snippet nicht in der gewünschten Sprache verfügbar sein, wird automatisch das Snippet
 in der Standard-Sprache geladen.
 
+## Snippets einbinden
+
+Ein Snippet wird über seinen __Namen__ als Shortcode in einen Inhalt (z.B. Seite, Beitrag oder
+ein anderes Snippet) eingebunden. Es gibt drei Schreibweisen:
+
+| Shortcode                  | Wirkung                                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------------------|
+| `[snippet=name]`           | Fügt nur den __Inhalt__ des Snippets ein.                                                                |
+| `[snippet]name[/snippet]`  | Identisch zu `[snippet=name]` – fügt nur den Inhalt ein.                                                 |
+| `[snippet=name]tpl[/snippet]` | Rendert das Snippet über sein __eigenes Template__ (Titel, Bilder, Link, Klassen usw.), sofern das Theme das unterstützt. |
+
+Ersetze `name` jeweils durch den Namen, den Du dem Snippet vergeben hast.
+
+__Hinweis:__ Innerhalb von `<pre>`- und `<code>`-Blöcken werden Shortcodes __nicht__ ersetzt.
+So kannst Du die Syntax in Anleitungen darstellen, ohne dass das Snippet eingebunden wird.
+
 ## Eingabefelder
 
 | Feld             | Beschreibung                                                                                                                                                                                                     |

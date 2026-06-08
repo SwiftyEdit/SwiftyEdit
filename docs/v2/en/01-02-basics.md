@@ -16,7 +16,7 @@ You can also create new entries directly.
 
 On the right-hand side you will find a log, current warnings and information on the software used.
 
-Tipp: If you are working on a theme or similar and have not activated the “Smarty Compile Check” option,
+Tip: If you are working on a theme or similar and have not activated the “Smarty Compile Check” option,
 you can also clear the Smarty cache here.
 
 ---
@@ -44,7 +44,7 @@ replaces the meta-information (title, description, keywords) of the page.
 | Thumbnail   | `File`     | An image for this category can be selected here.                                              |
 | Description | `Textarea` | The description of the category                                                               |
 | Keywords    | `Text`     | Keywords                                                                                      |
-| Inhalt      | `wysiwyg`  | Description text for the category. Depending on the theme, this is displayed in the frontend. |
+| Content     | `wysiwyg`  | Description text for the category. Depending on the theme, this is displayed in the frontend. |
 
 ---
 
