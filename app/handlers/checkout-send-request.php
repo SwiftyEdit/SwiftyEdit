@@ -97,9 +97,14 @@ if($send_request === true) {
     //$send = se_send_mail($recipient,$subject,$mail_content,true);
     $send_mail = se_send_mail($recipient, $subject, $build_html_mail,true);
     if($send_mail == 1) {
-        $send_request_msg = $lang['msg_request_send'];
-        $smarty->assign('send_request_msg', $send_request_msg);
-        $smarty->assign('request_msg_class', 'success');
+
+        $cart_alert = se_get_snippet('cart_request_sent',$languagePack,'content');
+        if($cart_alert == '') {
+            $cart_alert = $lang['msg_request_send'];
+        }
+
+        $smarty->assign("cart_alert_success",$cart_alert,true);
+
         /* remove items from se_carts */
         if(isset($_SESSION['user_id'])) {
             se_clear_cart($_SESSION['user_id']);
