@@ -62,6 +62,10 @@ So kannst Du die Syntax in Anleitungen darstellen, ohne dass das Snippet eingebu
 | `account_confirm_mail` | Wird als E-Mail versendet damit ein Benutzer seinen Account freischalten kann. Dieses Snippet enthält einige Variablen       |
 | `account_reset_psw`    | Wird als E-Mail versendet wenn ein Benutzer sein Passwort zurücksetzt. Ersetzt `forgotten_psw_mail_info`aus der Sprachdatei. |
 | `cart_order_sent`      | Wird als Meldung angezeigt, sobald eine Bestellung abgesendet wurde                                                          |
+| `cart_request_sent`    | Wird als Meldung angezeigt, sobald der Warenkorb als Anfrage versendet wurde.                                                |
+| `mail_salutation_order_request` | Wird als Anrede/Einleitung in der E-Mail verwendet, wenn der Warenkorb als Anfrage versendet wird. Unterstützt die Variablen `{order_date}` und `{order_time}`. |
+| `cart_max_order_value` | Wird angezeigt, wenn der maximale Bestellwert überschritten wird und deshalb nur noch eine Anfrage versendet werden kann.    |
+| `cart_error_delivery_zone` | Wird angezeigt, wenn das Land des Käufers nicht in den Liefergebieten enthalten ist und deshalb nur noch eine Anfrage versendet werden kann. |
 | `no_search_results`    | Wird angezeigt, wenn die Suche keine Ergebnisse liefert                                                                      |
 | `agreement_text`       | Dieser Text muss vom Benutzer akzeptiert werden, bevor er einen Account erstellen kann.                                      |
 | `cart_agree_term`      | Dieser Text muss akzeptiert werden, bevor eine Bestellung abgesendet werden kann.                                            |

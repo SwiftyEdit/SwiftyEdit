@@ -61,6 +61,10 @@ show the syntax in tutorials without the snippet being embedded.
 | `account_confirm_mail` | Sent as an e-mail so that a user can activate their account. This snippet contains a few variables.                         |
 | `account_reset_psw`    | Sent as an e-mail when a user resets their password. Replaces `forgotten_psw_mail_info` from the language file.             |
 | `cart_order_sent`      | Shown as a message as soon as an order has been submitted.                                                                  |
+| `cart_request_sent`    | Shown as a message as soon as the shopping cart has been sent as a request.                                                |
+| `mail_salutation_order_request` | Used as the salutation/intro in the e-mail when the shopping cart is sent as a request. Supports the variables `{order_date}` and `{order_time}`. |
+| `cart_max_order_value` | Shown when the maximum order value is exceeded and therefore only a request can be sent.                                    |
+| `cart_error_delivery_zone` | Shown when the buyer's country is not included in the delivery areas and therefore only a request can be sent.          |
 | `no_search_results`    | Shown when the search returns no results.                                                                                   |
 | `agreement_text`       | This text must be accepted by the user before they can create an account.                                                  |
 | `cart_agree_term`      | This text must be accepted before an order can be submitted.                                                               |
