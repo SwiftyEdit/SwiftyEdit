@@ -126,10 +126,10 @@ function observeContainersForDraggableDivs(parentSelector) {
         function assignHiddenInputsToDivs() {
             const childDivs = parentDiv.querySelectorAll('div.draggable');
             childDivs.forEach((div) => {
-                if (!div.querySelector('input[type="hidden"]')) {
-                    const hiddenInput = document.createElement('input');
+                let hiddenInput = div.querySelector('input[type="hidden"]');
+                if (!hiddenInput) {
+                    hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
-                    hiddenInput.name = `picker_${pickerIndex}[]`;
 
                     const dataId = div.getAttribute('data-id');
                     hiddenInput.value = dataId ?? '';
@@ -144,6 +144,9 @@ function observeContainersForDraggableDivs(parentSelector) {
                     div.appendChild(hiddenInput);
                     div.appendChild(deleteButton);
                 }
+                // Immer am aktuellen Container neu setzen: SortableJS schiebt das Element
+                // während des Ziehens durch Nachbar-Container; nur der finale Container darf gewinnen.
+                hiddenInput.name = `picker_${pickerIndex}[]`;
             });
             parentDiv.classList.add('border', 'border-primary');
             setTimeout(() => {

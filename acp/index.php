@@ -326,7 +326,7 @@ if (isset($set_acptheme)) {
         }
     </script>
 
-    <script src="/themes/administration/dist/backend.js?v=2026-02-19"></script>
+    <script src="/themes/administration/dist/backend.js?v=2026-06-11"></script>
     <script src="/themes/administration/dist/tinymce/tinymce.min.js"></script>
     <script src="/themes/administration/dist/tinymce-jquery/tinymce-jquery.js"></script>
 
