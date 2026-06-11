@@ -76,14 +76,29 @@
                                 {if $product_addons_label != ""}
                                 <h5 class="card-header">{$product_addons_label}</h5>
                                 {/if}
-                                <ul class="list-group">
+                                <div class="list-group">
                                 {foreach $select_addons as $addon}
-                                    <li class="list-group-item">
-                                        <input class="form-check-input me-1" type="checkbox" name="product_addons[]" value="{$addon.id}" id="addon_{$addon.id}">
-                                        <label class="form-check-label" for="addon_{$addon.id}">{$addon.title} <span class="text-muted">(+ {$product_currency} {$addon.price} <span class="product-amount">{$addon.amount}</span> <span class="product-unit">{$addon.unit}</span>)</span></label>
-                                    </li>
+                                    <label class="list-group-item d-flex gap-3">
+                                        <input class="form-check-input flex-shrink-0 fs-4" type="checkbox" name="product_addons[]" value="{$addon.id}" id="addon_{$addon.id}">
+                                        <span class="pt-1 flex-grow-1 form-checked-content">
+                                        <strong>{$addon.title}</strong>
+                                        <span class="d-block text-muted">(+ {$product_currency} {$addon.price} <span class="product-amount">{$addon.amount}</span> <span class="product-unit">{$addon.unit}</span>)</span>
+                                        </span>
+                                        <span class="flex-shrink-0 mt-1 rounded" style="background-image: url('{$addon.image_src}');width:45px;height:45px;background-size: cover;background-position: center;background-repeat: no-repeat;">
+                                       </span>
+                                        <button type="button" class="flex-shrink-0 btn btn-link"
+                                                data-bs-html="true"
+                                                data-bs-container="body"
+                                                data-bs-toggle="popover"
+                                                data-bs-placement="top"
+                                                data-bs-trigger="hover focus"
+                                                data-bs-title="{$addon.title}"
+                                                data-bs-content="{$addon.teaser}">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </label>
                                 {/foreach}
-                                </ul>
+                                </div>
                             </div>
                         {/if}
 

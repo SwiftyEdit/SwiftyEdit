@@ -33,3 +33,5 @@ $headings-color: desaturate($primary,10%);
 $navbar-bg: darken($header-bg,5);
 $navbar-color: mix($light,$primary,25) !default;
 $navbar-color-active: $light;
+
+$popover-header-bg: $widget-bg;

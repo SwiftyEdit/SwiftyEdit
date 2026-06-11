@@ -24,3 +24,5 @@ $input-border-color-dark: mix($primary-dark,$dark,65) !default;
 $list-group-color-dark: desaturate($link-color,15) !default;
 $list-group-bg-dark: $widget-bg !default;
 $list-group-hover-bg-dark: lighten($widget-bg,2) !default;
+
+$popover-header-bg-dark: $widget-bg-dark;
