@@ -371,9 +371,19 @@ if(is_array($product_addons)) {
         $filtered = array_filter($addon_images);
         $addon_thumb_src = reset($filtered);
 
+        $addon_href = SE_INCLUDE_PATH . "/" . $target_page.$addon_data['slug'];
+
+        /* delivery time */
+        $addon_delivery_time = (int) $addon_data['product_delivery_time'];
+        $get_addon_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_content"], [
+            "snippet_id" => $addon_delivery_time
+        ]);
+
         $select_addons[] = [
             "id" => (int) $addon_id,
+            "href" => $addon_href,
             "title" => $addon_data['title'],
+            "delivery_time" => $get_addon_delivery_text['snippet_title'],
             "teaser" => text_parser(htmlspecialchars_decode($addon_data['teaser'])),
             "image_src" => $addon_thumb_src,
             "price" => $addon_price_tag,

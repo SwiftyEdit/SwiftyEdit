@@ -7,8 +7,10 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 - [x] Complete the transformation from flatCore CMS to SwiftyEdit CMS.
 
 ## Upcoming
-### Version 2.0 (~Q1 2026)
+### Version 2.0 (Summer 2026)
 
+- [ ] Enable guest orders
+- [ ] Add a cancellation button, form, or page
 - [ ] Complete the Documentation
 - [x] Integrate the Documentation to the backend [#262](https://github.com/SwiftyEdit/SwiftyEdit/issues/262)
 - [x] Improve the category integration in the blog module
