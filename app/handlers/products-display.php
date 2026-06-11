@@ -367,10 +367,17 @@ if(is_array($product_addons)) {
             $addon_price_tag = $addon_prices['net'];
         }
 
+        $addon_images = explode("<->", $addon_data['images']);
+        $filtered = array_filter($addon_images);
+        $addon_thumb_src = reset($filtered);
+
         $select_addons[] = [
             "id" => (int) $addon_id,
             "title" => $addon_data['title'],
+            "teaser" => text_parser(htmlspecialchars_decode($addon_data['teaser'])),
+            "image_src" => $addon_thumb_src,
             "price" => $addon_price_tag,
+            "sku" => $addon_data['product_number'],
             "unit" => $addon_unit,
             "amount" => $addon_amount
         ];
