@@ -21,7 +21,7 @@
     "fs-extra": "^11.3.5",
     "sass": "^1.100.0",
     "terser": "^5.48.0",
-    "vite": "^8.0.14"
+    "vite": "^8.1.0"
   },
   "repository": {},
   "scripts": {
