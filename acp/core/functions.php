@@ -788,18 +788,21 @@ function first_words($string,$nbr=5) {
  * @param integer $length
  * @return string
  */
-function se_return_first_chars($str,$length=200) {
+function se_return_first_chars($str,$length=200,$html_ellipsis=true) {
 
     $str = strip_tags(htmlspecialchars_decode($str));
     if(strlen($str) > $length) {
-        $ellipses = ' <small><i>(...)</i></small>';
         $last_blank_pos = strrpos(substr($str, 0, $length), ' ');
         if($last_blank_pos !== false) {
             $trimmed_string = substr($str, 0, $last_blank_pos);
         } else {
             $trimmed_string = substr($str, 0, $length);
         }
-        $trimmed_string .= $ellipses;
+        // markup is opt-out so callers can render the trimmed text autoescaped
+        // and add their own (static) ellipsis instead of relying on |raw
+        if($html_ellipsis) {
+            $trimmed_string .= ' <small><i>(...)</i></small>';
+        }
         return $trimmed_string;
     } else {
         return $str;
@@ -1094,15 +1097,15 @@ function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
                 $images_container .= '<div class="image-checkbox image-checkbox-checked">';
                 $images_container .= '<div class="row">';
                 $images_container .= '<div class="col-3">';
-                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.$sel_images_abs.')">';
+                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.htmlspecialchars($sel_images_abs, ENT_QUOTES).')">';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
                 $images_container .= '<div class="col-9">';
                 $images_container .= '<span class="input-group-text d-inline-block float-end" id="basic-addon1">';
                 $images_container .= '<i class="bi bi-arrows-move" aria-hidden="true"></i>';
                 $images_container .= '</span>';
-                $images_container .= '<input name="picker'.$id.'_images[]" value="'.$sel_images.'" type="checkbox" checked>';
-                $images_container .= '<div class="small text-muted">'.basename($sel_images).'</div>';
+                $images_container .= '<input name="picker'.$id.'_images[]" value="'.htmlspecialchars($sel_images, ENT_QUOTES).'" type="checkbox" checked>';
+                $images_container .= '<div class="small text-muted">'.htmlspecialchars(basename($sel_images), ENT_QUOTES).'</div>';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
                 $images_container .= '</div>';
@@ -1120,7 +1123,10 @@ function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
     for($i=0;$i<$cnt_images;$i++) {
 
         $img_filename = basename($images[$i]['media_file']);
-        $img_filename_short = se_return_first_chars($img_filename,15);
+        // plain text + flag; markup is added (statically) at output and the
+        // value itself is htmlspecialchars-escaped below (no Twig here)
+        $img_filename_short = se_return_first_chars($img_filename,15,false);
+        $img_filename_truncated = strlen(strip_tags(htmlspecialchars_decode($img_filename))) > 15;
         $image_name = $images[$i]['media_file'];
         $image_tmb_name = $images[$i]['media_thumb'];
         $lastedit = (int) $images[$i]['media_lastedit'];
@@ -1148,14 +1154,18 @@ function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
         }
 
         if(!in_array($image_name, $selected_img)) {
-            $images_container .= '<div class="col col-lg-3" title="'.$img_filename.'">';
+            $images_container .= '<div class="col col-lg-3" title="'.htmlspecialchars($img_filename, ENT_QUOTES).'">';
             $images_container .= '<div class="image-checkbox h-100">';
             $images_container .= '<div class="card h-100">';
             $images_container .= '<div class="card-body p-0">';
-            $images_container .= '<div class="image-select-preview" style="background-image: url('.$preview.')"></div>';
-            $images_container .= '<input name="picker'.$id.'_images[]" value="'.$image_name.'" type="checkbox">';
+            $images_container .= '<div class="image-select-preview" style="background-image: url('.htmlspecialchars($preview, ENT_QUOTES).')"></div>';
+            $images_container .= '<input name="picker'.$id.'_images[]" value="'.htmlspecialchars($image_name, ENT_QUOTES).'" type="checkbox">';
             $images_container .= '</div>';
-            $images_container .= '<div class="text-muted small">'.$img_filename_short.'</div>';
+            $images_container .= '<div class="text-muted small">'.htmlspecialchars($img_filename_short, ENT_QUOTES);
+            if($img_filename_truncated) {
+                $images_container .= ' <small><i>(...)</i></small>';
+            }
+            $images_container .= '</div>';
 
             $images_container .= '</div>';
             $images_container .= '</div>';
