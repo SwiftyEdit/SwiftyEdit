@@ -1600,14 +1600,64 @@ function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
  */
  
 function se_get_order_details($id) {
-	
+
 	global $db_content;
 
 	$order = $db_content->get("se_orders","*", [
 		"id" => $id
 	]);
-	
+
 	return $order;
+}
+
+/**
+ * fetch an order by its number, but only if it belongs to $user_id.
+ * used to authorize order-related actions (downloads, uploads) and
+ * prevent IDOR via a guessed/forged order number.
+ *
+ * @param mixed $order_nbr the submitted order number
+ * @param int $user_id the logged-in customer
+ * @return array|null the order row, or null if not owned / not found
+ */
+function se_get_owned_order($order_nbr, $user_id) {
+
+	global $db_content;
+
+	$user_id = (int) $user_id;
+	if($user_id < 1 || !is_string($order_nbr) || $order_nbr === '') {
+		return null;
+	}
+
+	$order = $db_content->get("se_orders", "*", [
+		"order_nbr" => $order_nbr,
+		"user_id"   => $user_id
+	]);
+
+	return is_array($order) ? $order : null;
+}
+
+/**
+ * check whether a product (post_id) is part of the given order row.
+ *
+ * @param array $order an order row (must contain order_products JSON)
+ * @param int $product_id the product post_id
+ * @return bool
+ */
+function se_order_contains_product($order, $product_id) {
+
+	$product_id = (int) $product_id;
+	$items = json_decode($order['order_products'] ?? '', true);
+	if(!is_array($items)) {
+		return false;
+	}
+
+	foreach($items as $item) {
+		if((int) ($item['post_id'] ?? 0) === $product_id) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
