@@ -19,7 +19,7 @@ if(isset($_POST['save_paypal_prefs'])) {
 
     $paypal_mode = $_POST['paypal_mode'] == 'live' ? 'live' : 'sandbox';
 
-    $pm_prefs_content = str_replace("{addon_name}","se_cash-pay",$pm_prefs_content_file);
+    $pm_prefs_content = str_replace("{addon_name}","se_paypal-pay",$pm_prefs_content_file);
     $pm_prefs_content = str_replace("{addon_additional_costs}","$paypal_additional_costs",$pm_prefs_content);
     $pm_prefs_content = str_replace("{addon_snippet_cart}","$paypal_snippet",$pm_prefs_content);
 

@@ -25,5 +25,5 @@ will be included after the checkout is done. A button for the PayPal payment pro
 
 ### Resources
 
-* https://github.com/paypal/Checkout-PHP-SDK
+* https://github.com/paypal/PayPal-PHP-Server-SDK
 * https://developer.paypal.com/

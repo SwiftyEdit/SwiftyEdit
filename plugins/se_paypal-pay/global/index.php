@@ -5,11 +5,10 @@
  * check if payment was successful
  */
 
-use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Core\ProductionEnvironment;
-use PayPalCheckoutSdk\Core\SandboxEnvironment;
-use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
-use PayPalHttp\HttpException;
+use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
+use PaypalServerSdkLib\Environment;
+use PaypalServerSdkLib\Exceptions\ApiException;
+use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
 
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
 
@@ -19,18 +18,23 @@ if($paypal_settings['paypal_mode'] == 'live') {
     $clientId = $paypal_settings['paypal_client_id'];
     $clientSecret = $paypal_settings['paypal_client_secret'];
     $paypal_url = parse_url($paypal_settings['paypal_return_url']);
-    $environment = new ProductionEnvironment($clientId, $clientSecret);
+    $environment = Environment::PRODUCTION;
 } else {
     $clientId = $paypal_settings['paypal_sb_client_id'];
     $clientSecret = $paypal_settings['paypal_sb_client_secret'];
     $paypal_url = parse_url($paypal_settings['paypal_sb_return_url']);
-    $environment = new SandboxEnvironment($clientId, $clientSecret);
+    $environment = Environment::SANDBOX;
 }
 
 $paypal_url_str = substr($paypal_url['path'],1);
 if(isset($_GET['token']) && $_REQUEST['query'] == $paypal_url_str){
 
-    $client = new PayPalHttpClient($environment);
+    $client = PaypalServerSdkClientBuilder::init()
+        ->clientCredentialsAuthCredentials(
+            ClientCredentialsAuthCredentialsBuilder::init($clientId, $clientSecret)
+        )
+        ->environment($environment)
+        ->build();
 
     $orderId = $_GET['token'] ?? null;
     if (!$orderId) {
@@ -40,16 +44,19 @@ if(isset($_GET['token']) && $_REQUEST['query'] == $paypal_url_str){
     $return_str = '';
 
     try {
-        // get data from PayPal
-        $request = new OrdersCaptureRequest($orderId);
-        $request->prefer('return=representation');
+        // capture the order at PayPal
+        $response = $client->getOrdersController()->captureOrder([
+            'id' => $orderId,
+            'prefer' => 'return=representation'
+        ]);
 
-        $response = $client->execute($request);
+        $order = $response->getResult();
 
-        if ($response->result->status === 'COMPLETED') {
+        if ($order->getStatus() === 'COMPLETED') {
             // order is paid
 
-            $order_nbr = htmlspecialchars($response->result->purchase_units[0]->reference_id);
+            $purchase_units = $order->getPurchaseUnits();
+            $order_nbr = htmlspecialchars($purchase_units[0]->getReferenceId());
 
             $return_str .= '<h1>'.$lang['label_payment_completed'].'</h1>';
             $return_str .= '<p>'.$lang['msg_payment_completed'].'</p>';
@@ -65,10 +72,10 @@ if(isset($_GET['token']) && $_REQUEST['query'] == $paypal_url_str){
 
         } else {
             $return_str .= "<h1>ERROR</h1>";
-            $return_str .= "<p>Status: " . htmlspecialchars($response->result->status) . "</p>";
+            $return_str .= "<p>Status: " . htmlspecialchars($order->getStatus()) . "</p>";
         }
 
-    } catch (HttpException $ex) {
+    } catch (ApiException $ex) {
         // error handling
         $return_str .= "<h1>ERROR</h1>";
         $return_str .= "<pre>" . htmlspecialchars($ex->getMessage()) . "</pre>";
