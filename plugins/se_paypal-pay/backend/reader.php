@@ -1,9 +1,9 @@
 <?php
 
-use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Core\SandboxEnvironment;
-use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
-use PayPalCheckoutSdk\Core\ProductionEnvironment;
+use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
+use PaypalServerSdkLib\Environment;
+use PaypalServerSdkLib\Exceptions\ApiException;
+use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
 
 
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
@@ -48,15 +48,20 @@ if($_GET['show'] == 'paypal_tests') {
     if($paypal_settings['paypal_mode'] == 'live') {
         $clientId = $paypal_settings['paypal_client_id'];
         $clientSecret = $paypal_settings['paypal_client_secret'];
-        $environment = new ProductionEnvironment($clientId, $clientSecret);
+        $environment = Environment::PRODUCTION;
     } else {
         $clientId = $paypal_settings['paypal_sb_client_id'];
         $clientSecret = $paypal_settings['paypal_sb_client_secret'];
-        $environment = new SandboxEnvironment($clientId, $clientSecret);
+        $environment = Environment::SANDBOX;
     }
 
 
-    $client = new PayPalHttpClient($environment);
+    $client = PaypalServerSdkClientBuilder::init()
+        ->clientCredentialsAuthCredentials(
+            ClientCredentialsAuthCredentialsBuilder::init($clientId, $clientSecret)
+        )
+        ->environment($environment)
+        ->build();
 
     echo '<form hx-post="/admin-xhr/addons/plugin/se_paypal-pay/read/?show=paypal_tests" method="post">';
 
@@ -86,31 +91,33 @@ if($_GET['show'] == 'paypal_tests') {
             "order_currency" => "EUR"
         ];
 
-        $request = new OrdersCreateRequest();
-        $request->prefer('return=representation');
-        $request->body = [
-            "intent" => "CAPTURE",
-            "purchase_units" => [[
-                "amount" => [
-                    "currency_code" => $demo_order['order_currency'],
-                    "value" => $demo_order['order_value']
-                ]
-            ]]
-        ];
-
         try {
-            $response = $client->execute($request);
-            echo '<div class="alert alert-success">';
-            echo "Order ID: " . $response->result->id;
-            echo '</div>';
-        } catch (HttpException $ex) {
-            echo "ERROR: " . $ex->getMessage();
-        }
+            $response = $client->getOrdersController()->createOrder([
+                'body' => [
+                    "intent" => "CAPTURE",
+                    "purchase_units" => [[
+                        "amount" => [
+                            "currency_code" => $demo_order['order_currency'],
+                            "value" => $demo_order['order_value']
+                        ]
+                    ]]
+                ],
+                'prefer' => 'return=representation'
+            ]);
 
-        foreach ($response->result->links as $link) {
-            if ($link->rel === 'approve') {
-                echo '<p><a class="btn btn-info w-100" href="' . $link->href . '">Pay with PayPal</a></p>';
+            $order = $response->getResult();
+
+            echo '<div class="alert alert-success">';
+            echo "Order ID: " . $order->getId();
+            echo '</div>';
+
+            foreach ($order->getLinks() as $link) {
+                if ($link->getRel() === 'approve') {
+                    echo '<p><a class="btn btn-info w-100" href="' . $link->getHref() . '">Pay with PayPal</a></p>';
+                }
             }
+        } catch (ApiException $ex) {
+            echo "ERROR: " . $ex->getMessage();
         }
 
     }

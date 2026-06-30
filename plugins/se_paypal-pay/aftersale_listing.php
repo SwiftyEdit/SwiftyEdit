@@ -10,10 +10,10 @@
  * @var array $lang
  */
 
-use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Core\ProductionEnvironment;
-use PayPalCheckoutSdk\Core\SandboxEnvironment;
-use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
+use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
+use PaypalServerSdkLib\Environment;
+use PaypalServerSdkLib\Exceptions\ApiException;
+use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
 
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
 $paypal_settings = pp_get_settings();
@@ -23,16 +23,21 @@ if($paypal_settings['paypal_mode'] == 'live') {
     $clientSecret = $paypal_settings['paypal_client_secret'];
     $paypal_return_url = $paypal_settings['paypal_return_url'];
     $paypal_cancel_url = $paypal_settings['paypal_cancel_url'];
-    $environment = new ProductionEnvironment($clientId, $clientSecret);
+    $environment = Environment::PRODUCTION;
 } else {
     $clientId = $paypal_settings['paypal_sb_client_id'];
     $clientSecret = $paypal_settings['paypal_sb_client_secret'];
     $paypal_return_url = $paypal_settings['paypal_sb_return_url'];
     $paypal_cancel_url = $paypal_settings['paypal_sb_cancel_url'];
-    $environment = new SandboxEnvironment($clientId, $clientSecret);
+    $environment = Environment::SANDBOX;
 }
 
-$client = new PayPalHttpClient($environment);
+$client = PaypalServerSdkClientBuilder::init()
+    ->clientCredentialsAuthCredentials(
+        ClientCredentialsAuthCredentialsBuilder::init($clientId, $clientSecret)
+    )
+    ->environment($environment)
+    ->build();
 
 $reference_id = $order_data['order_nbr'];
 
@@ -41,36 +46,39 @@ $order_value = str_replace(',', '.', $order_value);
 $order_value = round($order_value,2);
 $order_currency = $se_settings['posts_products_default_currency'];
 
-$request = new OrdersCreateRequest();
-$request->prefer('return=representation');
-$request->body = [
-    "intent" => "CAPTURE",
-    "purchase_units" => [[
-        "reference_id" => $reference_id,
-        "amount" => [
-            "currency_code" => $order_currency,
-            "value" => $order_value
-        ]
-    ]],
-    "application_context" => [
-        "return_url" => $paypal_return_url,
-        "cancel_url" => $paypal_cancel_url,
-        "brand_name" => $se_settings['pagename'],
-        "landing_page" => "LOGIN",
-        "user_action" => "PAY_NOW"
-    ]
-];
+$response_str = '';
 
 try {
-    $response = $client->execute($request);
-} catch (HttpException $ex) {
-    $response_str = "ERROR: " . $ex->getMessage();
-}
+    $response = $client->getOrdersController()->createOrder([
+        'body' => [
+            "intent" => "CAPTURE",
+            "purchase_units" => [[
+                "reference_id" => $reference_id,
+                "amount" => [
+                    "currency_code" => $order_currency,
+                    "value" => $order_value
+                ]
+            ]],
+            "application_context" => [
+                "return_url" => $paypal_return_url,
+                "cancel_url" => $paypal_cancel_url,
+                "brand_name" => $se_settings['pagename'],
+                "landing_page" => "LOGIN",
+                "user_action" => "PAY_NOW"
+            ]
+        ],
+        'prefer' => 'return=representation'
+    ]);
 
-foreach ($response->result->links as $link) {
-    if ($link->rel === 'approve') {
-        $response_str = '<p><a class="btn btn-info w-100" href="' . $link->href . '">'.$lang['btn_pay_with_paypal'].'</a></p>';
+    $order = $response->getResult();
+
+    foreach ($order->getLinks() as $link) {
+        if ($link->getRel() === 'approve') {
+            $response_str = '<p><a class="btn btn-info w-100" href="' . $link->getHref() . '">'.$lang['btn_pay_with_paypal'].'</a></p>';
+        }
     }
+} catch (ApiException $ex) {
+    $response_str = "ERROR: " . $ex->getMessage();
 }
 
 $pm_plugin_str = $response_str;
