@@ -136,7 +136,9 @@ if ($_REQUEST['widget'] == 'img-select') {
 
     foreach ($media_data as &$image) {
         $img_filename = se_filter_filepath(basename($image['media_file']));
-        $image['img_filename_short'] = se_return_first_chars($img_filename, 20);
+        // plain (autoescaped) text + flag; the ellipsis markup lives in the template
+        $image['img_filename_short'] = se_return_first_chars($img_filename, 20, false);
+        $image['img_filename_truncated'] = strlen($img_filename) > 20;
 
         $image_src = se_filter_filepath($image['media_file']);
         $image['image_src'] = str_replace("../", "/", $image_src);

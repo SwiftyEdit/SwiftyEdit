@@ -147,7 +147,12 @@ if($_REQUEST['action'] == 'list_plugins') {
 if(isset($_REQUEST['check_plugin'])) {
 
     $plugin_dir = basename($_REQUEST['check_plugin']);
-    $addon_info_file = SE_PLUGINS. DIRECTORY_SEPARATOR .$plugin_dir. DIRECTORY_SEPARATOR. 'info.json';
+
+    // confine the info file to the plugins directory (traversal safeguard, see #338)
+    $addon_info_file = se_resolve_within(SE_PLUGINS, $plugin_dir . '/info.json');
+    if ($addon_info_file === false) {
+        exit;
+    }
 
     // load plugin info
     $json = @file_get_contents($addon_info_file);
@@ -166,7 +171,7 @@ if(isset($_REQUEST['check_plugin'])) {
         $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success" 
                             hx-post="/admin-xhr/addons/write/"
                             hx-vals=\''.json_encode($vals).'\'
-                            hx-target="#update-response-'.$plugin_dir.'"
+                            hx-target="#update-response-'.htmlspecialchars($plugin_dir, ENT_QUOTES).'"
                             >Update '.$icon['arrow_clockwise'].'</button>';
         echo $update_btn;
     } else if($update_info['status'] == 'up_to_date') {
