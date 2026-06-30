@@ -23,12 +23,78 @@ function clean_filename($str) {
 	return $str; 
 }
 
+/**
+ * Filter a file path on the character level (whitelist based).
+ *
+ * Keeps slashes and the relative ".." that the upload/media paths rely on,
+ * but strips null bytes, control characters, stream-wrapper colons and any
+ * character outside the safe set. This is a character filter only - use
+ * se_resolve_within() for actual directory confinement.
+ *
+ * @param mixed $str
+ * @return string
+ */
 function se_filter_filepath($str) {
+	if (!is_string($str)) {
+		return '';
+	}
+
 	$str = strip_tags($str);
-	$remove_chars = array('<','>','\\','=','@','(',')',' ',',','%','');
+
+	// remove null bytes and control characters
+	$str = preg_replace('/[\x00-\x1F\x7F]/u', '', $str);
+
+	// replace whitespace with underscores
 	$str = preg_replace('/\s/s', '_', $str);
-	$str = str_replace($remove_chars, "", $str);
-	return $str; 
+
+	// normalise backslashes to forward slashes
+	$str = str_replace('\\', '/', $str);
+
+	// whitelist: only a-z A-Z 0-9 _ . - /
+	$str = preg_replace('#[^A-Za-z0-9_./-]#', '', $str);
+
+	// collapse runs of dots and slashes (e.g. "....//" -> "..//" -> "../")
+	$str = preg_replace('/\.{2,}/', '..', $str);
+	$str = preg_replace('#/{2,}#', '/', $str);
+
+	return $str;
+}
+
+/**
+ * Resolve $path relative to $base and guarantee the result stays inside $base.
+ *
+ * Resolves "." and ".." segments manually so it also works for paths that do
+ * not exist on disk yet (unlike realpath()). Returns the confined absolute
+ * path on success or false if the path would escape $base (traversal attempt).
+ *
+ * @param string $base absolute base directory (no trailing slash required)
+ * @param string $path untrusted relative path
+ * @return string|false
+ */
+function se_resolve_within(string $base, string $path) {
+	$base = rtrim($base, '/');
+	$candidate = $base . '/' . ltrim(se_filter_filepath($path), '/');
+
+	// resolve "." and ".." segments without touching the filesystem
+	$parts = array();
+	foreach (explode('/', $candidate) as $seg) {
+		if ($seg === '' || $seg === '.') {
+			continue;
+		}
+		if ($seg === '..') {
+			array_pop($parts);
+			continue;
+		}
+		$parts[] = $seg;
+	}
+	$resolved = '/' . implode('/', $parts);
+
+	// reject anything that resolved outside of $base
+	if (!str_starts_with($resolved . '/', $base . '/')) {
+		return false;
+	}
+
+	return $resolved;
 }
 
 function se_return_clean_value($string) {

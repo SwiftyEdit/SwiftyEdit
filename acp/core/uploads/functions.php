@@ -14,6 +14,13 @@ function delete_folder($dir) {
 
     $dir = se_filter_filepath($dir);
 
+    // confine deletion to a subfolder of the public directory; reject traversal
+    // attempts and refuse to operate on the public root itself
+    $resolved = se_resolve_within(SE_PUBLIC, $dir);
+    if ($resolved === false || $resolved === rtrim(SE_PUBLIC, '/')) {
+        return false;
+    }
+
     $delete_folder = SE_PUBLIC.'/'.$dir;
     $files = array_diff(scandir($delete_folder), array('.','..'));
     foreach ($files as $file) {
