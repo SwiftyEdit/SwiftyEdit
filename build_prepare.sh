@@ -17,9 +17,20 @@ rsync -a plugins/se_cash-pay/ dist/$BUILD/plugins/se_cash-pay/
 rsync -a plugins/se_invoice-pay/ dist/$BUILD/plugins/se_invoice-pay/
 rsync -a plugins/se_paypal-pay/ dist/$BUILD/plugins/se_paypal-pay/
 
+# Editor plugins (bundled and always available, like the payment plugins).
+# Ship only the runtime files; the build tooling stays out of the release.
+EDITOR_EXCLUDES="--exclude node_modules --exclude package.json --exclude package-lock.json --exclude build.mjs"
+mkdir -p dist/$BUILD/plugins/tinymce-editor dist/$BUILD/plugins/ace-editor
+rsync -a $EDITOR_EXCLUDES plugins/tinymce-editor/ dist/$BUILD/plugins/tinymce-editor/
+rsync -a $EDITOR_EXCLUDES plugins/ace-editor/     dist/$BUILD/plugins/ace-editor/
+
 # Themes
 rsync -a public/assets/themes/administration/ dist/$BUILD/public/assets/themes/administration/
 rsync -a public/assets/themes/default/ dist/$BUILD/public/assets/themes/default/
+
+# Editor browser assets (served from /assets/editors)
+mkdir -p dist/$BUILD/public/assets/editors
+rsync -a public/assets/editors/ dist/$BUILD/public/assets/editors/
 
 # files for whitelist.json
 BUILD_DIR="dist/$BUILD"

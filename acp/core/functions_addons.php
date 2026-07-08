@@ -48,6 +48,131 @@ function se_get_all_addons(): array {
 }
 
 
+/**
+ * Get the installed and active editor plugins (info.json "type": "editor").
+ *
+ * An editor is considered active when it is flagged as a core editor
+ * ("editor": { "core": true }) or when it has been activated in the
+ * se_addons table. Returns the editor meta blocks keyed by plugin directory,
+ * each enriched with a "dir" key, sorted by their numeric "order".
+ *
+ * @return array<string, array>
+ */
+function se_get_editor_addons(): array {
+
+    $all = se_get_all_addons();
+
+    // Collect directories of DB-activated plugins
+    $active_dirs = [];
+    $active_rows = se_get_addons('plugin');
+    if (is_array($active_rows)) {
+        foreach ($active_rows as $row) {
+            if (!empty($row['addon_dir'])) {
+                $active_dirs[$row['addon_dir']] = true;
+            }
+        }
+    }
+
+    $editors = [];
+    foreach ($all as $dir => $info) {
+
+        if (($info['addon']['type'] ?? '') !== 'editor') {
+            continue;
+        }
+
+        $is_core = !empty($info['editor']['core']);
+        if (!$is_core && empty($active_dirs[$dir])) {
+            continue;
+        }
+
+        $editor = $info['editor'] ?? [];
+        $editor['dir'] = $dir;
+        $editors[$dir] = $editor;
+    }
+
+    // Order by the numeric "order" hint for a stable switch UI
+    uasort($editors, static function ($a, $b) {
+        return ($a['order'] ?? 100) <=> ($b['order'] ?? 100);
+    });
+
+    return $editors;
+}
+
+
+/**
+ * Recursively copy a directory tree.
+ */
+function se_copy_recursive(string $src, string $dest): void {
+    if (!is_dir($src)) {
+        return;
+    }
+    if (!is_dir($dest)) {
+        mkdir($dest, 0755, true);
+    }
+    $items = array_diff(scandir($src), ['.', '..', '.DS_Store']);
+    foreach ($items as $item) {
+        $from = $src . '/' . $item;
+        $to   = $dest . '/' . $item;
+        if (is_dir($from)) {
+            se_copy_recursive($from, $to);
+        } else {
+            copy($from, $to);
+        }
+    }
+}
+
+
+/**
+ * Publish an editor plugin's browser assets to the web-served folder
+ * public/assets/editors/<id>. Core editors ship their assets pre-published and
+ * carry no bundled public/ folder, so this is a no-op for them.
+ */
+function se_publish_editor_assets(string $plugin_dir): void {
+    $plugin_dir = basename($plugin_dir);
+    $info_file  = SE_PLUGINS . '/' . $plugin_dir . '/info.json';
+    if (!is_file($info_file)) {
+        return;
+    }
+    $info = json_decode(file_get_contents($info_file), true);
+    if (($info['addon']['type'] ?? '') !== 'editor') {
+        return;
+    }
+    $id  = basename($info['editor']['id'] ?? '');
+    $src = SE_PLUGINS . '/' . $plugin_dir . '/public';
+    if ($id === '' || !is_dir($src)) {
+        return;
+    }
+    se_copy_recursive($src, SE_PUBLIC . '/assets/editors/' . $id);
+}
+
+
+/**
+ * Remove a non-core editor plugin's published browser assets.
+ */
+function se_unpublish_editor_assets(string $plugin_dir): void {
+    $plugin_dir = basename($plugin_dir);
+    $info_file  = SE_PLUGINS . '/' . $plugin_dir . '/info.json';
+    if (!is_file($info_file)) {
+        return;
+    }
+    $info = json_decode(file_get_contents($info_file), true);
+    if (($info['addon']['type'] ?? '') !== 'editor') {
+        return;
+    }
+    if (!empty($info['editor']['core'])) {
+        return; // never remove core editor assets
+    }
+    $id = basename($info['editor']['id'] ?? '');
+    if ($id === '') {
+        return;
+    }
+    $dest = SE_PUBLIC . '/assets/editors/' . $id;
+    if (is_dir($dest)) {
+        se_reomove_addon_files($dest);
+    }
+}
+
+
 function se_load_addon_info(string $url): array {
 
     // Load info.json

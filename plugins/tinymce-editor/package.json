@@ -1,0 +1,18 @@
+{
+  "name": "swiftyedit-editor-tinymce",
+  "version": "1.0.0",
+  "description": "TinyMCE WYSIWYG editor plugin for SwiftyEdit",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tinymce/tinymce-jquery": "^2.2.0",
+    "tinymce": "^8.6.0"
+  },
+  "devDependencies": {
+    "fs-extra": "^11.3.5"
+  },
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}

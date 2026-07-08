@@ -1,0 +1,17 @@
+{
+  "name": "swiftyedit-editor-ace",
+  "version": "1.0.0",
+  "description": "ACE source code editor plugin for SwiftyEdit",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ace-builds": "^1.44.0"
+  },
+  "devDependencies": {
+    "fs-extra": "^11.3.5"
+  },
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}
