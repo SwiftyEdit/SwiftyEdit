@@ -77,6 +77,62 @@ if(!is_array($product_data)) {
     $product_data['product_amount'] = 1;
 }
 
+$editor_teaser = se_print_form_input([
+    "input_name" => "teaser",
+    "input_value" => $product_data['teaser'],
+    "label" => $lang['label_teaser'],
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$editor_text = se_print_form_input([
+    "input_name" => "text",
+    "input_value" => $product_data['text'],
+    "label" => '',
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$editor_text_a1 = se_print_form_input([
+    "input_name" => "text_additional1",
+    "input_value" => $product_data['text_additional1'],
+    "label" => '',
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$editor_text_a2 = se_print_form_input([
+    "input_name" => "text_additional2",
+    "input_value" => $product_data['text_additional2'],
+    "label" => '',
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$editor_text_a3 = se_print_form_input([
+    "input_name" => "text_additional3",
+    "input_value" => $product_data['text_additional3'],
+    "label" => '',
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$editor_text_a4 = se_print_form_input([
+    "input_name" => "text_additional4",
+    "input_value" => $product_data['text_additional4'],
+    "label" => '',
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$editor_text_a5 = se_print_form_input([
+    "input_name" => "text_additional5",
+    "input_value" => $product_data['text_additional5'],
+    "label" => '',
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
 // select main catalog page
 $all_catalog_pages = [];
 $all_catalog_pages = $db_content->select("se_pages","page_permalink",[
@@ -989,6 +1045,13 @@ $form_tpl = str_replace('{variant_tooltip}', se_print_docs_link("05-00-shop.md")
 
 $form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
 $form_tpl = str_replace('{teaser}', $product_data['teaser'], $form_tpl);
+$form_tpl = str_replace('{editor_teaser}', $editor_teaser, $form_tpl);
+$form_tpl = str_replace('{editor_text}', $editor_text, $form_tpl);
+$form_tpl = str_replace('{editor_text_a1}', $editor_text_a1, $form_tpl);
+$form_tpl = str_replace('{editor_text_a2}', $editor_text_a2, $form_tpl);
+$form_tpl = str_replace('{editor_text_a3}', $editor_text_a3, $form_tpl);
+$form_tpl = str_replace('{editor_text_a4}', $editor_text_a4, $form_tpl);
+$form_tpl = str_replace('{editor_text_a5}', $editor_text_a5, $form_tpl);
 $form_tpl = str_replace('{link_name}', $product_data['link_name'], $form_tpl);
 $form_tpl = str_replace('{link_classes}', $product_data['link_classes'], $form_tpl);
 $form_tpl = str_replace('{text}', $product_data['text'], $form_tpl);

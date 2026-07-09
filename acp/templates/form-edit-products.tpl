@@ -37,8 +37,7 @@
                                         <input class="form-control" name="title" type="text" value="{title}">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">{label_description}</label>
-                                        <textarea class='mceEditor_small' name='teaser'>{teaser}</textarea>
+                                        {editor_teaser}
                                     </div>
                                     <div class="mb-3">
                                         <div class="row">
@@ -154,7 +153,7 @@
                                                        class="form-control" id="text_label">
                                             </div>
                                             <div class="mb-3">
-                                                <textarea class='mceEditor' name='text'>{text}</textarea>
+                                                {editor_text}
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="add-content1">
@@ -165,8 +164,7 @@
                                                        id="text_label1">
                                             </div>
                                             <div class="mb-3">
-                                                <textarea class='mceEditor'
-                                                          name='text_additional1'>{text_additional_1}</textarea>
+                                                {editor_text_a1}
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="add-content2">
@@ -177,8 +175,7 @@
                                                        id="text_label2">
                                             </div>
                                             <div class="mb-3">
-                                                <textarea class='mceEditor'
-                                                          name='text_additional2'>{text_additional_2}</textarea>
+                                                {editor_text_a2}
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="add-content3">
@@ -189,8 +186,7 @@
                                                        id="text_label3">
                                             </div>
                                             <div class="mb-3">
-                                                <textarea class='mceEditor'
-                                                          name='text_additional3'>{text_additional_3}</textarea>
+                                                {editor_text_a3}
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="add-content4">
@@ -201,8 +197,7 @@
                                                        id="text_label4">
                                             </div>
                                             <div class="mb-3">
-                                                <textarea class='mceEditor'
-                                                          name='text_additional4'>{text_additional_4}</textarea>
+                                                {editor_text_a4}
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="add-content5">
@@ -213,8 +208,7 @@
                                                        id="text_label5">
                                             </div>
                                             <div class="mb-3">
-                                                <textarea class='mceEditor'
-                                                          name='text_additional5'>{text_additional_5}</textarea>
+                                                {editor_text_a5}
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="sod">
