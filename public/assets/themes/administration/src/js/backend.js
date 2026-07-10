@@ -9,11 +9,6 @@ import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/color-mode.js';
 import ClipboardJS from "clipboard";
 
-import ace from "ace-builds/src-noconflict/ace";
-import 'ace-builds/src-noconflict/mode-html';
-import 'ace-builds/src-noconflict/theme-twilight'
-import 'ace-builds/src-noconflict/theme-chrome'
-
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;
 
@@ -336,34 +331,9 @@ $(function() {
 
 
 
-    // editors
-    ace.config.set("basePath", "/assets/themes/administartion/dist/ace");
-    ace.config.set('modePath', '/assets/themes/administartion/dist/ace');
-    ace.config.set('themePath', '/assets/themes/administartion/dist/ace');
-
-
-
-    /* ace editor instead of <pre>, readonly */
-    $('textarea[data-editor]').each(function () {
-        var textarea = $(this);
-        var mode = textarea.data('editor');
-        var editDiv = $('<div>', {
-            position: 'absolute',
-            width: '100%',
-            height: '400px',
-            'class': textarea.attr('class')
-        }).insertBefore(textarea);
-        textarea.css('display', 'none');
-        var editor = ace.edit(editDiv[0]);
-        editor.$blockScrolling = Infinity;
-        editor.getSession().setValue(textarea.val());
-        editor.setTheme("ace/theme/" + ace_theme);
-        editor.getSession().setMode("ace/mode/" + mode);
-        editor.getSession().setUseWorker(false);
-        editor.setShowPrintMargin(false);
-        editor.setReadOnly(true);
-    });
-
+    // Editors (TinyMCE / ACE) are provided by the editor plugins under
+    // public/assets/editors and initialised from the ACP footer, including the
+    // read-only code viewers for <textarea data-editor="...">.
 
     stretchAppContainer();
 

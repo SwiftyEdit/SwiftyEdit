@@ -10,12 +10,6 @@ function copyAssets() {
             const copies = [
                 { src: 'node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff',  dest: 'dist/fonts/bootstrap-icons.woff' },
                 { src: 'node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2', dest: 'dist/fonts/bootstrap-icons.woff2' },
-                { src: 'node_modules/tinymce',                                           dest: 'dist/tinymce' },
-                { src: 'node_modules/@tinymce/tinymce-jquery/dist/tinymce-jquery.js',   dest: 'dist/tinymce-jquery/tinymce-jquery.js' },
-                { src: 'node_modules/ace-builds/src/mode-html.js',                      dest: 'dist/ace/mode-html.js' },
-                { src: 'node_modules/ace-builds/src/theme-twilight.js',                 dest: 'dist/ace/theme-twilight.js' },
-                { src: 'node_modules/ace-builds/src/theme-chrome.js',                   dest: 'dist/ace/theme-chrome.js' },
-                { src: 'src/tinymce-languages',                                          dest: 'dist/tinymce-languages' },
                 { src: 'node_modules/prismjs/themes',                                    dest: 'dist/prismjs' },
             ];
             for (const { src, dest } of copies) {

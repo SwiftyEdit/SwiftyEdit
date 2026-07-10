@@ -43,6 +43,10 @@ config_database.php
 /plugins/se_invoice-pay/pm_config.php
 !/plugins/se_paypal-pay/*
 /plugins/se_paypal-pay/pm_config.php
+!/plugins/tinymce-editor/*
+/plugins/tinymce-editor/node_modules
+!/plugins/ace-editor/*
+/plugins/ace-editor/node_modules
 
 /public/assets/config.php
 /public/assets/avatars/*
@@ -56,6 +60,9 @@ config_database.php
 !/public/assets/plugins/index.html
 /public/assets/uploads/*
 !/public/assets/uploads/index.html
+
+# editor plugin browser assets are build artifacts (see plugins/se_*/build.mjs)
+/public/assets/editors/*
 !/public/assets/modules/se_cash.pay/*
 !/public/assets/modules/se_cash.pay/**/*
 /public/assets/modules/se_cash.pay/pm_config.php

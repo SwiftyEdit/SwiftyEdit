@@ -53,6 +53,8 @@ if(isset($_POST['activate_addon'])) {
             "addon_name" => $info['addon']['name'],
             "addon_version" => $info['addon']['version']
         ]);
+        // editor plugins: publish their browser assets to /assets/editors
+        se_publish_editor_assets($plugin_base);
         mods_check_in();
     }
     header( "HX-Trigger: update_plugins_list");
@@ -66,6 +68,8 @@ if(isset($_POST['deactivate_addon'])) {
             "addon_dir" => $plugin_base
         ]
     ]);
+    // editor plugins: remove their published browser assets again
+    se_unpublish_editor_assets($plugin_base);
     mods_check_in();
     header( "HX-Trigger: update_plugins_list");
 }

@@ -1,0 +1,22 @@
+{
+  "addon": {
+    "name": "TinyMCE Editor",
+    "type": "editor",
+    "version": "1.0",
+    "author": "SwiftyEdit Developer Team",
+    "description": "WYSIWYG content editor based on TinyMCE"
+  },
+  "editor": {
+    "id": "tinymce",
+    "label": "TinyMCE",
+    "mode": "wysiwyg",
+    "order": 10,
+    "core": true
+  },
+  "navigation": [
+    {
+      "text": "nav_overview",
+      "file": "start"
+    }
+  ]
+}

@@ -151,12 +151,31 @@ function tpl_form_input_textarea(array $data) {
     $editor_switch = '';
     $editor_classes = '';
     if($data['mode'] == 'wysiwyg') {
+
+        global $se_editor_addons;
+
+        /*
+         * One button per installed editor plugin (labelled with the editor's
+         * name and keyed by its id), plus the built-in plain-text option.
+         * Installing another editor adds its button automatically; removing one
+         * removes it. Editors are ordered by their numeric "order".
+         */
         $editor_switch = '<div class="btn-group float-end pb-1" role="group">';
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE1">WYSIWYG</label>';
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE2">Text</label>';
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="optE3">Code</label>';
+        if(!empty($se_editor_addons) && is_array($se_editor_addons)) {
+            foreach($se_editor_addons as $editor_addon) {
+                $id = $editor_addon['id'] ?? '';
+                if($id === '') {
+                    continue;
+                }
+                $label = $editor_addon['label'] ?? $id;
+                $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="'.htmlspecialchars($id).'">'.htmlspecialchars($label).'</label>';
+            }
+        }
+        // built-in plain-text option
+        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="plain">Text</label>';
         $editor_switch .= '</div>';
-        $editor_classes = 'mceEditor textEditor switchEditor';
+
+        $editor_classes = 'textEditor switchEditor';
     }
 
 

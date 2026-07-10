@@ -1,0 +1,22 @@
+{
+  "addon": {
+    "name": "ACE Code Editor",
+    "type": "editor",
+    "version": "1.0",
+    "author": "SwiftyEdit Developer Team",
+    "description": "Source code editor based on ACE (also powers read-only code viewers)"
+  },
+  "editor": {
+    "id": "ace",
+    "label": "ACE",
+    "mode": "code",
+    "order": 30,
+    "core": true
+  },
+  "navigation": [
+    {
+      "text": "nav_overview",
+      "file": "start"
+    }
+  ]
+}

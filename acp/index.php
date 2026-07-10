@@ -24,7 +24,9 @@
  * @var string $se_version_build build number
  *
  * from editors.php
- * @var string $tinyMCE_config_contents
+ * @var string $editor_css_url        active theme editor content CSS URL
+ * @var string $editor_img_list_url   TinyMCE image-list endpoint
+ * @var string $editor_link_list_url  TinyMCE link-list endpoint
  *
  * others
  * @var string $tn get parameter
@@ -132,6 +134,15 @@ if(in_array($se_path[0], $se_sections)) {
 $all_mods = se_get_all_addons();
 $cnt_mods = count($all_mods);
 $all_plugins = se_get_all_addons();
+$se_editor_addons = se_get_editor_addons();
+
+/* default editor: first installed editor (by order), else plain text */
+$se_default_editor = 'plain';
+if (!empty($se_editor_addons)) {
+    $se_first_editor = reset($se_editor_addons);
+    $se_default_editor = $se_first_editor['id'] ?? 'plain';
+}
+
 $se_labels = se_get_labels();
 $cnt_labels = count($se_labels);
 $all_langs = get_all_languages();
@@ -327,8 +338,16 @@ if (isset($set_acptheme)) {
     </script>
 
     <script src="/themes/administration/dist/backend.js?v=2026-06-11"></script>
-    <script src="/themes/administration/dist/tinymce/tinymce.min.js"></script>
-    <script src="/themes/administration/dist/tinymce-jquery/tinymce-jquery.js"></script>
+    <?php
+    /* load the <head> assets of every installed editor plugin */
+    foreach ($se_editor_addons as $editor_addon) {
+        $se_editor_current = $editor_addon;
+        $editor_head = SE_ROOT . 'plugins/' . $editor_addon['dir'] . '/backend/head.php';
+        if (is_file($editor_head)) {
+            include $editor_head;
+        }
+    }
+    ?>
 
 
     <?php
@@ -502,16 +521,39 @@ if (is_file('../maintenance.html')) {
 </div>
 
 
+<?php
+/* load the footer init of every installed editor plugin (registers window.seEditors) */
+foreach ($se_editor_addons as $editor_addon) {
+    $se_editor_current = $editor_addon;
+    $editor_init = SE_ROOT . 'plugins/' . $editor_addon['dir'] . '/backend/init.js.php';
+    if (is_file($editor_init)) {
+        include $editor_init;
+    }
+}
+?>
 <script type="text/javascript">
 
     $(function () {
 
-        /* toggle editor class [mceEditor|plain|aceEditor_html] */
+        window.seEditors = window.seEditors || {};
+
+        /*
+         * Content editor switch. Each editor plugin registers itself in
+         * window.seEditors keyed by its editor id (e.g. "tinymce", "ace"). The
+         * switch value "plain" is the built-in plain-text mode and has no
+         * registered editor object.
+         */
+        var defaultEditor = '<?php echo $se_default_editor; ?>';
         var editor_mode = localStorage.getItem('editor_mode');
-        if (!editor_mode) {
-            editor_mode = 'optE1';
-            localStorage.setItem("editor_mode", editor_mode);
+
+        /* fall back to the default if the stored editor is no longer installed */
+        if (editor_mode && editor_mode !== 'plain' && !window.seEditors[editor_mode]) {
+            editor_mode = null;
         }
+        if (!editor_mode) {
+            editor_mode = defaultEditor;
+        }
+        localStorage.setItem("editor_mode", editor_mode);
 
         $('input[name="optEditor"]').on("change", function () {
             var button = $("input[name='optEditor']:checked").val();
@@ -519,89 +561,39 @@ if (is_file('../maintenance.html')) {
             switchEditorMode(button);
         });
 
-        if (editor_mode !== 'optE1') {
-            switchEditorMode(editor_mode);
-        } else {
-            <?php echo $tinyMCE_config_contents; ?>
-        }
-
-        //setAceEditor();
-
-        $("input[value=" + editor_mode + "]").parent().addClass('active');
+        switchEditorMode(editor_mode);
 
         function switchEditorMode(mode) {
 
             var textEditor = $('textarea[class*=switchEditor]');
+
+            /* tear down whichever editor is currently attached */
+            Object.keys(window.seEditors).forEach(function (id) {
+                try {
+                    window.seEditors[id].detach(textEditor);
+                } catch (e) {}
+            });
+
             textEditor.removeClass();
             textEditor.removeAttr('style');
-            var divEditor = $('.aceCodeEditor');
 
-            if (mode == 'optE1') {
-                /* switch to wysiwyg */
-                textEditor.addClass('mceEditor form-control switchEditor');
+            var editor = window.seEditors[mode];
+            if (editor) {
+                textEditor.addClass((editor.cls || '') + ' form-control switchEditor');
                 textEditor.css("display", "flex");
-                divEditor.remove();
-                /* load configs again */
-                <?php echo $tinyMCE_config_contents; ?>
-                tinymce.EditorManager.execCommand('mceAddEditor', false, '#textEditor');
-            }
-            if (mode == 'optE2') {
-                /* switch to plain textarea */
-                if (tinymce.get().length > 0) {
-                    tinymce.EditorManager.execCommand('mceRemoveEditor', true, '#textEditor');
-                    $('div.mceEditor').remove();
-                    tinymce.remove('.switchEditor');
-                    tinymce.remove();
-                }
-                divEditor.remove();
+                editor.attach(textEditor);
+            } else {
+                /* plain textarea */
                 textEditor.addClass('plain form-control switchEditor');
                 textEditor.css("visibility", "visible");
                 textEditor.css("display", "flex");
             }
-            if (mode == 'optE3') {
-                /* switch to ace editor */
-                if (tinymce.get().length > 0) {
-                    tinymce.EditorManager.execCommand('mceRemoveEditor', true, '#textEditor');
-                    $('div.mceEditor').remove();
-                    tinymce.remove();
-                }
-                textEditor.addClass('aceEditor_code form-control switchEditor');
-                setAceEditor();
-            }
 
+            $("input[value=" + mode + "]").prop('checked', true);
             $("input[name='optEditor']").parent().removeClass('active');
             $("input[value=" + mode + "]").parent().addClass('active');
 
         }
-
-        function setAceEditor() {
-            if ($('.aceEditor_code').length != 0) {
-                $('textarea[class*=switchEditor]').each(function () {
-
-                    var textarea = $(this);
-                    var textarea_id = textarea.attr('id');
-                    var editDiv = $('<div>', {
-                        position: 'absolute',
-                        'class': textarea.attr('class') + ' aceCodeEditor'
-                    }).insertBefore(textarea);
-
-                    var HTMLtextarea = $('textarea[class*=aceEditor_code]').hide();
-                    var aceEditor = ace.edit(editDiv[0]);
-                    aceEditor.$blockScrolling = Infinity;
-                    aceEditor.getSession().setMode('ace/mode/html');
-                    aceEditor.getSession().setValue(textarea.val());
-                    aceEditor.setTheme('ace/theme/'+ace_theme);
-                    aceEditor.getSession().setUseWorker(false);
-                    aceEditor.setShowPrintMargin(false);
-
-                    aceEditor.getSession().on('change', function () {
-                        textarea.val(aceEditor.getSession().getValue());
-                    });
-
-                });
-            }
-        }
-
 
     });
 
