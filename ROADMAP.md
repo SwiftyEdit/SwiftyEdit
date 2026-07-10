@@ -12,6 +12,7 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 - [ ] Enable guest orders
 - [ ] Add a cancellation button, form, or page
 - [ ] Complete the Documentation
+- [x] Separate editors from the core [#264](https://github.com/SwiftyEdit/SwiftyEdit/issues/264)
 - [x] Integrate the Documentation to the backend [#262](https://github.com/SwiftyEdit/SwiftyEdit/issues/262)
 - [x] Improve the category integration in the blog module
 - [x] Implement a caching system for products
@@ -27,7 +28,6 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 
 ### Version 2.5 (~Q2 2026)
 - [ ] Database overhaul (merging the SQLite files, add MariaDB support)
-- [ ] Separate editors from the core [#264](https://github.com/SwiftyEdit/SwiftyEdit/issues/264)
 
 
 ## How to Contribute
