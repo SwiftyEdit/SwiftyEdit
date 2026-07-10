@@ -32,6 +32,12 @@ if (isset($_POST['update_shop_settings'])) {
     foreach($_POST as $key => $val) {
         $data[htmlentities($key)] = htmlentities($val);
     }
+
+    $data['prefs_posts_guest_order_enable'] = 0;
+    if(isset($_POST['prefs_posts_guest_order_enable'])) {
+        $data['prefs_posts_guest_order_enable'] = 1;
+    }
+
     se_write_option($data,'se');
     show_toast($lang['msg_success_db_changed'],'success');
 }
@@ -134,6 +140,17 @@ if (isset($_POST['update_general'])) {
     foreach($_POST as $key => $val) {
         $data[htmlentities($key)] = htmlentities($val);
     }
+
+    $data['prefs_publisher_mode'] = '';
+    if(isset($_POST['prefs_publisher_mode'])) {
+        $data['prefs_publisher_mode'] = 'overwrite';
+    }
+
+    $data['prefs_uploads_remain_unchanged'] = '';
+    if(isset($_POST['prefs_uploads_remain_unchanged'])) {
+        $data['prefs_uploads_remain_unchanged'] = 'yes';
+    }
+
     se_write_option($data,'se');
     show_toast($lang['msg_success_db_changed'],'success');
 }
