@@ -51,6 +51,7 @@
   "status.order.received": "Primit",
   "status.order.completed": "Completat",
   "status.order.canceled": "Anulat",
+  "status.order.withdrawal_requested": "Withdrawal requested",
   "status.order.payment_open": "Deschideți",
   "status.order.payment_paid": "Plătit",
   "status.order.shipping_prepared": "Pregătită",
