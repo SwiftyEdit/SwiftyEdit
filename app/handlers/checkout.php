@@ -341,7 +341,9 @@ if($se_settings['posts_max_order_value'] != '') {
 }
 
 // If delivery areas have been specified and the user’s country is not included, only a request can be sent.
-if(!empty($get_delivery_countries) && !in_array($shipping_country, array_column($get_delivery_countries, 'code'))) {
+// Skip this while the shipping country is still unknown (e.g. address not filled in yet),
+// otherwise nobody could ever reach the address form to begin with.
+if($shipping_country != '' && !empty($get_delivery_countries) && !in_array($shipping_country, array_column($get_delivery_countries, 'code'))) {
     $se_settings['posts_order_mode'] = 2;
     $cart_error_delivery_zone = se_get_snippet('cart_error_delivery_zone',$languagePack,'content');
 }
@@ -401,9 +403,33 @@ if($checkout_error == 'missing_approval') {
     $checkout_error_msg = $lang['msg_missing_user_approval'];
 }
 
+// guests have no account page to fix their address on, so offer the address
+// forms inline in the cart instead when their billing/shipping data is incomplete.
+// e-mail is confirmed first, address forms only appear once that step is done.
+$guest_checkout_eligible = ($checkout_error == 'missing_mandatory_informations'
+    && !is_numeric($_SESSION['user_id'])
+    && $se_settings['posts_guest_order_enable'] == 1);
+
+$show_guest_mail_form = ($guest_checkout_eligible && empty($_SESSION['guest_order_data']['ba_mail'])) ? 1 : 0;
+$show_guest_address_form = ($guest_checkout_eligible && !empty($_SESSION['guest_order_data']['ba_mail'])) ? 1 : 0;
+
+// let the guest know an account is an option too, right where they'd otherwise commit to checking out as a guest
+$guest_register_link = '';
+if ($show_guest_mail_form && isset($se_settings['userregistration']) && $se_settings['userregistration'] == 'yes') {
+    $href_register = SE_INCLUDE_PATH . "/register/";
+    $register_page = se_get_type_of_use_pages('register');
+    if ($register_page['page_permalink'] != '') {
+        $href_register = $se_base_url . $register_page['page_permalink'];
+    }
+    $guest_register_link = '<a href="' . $href_register . '">' . $lang['link_register'] . '</a>';
+}
+
 $smarty->assign("max_order_value_msg",$max_order_value_msg,true);
 $smarty->assign("cart_error_delivery_zone",$cart_error_delivery_zone,true);
 $smarty->assign("checkout_error_msg",$checkout_error_msg,true);
+$smarty->assign("show_guest_mail_form",$show_guest_mail_form,true);
+$smarty->assign("guest_register_link",$guest_register_link,true);
+$smarty->assign("show_guest_address_form",$show_guest_address_form,true);
 $smarty->assign("cnt_items",$cnt_cart_items,true);
 $smarty->assign('cart_shipping_costs', se_post_print_currency($shipping_costs), true);
 $smarty->assign('cart_shipping_costs_total', se_post_print_currency($shipping_costs_total), true);

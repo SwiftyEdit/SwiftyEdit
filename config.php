@@ -24,7 +24,7 @@ $se_upload_file_types = array('pdf','doc','docx','ppt','pptx','xls','xlsx','mp3'
 $se_upload_frontend_types = array('jpg','jpeg','png');
 
 /* page types */
-$se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders');
+$se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders', 'order_withdrawal');
 
 // limit login fails - integer || null
 $se_failed_logins_limit = null;

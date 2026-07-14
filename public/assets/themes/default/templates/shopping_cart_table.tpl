@@ -203,6 +203,36 @@
         <div class="alert alert-info">
             {$checkout_error_msg}
         </div>
+
+        {if $show_guest_mail_form == 1}
+            <div class="alert alert-info">
+                {$lang_label_guest_checkout_hint}
+                {if $guest_register_link != ''} {$guest_register_link}{/if}
+            </div>
+
+            <div id="address-mail-response"></div>
+            <div id="" hx-get="/xhr/se/profile/?address-mail" hx-trigger="load">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        {/if}
+
+        {if $show_guest_address_form == 1}
+            <div id="address-ba-response"></div>
+            <div id="" hx-get="/xhr/se/profile/?address-ba" hx-trigger="load, changed_address_ba">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div id="address-sa-response"></div>
+            <div id="" hx-get="/xhr/se/profile/?address-sa" hx-trigger="load, changed_address_sa">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        {/if}
     {else}
         <form action="{$shopping_cart_uri}" method="POST">
             <div class="card p-2 mb-4">

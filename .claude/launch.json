@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "default-theme-watch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "public/assets/themes/default"]
+    },
+    {
+      "name": "administration-theme-watch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "public/assets/themes/administration"]
+    }
+  ]
+}

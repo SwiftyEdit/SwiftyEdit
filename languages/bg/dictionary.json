@@ -51,6 +51,7 @@
   "status.order.received": "Приет",
   "status.order.completed": "Завършено",
   "status.order.canceled": "Canceled",
+  "status.order.withdrawal_requested": "Withdrawal requested",
   "status.order.payment_open": "Отвори",
   "status.order.payment_paid": "Платено",
   "status.order.shipping_prepared": "Подготвени",

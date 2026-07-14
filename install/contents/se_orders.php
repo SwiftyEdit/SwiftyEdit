@@ -10,6 +10,7 @@
  * order_status_shipping [1 = shipping is not done] [2 = shipping is done]
  *
  * order_products JSON String from products id, title, amount, price_net, tax
+ * order_withdrawal_requested unix timestamp of the customer's withdrawal request, empty/0 if none
  *
  */
  
@@ -36,7 +37,8 @@ $cols = array(
   "order_payment_type"  => "VARCHAR(100) NOT NULL DEFAULT ''",
   "order_payment_costs"  => "VARCHAR(100) NOT NULL DEFAULT ''",
   "order_user_comment" => "LONGTEXT NOT NULL DEFAULT ''",
-  "order_admin_comment" => "LONGTEXT NOT NULL DEFAULT ''"
+  "order_admin_comment" => "LONGTEXT NOT NULL DEFAULT ''",
+  "order_withdrawal_requested" => 'INTEGER(12)'
 );
 
 ?>

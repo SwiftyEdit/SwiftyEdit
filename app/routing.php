@@ -15,6 +15,7 @@ $a_allowed_p = [
     'display_product',
     'logout',
     'orders',
+    'order_withdrawal',
     'password',
     'profile',
     'register',

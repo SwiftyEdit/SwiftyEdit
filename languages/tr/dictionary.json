@@ -51,6 +51,7 @@
   "status.order.received": "Alınan",
   "status.order.completed": "Tamamlandı",
   "status.order.canceled": "İptal edildi",
+  "status.order.withdrawal_requested": "Withdrawal requested",
   "status.order.payment_open": "Açıldı",
   "status.order.payment_paid": "Ödenmiş",
   "status.order.shipping_prepared": "Hazır",

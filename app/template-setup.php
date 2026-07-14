@@ -33,7 +33,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    $restricted_pages = ['password', 'profile', 'orders', 'account', 'register', 'unlock', 'tagged', 'checkout'];
+    $restricted_pages = ['password', 'profile', 'orders', 'order_withdrawal', 'account', 'register', 'unlock', 'tagged', 'checkout'];
     if (in_array($p, $restricted_pages)) {
         $show_posts = false;
     }

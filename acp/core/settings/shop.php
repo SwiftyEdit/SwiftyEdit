@@ -68,10 +68,25 @@ $input_select_mode_order = [
     "type" => "select"
 ];
 
+$input_check_guestmode = [
+    "input_name" => "prefs_posts_guest_order_enable",
+    "input_value" => $se_settings['posts_guest_order_enable'],
+    "label" => $lang['label_orders_guest_order_enable'],
+    "type" => "checkbox",
+    "status" => $se_settings['posts_guest_order_enable'] == "1" ? 'checked' :''
+];
+
 $input_max_order_value = [
     "input_name" => "prefs_posts_max_order_value",
     "input_value" => $se_settings['posts_max_order_value'],
     "label" => $lang['label_max_order_value'],
+    "type" => "text"
+];
+
+$input_order_withdrawal_days = [
+    "input_name" => "prefs_posts_order_withdrawal_days",
+    "input_value" => $se_settings['posts_order_withdrawal_days'],
+    "label" => $lang['label_orders_withdrawal_days'],
     "type" => "text"
 ];
 
@@ -106,7 +121,7 @@ $input_currency = [
 $input_select_mode_price = [
     "input_name" => "prefs_posts_price_mode",
     "input_value" => $se_settings['posts_price_mode'],
-    "label" => $lang['label_orders'],
+    "label" => $lang['label_products'].' / '.$lang['label_carts'],
     "options" => [
         $lang['product_show_price_gross'] => 1,
         $lang['product_show_price_both'] => 2,
@@ -210,13 +225,15 @@ echo '</form>';
 echo '<h5 class="heading-line">' . $lang['label_product_cart_mode'] . '</h5>';
 
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
+
 $input_modes = [
     se_print_form_input($input_select_mode_cart),
-    se_print_form_input($input_select_mode_order),
-    se_print_form_input($input_max_order_value)
+    se_print_form_input($input_select_mode_order).se_print_form_input($input_check_guestmode),
+    se_print_form_input($input_max_order_value),
+    se_print_form_input($input_order_withdrawal_days)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_modes,$bs_row_col3);
+echo str_replace(['{col1}','{col2}','{col3}','{col4}'],$input_modes,$bs_row_col4);
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
 

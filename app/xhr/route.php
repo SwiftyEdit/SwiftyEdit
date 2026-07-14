@@ -13,6 +13,7 @@ $routes = [
     'votes' => 'votes.php',
     'login' => 'login.php',
     'orders' => 'orders.php',
+    'order-withdrawal' => 'order-withdrawal.php',
     'password-reset' => 'password-reset.php',
     'products' => 'products.php',
     'statusbox' => 'statusbox.php',

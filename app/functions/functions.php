@@ -435,10 +435,15 @@ function se_send_order_status($recipient,$order,$reason): int|string {
     $tax_grouped = [];
 
     if($recipient['type'] == 'client') {
-        // get client data
+        // get client data; guest orders have no se_user row (user_id is null),
+        // so fall back to the mail/name already stored on the order itself
         $user_data = se_get_userdata_by_id($this_order['user_id']);
-        $recipient['name'] = $user_data['user_firstname'].' '.$user_data['user_lastname'];
-        $recipient['mail'] = $user_data['user_mail'];
+        if (!empty($user_data)) {
+            $recipient['name'] = $user_data['user_firstname'].' '.$user_data['user_lastname'];
+            $recipient['mail'] = $user_data['user_mail'];
+        } else {
+            $recipient['mail'] = $this_order['order_invoice_mail'];
+        }
         if($recipient['mail'] == '') {
             return 'error';
         }

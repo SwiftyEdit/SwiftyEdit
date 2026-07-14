@@ -55,7 +55,7 @@ $input_page_author_mode = [
     "input_value" => $se_settings['publisher_mode'],
     "label" => $lang['label_settings_publisher_mode'],
     "type" => "checkbox",
-    "status" => $se_settings['prefs_publisher_mode'] == "overwrite" ? 'checked' :''
+    "status" => $se_settings['publisher_mode'] == "overwrite" ? 'checked' :''
 ];
 
 $input_rss_offset = [

@@ -990,6 +990,12 @@ if($_REQUEST['action'] == 'list_orders') {
         $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_received'].'</button></li>';
         $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_completed'].'</button></li>';
         $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="3" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_canceled'].'</button></li>';
+
+        if($order['order_withdrawal_requested'] > 0) {
+            $dropdown .= '<li><hr class="dropdown-divider"></li>';
+            $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="clear_order_withdrawal_requested" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['btn_order_withdrawal_mark_handled'].'</button></li>';
+        }
+
         $dropdown .= '</ul>';
         $dropdown .= '</div>';
 
@@ -999,7 +1005,11 @@ if($_REQUEST['action'] == 'list_orders') {
         echo '<td>'.$order['order_nbr'].'</td>';
         echo '<td>'.$order['order_invoice_address'].' '.$order['order_payment_type'].' '.$order['order_invoice_mail'].'</td>';
         echo '<td>'.se_post_print_currency($order['order_price_total']).' ('.$show_payment_status[$payment_status].')</td>';
-        echo '<td>'.$show_order_status[$order_status].'</td>';
+        echo '<td>'.$show_order_status[$order_status];
+        if($order['order_withdrawal_requested'] > 0) {
+            echo ' <span class="badge text-bg-warning">'.$lang['status_order_withdrawal_requested'].'</span>';
+        }
+        echo '</td>';
         echo '<td><div class="btn-group">'.$dropdown.' ';
         echo '<button hx-get="/admin-xhr/shop/orders/read/?show_order='.$order['id'].'" hx-target="#order-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">'.$icon['info_circle'].'</button>';
         echo '</div></td>';

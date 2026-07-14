@@ -99,3 +99,5 @@ secrets.json
 test-results/
 /node_modules/
 public/.htaccess
+
+.claude/settings.local.json

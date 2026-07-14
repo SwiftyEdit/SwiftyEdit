@@ -385,16 +385,47 @@ function get_userdata_by_mail(string $mail): mixed {
  */
 function get_my_userdata() {
 
-    global $db_user;
+    global $db_user, $se_settings;
 
-    $user_data = $db_user->get("se_user", "*", [
-        "AND" => [
-            "user_id" => $_SESSION['user_id'],
-            "user_verified" => "verified"
-        ]
+    if (isset($_SESSION['user_id'])) {
+        $user_data = $db_user->get("se_user", "*", [
+            "AND" => [
+                "user_id" => $_SESSION['user_id'],
+                "user_verified" => "verified"
+            ]
+        ]);
+
+        if ($user_data) {
+            return $user_data;
+        }
+    }
+
+    // guest checkout: return the session-held address data in se_user format
+    if ($se_settings['posts_guest_order_enable'] == 1 && !empty($_SESSION['guest_order_data'])) {
+        return se_get_guest_userdata();
+    }
+
+    return false;
+}
+
+/**
+ * Builds a se_user-shaped array from the guest checkout form's session data,
+ * so the rest of the checkout code doesn't have to distinguish between a
+ * registered user and a guest.
+ *
+ * @return array
+ */
+function se_get_guest_userdata(): array {
+    $guest = $_SESSION['guest_order_data'];
+
+    return array_merge($guest, [
+        'user_id' => null,
+        'user_verified' => 'verified',
+        'user_verified_by_admin' => 'yes',
+        'user_mail' => $guest['ba_mail'] ?? '',
+        'user_firstname' => $guest['ba_firstname'] ?? '',
+        'user_lastname' => $guest['ba_lastname'] ?? '',
     ]);
-
-    return $user_data;
 }
 
 function se_email_exists($email): bool {
