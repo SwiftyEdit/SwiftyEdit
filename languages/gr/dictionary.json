@@ -51,6 +51,7 @@
   "status.order.received": "Ελήφθη",
   "status.order.completed": "Ολοκληρώθηκε",
   "status.order.canceled": "Ακυρώθηκε",
+  "status.order.withdrawal_requested": "Withdrawal requested",
   "status.order.payment_open": "Άνοιγμα",
   "status.order.payment_paid": "Πληρωμένο",
   "status.order.shipping_prepared": "Προετοιμασμένο",

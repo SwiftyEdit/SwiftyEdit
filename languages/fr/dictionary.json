@@ -51,6 +51,7 @@
   "status.order.received": "Reçu",
   "status.order.completed": "Terminé",
   "status.order.canceled": "Annulé",
+  "status.order.withdrawal_requested": "Withdrawal requested",
   "status.order.payment_open": "Ouvert",
   "status.order.payment_paid": "Payé",
   "status.order.shipping_prepared": "Préparé",
