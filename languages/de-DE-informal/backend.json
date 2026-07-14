@@ -320,6 +320,7 @@
   "label.order_date": "Bestelldatum",
   "label.price_total": "Gesamtpreis",
   "label.payment": "Zahlung",
+  "label.orders.guest_order_enable": "Enable Guest Orders",
   "label.business.address": "Geschäftsadresse",
   "label.business.tax_number": "Steuernummer",
   "label.mail.new": "Neue E-Mail erstellen",
