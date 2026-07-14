@@ -9,8 +9,8 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 ## Upcoming
 ### Version 2.0 (Summer 2026)
 
-- [ ] Add a cancellation button, form, or page
 - [ ] Complete the Documentation
+- [x] Add a cancellation button, form, or page
 - [x] Enable guest orders
 - [x] Separate editors from the core [#264](https://github.com/SwiftyEdit/SwiftyEdit/issues/264)
 - [x] Integrate the Documentation to the backend [#262](https://github.com/SwiftyEdit/SwiftyEdit/issues/262)
