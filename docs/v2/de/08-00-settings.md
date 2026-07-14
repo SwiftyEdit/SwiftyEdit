@@ -57,8 +57,53 @@ Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion:
 Diese Einstellungen betreffen die Posts (Blog).
 
 ## Shop
-Hier kannst Du festlegen, ob die Warenkorbfunktion aktiv ist und/oder ob Artikel verkauft werden.
-Außerdem kannst Du Angaben zu den Steuersätzen, Versand und Liefergebiete hinterlegen.
+Die Shop-Seite ist in vier Tabs unterteilt:
+
+* <kbd>Allgemein</kbd> Einträge pro Seite und die Standard-Sortierung für die Produktliste, ob der
+  Cache für die Produktliste aktiviert ist, der Warenkorb-Modus, der Bestell-Modus und Gastbestellungen,
+  ein maximaler Bestellwert, bis zu drei Steuersätze, die Standardwährung sowie wie und für wen Preise
+  angezeigt werden.
+* <kbd>Zahlung & Versand</kbd> Der Versand-Modus und die Versandkosten sowie Aktivierungsschalter für
+  installierte Zahlungs- und Versand-Plugins.
+* <kbd>Liefergebiete</kbd> Länder, in die Du lieferst, hinzufügen, bearbeiten oder entfernen.
+* <kbd>Geschäftsangaben</kbd> Deine Geschäftsadresse und Steuernummer.
+
+### Warenkorb und Bestellungen
+Der Warenkorb-Modus schaltet den Warenkorb komplett aus, beschränkt ihn auf registrierte Benutzer oder
+öffnet ihn für alle. Der Bestell-Modus legt fest, ob Produkte direkt bestellt werden können, ob
+Besucher stattdessen nur eine Bestellanfrage senden können (statt zu bezahlen), oder beides. Wenn Du
+einen maximalen Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die
+Anfrage-Funktion zurück, auch wenn die Direktbestellung aktiviert ist.
+
+### Gastbestellungen
+Aktiviere Gastbestellungen, damit Kunden den Checkout abschließen können, ohne ein Konto anzulegen.
+Gastbestellungen werden per E-Mail bestätigt, die eingegebene Lieferadresse wird nur für die aktuelle
+Sitzung gespeichert.
+
+### Steuersätze und Währung
+Du kannst bis zu drei feste Steuersätze festlegen (Steuer #1-#3); jedes Produkt wählt dann individuell
+einen davon aus - eine separate Verwaltung von Steuerklassen gibt es nicht. Die Standardwährung ist ein
+Freitextfeld (z. B. `EUR`). Außerdem kannst Du festlegen, ob Preise brutto, netto oder beides angezeigt
+werden, und ob sie für alle Besucher oder nur für registrierte Benutzer sichtbar sind.
+
+### Versandkosten
+Lege fest, ob der Versand mit einer Pauschale berechnet wird oder anhand von Versandkategorien, wobei
+die teuerste im Warenkorb vorhandene Kategorie die Versandkosten bestimmt. Du kannst sowohl die
+Pauschale als auch bis zu drei kategorie-basierte Versandkosten definieren.
+
+### Zahlungs- und Versand-Plugins
+Zahlungsarten (z. B. Barzahlung, Rechnung, PayPal) und Versandoptionen werden über Plugins
+bereitgestellt. Jedes installierte Zahlungs- oder Versand-Plugin erscheint in einer eigenen Liste im
+Tab Zahlung & Versand, wo Du es für den Shop aktivieren kannst.
+
+### Liefergebiete
+Füge über die Länderauswahl die Länder hinzu, in die Du lieferst. Jedes Liefergebiet kann auf
+öffentlich oder Entwurf gesetzt werden, außerdem kannst Du festlegen, ob für Bestellungen in dieses
+Land Steuer hinzugerechnet werden soll.
+
+### Geschäftsangaben
+Deine Geschäftsadresse und Steuernummer werden hier hinterlegt und für Bestellungen und Rechnungen
+verwendet.
 
 ## Veranstaltungen / Events
 Hier findest Du die Voreinstellungen für das Event-Modul. Du kannst z.B. festlegen ob die Gästelisten

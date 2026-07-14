@@ -54,8 +54,49 @@ These settings control everything around user accounts and interaction:
 These settings affect the posts (blog).
 
 ## Shop
-Here you can specify whether the shopping cart function is active and/or whether items are sold.
-You can also enter information on tax rates, shipping and delivery areas.
+The Shop page is divided into four tabs:
+
+* <kbd>General</kbd> Products per page and the default sorting for the product listing, whether the
+  product listing cache is enabled, the shopping cart mode, the order mode and guest checkout, a
+  maximum order value, up to three tax rates, the default currency, and how prices are displayed
+  and to whom.
+* <kbd>Payment & Shipping</kbd> The shipping mode and shipping costs, plus activation switches for
+  any installed payment and delivery plugins.
+* <kbd>Delivery areas</kbd> Add, edit or remove the countries you deliver to.
+* <kbd>Business details</kbd> Your business address and tax number.
+
+### Shopping carts and orders
+The shopping carts setting turns the cart off entirely, or restricts it to registered users, or opens
+it to everyone. The orders setting controls whether products can be ordered directly, whether visitors
+can only send an order request instead of checking out, or both. If you set a maximum order value,
+carts that exceed it automatically fall back to the request form, even if direct ordering is enabled.
+
+### Guest orders
+Enable guest orders to let customers complete checkout without creating an account. Guest orders are
+confirmed by e-mail, and the delivery address entered is only kept for the current session.
+
+### Tax rates and currency
+You can define up to three flat tax rates (tax #1-#3); each product then picks one of them
+individually — there is no separate tax-class management. The default currency is a free-text field
+(e.g. `EUR`). You can also choose whether prices are shown gross, net, or both, and whether they are
+visible to all visitors or only to registered users.
+
+### Shipping costs
+Choose whether shipping is charged as a flat rate, or based on shipping categories, where the most
+expensive category present in the shopping cart determines the shipping cost. You can define the flat
+rate as well as up to three category-based shipping rates.
+
+### Payment and delivery plugins
+Payment methods (e.g. cash, invoice, PayPal) and delivery options are provided by plugins. Any
+installed payment or delivery plugin shows up in its own list on the Payment & Shipping tab, where you
+can activate it for the shop.
+
+### Delivery areas
+Add the countries you deliver to from the country dropdown. Each delivery area can be set to public
+or draft, and you can specify whether tax should be added for orders shipped there.
+
+### Business details
+Your business address and tax number are stored here for use on orders and invoices.
 
 ## Events
 Here you will find the default settings for the event module. For example, you can specify whether the guest lists
