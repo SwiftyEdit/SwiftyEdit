@@ -363,6 +363,7 @@
   "label.order_date": "Order date",
   "label.price_total": "Price total",
   "label.payment": "Payment",
+  "label.orders.guest_order_enable": "Enable Guest Orders",
 
   "label.business.address": "Business Address",
   "label.business.tax_number": "Tax number",
