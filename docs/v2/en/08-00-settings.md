@@ -58,8 +58,8 @@ The Shop page is divided into four tabs:
 
 * <kbd>General</kbd> Products per page and the default sorting for the product listing, whether the
   product listing cache is enabled, the shopping cart mode, the order mode and guest checkout, a
-  maximum order value, up to three tax rates, the default currency, and how prices are displayed
-  and to whom.
+  maximum order value, the order withdrawal period, up to three tax rates, the default currency, and
+  how prices are displayed and to whom.
 * <kbd>Payment & Shipping</kbd> The shipping mode and shipping costs, plus activation switches for
   any installed payment and delivery plugins.
 * <kbd>Delivery areas</kbd> Add, edit or remove the countries you deliver to.
@@ -74,6 +74,12 @@ carts that exceed it automatically fall back to the request form, even if direct
 ### Guest orders
 Enable guest orders to let customers complete checkout without creating an account. Guest orders are
 confirmed by e-mail, and the delivery address entered is only kept for the current session.
+
+### Order withdrawal period
+The "order withdrawal button visible for" setting controls how many days the "withdraw order" button
+stays visible next to an order on the "My orders" page. It defaults to 14 days (the EU-mandated
+withdrawal period); enter `0` to always show the button regardless of order age. This only affects the
+button's visibility, not the "Order Withdrawal" page itself, which is always reachable directly.
 
 ### Tax rates and currency
 You can define up to three flat tax rates (tax #1-#3); each product then picks one of them

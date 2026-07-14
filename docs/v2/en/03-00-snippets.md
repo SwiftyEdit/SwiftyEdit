@@ -69,6 +69,8 @@ show the syntax in tutorials without the snippet being embedded.
 | `agreement_text`       | This text must be accepted by the user before they can create an account.                                                  |
 | `cart_agree_term`      | This text must be accepted before an order can be submitted.                                                               |
 | `mail_psw_updated`     | Sent as an e-mail when a user has – successfully – reset their password.                                                    |
+| `order_withdrawal_intro` | Intro text shown on the "Order Withdrawal" page (page type `order_withdrawal`). Replaces `text_order_withdrawal_intro` from the language file. |
+| `mail_salutation_order_withdrawal` | Used as the salutation/intro in the e-mail sent to the administrator when a customer withdraws from an order. Supports the variable `{order_nbr}`. |
 
 * `{USERNAME}` the user name
 * `{SITENAME}` the name of the site (set in the settings)

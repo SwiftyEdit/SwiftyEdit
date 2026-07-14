@@ -28,6 +28,9 @@
             {else}
                 <span class="text-success">{$lang_status_payment_paid}</span><br>
             {/if}
+            {if $order.withdrawal_requested > 0}
+                <span class="badge text-bg-warning">{$lang_status_order_withdrawal_requested}</span>
+            {/if}
         </td>
         <td>{$order.price} {$order.currency}</td>
         <td><button class="btn btn-link"

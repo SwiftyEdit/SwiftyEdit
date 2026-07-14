@@ -61,8 +61,8 @@ Die Shop-Seite ist in vier Tabs unterteilt:
 
 * <kbd>Allgemein</kbd> Einträge pro Seite und die Standard-Sortierung für die Produktliste, ob der
   Cache für die Produktliste aktiviert ist, der Warenkorb-Modus, der Bestell-Modus und Gastbestellungen,
-  ein maximaler Bestellwert, bis zu drei Steuersätze, die Standardwährung sowie wie und für wen Preise
-  angezeigt werden.
+  ein maximaler Bestellwert, die Widerrufsfrist, bis zu drei Steuersätze, die Standardwährung sowie wie
+  und für wen Preise angezeigt werden.
 * <kbd>Zahlung & Versand</kbd> Der Versand-Modus und die Versandkosten sowie Aktivierungsschalter für
   installierte Zahlungs- und Versand-Plugins.
 * <kbd>Liefergebiete</kbd> Länder, in die Du lieferst, hinzufügen, bearbeiten oder entfernen.
@@ -79,6 +79,13 @@ Anfrage-Funktion zurück, auch wenn die Direktbestellung aktiviert ist.
 Aktiviere Gastbestellungen, damit Kunden den Checkout abschließen können, ohne ein Konto anzulegen.
 Gastbestellungen werden per E-Mail bestätigt, die eingegebene Lieferadresse wird nur für die aktuelle
 Sitzung gespeichert.
+
+### Widerrufsfrist
+Das Feld "Widerrufsbutton sichtbar für (Tage)" legt fest, wie viele Tage lang der Button "Bestellung
+widerrufen" bei einer Bestellung auf der Seite "Meine Bestellungen" angezeigt wird. Standardmäßig sind
+das 14 Tage (die gesetzliche EU-Widerrufsfrist); mit `0` wird der Button unabhängig vom Bestellalter
+immer angezeigt. Das betrifft nur die Sichtbarkeit des Buttons - die Seite "Bestellung widerrufen"
+selbst ist weiterhin jederzeit direkt erreichbar.
 
 ### Steuersätze und Währung
 Du kannst bis zu drei feste Steuersätze festlegen (Steuer #1-#3); jedes Produkt wählt dann individuell

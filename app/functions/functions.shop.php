@@ -1675,6 +1675,60 @@ function se_get_owned_order($order_nbr, $user_id) {
 }
 
 /**
+ * check whether the "withdraw order" button/form should still be offered
+ * for this order, based on the admin-configured withdrawal period
+ * (se_settings 'posts_order_withdrawal_days', defaults to the EU-mandated
+ * 14 days; 0 or a negative value means no time limit).
+ *
+ * @param array $order an order row (must contain order_time)
+ * @return bool
+ */
+function se_order_withdrawal_eligible($order) {
+
+	global $se_settings;
+
+	$days = $se_settings['posts_order_withdrawal_days'];
+	$days = $days !== '' && $days !== null ? (int) $days : 14;
+
+	if($days <= 0) {
+		return true;
+	}
+
+	$order_time = (int) ($order['order_time'] ?? 0);
+
+	return $order_time > 0 && (time() - $order_time) <= ($days * 86400);
+}
+
+/**
+ * fetch an order by its number, but only if the given e-mail matches the
+ * address stored on the order (order_invoice_mail). guest orders have no
+ * user_id to authorize against, so order_nbr + e-mail is the shared secret
+ * used instead - e.g. for the order withdrawal form.
+ *
+ * @param string $order_nbr the submitted order number
+ * @param string $mail the submitted e-mail address
+ * @return array|null the order row, or null if not found / mail mismatch
+ */
+function se_get_order_by_nbr_and_mail($order_nbr, $mail) {
+
+	global $db_content;
+
+	if(!is_string($order_nbr) || $order_nbr === '' || !is_string($mail) || $mail === '') {
+		return null;
+	}
+
+	$order = $db_content->get("se_orders", "*", [
+		"order_nbr" => $order_nbr
+	]);
+
+	if(!is_array($order) || strcasecmp(trim($order['order_invoice_mail']), trim($mail)) !== 0) {
+		return null;
+	}
+
+	return $order;
+}
+
+/**
  * check whether a product (post_id) is part of the given order row.
  *
  * @param array $order an order row (must contain order_products JSON)

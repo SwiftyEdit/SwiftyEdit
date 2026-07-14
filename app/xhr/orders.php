@@ -19,6 +19,13 @@ if($order_page['page_permalink'] == '') {
     $order_page_uri = '/'.$order_page['page_permalink'];
 }
 
+$order_withdrawal_page = se_get_type_of_use_pages('order_withdrawal');
+if($order_withdrawal_page['page_permalink'] == '') {
+    $order_withdrawal_uri = '/order_withdrawal/';
+} else {
+    $order_withdrawal_uri = '/'.$order_withdrawal_page['page_permalink'];
+}
+
 
 // show order by id
 if(isset($_GET['id'])) {
@@ -110,6 +117,8 @@ if(isset($_GET['id'])) {
     $smarty->assign('order_status_payment', $get_order['order_status_payment']);
     $smarty->assign('order_status_shipping', $get_order['order_status_shipping']);
     $smarty->assign('order_page_uri', $order_page_uri);
+    $smarty->assign('order_withdrawal_uri', $order_withdrawal_uri.'?order_nbr='.urlencode($get_order['order_nbr']).'&mail='.urlencode($get_order['order_invoice_mail']));
+    $smarty->assign('order_withdrawal_eligible', se_order_withdrawal_eligible($get_order));
 
     $smarty->display('order-item.tpl');
     exit;
@@ -175,6 +184,7 @@ for($i=0;$i<$cnt_orders;$i++) {
     $order_item[$i]['date'] = date("d.m.Y H:i",$get_orders[$i]['order_time']);
     $order_item[$i]['status'] = $get_orders[$i]['order_status'];
     $order_item[$i]['status_payment'] = $get_orders[$i]['order_status_payment'];
+    $order_item[$i]['withdrawal_requested'] = $get_orders[$i]['order_withdrawal_requested'];
 
     $order_item[$i]['price'] = se_post_print_currency($get_orders[$i]['order_price_total']);
 

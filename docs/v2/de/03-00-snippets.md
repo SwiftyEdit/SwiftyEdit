@@ -70,6 +70,8 @@ So kannst Du die Syntax in Anleitungen darstellen, ohne dass das Snippet eingebu
 | `agreement_text`       | Dieser Text muss vom Benutzer akzeptiert werden, bevor er einen Account erstellen kann.                                      |
 | `cart_agree_term`      | Dieser Text muss akzeptiert werden, bevor eine Bestellung abgesendet werden kann.                                            |
 | `mail_psw_updated`     | Wird als E-Mail versendet, wenn ein Benutzer - erfolgreich - sein Passwort zurückgesetzt hat                                 |
+| `order_withdrawal_intro` | Einleitungstext auf der Seite "Bestellung widerrufen" (Seitentyp `order_withdrawal`). Ersetzt `text_order_withdrawal_intro` aus der Sprachdatei. |
+| `mail_salutation_order_withdrawal` | Wird als Anrede/Einleitung in der E-Mail an den Administrator verwendet, wenn ein Kunde eine Bestellung widerruft. Unterstützt die Variable `{order_nbr}`. |
 
 * `{USERNAME}` der Benutzername
 * `{SITENAME}` der Name der Seite (wird in den Einstellungen festgelegt)

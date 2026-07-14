@@ -9,6 +9,6 @@
         {col3}
     </div>
     <div class="col-md-3">
-        {col3}
+        {col4}
     </div>
 </div>

@@ -496,6 +496,17 @@ if(isset($_POST['set_order_status'])) {
     header( "HX-Trigger: update_orders_list");
 }
 
+// acknowledge / clear a customer's withdrawal request
+if(isset($_POST['clear_order_withdrawal_requested'])) {
+    $order_id = (int) $_POST['order_id'];
+    $update = $db_content->update("se_orders", [
+        "order_withdrawal_requested" => null
+    ],[
+        "id" => $order_id
+    ]);
+    header( "HX-Trigger: update_orders_list");
+}
+
 if(isset($_POST['products_cache'])) {
 
    if($_POST['products_cache'] == 'update') {

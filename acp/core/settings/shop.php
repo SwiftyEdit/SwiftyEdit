@@ -83,6 +83,13 @@ $input_max_order_value = [
     "type" => "text"
 ];
 
+$input_order_withdrawal_days = [
+    "input_name" => "prefs_posts_order_withdrawal_days",
+    "input_value" => $se_settings['posts_order_withdrawal_days'],
+    "label" => $lang['label_orders_withdrawal_days'],
+    "type" => "text"
+];
+
 $input_tax1 = [
     "input_name" => "prefs_posts_products_default_tax",
     "input_value" => $se_settings['posts_products_default_tax'],
@@ -222,10 +229,11 @@ echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-targ
 $input_modes = [
     se_print_form_input($input_select_mode_cart),
     se_print_form_input($input_select_mode_order).se_print_form_input($input_check_guestmode),
-    se_print_form_input($input_max_order_value)
+    se_print_form_input($input_max_order_value),
+    se_print_form_input($input_order_withdrawal_days)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_modes,$bs_row_col3);
+echo str_replace(['{col1}','{col2}','{col3}','{col4}'],$input_modes,$bs_row_col4);
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
 

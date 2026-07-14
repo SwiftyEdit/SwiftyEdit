@@ -169,6 +169,14 @@ Für den Warenkorb.
 
 Hier kann der Benutzer seine Bestellungen einsehen.
 
+#### Bestellung widerrufen
+
+Ein Formular, mit dem Kunden eine Bestellung widerrufen können (z.B. zur Erfüllung des
+EU-Widerrufsrechts). Der Kunde muss dazu die Bestellnummer und die bei der Bestellung
+hinterlegte E-Mail-Adresse eingeben; die Anfrage wird anschließend per E-Mail an den
+Administrator gesendet. Von der Seite "Bestellungen" aus können Kunden dieses Formular
+vorausgefüllt für eine bestimmte Bestellung öffnen.
+
 ---
 
 ## Sortierung der Suchergebnisse

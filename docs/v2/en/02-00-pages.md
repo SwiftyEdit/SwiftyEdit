@@ -169,6 +169,13 @@ For the shopping cart.
 
 Here the user can view their orders.
 
+#### Order Withdrawal
+
+A form customers can use to withdraw from an order (e.g. to fulfil the EU right of
+withdrawal). The customer must enter the order number and the e-mail address stored
+on the order; the request is then sent to the site administrator by e-mail. From the
+"Orders" page, customers can open this form pre-filled for a specific order.
+
 ---
 
 ## Sorting search results
