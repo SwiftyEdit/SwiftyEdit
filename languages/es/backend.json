@@ -320,6 +320,7 @@
   "label.order_date": "Fecha del pedido",
   "label.price_total": "Precio total",
   "label.payment": "Pago",
+  "label.orders.guest_order_enable": "Enable Guest Orders",
   "label.business.address": "Dirección de negocio",
   "label.business.tax_number": "Número de impuestos",
   "label.mail.new": "Crear nuevo E-Mail",
