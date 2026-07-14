@@ -320,6 +320,7 @@
   "label.order_date": "Data comenzii",
   "label.price_total": "Preț total",
   "label.payment": "Plată",
+  "label.orders.guest_order_enable": "Enable Guest Orders",
   "label.business.address": "Adresa companiei",
   "label.business.tax_number": "Număr impozit",
   "label.mail.new": "Creare e-mail nou",
