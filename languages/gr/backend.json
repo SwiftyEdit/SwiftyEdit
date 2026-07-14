@@ -320,6 +320,7 @@
   "label.order_date": "Ημερομηνία παραγγελίας",
   "label.price_total": "Συνολική τιμή",
   "label.payment": "Πληρωμή",
+  "label.orders.guest_order_enable": "Enable Guest Orders",
   "label.business.address": "Διεύθυνση Επιχειρήσεων",
   "label.business.tax_number": "Αριθμός φόρου",
   "label.mail.new": "Δημιουργία νέου E-Mail",
