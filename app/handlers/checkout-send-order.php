@@ -30,7 +30,7 @@ if($send_order == true) {
     $order_data['order_payment_type'] = $payment_addon;
     $order_data['order_payment_costs'] = $payment_costs;
     $order_data['order_comment'] = $_POST['cart_comment'];
-    $order_data['order_nbr'] = $get_cd['user_id'].'-'.uniqid();
+    $order_data['order_nbr'] = ($order_data['user_id'] ?? 'guest').'-'.uniqid();
 
     $order_id = se_send_order($order_data);
 
@@ -45,7 +45,8 @@ if($send_order == true) {
 
 
         /* remove items from se_carts */
-        se_clear_cart($order_data['user_id']);
+        $clear_cart_identifier = is_numeric($_SESSION['user_id']) ? $_SESSION['user_id'] : $_SESSION['token'];
+        se_clear_cart($clear_cart_identifier);
         $cnt_cart_items = 0;
 
         $recipient['name'] = $get_cd['user_firstname'].' '.$get_cd['user_lastname'];

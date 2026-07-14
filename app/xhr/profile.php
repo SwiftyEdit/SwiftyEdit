@@ -16,37 +16,19 @@ foreach($lang as $key => $val) {
 }
 
 // Assign all user data to template
-foreach ($get_my_userdata as $key => $value) {
-    $smarty->assign($key, $value ?? '', true);
+if (is_array($get_my_userdata)) {
+    foreach ($get_my_userdata as $key => $value) {
+        $smarty->assign($key, $value ?? '', true);
+    }
 }
 
-// get all countries
-$all_countries = se_get_countries_options();
+// delivery-areas
+$country_options = se_get_delivery_country_options();
 
-// get predefined delivery countries
-$get_delivery_countries = $db_content->select("se_delivery_areas", ["code","name"],[
-    "status" => 1
-]);
-
-// create an array of predefined delivery countries. F.e. ['DE','AT']
-$predefined_delivery_countries = !empty($get_delivery_countries)
-    ? array_column($get_delivery_countries, 'code')
-    : [];
-
-$delivery_countries_options = array_intersect_key(
-    $all_countries,
-    array_flip($predefined_delivery_countries)
-);
-
-$other_countries_options = array_diff_key(
-    $all_countries,
-    $delivery_countries_options
-);
-
-$smarty->assign('selected_billing_country', $get_my_userdata['ba_country'] ?? '');
-$smarty->assign('selected_delivery_country', $get_my_userdata['sa_country'] ?? '');
-$smarty->assign('delivery_countries_options', $delivery_countries_options);
-$smarty->assign('other_countries_options', $other_countries_options);
+$smarty->assign('selected_billing_country', is_array($get_my_userdata) ? ($get_my_userdata['ba_country'] ?? '') : '');
+$smarty->assign('selected_delivery_country', is_array($get_my_userdata) ? ($get_my_userdata['sa_country'] ?? '') : '');
+$smarty->assign('delivery_countries_options', $country_options['delivery_countries_options']);
+$smarty->assign('other_countries_options', $country_options['other_countries_options']);
 
 // display avatar form
 if(isset($_GET['avatar'])) {
@@ -67,6 +49,12 @@ if(isset($_GET['mail'])) {
 // display address form
 if(isset($_GET['address'])) {
     $smarty->display('profile/address.tpl');
+}
+
+// display guest e-mail confirmation form
+if(isset($_GET['address-mail'])) {
+    $smarty->assign('ba_mail', $_SESSION['guest_order_data']['ba_mail'] ?? '');
+    $smarty->display('profile/address-mail.tpl');
 }
 
 // display billing address form
@@ -205,13 +193,43 @@ if(isset($_POST['update_address'])) {
     }
 }
 
+// confirm guest e-mail address (guest checkout only, first step before the address forms)
+if(isset($_POST['update_address_mail'])) {
+    $ba_mail = sanitizeUserInputs($_POST['ba_mail'] ?? '');
+    $ba_mail_repeat = sanitizeUserInputs($_POST['ba_mail_repeat'] ?? '');
+
+    if (is_numeric($_SESSION['user_id']) || $se_settings['posts_guest_order_enable'] != 1) {
+        $success = false;
+        $error_msg = $lang['msg_update_profile_error'];
+    } elseif (!filter_var($ba_mail, FILTER_VALIDATE_EMAIL)) {
+        $success = false;
+        $error_msg = $lang['msg_invalid_mail_format'];
+    } elseif ($ba_mail !== $ba_mail_repeat) {
+        $success = false;
+        $error_msg = $lang['msg_register_mailrepeat_error'];
+    } else {
+        $_SESSION['guest_order_data'] = array_merge($_SESSION['guest_order_data'] ?? [], [
+            "ba_mail" => "$ba_mail"
+        ]);
+        $success = true;
+    }
+
+    if($success){
+        // reload the cart page so it re-evaluates which step (mail vs. address form) to show next
+        header("HX-Refresh: true");
+    } else {
+        $smarty->assign("alert_text",$error_msg);
+        $smarty->display('alert/alert-danger.tpl');
+    }
+}
+
 // update billing address
 if(isset($_POST['update_address_ba'])) {
     foreach($_POST as $key => $val) {
         $$key = sanitizeUserInputs($val);
     }
 
-    $update_ba_data = $db_user->update("se_user", [
+    $ba_data = [
         "ba_company" => "$ba_company",
         "ba_firstname" => "$ba_firstname",
         "ba_lastname" => "$ba_lastname",
@@ -223,11 +241,23 @@ if(isset($_POST['update_address_ba'])) {
         "ba_tax_number" => "$ba_tax_number",
         "ba_tax_id_number" => "$ba_tax_id_number",
         "ba_sales_tax_id_number" => "$ba_sales_tax_id_number"
-    ], [
-        "user_id" => (int) $_SESSION['user_id']
-    ]);
+    ];
 
-    if($update_ba_data->rowCount() == 1){
+    if (is_numeric($_SESSION['user_id'])) {
+        // registered user: persist to se_user as before
+        $update_ba_data = $db_user->update("se_user", $ba_data, [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+        $success = $update_ba_data->rowCount() == 1;
+    } elseif ($se_settings['posts_guest_order_enable'] == 1) {
+        // guest: keep the address in session for this order only
+        $_SESSION['guest_order_data'] = array_merge($_SESSION['guest_order_data'] ?? [], $ba_data);
+        $success = true;
+    } else {
+        $success = false;
+    }
+
+    if($success){
         $smarty->assign("alert_text",$lang['msg_update_profile']);
         $smarty->display('alert/alert-success.tpl');
     } else {
@@ -242,7 +272,7 @@ if(isset($_POST['update_address_sa'])) {
         $$key = sanitizeUserInputs($val);
     }
 
-    $update_sa_data = $db_user->update("se_user", [
+    $sa_data = [
         "sa_company" => "$sa_company",
         "sa_firstname" => "$sa_firstname",
         "sa_lastname" => "$sa_lastname",
@@ -251,11 +281,23 @@ if(isset($_POST['update_address_sa'])) {
         "sa_zip" => "$sa_zip",
         "sa_city" => "$sa_city",
         "sa_country" => "$sa_country"
-    ], [
-        "user_id" => (int) $_SESSION['user_id']
-    ]);
+    ];
 
-    if($update_sa_data->rowCount() == 1){
+    if (is_numeric($_SESSION['user_id'])) {
+        // registered user: persist to se_user as before
+        $update_sa_data = $db_user->update("se_user", $sa_data, [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+        $success = $update_sa_data->rowCount() == 1;
+    } elseif ($se_settings['posts_guest_order_enable'] == 1) {
+        // guest: keep the address in session for this order only
+        $_SESSION['guest_order_data'] = array_merge($_SESSION['guest_order_data'] ?? [], $sa_data);
+        $success = true;
+    } else {
+        $success = false;
+    }
+
+    if($success){
         $smarty->assign("alert_text",$lang['msg_update_profile']);
         $smarty->display('alert/alert-success.tpl');
     } else {

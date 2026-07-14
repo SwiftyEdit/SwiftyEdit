@@ -1397,6 +1397,44 @@ function se_get_payment_method_data($addon) {
 }
 
 
+/**
+ * Returns the country list for delivery-area selects, split into
+ * "available" (from se_delivery_areas) and "on request" (all others).
+ *
+ * @return array{delivery_countries_options: array, other_countries_options: array}
+ */
+function se_get_delivery_country_options() {
+    global $db_content;
+
+    $all_countries = se_get_countries_options();
+
+    // get predefined delivery countries
+    $get_delivery_countries = $db_content->select("se_delivery_areas", ["code", "name"], [
+        "status" => 1
+    ]);
+
+    // create an array of predefined delivery countries, e.g. ['DE','AT']
+    $predefined_delivery_countries = !empty($get_delivery_countries)
+        ? array_column($get_delivery_countries, 'code')
+        : [];
+
+    $delivery_countries_options = array_intersect_key(
+        $all_countries,
+        array_flip($predefined_delivery_countries)
+    );
+
+    $other_countries_options = array_diff_key(
+        $all_countries,
+        $delivery_countries_options
+    );
+
+    return [
+        'delivery_countries_options' => $delivery_countries_options,
+        'other_countries_options' => $other_countries_options,
+    ];
+}
+
+
 function se_reformat_payment_costs($amount) {
 
     $format = str_replace(',', '.', $amount);
@@ -1436,7 +1474,7 @@ function se_send_order($data) {
     $order_comment = clean_visitors_input($data['order_comment']);
 	
 	$db_content->insert("se_orders", [
-		"user_id" => "$user_id",
+		"user_id" => $user_id !== null ? (int) $user_id : null,
 		"order_nbr" => "$order_nbr",
 		"order_time" => "$order_time",
 		"order_status" => "$order_status",
@@ -1668,7 +1706,7 @@ function se_order_contains_product($order, $product_id) {
 function se_checkout_address_complete(array $data, string $prefix): bool {
     $required = ['firstname', 'lastname', 'street', 'street_nbr', 'zip', 'city', 'country'];
     foreach ($required as $field) {
-        if ($data[$prefix . $field] === '') return false;
+        if (($data[$prefix . $field] ?? '') === '') return false;
     }
     return true;
 }
