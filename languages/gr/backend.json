@@ -210,6 +210,8 @@
   "type_of_use_checkout": "Αγορά",
   "type_of_use_orders": "Παραγγελίες",
   "type_of_use_order_withdrawal": "Order Withdrawal",
+  "type_of_use_wishlist": "Lists",
+  "label_wishlist_enable": "Enable lists",
   "post_type_message": "Μηνύματα",
   "post_type_gallery": "Συλλογές",
   "post_type_event": "Συμβάντα",
