@@ -142,6 +142,45 @@ Menüpunkt, der die entsprechende PHP-Datei aus dem `/backend/` Verzeichnis läd
 | `text` | ja | Sprachschlüssel für die Navigationsbezeichnung |
 | `file` | ja | Dateiname ohne `.php` Erweiterung, wird aus `/backend/` geladen |
 
+#### editor
+
+Optional. Kennzeichnet ein Plugin als Editor-Plugin (`addon.type` muss dafür `editor`
+sein). Es gibt zwei Arten von Editor-Plugins:
+
+- **WYSIWYG-/Code-Editoren** (`mode: "wysiwyg"` oder `mode: "code"`, z. B. TinyMCE, ACE):
+  stellen lediglich ein anderes Eingabe-Widget für ein `<textarea>` bereit. Der
+  gespeicherte Wert ist immer rohes HTML, unabhängig vom gewählten Editor.
+- **Content-Format-Editoren** (`mode: "format"`, z. B. ein Drag&Drop-Baukasten oder ein
+  Markdown-Editor): bestimmen das *Format* des gespeicherten Werts selbst. Der Inhalt
+  wird als `{"editor": "<id>", "content": ...}` im Content-Feld gespeichert (z. B.
+  `page_content`) und beim Laden über `se_register_editor()` an das zuständige Plugin
+  delegiert (siehe `app/functions/functions.editors.php`). Ist kein Plugin mit
+  passender `editor.id` aktiv, fällt SwiftyEdit auf die Anzeige als rohen Text zurück.
+
+| Feld | Pflicht | Beschreibung |
+|---|---|---|
+| `id` | ja | Eindeutiger Editor-Schlüssel. Bei `mode: "format"` wird dieser Wert 1:1 im gespeicherten JSON referenziert. |
+| `label` | ja | Anzeigename im Editor-Umschalter bzw. in der Format-Auswahl |
+| `mode` | ja | `wysiwyg`, `code` oder `format` |
+| `order` | ja | Sortierung innerhalb der Editor-Liste (aufsteigend) |
+| `core` | optional | `true` markiert den Editor als immer aktiv (umgeht die Plugin-Aktivierung). Nur für mitgelieferte Editoren wie TinyMCE/ACE gedacht. |
+
+### Editor-Plugin austauschen
+
+Ein Content-Format-Editor-Plugin ist über seinen `editor.id`-Wert mit bereits
+gespeicherten Seiten verknüpft, nicht über den Plugin-Ordnernamen. Um einen
+Content-Format-Editor durch eine neue Implementierung zu ersetzen und dabei bereits
+gespeicherte Seiten weiter bearbeitbar zu halten:
+
+1. Das alte Plugin im Backend deaktivieren (sonst registrieren beide Plugins denselben
+   Schlüssel, und es ist nicht definiert, welches zuletzt geladen wird und damit gewinnt).
+2. Im neuen Plugin denselben Wert für `editor.id` in der `info.json` eintragen, den das
+   alte Plugin verwendet hat.
+3. Das neue Plugin aktivieren.
+
+Alle Seiten, deren Content-Feld `"editor": "<id>"` enthält, werden ab sofort vom neuen
+Plugin gerendert und bearbeitet — ganz ohne Datenmigration.
+
 ### Updates
 
 SwiftyEdit prüft automatisch auf Updates beim Aufruf von `/backend/addons/`.

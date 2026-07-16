@@ -143,6 +143,45 @@ a menu item that loads the corresponding PHP file from the `/backend/` directory
 | `text` | yes | Language key for the navigation label |
 | `file` | yes | Filename without `.php` extension, loaded from `/backend/` |
 
+#### editor
+
+Optional. Marks a plugin as an editor plugin (`addon.type` must be `editor`). There
+are two kinds of editor plugins:
+
+- **WYSIWYG/code editors** (`mode: "wysiwyg"` or `mode: "code"`, e.g. TinyMCE, ACE):
+  only provide a different input widget for a `<textarea>`. The stored value is
+  always raw HTML, regardless of which editor was chosen.
+- **Content-format editors** (`mode: "format"`, e.g. a drag & drop page builder or a
+  Markdown editor): determine the *format* of the stored value itself. Content is
+  stored as `{"editor": "<id>", "content": ...}` in the content field (e.g.
+  `page_content`) and delegated to the responsible plugin on load via
+  `se_register_editor()` (see `app/functions/functions.editors.php`). If no plugin
+  with a matching `editor.id` is active, SwiftyEdit falls back to displaying the raw
+  text.
+
+| Field | Required | Description |
+|---|---|---|
+| `id` | yes | Unique editor key. For `mode: "format"`, this value is referenced verbatim in the stored JSON. |
+| `label` | yes | Display name in the editor switch / format selector |
+| `mode` | yes | `wysiwyg`, `code`, or `format` |
+| `order` | yes | Sort order within the editor list (ascending) |
+| `core` | optional | `true` marks the editor as always active (bypasses plugin activation). Intended for bundled editors like TinyMCE/ACE only. |
+
+### Replacing an editor plugin
+
+A content-format editor plugin is tied to already-saved pages through its
+`editor.id` value, not through the plugin's folder name. To replace a content-format
+editor with a new implementation while keeping previously saved pages editable:
+
+1. Deactivate the old plugin in the backend (otherwise both plugins register the
+   same key, and it's undefined which one wins depending on load order).
+2. Give the new plugin the same `editor.id` value in its `info.json` that the old
+   plugin used.
+3. Activate the new plugin.
+
+Every page whose content field contains `"editor": "<id>"` will now be rendered and
+edited by the new plugin - no data migration required.
+
 ### Updates
 
 SwiftyEdit automatically checks for updates when visiting `/backend/addons/`.
