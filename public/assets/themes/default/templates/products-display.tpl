@@ -55,7 +55,10 @@
                     <div class="alert alert-info mt-3">{$product_addon_only_note}</div>
                 {else}
                 <div class="mt-3">
-                    <form action="{$form_action}" method="POST" class="text-start d-inline">
+                    <form action="{$form_action}" method="POST" class="text-start d-inline"
+                          hx-post="/xhr/se/products/"
+                          hx-target="#add-to-cart-message-{$product_id}"
+                          hx-swap="innerHTML">
 
                         {if is_array($select_options)}
                             <!-- product options -->
@@ -127,6 +130,7 @@
                             </div>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
                         </div>
+                        <div id="add-to-cart-message-{$product_id}" class="mt-1"></div>
                         <input type="hidden" name="product_href" value="{$product_href}">
                         {$hidden_csrf_token}
 

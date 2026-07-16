@@ -5,6 +5,22 @@
  * @var array $lang
  */
 
+// CSRF is already validated globally by bootstrap.php for every POST
+// request, no manual se_validate_token() call needed here.
+if (isset($_POST['add_to_cart'])) {
+
+    if (!($se_settings['posts_products_cart'] == 2 || $se_settings['posts_products_cart'] == 3)) {
+        http_response_code(404);
+        exit;
+    }
+
+    se_add_to_cart();
+
+    header("HX-Trigger: update_user_status");
+    echo '<div class="text-success small mt-2"><i class="bi bi-check2-circle"></i> ' . $lang['msg_added_to_cart'] . '</div>';
+    exit;
+}
+
 if (isset($_GET['calc']) && is_numeric($_GET['product_id'])) {
 
     // recalculate product price

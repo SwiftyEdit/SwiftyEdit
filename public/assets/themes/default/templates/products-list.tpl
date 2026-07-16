@@ -135,7 +135,10 @@
                     <div class="col-md-4">
                         <a class="btn btn-link w-100 {$link_classes}" href="{$value.product_href}">{$btn_read_more}</a>
                         {if $value.show_shopping_cart == true}
-                            <form action="{$form_action}" method="POST" class="pt-1">
+                            <form action="{$form_action}" method="POST" class="pt-1" id="add-to-cart-form-{$value.product_id}"
+                                  hx-post="/xhr/se/products/"
+                                  hx-target="#add-to-cart-form-{$value.product_id}"
+                                  hx-swap="outerHTML">
                                 <button class="btn btn-outline-success w-100" name="add_to_cart" value="{$value.product_id}">{$btn_add_to_cart}</button>
                                 <input type="hidden" name="product_href" value="{$value.product_href}">
                                 {$hidden_csrf_token}

@@ -109,6 +109,7 @@
   "legend_add_to_wishlist": "Save to a list",
   "msg_wishlist_item_added": "Added to list.",
   "msg_wishlist_added_to_cart": "Added to cart.",
+  "msg_added_to_cart": "Added to cart.",
   "btn_pay_with_paypal": "Pay with PayPal",
   "btn_all": "Alle",
   "btn_run_commands": "Run Commands",
