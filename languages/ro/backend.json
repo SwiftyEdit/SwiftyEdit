@@ -210,6 +210,8 @@
   "type_of_use_checkout": "Plătește",
   "type_of_use_orders": "Comenzi",
   "type_of_use_order_withdrawal": "Order Withdrawal",
+  "type_of_use_wishlist": "Lists",
+  "label_wishlist_enable": "Enable lists",
   "post_type_message": "Mesaje",
   "post_type_gallery": "Galerii",
   "post_type_event": "Evenimente",
