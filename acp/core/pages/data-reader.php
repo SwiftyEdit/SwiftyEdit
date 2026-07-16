@@ -290,6 +290,30 @@ if($_REQUEST['action'] == 'list_page_types') {
     exit;
 }
 
+// rebuild just the page_content field when the format-switch dropdown changes
+// (see tpl_content_format_switch() in acp/core/templates.php) - an HTMX
+// partial swap targeting #pageContentField instead of a full page reload, so
+// unsaved edits in the rest of the pages-edit form survive.
+if(isset($_REQUEST['content_field'])) {
+    require_once __DIR__ . '/functions.php';
+
+    $requested_page_id = $_REQUEST['content_field'];
+    if ($requested_page_id !== 'new' && is_numeric($requested_page_id)) {
+        $get_page = $db_content->get("se_pages", "*", ["page_id" => (int) $requested_page_id]);
+    }
+    if (!is_array($get_page ?? null)) {
+        $get_page = [];
+    }
+
+    $format_override = $_REQUEST['set_content_format'] ?? null;
+    $input_text_page_content = se_build_page_content_field($get_page, $format_override);
+
+    echo '<div id="pageContentField">';
+    echo se_print_form_input($input_text_page_content);
+    echo '</div>';
+    exit;
+}
+
 // show snapshots of pages
 if(isset($_REQUEST['snapshots']) && is_numeric($_REQUEST['snapshots'])) {
     $snapshot_id = (int) $_REQUEST['snapshots'];

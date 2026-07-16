@@ -76,3 +76,20 @@ echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update
 echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="se_products_uuid">Update Products</button>';
 echo '</div>';
 echo '</div>';
+
+
+echo '<div class="card mb-3">';
+echo '<div class="card-header"><h5>Content-format editors / page_content_source column</h5></div>';
+echo '<div class="card-body">';
+
+echo '<p>Adds the <code>page_content_source</code> column to <code>se_pages</code> and <code>se_pages_cache</code>.
+Content-format editor plugins (e.g. a Markdown or block-builder editor) store their raw content there;
+<code>page_content</code> keeps holding the plugin\'s rendered HTML, computed once when the page is saved.
+Safe to run more than once - already-existing columns are skipped.</p>';
+
+echo '</div>';
+
+echo '<div class="card-footer">';
+echo '<button class="btn btn-default text-danger m-1" hx-post="/admin-xhr/update/write/" hx-target="#response" hx-vals=\''.json_encode($hx_vals).'\' name="helper_update_table" value="page_content_source_column">Add page_content_source column</button>';
+echo '</div>';
+echo '</div>';

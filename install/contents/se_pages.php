@@ -28,7 +28,16 @@ $cols = array(
 	"page_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
 	"page_status" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_usergroup" => "VARCHAR(50) NOT NULL DEFAULT ''",
+	// page_content: always final HTML, read directly by the frontend - either
+	// legacy content, or (for a content-format editor page) the plugin's
+	// rendered output, frozen once at save time by se_freeze_editor_content()
+	// (app/functions/functions.editors.php). Never contains editor JSON.
 	"page_content" => "LONGTEXT NOT NULL DEFAULT ''",
+	// page_content_source: the raw {"editor":"...","content":...} envelope a
+	// content-format editor plugin (e.g. rabbit-editor, sloth-editor)
+	// produced - what the backend editor UI reloads via render_backend().
+	// Empty for legacy HTML pages.
+	"page_content_source" => "LONGTEXT NOT NULL DEFAULT ''",
 	"page_sort" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_lastedit" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_lastedit_from" => "VARCHAR(50) NOT NULL DEFAULT ''",

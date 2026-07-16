@@ -210,13 +210,16 @@ $input_text_page_redirect = [
     "type" => "text"
 ];
 
-$input_text_page_content = [
-    "input_name" => "page_content",
-    "input_value" => $page_content,
-    "label" => ' ',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-];
+require_once __DIR__ . '/functions.php';
+
+/*
+ * Initial page load never has a format override - the field reflects
+ * whatever is last-saved in the DB. Switching format afterwards happens via
+ * an HTMX partial swap (see #pageContentField above and
+ * tpl_content_format_switch() in acp/core/templates.php), not a reload of
+ * this file.
+ */
+$input_text_page_content = se_build_page_content_field($get_page ?? [], null);
 
 $input_text_page_title = [
     "input_name" => "page_title",
@@ -542,7 +545,9 @@ $form_tpl .= str_replace(['{classes_1}','{col1}','{classes_2}','{col2}'],$input_
 $form_tpl .= '</div>'; // info tab
 
 $form_tpl .= '<div class="tab-pane" id="content-tab" role="tabpanel" tabindex="0">';
+$form_tpl .= '<div id="pageContentField">';
 $form_tpl .= se_print_form_input($input_text_page_content);
+$form_tpl .= '</div>'; // pageContentField - swapped in place when the format dropdown changes, see acp/core/pages/data-reader.php
 $form_tpl .= '</div>'; // content tab
 
 $form_tpl .= '<div class="tab-pane" id="metas-tab" role="tabpanel" tabindex="0">';

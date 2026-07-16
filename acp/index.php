@@ -134,12 +134,25 @@ if(in_array($se_path[0], $se_sections)) {
 $all_mods = se_get_all_addons();
 $cnt_mods = count($all_mods);
 $all_plugins = se_get_all_addons();
-$se_editor_addons = se_get_editor_addons();
 
-/* default editor: first installed editor (by order), else plain text */
+/*
+ * Content-format editors (mode "format", e.g. block-builder/markdown
+ * plugins) are a separate axis from the WYSIWYG/code widget switcher below -
+ * they don't wrap a <textarea> and must not become the default WYSIWYG
+ * editor. se_bootstrap_editor_plugins() loads every editor addon's
+ * global/index.php, where content-format plugins call se_register_editor().
+ */
+require_once SE_ROOT . 'app/functions/functions.editors.php';
+$se_editor_addons = se_bootstrap_editor_plugins();
+
+$se_wysiwyg_editor_addons = array_filter($se_editor_addons, static function ($editor_addon) {
+    return ($editor_addon['mode'] ?? '') !== 'format';
+});
+
+/* default editor: first installed WYSIWYG/code editor (by order), else plain text */
 $se_default_editor = 'plain';
-if (!empty($se_editor_addons)) {
-    $se_first_editor = reset($se_editor_addons);
+if (!empty($se_wysiwyg_editor_addons)) {
+    $se_first_editor = reset($se_wysiwyg_editor_addons);
     $se_default_editor = $se_first_editor['id'] ?? 'plain';
 }
 
@@ -520,6 +533,21 @@ if (is_file('../maintenance.html')) {
     </div>
 </div>
 
+<!-- fullscreen modal for content-format editors (blocks_v1, markdown_v1, ...) -
+     see acp/templates/bs-form-input-content-editor.tpl's fullscreen button and
+     the content-editor JS glue below, which moves a .content-editor-mount into
+     .content-editor-fullscreen-slot on show and moves it back on hide -->
+<div class="modal fade" id="contentEditorFullscreenModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body content-editor-fullscreen-slot"></div>
+        </div>
+    </div>
+</div>
+
 
 <?php
 /* load the footer init of every installed editor plugin (registers window.seEditors) */
@@ -533,29 +561,75 @@ foreach ($se_editor_addons as $editor_addon) {
 ?>
 <script type="text/javascript">
 
-    $(function () {
+    window.seEditors = window.seEditors || {};
 
-        window.seEditors = window.seEditors || {};
+    /*
+     * Content editor switch. Each editor plugin registers itself in
+     * window.seEditors keyed by its editor id (e.g. "tinymce", "ace"). The
+     * switch value "plain" is the built-in plain-text mode and has no
+     * registered editor object.
+     */
+    var seDefaultEditor = '<?php echo $se_default_editor; ?>';
 
-        /*
-         * Content editor switch. Each editor plugin registers itself in
-         * window.seEditors keyed by its editor id (e.g. "tinymce", "ace"). The
-         * switch value "plain" is the built-in plain-text mode and has no
-         * registered editor object.
-         */
-        var defaultEditor = '<?php echo $se_default_editor; ?>';
+    function seCurrentEditorMode() {
         var editor_mode = localStorage.getItem('editor_mode');
-
         /* fall back to the default if the stored editor is no longer installed */
         if (editor_mode && editor_mode !== 'plain' && !window.seEditors[editor_mode]) {
             editor_mode = null;
         }
         if (!editor_mode) {
-            editor_mode = defaultEditor;
+            editor_mode = seDefaultEditor;
         }
+        return editor_mode;
+    }
+
+    function switchEditorMode(mode) {
+
+        var textEditor = $('textarea[class*=switchEditor]');
+
+        /* tear down whichever editor is currently attached */
+        Object.keys(window.seEditors).forEach(function (id) {
+            try {
+                window.seEditors[id].detach(textEditor);
+            } catch (e) {}
+        });
+
+        textEditor.removeClass();
+        textEditor.removeAttr('style');
+
+        var editor = window.seEditors[mode];
+        if (editor) {
+            textEditor.addClass((editor.cls || '') + ' form-control switchEditor');
+            textEditor.css("display", "flex");
+            editor.attach(textEditor);
+        } else {
+            /* plain textarea */
+            textEditor.addClass('plain form-control switchEditor');
+            textEditor.css("visibility", "visible");
+            textEditor.css("display", "flex");
+        }
+
+        $("input[value=" + mode + "]").prop('checked', true);
+        $("input[name='optEditor']").parent().removeClass('active');
+        $("input[value=" + mode + "]").parent().addClass('active');
+
+    }
+
+    $(function () {
+
+        var editor_mode = seCurrentEditorMode();
         localStorage.setItem("editor_mode", editor_mode);
 
-        $('input[name="optEditor"]').on("change", function () {
+        /*
+         * Delegated binding (on document, not the specific radio elements) so
+         * this keeps working after an HTMX swap replaces #pageContentField -
+         * and its optEditor radios - with fresh DOM (e.g. switching the
+         * content format back to "Legacy (HTML)", see
+         * tpl_content_format_switch() in acp/core/templates.php). A direct
+         * .on("change", fn) binding would only ever reach the radios present
+         * at page-load time.
+         */
+        $(document).on("change", 'input[name="optEditor"]', function () {
             var button = $("input[name='optEditor']:checked").val();
             localStorage.setItem("editor_mode", button);
             switchEditorMode(button);
@@ -563,40 +637,116 @@ foreach ($se_editor_addons as $editor_addon) {
 
         switchEditorMode(editor_mode);
 
-        function switchEditorMode(mode) {
-
-            var textEditor = $('textarea[class*=switchEditor]');
-
-            /* tear down whichever editor is currently attached */
-            Object.keys(window.seEditors).forEach(function (id) {
-                try {
-                    window.seEditors[id].detach(textEditor);
-                } catch (e) {}
-            });
-
-            textEditor.removeClass();
-            textEditor.removeAttr('style');
-
-            var editor = window.seEditors[mode];
-            if (editor) {
-                textEditor.addClass((editor.cls || '') + ' form-control switchEditor');
-                textEditor.css("display", "flex");
-                editor.attach(textEditor);
-            } else {
-                /* plain textarea */
-                textEditor.addClass('plain form-control switchEditor');
-                textEditor.css("visibility", "visible");
-                textEditor.css("display", "flex");
-            }
-
-            $("input[value=" + mode + "]").prop('checked', true);
-            $("input[name='optEditor']").parent().removeClass('active');
-            $("input[value=" + mode + "]").parent().addClass('active');
-
-        }
-
     });
 
+    /*
+     * Content-format editors (blocks_v1, markdown_v1, ...). Each editor plugin
+     * registers itself in window.seContentEditors keyed by its editor id, with
+     * mount(el, content) / serialize(el) methods. Mount points are
+     * .content-editor-mount divs (see acp/templates/bs-form-input-content-editor.tpl);
+     * the paired hidden textarea.content-editor-value (looked up via
+     * data-value-field, not DOM adjacency - the mount can be moved into the
+     * fullscreen modal below) carries the serialized value into the (HTMX)
+     * form submit.
+     */
+    window.seContentEditors = window.seContentEditors || {};
+
+    function seMountContentEditors(scope) {
+        (scope || document).querySelectorAll('.content-editor-mount').forEach(function (el) {
+            if (el.dataset.mounted === '1') {
+                return;
+            }
+            var editor = window.seContentEditors[el.dataset.editor];
+            if (!editor) {
+                el.innerHTML = '<div class="alert alert-warning">Editor "' + el.dataset.editor + '" not installed.</div>';
+                return;
+            }
+            var content = null;
+            try {
+                content = JSON.parse(el.dataset.content || 'null');
+            } catch (e) {}
+            editor.mount(el, content);
+            el.dataset.mounted = '1';
+        });
+    }
+
+    $(function () {
+        seMountContentEditors(document);
+    });
+
+    document.body.addEventListener('htmx:configRequest', function (evt) {
+        document.querySelectorAll('.content-editor-mount').forEach(function (el) {
+            var editor = window.seContentEditors[el.dataset.editor];
+            var valueField = document.getElementById(el.dataset.valueField);
+            if (!editor || !valueField) {
+                return;
+            }
+            /*
+             * The plugin's serialize() only returns its own inner "content"
+             * value (a markdown string, a block tree, ...) - Core owns the
+             * {"editor":...,"content":...} envelope on both the PHP side
+             * (se_decode_editor_content()) and here, so plugins never need to
+             * know the wrapper shape.
+             */
+            evt.detail.parameters[valueField.name] = JSON.stringify({
+                editor: el.dataset.editor,
+                content: editor.serialize(el)
+            });
+        });
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function (evt) {
+        /*
+         * Deliberately not scoped to evt.detail.target: for an outerHTML
+         * swap (used by the content-format switch, see
+         * tpl_content_format_switch() in acp/core/templates.php), htmx
+         * removes the original target element from the DOM and inserts the
+         * new content in its place, but evt.detail.target still points at
+         * that now-detached original element - scoping to it silently finds
+         * nothing in the (correct) new content. Both functions below already
+         * tolerate a document-wide scan (seMountContentEditors() is guarded
+         * by data-mounted, switchEditorMode() already queries
+         * document-wide internally), so scan the whole document instead.
+         */
+        seMountContentEditors(document);
+        if (document.querySelector('textarea[class*=switchEditor]')) {
+            switchEditorMode(seCurrentEditorMode());
+        }
+    });
+
+    /*
+     * Fullscreen toggle (see the .content-editor-fullscreen-btn in
+     * bs-form-input-content-editor.tpl and #contentEditorFullscreenModal
+     * above): moves the .content-editor-mount into the modal on open, moves
+     * it back to its original spot in the form on close. The mount keeps its
+     * SortableJS instances etc. intact across the move - only its position in
+     * the DOM tree changes, nothing is re-mounted.
+     */
+    (function () {
+        var modalEl = document.getElementById('contentEditorFullscreenModal');
+        if (!modalEl) {
+            return;
+        }
+        var slotEl = modalEl.querySelector('.content-editor-fullscreen-slot');
+        var origin = null;
+
+        modalEl.addEventListener('show.bs.modal', function (evt) {
+            var trigger = evt.relatedTarget;
+            var mountEl = trigger ? document.getElementById(trigger.dataset.editorTarget) : null;
+            if (!mountEl) {
+                return;
+            }
+            origin = { el: mountEl, parent: mountEl.parentNode, nextSibling: mountEl.nextSibling };
+            slotEl.appendChild(mountEl);
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            if (origin) {
+                origin.parent.insertBefore(origin.el, origin.nextSibling);
+                origin = null;
+            }
+        });
+    })();
 
     <?php
     $gc_maxlifetime = ini_get("session.gc_maxlifetime");
