@@ -71,6 +71,11 @@ it to everyone. The orders setting controls whether products can be ordered dire
 can only send an order request instead of checking out, or both. If you set a maximum order value,
 carts that exceed it automatically fall back to the request form, even if direct ordering is enabled.
 
+### Lists
+Enable lists to let logged-in customers save products to one or more personal lists from the product
+card or product page. A list can optionally be shared via a public link — visitors who open that link
+can view the list and add its products to their own cart without needing an account.
+
 ### Guest orders
 Enable guest orders to let customers complete checkout without creating an account. Guest orders are
 confirmed by e-mail, and the delivery address entered is only kept for the current session.

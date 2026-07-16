@@ -33,7 +33,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    $restricted_pages = ['password', 'profile', 'orders', 'order_withdrawal', 'account', 'register', 'unlock', 'tagged', 'checkout'];
+    $restricted_pages = ['password', 'profile', 'orders', 'order_withdrawal', 'account', 'register', 'unlock', 'tagged', 'checkout', 'wishlist'];
     if (in_array($p, $restricted_pages)) {
         $show_posts = false;
     }
@@ -57,6 +57,11 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
 
     if($page_contents['page_type_of_use'] == 'checkout') {
         $p = 'checkout';
+    }
+
+    if($page_contents['page_type_of_use'] == 'wishlist') {
+        $p = 'wishlist';
+        $show_posts = false;
     }
 
     if($show_posts === true) {

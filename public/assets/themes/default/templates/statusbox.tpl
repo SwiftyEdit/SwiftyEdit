@@ -16,6 +16,10 @@
                 <a href="{$orders_uri}" class="list-group-item link-orders">{$lang_button_orders}</a>
             {/if}
 
+            {if $wishlist_uri != ''}
+                <a href="{$wishlist_uri}" class="list-group-item link-wishlist">{$lang_button_wishlist}</a>
+            {/if}
+
             <a href="{$link_logout}" class="list-group-item link-logout">{$lang_button_logout}</a>
 
         </div>

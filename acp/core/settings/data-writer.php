@@ -38,6 +38,11 @@ if (isset($_POST['update_shop_settings'])) {
         $data['prefs_posts_guest_order_enable'] = 1;
     }
 
+    $data['prefs_wishlist_enabled'] = 0;
+    if(isset($_POST['prefs_wishlist_enabled'])) {
+        $data['prefs_wishlist_enabled'] = 1;
+    }
+
     se_write_option($data,'se');
     show_toast($lang['msg_success_db_changed'],'success');
 }

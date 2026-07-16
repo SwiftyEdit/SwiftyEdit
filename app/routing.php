@@ -22,7 +22,8 @@ $a_allowed_p = [
     'search',
     'sitemap',
     'tagged',
-    'unlock'
+    'unlock',
+    'wishlist'
 ];
 
 /*
@@ -127,6 +128,7 @@ foreach($active_mods as $mods) {
 }
 
 require_once SE_ROOT . 'app/hooks/hooks-frontend.php';
+se_wishlist_register_hooks();
 
 if(is_array($clean_mods)) {
     $activeplugins = array_unique($clean_mods);

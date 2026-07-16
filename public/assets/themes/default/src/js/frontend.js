@@ -17,6 +17,12 @@ window.glightbox = GLightbox;
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
+import { initWishlistSortable, copyWishlistLink } from './components/wishlist.js';
+htmx.onLoad(function(content) {
+    initWishlistSortable(content);
+});
+window.copyWishlistLink = copyWishlistLink;
+
 import * as noUiSlider from 'nouislider';
 window.noUiSlider = noUiSlider;
 

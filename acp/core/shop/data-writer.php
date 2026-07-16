@@ -102,6 +102,7 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
     ]);
 
     if(($cnt_changes->rowCount()) > 0) {
+        se_delete_wishlist_items_by_product($delete_id);
         show_toast($lang['msg_info_data_deleted'],'success');
         record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
         header( "HX-Redirect: /admin/shop/");

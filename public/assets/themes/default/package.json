@@ -13,7 +13,8 @@
     "htmx.org": "^2.0.10",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.7",
-    "nouislider": "^15.8.1"
+    "nouislider": "^15.8.1",
+    "sortablejs": "^1.15.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.5.0",

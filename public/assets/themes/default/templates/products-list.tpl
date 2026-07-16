@@ -141,6 +141,21 @@
                                 {$hidden_csrf_token}
                             </form>
                         {/if}
+                        {if $value.show_wishlist_button == true}
+                            {if $smarty.session.user_nick != ''}
+                                <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-1"
+                                        hx-get="/xhr/se/wishlist/?form=picker&product_id={$value.product_id}&product_href={$value.product_href|escape:'url'}"
+                                        hx-target="#wishlist-picker-modal-body"
+                                        hx-swap="innerHTML"
+                                        data-bs-toggle="modal" data-bs-target="#wishlist-picker-modal">
+                                    <i class="bi bi-heart"></i> {$lang_btn_add_to_wishlist}
+                                </button>
+                            {else}
+                                <a class="btn btn-outline-secondary btn-sm w-100 mt-1" href="{$wishlist_login_uri}">
+                                    <i class="bi bi-heart"></i> {$lang_btn_add_to_wishlist}
+                                </a>
+                            {/if}
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -181,3 +196,18 @@
         </nav>
     {/if}
 </div>
+
+{if $prefs_wishlist_enabled == 1}
+<div class="modal fade" id="wishlist-picker-modal" tabindex="-1" aria-labelledby="wishlistPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="wishlistPickerModalLabel">{$lang_legend_add_to_wishlist}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="wishlist-picker-modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+{/if}

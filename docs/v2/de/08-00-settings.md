@@ -75,6 +75,12 @@ Besucher stattdessen nur eine Bestellanfrage senden können (statt zu bezahlen),
 einen maximalen Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die
 Anfrage-Funktion zurück, auch wenn die Direktbestellung aktiviert ist.
 
+### Listen
+Aktiviere Listen, damit angemeldete Kunden Produkte über die Produktkarte oder Produktseite in eine
+oder mehrere persönliche Listen speichern können. Eine Liste kann optional über einen öffentlichen Link
+geteilt werden - wer diesen Link öffnet, kann die Liste ansehen und die enthaltenen Produkte ohne
+eigenes Konto in den eigenen Warenkorb legen.
+
 ### Gastbestellungen
 Aktiviere Gastbestellungen, damit Kunden den Checkout abschließen können, ohne ein Konto anzulegen.
 Gastbestellungen werden per E-Mail bestätigt, die eingegebene Lieferadresse wird nur für die aktuelle
