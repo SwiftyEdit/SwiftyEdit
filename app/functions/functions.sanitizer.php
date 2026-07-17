@@ -465,9 +465,11 @@ function se_validate_token($token): void {
 
     if(empty($token)) {
         header('Location: /');
+        exit;
     }
-    if($token !== $_SESSION['token']) {
+    if($token !== ($_SESSION['token'] ?? null)) {
         header('Location: /');
+        exit;
     }
 
 }
