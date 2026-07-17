@@ -125,10 +125,15 @@ function move_new_files($source) {
     // update htaccess file
     update_htaccess_file();
 
-    // payment addons
+    // bundled plugins (payment + editors) - these ship inside /plugins/ like any
+    // other plugin, but /plugins/ as a whole is excluded from the generic copy
+    // loop below (so user-installed plugins are left alone), so the ones that
+    // are actually part of the release have to be re-copied explicitly here
     copy_recursive($sources_path.$sources_dir."/plugins/se_invoice-pay","../plugins/se_invoice-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/se_cash-pay","../plugins/se_cash-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/se_paypal-pay","../plugins/se_paypal-pay");
+    copy_recursive($sources_path.$sources_dir."/plugins/tinymce-editor","../plugins/tinymce-editor");
+    copy_recursive($sources_path.$sources_dir."/plugins/ace-editor","../plugins/ace-editor");
 
     if(!is_array($new_files)) {
         $_SESSION['protocol'] .= "ERROR can not scan target files<|>";
