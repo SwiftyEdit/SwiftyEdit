@@ -210,6 +210,8 @@
   "type_of_use_checkout": "Checkout",
   "type_of_use_orders": "Bestellungen",
   "type_of_use_order_withdrawal": "Bestellung widerrufen",
+  "type_of_use_wishlist": "Listen",
+  "label_wishlist_enable": "Listen aktivieren",
   "post_type_message": "Nachrichten",
   "post_type_gallery": "Galerien",
   "post_type_event": "Veranstaltungen",

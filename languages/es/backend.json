@@ -210,6 +210,8 @@
   "type_of_use_checkout": "Pedido",
   "type_of_use_orders": "Pedidos",
   "type_of_use_order_withdrawal": "Order Withdrawal",
+  "type_of_use_wishlist": "Lists",
+  "label_wishlist_enable": "Enable lists",
   "post_type_message": "Mensajes",
   "post_type_gallery": "Galerías",
   "post_type_event": "Eventos",
