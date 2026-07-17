@@ -19,6 +19,32 @@ In den Plugins werden hier zwei Verzeichnisse benötigt:
 `plugins/{plugin}/hooks-backend/` für das Backend und
 `plugins/{plugin}/hooks-frontend/` für das Frontend.
 
+## Verfügbare Hooks
+
+Das ist die vollständige Liste der Hooks, die SwiftyEdit aktuell feuert, wie in
+`app/hooks/hooks-map.php` definiert - diese Datei bleibt die maßgebliche Quelle, falls sie und
+diese Liste jemals auseinanderlaufen sollten, zum Zeitpunkt dieses Texts stimmen sie überein.
+
+### Backend-Hooks
+
+Alle Backend-Hooks sind `action`-Hooks (registriert über `se_add_backend_hook`, siehe unten) -
+sie führen Code aus, verändern aber keinen Wert.
+
+| Hook               | Context                                        | Feuert, wenn...                          |
+|---------------------|---------------------------------------------------|------------------------------------------------|
+| `page.updated`       | `page_id`, `data`, `changes`, `user_id`             | Eine Seite im ACP gespeichert wurde.            |
+| `product.updated`    | `product_id`, `data`, `changes`, `user_id`          | Ein Produkt im ACP gespeichert wurde.           |
+| `product.deleted`    | `product_id`, `user_id`                              | Ein Produkt im ACP gelöscht wurde.               |
+| `user.created`       | `user_id`, `data`, `created_by`                      | Ein Benutzerkonto angelegt wurde.                |
+| `user.updated`       | `user_id`, `data`, `changes`, `updated_by`           | Ein Benutzerkonto gespeichert wurde.             |
+| `user.deleted`       | `user_id`, `deleted_by`                              | Ein Benutzerkonto gelöscht wurde.                |
+
+### Frontend-Hooks
+
+Die Frontend-Hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
+`page.display.after`) sind zusammen mit den Template-Variablen und Rendering-Konventionen, die
+sie betreffen, dokumentiert - siehe [Hooks](09-01-00-themes.md#hooks) im Themes-Kapitel.
+
 ## Beispiel Backend-Hook
 
 Die Hooks des Plugins werden in der Datei meta.php definiert.
@@ -64,8 +90,14 @@ se_add_backend_hook('product.updated', function (array $context): void {
 });
 ```
 
-Alle verfügbaren Backend/Frontend-Hooks findest du in der Datei
-`app/hooks/hooks-map.php`
+__Vorsicht bei der Reihenfolge:__ Wenn ein Administrator einzelne Hook-Aktionen in einem Tab
+aktiviert, merkt sich SwiftyEdit nicht, *welche* Aktion namentlich angehakt wurde, sondern nur
+deren __Position__ in der Liste (`se_do_backend_hook_selected()` gleicht aktivierte Checkboxen
+anhand des Array-Index mit den registrierten Callbacks ab, nicht anhand der Bezeichnung). Das
+bedeutet: Die `se_add_backend_hook(...)`-Aufrufe für einen Hook-Namen müssen in exakt derselben
+Reihenfolge registriert werden wie die zugehörigen Einträge im Array dieses Hooks in `meta.php`
+- vertauschst du nur eine der beiden Reihenfolgen, greifen die bestehenden Checkbox-Einstellungen
+eines Admins nach einem Plugin-Update still und leise bei der falschen Aktion.
 
 ## Beispiel Frontend
 

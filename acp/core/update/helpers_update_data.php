@@ -160,3 +160,19 @@ if($_POST['helper_update_table'] == 'se_products_uuid') {
     echo se_helper_fill_uuids($db_posts, 'se_products', 'id', 'uuid');
     exit;
 }
+
+// page_content_source column (content-format editor plugins, see app/functions/functions.editors.php)
+if($_POST['helper_update_table'] == 'page_content_source_column') {
+    foreach (['se_pages', 'se_pages_cache'] as $table) {
+        // Medoo runs with PDO::ERRMODE_SILENT by default, so a duplicate-column
+        // error (column already added by an earlier run) does not throw - check
+        // errorInfo instead of wrapping in try/catch.
+        update_table('page_content_source', "LONGTEXT NOT NULL DEFAULT ''", $table, 'content');
+        if ($db_content->errorInfo && $db_content->errorInfo[0] !== '00000') {
+            echo '<p class="text-muted">Skipped <code>' . $table . '</code> (column likely already exists).</p>';
+        } else {
+            echo '<p class="text-success">Added <code>page_content_source</code> to <code>' . $table . '</code>.</p>';
+        }
+    }
+    exit;
+}

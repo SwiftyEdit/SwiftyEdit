@@ -83,6 +83,14 @@ $input_max_order_value = [
     "type" => "text"
 ];
 
+$input_check_wishlist_enable = [
+    "input_name" => "prefs_wishlist_enabled",
+    "input_value" => $se_settings['wishlist_enabled'],
+    "label" => $lang['label_wishlist_enable'],
+    "type" => "checkbox",
+    "status" => $se_settings['wishlist_enabled'] == "1" ? 'checked' :''
+];
+
 $input_order_withdrawal_days = [
     "input_name" => "prefs_posts_order_withdrawal_days",
     "input_value" => $se_settings['posts_order_withdrawal_days'],
@@ -227,7 +235,7 @@ echo '<h5 class="heading-line">' . $lang['label_product_cart_mode'] . '</h5>';
 echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
 
 $input_modes = [
-    se_print_form_input($input_select_mode_cart),
+    se_print_form_input($input_select_mode_cart).se_print_form_input($input_check_wishlist_enable),
     se_print_form_input($input_select_mode_order).se_print_form_input($input_check_guestmode),
     se_print_form_input($input_max_order_value),
     se_print_form_input($input_order_withdrawal_days)

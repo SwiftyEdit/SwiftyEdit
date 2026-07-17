@@ -13,6 +13,7 @@ $bs_form_radio = file_get_contents($tpl_dir.'/bs-form-radio.tpl');
 $bs_form_select = file_get_contents($tpl_dir.'/bs-form-select.tpl');
 $bs_form_input_text = file_get_contents($tpl_dir.'bs-form-input-text.tpl');
 $bs_form_input_textarea = file_get_contents($tpl_dir.'/bs-form-input-textarea.tpl');
+$bs_form_input_content_editor = file_get_contents($tpl_dir.'/bs-form-input-content-editor.tpl');
 $bs_form_control_group = file_get_contents($tpl_dir.'/bs-form-control-group.tpl');
 
 $bs_row_col2 = file_get_contents($tpl_dir.'/bs-row-col2.tpl');
@@ -40,6 +41,8 @@ function se_print_form_input(array $input): string {
         $block = tpl_form_input_text($input);
     } else if($input['type'] === 'textarea') {
         $block = tpl_form_input_textarea($input);
+    } else if($input['type'] === 'content_editor') {
+        $block = tpl_form_input_content_editor($input);
     } else if($input['type'] === 'checkbox') {
         $block = tpl_form_checkbox($input);
     } else if($input['type'] === 'radios') {
@@ -126,6 +129,58 @@ function tpl_form_input_text(array $data) {
     return $tpl;
 }
 
+/**
+ * Build the "switch content format" <select> shared by the legacy textarea
+ * and the content_editor field type. $options is ['legacy' => label, '<editor_key>' => label, ...].
+ * Changing it reloads the page with ?set_content_format=<key> (handled in
+ * acp/core/pages/pages-edit.php); nothing is persisted until Save.
+ */
+function tpl_content_format_switch(array $options, string $current, $page_id): string {
+
+    if (count($options) <= 1) {
+        // no registered content-format editors installed - nothing to switch to
+        return '';
+    }
+
+    global $lang;
+
+    $select = '<div class="float-end pb-1 ms-1">';
+    $select .= '<select class="form-select form-select-sm" name="content_format_switch" style="width:auto;display:inline-block;">';
+    foreach ($options as $key => $label) {
+        $selected = ($key === $current) ? ' selected' : '';
+        $select .= '<option value="'.htmlspecialchars($key).'"'.$selected.'>'.htmlspecialchars($label).'</option>';
+    }
+    $select .= '</select>';
+    $select .= '</div>';
+    $select .= '<script>document.currentScript.previousElementSibling.querySelector("select[name=content_format_switch]").addEventListener("change", function(e){';
+    $select .= 'var current='.json_encode($current).';';
+    $select .= 'var pageId='.json_encode((string) $page_id).';';
+    /*
+     * Switching TO "legacy" is not destructive - page_content already holds
+     * the last-saved rendered HTML at all times (se_freeze_editor_content()
+     * in app/functions/functions.editors.php runs on every save), so the
+     * plain-textarea view just shows it as-is. Switching to any other format
+     * still starts an empty tree/string (formats aren't auto-converted into
+     * each other), so that case keeps the discard warning.
+     */
+    $select .= 'var discardMsg='.json_encode($lang['label_content_format_confirm_switch'] ?? 'Switching the format discards the current content. Continue?').';';
+    $select .= 'var convertMsg='.json_encode($lang['label_content_format_confirm_convert'] ?? 'The current content will be converted to static HTML and can no longer be edited with its current editor afterwards. Continue?').';';
+    $select .= 'var isConvertToLegacy=(e.target.value==="legacy"&&current!=="legacy");';
+    $select .= 'if(confirm(isConvertToLegacy?convertMsg:discardMsg)){';
+    /*
+     * HTMX partial swap instead of a full page reload - a reload would
+     * discard any unsaved edits in the rest of the pages-edit form (title,
+     * meta, ...). #pageContentField wraps the field in both
+     * acp/core/pages/pages-edit.php (initial load) and this swap's target
+     * endpoint, acp/core/pages/data-reader.php.
+     */
+    $select .= 'htmx.ajax("GET","/admin-xhr/pages/read/?content_field="+encodeURIComponent(pageId)+"&set_content_format="+encodeURIComponent(e.target.value),{target:"#pageContentField",swap:"outerHTML"});';
+    $select .= '}else{e.target.value=current;}';
+    $select .= '});</script>';
+
+    return $select;
+}
+
 function tpl_form_input_textarea(array $data) {
 
     if((!isset($data['container_class'])) OR $data['container_class'] == '') {
@@ -158,11 +213,16 @@ function tpl_form_input_textarea(array $data) {
          * One button per installed editor plugin (labelled with the editor's
          * name and keyed by its id), plus the built-in plain-text option.
          * Installing another editor adds its button automatically; removing one
-         * removes it. Editors are ordered by their numeric "order".
+         * removes it. Editors are ordered by their numeric "order". Content-format
+         * editors (mode "format") are a separate concept (see content_format_options
+         * below) and are excluded here.
          */
         $editor_switch = '<div class="btn-group float-end pb-1" role="group">';
         if(!empty($se_editor_addons) && is_array($se_editor_addons)) {
             foreach($se_editor_addons as $editor_addon) {
+                if(($editor_addon['mode'] ?? '') === 'format') {
+                    continue;
+                }
                 $id = $editor_addon['id'] ?? '';
                 if($id === '') {
                     continue;
@@ -176,6 +236,10 @@ function tpl_form_input_textarea(array $data) {
         $editor_switch .= '</div>';
 
         $editor_classes = 'textEditor switchEditor';
+    }
+
+    if(!empty($data['content_format_options'])) {
+        $editor_switch = tpl_content_format_switch($data['content_format_options'], $data['content_format_value'] ?? 'legacy', $data['page_id'] ?? 'new') . $editor_switch;
     }
 
 
@@ -194,6 +258,44 @@ function tpl_form_input_textarea(array $data) {
     $tpl = str_replace('{input_name}', $data['input_name'], $tpl);
     $tpl = str_replace('{input_value}', $data['input_value'], $tpl);
     $tpl = str_replace('{type}', $data['type'], $tpl);
+
+    return $tpl;
+}
+
+/**
+ * A content field whose value is a registered content-format editor's JSON
+ * payload (see app/functions/functions.editors.php). Renders a mount point
+ * that the editor plugin's own JS (window.seContentEditors[id]) attaches to,
+ * plus a hidden textarea that carries the serialized value on submit - Core
+ * never interprets the mounted content itself.
+ */
+function tpl_form_input_content_editor(array $data): string {
+
+    if((!isset($data['container_class'])) OR $data['container_class'] == '') {
+        $data['container_class'] = 'mb-3';
+    }
+
+    if((!isset($data['inputid'])) OR $data['inputid'] == '') {
+        $data['inputid'] = uniqid();
+    }
+
+    global $lang;
+    $label = $data['label'] ?? '';
+    if($label == '') {
+        $label = '&nbsp;';
+    }
+
+    $format_switch = tpl_content_format_switch($data['content_format_options'] ?? [], $data['content_format_value'] ?? '', $data['page_id'] ?? 'new');
+
+    global $bs_form_input_content_editor;
+
+    $tpl = str_replace('{container_classes}', $data['container_class'], $bs_form_input_content_editor);
+    $tpl = str_replace('{inputid}', $data['inputid'], $tpl);
+    $tpl = str_replace('{format_switch}', $format_switch, $tpl);
+    $tpl = str_replace('{label}', $label, $tpl);
+    $tpl = str_replace('{input_name}', $data['input_name'], $tpl);
+    $tpl = str_replace('{editor}', htmlspecialchars($data['editor'] ?? '', ENT_QUOTES, 'UTF-8'), $tpl);
+    $tpl = str_replace('{content_json}', htmlspecialchars(json_encode($data['backend_payload'] ?? null), ENT_QUOTES, 'UTF-8'), $tpl);
 
     return $tpl;
 }

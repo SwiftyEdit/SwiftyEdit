@@ -1,13 +1,13 @@
 ---
 title: Snippets
-description: Manage and use Snippets
+description: Snippets verwalten und einsetzen
 btn: Snippets
 group: backend
 priority: 200
 ---
-# Manage and use Snippets
+# Snippets verwalten und einsetzen
 
-<kbd>Backend</kbd> <kbd>Contents</kbd> <kbd>Snippets</kbd>
+<kbd>Backend</kbd> ▶ <kbd>Snippets</kbd>
 
 Die Möglichkeiten wie Snippets eingesetzt werden können sind grenzenlos.
 Immer wenn Du bestimmte Textphrasen mehr als einmal benötigst, können diese als Snippet gespeichert
@@ -72,6 +72,8 @@ So kannst Du die Syntax in Anleitungen darstellen, ohne dass das Snippet eingebu
 | `mail_psw_updated`     | Wird als E-Mail versendet, wenn ein Benutzer - erfolgreich - sein Passwort zurückgesetzt hat                                 |
 | `order_withdrawal_intro` | Einleitungstext auf der Seite "Bestellung widerrufen" (Seitentyp `order_withdrawal`). Ersetzt `text_order_withdrawal_intro` aus der Sprachdatei. |
 | `mail_salutation_order_withdrawal` | Wird als Anrede/Einleitung in der E-Mail an den Administrator verwendet, wenn ein Kunde eine Bestellung widerruft. Unterstützt die Variable `{order_nbr}`. |
+| `mail_salutation_order_confirmation` | Wird als Anrede/Einleitung in der Bestellbestätigungs-E-Mail verwendet, die der Kunde nach dem Checkout erhält. |
+| `footer_text_mail`     | Standard-Footer für ausgehende E-Mails, wird verwendet, wenn keine E-Mail-spezifische Fußzeile übergeben wird.               |
 
 * `{USERNAME}` der Benutzername
 * `{SITENAME}` der Name der Seite (wird in den Einstellungen festgelegt)

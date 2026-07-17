@@ -55,7 +55,10 @@
                     <div class="alert alert-info mt-3">{$product_addon_only_note}</div>
                 {else}
                 <div class="mt-3">
-                    <form action="{$form_action}" method="POST" class="text-start d-inline">
+                    <form action="{$form_action}" method="POST" class="text-start d-inline"
+                          hx-post="/xhr/se/products/"
+                          hx-target="#add-to-cart-message-{$product_id}"
+                          hx-swap="innerHTML">
 
                         {if is_array($select_options)}
                             <!-- product options -->
@@ -127,6 +130,7 @@
                             </div>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
                         </div>
+                        <div id="add-to-cart-message-{$product_id}" class="mt-1"></div>
                         <input type="hidden" name="product_href" value="{$product_href}">
                         {$hidden_csrf_token}
 
@@ -410,5 +414,34 @@
                 class="{$action.class|escape}">
             {$action.label|escape}
         </button>
+    {elseif $action.type == 'button_htmx'}
+        <button type="button"
+                class="{$action.class|escape}"
+                hx-get="{$action.hx_get|escape}&product_href={$product_href|escape:'url'}"
+                hx-target="{$action.hx_target|escape}"
+                hx-swap="{$action.hx_swap|escape}"
+                data-bs-toggle="modal"
+                data-bs-target="#wishlist-picker-modal">
+            {$action.label|escape}
+        </button>
+    {elseif $action.type == 'link'}
+        <a class="{$action.class|escape}" href="{$action.href|escape}">
+            {$action.label|escape}
+        </a>
     {/if}
 {/foreach}
+
+{if $prefs_wishlist_enabled == 1}
+<div class="modal fade" id="wishlist-picker-modal" tabindex="-1" aria-labelledby="wishlistPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="wishlistPickerModalLabel">{$lang_legend_add_to_wishlist}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="wishlist-picker-modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+{/if}

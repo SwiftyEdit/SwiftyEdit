@@ -44,12 +44,25 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
         $orders_uri = '/'.$orders_page['page_permalink'];
     }
 
+    /* get permalink for the wishlist page */
+    $wishlist_uri = '';
+    if(($se_settings['wishlist_enabled'] ?? 0) == 1) {
+        $wishlist_page = se_get_type_of_use_pages('wishlist');
+        if($wishlist_page == NULL OR $wishlist_page['page_permalink'] == '') {
+            $wishlist_uri = '/wishlist/';
+        } else {
+            $wishlist_uri = '/'.$wishlist_page['page_permalink'];
+        }
+    }
+
     $smarty->assign('orders_uri', $orders_uri);
+    $smarty->assign('wishlist_uri', $wishlist_uri);
     $smarty->assign('link_profile', $link_profile);
     $smarty->assign('href_profile', $link_profile);
     $smarty->assign("link_acp","$link_acp");
     $smarty->assign('lang_button_profile', $lang['button_profile']);
     $smarty->assign('lang_button_orders', $lang['button_orders']);
+    $smarty->assign('lang_button_wishlist', $lang['button_wishlist']);
     $smarty->assign("link_logout","$link_logout");
     $smarty->assign('lang_button_logout', $lang['button_logout']);
     $smarty->assign('lang_button_acp', $lang['button_acp']);

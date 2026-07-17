@@ -8,6 +8,8 @@ priority: 900
 
 # Settings
 
+<kbd>Backend</kbd> ▶ <kbd>Settings</kbd>
+
 The settings are divided into the following sub-categories
 
 * General
@@ -71,6 +73,11 @@ it to everyone. The orders setting controls whether products can be ordered dire
 can only send an order request instead of checking out, or both. If you set a maximum order value,
 carts that exceed it automatically fall back to the request form, even if direct ordering is enabled.
 
+### Lists {#lists}
+Enable lists to let logged-in customers save products to one or more personal lists from the product
+card or product page. A list can optionally be shared via a public link — visitors who open that link
+can view the list and add its products to their own cart without needing an account.
+
 ### Guest orders
 Enable guest orders to let customers complete checkout without creating an account. Guest orders are
 confirmed by e-mail, and the delivery address entered is only kept for the current session.
@@ -114,7 +121,9 @@ If you manage a lot of data and entries, these labels help you to keep an overvi
 
 ---
 
-## Update
+## Update {#update}
 Update is a separate top-level item in the sidebar (not part of the settings).
-If a newer version is available for installation, it will be displayed there.
+If a newer version is available for installation, it will be displayed there. See
+[Updates](01-01-installation.md#updates) for what an update actually does and how to update
+safely.
 

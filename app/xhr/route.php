@@ -18,7 +18,8 @@ $routes = [
     'products' => 'products.php',
     'statusbox' => 'statusbox.php',
     'search' => 'search.php',
-    'profile' => 'profile.php'
+    'profile' => 'profile.php',
+    'wishlist' => 'wishlist.php'
 ];
 
 if (!preg_match('#^[a-z0-9\-_]+$#i', $xhr_path)) {

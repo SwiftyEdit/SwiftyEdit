@@ -37,6 +37,15 @@ require_once 'core/functions.php';
 require_once '../app/functions/functions.php';
 include_once '../acp/core/templates.php';
 
+/*
+ * Populate the content-format editor registry (se_register_editor()) for
+ * this request - needed both by data-writer.php (se_save_page()/
+ * se_update_page() call se_freeze_editor_content() at save time) and
+ * data-reader.php (rebuilding the content field on a format-switch). Mirrors
+ * the same call in acp/index.php's own bootstrap.
+ */
+$se_editor_addons = se_bootstrap_editor_plugins();
+
 $se_get_preferences = se_get_preferences();
 
 foreach ($se_get_preferences as $k => $v) {

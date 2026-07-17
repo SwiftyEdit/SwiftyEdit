@@ -38,6 +38,7 @@ $cols = array(
 	"page_status" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_usergroup" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_content" => "LONGTEXT NOT NULL DEFAULT ''",
+	"page_content_source" => "LONGTEXT NOT NULL DEFAULT ''",
 	"page_sort" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_lastedit" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_lastedit_from" => "VARCHAR(50) NOT NULL DEFAULT ''",

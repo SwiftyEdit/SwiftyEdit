@@ -33,7 +33,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
         }
     }
 
-    $restricted_pages = ['password', 'profile', 'orders', 'order_withdrawal', 'account', 'register', 'unlock', 'tagged', 'checkout'];
+    $restricted_pages = ['password', 'profile', 'orders', 'order_withdrawal', 'account', 'register', 'unlock', 'tagged', 'checkout', 'wishlist'];
     if (in_array($p, $restricted_pages)) {
         $show_posts = false;
     }
@@ -57,6 +57,11 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
 
     if($page_contents['page_type_of_use'] == 'checkout') {
         $p = 'checkout';
+    }
+
+    if($page_contents['page_type_of_use'] == 'wishlist') {
+        $p = 'wishlist';
+        $show_posts = false;
     }
 
     if($show_posts === true) {
@@ -263,12 +268,28 @@ if(!isset($page_content)) {
     $page_content = '';
 }
 
-$parsed_content = text_parser($page_content.$modul_content);
+/*
+ * Decode from the raw DB value (page_contents['page_content']), not from
+ * $page_content above - that has already been through stripslashes() (see
+ * the $$k assignment loop earlier in this file), which corrupts JSON escape
+ * sequences like \n and \" before they can be json_decode()'d.
+ */
+$page_content_editor = se_decode_editor_content(is_array($page_contents) ? ($page_contents['page_content'] ?? '') : '');
 
-if($parsed_content != $page_content) {
-    $smarty->assign('page_content', $parsed_content,true);
+if ($page_content_editor !== null) {
+    /* delegate to the registered editor plugin - it returns finished HTML,
+       Core does not parse shortcodes/[include]/[plugin] etc. into it */
+    $parsed_content = se_render_editor_content_frontend($page_content_editor['editor'], $page_content_editor['content']);
+    $parsed_content .= text_parser($modul_content);
+    $smarty->assign('page_content', $parsed_content, true);
 } else {
-    $smarty->assign('page_content', $page_content);
+    $parsed_content = text_parser($page_content.$modul_content);
+
+    if($parsed_content != $page_content) {
+        $smarty->assign('page_content', $parsed_content,true);
+    } else {
+        $smarty->assign('page_content', $page_content);
+    }
 }
 
 /**

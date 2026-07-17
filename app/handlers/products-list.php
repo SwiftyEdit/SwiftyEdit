@@ -668,6 +668,10 @@ foreach ($get_products as $k => $post) {
         }
     }
 
+    /* show "add to wishlist" button - stateless (no per-product "already
+       saved" check here, that would be an N+1 query per listing page) */
+    $get_products[$k]['show_wishlist_button'] = ($se_settings['wishlist_enabled'] ?? 0) == 1;
+
     // add helpers for admins
     if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
         se_store_admin_helper("prod", $get_products[$k]['id']);
@@ -703,6 +707,9 @@ if($status_404 === true) {
     $smarty->assign('show_shopping_cart', $show_shopping_cart);
     $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
     $smarty->assign('btn_read_more', $lang['btn_open_product']);
+
+    $wishlist_login_page = se_get_type_of_use_pages('profile');
+    $smarty->assign('wishlist_login_uri', '/'.($wishlist_login_page['page_permalink'] ?? ''));
 
     $products_page = $smarty->fetch("products-list.tpl", $cache_id);
     $smarty->assign('page_title', html_entity_decode($page_title));

@@ -698,7 +698,7 @@ for($i=0;$i<$cnt_options;$i++) {
     }
 
     foreach($option_values_array as $value) {
-        $option_values .= '<span class="badge badge-secondary">'.$value.'</span> ';
+        $option_values .= '<span class="badge text-bg-secondary">'.$value.'</span> ';
     }
     $option_label = $option_title.'<br>'.$option_values;
     $options_input_str .= '<div class="form-check">';

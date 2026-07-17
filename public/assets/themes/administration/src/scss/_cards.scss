@@ -78,10 +78,27 @@
 			background: $widget_background_dark;
 		}
 
+		// Nested cards: the frame itself gets a darker tone to set it apart. .card-body
+		// keeps the same base $widget_background_dark as every other level (so content
+		// like form fields always sits on a known background) but gets a subtle lighter
+		// gradient on top of that base, running the full height from top to bottom, as a
+		// visual nesting cue.
 		.card {
 			background: darken($widget_background_dark,5);
+
 			.card-body {
-				background: darken($widget_background_dark,3);
+				background: linear-gradient(to bottom, $nested_card_gradient_dark, $widget_background_dark);
+			}
+
+			// The active card-header-tab must match the gradient's top (lightest) color,
+			// not the flat $widget_background_dark used at the top level — otherwise the
+			// tab and the card-body edge right below it would show a visible color seam.
+			.card-header-tabs li {
+				.active,
+				.active:hover {
+					background: $nested_card_gradient_dark;
+					border-color: $nested_card_gradient_dark;
+				}
 			}
 		}
 

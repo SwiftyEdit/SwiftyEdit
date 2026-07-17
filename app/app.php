@@ -93,7 +93,7 @@ if(!empty($page_contents['page_modul'])) {
 require_once __DIR__.'/template-setup.php';
 
 $valid_page_types = ['register', 'account', 'profile', 'search', 'password', 'unlock',
-    'checkout', 'orders', 'order_withdrawal', 'products', 'events', 'posts', 'tagged','download'];
+    'checkout', 'orders', 'order_withdrawal', 'products', 'events', 'posts', 'tagged','download', 'wishlist'];
 
 if (in_array($page_contents['page_type_of_use'], $valid_page_types)) {
     $p = $page_contents['page_type_of_use'];

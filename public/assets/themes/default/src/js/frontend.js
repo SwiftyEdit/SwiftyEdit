@@ -17,6 +17,12 @@ window.glightbox = GLightbox;
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
+import { initWishlistSortable, copyWishlistLink } from './components/wishlist.js';
+htmx.onLoad(function(content) {
+    initWishlistSortable(content);
+});
+window.copyWishlistLink = copyWishlistLink;
+
 import * as noUiSlider from 'nouislider';
 window.noUiSlider = noUiSlider;
 
@@ -45,6 +51,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
     });
 
     registerElements()
+
+    // briefly bump the shopping cart icon when a product was added to the cart
+    document.body.addEventListener('cart_item_added', function() {
+        const cartIcon = document.querySelector('.shopping-cart-container');
+        if (!cartIcon) return;
+
+        cartIcon.classList.remove('cart-bump');
+        void cartIcon.offsetWidth; // restart the animation on repeated triggers
+        cartIcon.classList.add('cart-bump');
+    });
 
     const rangeSliders = document.querySelectorAll('.range-slider');
 

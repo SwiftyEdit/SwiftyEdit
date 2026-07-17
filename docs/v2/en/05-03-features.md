@@ -8,6 +8,8 @@ priority: 400
 
 # Features
 
+<kbd>Backend</kbd> ▶ <kbd>Shop</kbd> ▶ <kbd>Features</kbd>
+
 Features are listed in the frontend. The default theme shows these details in table form.
 The left column shows the title and the right column shows the text.
 

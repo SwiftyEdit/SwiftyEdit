@@ -152,7 +152,7 @@ if($_REQUEST['action'] == 'list_snippets') {
         $snippet_classes = explode(' ',$snippet['snippet_classes']);
         $class_badge = '';
         foreach($snippet_classes as $class) {
-            $class_badge .= '<span class="badge badge-secondary">'.$class.'</span> ';
+            $class_badge .= '<span class="badge text-bg-secondary">'.$class.'</span> ';
         }
 
         if(strlen($snippet_content) > 150) {

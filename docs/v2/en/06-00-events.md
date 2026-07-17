@@ -8,6 +8,8 @@ priority: 500
 
 # Events
 
+<kbd>Backend</kbd> ▶ <kbd>Events</kbd>
+
 You can advertise events or offer tickets using the event module.
 All existing events are listed on the overview. On the right you will find filters and
 more options to sort the list. You can also show or hide past events here.

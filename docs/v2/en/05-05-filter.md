@@ -8,6 +8,8 @@ priority: 400
 
 # Create and manage product filters
 
+<kbd>Backend</kbd> ▶ <kbd>Shop</kbd> ▶ <kbd>Filter</kbd>
+
 ## Groups
 
 To use filters, you first have to create a group.
@@ -15,12 +17,14 @@ Any number of values can then be assigned to this group.
 
 ### Input fields
 
-* __Group name__ gives the group its name
-* __Description__ appears in the frontend as a tooltip
-* __Priority__ controls the sorting when there are several groups
-* __Type__ Radio, Checkbox or Range, decides whether the user can activate only one value (Radio), several values (Checkbox) or a value range (Range) of this group.
-* __Language__ in case you run a multilingual website and group names are identical
-* __Categories__ the filter is only shown in the frontend if it matches the category.
+| Field       | Type         | Description                                                                                                                              |
+|-------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Group name  | `Text`       | Gives the group its name.                                                                                                                 |
+| Description | `Textarea`   | Appears in the frontend as a tooltip.                                                                                                     |
+| Priority    | `Text`       | Controls the sorting when there are several groups.                                                                                       |
+| Type        | `Select`     | Radio, Checkbox or Range - decides whether the user can activate only one value (Radio), several values (Checkbox) or a value range (Range) of this group. |
+| Language    | `Select`     | In case you run a multilingual website and group names are identical.                                                                     |
+| Categories  | `Checkboxes` | The filter is only shown in the frontend if it matches the category.                                                                      |
 
 ## Values
 

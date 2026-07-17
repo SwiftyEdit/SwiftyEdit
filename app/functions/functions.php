@@ -14,9 +14,11 @@ include_once 'functions.helpers.php';
 include_once 'functions.sanitizer.php';
 include_once 'functions.posts.php';
 include_once 'functions.shop.php';
+include_once 'functions.wishlist.php';
 include_once 'functions.user.php';
 include_once 'functions.pages.php';
 include_once 'functions.snippets.php';
+include_once 'functions.editors.php';
 
 /**
  * Retrieves all active system preferences
@@ -467,7 +469,7 @@ function se_send_order_status($recipient,$order,$reason): int|string {
         $salutation = se_get_textlib("mail_salutation_order_confirmation","$lang","content");
     } else {
         $subject = $lang['mail_subject_order_changed']. ' (#'.$this_order['order_nbr'].')';
-        $salutation = se_get_textlib("mail_salutation_order_changed'","$lang","content");
+        $salutation = se_get_textlib("mail_salutation_order_changed","$lang","content");
     }
 
     $order_invoice_address = html_entity_decode($this_order['order_invoice_address']);

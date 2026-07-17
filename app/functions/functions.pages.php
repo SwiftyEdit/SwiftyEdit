@@ -178,6 +178,7 @@ function se_save_page($data) {
     global $db_content, $custom_fields, $lang;
 
     $sanitized_data = se_sanitize_page_inputs($data);
+    $sanitized_data = se_freeze_editor_content($sanitized_data);
 
     // get all cols from the installer
     require '../install/contents/se_pages.php';
@@ -222,6 +223,7 @@ function se_update_page($data,$id) {
 
 
     $sanitized_data = se_sanitize_page_inputs($data);
+    $sanitized_data = se_freeze_editor_content($sanitized_data);
 
     // get all cols from the installer
     require '../install/contents/se_pages.php';
@@ -262,6 +264,7 @@ function se_save_preview_page($data) {
     global $db_content, $custom_fields, $lang;
 
     $sanitized_data = se_sanitize_page_inputs($data);
+    $sanitized_data = se_freeze_editor_content($sanitized_data);
     $page_id_original = $sanitized_data['editpage'];
     // get all cols from the installer
     require '../install/contents/se_pages.php';
