@@ -465,8 +465,8 @@ if (is_file('../maintenance.html')) {
                     $files_folder = basename($path_files);
                     ?>
 
-                    <div class="row">
-                        <div class="col-md-9">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <label><?php echo $lang['upload_destination']; ?></label>
                             <select name="upload_destination" class="form-control custom-select">
                                 <optgroup label="<?php echo $lang['images']; ?>">
@@ -489,7 +489,7 @@ if (is_file('../maintenance.html')) {
                                 </optgroup>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="file_mode" value="overwrite" id="overwrite">
                                 <label class="form-check-label" for="overwrite">
