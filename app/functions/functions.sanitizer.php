@@ -200,12 +200,12 @@ function sanitizeUserInputs($str,$type='str',$flags=NULL): mixed {
 
 function clean_visitors_input($text) {
 
-	$text = preg_replace("/\[snippet\](.*?)\[\/snippet\]/si","",$text);
-	$text = preg_replace("/\[script\](.*?)\[\/script\]/si","",$text);
-	$text = preg_replace("/\[include\](.*?)\[\/include\]/si","",$text);
-	$text = preg_replace("/\[plugin=(.*?)\](.*?)\[\/plugin\]/si","",$text);
-    $text = preg_replace("/\[image=(.*?)\](.*?)\[\/image\]/si","",$text);
-    $text = preg_replace("/\[file=(.*?)\](.*?)\[\/file\]/si","",$text);
+	$text = preg_replace("/\[snippet](.*?)\[\/snippet]/si","",$text);
+	$text = preg_replace("/\[script](.*?)\[\/script]/si","",$text);
+	$text = preg_replace("/\[include](.*?)\[\/include]/si","",$text);
+	$text = preg_replace("/\[plugin=(.*?)](.*?)\[\/plugin]/si","",$text);
+    $text = preg_replace("/\[image=(.*?)](.*?)\[\/image]/si","",$text);
+    $text = preg_replace("/\[file=(.*?)](.*?)\[\/file]/si","",$text);
 
     $text = sanitizeUserInputs($text,"str","");
 	
