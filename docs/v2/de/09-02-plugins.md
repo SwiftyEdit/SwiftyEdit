@@ -30,8 +30,8 @@ Anders als in SwiftyEdit Version 1 müssen alle Plugins einer bestimmten Ordners
 
 ### Tipps
 
-- Wenn du deinem Plugin den Präfix `-pay` gibst, wird es automatisch als
-  Zahlungs-Plugin erkannt. Dadurch wird die Datei `aftersale.php` zur Pflicht.
+- Wenn der Name deines Plugins auf `-pay` endet (z. B. `my-gateway-pay`), wird es automatisch
+  als Zahlungs-Plugin erkannt. Dadurch wird die Datei `aftersale.php` zur Pflicht.
 - XHR-Anfragen werden über die Datei `global/xhr.php` verarbeitet, die unter
   `/xhr/plugins/{plugin}/` erreichbar ist.
 

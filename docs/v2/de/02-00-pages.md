@@ -8,7 +8,7 @@ priority: 190
 
 # Seiten anlegen, bearbeiten und verwalten
 
-<kbd>Backend</kbd> <kbd>Inhalte</kbd> <kbd>Alle Seiten anzeigen</kbd>
+<kbd>Backend</kbd> ▶ <kbd>Seiten</kbd>
 
 ## Geordnete Seiten {#ordered-pages}
 Die Seiten, die eine Sortierungsnummer enthalten, werden als geordnete Seiten aufgelistet.
@@ -176,6 +176,13 @@ EU-Widerrufsrechts). Der Kunde muss dazu die Bestellnummer und die bei der Beste
 hinterlegte E-Mail-Adresse eingeben; die Anfrage wird anschließend per E-Mail an den
 Administrator gesendet. Von der Seite "Bestellungen" aus können Kunden dieses Formular
 vorausgefüllt für eine bestimmte Bestellung öffnen.
+
+#### Listen
+
+Die Seite für die [Listen-Funktion](05-00-shop.md#listen). Angemeldete Kunden sehen und
+verwalten hier ihre persönlichen Listen; eine einzelne öffentliche Liste wird hier auch
+angezeigt, wenn sie über ihren Freigabe-Link geöffnet wird. Diese Nutzungsart ist nur
+relevant, wenn Listen unter Einstellungen → Shop aktiviert sind.
 
 ---
 

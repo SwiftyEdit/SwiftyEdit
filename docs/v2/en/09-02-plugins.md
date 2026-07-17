@@ -30,8 +30,8 @@ Differently from SwiftyEdit version 1, all plugins must adhere to a specific fol
 
 ### Tips
 
-- if you name your plugin with the prefix `-pay`, it is automatically recognized
-  as a payment plugin. This makes the `aftersale.php` file mandatory.
+- if you name your plugin with the suffix `-pay` (e.g. `my-gateway-pay`), it is
+  automatically recognized as a payment plugin. This makes the `aftersale.php` file mandatory.
 - XHR requests are handled by the `global/xhr.php` file, which is reachable
   via `/xhr/plugins/{plugin}/`.
 

@@ -8,6 +8,8 @@ priority: 400
 
 # Optionen
 
+<kbd>Backend</kbd> ▶ <kbd>Shop</kbd> ▶ <kbd>Optionen</kbd>
+
 Optionen enthalten einen Titel und mindestens zwei Werte.
 Wird einem Produkt eine Option zugewiesen, kann der Kunde beim Bestellvorgang diese Optionen wählen.
 

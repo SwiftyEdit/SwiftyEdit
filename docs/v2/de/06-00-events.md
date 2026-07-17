@@ -8,6 +8,8 @@ priority: 500
 
 # Events
 
+<kbd>Backend</kbd> ▶ <kbd>Events</kbd>
+
 Über das Event-Modul kannst Du Veranstaltungen bewerben bzw. Tickets anbieten.
 Auf der Übersicht bekommst Du alle bestehenden Events aufgelistet. Auf der rechten Seite findest Du Filter und
 weitere Möglichkeiten um die Liste zu sortieren. Auch vergangene Events kannst Du hier ein- bzw. ausblenden.

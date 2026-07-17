@@ -8,6 +8,8 @@ priority: 400
 
 # Orders
 
+<kbd>Backend</kbd> ▶ <kbd>Shop</kbd> ▶ <kbd>Orders</kbd>
+
 ## Payments
 
 If an order is not automatically marked as paid by a payment plugin

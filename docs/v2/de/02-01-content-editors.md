@@ -8,7 +8,7 @@ priority: 190
 
 # Editoren beim Bearbeiten von Inhalten
 
-<kbd>Backend</kbd> <kbd>Inhalte</kbd> <kbd>Seite bearbeiten</kbd>
+<kbd>Backend</kbd> ▶ <kbd>Seiten</kbd> ▶ <kbd>Seite bearbeiten</kbd>
 
 Beim Bearbeiten des Inhaltsfelds einer Seite können zwei voneinander unabhängige Dinge
 eine Rolle spielen: **welches Eingabe-Werkzeug** du benutzt, und **in welchem Format**

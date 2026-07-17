@@ -8,6 +8,8 @@ priority: 400
 
 # Features
 
+<kbd>Backend</kbd> ▶ <kbd>Shop</kbd> ▶ <kbd>Features</kbd>
+
 Features werden im Frontend aufgelistet. Das Standard Theme zeigt diese Angaben in Tabellenform.
 Dabei wird in der linken Spalte der Titel und in der rechten Spalte der Text angezeigt.
 

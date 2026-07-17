@@ -8,7 +8,7 @@ priority: 190
 
 # Editors when editing content
 
-<kbd>Backend</kbd> <kbd>Content</kbd> <kbd>Edit page</kbd>
+<kbd>Backend</kbd> ▶ <kbd>Pages</kbd> ▶ <kbd>Edit page</kbd>
 
 Two independent things can come into play when editing a page's content field:
 **which input tool** you're using, and **which format** the content is stored in. Most

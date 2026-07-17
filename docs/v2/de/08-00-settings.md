@@ -8,6 +8,8 @@ priority: 900
 
 # Einstellungen
 
+<kbd>Backend</kbd> ▶ <kbd>Einstellungen</kbd>
+
 Die Einstellungen sind in folgende Unterkategorien unterteilt
 
 * Allgemein
@@ -75,7 +77,7 @@ Besucher stattdessen nur eine Bestellanfrage senden können (statt zu bezahlen),
 einen maximalen Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die
 Anfrage-Funktion zurück, auch wenn die Direktbestellung aktiviert ist.
 
-### Listen
+### Listen {#listen}
 Aktiviere Listen, damit angemeldete Kunden Produkte über die Produktkarte oder Produktseite in eine
 oder mehrere persönliche Listen speichern können. Eine Liste kann optional über einen öffentlichen Link
 geteilt werden - wer diesen Link öffnet, kann die Liste ansehen und die enthaltenen Produkte ohne
@@ -128,6 +130,8 @@ Wenn Du viele Daten und Einträge verwaltest, helfen diese Labels den Überblick
 
 ---
 
-## Update
+## Update {#update}
 Update ist ein eigener Eintrag in der Seitenleiste (nicht Teil der Einstellungen).
-Falls eine neuere Version zur Installation bereitsteht, wird diese dort angezeigt.
+Falls eine neuere Version zur Installation bereitsteht, wird diese dort angezeigt. Was ein
+Update dabei technisch macht und wie Du sicher aktualisierst, steht unter
+[Updates](01-01-installation.md#updates).

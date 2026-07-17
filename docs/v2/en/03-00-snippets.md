@@ -7,7 +7,7 @@ priority: 200
 ---
 # Manage and use Snippets
 
-<kbd>Backend</kbd> <kbd>Contents</kbd> <kbd>Snippets</kbd>
+<kbd>Backend</kbd> ▶ <kbd>Snippets</kbd>
 
 The possibilities of how snippets can be used are limitless.
 Whenever you need certain text phrases more than once, they can be saved as a snippet and then
@@ -71,6 +71,8 @@ show the syntax in tutorials without the snippet being embedded.
 | `mail_psw_updated`     | Sent as an e-mail when a user has – successfully – reset their password.                                                    |
 | `order_withdrawal_intro` | Intro text shown on the "Order Withdrawal" page (page type `order_withdrawal`). Replaces `text_order_withdrawal_intro` from the language file. |
 | `mail_salutation_order_withdrawal` | Used as the salutation/intro in the e-mail sent to the administrator when a customer withdraws from an order. Supports the variable `{order_nbr}`. |
+| `mail_salutation_order_confirmation` | Used as the salutation/intro in the order confirmation e-mail sent to the customer after checkout. |
+| `footer_text_mail`     | Default footer for outgoing e-mails, used whenever no e-mail-specific footer is supplied.                                   |
 
 * `{USERNAME}` the user name
 * `{SITENAME}` the name of the site (set in the settings)

@@ -8,6 +8,8 @@ priority: 400
 
 # Bestellungen
 
+<kbd>Backend</kbd> ▶ <kbd>Shop</kbd> ▶ <kbd>Bestellungen</kbd>
+
 ## Zahlungen
 
 Falls eine Bestellung nicht mit einem Zahlungsplugin automatisch als bezahlt markiert wird

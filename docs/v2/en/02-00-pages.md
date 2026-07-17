@@ -8,7 +8,7 @@ priority: 190
 
 # Pages
 
-<kbd>Backend</kbd> <kbd>Contents</kbd> <kbd>Show all Pages</kbd>
+<kbd>Backend</kbd> ▶ <kbd>Pages</kbd>
 
 ## Ordered pages {#ordered-pages}
 The pages that contain a sorting number are listed as ordered pages.
@@ -175,6 +175,13 @@ A form customers can use to withdraw from an order (e.g. to fulfil the EU right 
 withdrawal). The customer must enter the order number and the e-mail address stored
 on the order; the request is then sent to the site administrator by e-mail. From the
 "Orders" page, customers can open this form pre-filled for a specific order.
+
+#### Lists
+
+The page for the [wishlist / lists feature](05-00-shop.md#lists). Logged-in customers
+use it to view and manage their personal lists; a single public list is also shown here
+when opened via its share link. This usage type is only relevant if lists are enabled
+in Settings → Shop.
 
 ---
 
