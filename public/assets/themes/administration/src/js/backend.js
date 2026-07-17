@@ -304,7 +304,24 @@ document.addEventListener('click', function (e) {
 
     const hashIndex = href.indexOf('#');
     const file = hashIndex !== -1 ? href.substring(0, hashIndex) : href;
-    pendingAnchor = hashIndex !== -1 ? href.substring(hashIndex + 1) : null;
+    const anchor = hashIndex !== -1 ? href.substring(hashIndex + 1) : null;
+
+    if (file === '') {
+        // pure same-page anchor (href="#some-heading") - scroll within the
+        // already-loaded content instead of re-fetching an empty file
+        if (!anchor) return;
+
+        const el = container.querySelector('#' + CSS.escape(anchor));
+        if (!el) return;
+
+        const scrollContainer = container.querySelector('#docsScrollContainer');
+        if (scrollContainer) {
+            scrollContainer.scrollTop = el.offsetTop - 16;
+        }
+        return;
+    }
+
+    pendingAnchor = anchor;
 
     htmx.ajax('GET', '/admin-xhr/docs/read/?show_file=' + encodeURIComponent(file), { target: '#showModalContent' });
 });

@@ -11,7 +11,11 @@ require_once __DIR__.'/functions.php';
 
 if(isset($_GET['file'])) {
 
-    $file = se_filter_filepath($_GET['file']);
+    // strip a trailing #anchor before filtering - se_filter_filepath()'s
+    // whitelist doesn't include '#', so left in place it would get dropped
+    // and glued onto the filename (e.g. "basics.md#dashboard" -> "basics.mddashboard").
+    // The anchor itself is only needed client-side (see backend.js pendingAnchor).
+    $file = se_filter_filepath(explode('#', $_GET['file'], 2)[0]);
 
     if($_GET['file'] == 'start') {
         $file = '01-00-introduction.md';
