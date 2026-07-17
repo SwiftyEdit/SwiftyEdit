@@ -40,7 +40,7 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-find "${BUILD_DIR}/acp" "${BUILD_DIR}/app" "${BUILD_DIR}/install" "${BUILD_DIR}/languages" "${BUILD_DIR}/vendor" -type f | jq -R -s -c 'split("\n")[:-1]' > "${BUILD_DIR}/whitelist.json"
+find "${BUILD_DIR}/acp" "${BUILD_DIR}/app" "${BUILD_DIR}/install" "${BUILD_DIR}/languages" "${BUILD_DIR}/vendor" -type f | sed "s|^${BUILD_DIR}/||" | jq -R -s -c 'split("\n")[:-1]' > "${BUILD_DIR}/whitelist.json"
 
 # clean up
 find "${BUILD_DIR}/public/assets/themes/" -type d \( -name node_modules -o -name src \) -exec rm -rf '{}' +
