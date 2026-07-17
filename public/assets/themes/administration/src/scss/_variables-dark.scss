@@ -38,6 +38,17 @@ $page_header_bg_dark: desaturate(#191A1A,10%);
 $widget_background_dark: #262626;
 $widget_border_color_dark: darken($widget_background_dark,25%);
 
+// Form controls get their own background/border instead of $widget_background_dark /
+// $widget_border_color_dark, kept separate from the generic tokens so containers like
+// cards/list-groups are unaffected.
+$input_bg_dark: #191919;
+$input_border_color_dark: #0d0d0d;
+
+// Lightest point of the nested-card .card-body gradient (its top edge). Also reused as
+// the active card-header-tab background so a nav-tabs header on a nested card blends
+// seamlessly into the body right below it instead of showing a color seam.
+$nested_card_gradient_dark: lighten($widget_background_dark,6%);
+
 $widget-bg-dark-100: mix($lighten,$widget_background_dark,40%);
 $widget-bg-dark-200: mix($lighten,$widget_background_dark,30%);
 $widget-bg-dark-300: mix($lighten,$widget_background_dark,20%);

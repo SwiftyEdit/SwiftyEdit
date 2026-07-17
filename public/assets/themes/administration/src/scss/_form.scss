@@ -57,32 +57,57 @@ fieldset.fieldset-danger {
 }
 
 
+// Own dedicated --bs-input-bg / --bs-input-border-color (see backend.scss) instead of the
+// generic --bs-body-bg / --bs-border-color, which are shared with cards/list-groups/modals
+// and stay deliberately unaffected — only form controls get this treatment.
 textarea.form-control,
 input.form-control,
 input.form-control[readonly],
 select.form-control,
 select.form-select,
 .bootstrap-tagsinput {
-	background: $input-bg;
+	background: var(--bs-input-bg);
 	color: $input-color;
-	border-color: $input_border_color;
+	border-color: var(--bs-input-border-color);
 	&:focus {
-		background: $input-bg;
+		background: var(--bs-input-bg);
 		color: $input-color;
 	}
 
 
 }
 
+// Checkboxes/radios ship with Bootstrap's own $form-check-input-bg/-border, which are tied
+// to the generic --bs-body-bg/--bs-border-color — align them with the form controls above.
+.form-check-input {
+	background-color: var(--bs-input-bg);
+	border-color: var(--bs-input-border-color);
+}
+
+// Same for input-group addons (e.g. prefix/suffix icons): their border defaults to the
+// generic --bs-border-color too, which would no longer match the adjoining .form-control.
+.input-group-text {
+	border-color: var(--bs-input-border-color);
+}
+
 
 select.custom-select,
 select.form-control {
-	background: $input-bg !important;
-	background: $input-bg url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px !important;
-	
+	background: var(--bs-input-bg) !important;
+	background: var(--bs-input-bg) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px !important;
+
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
+}
+
+// The dropdown-arrow SVG above has a fixed dark fill; swap in a light-fill version for
+// dark mode, since the dark arrow is invisible against the (also dark) field background.
+[data-bs-theme="dark"] {
+	select.custom-select,
+	select.form-control {
+		background: var(--bs-input-bg) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23e5e5e5' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px !important;
+	}
 }
 
 
@@ -91,8 +116,8 @@ select.form-control {
 #CSSeditor,
 #HTMLeditor,
 .form-control {
-	border: 1px solid $input_border_color !important;
-	background: $input-bg;
+	border: 1px solid var(--bs-input-border-color) !important;
+	background: var(--bs-input-bg);
 }
 
 

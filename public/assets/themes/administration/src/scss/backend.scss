@@ -63,6 +63,8 @@ $color-mode-type: data;
 
   --#{$prefix}border-color: #{$border-color};
   --#{$prefix}border-color-translucent: #{$border-color-translucent};
+  --#{$prefix}input-bg: var(--#{$prefix}body-bg);
+  --#{$prefix}input-border-color: #{$widget_border_color};
 }
 
 [data-bs-theme="dark"] {
@@ -106,6 +108,8 @@ $color-mode-type: data;
 
     --#{$prefix}border-color: #{$border-color-dark};
     --#{$prefix}border-color-translucent: #{$border-color-translucent-dark};
+    --#{$prefix}input-bg: #{$input_bg_dark};
+    --#{$prefix}input-border-color: #{$input_border_color_dark};
 
 }
 
@@ -479,6 +483,20 @@ textarea#textEditor2,
 }
 
 
+/* list-group */
+
+// Bootstrap defaults list-group items to var(--bs-body-bg)/var(--bs-border-color), i.e. the
+// page background — inside a .card-body (a much lighter widget tone in dark mode) that makes
+// items render far darker than their container. Match the widget surface instead, with the
+// same visible border used for form controls (--bs-border-color is deliberately near-black).
+.list-group-item {
+  // Minimally darker than the surrounding widget surface (card/card-body) rather than an
+  // identical match, so items still read as distinct from their container at a glance.
+  background-color: color-mix(in srgb, var(--bs-widget-bg) 93%, black);
+  border-color: var(--bs-input-border-color);
+}
+
+
 /* popover */
 
 .popover {
@@ -506,12 +524,11 @@ textarea#textEditor2,
 /* tags-input */
 
 .selectize-control {
-  border-color: transparent;
   border-radius: var(--bs-border-radius);
 }
 .selectize-input {
-  background: var(--bs-body-bg);
-  border-color: transparent;
+  background: var(--bs-input-bg);
+  border-color: var(--bs-input-border-color);
   border-radius: var(--bs-border-radius);
 
   div.item {
@@ -520,9 +537,16 @@ textarea#textEditor2,
   }
 }
 
+// The plugin's own CSS hardcodes #343a40 text, unreadable on a dark background.
+.selectize-input,
+.selectize-dropdown,
+.selectize-input input {
+  color: $input-color;
+}
+
 .selectize-dropdown,
 .selectize-dropdown.form-control {
-    background: var(--bs-body-bg);
+    background: var(--bs-input-bg);
     border: 1pc solid var(--bs-dropdown-border-color)
 }
 
