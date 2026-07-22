@@ -7,7 +7,7 @@
   "repository": {},
   "private": true,
   "dependencies": {
-    "@floating-ui/dom": "^1.7.6",
+    "@floating-ui/dom": "^1.8.0",
     "@popperjs/core": "^2.11.8",
     "@selectize/selectize": "^0.15.2",
     "@uppy/core": "^5.2.0",
@@ -26,12 +26,12 @@
     "sortablejs": "^1.15.7"
   },
   "devDependencies": {
-    "autoprefixer": "^10.5.0",
+    "autoprefixer": "^10.5.4",
     "cssnano": "^7.1.9",
-    "fs-extra": "^11.3.5",
-    "sass": "^1.100.0",
-    "terser": "^5.48.0",
-    "vite": "^8.1.0"
+    "fs-extra": "^11.3.6",
+    "sass": "^1.101.3",
+    "terser": "^5.49.0",
+    "vite": "^8.1.5"
   },
   "scripts": {
     "build": "vite build",

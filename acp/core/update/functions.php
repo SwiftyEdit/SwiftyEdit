@@ -157,7 +157,93 @@ function move_new_files($source) {
 
     }
 
+    // remove files from older builds that are no longer part of this release
+    // (the copy loop above only ever adds/overwrites files)
+    remove_obsolete_files($sources_path.$sources_dir);
+
     $_SESSION['errors_cnt'] = $cnt_errors;
+}
+
+/**
+ * Delete local files that are no longer part of the new release.
+ * Compares the current install against whitelist.json (built by
+ * build_prepare.sh), which lists every file the release ships under
+ * acp/, app/, languages/ and vendor/. Anything under those directories
+ * that isn't in the whitelist is a leftover from an older build and gets
+ * removed. install/ is already fully replaced in move_new_files(); data/,
+ * plugins/ and public/ are intentionally left untouched (user data /
+ * installed plugins / themes).
+ * @return void
+ */
+function remove_obsolete_files($extracted_source_dir) {
+    $whitelist_file = $extracted_source_dir.'/whitelist.json';
+
+    if (!is_file($whitelist_file)) {
+        $_SESSION['protocol'] .= 'ERROR whitelist.json not found in release, skipping cleanup of obsolete files<|>';
+        return;
+    }
+
+    $whitelist = json_decode(file_get_contents($whitelist_file), true);
+
+    if (!is_array($whitelist)) {
+        $_SESSION['protocol'] .= 'ERROR whitelist.json could not be parsed, skipping cleanup of obsolete files<|>';
+        return;
+    }
+
+    $whitelist = array_flip($whitelist);
+
+    foreach (['../acp', '../app', '../languages', '../vendor'] as $dir) {
+        if (!is_dir($dir)) {
+            continue;
+        }
+
+        $existing_files = scandir_recursive($dir);
+
+        if (!is_array($existing_files)) {
+            continue;
+        }
+
+        foreach ($existing_files as $path) {
+            if (is_dir($path)) {
+                continue;
+            }
+
+            $relative = substr($path, strlen('../'));
+
+            if (!isset($whitelist[$relative])) {
+                unlink($path);
+                $_SESSION['protocol'] .= 'removed obsolete file: '.$relative.'<|>';
+            }
+        }
+
+        remove_empty_dirs_recursive($dir);
+    }
+}
+
+/**
+ * Remove now-empty directories left behind by remove_obsolete_files().
+ * @return void
+ */
+function remove_empty_dirs_recursive($dir) {
+    if (!is_dir($dir)) {
+        return;
+    }
+
+    foreach (scandir($dir) as $entry) {
+        if ($entry === '.' || $entry === '..') {
+            continue;
+        }
+
+        $path = $dir.'/'.$entry;
+
+        if (is_dir($path)) {
+            remove_empty_dirs_recursive($path);
+        }
+    }
+
+    if (count(scandir($dir)) === 2) {
+        rmdir($dir);
+    }
 }
 
 /**
