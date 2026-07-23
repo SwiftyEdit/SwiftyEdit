@@ -158,7 +158,7 @@ if(isset($_POST['rename_wishlist'])) {
         exit;
     }
 
-    se_rename_wishlist((int) ($_POST['wishlist_id'] ?? 0), $current_user_id, trim($_POST['wishlist_name'] ?? ''));
+    se_rename_wishlist((int) ($_POST['wishlist_id'] ?? 0), $current_user_id, trim($_POST['wishlist_name'] ?? ''), trim($_POST['wishlist_description'] ?? ''));
 
     // list column shows the new name, detail panel re-confirms the saved value
     header("HX-Trigger: update_wishlists, update_wishlist_detail");

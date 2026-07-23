@@ -35,6 +35,27 @@
 
             <h1>{$product_title}</h1>
             {$product_teaser}
+            {* wishlist button - shown next to "add to cart" when that button is
+               rendered, or on its own nearby the price when it isn't (e.g.
+               addon-only products, or cart/price hidden for this product) *}
+            {capture name="wishlist_btn"}
+                {if $show_wishlist_button}
+                    {if $wishlist_logged_in}
+                        <button type="button" class="btn btn-outline-danger btn-lg ms-1{if $wishlist_already_saved} active{/if}"
+                                hx-get="/xhr/se/wishlist/?form=picker&product_id={$product_id}&product_href={$product_href|escape:'url'}"
+                                hx-target="#wishlist-picker-modal-body"
+                                hx-swap="innerHTML"
+                                data-bs-toggle="modal" data-bs-target="#wishlist-picker-modal">
+                            <i class="bi bi-heart"></i> {$lang_btn_add_to_wishlist}
+                        </button>
+                    {else}
+                        <a class="btn btn-outline-secondary btn-lg ms-1" href="{$wishlist_login_uri}">
+                            <i class="bi bi-heart"></i> {$lang_btn_add_to_wishlist}
+                        </a>
+                    {/if}
+                {/if}
+            {/capture}
+
             <!-- pricetag -->
             {if $product_pricetag_mode != "2"}
                 <div class="price-tag d-inline-block">
@@ -53,6 +74,7 @@
                 {if $product_cart_mode != "2"}
                 {if $is_addon_only}
                     <div class="alert alert-info mt-3">{$product_addon_only_note}</div>
+                    <div class="mt-2">{$smarty.capture.wishlist_btn}</div>
                 {else}
                 <div class="mt-3">
                     <form action="{$form_action}" method="POST" class="text-start d-inline"
@@ -129,6 +151,7 @@
                             <button type="button" class="btn btn-outline-secondary" onclick="adjustQuantity(1)">+</button>
                             </div>
                             <button class="btn btn-outline-success btn-lg" name="add_to_cart" value="{$product_id}">{$btn_add_to_cart}</button>
+                            {$smarty.capture.wishlist_btn}
                         </div>
                         <div id="add-to-cart-message-{$product_id}" class="mt-1"></div>
                         <input type="hidden" name="product_href" value="{$product_href}">
@@ -137,7 +160,11 @@
                     </form>
                 </div>
                 {/if}
+                {else}
+                    <div class="mt-3">{$smarty.capture.wishlist_btn}</div>
                 {/if}
+            {else}
+                <div class="mt-3">{$smarty.capture.wishlist_btn}</div>
             {/if}
             <!-- pricetag end -->
 
@@ -412,16 +439,6 @@
                 name="{$action.name|escape}"
                 value="{$action.value|escape}"
                 class="{$action.class|escape}">
-            {$action.label|escape}
-        </button>
-    {elseif $action.type == 'button_htmx'}
-        <button type="button"
-                class="{$action.class|escape}"
-                hx-get="{$action.hx_get|escape}&product_href={$product_href|escape:'url'}"
-                hx-target="{$action.hx_target|escape}"
-                hx-swap="{$action.hx_swap|escape}"
-                data-bs-toggle="modal"
-                data-bs-target="#wishlist-picker-modal">
             {$action.label|escape}
         </button>
     {elseif $action.type == 'link'}

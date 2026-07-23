@@ -42,6 +42,25 @@ $productActions = se_apply_frontend_filters('product.display.actions', $productA
 
 $smarty->assign('product_plugin_actions', $productActions);
 
+/* "add to wishlist" button - a core feature, not a plugin action, so it's
+   computed directly here (same pattern as products-list.php) instead of
+   going through the product.display.actions plugin filter above */
+$wishlist_product_id = (int) ($product_data['id'] ?? 0);
+$show_wishlist_button = ($se_settings['wishlist_enabled'] ?? 0) == 1 && $wishlist_product_id > 0;
+$smarty->assign('show_wishlist_button', $show_wishlist_button);
+
+if ($show_wishlist_button) {
+    $wishlist_logged_in = ($_SESSION['user_nick'] ?? '') !== '';
+    $smarty->assign('wishlist_logged_in', $wishlist_logged_in);
+
+    if ($wishlist_logged_in) {
+        $smarty->assign('wishlist_already_saved', se_product_in_any_wishlist((int) $_SESSION['user_id'], $wishlist_product_id));
+    } else {
+        $wishlist_login_page = se_get_type_of_use_pages('profile');
+        $smarty->assign('wishlist_login_uri', '/' . ($wishlist_login_page['page_permalink'] ?? ''));
+    }
+}
+
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);
 

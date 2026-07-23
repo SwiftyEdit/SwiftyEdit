@@ -3,15 +3,19 @@
     <div class="card mb-3">
         <div class="card-body">
 
-            <form class="input-group mb-2"
+            <form class="mb-2"
                   hx-post="/xhr/se/wishlist/"
                   hx-swap="none">
                 {$hidden_csrf_token}
                 <input type="hidden" name="wishlist_id" value="{$wishlist.id}">
-                <input type="text" class="form-control" name="wishlist_name" value="{$wishlist.name|escape}" required>
-                <button type="submit" class="btn btn-outline-secondary" name="rename_wishlist" value="1">
-                    {$lang_btn_rename_wishlist}
-                </button>
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" name="wishlist_name" value="{$wishlist.name|escape}" required>
+                    <button type="submit" class="btn btn-outline-secondary" name="rename_wishlist" value="1">
+                        {$lang_update}
+                    </button>
+                </div>
+                <textarea class="form-control" name="wishlist_description" rows="2"
+                          placeholder="{$lang_label_product_description}">{$wishlist.description|escape}</textarea>
             </form>
 
             <div class="form-check form-switch mb-2">
