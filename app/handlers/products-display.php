@@ -524,6 +524,7 @@ if($product_data['product_related'] != '') {
     for($i=0;$i<$cnt_related_products;$i++) {
 
         $related_product = se_get_product_data($related_products_array[$i]);
+        if(empty($related_product)) { continue; }
 
         $rp[$i]['title'] = $related_product['title'];
         $rp[$i]['teaser'] = se_return_words_str(html_entity_decode($related_product['teaser']),10);
@@ -553,6 +554,7 @@ if($product_data['product_accessories'] != '') {
     $cnt_products_accessories = count((array) $products_accessories_array);
     for($i=0;$i<$cnt_products_accessories;$i++) {
         $accessories_product = se_get_product_data($products_accessories_array[$i]);
+        if(empty($accessories_product)) { continue; }
 
         $ap[$i]['title'] = $accessories_product['title'];
         $ap[$i]['teaser'] = se_return_words_str(html_entity_decode($accessories_product['teaser']),10);
