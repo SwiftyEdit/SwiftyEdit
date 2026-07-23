@@ -63,12 +63,14 @@ if(isset($_GET['token']) && $_REQUEST['query'] == $paypal_url_str){
             $return_str .= '<p>'.$lang['label_order_nbr'].': '. $order_nbr . '</p>';
 
             // update se_orders - order_status_payment -> 2
-            $db_content->update("se_orders", [
-                "order_status_payment" => "2"
-            ],[
+            $matched_order = $db_content->get("se_orders", ["id"], [
                 "order_nbr" => $order_nbr,
                 "user_id" => $_SESSION['user_id']
             ]);
+
+            if (is_array($matched_order)) {
+                se_update_order_payment_status((int) $matched_order['id'], 2, 'se_paypal-pay');
+            }
 
         } else {
             $return_str .= "<h1>ERROR</h1>";

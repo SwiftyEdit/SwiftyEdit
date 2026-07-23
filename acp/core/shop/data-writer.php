@@ -477,11 +477,7 @@ if(isset($_POST['delete_filter_group'])) {
 if(isset($_POST['set_payment'])) {
     $set_payment = (int) $_POST['set_payment'];
     $order_id = (int) $_POST['order_id'];
-    $update = $db_content->update("se_orders", [
-        "order_status_payment" => $set_payment
-    ],[
-        "id" => $order_id
-    ]);
+    se_update_order_payment_status($order_id, $set_payment, 'admin');
     header( "HX-Trigger: update_orders_list");
 }
 

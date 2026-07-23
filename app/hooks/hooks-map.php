@@ -88,4 +88,23 @@ return [
             'context' => ['user_id', 'deleted_by'],
         ],
     ],
+
+
+    // ==========================
+    // Global hooks
+    // ==========================
+    // Fire identically regardless of whether the triggering action happened
+    // in the ACP (backend) or the frontend. Callbacks are loaded on both
+    // request lifecycles (see plugins/<name>/hooks-global/).
+    'global' => [
+
+        // ----- Orders -----
+
+        // An order has been marked as paid, either manually by an admin in the
+        // ACP or automatically by a payment plugin (e.g. se_paypal-pay).
+        'order.paid' => [
+            'type'    => 'action',
+            'context' => ['order_id', 'order', 'triggered_by'],
+        ],
+    ],
 ];

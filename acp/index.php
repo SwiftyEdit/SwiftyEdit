@@ -292,6 +292,22 @@ foreach ($all_plugins as $pluginDir => $pluginData) {
     }
 }
 
+// Load global hook handlers (fire on both frontend and backend triggers)
+// for all plugins
+require_once SE_ROOT . 'app/hooks/hooks-global.php';
+
+foreach ($all_plugins as $pluginDir => $pluginData) {
+    $globalHooksPath = SE_ROOT . 'plugins/' . $pluginDir . '/hooks-global';
+    if (!is_dir($globalHooksPath)) {
+        continue;
+    }
+
+    foreach (glob($globalHooksPath . '/*.php') as $hookFile) {
+        // Each file registers callbacks via se_add_global_hook(...)
+        require_once $hookFile;
+    }
+}
+
 
 /* build absolute URL */
 if ($se_settings['cms_ssl_domain'] != '') {
