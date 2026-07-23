@@ -455,7 +455,16 @@ if($product_data['type'] == 'v') {
     $variants = se_get_product_variants($product_data['parent_id']);
 
     $parent_product = se_get_product_data($product_data['parent_id']);
-    $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
+
+    if (!empty($parent_product['main_catalog_slug']) && $parent_product['main_catalog_slug'] !== 'default') {
+        $canonical_url = $se_base_url.$parent_product['main_catalog_slug'].$parent_product['slug'];
+    } elseif ($target_page !== $swifty_slug && $target_page !== '') {
+        // fallback: target page (when different from swifty slug)
+        $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
+    } else {
+        // final fallback: self (swifty_slug + parent product slug)
+        $canonical_url = $se_base_url.$swifty_slug.$parent_product['slug'];
+    }
     $smarty->assign('page_canonical_url', $canonical_url);
     $smarty->assign('product_type', "v");
 

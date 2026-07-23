@@ -216,12 +216,14 @@ function se_prepareProductData($data, $id = null) {
             ]
         ]);
         // if we have no page for display_products, find another catalog page
-        $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
-            "AND" => [
-                "page_posts_types[~]" => "p",
-                "page_language" => $data['product_lang']
-            ]
-        ]);
+        if(empty($main_catalog_slug)) {
+            $main_catalog_slug = $db_content->get("se_pages", "page_permalink", [
+                "AND" => [
+                    "page_posts_types[~]" => "p",
+                    "page_language" => $data['product_lang']
+                ]
+            ]);
+        }
     } else {
         $main_catalog_slug = se_clean_permalink($data['main_catalog_slug']);
     }
