@@ -32,5 +32,8 @@ The customer is redirected to this page if he cancels the PayPal payment process
 
 ### Return URL
 The customer will be redirected to this page as soon as the PayPal payment has been completed.
-Create this page via Page Management and include `se_paypal-pay` in the Plugins tab.
+Create a regular page via Page Management whose permalink matches the path of this Return URL
+exactly. You do **not** need to assign a plugin to this page (payment plugins aren't even
+selectable in the Plugins tab) — SwiftyEdit recognizes the page automatically by its URL and
+captures the payment at PayPal once the customer is redirected there.
 This means that your customers' payments are taken into account directly in the order and the order is marked as paid.
