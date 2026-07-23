@@ -67,6 +67,10 @@ function se_prepareProductData($data, $id = null) {
         }
     } else {
         // data from backend
+        if (isset($data['title']) && is_string($data['title'])) {
+            $data['title'] = trim($data['title']);
+        }
+
         foreach ($data as $key => $val) {
             if (is_string($val)) {
                 $$key = @htmlspecialchars($val, ENT_QUOTES);

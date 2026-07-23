@@ -13,6 +13,7 @@ function clean_vars($var) {
 }
 
 function clean_filename($str) {
+	$str = trim($str);
 	$str = strtolower($str);
 	$a = array('ä','ö','ü','ß',' - ',' + ',' / ','/'); 
 	$b = array('ae','oe','ue','ss','-','-','-','-');
@@ -111,6 +112,7 @@ function se_return_clean_value($string) {
 }
 
 function se_clean_permalink($str) {
+	$str = trim($str);
 	$str = stripslashes($str);
 	$str = strip_tags($str);
 	$str = strtolower($str);
