@@ -136,6 +136,7 @@ if(isset($_POST['delete_page'])) {
     if($del_page->rowCount() > 0) {
         record_log($_SESSION['user_nick'],"deleted page id: $delete_id","10");
         se_generate_xml_sitemap('pages');
+        se_build_navigation_cache();
         show_toast($lang['msg_success_page_deleted'],'success');
     }
 
@@ -161,6 +162,7 @@ if(isset($_POST['save_page'])) {
     // cache files
     mods_check_in();
     cache_url_paths();
+    se_build_navigation_cache();
 
 // build hook context
     $context = [

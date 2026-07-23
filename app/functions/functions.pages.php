@@ -352,3 +352,75 @@ function se_get_pages_keywords() {
 
     return $count_keywords;
 }
+
+/**
+ * path to the navigation cache file for a language
+ * cache directory is created on first use
+ */
+function se_getNavigationCachePath($lang) {
+
+    $dir = SE_CONTENT . '/cache/navigation';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    return $dir . '/nav_' . $lang . '.json';
+}
+
+/**
+ * read the cached navigation entries for a language
+ * @return array|null null if no valid cache file exists
+ */
+function se_get_navigation_from_cache($lang) {
+
+    $cache_file = se_getNavigationCachePath($lang);
+
+    if (!file_exists($cache_file) || !is_readable($cache_file)) {
+        return null;
+    }
+
+    $content = file_get_contents($cache_file);
+    if ($content === false) {
+        return null;
+    }
+
+    $data = json_decode($content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        return null;
+    }
+
+    return $data;
+}
+
+/**
+ * rebuild the navigation cache file(s) from the database
+ * only the public navigation (no draft/ghost pages) is cached -
+ * administrators always get a live query so they can preview unpublished pages
+ * called after page create/update/delete in the ACP
+ *
+ * @param string|null $lang rebuild a single language, or all languages if null
+ */
+function se_build_navigation_cache($lang = null) {
+
+    global $db_content;
+
+    $languages = $lang !== null ? [$lang] : array_unique($db_content->select("se_pages", "page_language", []));
+
+    foreach ($languages as $language) {
+
+        $se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
+                "AND" => [
+                    "OR" => [
+                        "page_status[!]" => ["draft","ghost"]
+                ],
+                "page_language" => $language
+            ],
+                "ORDER" => ["page_sort" => "DESC"]
+            ]);
+
+        $se_nav = se_array_multisort($se_nav, 'page_language', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
+
+        $cache_file = se_getNavigationCachePath($language);
+        file_put_contents($cache_file, json_encode($se_nav, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}

@@ -66,26 +66,36 @@ function se_get_content($page, $mode = 'p') {
 
 	if(!isset($_SESSION['user_class']) OR $_SESSION['user_class'] != 'administrator') {
 
-		$se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
-				"AND" => [
-					"OR" => [
-						"page_status[!]" => ["draft","ghost"]
+		// cached navigation for regular visitors, built by se_build_navigation_cache()
+		$se_nav = se_get_navigation_from_cache($languagePack);
+
+		if ($se_nav === null) {
+
+			$se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
+					"AND" => [
+						"OR" => [
+							"page_status[!]" => ["draft","ghost"]
+					],
+					"page_language" => $languagePack
 				],
-				"page_language" => $languagePack
-			],
-				"ORDER" => ["page_sort" => "DESC"]
-			]);
-		
+					"ORDER" => ["page_sort" => "DESC"]
+				]);
+
+			$se_nav = se_array_multisort($se_nav, 'page_language', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
+		}
+
 	} else {
 
+		// administrators always see a live query, including draft/ghost pages
 		$se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
 				"page_language" => $languagePack
 			],[
 				"ORDER" => ["page_sort" => "DESC"]
 			]);
+
+		$se_nav = se_array_multisort($se_nav, 'page_language', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
 	}
-	
-	$se_nav = se_array_multisort($se_nav, 'page_language', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
+
 	$contents = array($page_contents,$se_nav);
 	
 	return $contents;
