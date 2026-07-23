@@ -8,16 +8,25 @@ priority: 200
 
 # Inhalte mit Hooks manipulieren
 
-Es gibt zwei Arten von Hooks.
+Es gibt drei Arten von Hooks.
 Einmal für das Backend. Diese Hooks sind immer verfügbar, 
 sobald ein Plugin mit entsprechenden Funktionen installiert wurde.
 Hooks für das Frontend sind nur dann verfügbar, wenn das Plugin 
 auch aktiviert wurde.
+Globale Hooks feuern unabhängig davon, ob die auslösende Aktion im Backend
+oder im Frontend passiert ist - etwa wenn eine Bestellung sowohl manuell
+im ACP als auch automatisch durch ein Zahlungsplugin als bezahlt markiert
+werden kann. Da ACP-Requests und Frontend-Requests vollständig getrennte
+Ablaufumgebungen mit eigenem Bootstrap sind, werden globale Hook-Callbacks
+in beiden geladen, damit ein Plugin nicht zweimal (einmal pro Kontext)
+registriert werden muss.
 
-In den Plugins werden hier zwei Verzeichnisse benötigt:
+In den Plugins werden hier drei Verzeichnisse benötigt:
 
-`plugins/{plugin}/hooks-backend/` für das Backend und
-`plugins/{plugin}/hooks-frontend/` für das Frontend.
+`plugins/{plugin}/hooks-backend/` für das Backend,
+`plugins/{plugin}/hooks-frontend/` für das Frontend und
+`plugins/{plugin}/hooks-global/` für Hooks, die sowohl vom Backend als
+auch vom Frontend ausgelöst werden können.
 
 ## Verfügbare Hooks
 
@@ -44,6 +53,17 @@ sie führen Code aus, verändern aber keinen Wert.
 Die Frontend-Hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
 `page.display.after`) sind zusammen mit den Template-Variablen und Rendering-Konventionen, die
 sie betreffen, dokumentiert - siehe [Hooks](09-01-00-themes.md#hooks) im Themes-Kapitel.
+
+### Globale Hooks
+
+Globale Hooks sind ebenfalls `action`-Hooks (registriert über `se_add_global_hook`, siehe unten).
+Anders als bei Backend-Hooks gibt es hier keine `meta.php` und keine Checkbox-Auswahl im ACP -
+jeder registrierte Callback wird bei jedem Feuern des Hooks immer ausgeführt, ganz wie bei
+Frontend-Hooks.
+
+| Hook         | Context                                | Feuert, wenn...                                    |
+|--------------|-----------------------------------------|-----------------------------------------------------|
+| `order.paid` | `order_id`, `order`, `triggered_by`     | Eine Bestellung als bezahlt markiert wurde - manuell im ACP (`triggered_by` = `admin`) oder automatisch durch ein Zahlungsplugin (`triggered_by` = z.B. `se_paypal-pay`). |
 
 ## Beispiel Backend-Hook
 
@@ -106,6 +126,20 @@ eines Admins nach einem Plugin-Update still und leise bei der falschen Aktion.
 se_add_frontend_hook('product.display.before', function (array $product, array $context): array {
     $product['title'] = strtoupper($product['title']);
     return $product;
+});
+```
+
+## Beispiel globaler Hook
+
+Globale Hooks benötigen keine `meta.php` und keine Checkbox-Auswahl - jeder registrierte Callback
+läuft bei jedem Feuern des Hooks, unabhängig davon, ob der Auslöser im Backend oder im Frontend
+lag.
+
+```php
+// plugins/{plugin}/hooks-global/order-paid.php
+se_add_global_hook('order.paid', function (array $context): void {
+    // run hook code here
+    // $context['order_id'], $context['order'], $context['triggered_by']
 });
 ```
 

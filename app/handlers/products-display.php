@@ -42,6 +42,25 @@ $productActions = se_apply_frontend_filters('product.display.actions', $productA
 
 $smarty->assign('product_plugin_actions', $productActions);
 
+/* "add to wishlist" button - a core feature, not a plugin action, so it's
+   computed directly here (same pattern as products-list.php) instead of
+   going through the product.display.actions plugin filter above */
+$wishlist_product_id = (int) ($product_data['id'] ?? 0);
+$show_wishlist_button = ($se_settings['wishlist_enabled'] ?? 0) == 1 && $wishlist_product_id > 0;
+$smarty->assign('show_wishlist_button', $show_wishlist_button);
+
+if ($show_wishlist_button) {
+    $wishlist_logged_in = ($_SESSION['user_nick'] ?? '') !== '';
+    $smarty->assign('wishlist_logged_in', $wishlist_logged_in);
+
+    if ($wishlist_logged_in) {
+        $smarty->assign('wishlist_already_saved', se_product_in_any_wishlist((int) $_SESSION['user_id'], $wishlist_product_id));
+    } else {
+        $wishlist_login_page = se_get_type_of_use_pages('profile');
+        $smarty->assign('wishlist_login_uri', '/' . ($wishlist_login_page['page_permalink'] ?? ''));
+    }
+}
+
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);
 
@@ -455,7 +474,16 @@ if($product_data['type'] == 'v') {
     $variants = se_get_product_variants($product_data['parent_id']);
 
     $parent_product = se_get_product_data($product_data['parent_id']);
-    $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
+
+    if (!empty($parent_product['main_catalog_slug']) && $parent_product['main_catalog_slug'] !== 'default') {
+        $canonical_url = $se_base_url.$parent_product['main_catalog_slug'].$parent_product['slug'];
+    } elseif ($target_page !== $swifty_slug && $target_page !== '') {
+        // fallback: target page (when different from swifty slug)
+        $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
+    } else {
+        // final fallback: self (swifty_slug + parent product slug)
+        $canonical_url = $se_base_url.$swifty_slug.$parent_product['slug'];
+    }
     $smarty->assign('page_canonical_url', $canonical_url);
     $smarty->assign('product_type', "v");
 
@@ -524,6 +552,7 @@ if($product_data['product_related'] != '') {
     for($i=0;$i<$cnt_related_products;$i++) {
 
         $related_product = se_get_product_data($related_products_array[$i]);
+        if(empty($related_product)) { continue; }
 
         $rp[$i]['title'] = $related_product['title'];
         $rp[$i]['teaser'] = se_return_words_str(html_entity_decode($related_product['teaser']),10);
@@ -553,6 +582,7 @@ if($product_data['product_accessories'] != '') {
     $cnt_products_accessories = count((array) $products_accessories_array);
     for($i=0;$i<$cnt_products_accessories;$i++) {
         $accessories_product = se_get_product_data($products_accessories_array[$i]);
+        if(empty($accessories_product)) { continue; }
 
         $ap[$i]['title'] = $accessories_product['title'];
         $ap[$i]['teaser'] = se_return_words_str(html_entity_decode($accessories_product['teaser']),10);

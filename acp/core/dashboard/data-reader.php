@@ -29,6 +29,11 @@ if($_REQUEST['action'] === 'list_pages') {
     ]);
 
     foreach ($getPages as &$page) {
+        // page_title / page_meta_description are stored HTML-entity-encoded (se_return_clean_value()).
+        // Decode here so Twig's autoescape encodes them exactly once instead of double-encoding
+        // (which turns umlauts like "&Uuml;" into visible "&amp;Uuml;" in the browser).
+        $page['page_title'] = html_entity_decode($page['page_title'], ENT_QUOTES, 'UTF-8');
+        $page['page_meta_description'] = html_entity_decode($page['page_meta_description'], ENT_QUOTES, 'UTF-8');
         $page['page_se_format_datetime'] = se_format_datetime($page['page_lastedit']);
     }
 

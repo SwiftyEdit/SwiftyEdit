@@ -1500,6 +1500,49 @@ function se_send_order($data) {
 }
 
 /**
+ * update an order's payment status and, on the open -> paid transition,
+ * fire the 'order.paid' backend hook
+ *
+ * used both by the manual ACP "mark as paid" action and by payment
+ * plugins (e.g. se_paypal-pay) confirming a payment automatically
+ *
+ * @param int    $order_id     se_orders.id
+ * @param int    $status       1 = open, 2 = paid
+ * @param string $triggered_by 'admin' or the triggering plugin's slug
+ * @return bool false if the order does not exist
+ */
+function se_update_order_payment_status(int $order_id, int $status, string $triggered_by = 'admin'): bool {
+
+	global $db_content;
+
+	$order = $db_content->get("se_orders", "*", ["id" => $order_id]);
+
+	if (!is_array($order)) {
+		return false;
+	}
+
+	$was_paid = (int) $order['order_status_payment'] === 2;
+
+	$db_content->update("se_orders", [
+		"order_status_payment" => $status
+	], [
+		"id" => $order_id
+	]);
+
+	$order['order_status_payment'] = $status;
+
+	if ($status === 2 && !$was_paid) {
+		se_do_global_hook('order.paid', [
+			'order_id'     => $order_id,
+			'order'        => $order,
+			'triggered_by' => $triggered_by,
+		]);
+	}
+
+	return true;
+}
+
+/**
  * @param array $items amount and item
  * @return void
  *

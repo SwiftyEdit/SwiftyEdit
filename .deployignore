@@ -23,6 +23,8 @@ secrets.json
 test-results
 dev.env
 build_prepare.sh
+.claude
+.ollamassist
 
 # IDE- and system files
 .idea
@@ -53,6 +55,11 @@ sitemap*.xml
 README.md
 README.*.md
 LICENSE
+CLAUDE.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+ROADMAP.md
+SECURITY.md
 
 #data directory
 /data/*

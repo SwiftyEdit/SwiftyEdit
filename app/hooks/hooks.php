@@ -6,6 +6,7 @@
 $SE_HOOKS = [
     'frontend' => [],
     'backend' => [],
+    'global' => [],
 ];
 
 /**

@@ -8,16 +8,24 @@ priority: 200
 
 # Manipulate contents with hooks
 
-There are two types of hooks.
+There are three types of hooks.
 One is for the backend. These hooks are always available
 once a plugin with the corresponding functions has been installed.
 Hooks for the frontend are only available if the plugin
 has also been activated.
+Global hooks fire regardless of whether the triggering action happened in
+the backend or the frontend - for example, an order can be marked as paid
+either manually in the ACP or automatically by a payment plugin. Since ACP
+requests and frontend requests are entirely separate request lifecycles
+with their own bootstrap, global hook callbacks are loaded in both, so a
+plugin doesn't need to register itself twice (once per context).
 
-Two directories are required in the plugins:
+Three directories are required in the plugins:
 
-`plugins/{plugin}/hooks-backend/` for the backend and
-`plugins/{plugin}/hooks-frontend/` for the frontend.
+`plugins/{plugin}/hooks-backend/` for the backend,
+`plugins/{plugin}/hooks-frontend/` for the frontend, and
+`plugins/{plugin}/hooks-global/` for hooks that can be triggered from
+either the backend or the frontend.
 
 ## Available hooks
 
@@ -44,6 +52,16 @@ run code but don't transform a value.
 The frontend hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
 `page.display.after`) are documented together with the template variables and rendering
 conventions they affect - see [Hooks](09-01-00-themes.md#hooks) in the Themes chapter.
+
+### Global hooks
+
+Global hooks are also `action` hooks (registered via `se_add_global_hook`, see below). Unlike
+backend hooks, there is no `meta.php` and no checkbox selection in the ACP - every registered
+callback always runs whenever the hook fires, just like frontend hooks.
+
+| Hook         | Context                                | Fires when...                                        |
+|--------------|------------------------------------------|-------------------------------------------------------|
+| `order.paid` | `order_id`, `order`, `triggered_by`     | An order has been marked as paid - manually in the ACP (`triggered_by` = `admin`) or automatically by a payment plugin (`triggered_by` = e.g. `se_paypal-pay`). |
 
 ## Example backend hook
 
@@ -105,6 +123,20 @@ silently apply to the wrong action after your plugin updates.
 se_add_frontend_hook('product.display.before', function (array $product, array $context): array {
     $product['title'] = strtoupper($product['title']);
     return $product;
+});
+```
+
+## Global hook example
+
+Global hooks need no `meta.php` and no checkbox selection - every registered callback runs
+whenever the hook fires, regardless of whether the trigger happened in the backend or the
+frontend.
+
+```php
+// plugins/{plugin}/hooks-global/order-paid.php
+se_add_global_hook('order.paid', function (array $context): void {
+    // run hook code here
+    // $context['order_id'], $context['order'], $context['triggered_by']
 });
 ```
 

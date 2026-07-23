@@ -1,5 +1,9 @@
 <h2>{$wishlist.name|escape}</h2>
 
+{if $wishlist.description != ''}
+    <p class="text-muted" style="white-space: pre-wrap;">{$wishlist.description|escape}</p>
+{/if}
+
 {if is_array($wishlist_items) && $wishlist_items|@count > 0}
     <div class="row">
         {foreach $wishlist_items as $item}

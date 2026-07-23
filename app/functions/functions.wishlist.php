@@ -114,13 +114,14 @@ function se_get_wishlist_by_slug(string $slug): ?array {
 }
 
 /**
- * rename a wishlist (ownership-checked)
+ * rename a wishlist and update its description (ownership-checked)
  * @param int $wishlist_id
  * @param int $user_id
  * @param string $new_name
+ * @param string $description plain text, no HTML - escaped on output instead
  * @return bool
  */
-function se_rename_wishlist(int $wishlist_id, int $user_id, string $new_name): bool {
+function se_rename_wishlist(int $wishlist_id, int $user_id, string $new_name, string $description = ''): bool {
 
     global $db_content;
 
@@ -129,7 +130,8 @@ function se_rename_wishlist(int $wishlist_id, int $user_id, string $new_name): b
     }
 
     $db_content->update("se_wishlists", [
-        "name" => trim($new_name)
+        "name" => trim($new_name),
+        "description" => trim($description)
     ], [
         "id" => $wishlist_id,
         "user_id" => $user_id
@@ -425,57 +427,4 @@ function se_delete_wishlist_items_by_product(int $product_id): void {
     $db_content->delete("se_wishlist_items", [
         "product_id" => $product_id
     ]);
-}
-
-// ----- hook registration -----
-
-/**
- * registers this feature's frontend hook callback(s). called once from
- * routing.php right after hooks-frontend.php is required - $se_settings is
- * fully populated by then, functions.php (where this file lives) is not
- * loaded yet at that point in the bootstrap, so hooks can't be registered
- * at top-level include time.
- * @return void
- */
-function se_wishlist_register_hooks(): void {
-
-    se_add_frontend_hook('product.display.actions', function($actions, $context) {
-
-        global $se_settings, $lang;
-
-        if(($se_settings['wishlist_enabled'] ?? 0) != 1) {
-            return $actions;
-        }
-
-        $product_id = (int) ($context['product_id'] ?? 0);
-        if($product_id < 1) {
-            return $actions;
-        }
-
-        $logged_in = ($_SESSION['user_nick'] ?? '') !== '';
-
-        if(!$logged_in) {
-            $profile_page = se_get_type_of_use_pages('profile');
-            $actions[] = [
-                'type' => 'link',
-                'label' => $lang['btn_login_to_save_wishlist'],
-                'class' => 'btn btn-outline-secondary btn-sm',
-                'href' => '/' . ($profile_page['page_permalink'] ?? '')
-            ];
-            return $actions;
-        }
-
-        $already_saved = se_product_in_any_wishlist((int) $_SESSION['user_id'], $product_id);
-
-        $actions[] = [
-            'type' => 'button_htmx',
-            'label' => $lang['btn_add_to_wishlist'],
-            'class' => 'btn btn-outline-danger btn-sm' . ($already_saved ? ' active' : ''),
-            'hx_get' => '/xhr/se/wishlist/?form=picker&product_id=' . $product_id,
-            'hx_target' => '#wishlist-picker-modal-body',
-            'hx_swap' => 'innerHTML'
-        ];
-
-        return $actions;
-    });
 }

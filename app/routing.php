@@ -128,10 +128,28 @@ foreach($active_mods as $mods) {
 }
 
 require_once SE_ROOT . 'app/hooks/hooks-frontend.php';
-se_wishlist_register_hooks();
 
 if(is_array($clean_mods)) {
     $activeplugins = array_unique($clean_mods);
+
+    // Load global hook handlers (fire on both frontend and backend triggers)
+    // for all active plugins. This must happen before a plugin's
+    // global/index.php runs below, since some plugins (e.g. se_paypal-pay)
+    // fire global hooks synchronously during their own bootstrap.
+    require_once SE_ROOT . 'app/hooks/hooks-global.php';
+
+    foreach ($activeplugins as $pluginName) {
+        $globalHooksPath = SE_ROOT . 'plugins/' . $pluginName . '/hooks-global';
+
+        if (!is_dir($globalHooksPath)) {
+            continue;
+        }
+
+        foreach (glob($globalHooksPath . '/*.php') as $hookFile) {
+            // Each file registers callbacks via se_add_global_hook(...)
+            require_once $hookFile;
+        }
+    }
 
     foreach ($activeplugins as $pluginName) {
         $pluginIndex = SE_ROOT . 'plugins/' . $pluginName . '/global/index.php';
