@@ -173,6 +173,28 @@ a#dashboard {
   }
 }
 
+/*
+ * Privacy blur - toggled via the ACP header button (privacy-blur.js).
+ * Any element carrying .se-privacy-blur is blurred so admins can screenshot
+ * a page (e.g. an order list with customer data) without exposing it.
+ */
+[data-privacy-blur="on"] .se-privacy-blur {
+  filter: blur(6px);
+  user-select: none;
+}
+
+[data-privacy-blur="on"] {
+  #privacy-blur-off {
+    display: none;
+  }
+}
+
+[data-privacy-blur="off"] {
+  #privacy-blur-on {
+    display: none;
+  }
+}
+
 
 .ph-dashboard {
   border-bottom: 1px solid rgba($section_color_dashboard,.5);

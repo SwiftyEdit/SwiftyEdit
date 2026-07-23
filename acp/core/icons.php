@@ -62,6 +62,7 @@ $icon = [
     "exclamation_triangle" => '<i class="bi bi-exclamation-triangle"></i>',
     "eye" => '<i class="bi bi-eye"></i>',
     "eye_slash" => '<i class="bi bi-eye-slash"></i>',
+    "eye_slash_fill" => '<i class="bi bi-eye-slash-fill"></i>',
 
     "file" => '<i class="bi bi-file-earmark"></i>',
     "file_alt" => '<i class="bi bi-file-earmark"></i>',

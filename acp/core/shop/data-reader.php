@@ -1001,15 +1001,15 @@ if($_REQUEST['action'] == 'list_orders') {
 
 
         echo '<tr>';
-        echo '<td>'.se_format_datetime($order['order_time']).'</td>';
-        echo '<td>'.$order['order_nbr'].'</td>';
-        echo '<td>'.$order['order_invoice_address'].' '.$order['order_payment_type'].' '.$order['order_invoice_mail'].'</td>';
-        echo '<td>'.se_post_print_currency($order['order_price_total']).' ('.$show_payment_status[$payment_status].')</td>';
-        echo '<td>'.$show_order_status[$order_status];
+        echo '<td><span class="se-privacy-blur">'.se_format_datetime($order['order_time']).'</span></td>';
+        echo '<td><span class="se-privacy-blur">'.$order['order_nbr'].'</span></td>';
+        echo '<td><span class="se-privacy-blur">'.$order['order_invoice_address'].' '.$order['order_payment_type'].' '.$order['order_invoice_mail'].'</span></td>';
+        echo '<td><span class="se-privacy-blur">'.se_post_print_currency($order['order_price_total']).' ('.$show_payment_status[$payment_status].')</span></td>';
+        echo '<td><span class="se-privacy-blur">'.$show_order_status[$order_status];
         if($order['order_withdrawal_requested'] > 0) {
             echo ' <span class="badge text-bg-warning">'.$lang['status_order_withdrawal_requested'].'</span>';
         }
-        echo '</td>';
+        echo '</span></td>';
         echo '<td><div class="btn-group">'.$dropdown.' ';
         echo '<button hx-get="/admin-xhr/shop/orders/read/?show_order='.$order['id'].'" hx-target="#order-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">'.$icon['info_circle'].'</button>';
         echo '</div></td>';

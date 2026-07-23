@@ -68,6 +68,11 @@ echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()"
 <span id="toggle-light"><i class="bi bi-sun"></i></span>
 </button>';
 
+echo '<button class="btn btn-default ms-1" type="button" onclick="togglePrivacyBlur()" title="'.$lang['btn_privacy_blur'].'">
+<span id="privacy-blur-off">'.$icon['eye'].'</span>
+<span id="privacy-blur-on" class="text-danger">'.$icon['eye_slash_fill'].'</span>
+</button>';
+
 echo '<button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" 
 hx-get="/admin-xhr/docs/read/?file=start"
 hx-target="#helpModal"

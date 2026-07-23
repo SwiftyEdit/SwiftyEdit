@@ -515,9 +515,9 @@ function se_show_log($limit=10) {
             $log_priority = 'log_priority' . $result[$i]['priority'];
 
             $table .= '<tr>';
-            $table .= '<td><span class="priority-indicator ' . $log_priority . '" title="' . $result[$i]['priority'] . '"></span></td>';
-            $table .= '<td>' . $date . ' ' . $time . '</td>';
-            $table .= '<td>' . $result[$i]['source'] . ' - ' . $result[$i]['entry'] . '</td>';
+            $table .= '<td><span class="se-privacy-blur"><span class="priority-indicator ' . $log_priority . '" title="' . $result[$i]['priority'] . '"></span></span></td>';
+            $table .= '<td><span class="se-privacy-blur">' . $date . ' ' . $time . '</span></td>';
+            $table .= '<td><span class="se-privacy-blur">' . $result[$i]['source'] . ' - ' . $result[$i]['entry'] . '</span></td>';
             $table .= '</tr>';
 
         }
