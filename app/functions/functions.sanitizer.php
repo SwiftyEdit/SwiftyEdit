@@ -365,12 +365,7 @@ function se_sanitize_page_inputs($data) {
 
         // addon_values
         if($key == 'addon_values') {
-            if(is_array($val)) {
-                foreach($val as $k => $v) {
-                    $addon_values[$k] = htmlentities(stripslashes($v), ENT_QUOTES);
-                }
-                $sanitized['page_addon_string'] = json_encode($addon_values,JSON_UNESCAPED_UNICODE);
-            }
+            $sanitized['addon_string'] = se_encode_addon_values(is_array($val) ? $val : null);
         }
 
         // theme values

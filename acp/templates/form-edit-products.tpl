@@ -608,7 +608,14 @@
                             {list_products_filter}
                         </div>
                         <div class="tab-pane fade" id="addons">
-                            {list_product_update_hooks}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {addon_module_forms}
+                                </div>
+                                <div class="col-md-6">
+                                    {list_product_update_hooks}
+                                </div>
+                            </div>
                         </div>
 
                     </div>

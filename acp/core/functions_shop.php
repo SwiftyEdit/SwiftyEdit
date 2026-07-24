@@ -77,6 +77,8 @@ function se_prepareProductData($data, $id = null) {
             }
         }
 
+        $addon_string = se_encode_addon_values($data['addon_values'] ?? null);
+
         // images
         $images = '';
         if(isset($data['picker_0'])) {

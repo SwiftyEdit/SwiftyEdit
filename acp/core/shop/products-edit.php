@@ -63,6 +63,8 @@ if(is_int($get_product_id)) {
     $form_mode = 'new';
 }
 
+$record_data = $product_data ?? [];
+
 if($product_data['type'] == 'v') {
     // hide the submit as variant button
     $submit_variant_btn = '';
@@ -1154,6 +1156,8 @@ $form_tpl = str_replace('{select_product_cart_mode}', $select_cart_mode, $form_t
 $form_tpl = str_replace('{select_product_pricetag_mode}', $select_pricetag_mode, $form_tpl);
 $form_tpl = str_replace('{select_delivery_time}', $snippet_select_delivery_time, $form_tpl);
 
+$addon_module_forms = se_render_record_addons('product', $record_data);
+$form_tpl = str_replace('{addon_module_forms}', $addon_module_forms, $form_tpl);
 $form_tpl = str_replace('{list_product_update_hooks}', $list_product_update_hooks, $form_tpl);
 
 

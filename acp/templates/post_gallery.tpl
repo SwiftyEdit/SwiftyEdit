@@ -7,6 +7,7 @@
 						<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{nav_btn_content}</a></li>
 						<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_metas}</a></li>
 						<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#preferences">{nav_btn_settings}</a></li>
+						<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#addons" title="{nav_btn_addons}">{icon_addons}</a></li>
 					</ul>
 				</div>
 				<div class="card-body">
@@ -67,6 +68,10 @@
 						<label for="inputRssUrl" class="form-label">{label_rss_url}</label>
 						<input id="inputRssUrl" class='form-control' name="post_rss_url" type="text" value="{post_rss_url}">
 					</div>
+				</div>
+
+				<div class="tab-pane fade" id="addons">
+					{addon_module_forms}
 				</div>
 			</div>
 		</div>
