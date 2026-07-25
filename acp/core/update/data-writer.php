@@ -43,7 +43,7 @@ if(isset($_POST['load_update_data'])) {
 
     if(is_dir("$extract_dir")) {
         if(copy("$source_file","$download_dir/$get_filename")) {
-            echo '<div class="alert alert-info">Download complete. File: '.basename($get_filename).'</div>';
+            echo '<div class="alert alert-info">Download complete. File: '.htmlspecialchars(basename($get_filename), ENT_QUOTES).'</div>';
         } else {
             echo '<div class="alert alert-warning">Error: cannot copy file</div>';
         }
@@ -53,7 +53,7 @@ if(isset($_POST['load_update_data'])) {
     if($archive->open("$download_dir/$get_filename") === TRUE) {
         $archive->extractTo("$extract_dir");
         $archive->close();
-        echo '<div class="alert alert-info">Files extracted from: '.basename($get_filename).'</div>';
+        echo '<div class="alert alert-info">Files extracted from: '.htmlspecialchars(basename($get_filename), ENT_QUOTES).'</div>';
     } else {
         echo '<div class="alert alert-warning">Error: cannot open zip file</div>';
     }
