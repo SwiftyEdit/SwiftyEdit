@@ -172,7 +172,9 @@ function move_new_files($source) {
  * that isn't in the whitelist is a leftover from an older build and gets
  * removed. install/ is already fully replaced in move_new_files(); data/,
  * plugins/ and public/ are intentionally left untouched (user data /
- * installed plugins / themes).
+ * installed plugins / themes). acp/core/update/download/ is also skipped:
+ * it's the updater's own runtime cache (gitignored, never part of the
+ * release build), so it never appears in whitelist.json.
  * @return void
  */
 function remove_obsolete_files($extracted_source_dir) {
@@ -209,6 +211,10 @@ function remove_obsolete_files($extracted_source_dir) {
             }
 
             $relative = substr($path, strlen('../'));
+
+            if (str_starts_with($relative, 'acp/core/update/download/')) {
+                continue;
+            }
 
             if (!isset($whitelist[$relative])) {
                 unlink($path);
