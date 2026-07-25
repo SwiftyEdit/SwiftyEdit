@@ -17,6 +17,7 @@ if(isset($_POST['delete'])) {
     ]);
     if($data->rowCount() > 0) {
         record_log($_SESSION['user_nick'],"delete category id: $delete_id","8");
+        se_updateCategoriesCache();
         header( "HX-Trigger: updated_categories");
         exit;
     }
@@ -95,6 +96,7 @@ if (isset($_POST['save_category'])) {
         ]);
     }
 
+    se_updateCategoriesCache();
     show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: updated_categories");
 }

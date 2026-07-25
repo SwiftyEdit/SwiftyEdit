@@ -17,6 +17,8 @@ Anders als in SwiftyEdit Version 1 müssen alle Plugins einer bestimmten Ordners
     - index.php (wird geladen, sobald das Plugin aktiv ist)
     - xhr.php (verarbeitet XHR-Anfragen unter `/xhr/plugins/{plugin}/`)
   - backend [d] (optional)
+    - page-values.php / product-values.php / post-values.php (optional, ergänzt Felder
+      im "Addons"-Tab des Seiten-/Produkt-/Post-Editors, siehe unten)
   - frontend [d] (optional)
     - index.php (nur für Seiten-Modul-Plugins, ersetzt den Seiteninhalt)
   - hooks-backend [d] (optional)
@@ -44,6 +46,8 @@ Ein Plugin muss aktiviert sein, damit es
 
 - XHR-Anfragen im Frontend verarbeiten kann
 - Hooks im Frontend ausgeführt werden können
+- eigene Felder im "Addons"-Tab des Seiten-/Produkt-/Post-Editors anzeigen kann
+  (`{page|product|post}-values.php`, siehe unten)
 
 ### Wann werden welche Plugin-Dateien geladen?
 
@@ -53,6 +57,7 @@ Folgende Includes sind möglich:
 2. `/plugins/{plugin}/frontend/index.php`
 3. `/plugins/{plugin}/global/index.php`
 4. `/plugins/{plugin}/global/xhr.php`
+5. `/plugins/{plugin}/backend/{page|product|post}-values.php`
 
 ---
 
@@ -63,6 +68,45 @@ Folgende Includes sind möglich:
    in eine Seite eingebunden oder manuell aktiviert.
 4. Wenn ein Plugin XHR-Anfragen im Frontend verarbeiten soll.
    Das Plugin muss dafür aktiviert sein. Die korrekte Route ist `/xhr/plugins/{plugin}/`
+5. Wenn der Seiten-, Produkt- oder Post-Editor seinen "Addons"-Tab rendert - einmal für
+   jedes Plugin, das im Backend aktiviert ist (siehe unten).
+
+### Addon-Felder im Seiten-/Produkt-/Post-Editor
+
+Ein Plugin kann eigene Eingabefelder im "Addons"-Tab des Seiten-, Produkt- und
+Post-Editors ergänzen, indem es eine dieser Dateien bereitstellt:
+
+- `/plugins/{plugin}/backend/page-values.php`
+- `/plugins/{plugin}/backend/product-values.php`
+- `/plugins/{plugin}/backend/post-values.php`
+
+Diese Dateien werden nur für Plugins geladen, die **im Backend aktiviert** sind - die
+Einbindung in eine Seite allein reicht nicht aus.
+
+Jede Datei erhält ein `$record_data`-Array (die Datenbankzeile des aktuellen Datensatzes)
+und muss einen String `$plugin_form_tpl` mit dem HTML für die eigenen Felder setzen:
+
+```php
+<?php
+// plugins/mein-plugin/backend/page-values.php
+
+$values = json_decode($record_data['addon_string'], true) ?: [];
+
+$plugin_form_tpl = '<div class="mb-1">';
+$plugin_form_tpl .= '<label>Mein Feld</label>';
+$plugin_form_tpl .= '<input type="text" class="form-control" name="addon_values[mein_feld]" value="'
+    . htmlspecialchars($values['mein_feld'] ?? '') . '">';
+$plugin_form_tpl .= '</div>';
+```
+
+- Benenne deine Eingabefelder `addon_values[key]` für einzelne Werte, oder
+  `addon_values[key][]` für Mehrfachauswahl-Felder (Checkboxen, Multi-Select).
+- SwiftyEdit präfixt jeden Feldnamen automatisch mit dem Ordnernamen deines Plugins,
+  bevor gespeichert wird, und entfernt das Präfix wieder, bevor `$record_data['addon_string']`
+  an deine Datei übergeben wird - du musst dich also nicht um Namenskollisionen mit
+  anderen Plugins kümmern, die ebenfalls Addon-Felder zum selben Datensatz ergänzen.
+- Die übermittelten Werte werden als JSON in der Spalte `addon_string` des Datensatzes
+  gespeichert (`se_pages`, `se_products` bzw. `se_posts`).
 
 ## Die info.json Datei
 

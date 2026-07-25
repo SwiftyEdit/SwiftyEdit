@@ -416,8 +416,94 @@ function se_get_addons($t='module') {
 	$result = $db_content->select("se_addons", "*", [
 	    "addon_type" => "$type"
 	]);
-	
+
 	return $result;
+}
+
+
+/**
+ * Sanitize + JSON-encode posted addon_values (already plugin-prefixed by the browser,
+ * see se_render_record_addons()). Handles both scalar fields (addon_values[key]) and
+ * array fields (addon_values[key][], e.g. multi-select/checkboxes).
+ */
+function se_encode_addon_values(?array $postedAddonValues): string {
+
+	if (!is_array($postedAddonValues)) {
+		return '';
+	}
+
+	$sanitized = [];
+	foreach ($postedAddonValues as $key => $value) {
+		if (is_array($value)) {
+			$sanitized[$key] = array_map(
+				fn($v) => htmlentities(stripslashes($v), ENT_QUOTES),
+				$value
+			);
+		} else {
+			$sanitized[$key] = htmlentities(stripslashes($value), ENT_QUOTES);
+		}
+	}
+
+	return json_encode($sanitized, JSON_UNESCAPED_UNICODE);
+}
+
+
+/**
+ * Strip this plugin's prefix from a record's addon_string before handing the data to
+ * the plugin's backend/{recordType}-values.php include, so existing plugin code
+ * (e.g. $get_addon_data['key']) keeps working unchanged.
+ */
+function se_prepare_addon_scope(string $pluginSlug, array $recordData): array {
+
+	$allValues = json_decode($recordData['addon_string'] ?? '', true) ?: [];
+	$prefix = $pluginSlug . '__';
+	$ownValues = [];
+
+	foreach ($allValues as $key => $value) {
+		if (str_starts_with($key, $prefix)) {
+			$ownValues[substr($key, strlen($prefix))] = $value;
+		}
+	}
+
+	$recordData['addon_string'] = json_encode($ownValues);
+	return $recordData;
+}
+
+
+/**
+ * Render addon cards for every active plugin providing backend/{recordType}-values.php
+ * (recordType is 'page', 'product' or 'post'). Field names are prefixed with the plugin's
+ * slug after include, so plugin authors don't need to namespace their own field names.
+ */
+function se_render_record_addons(string $recordType, array $recordData): string {
+
+	$combined = '';
+
+	foreach (se_get_addons('plugin') as $addon) {
+		$pluginSlug = $addon['addon_dir'];
+		$file = SE_PLUGINS . "/{$pluginSlug}/backend/{$recordType}-values.php";
+
+		if (!is_file($file)) {
+			continue;
+		}
+
+		$record_data = se_prepare_addon_scope($pluginSlug, $recordData);
+		$plugin_form_tpl = '';
+		include $file;
+
+		$plugin_form_tpl = preg_replace(
+			'/name="addon_values\[([a-zA-Z0-9_]+)\](\[\])?"/',
+			'name="addon_values[' . $pluginSlug . '__$1]$2"',
+			$plugin_form_tpl
+		);
+
+		$combined .= '<div class="card mb-1">';
+		$combined .= '<div class="card-header">' . htmlspecialchars($addon['addon_name']) . '</div>';
+		$combined .= '<div class="card-body">' . $plugin_form_tpl . '</div>';
+		$combined .= '</div>';
+	}
+
+	return $combined;
 }
 
 

@@ -45,6 +45,8 @@ $cols = array(
 	"post_labels" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"post_attachments" => "VARCHAR(255) NOT NULL DEFAULT ''",
 	"post_template_values" => "LONGTEXT NOT NULL DEFAULT ''",
+	/* plugin addon fields, see acp/core/functions_addons.php:se_render_record_addons() */
+	"addon_string" => "VARCHAR(500) NOT NULL DEFAULT ''",
 	/* meta data */
 	"post_meta_title" => "VARCHAR(255) NOT NULL DEFAULT ''",
 	"post_meta_description" => "VARCHAR(255) NOT NULL DEFAULT ''",

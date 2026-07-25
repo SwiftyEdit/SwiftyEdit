@@ -116,17 +116,60 @@ function se_get_media_data_by_id($id): bool|array
 
 
 /**
+ * path to the categories cache file
+ * cache directory is created on first use
+ */
+function se_getCategoriesCachePath() {
+
+	$dir = SE_CONTENT . '/cache/categories';
+	if (!is_dir($dir)) {
+		mkdir($dir, 0777, true);
+	}
+
+	return $dir . '/categories.json';
+}
+
+/**
  * get all categories
  * order by cat_sort
+ * reads from cache when available, falls back to the database
  */
 
 function se_get_categories() {
 	global $db_content;
+
+	$cache_file = se_getCategoriesCachePath();
+	if (file_exists($cache_file) && is_readable($cache_file)) {
+		$content = file_get_contents($cache_file);
+		if ($content !== false) {
+			$categories = json_decode($content, true);
+			if (json_last_error() === JSON_ERROR_NONE) {
+				return $categories;
+			}
+		}
+	}
+
 	$categories = $db_content->select("se_categories", "*",
 	[
 		"ORDER" => ["cat_sort" => "DESC"]
-	]);	
+	]);
 	return $categories;
+}
+
+/**
+ * rebuild the categories cache file from the database
+ * called after category create/update/delete in the ACP
+ */
+function se_updateCategoriesCache() {
+	global $db_content;
+
+	$categories = $db_content->select("se_categories", "*",
+	[
+		"ORDER" => ["cat_sort" => "DESC"]
+	]);
+
+	$cache_file = se_getCategoriesCachePath();
+	file_put_contents($cache_file, json_encode($categories, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 

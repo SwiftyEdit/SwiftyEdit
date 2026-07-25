@@ -9,6 +9,7 @@
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#file">{nav_btn_files}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_metas}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{nav_btn_settings}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#addons" title="{nav_btn_addons}">{icon_addons}</a></li>
 			</ul>
 				</div>
 				<div class="card-body">
@@ -102,6 +103,10 @@
 					</div>
 					
 				</div><!-- #prefs -->
+
+				<div class="tab-pane fade" id="addons">
+					{addon_module_forms}
+				</div>
 			</div>
 		</div>
 			</div>

@@ -205,6 +205,8 @@ if(isset($_POST['save_post'])) {
         $post_labels = implode(",", $_POST['post_labels']);
     }
 
+    $addon_string = se_encode_addon_values($_POST['addon_values'] ?? null);
+
     /* fix on top */
 
     if($_POST['post_fixed'] == 'fixed') {

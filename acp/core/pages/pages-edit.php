@@ -65,6 +65,8 @@ if(isset($_POST['restore_id']) && is_numeric($_POST['restore_id'])) {
     $btn_submit_text = $lang['update'];
 }
 
+$record_data = $get_page ?? [];
+
 if(str_contains($page_sort, '.')) {
     $last_part_page_sort = substr($page_sort, strrpos($page_sort, '.') + 1);
 } else {
@@ -738,19 +740,7 @@ $form_tpl .= '<label for="selMod">'.$lang['label_pages_select_addon'].'</label>'
 $form_tpl .= $select_page_modul;
 $form_tpl .= '</div>';
 
-foreach($all_mods as $k => $v) {
-    $show_mod = basename($k);
-    $mod_id = md5($k);
-    if(is_file(SE_ROOT."/plugins/$show_mod/backend/page_values.php")) {
-        $form_tpl .= '<div class="card mb-1">';
-        $form_tpl .= '<div class="card-header">' . $show_mod . '</div>';
-        $form_tpl .= '<div class="card-body">';
-        include SE_ROOT."/plugins/$show_mod/backend/page_values.php";
-        $form_tpl .= $plugin_form_tpl;
-        $form_tpl .= '</div>';
-        $form_tpl .= '</div>';
-    }
-}
+$form_tpl .= se_render_record_addons('page', $record_data);
 
 $form_tpl .= '</div>';
 $form_tpl .= '<div class="col-md-6">';

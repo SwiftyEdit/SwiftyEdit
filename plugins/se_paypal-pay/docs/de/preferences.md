@@ -35,5 +35,8 @@ Auf diese Seite wird der Kunde geleitet, wenn er den Bazahlvorgang bei PayPal ab
 
 ### Return URL
 Auf diese Seite wird der Kunde geleitet, sobald die Zahlung bei PayPal abgeschlossen wurde.
-Erstelle diese Seite über das Seiten Management und binde im Tab Plugins `se_paypal-pay` ein.
+Erstelle dazu über das Seiten Management eine normale Seite, deren Permalink exakt mit dem
+Pfad dieser Return URL übereinstimmt. Ein Plugin muss dieser Seite **nicht** zugewiesen werden
+(Zahlungs-Plugins stehen im Tab Plugins gar nicht zur Auswahl) – SwiftyEdit erkennt die Seite
+automatisch anhand der URL und erfasst die Zahlung bei PayPal, sobald der Kunde darauf geleitet wird.
 Damit werden Zahlungen deiner Kunden direkt in der Bestellung berücksichtigt und die Bestellung als bezahlt markiert.

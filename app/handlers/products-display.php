@@ -709,7 +709,7 @@ $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
 $smarty->assign('text_scope_of_delivery', $text_scope_of_delivery);
 $smarty->assign('product_text_label', $text_label);
-$smarty->assign('product_href', $swifty_slug.$product_data['slug']);
+$smarty->assign('product_href', SE_INCLUDE_PATH . '/' . $target_page . $product_data['slug']);
 
 
 $smarty->assign('product_pricetag_mode', $product_data['product_pricetag_mode']);

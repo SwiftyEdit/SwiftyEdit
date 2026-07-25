@@ -39,6 +39,8 @@ if(isset($post_data['post_type'])) {
     $post_type_form = $post_data['post_type'];
 }
 
+$record_data = $post_data ?? [];
+
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['files'].' '.$lang['nav_btn_blog'];
 echo '<div class="d-flex ms-auto">'.$mode.' '.$post_type_form.'</div>';
@@ -77,6 +79,10 @@ $form_tpl = file_get_contents($form_array[$post_type_form]);
 // inject the sidebar - it is in all templates the same
 $form_tpl_sidebar = file_get_contents('../acp/templates/post_options.tpl');
 $form_tpl = str_replace('{sidebar}', $form_tpl_sidebar, $form_tpl);
+
+$addon_module_forms = se_render_record_addons('post', $record_data);
+$form_tpl = str_replace('{addon_module_forms}', $addon_module_forms, $form_tpl);
+$form_tpl = str_replace('{icon_addons}', $icon['plugin'], $form_tpl);
 
 $all_blog_pages = [];
 $all_blog_pages = $db_content->select("se_pages","page_permalink",[
