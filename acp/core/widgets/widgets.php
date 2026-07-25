@@ -265,8 +265,6 @@ if ($_REQUEST['widget'] == 'product-select') {
     foreach ($products_data as &$product) {
         $product['product_id'] = (int)$product['id'];
         $product['flag_src'] = return_language_flag_src($product['product_lang']);
-        $product['product_number'] = htmlentities($product['product_number']);
-        $product['title'] = htmlentities($product['title']);
     }
 
     $pagination_classes = [
