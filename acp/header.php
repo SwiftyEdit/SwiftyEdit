@@ -84,8 +84,8 @@ if (!isset($_SESSION['lang'])) {
 }
 
 if (isset($_GET['set_lang'])) {
-    $set_lang = sanitizeUserInputs($_GET['set_lang']);
-    if (is_dir(SE_ROOT.'languages/'.$set_lang)) {
+    $set_lang = se_sanitize_lang_input($_GET['set_lang']);
+    if ($set_lang !== '' && is_dir(SE_ROOT.'languages/'.$set_lang)) {
         $_SESSION['lang'] = "$set_lang";
     }
 }
