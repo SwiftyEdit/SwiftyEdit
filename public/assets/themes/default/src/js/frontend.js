@@ -8,9 +8,6 @@ window.jQuery = $; window.$ = $;
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/theme_switch.js';
 
-const { sign_guestlist } = require('./components/guestlist');
-window.sign_guestlist = sign_guestlist;
-
 import GLightbox from 'glightbox';
 window.glightbox = GLightbox;
 

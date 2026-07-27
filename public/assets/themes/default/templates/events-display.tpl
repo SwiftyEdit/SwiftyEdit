@@ -40,12 +40,19 @@
                         <dt class="col-sm-9 text-end">{$label_nbr_total_available}</dt>
                         <dd class="col-sm-3">{$nbr_available_total}</dd>
                         <dt class="col-sm-9 text-end">{$label_nbr_commitments}</dt>
-                        <dd class="col-sm-3"><span id="nbr-commitments">{$nbr_commitments}</span></dd>
+                        <dd class="col-sm-3">
+                            {if $label_nbr_commitments != ""}
+                                <span id="nbr-commitments" hx-get="/xhr/se/guestlist/?evc={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_guestlist_{$event_id} from:body">{$nbr_commitments}</span>
+                            {else}
+                                <span id="nbr-commitments">{$nbr_commitments}</span>
+                            {/if}
+                        </dd>
                     </dl>
                 </div>
             </div>
 
-            <button class="btn btn-sm btn-outline-secondary" name="sign" onclick="sign_guestlist(this.value)" value="confirm-{$event_id}" {$disabled}>{$sign_guestlist}</button>
+            {$hidden_csrf_token}
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/guestlist/" hx-swap="none" hx-include="[name='csrf_token']" name="val" value="confirm-{$event_id}" {$disabled}>{$sign_guestlist}</button>
         </div>
     </div>
     {/if}
@@ -56,13 +63,14 @@
 
     {if $show_voting == true}
         <div class="mb-3">
-            <button class="btn btn-sm btn-outline-secondary" name="upvote" onclick="vote(this.value)"
-                    value="up-post-{$event_id}" {$votes_status_up}>
-                <i class="bi bi-hand-thumbs-up-fill"></i> <span id="vote-up-nbr-{$product_id}">{$votes_up}</span>
+            {$hidden_csrf_token}
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="[name='csrf_token']"
+                    name="vote" value="up-event-{$event_id}" {$votes_status_up}>
+                <i class="bi bi-hand-thumbs-up-fill"></i> <span hx-get="/xhr/se/votes/?section=e&upv={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$event_id} from:body">0</span>
             </button>
-            <button class="btn btn-sm btn-outline-secondary" name="dnvote" onclick="vote(this.value)"
-                    value="dn-post-{$value.product_id}" {$votes_status_dn}>
-                <i class="bi bi-hand-thumbs-down-fill"></i> <span id="vote-dn-nbr-{$product_id}">{$votes_dn}</span>
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="[name='csrf_token']"
+                    name="vote" value="dn-event-{$event_id}" {$votes_status_dn}>
+                <i class="bi bi-hand-thumbs-down-fill"></i> <span hx-get="/xhr/se/votes/?section=e&dnv={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$event_id} from:body">0</span>
             </button>
         </div>
     {/if}

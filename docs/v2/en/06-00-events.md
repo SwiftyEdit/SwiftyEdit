@@ -28,3 +28,16 @@ The most important event data is...
 (The input fields are currently labelled in German: "Beginn" for the start and "Ende" for the end.)
 
 This information is responsible, among other things, for sorting your events.
+
+### Guest list
+
+The <kbd>Guestlist</kbd> section controls whether and how visitors can confirm their attendance for the
+event:
+
+* <kbd>Deactivated</kbd>, <kbd>For registered users</kbd> or <kbd>For all Users</kbd> controls who sees
+  and can use the confirm button on the event page.
+* <kbd>Show number of commitments</kbd> / <kbd>Hide number of commitments</kbd> controls whether the
+  number of already confirmed commitments is publicly visible on the event page.
+* <kbd>Guestlist limit</kbd> stores a number of available seats, shown as information on the event page.
+  The limit is not enforced automatically - further commitments remain possible even after the number is
+  reached.

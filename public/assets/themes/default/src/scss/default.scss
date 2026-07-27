@@ -114,6 +114,17 @@ $enable-dark-mode: true;
     }
   }
 
+  .user-status-container {
+    float: right;
+    margin-top: -15px;
+    margin-left: 5px;
+    button.btn-link {
+      padding: 3px 5px;
+      color: $light;
+      text-decoration: none;
+    }
+  }
+
 }
 
 #pageTeaser {
@@ -121,6 +132,7 @@ $enable-dark-mode: true;
   margin-top: -1rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 [data-bs-theme=dark] #pageTeaser {

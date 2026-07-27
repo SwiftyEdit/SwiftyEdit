@@ -90,11 +90,11 @@
 						</div>
 						<hr>
 						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="1" id="event_guestlist_public_nbr_yes" {checked_gl_public_nbr_1}>
+							<input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="2" id="event_guestlist_public_nbr_yes" {checked_gl_public_nbr_2}>
 							<label class="form-check-label" for="event_guestlist_public_nbr_yes">{label_guestlist_show_number}</label>
 						</div>
 						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="2" id="event_guestlist_public_nbr_no" {checked_gl_public_nbr_2}>
+							<input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="1" id="event_guestlist_public_nbr_no" {checked_gl_public_nbr_1}>
 							<label class="form-check-label" for="event_guestlist_public_nbr_no">{label_guestlist_hide_number}</label>
 						</div>
 						<hr>

@@ -1,6 +1,6 @@
 {include file='header.tpl'}
 
-<div class="container">
+<div class="container-fluid">
     {include file='content.tpl'}
 </div>
 

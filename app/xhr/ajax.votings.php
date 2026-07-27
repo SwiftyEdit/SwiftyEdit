@@ -1,12 +1,10 @@
 <?php
-session_start();
-error_reporting(0);
 
-const SE_SECTION = 'frontend';
-require SE_ROOT.'/vendor/autoload.php';
-include_once SE_ROOT.'/config.php';
-include_once SE_ROOT.'/database.php';
-include_once SE_ROOT.'/app/functions/functions.posts.php';
+/**
+ * ajax voting
+ * called via route.php, which already includes bootstrap.php
+ * ($db_content, session, csrf validation, functions.posts.php)
+ */
 
 $time = time();
 

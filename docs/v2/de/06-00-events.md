@@ -26,3 +26,16 @@ eintragen. Die wichtigsten Event-Daten sind ...
 * und <kbd>Ende</kbd> Hier gibst Du das Datum an, wenn das Event beendet ist.
 
 Diese Angaben sind u.a. für die Sortierung Deiner Events verantwortlich.
+
+### Gästeliste
+
+Im Bereich <kbd>Gästeliste</kbd> legst Du fest, ob und wie Besucher ihre Teilnahme am Event bestätigen
+können:
+
+* <kbd>Deaktiviert</kbd>, <kbd>Für registrierte Benutzer</kbd> oder <kbd>Für alle Benutzer</kbd> steuert,
+  wer auf der Event-Seite den Button zum Bestätigen sieht und nutzen kann.
+* <kbd>Anzahl der Zusagen anzeigen</kbd> bzw. <kbd>Anzahl der Zusagen verbergen</kbd> legt fest, ob die
+  Anzahl der bereits bestätigten Zusagen öffentlich auf der Event-Seite sichtbar ist.
+* <kbd>Gästelistenlimit</kbd> hinterlegt eine Anzahl verfügbarer Plätze, die auf der Event-Seite als
+  Information angezeigt wird. Das Limit wird nicht automatisch durchgesetzt - weitere Zusagen sind auch
+  nach Erreichen der Anzahl weiterhin möglich.

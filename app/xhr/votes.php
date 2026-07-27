@@ -4,7 +4,7 @@
  * show number of up- and downvotes
  */
 
-$allowed_section = ['p', 'b', 'e'];
+$allowed_section = ['p', 'b', 'e', 's'];
 $section = '';
 if(in_array($_GET['section'], $allowed_section)) {
     $section = $_GET['section'];

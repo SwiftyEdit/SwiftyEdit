@@ -15,12 +15,12 @@
 				{/foreach}
 			</ul>
 		</div>
-		
+
 		<form class="form-inline" action="{$search_uri}" method="POST">
     		<input class="form-control mr-sm-2 searchbox" name="s" type="search" aria-label="Search" value="{$search_string}">
 			{$hidden_csrf_token}
   		</form>
-		
+
 	</div>
 </nav>
 {/nocache}
