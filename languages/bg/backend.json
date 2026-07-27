@@ -30,6 +30,7 @@
   "btn.help": "Помощ",
   "btn.docs": "Документация",
   "btn.run_commands": "Изпълни команда",
+  "btn.privacy_blur": "Blur sensitive data",
   "btn.new.group": "Нова група",
   "btn.new.value": "Новата стойност",
   "btn.bulk_index": "Bulk index",
