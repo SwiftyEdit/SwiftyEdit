@@ -44,6 +44,43 @@
             </div>
         {/if}
 
+        <div class="user-status-container">
+            {if $smarty.session.user_class == "administrator"}
+                <button class="btn btn-link btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminHelpersOffcanvas" aria-controls="adminHelpersOffcanvas" title="{$lang_button_acp}">
+                    <i class="bi bi-tools"></i>
+                </button>
+            {/if}
+
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-link btn-sm dropdown-toggle" id="userBoxToggle" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="userBoxToggle" style="min-width: 280px;">
+                    <div id="user-box"
+                         hx-get="/xhr/se/statusbox/"
+                         hx-trigger="load, update_user_status"
+                         hx-swap="innerHTML">
+                        <div class="d-flex align-items-center htmx-indicator">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            <span class="sr-only">{$lang_loading}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {if $smarty.session.user_class == "administrator"}
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="adminHelpersOffcanvas" aria-labelledby="adminHelpersOffcanvasLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="adminHelpersOffcanvasLabel">{$lang_button_acp}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    {include file='admin_helpers.tpl'}
+                </div>
+            </div>
+        {/if}
+
         {if $social_media_block != ''}
             {include file='socialmedia.tpl'}
         {/if}
