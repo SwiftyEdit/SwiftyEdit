@@ -10,6 +10,9 @@
                  <td><p>{lang_label_payment}</p></td><td><p>{payment_status}</p></td>
              </tr>
              <tr>
+                 <td><p>{lang_label_payment_method}</p></td><td><p>{payment_type}</p></td>
+             </tr>
+             <tr>
                  <td><p>{lang_price_total}</p></td><td><p>{price_total} {currency}</p></td>
              </tr>
              <tr>

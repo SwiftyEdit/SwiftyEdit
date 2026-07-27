@@ -30,6 +30,7 @@
   "btn.help": "Yardım",
   "btn.docs": "Belgeleme",
   "btn.run_commands": "Komutları Çalıştır",
+  "btn.privacy_blur": "Blur sensitive data",
   "btn.new.group": "Yeni grup",
   "btn.new.value": "Yeni değer",
   "btn.bulk_index": "Çoklu indeksleme",

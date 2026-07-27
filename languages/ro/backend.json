@@ -30,6 +30,7 @@
   "btn.help": "Ajutor",
   "btn.docs": "Documentație",
   "btn.run_commands": "Rulează comenzile",
+  "btn.privacy_blur": "Blur sensitive data",
   "btn.new.group": "Grup nou",
   "btn.new.value": "Valoare nouă",
   "btn.bulk_index": "Indexul în masă",
