@@ -30,7 +30,7 @@
   "btn.help": "Hilfe",
   "btn.docs": "Dokumentation",
   "btn.run_commands": "Befehle ausführen",
-  "btn.privacy_blur": "Blur sensitive data",
+  "btn.privacy_blur": "Sensible Daten unkenntlich machen",
   "btn.new.group": "Neue Gruppe",
   "btn.new.value": "Neuer Wert",
   "btn.bulk_index": "Mehrere indexieren",
