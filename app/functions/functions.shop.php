@@ -72,6 +72,20 @@ function se_get_products($start, $limit, $filter)
         $filter['text_search'] = '';
     }
 
+    // Bound parameters for the WHERE clause. Values used to be interpolated
+    // into the SQL string after addslashes() - that's not a real defense on
+    // SQLite, which has no backslash-escaping in string literals (only a
+    // doubled '' escapes a quote), so a quote in a filter value could break
+    // out of the literal. Every LIKE/comparison value below is passed as a
+    // bound parameter instead.
+    $map = [];
+    $ph_index = 0;
+    $bind = function ($value) use (&$map, &$ph_index) {
+        $key = ':filter_ph' . $ph_index++;
+        $map[$key] = (string)$value;
+        return $key;
+    };
+
     // Base filter: products and variants
     $sql_filter_start = "WHERE (type LIKE '%p%' OR type LIKE '%v%') ";
 
@@ -82,8 +96,8 @@ function se_get_products($start, $limit, $filter)
         $lang = explode('-', $filter['languages']);
         foreach ($lang as $l) {
             if ($l != '') {
-                $l = addslashes(trim($l));
-                $sql_lang_filter .= "(product_lang LIKE '%$l%') OR ";
+                $ph = $bind('%' . trim($l) . '%');
+                $sql_lang_filter .= "(product_lang LIKE $ph) OR ";
             }
         }
         $sql_lang_filter = rtrim($sql_lang_filter, ' OR ');
@@ -137,9 +151,11 @@ function se_get_products($start, $limit, $filter)
             if ($f == "") {
                 continue;
             }
-            // Escape for LIKE - use real_escape_string equivalent
-            $f = addslashes($f);
-            $sql_text_filter .= "(tags LIKE '%$f%' OR title LIKE '%$f%' OR teaser LIKE '%$f%' OR text LIKE '%$f%') AND ";
+            $ph_tags = $bind('%' . $f . '%');
+            $ph_title = $bind('%' . $f . '%');
+            $ph_teaser = $bind('%' . $f . '%');
+            $ph_text = $bind('%' . $f . '%');
+            $sql_text_filter .= "(tags LIKE $ph_tags OR title LIKE $ph_title OR teaser LIKE $ph_teaser OR text LIKE $ph_text) AND ";
         }
         $sql_text_filter = rtrim($sql_text_filter, ' AND ');
     }
@@ -153,8 +169,8 @@ function se_get_products($start, $limit, $filter)
         $status = explode('-', $filter['status']);
         foreach ($status as $s) {
             if ($s != '') {
-                $s = addslashes($s);
-                $sql_status_filter .= "(status LIKE '%$s%') OR ";
+                $ph = $bind('%' . $s . '%');
+                $sql_status_filter .= "(status LIKE $ph) OR ";
             }
         }
         $sql_status_filter = rtrim($sql_status_filter, ' OR ');
@@ -166,8 +182,8 @@ function se_get_products($start, $limit, $filter)
         $cats = explode(',', $filter['categories']);
         foreach ($cats as $c) {
             if ($c != '') {
-                $c = addslashes($c);
-                $sql_cat_filter .= "(categories LIKE '%$c%') OR ";
+                $ph = $bind('%' . $c . '%');
+                $sql_cat_filter .= "(categories LIKE $ph) OR ";
             }
         }
         $sql_cat_filter = rtrim($sql_cat_filter, ' OR ');
@@ -180,8 +196,11 @@ function se_get_products($start, $limit, $filter)
         foreach ($se_labels as $label_data) {
             $label = $label_data['label_id'];
             if (in_array($label, $checked_labels_array)) {
-                $label = addslashes($label);
-                $sql_label_filter .= "labels LIKE '%,$label,%' OR labels LIKE '%,$label' OR labels LIKE '$label,%' OR labels = '$label' OR ";
+                $ph1 = $bind('%,' . $label . ',%');
+                $ph2 = $bind('%,' . $label);
+                $ph3 = $bind($label . ',%');
+                $ph4 = $bind($label);
+                $sql_label_filter .= "labels LIKE $ph1 OR labels LIKE $ph2 OR labels LIKE $ph3 OR labels = $ph4 OR ";
             }
         }
         $sql_label_filter = rtrim($sql_label_filter, ' OR ');
@@ -214,12 +233,16 @@ function se_get_products($start, $limit, $filter)
 
     // Frontend: only show released products
     if (SE_SECTION == 'frontend') {
-        $sql_filter .= "AND releasedate <= '$time_string_now' ";
+        $ph_now = $bind($time_string_now);
+        $sql_filter .= "AND releasedate <= $ph_now ";
     }
 
     // Time range filter
     if (!empty($time_string_start)) {
-        $sql_filter .= "AND releasedate >= '$time_string_start' AND releasedate <= '$time_string_end' AND releasedate < '$time_string_now' ";
+        $ph_start = $bind($time_string_start);
+        $ph_end = $bind($time_string_end);
+        $ph_now2 = $bind($time_string_now);
+        $sql_filter .= "AND releasedate >= $ph_start AND releasedate <= $ph_end AND releasedate < $ph_now2 ";
     }
 
     // Subquery: Find parent product IDs
@@ -240,16 +263,16 @@ function se_get_products($start, $limit, $filter)
             AND type LIKE '%p%'
             $order $limit_str";
 
-    $entries = $db_posts->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $entries = $db_posts->query($sql, $map)->fetchAll(PDO::FETCH_ASSOC);
 
     // Count query for statistics
-    $sql_cnt = "SELECT 
-        count(*) AS 'P', 
+    $sql_cnt = "SELECT
+        count(*) AS 'P',
         (SELECT count(*) FROM se_products WHERE type LIKE '%p%') AS 'A',
-        (SELECT count(DISTINCT CASE WHEN type LIKE '%v%' THEN parent_id ELSE id END) 
+        (SELECT count(DISTINCT CASE WHEN type LIKE '%v%' THEN parent_id ELSE id END)
          FROM se_products $sql_filter) AS 'F' ";
 
-    $stat = $db_posts->query("$sql_cnt")->fetch(PDO::FETCH_ASSOC);
+    $stat = $db_posts->query($sql_cnt, $map)->fetch(PDO::FETCH_ASSOC);
 
     // Add statistics to results
     if (count($entries) > 0) {

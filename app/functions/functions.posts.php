@@ -50,6 +50,17 @@ function se_get_post_entries($start,$limit,$filter): array {
 	/* set filters */
 	$sql_filter_start = 'WHERE post_id IS NOT NULL ';
 
+	// Bound parameters for the WHERE clause instead of building the SQL
+	// string via raw interpolation - these values used to be embedded
+	// directly with no escaping at all.
+	$map = [];
+	$ph_index = 0;
+	$bind = function ($value) use (&$map, &$ph_index) {
+		$key = ':filter_ph' . $ph_index++;
+		$map[$key] = (string)$value;
+		return $key;
+	};
+
     /* text search */
     if($filter['text'] != '') {
         $sql_text_filter = '';
@@ -57,7 +68,11 @@ function se_get_post_entries($start,$limit,$filter): array {
         // loop through keywords
         foreach($all_filter as $f) {
             if($f == "") { continue; }
-            $sql_text_filter .= "(post_tags like '%$f%' OR post_title like '%$f%' OR post_teaser like '%$f%' OR post_text like '%$f%') AND";
+            $ph_tags = $bind('%' . $f . '%');
+            $ph_title = $bind('%' . $f . '%');
+            $ph_teaser = $bind('%' . $f . '%');
+            $ph_text = $bind('%' . $f . '%');
+            $sql_text_filter .= "(post_tags like $ph_tags OR post_title like $ph_title OR post_teaser like $ph_teaser OR post_text like $ph_text) AND";
         }
         $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
 
@@ -71,21 +86,23 @@ function se_get_post_entries($start,$limit,$filter): array {
         $lang = explode('-', $filter['languages']);
         foreach ($lang as $l) {
             if ($l != '') {
-                $sql_lang_filter .= "(post_lang LIKE '%$l%') OR ";
+                $ph = $bind('%' . $l . '%');
+                $sql_lang_filter .= "(post_lang LIKE $ph) OR ";
             }
         }
         $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
     } else {
         $sql_lang_filter = '';
     }
-	
+
 	/* type filter */
 	$sql_types_filter = "post_type IS NULL OR ";
 	$types = explode('-', $filter['types']);
 	foreach($types as $t) {
 		if($t != '') {
-			$sql_types_filter .= "(post_type LIKE '%$t%') OR ";
-		}		
+			$ph = $bind('%' . $t . '%');
+			$sql_types_filter .= "(post_type LIKE $ph) OR ";
+		}
 	}
 	$sql_types_filter = substr("$sql_types_filter", 0, -3); // cut the last ' OR'
 
@@ -96,41 +113,47 @@ function se_get_post_entries($start,$limit,$filter): array {
         $status = explode('-', $filter['status']);
         foreach ($status as $s) {
             if ($s != '') {
-                $sql_status_filter .= "(post_status LIKE '%$s%') OR ";
+                $ph = $bind('%' . $s . '%');
+                $sql_status_filter .= "(post_status LIKE $ph) OR ";
             }
         }
         $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
     } else {
         $sql_status_filter = '';
     }
-	
+
 	/* category filter */
 	if($filter['categories'] == 'all' OR $filter['categories'] == '') {
 		$sql_cat_filter = '';
 	} else {
-		
+
 		$cats = explode(',', $filter['categories']);
 		foreach($cats as $c) {
 			if($c != '') {
-				$sql_cat_filter .= "(post_categories LIKE '%$c%') OR ";
-			}		
+				$ph = $bind('%' . $c . '%');
+				$sql_cat_filter .= "(post_categories LIKE $ph) OR ";
+			}
 		}
 		$sql_cat_filter = substr("$sql_cat_filter", 0, -3); // cut the last ' OR'
 	}
-	
+
 	/* label filter */
 	if(!isset($filter['labels']) OR $filter['labels'] == 'all' OR $filter['labels'] == '') {
 		$sql_label_filter = '';
 	} else {
 
 		$checked_labels_array = explode('-', $filter['labels']);
-		
+
 		for($i=0;$i<count($se_labels);$i++) {
 			$label = $se_labels[$i]['label_id'];
 			if(in_array($label, $checked_labels_array)) {
-				$sql_label_filter .= "post_labels LIKE '%,$label,%' OR post_labels LIKE '%,$label' OR post_labels LIKE '$label,%' OR post_labels = '$label' OR ";
+				$ph1 = $bind('%,' . $label . ',%');
+				$ph2 = $bind('%,' . $label);
+				$ph3 = $bind($label . ',%');
+				$ph4 = $bind($label);
+				$sql_label_filter .= "post_labels LIKE $ph1 OR post_labels LIKE $ph2 OR post_labels LIKE $ph3 OR post_labels = $ph4 OR ";
 			}
-		}		
+		}
 		$sql_label_filter = substr("$sql_label_filter", 0, -3); // cut the last ' OR'
 	}
 
@@ -156,23 +179,27 @@ function se_get_post_entries($start,$limit,$filter): array {
     }
 	
 	if(SE_SECTION == 'frontend') {
-		$sql_filter .= "AND post_releasedate <= '$time_string_now' ";
+		$ph_now = $bind($time_string_now);
+		$sql_filter .= "AND post_releasedate <= $ph_now ";
 	}
 
 	if($time_string_start != '') {
-		$sql_filter .= "AND post_releasedate >= '$time_string_start' AND post_releasedate <= '$time_string_end' AND post_releasedate < '$time_string_now' ";
+		$ph_start = $bind($time_string_start);
+		$ph_end = $bind($time_string_end);
+		$ph_now2 = $bind($time_string_now);
+		$sql_filter .= "AND post_releasedate >= $ph_start AND post_releasedate <= $ph_end AND post_releasedate < $ph_now2 ";
 	}
-	
+
 	if($db_type == 'sqlite') {
 		$sql = "SELECT *, strftime('%Y-%m-%d',datetime(post_releasedate, 'unixepoch')) as 'sortdate' FROM se_posts $sql_filter $order $limit_str";
 	} else {
 		$sql = "SELECT *, FROM_UNIXTIME(post_releasedate,'%Y-%m-%d') as 'sortdate' FROM se_posts $sql_filter $order $limit_str";
 	}
 
-	$entries = $db_posts->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-			
+	$entries = $db_posts->query($sql, $map)->fetchAll(PDO::FETCH_ASSOC);
+
 	$sql_cnt = "SELECT count(*) AS 'A', (SELECT count(*) FROM se_posts $sql_filter) AS 'filter_posts',  (SELECT count(*) FROM se_posts WHERE post_type IN ('m','i','g','f','v','l') ) AS 'all_posts'";
-	$stat = $db_posts->query("$sql_cnt")->fetch(PDO::FETCH_ASSOC);
+	$stat = $db_posts->query($sql_cnt, $map)->fetch(PDO::FETCH_ASSOC);
 
 	/* number of posts that match the filter */
 	$entries[0]['cnt_posts'] = $stat['filter_posts'];
@@ -223,13 +250,25 @@ function se_get_event_entries($start,$limit,$filter) {
     /* set filters */
     $sql_filter_start = "WHERE id IS NOT NULL ";
 
+    // Bound parameters for the WHERE clause instead of building the SQL
+    // string via raw interpolation - these values used to be embedded
+    // directly with no escaping at all.
+    $map = [];
+    $ph_index = 0;
+    $bind = function ($value) use (&$map, &$ph_index) {
+        $key = ':filter_ph' . $ph_index++;
+        $map[$key] = (string)$value;
+        return $key;
+    };
+
     /* language filter */
     if($filter['languages'] != '') {
         $sql_lang_filter = "event_lang IS NULL OR ";
         $lang = explode('-', $filter['languages']);
         foreach ($lang as $l) {
             if ($l != '') {
-                $sql_lang_filter .= "(event_lang LIKE '%$l%') OR ";
+                $ph = $bind('%' . $l . '%');
+                $sql_lang_filter .= "(event_lang LIKE $ph) OR ";
             }
         }
         $sql_lang_filter = substr("$sql_lang_filter", 0, -3); // cut the last ' OR'
@@ -244,7 +283,11 @@ function se_get_event_entries($start,$limit,$filter) {
         // loop through keywords
         foreach($all_filter as $f) {
             if($f == "") { continue; }
-            $sql_text_filter .= "(tags like '%$f%' OR title like '%$f%' OR teaser like '%$f%' OR text like '%$f%') AND";
+            $ph_tags = $bind('%' . $f . '%');
+            $ph_title = $bind('%' . $f . '%');
+            $ph_teaser = $bind('%' . $f . '%');
+            $ph_text = $bind('%' . $f . '%');
+            $sql_text_filter .= "(tags like $ph_tags OR title like $ph_title OR teaser like $ph_teaser OR text like $ph_text) AND";
         }
         $sql_text_filter = substr("$sql_text_filter", 0, -4); // cut the last ' AND'
 
@@ -258,7 +301,8 @@ function se_get_event_entries($start,$limit,$filter) {
         $status = explode('-', $filter['status']);
         foreach ($status as $s) {
             if ($s != '') {
-                $sql_status_filter .= "(status LIKE '%$s%') OR ";
+                $ph = $bind('%' . $s . '%');
+                $sql_status_filter .= "(status LIKE $ph) OR ";
             }
         }
         $sql_status_filter = substr("$sql_status_filter", 0, -3); // cut the last ' OR'
@@ -275,7 +319,8 @@ function se_get_event_entries($start,$limit,$filter) {
         $cats = explode(',', $filter['categories']);
         foreach($cats as $c) {
             if($c != '') {
-                $sql_cat_filter .= "(categories LIKE '%$c%') OR ";
+                $ph = $bind('%' . $c . '%');
+                $sql_cat_filter .= "(categories LIKE $ph) OR ";
             }
         }
         $sql_cat_filter = substr("$sql_cat_filter", 0, -3); // cut the last ' OR'
@@ -291,7 +336,11 @@ function se_get_event_entries($start,$limit,$filter) {
         for($i=0;$i<count($se_labels);$i++) {
             $label = $se_labels[$i]['label_id'];
             if(in_array($label, $checked_labels_array)) {
-                $sql_label_filter .= "labels LIKE '%,$label,%' OR labels LIKE '%,$label' OR labels LIKE '$label,%' OR labels = '$label' OR ";
+                $ph1 = $bind('%,' . $label . ',%');
+                $ph2 = $bind('%,' . $label);
+                $ph3 = $bind($label . ',%');
+                $ph4 = $bind($label);
+                $sql_label_filter .= "labels LIKE $ph1 OR labels LIKE $ph2 OR labels LIKE $ph3 OR labels = $ph4 OR ";
             }
         }
         $sql_label_filter = substr("$sql_label_filter", 0, -3); // cut the last ' OR'
@@ -319,20 +368,26 @@ function se_get_event_entries($start,$limit,$filter) {
 
     /* we hide past events in frontend */
     if(SE_SECTION == 'frontend') {
-        $sql_filter .= "AND releasedate <= '$time_string_now' ";
+        $ph_now = $bind($time_string_now);
+        $sql_filter .= "AND releasedate <= $ph_now ";
         $time_hide_events = $time_string_now-$se_prefs['prefs_posts_event_time_offset'];
-        $sql_filter .= "AND event_enddate >= '$time_hide_events' ";
+        $ph_hide = $bind($time_hide_events);
+        $sql_filter .= "AND event_enddate >= $ph_hide ";
     }
 
     /* hide past events in backend */
     if(SE_SECTION !== 'frontend' AND $_SESSION['show_past_events'] == 2) {
         $time_string_now = time();
         $time_hide_events = $time_string_now-$se_prefs['prefs_posts_event_time_offset'];
-        $sql_filter .= "AND event_enddate >= '$time_hide_events' ";
+        $ph_hide2 = $bind($time_hide_events);
+        $sql_filter .= "AND event_enddate >= $ph_hide2 ";
     }
 
     if($time_string_start != '') {
-        $sql_filter .= "AND releasedate >= '$time_string_start' AND releasedate <= '$time_string_end' AND releasedate < '$time_string_now' ";
+        $ph_start = $bind($time_string_start);
+        $ph_end = $bind($time_string_end);
+        $ph_now2 = $bind($time_string_now);
+        $sql_filter .= "AND releasedate >= $ph_start AND releasedate <= $ph_end AND releasedate < $ph_now2 ";
     }
 
     if($db_type == 'sqlite') {
@@ -341,10 +396,10 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql = "SELECT * , FROM_UNIXTIME(releasedate,'%Y-%m-%d') as 'sortdate', FROM_UNIXTIME(event_startdate,'%Y-%m-%d') as 'sortdate_events' FROM se_events $sql_filter $order $limit_str";
     }
 
-    $entries = $db_posts->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $entries = $db_posts->query($sql, $map)->fetchAll(PDO::FETCH_ASSOC);
 
     $sql_cnt = "SELECT count(*) AS 'A', (SELECT count(*) FROM se_events $sql_filter) AS 'filter_events', (SELECT count(*) FROM se_events) AS 'all_events'";
-    $stat = $db_posts->query("$sql_cnt")->fetch(PDO::FETCH_ASSOC);
+    $stat = $db_posts->query($sql_cnt, $map)->fetch(PDO::FETCH_ASSOC);
 
     /* number of posts that match the filter */
     $entries[0]['cnt_events'] = $stat['filter_events'];
