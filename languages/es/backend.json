@@ -30,6 +30,7 @@
   "btn.help": "Ayuda",
   "btn.docs": "Documentación",
   "btn.run_commands": "Ejecutar comandos",
+  "btn.privacy_blur": "Blur sensitive data",
   "btn.new.group": "Nuevo grupo",
   "btn.new.value": "Nuevo valor",
   "btn.bulk_index": "Índice masivo",

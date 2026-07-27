@@ -30,6 +30,7 @@
   "btn.help": "Βοήθεια",
   "btn.docs": "Τεκμηρίωση",
   "btn.run_commands": "Εκτέλεση Εντολών",
+  "btn.privacy_blur": "Blur sensitive data",
   "btn.new.group": "Νέα ομάδα",
   "btn.new.value": "Νέα τιμή",
   "btn.bulk_index": "Δείκτης χύμα",
