@@ -61,6 +61,11 @@ If the installation was successful, the next step is to go to the ACP.
 Just click on <kbd>Administration</kbd>.
 As of version 2, the backend can be accessed at a new address: `example.com/admin/`
 
+__Note:__ Don't delete the `/install/` directory after setup - core functions (e.g. saving
+pages, products, posts, events, or users) still load their database schemas from
+`install/contents/` at runtime. The installation wizard itself locks itself down automatically
+once setup is complete and is only reachable by already logged-in administrators afterwards.
+
 __Tip:__ Under <kbd>Settings</kbd> → <kbd>General</kbd> → <kbd>System</kbd> you can set a login
 slug - an extra secret segment appended to the admin URL. Once it's set, the backend is no
 longer reachable at plain `example.com/admin/`; only the full address including your slug (e.g.

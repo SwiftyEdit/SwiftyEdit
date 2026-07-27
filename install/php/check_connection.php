@@ -24,7 +24,7 @@ try {
 } catch (Exception $e) {
   $conn = false;
   $fail_msg  = '<div class="alert alert-danger">Database Connection failed<hr>';
-  $fail_msg .= print_r($e,true);
+  $fail_msg .= '<pre class="mb-0">'.htmlspecialchars(print_r($e,true), ENT_QUOTES).'</pre>';
   $fail_msg .= '</div>';
 }
 

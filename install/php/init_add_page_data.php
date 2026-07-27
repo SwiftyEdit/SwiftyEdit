@@ -39,12 +39,12 @@ echo '<div class="alert alert-info">'.$lang['description_add_page_data'].'</div>
 
 echo '<div class="mb-2">';
 echo '<label class="form-label">'.$lang['label_settings_cms_domain'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_cms_domain" value="'.$prefs_cms_domain.'">';
+echo '<input type="text" class="form-control" name="prefs_cms_domain" value="'.htmlspecialchars($prefs_cms_domain, ENT_QUOTES).'">';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label class="form-label">'.$lang['label_settings_cms_domain_ssl'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_cms_ssl_domain" value="'.$prefs_cms_ssl_domain.'">';
+echo '<input type="text" class="form-control" name="prefs_cms_ssl_domain" value="'.htmlspecialchars($prefs_cms_ssl_domain, ENT_QUOTES).'">';
 echo '</div>';
 
 echo '<div class="mb-2">';

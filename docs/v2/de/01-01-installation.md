@@ -64,6 +64,12 @@ War die Installation erfolgreich, führt der nächste Weg in das Backend.
 Einfach auf <kbd>Administration</kbd> klicken.
 Das Backend erreichst Du übrigens immer über die URL `example.com/admin/`.
 
+__Hinweis:__ Das Verzeichnis `/install/` sollte nach der Installation nicht gelöscht werden -
+Kernfunktionen (z. B. das Speichern von Seiten, Produkten, Beiträgen, Events oder Benutzern)
+laden ihre Datenbankschemata weiterhin zur Laufzeit aus `install/contents/`. Der
+Installations-Assistent selbst sperrt sich nach erfolgreicher Einrichtung automatisch und ist
+danach nur noch für bereits eingeloggte Administratoren erreichbar.
+
 __Tipp:__ Unter <kbd>Einstellungen</kbd> → <kbd>Allgemein</kbd> → <kbd>System</kbd> kannst Du
 einen Login-Slug festlegen - ein zusätzliches, geheimes Segment, das an die Backend-URL angehängt
 wird. Ist er gesetzt, ist das Backend nicht mehr über das einfache `example.com/admin/`

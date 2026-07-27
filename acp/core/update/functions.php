@@ -114,7 +114,7 @@ function move_new_files($source) {
     if(is_dir($sources_path.$sources_dir))	{
         $new_files = scandir_recursive($sources_path.$sources_dir);
     } else {
-        echo '<div class="alert alert-danger">No Source found: '. $sources_path.$sources_dir .'</div>';
+        echo '<div class="alert alert-danger">No Source found: '. $sources_path.htmlspecialchars($sources_dir, ENT_QUOTES) .'</div>';
     }
 
 
@@ -172,7 +172,9 @@ function move_new_files($source) {
  * that isn't in the whitelist is a leftover from an older build and gets
  * removed. install/ is already fully replaced in move_new_files(); data/,
  * plugins/ and public/ are intentionally left untouched (user data /
- * installed plugins / themes).
+ * installed plugins / themes). acp/core/update/download/ is also skipped:
+ * it's the updater's own runtime cache (gitignored, never part of the
+ * release build), so it never appears in whitelist.json.
  * @return void
  */
 function remove_obsolete_files($extracted_source_dir) {
@@ -210,9 +212,13 @@ function remove_obsolete_files($extracted_source_dir) {
 
             $relative = substr($path, strlen('../'));
 
+            if (str_starts_with($relative, 'acp/core/update/download/')) {
+                continue;
+            }
+
             if (!isset($whitelist[$relative])) {
                 unlink($path);
-                $_SESSION['protocol'] .= 'removed obsolete file: '.$relative.'<|>';
+                $_SESSION['protocol'] .= 'removed obsolete file: '.htmlspecialchars($relative, ENT_QUOTES).'<|>';
             }
         }
 
@@ -280,7 +286,7 @@ function copy_recursive($source, $target) {
 
     if(is_dir($source)) {
         if(!is_dir("$target")) {
-            $_SESSION['protocol'] .= "missing: $target <|>";
+            $_SESSION['protocol'] .= "missing: ".htmlspecialchars($target, ENT_QUOTES)." <|>";
             mkdir_recursive($target,0777);
         }
 
@@ -304,10 +310,10 @@ function copy_recursive($source, $target) {
         chmod("$target", 0777);
         unlink("$target");
         if(copy($source, $target)) {
-            $_SESSION['protocol'] .= '<b>copied:</b> '.$target.'<|>';
+            $_SESSION['protocol'] .= '<b>copied:</b> '.htmlspecialchars($target, ENT_QUOTES).'<|>';
         } else {
             $errors = error_get_last();
-            $_SESSION['protocol'] .= '<b class="text-danger">ERROR:</b> '.$errors['type']. '</b> ' . $errors['message'].'<|>';
+            $_SESSION['protocol'] .= '<b class="text-danger">ERROR:</b> '.htmlspecialchars($errors['type'], ENT_QUOTES). '</b> ' . htmlspecialchars($errors['message'], ENT_QUOTES).'<|>';
             $_SESSION['errors_cnt']++;
             return $errors['message'];
         }
@@ -347,7 +353,7 @@ function mkdir_recursive($dir, $chmod=0777){
         if(!is_dir($directory) && strlen($directory)>0) {
             mkdir($directory, $chmod);
             chmod("$directory", $chmod);
-            $_SESSION['protocol'] .= "created: $directory <|>";
+            $_SESSION['protocol'] .= "created: ".htmlspecialchars($directory, ENT_QUOTES)." <|>";
         }
     }
 }
@@ -373,7 +379,7 @@ function update_database() {
         if($is_table < 1) {
             add_table("$database","$table_name",$cols);
 
-            $_SESSION['protocol'] .= '<b class="text-success">new table:</b> '.$table_name.' in '.$database.'<|>';
+            $_SESSION['protocol'] .= '<b class="text-success">new table:</b> '.htmlspecialchars($table_name, ENT_QUOTES).' in '.htmlspecialchars($database, ENT_QUOTES).'<|>';
         }
 
 
@@ -385,7 +391,7 @@ function update_database() {
             if(!array_key_exists("$k", $existing_cols)) {
                 //update_table -> column, type, table, database
                 update_table("$k","$cols[$k]","$table_name","$database");
-                $_SESSION['protocol'] .= '<b class="text-success">new column:</b> '.$k.' in table '.$table_name.'<|>';
+                $_SESSION['protocol'] .= '<b class="text-success">new column:</b> '.htmlspecialchars($k, ENT_QUOTES).' in table '.htmlspecialchars($table_name, ENT_QUOTES).'<|>';
             }
 
         } // eo foreach

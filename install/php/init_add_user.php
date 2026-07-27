@@ -46,17 +46,17 @@ echo '<div class="alert alert-info">'.$lang['description_add_user'].'</div>';
 
 echo '<div class="mb-2">';
 echo '<label class="form-label">'.$lang['username'].' <small>(A-Za-z0-9) / (min 2, max 20)</small></label>';
-echo '<input type="text" class="form-control" name="username" value="'.$_SESSION['temp_username'].'">';
+echo '<input type="text" class="form-control" name="username" value="'.htmlspecialchars($_SESSION['temp_username'], ENT_QUOTES).'">';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label class="form-label">'.$lang['email'].'</label>';
-echo '<input type="mail" class="form-control" name="mail" value="'.$_SESSION['temp_usermail'].'">';
+echo '<input type="mail" class="form-control" name="mail" value="'.htmlspecialchars($_SESSION['temp_usermail'], ENT_QUOTES).'">';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label class="form-label">'.$lang['password'].'</label>';
-echo '<input type="password" class="form-control" name="psw" value="'.$_SESSION['temp_userpsw'].'">';
+echo '<input type="password" class="form-control" name="psw" value="'.htmlspecialchars($_SESSION['temp_userpsw'], ENT_QUOTES).'">';
 echo '<div class="form-text">'.$lang['password_help_text'].'</div>';
 echo '</div>';
 

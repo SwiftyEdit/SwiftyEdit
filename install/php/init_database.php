@@ -46,30 +46,30 @@ echo '<form action="index.php#mysql" method="POST">';
 
 echo '<div class="mb-2">';
 echo '<label>'.$lang['db_host'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_database_host" placeholder="localhost" value="'.$prefs_database_host.'">';
+echo '<input type="text" class="form-control" name="prefs_database_host" placeholder="localhost" value="'.htmlspecialchars($prefs_database_host, ENT_QUOTES).'">';
 echo '<small class="form-text text-muted">'.$lang['db_host_help'].'</small>';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label>'.$lang['db_port'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_database_port" placeholder="" value="'.$prefs_database_port.'">';
+echo '<input type="text" class="form-control" name="prefs_database_port" placeholder="" value="'.htmlspecialchars($prefs_database_port, ENT_QUOTES).'">';
 echo '<small class="form-text text-muted">'.$lang['db_port_help'].'</small>';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label>'.$lang['db_name'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_database_name" placeholder="" value="'.$prefs_database_name.'">';
+echo '<input type="text" class="form-control" name="prefs_database_name" placeholder="" value="'.htmlspecialchars($prefs_database_name, ENT_QUOTES).'">';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label>'.$lang['db_username'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_database_username" placeholder="" value="'.$prefs_database_username.'">';
+echo '<input type="text" class="form-control" name="prefs_database_username" placeholder="" value="'.htmlspecialchars($prefs_database_username, ENT_QUOTES).'">';
 echo '<small class="form-text text-muted">'.$lang['db_username_help'].'</small>';
 echo '</div>';
 
 echo '<div class="mb-2">';
 echo '<label>'.$lang['db_psw'].'</label>';
-echo '<input type="text" class="form-control" name="prefs_database_psw" placeholder="" value="'.$prefs_database_psw.'">';
+echo '<input type="text" class="form-control" name="prefs_database_psw" placeholder="" value="'.htmlspecialchars($prefs_database_psw, ENT_QUOTES).'">';
 echo '<small class="form-text text-muted">'.$lang['db_psw_help'].'</small>';
 echo '</div>';
 
