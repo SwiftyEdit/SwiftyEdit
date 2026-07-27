@@ -9,6 +9,7 @@ $routes = [
     'checks' => 'checks.php',
     'comments' => 'comments.php',
     'counter' => 'counter.php',
+    'guestlist' => 'ajax.guestlist.php',
     'vote' => 'ajax.votings.php',
     'votes' => 'votes.php',
     'login' => 'login.php',

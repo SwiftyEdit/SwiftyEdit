@@ -40,12 +40,19 @@
                         <dt class="col-sm-9 text-end">{$label_nbr_total_available}</dt>
                         <dd class="col-sm-3">{$nbr_available_total}</dd>
                         <dt class="col-sm-9 text-end">{$label_nbr_commitments}</dt>
-                        <dd class="col-sm-3"><span id="nbr-commitments">{$nbr_commitments}</span></dd>
+                        <dd class="col-sm-3">
+                            {if $label_nbr_commitments != ""}
+                                <span id="nbr-commitments" hx-get="/xhr/se/guestlist/?evc={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_guestlist_{$event_id} from:body">{$nbr_commitments}</span>
+                            {else}
+                                <span id="nbr-commitments">{$nbr_commitments}</span>
+                            {/if}
+                        </dd>
                     </dl>
                 </div>
             </div>
 
-            <button class="btn btn-sm btn-outline-secondary" name="sign" onclick="sign_guestlist(this.value)" value="confirm-{$event_id}" {$disabled}>{$sign_guestlist}</button>
+            {$hidden_csrf_token}
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/guestlist/" hx-swap="none" hx-include="[name='csrf_token']" name="val" value="confirm-{$event_id}" {$disabled}>{$sign_guestlist}</button>
         </div>
     </div>
     {/if}

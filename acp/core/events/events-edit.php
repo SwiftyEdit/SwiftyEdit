@@ -191,6 +191,11 @@ if($post_data['event_guestlist'] == '') {
     $post_data['event_guestlist'] = $se_settings['posts_default_guestlist'];
 }
 
+// event_guestlist_public_nbr -> 1 = hide, 2 = show
+if($post_data['event_guestlist_public_nbr'] == '') {
+    $post_data['event_guestlist_public_nbr'] = 1;
+}
+
 $select_guestlist_mode = [
     "input_name" => "event_guestlist",
     "input_value" => $post_data['event_guestlist'],
@@ -277,6 +282,8 @@ $form_tpl = str_replace('{event_street_nbr}', $post_data['event_street_nbr'], $f
 $form_tpl = str_replace('{event_zip}', $post_data['event_zip'], $form_tpl);
 $form_tpl = str_replace('{event_city}', $post_data['event_city'], $form_tpl);
 $form_tpl = str_replace('{event_guestlist_limit}', $post_data['event_guestlist_limit'], $form_tpl);
+$form_tpl = str_replace('{checked_gl_public_nbr_1}', ($post_data['event_guestlist_public_nbr'] == 1 ? 'checked' : ''), $form_tpl);
+$form_tpl = str_replace('{checked_gl_public_nbr_2}', ($post_data['event_guestlist_public_nbr'] == 2 ? 'checked' : ''), $form_tpl);
 $form_tpl = str_replace('{event_start}', $event_startdate, $form_tpl);
 $form_tpl = str_replace('{event_end}', $event_enddate, $form_tpl);
 $form_tpl = str_replace('{select_language}', $input_select_lang, $form_tpl);
