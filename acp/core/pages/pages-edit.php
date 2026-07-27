@@ -650,9 +650,7 @@ $post_types_label = [
 ];
 
 foreach($post_types as $type) {
-    if(str_contains($page_posts_types, $type)) {
-        $checked = 'checked';
-    }
+    $checked = in_array($type, explode(',', $page_posts_types)) ? 'checked' : '';
     if($type == 'p' OR $type == 'e') {
         $form_tpl .= '<hr>';
     }
