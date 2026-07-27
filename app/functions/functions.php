@@ -544,7 +544,18 @@ function se_send_order_status($recipient,$order,$reason): int|string {
     } else {
         $build_html_mail = str_replace("{shipping_status}",$lang['status_shipping_open'],$build_html_mail);
     }
+    $payment_plugin = basename($this_order['order_payment_type']);
+    $payment_plugin_name = $payment_plugin;
+    $payment_plugin_info = SE_ROOT.'/plugins/'.$payment_plugin.'/info.json';
+    if(is_file($payment_plugin_info)) {
+        $payment_plugin_data = json_decode(file_get_contents($payment_plugin_info), true);
+        if(!empty($payment_plugin_data['addon']['name'])) {
+            $payment_plugin_name = $payment_plugin_data['addon']['name'];
+        }
+    }
+
     $build_html_mail = str_replace("{order_nbr}",$this_order['order_nbr'],$build_html_mail);
+    $build_html_mail = str_replace("{payment_type}",htmlspecialchars($payment_plugin_name),$build_html_mail);
     $build_html_mail = str_replace("{invoice_address}",$order_invoice_address,$build_html_mail);
     $build_html_mail = str_replace("{shipping_address}",$order_shipping_address,$build_html_mail);
     $price_total = se_post_print_currency($this_order['order_price_total']);
