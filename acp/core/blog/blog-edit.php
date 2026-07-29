@@ -11,6 +11,7 @@
  * @var array $db_content
  * @var array $hidden_csrf_token
  * @var string $se_base_url
+ * @var string $query
  */
 
 $writer_uri = '/admin-xhr/blog/write/';
@@ -200,6 +201,16 @@ $input_select_status = [
     "type" => "select"
 ];
 
+$post_check_hide_detail_page = $post_data['post_hide_detail_page'] ?? '0';
+
+$input_check_hide_detail_page = [
+    "input_name" => "posts_hide_detail_page",
+    "input_value" => $post_check_hide_detail_page,
+    "label" => $lang['label_posts_hide_detail_page'],
+    "type" => "checkbox",
+    "status" => $post_check_hide_detail_page == "1" ? 'checked' :''
+];
+
 // select for comments
 $comment_types = [
     $lang['yes'] => '1',
@@ -331,9 +342,9 @@ $form_tpl = str_replace('{modal_upload_form}', $form_upload_tpl, $form_tpl);
 
 
 if($mode == 'new') {
-    $submit_btn = '<button type="submit" hx-post="/admin-xhr/blog/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
+    $submit_btn = '<button type="submit" hx-post="/admin-xhr/blog/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button>';
 } else {
-    $submit_btn = '<button type="submit" hx-post="/admin-xhr/blog/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button';
+    $submit_btn = '<button type="submit" hx-post="/admin-xhr/blog/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button>';
 }
 
 // replace all entries from $lang
@@ -366,6 +377,8 @@ $form_tpl = str_replace('{post_file_license}', $post_data['post_file_license'], 
 $form_tpl = str_replace('{post_file_version}', $post_data['post_file_version'], $form_tpl);
 $form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
 $form_tpl = str_replace('{checkbox_fixed}', $checkbox_fixed, $form_tpl);
+$form_tpl = str_replace('{checkbox_hide_detail_page}', se_print_form_input($input_check_hide_detail_page), $form_tpl);
+
 $form_tpl = str_replace('{select_status}', $input_select_status, $form_tpl);
 $form_tpl = str_replace('{select_comments}', $input_select_comments, $form_tpl);
 $form_tpl = str_replace('{select_votings}', $input_select_reactions, $form_tpl);

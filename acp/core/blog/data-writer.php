@@ -215,6 +215,11 @@ if(isset($_POST['save_post'])) {
         $post_fixed = 2;
     }
 
+    $post_hide_detail_page = 0;
+    if(isset($_POST['posts_hide_detail_page'])) {
+        $post_hide_detail_page = 1;
+        $post_rss = 'off';
+    }
 
     /* metas */
     if($_POST['post_meta_title'] == '') {

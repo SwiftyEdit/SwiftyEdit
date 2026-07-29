@@ -291,6 +291,10 @@ foreach($get_posts as $k => $post) {
 	$post_filename = basename($get_posts[$k]['post_slug']);
     $get_posts[$k]['post_href'] = SE_INCLUDE_PATH . "/".$target_page[0]."$post_filename-".$get_posts[$k]['post_id'].".html";
 
+    if($get_posts[$k]['post_hide_detail_page'] == "1") {
+        $get_posts[$k]['post_href'] = false;
+    }
+
     $get_posts[$k]['post_teaser'] = htmlspecialchars_decode($get_posts[$k]['post_teaser']);
     $get_posts[$k]['post_text'] = htmlspecialchars_decode($get_posts[$k]['post_text']);
 

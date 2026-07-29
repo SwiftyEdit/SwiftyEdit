@@ -37,6 +37,7 @@ $cols = array(
 	"post_rss_url" => "VARCHAR(100) NOT NULL DEFAULT ''",
 	"post_lang" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"post_slug" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    "post_hide_detail_page" => 'INTEGER(1)',
     "main_category_slug" => "VARCHAR(255) NOT NULL DEFAULT ''",
 	"post_priority" => 'INTEGER(12)',
 	"post_fixed" => 'INTEGER(12)',

@@ -660,6 +660,11 @@ function se_generate_xml_sitemap($mode): void
 
         $url_set_list = '';
         foreach ($posts_data as $post) {
+
+            if ($post['post_hide_detail_page'] == 1) {
+                continue;
+            }
+
             $post_lastedit = date("Y-m-d", $post['post_lastedit']);
             $link = $se_base_url.'/'.$target_page[0].$post['post_slug'];
             $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
