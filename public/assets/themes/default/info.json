@@ -1,0 +1,10 @@
+{
+  "addon": {
+    "id": "default",
+    "type": "theme",
+    "name": "Default Theme",
+    "version": "1.5.0",
+    "author": "SwiftyEdit",
+    "description": "The default SwiftyEdit CMS Theme"
+  }
+}
