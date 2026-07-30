@@ -16,6 +16,15 @@ use Twig\Environment;
  * @var Environment $twig
  */
 
+// This endpoint only reads from $_SESSION (header.php's own writes are
+// already done by this point) and never writes to it. The dashboard fires
+// ~13-15 of these hx-trigger="load" requests at once, all sharing one
+// PHPSESSID - the default file session handler holds an exclusive lock on
+// the session file for the whole request, so without closing it early here
+// those requests queue up and run one at a time instead of concurrently.
+// Do not add $_SESSION writes below without removing this first.
+session_write_close();
+
 
 // pages
 if($_REQUEST['action'] === 'list_pages') {
