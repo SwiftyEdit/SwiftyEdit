@@ -108,7 +108,7 @@ $plugin_form_tpl .= '</div>';
 - Die übermittelten Werte werden als JSON in der Spalte `addon_string` des Datensatzes
   gespeichert (`se_pages`, `se_products` bzw. `se_posts`).
 
-## Die info.json Datei
+## Die info.json Datei {#die-infojson-datei}
 
 Jedes Plugin muss eine `info.json` Datei in seinem Stammverzeichnis haben. Diese Datei
 enthält Metadaten über das Plugin und wird von SwiftyEdit verwendet, um Plugin-Informationen
@@ -156,7 +156,7 @@ im Backend anzuzeigen und Updates zu verwalten.
 | Feld | Pflicht | Beschreibung |
 |---|---|---|
 | `id` | empfohlen | Eindeutiger Bezeichner des Plugins. Wird als Ordnername verwendet. Wenn nicht angegeben, wird er aus der URL abgeleitet. |
-| `type` | ja | Muss `plugin` sein |
+| `type` | ja | Muss `plugin` sein (oder `editor`, siehe unten - `theme` für die [info.json eines Themes](09-01-00-themes.md#die-infojson-datei)) |
 | `name` | ja | Anzeigename des Plugins |
 | `version` | ja | Aktuelle Version, menschenlesbar (z.B. `1.0`) |
 | `build` | ja | Aktuelle Build-Nummer. Wird von SwiftyEdit zur Update-Erkennung verwendet. |

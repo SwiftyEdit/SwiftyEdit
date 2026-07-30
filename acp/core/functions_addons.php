@@ -49,6 +49,72 @@ function se_get_all_addons(): array {
 
 
 /**
+ * Get every installed theme's manifest, keyed by theme directory name, in
+ * the same shape as an info.json ("addon" => [...]). Mirrors
+ * se_get_all_addons() but scans SE_THEMES.
+ *
+ * Falls back to parsing the retired info.xml manifest for older themes that
+ * don't have an info.json yet (see se_parse_theme_info_xml()) - without
+ * this, every pre-info.json theme would simply vanish from the addons UI.
+ * A theme with neither file is omitted; callers fall back to the raw
+ * directory name/get_all_templates().
+ *
+ * @return array<string, array>
+ */
+function se_get_all_themes(): array {
+
+    $themes_root = SE_THEMES;
+    $scanned_directory = array_diff(scandir($themes_root), array('..', '.','.DS_Store'));
+
+    $theme_info = [];
+    foreach($scanned_directory as $theme_dir) {
+
+        $info_file = "$themes_root/$theme_dir/info.json";
+        if(is_file($info_file)) {
+            $theme_info[$theme_dir] = json_decode(file_get_contents($info_file), true);
+            continue;
+        }
+
+        $xml_file = "$themes_root/$theme_dir/info.xml";
+        if(is_file($xml_file)) {
+            $legacy = se_parse_theme_info_xml($xml_file);
+            if($legacy !== null) {
+                $theme_info[$theme_dir] = $legacy;
+            }
+        }
+    }
+    return $theme_info;
+}
+
+
+/**
+ * Parse the retired info.xml theme manifest into the same shape as an
+ * info.json's "addon" block, so callers don't need to care which format a
+ * given theme still ships. info.xml never had an "id", "build", "versions"
+ * or "update_url" field, so a theme identified this way is simply never
+ * offered for the install-from-URL/auto-update flow - it can only show up
+ * in the plain installed-themes list.
+ */
+function se_parse_theme_info_xml(string $file): ?array {
+
+    $xml = @simplexml_load_file($file);
+    if($xml === false) {
+        return null;
+    }
+
+    return [
+        'addon' => [
+            'type' => 'theme',
+            'name' => (string) ($xml->name ?? ''),
+            'version' => (string) ($xml->version ?? ''),
+            'author' => (string) ($xml->author ?? ''),
+            'description' => '',
+        ]
+    ];
+}
+
+
+/**
  * Get the installed and active editor plugins (info.json "type": "editor").
  *
  * An editor is considered active when it is flagged as a core editor
@@ -283,14 +349,29 @@ function se_check_addon_update(array $addon_info): array {
 
 
 function se_install_plugin(string $plugin_id, string $download_url): array {
+    return se_install_addon_zip($plugin_id, $download_url, SE_PLUGINS, 'Plugin');
+}
+
+
+function se_install_theme(string $theme_id, string $download_url): array {
+    return se_install_addon_zip($theme_id, $download_url, SE_THEMES, 'Theme');
+}
+
+
+/**
+ * Download and extract an addon ZIP (plugin or theme) into $target_root/$addon_id,
+ * shared by se_install_plugin() and se_install_theme() - the two only differ in
+ * which directory the ZIP is unpacked into.
+ */
+function se_install_addon_zip(string $addon_id, string $download_url, string $target_root, string $label): array {
 
     // Download ZIP to temporary file
-    $tmp_zip = tempnam(sys_get_temp_dir(), 'se_plugin_');
+    $tmp_zip = tempnam(sys_get_temp_dir(), 'se_addon_');
     $zip_content = @file_get_contents($download_url);
 
     if($zip_content === false) {
         unlink($tmp_zip);
-        return ['success' => false, 'message' => 'Could not download plugin ZIP.'];
+        return ['success' => false, 'message' => 'Could not download '.strtolower($label).' ZIP.'];
     }
 
     file_put_contents($tmp_zip, $zip_content);
@@ -315,12 +396,12 @@ function se_install_plugin(string $plugin_id, string $download_url): array {
         }
     }
 
-    // Determine plugin path
-    $plugin_path = SE_PLUGINS . DIRECTORY_SEPARATOR . $plugin_id;
+    // Determine addon path
+    $addon_path = $target_root . DIRECTORY_SEPARATOR . $addon_id;
 
-    // Create plugin directory if necessary
-    if(!is_dir($plugin_path)) {
-        mkdir($plugin_path, 0755, true);
+    // Create addon directory if necessary
+    if(!is_dir($addon_path)) {
+        mkdir($addon_path, 0755, true);
     }
 
     // Extract ZIP – strip root folder, skip /data/ directory
@@ -336,7 +417,7 @@ function se_install_plugin(string $plugin_id, string $download_url): array {
         }
 
         // Write file to target path
-        $target = $plugin_path . DIRECTORY_SEPARATOR . $relative_path;
+        $target = $addon_path . DIRECTORY_SEPARATOR . $relative_path;
 
         // Create subdirectory if necessary
         if(!is_dir(dirname($target))) {
@@ -349,7 +430,7 @@ function se_install_plugin(string $plugin_id, string $download_url): array {
     $zip->close();
     unlink($tmp_zip);
 
-    return ['success' => true, 'message' => 'Plugin successfully installed.'];
+    return ['success' => true, 'message' => $label.' successfully installed.'];
 }
 
 /**
@@ -372,30 +453,6 @@ function se_return_addon_translations($addon): array {
     return $translations;
 }
 
-
-/**
- * get all installed Moduls
- * return as array
- */
-
-function get_all_modules() {
-
-	$mdir = "assets/modules/";
-	$cntMods = 0;
-	$arr_iMods = array();
-	$scanned_directory = array_diff(scandir($mdir), array('..', '.','.DS_Store'));
-		
-	foreach($scanned_directory as $mod_folder) {
-		if(is_file("$mdir/$mod_folder/info.inc.php")) {
-			include $mdir.'/'.$mod_folder.'/info.inc.php';
-			$arr_iMods[$cntMods]['name'] = $mod['name'];
-			$arr_iMods[$cntMods]['folder'] = $mod_folder;
-			$cntMods++;		
-		}
-	}
-
-	return($arr_iMods);
-}
 
 /**
  * get all addons stored in table se_addons
@@ -674,24 +731,113 @@ function mods_check_in() {
  */
 
 function se_write_theme_options($data) {
-	
+
 	global $db_content;
-	
+
 	$db_content->delete("se_themes", [
 		"theme_name" => $data['theme']
 	]);
-	
+
 	foreach($data as $key => $value) {
-		
+
 		if($key == 'theme') {
 			$theme = $value;
 			continue;
 		}
-		
-		if((strstr($key, '_', true)) == 'theme') {	
+
+		if((strstr($key, '_', true)) == 'theme') {
 			$db_content->insert("se_themes", ["theme_name" => $data['theme'],"theme_label" => "$key","theme_value" => "$value"]);
 		}
-		
-		
+
+
 	}
+}
+
+/**
+ * Load the catalog of installable plugins from the SwiftyEdit catalog
+ * service (swiftyedit.net/api - syncs the swiftyedit/registry GitHub repo
+ * into a small REST API; version/build/download_url are resolved there
+ * live from each entry's own info.json on every sync, not stored in the
+ * registry itself). Cached with a simple TTL file cache (no generic cache
+ * helper exists in this codebase - this follows the same
+ * SE_CONTENT/cache/<subdir>/ convention already used by mods_check_in()
+ * and se_get_categories()).
+ *
+ * A stale-but-present cache is preferred over an empty catalog when the
+ * live fetch fails - the service being temporarily unreachable shouldn't
+ * blank out an otherwise-working page.
+ *
+ * @return array{success: bool, source: string, entries: array, message: string}
+ */
+function se_get_catalog_entries(bool $force_refresh = false): array {
+
+	$cache_dir  = SE_CONTENT.'/cache/registry';
+	$cache_file = $cache_dir.'/plugins.json';
+	$ttl        = 3600;
+
+	$is_fresh = is_file($cache_file) && (filemtime($cache_file) >= time() - $ttl);
+
+	if(!$force_refresh && $is_fresh) {
+		$cached = json_decode(file_get_contents($cache_file), true);
+		if(is_array($cached)) {
+			return ['success' => true, 'source' => 'cache', 'entries' => $cached, 'message' => ''];
+		}
+	}
+
+	$json = @file_get_contents('https://swiftyedit.net/api/plugins');
+
+	if($json === false || !is_array($rows = json_decode($json, true))) {
+		$message = $json === false ? 'Could not reach the plugin catalog.' : 'Unexpected catalog response.';
+		if(is_file($cache_file)) {
+			$cached = json_decode(file_get_contents($cache_file), true);
+			if(is_array($cached)) {
+				return ['success' => true, 'source' => 'stale_cache', 'entries' => $cached, 'message' => $message];
+			}
+		}
+		return ['success' => false, 'source' => 'none', 'entries' => [], 'message' => $message];
+	}
+
+	$entries = [];
+	foreach($rows as $row) {
+
+		if(empty($row['slug'])) {
+			continue;
+		}
+
+		// The catalog service stores tags as a JSON-encoded string column
+		// and returns it as such via SELECT * - decode here so every
+		// caller always gets a real array, never a raw JSON string.
+		$row['tags'] = is_string($row['tags'] ?? null) ? (json_decode($row['tags'], true) ?: []) : ($row['tags'] ?? []);
+
+		$entries[$row['slug']] = $row;
+	}
+
+	if(!is_dir($cache_dir)) {
+		mkdir($cache_dir, 0777, true);
+	}
+	file_put_contents($cache_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+	return ['success' => true, 'source' => 'live', 'entries' => $entries, 'message' => ''];
+}
+
+/**
+ * Derive a raw.githubusercontent.com URL for a file at the root of a
+ * registry entry's "repo" field (e.g. "info.json" for the existing
+ * get_addon_info_from_url install pipeline, or "poster.png" for the
+ * catalog's card thumbnail). Returns null for anything that isn't a plain
+ * https://github.com/{org}/{repo} URL.
+ *
+ * Hardcodes the "main" branch (true for every plugin repo published so far);
+ * isolated here so a future per-entry "branch" field only needs to change
+ * this one function.
+ */
+function se_registry_repo_to_raw_url(string $repo_url, string $path): ?string {
+
+	$repo_url = rtrim(trim($repo_url), '/');
+
+	if(!preg_match('#^https://github\.com/([^/]+)/([^/]+)$#', $repo_url, $m)) {
+		return null;
+	}
+
+	return "https://raw.githubusercontent.com/{$m[1]}/{$m[2]}/main/{$path}";
 }

@@ -1,11 +1,18 @@
 <?php
 
+/**
+ * @var array $lang
+ * @var array $icon
+ * @var string $se_upload_addons from config.php
+ */
+
 global $languagePack;
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['plugin'].' '.$lang['nav_btn_addons'];
-if($se_upload_addons) {
+if($se_upload_addons && se_hasPermission('drm_acp_sensitive_files')) {
     echo '<a href="/admin/addons/install/" class="btn btn-default text-success ms-auto">' . $icon['plus'] . ' ' . $lang['btn_install'] . '</a>';
+    echo '<a href="/admin/addons/catalog/" class="btn btn-default text-primary ms-1">' . $icon['shop'] . ' ' . $lang['btn_browse_catalog'] . '</a>';
 }
 echo '</div>';
 

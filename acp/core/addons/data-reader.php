@@ -6,6 +6,7 @@
  * @var array $icon
  * @var array $lang
  * @var array $se_settings
+ * @var string $se_upload_addons from config.php
  */
 
 if(!isset($languagePack)) {
@@ -143,6 +144,169 @@ if($_REQUEST['action'] == 'list_plugins') {
     exit;
 }
 
+// list catalog entries from the SwiftyEdit registry
+if($_REQUEST['action'] == 'list_catalog') {
+
+    // Reachable directly regardless of whether catalog.php's own link is
+    // shown - same "can upload sensitive files" right as install/router.php.
+    if(!se_hasPermission('drm_acp_sensitive_files')) {
+        echo '<div class="card p-3">'.$lang['rm_no_access'].'</div>';
+        exit;
+    }
+
+    if(!$se_upload_addons) {
+        echo '<div class="card p-3">'.$lang['catalog_disabled'].'</div>';
+        exit;
+    }
+
+    $catalog = se_get_catalog_entries();
+
+    if(!$catalog['success']) {
+        echo '<div class="card p-3 text-muted">';
+        echo $lang['catalog_unavailable'].' ('.htmlspecialchars($catalog['message']).')';
+        echo '</div>';
+        exit;
+    }
+
+    if($catalog['source'] === 'stale_cache') {
+        echo '<div class="alert alert-warning">'.$lang['catalog_stale'].'</div>';
+    }
+
+    if(empty($catalog['entries'])) {
+        echo '<div class="card p-3 text-muted">'.$lang['catalog_empty'].'</div>';
+        exit;
+    }
+
+    // Plugins live under SE_PLUGINS, themes under SE_THEMES - merge both so a
+    // registry entry of either type correctly shows as already installed.
+    $installed = array_merge(array_keys(se_get_all_addons()), array_keys(se_get_all_themes()));
+
+    // Reused for the per-card screenshots modal, same template/pattern as
+    // list_plugins' help-text modal above.
+    $modal_template_file = file_get_contents("../acp/templates/bs-modal.tpl");
+
+    echo '<div class="row">';
+    foreach($catalog['entries'] as $slug => $entry) {
+
+        $name          = htmlspecialchars($entry['name'] ?? $slug, ENT_QUOTES);
+        $description   = htmlspecialchars($entry['description'] ?? '', ENT_QUOTES);
+        $author        = htmlspecialchars($entry['author'] ?? '', ENT_QUOTES);
+        $requires_build = htmlspecialchars($entry['requires_build'] ?? '', ENT_QUOTES);
+        $latest        = htmlspecialchars($entry['version'] ?? '', ENT_QUOTES);
+        $tags          = $entry['tags'] ?? [];
+        $screenshots   = $entry['screenshots'] ?? [];
+        $fallback_poster = '/assets/themes/administration/images/poster-addons.png';
+        // poster.png (the plugin's own icon, optional per its own repo - see
+        // docs/v2/en/09-02-plugins.md) takes priority as the card thumbnail
+        // over a screenshot, since it's the plugin's actual branding. Not
+        // every plugin has one, so the <img onerror> below falls back
+        // client-side instead of doing an extra existence-check request
+        // per card on every cache refresh.
+        $poster = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'poster.png') ?: (($screenshots[0] ?? null) ?: $fallback_poster);
+
+        $info_json_url = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'info.json');
+        $modal_id      = 'catalog-screenshots-'.preg_replace('/[^a-zA-Z0-9_-]/', '', $slug);
+
+        // Small circular thumbnail, matching the installed-plugins list's
+        // own poster styling (acp/core/addons/data-reader.php's
+        // list_plugins block) rather than a large banner image. The
+        // screenshots gallery gets its own explicit link below (see
+        // $screenshots_link) instead of being a silent click-target on the
+        // image itself, which nobody would discover on their own.
+        $poster_attrs = 'src="'.htmlspecialchars($poster, ENT_QUOTES).'" class="img-fluid rounded-circle" onerror="this.onerror=null;this.src=\''.$fallback_poster.'\';"';
+
+        $screenshots_link = '';
+        if(!empty($screenshots)) {
+            $screenshots_link = '<button type="button" class="btn btn-sm btn-link p-0"
+                    data-bs-toggle="modal" data-bs-target="#'.$modal_id.'">'
+                    .$icon['images'].' '.$lang['catalog_screenshots'].' ('.count($screenshots).')</button>';
+        }
+
+        // Emitted as a sibling before the card (not nested inside it) -
+        // same placement list_plugins already uses for its help-text modal,
+        // since Bootstrap modals are position:fixed overlays and shouldn't
+        // sit inside a .card's own stacking/scroll context.
+        if(!empty($screenshots)) {
+            $modal_body = '';
+            foreach($screenshots as $shot) {
+                $modal_body .= '<img src="'.htmlspecialchars($shot, ENT_QUOTES).'" class="img-fluid mb-2 rounded">';
+            }
+            $modal = str_replace(
+                ['{modalID}', '{modalTitle}', '{modalBody}'],
+                [$modal_id, $name.' - '.$lang['catalog_screenshots'], $modal_body],
+                $modal_template_file
+            );
+            echo $modal;
+        }
+
+        $tags_attr = htmlspecialchars(implode(',', array_map('strtolower', $tags)), ENT_QUOTES);
+        echo '<div class="col-md-4 mb-3" data-catalog-tags="'.$tags_attr.'">';
+        echo '<div class="card h-100">';
+        echo '<div class="card-body d-flex flex-column">';
+        echo '<div class="row mb-2">';
+        echo '<div class="col-3 text-center"><img '.$poster_attrs.'></div>';
+        echo '<div class="col-9">';
+        echo '<div class="card-title d-flex justify-content-between">';
+        echo '<span>'.$name.'</span><span class="badge badge-se">'.$latest.'</span>';
+        echo '</div>';
+        $repo_url_attr = htmlspecialchars($entry['repo_url'] ?? '', ENT_QUOTES);
+        echo '<div class="card-text small text-muted">'.$lang['catalog_by'].' <a href="'.$repo_url_attr.'" target="_blank" rel="noopener">'.$author.'</a></div>';
+        if($screenshots_link !== '') {
+            echo '<div class="small mt-1">'.$screenshots_link.'</div>';
+        }
+        echo '</div>'; // col-9
+        echo '</div>'; // row
+
+        echo '<div class="card-text flex-grow-1">'.$description.'</div>';
+
+        if(!empty($tags)) {
+            echo '<div class="mb-1">';
+            foreach($tags as $tag) {
+                echo '<span class="badge badge-se me-1">'.htmlspecialchars($tag, ENT_QUOTES).'</span>';
+            }
+            echo '</div>';
+        }
+
+        if($requires_build !== '') {
+            echo '<div class="small text-muted mt-2">'.$lang['catalog_requires'].' '.$requires_build.'</div>';
+        }
+
+        echo '<div class="btn-toolbar mt-2">';
+
+        if(in_array($slug, $installed, true)) {
+            echo '<span class="badge text-bg-success">'.$lang['catalog_installed'].'</span>';
+        } elseif($info_json_url) {
+            // Targets the shared #catalogInstallModalBody (see catalog.php)
+            // instead of an inline per-card div - swapping the confirm/
+            // install response in inline would grow that card and desync
+            // the grid row's height against its siblings.
+            $vals = json_encode([
+                'csrf_token' => $_SESSION['token'],
+                'get_addon_info_from_url' => $info_json_url,
+                'target_id' => 'catalogInstallModalBody'
+            ]);
+            echo '<button class="btn btn-sm btn-primary"
+                    hx-post="/admin-xhr/addons/write/"
+                    hx-vals=\''.$vals.'\'
+                    hx-target="#catalogInstallModalBody"
+                    data-bs-toggle="modal"
+                    data-bs-target="#catalogInstallModal">'
+                    .$lang['btn_install'].'</button>';
+        } else {
+            echo '<span class="badge text-bg-danger">'.$lang['catalog_invalid_repo'].'</span>';
+        }
+
+        echo '</div>';
+
+        echo '</div>'; // card-body
+        echo '</div>'; // card
+        echo '</div>'; // col
+    }
+    echo '</div>'; // row
+
+    exit;
+}
+
 // check if a plugin is up to date
 if(isset($_REQUEST['check_plugin'])) {
 
@@ -192,6 +356,7 @@ if(isset($_REQUEST['check_plugin'])) {
 if($_REQUEST['action'] == 'list_themes') {
 
     $all_themes = get_all_templates();
+    $all_theme_info = se_get_all_themes();
 
     foreach($all_themes as $template) {
 
@@ -209,8 +374,18 @@ if($_REQUEST['action'] == 'list_themes') {
         // get all layout templates from this theme
         $arr_layout_tpls = glob(SE_PUBLIC."/assets/themes/".$template."/templates/layout*.tpl");
 
+        // Themes without an info.json (older themes, still shipping the retired
+        // info.xml) simply fall back to their raw directory name, same as before.
+        $theme_addon = $all_theme_info[$template]['addon'] ?? [];
+        $theme_name = htmlspecialchars($theme_addon['name'] ?? $template, ENT_QUOTES);
+        $theme_version = htmlspecialchars($theme_addon['version'] ?? '', ENT_QUOTES);
+
         echo '<div class="card mb-3 '.$class.'">';
-        echo '<div class="card-header">'.$template.' '.$active.'</div>';
+        echo '<div class="card-header">'.$theme_name;
+        if($theme_version !== '') {
+            echo ' <span class="badge badge-se">'.$theme_version.'</span>';
+        }
+        echo ' '.$active.'</div>';
         echo '<div class="card-body">';
 
         echo '<div class="row">';

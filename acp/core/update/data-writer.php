@@ -8,6 +8,17 @@ const INSTALLER = TRUE;
 require_once __DIR__.'/functions.php';
 require_once '../install/php/functions.php';
 
+// Reachable directly via /admin-xhr/update/write/ regardless of whether
+// update/router.php's own gate is shown - every branch below downloads,
+// extracts or installs update files (or rewrites the database), so the
+// whole file needs the same "can upload sensitive files" right as the
+// router (see acp/core/update/router.php, and the identical fix just
+// applied to acp/core/addons/data-writer.php).
+if(!se_hasPermission('drm_acp_sensitive_files')) {
+    echo '<div class="alert alert-info">'.$lang['rm_no_access'].'</div>';
+    exit;
+}
+
 // helpers
 if(isset($_POST['helper_update_table'])) {
     include __DIR__.'/helpers_update_data.php';
