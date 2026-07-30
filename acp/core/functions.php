@@ -481,20 +481,36 @@ function get_page_impression($pid) {
  */
 
 function se_show_log($limit=10) {
-	
+
 	global $db_content;
 	global $lang;
-	$interval = time() - (30 * 86400); // 30 days
 	$logs = '';
 
-	$del = $db_content->delete("se_logs", [
-	    "time[<]" => $interval
+	// Cheap gatekeeper: only attempt a cleanup once se_logs has grown past
+	// 1000 rows. Peeking at the id of the 1000th-newest row uses the
+	// primary key index (O(1000)), unlike COUNT(*) - SQLite keeps no
+	// running row count, so COUNT(*) would scan the whole table on every
+	// single dashboard load, which is exactly the cost we're avoiding here.
+	// Medoo's get() always forces its own LIMIT 1 (it's meant to fetch a
+	// single row), silently ignoring any offset - select() is needed here
+	// to actually respect the LIMIT/OFFSET pair.
+	$row_at_1000 = $db_content->select("se_logs", "id", [
+		"ORDER" => ["id" => "DESC"],
+		"LIMIT" => [999, 1]
 	]);
 
-	$count = $del->rowCount();
-	
-	if($count > 0) {
-        $logs .= '<div class="alert alert-info">Logs removed ('.$count.')</div>';
+	if (!empty($row_at_1000)) {
+		$interval = time() - (30 * 86400); // 30 days
+
+		$del = $db_content->delete("se_logs", [
+			"time[<]" => $interval
+		]);
+
+		$count = $del->rowCount();
+
+		if($count > 0) {
+			$logs .= '<div class="alert alert-info">Logs removed ('.$count.')</div>';
+		}
 	}
 
 	$result = $db_content->select("se_logs", "*", [

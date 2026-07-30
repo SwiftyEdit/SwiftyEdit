@@ -45,9 +45,10 @@
 				<div class="tab-content h-100">
 					<div class="tab-pane h-100 fade show active" id="pages_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getPages" class="p-1 scroll-container"
+							<div id="getPages" class="p-1 scroll-container scroll-container-h350"
 								 hx-get="{reader_uri}?action=list_pages"
 								 hx-trigger="load">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">{btn_page_overview} {btn_new_page}</div>
@@ -72,9 +73,10 @@
 					</div>
 					<div class="tab-pane fade h-100" id="snippets_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getSnippets" class="p-1 scroll-container"
+							<div id="getSnippets" class="p-1 scroll-container scroll-container-h350"
 								 hx-get="{reader_uri}?action=list_snippets"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#snippets_list'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -86,9 +88,10 @@
 					</div>
 					<div class="tab-pane fade h-100" id="post_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getPosts" class="p-1 scroll-container"
+							<div id="getPosts" class="p-1 scroll-container scroll-container-h350"
 								 hx-get="{reader_uri}?action=list_posts"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#post_list'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -100,9 +103,10 @@
 					</div>
 					<div class="tab-pane fade h-100" id="products_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getProducts" class="p-1 scroll-container"
+							<div id="getProducts" class="p-1 scroll-container scroll-container-h350"
 								 hx-get="{reader_uri}?action=list_products"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#products_list'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -114,9 +118,10 @@
 					</div>
 					<div class="tab-pane fade h-100" id="events_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getEvents" class="p-1 scroll-container"
+							<div id="getEvents" class="p-1 scroll-container scroll-container-h350"
 								 hx-get="{reader_uri}?action=list_events"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#events_list'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -128,9 +133,10 @@
 					</div>
 					<div class="tab-pane fade h-100" id="user_list">
 						<div class="d-flex flex-column h-100">
-							<div id="getUser" class="p-1 scroll-container"
+							<div id="getUser" class="p-1 scroll-container scroll-container-h350"
 								 hx-get="{reader_uri}?action=list_user"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#user_list'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">
@@ -155,26 +161,29 @@
 			<div class="card-body p-1">
 				<div class="tab-content">
 					<div class="tab-pane fade show active" id="logfile">
-						<div class="scroll-container">
+						<div class="scroll-container scroll-container-h350">
 							<div id="getLogfile" class="p-1"
 								 hx-get="{reader_uri}?action=list_logfile"
 								 hx-trigger="load">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade" id="alerts">
-						<div class="scroll-container">
+						<div class="scroll-container scroll-container-h350">
 							<div id="getAlerts" class="p-1"
 								 hx-get="{reader_uri}?action=list_alerts"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#alerts'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade" id="info_table">
-						<div class="scroll-container">
+						<div class="scroll-container scroll-container-h350">
 							<div id="getInfos" class="p-1"
 								 hx-get="{reader_uri}?action=list_infos"
-								 hx-trigger="load">
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#info_table'] once">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 						</div>
 					</div>
