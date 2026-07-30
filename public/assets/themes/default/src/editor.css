@@ -1,0 +1,5 @@
+@import url("default.css");
+
+body.mce-content-body  {
+    padding: .75rem;
+}
