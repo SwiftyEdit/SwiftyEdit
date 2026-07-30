@@ -163,7 +163,5 @@ if(isset($_POST['file'])) {
 
 
     echo $form_tpl;
-
-    print_r($get_media);
 }
 

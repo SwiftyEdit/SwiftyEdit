@@ -21,7 +21,6 @@ if(isset($_POST['blog_text_filter'])) {
 
 // remove keyword from filter list
 if(isset($_POST['rmkey'])) {
-    print_r($_POST);
     $all_filter = explode(" ", $_SESSION['posts_text_filter']);
     $_SESSION['posts_text_filter'] = '';
     foreach($all_filter as $f) {
