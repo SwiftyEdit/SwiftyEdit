@@ -131,9 +131,9 @@ if(in_array($se_path[0], $se_sections)) {
 }
 
 
-$all_mods = se_get_all_addons();
-$cnt_mods = count($all_mods);
 $all_plugins = se_get_all_addons();
+$all_mods = $all_plugins;
+$cnt_mods = count($all_mods);
 
 /*
  * Content-format editors (mode "format", e.g. block-builder/markdown
@@ -143,7 +143,7 @@ $all_plugins = se_get_all_addons();
  * global/index.php, where content-format plugins call se_register_editor().
  */
 require_once SE_ROOT . 'app/functions/functions.editors.php';
-$se_editor_addons = se_bootstrap_editor_plugins();
+$se_editor_addons = se_bootstrap_editor_plugins($all_plugins);
 
 $se_wysiwyg_editor_addons = array_filter($se_editor_addons, static function ($editor_addon) {
     return ($editor_addon['mode'] ?? '') !== 'format';

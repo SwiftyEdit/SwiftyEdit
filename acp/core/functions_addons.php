@@ -124,9 +124,15 @@ function se_parse_theme_info_xml(string $file): ?array {
  *
  * @return array<string, array>
  */
-function se_get_editor_addons(): array {
+/**
+ * @param array|null $all_plugins Result of se_get_all_addons(), if the caller
+ *        already has it - avoids re-scanning plugins/ and re-parsing every
+ *        info.json a second time in the same request. Falls back to scanning
+ *        itself when omitted.
+ */
+function se_get_editor_addons(?array $all_plugins = null): array {
 
-    $all = se_get_all_addons();
+    $all = $all_plugins ?? se_get_all_addons();
 
     // Collect directories of DB-activated plugins
     $active_dirs = [];

@@ -17,7 +17,12 @@ if(is_file('../'.SE_CONTENT.'/config.php')) {
 }
 
 $loader = new \Twig\Loader\FilesystemLoader(SE_ROOT.'/acp/templates');
-$twig = new \Twig\Environment($loader);
+$twig = new \Twig\Environment($loader, [
+    'cache' => SE_CONTENT.'/cache/twig',
+    // In dev, recompile on every change; in production, trust the cache
+    // (mirrors the $se_environment check in acp/core/update/functions.php).
+    'auto_reload' => $se_environment === 'd',
+]);
 
 /**
  * connect the database
@@ -37,6 +42,12 @@ require_once 'core/functions.php';
 require_once '../app/functions/functions.php';
 include_once '../acp/core/templates.php';
 
+// Scan plugins/ once and reuse the result below (hooks registration) and in
+// se_bootstrap_editor_plugins() - both used to call se_get_all_addons() on
+// their own, scanning the directory and re-parsing every info.json twice
+// per request.
+$all_plugins = se_get_all_addons();
+
 /*
  * Populate the content-format editor registry (se_register_editor()) for
  * this request - needed both by data-writer.php (se_save_page()/
@@ -44,7 +55,7 @@ include_once '../acp/core/templates.php';
  * data-reader.php (rebuilding the content field on a format-switch). Mirrors
  * the same call in acp/index.php's own bootstrap.
  */
-$se_editor_addons = se_bootstrap_editor_plugins();
+$se_editor_addons = se_bootstrap_editor_plugins($all_plugins);
 
 $se_get_preferences = se_get_preferences();
 
@@ -118,8 +129,6 @@ $lang_codes = array_values(array_unique($langs));
 if ($se_settings['timezone'] != '') {
     date_default_timezone_set($se_settings['timezone']);
 }
-
-$all_plugins = se_get_all_addons();
 
 require_once SE_ROOT . 'app/hooks/hooks.php';
 require_once SE_ROOT . 'app/hooks/hooks-meta.php';
