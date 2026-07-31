@@ -9,9 +9,9 @@
 		<meta name="generator" content="SwiftyEdit" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<!-- styles -->
-		<link rel="stylesheet" media="screen" href="/themes/default/dist/default.css" />
+		<link rel="stylesheet" media="screen" href="/themes/default/dist/core.css" />
 		<!-- JavaScript -->
-		<script type="text/javascript" src="/themes/default/dist/theme.js"></script>
+		<script type="text/javascript" src="/themes/default/dist/core.js"></script>
 
 <style>
 	.cover-container {

@@ -1,0 +1,11 @@
+{
+  "title_theme_values": "Theme-Werte",
+  "label_include_style_files": "Style-Dateien einbinden",
+  "option_load_all_components": "Die Haupt-Styles + alle Komponenten",
+  "option_load_selected_components": "Die Haupt-Styles + ausgewählte Komponenten",
+  "label_component_shop": "Shop",
+  "label_component_events": "Events",
+  "label_component_comments": "Kommentare",
+  "label_component_posts": "Beiträge (Blog)",
+  "help_components_picker": "Wird hier nichts ausgewählt, werden keine optionalen Komponenten geladen."
+}

@@ -1,0 +1,11 @@
+{
+  "title_theme_values": "Theme Values",
+  "label_include_style_files": "Include style files",
+  "option_load_all_components": "Core styles + all components",
+  "option_load_selected_components": "Core styles + selected components",
+  "label_component_shop": "Shop",
+  "label_component_events": "Events",
+  "label_component_comments": "Comments",
+  "label_component_posts": "Posts (blog)",
+  "help_components_picker": "Leaving all of these unchecked is valid - no optional component will be loaded then."
+}

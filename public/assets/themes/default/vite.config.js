@@ -4,6 +4,25 @@ import cssnano from 'cssnano';
 import fs from 'fs-extra';
 import path from 'path';
 
+/**
+ * Every *.js file directly under src/js/components/ becomes its own build
+ * entry (and therefore a selectable "theme component" - see
+ * php/theme-components.php for the runtime side of this convention).
+ * Helper modules that are only ever imported by an entry (theme_switch.js,
+ * wishlist.js, ...) must not live in this folder - they belong in
+ * src/js/lib/ instead, or they'd incorrectly show up as components too.
+ */
+function discoverComponentEntries() {
+    const dir = 'src/js/components';
+    const entries = {};
+    for (const file of fs.readdirSync(dir)) {
+        if (file.endsWith('.js')) {
+            entries[path.basename(file, '.js')] = `./${dir}/${file}`;
+        }
+    }
+    return entries;
+}
+
 function copyAssets() {
     return {
         name: 'copy-assets',
@@ -34,13 +53,14 @@ export default defineConfig({
         },
         rollupOptions: {
             input: {
-                theme: './src/js/frontend.js',
+                core: './src/js/frontend.js',
+                ...discoverComponentEntries(),
             },
             output: {
                 entryFileNames: '[name].js',
                 chunkFileNames: '[name].js',
                 assetFileNames: (assetInfo) => {
-                    if (assetInfo.name?.endsWith('.css')) return 'default.css';
+                    if (assetInfo.name?.endsWith('.css')) return '[name].css';
                     return 'assets/[name][extname]';
                 },
                 format: 'es',

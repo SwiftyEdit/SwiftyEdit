@@ -1,9 +1,12 @@
 /**
- * SwiftyEdit default Theme
+ * SwiftyEdit default Theme - core styles
+ * Always loaded. Component-specific styles (shop, events, comments, posts)
+ * live in their own entry files and are loaded conditionally, see
+ * php/page-values.php and templates/head.tpl.
  */
 $enable-dark-mode: true;
-@import "variables";
-@import "variables-dark";
+@import "lib/variables";
+@import "lib/variables-dark";
 
 // Bootstrap Core
 @import '../../node_modules/bootstrap/scss/bootstrap';
@@ -19,25 +22,10 @@ $enable-dark-mode: true;
 @import '../../node_modules/bootstrap-icons/font/bootstrap-icons';
 
 @import '../../node_modules/glightbox/dist/css/glightbox';
-@import '../../node_modules/nouislider/dist/nouislider';
 
-@import 'posts';
-@import 'shop';
-@import 'events';
 @import 'helpers';
 @import 'navbar';
-@import 'comments';
 
-
-@keyframes cart-bump {
-  0%, 100% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.35);
-    color: $success;
-  }
-}
 
 [data-bs-theme=dark] #pageHeader {
   background: $header-bg-dark;
@@ -125,6 +113,16 @@ $enable-dark-mode: true;
     }
   }
 
+}
+
+@keyframes cart-bump {
+  0%, 100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+    color: $success;
+  }
 }
 
 #pageTeaser {

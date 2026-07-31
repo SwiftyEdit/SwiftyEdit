@@ -1,9 +1,10 @@
-
 /**
- * css for all post entries
- * you can add more css for all types
- * example: .post-list-m (messages) or .post-list-i (images) ...
+ * SwiftyEdit default Theme - posts (blog) component
+ * Loaded only when the "posts" theme component is enabled for a page.
  */
+@import "../lib/variables";
+@import "../lib/variables-dark";
+@import "../lib/bootstrap-vars";
 
 .post-list-entry {
   border-bottom: 1px solid $gray-500;

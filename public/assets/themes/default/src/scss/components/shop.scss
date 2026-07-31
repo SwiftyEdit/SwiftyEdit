@@ -1,7 +1,12 @@
-
 /**
- * css for all shop entries
+ * SwiftyEdit default Theme - shop component
+ * Loaded only when the "shop" theme component is enabled for a page.
  */
+@import "../lib/variables";
+@import "../lib/variables-dark";
+@import "../lib/bootstrap-vars";
+
+@import '../../../node_modules/nouislider/dist/nouislider';
 
 .product-list-entry {
   border-bottom: 1px solid $gray-500;

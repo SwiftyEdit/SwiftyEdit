@@ -443,11 +443,12 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
  * @param string $addon directory of the addon
  * @return array
  */
-function se_return_addon_translations($addon): array {
+function se_return_addon_translations($addon, $type = 'plugin'): array {
     global $languagePack;
     $translations = [];
-    $addons_lang_file = SE_ROOT."/plugins/".$addon."/lang/".$languagePack.'.json';
-    $addons_lang_file_alt = SE_ROOT."/plugins/".$addon."/lang/en.json";
+    $addon_root = ($type === 'theme') ? SE_THEMES."/".$addon : SE_ROOT."/plugins/".$addon;
+    $addons_lang_file = $addon_root."/lang/".$languagePack.'.json';
+    $addons_lang_file_alt = $addon_root."/lang/en.json";
 
     if(is_file($addons_lang_file)) {
         $translations = json_decode(file_get_contents($addons_lang_file), true);

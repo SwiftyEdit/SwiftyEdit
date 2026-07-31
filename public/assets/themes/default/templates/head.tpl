@@ -34,10 +34,20 @@
 {/foreach}
 
 <!-- CSS -->
-<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/default.css" />
+<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/core.css" />
+{foreach $se_theme_components as $component_id => $component}
+	{if $component.enabled && $component.has_css}
+		<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.css" />
+	{/if}
+{/foreach}
 
 <!-- JavaScript -->
-<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/theme.js"></script>
+<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/core.js"></script>
+{foreach $se_theme_components as $component_id => $component}
+	{if $component.enabled && $component.has_js}
+		<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.js"></script>
+	{/if}
+{/foreach}
 
 
 {$page_head_styles}	

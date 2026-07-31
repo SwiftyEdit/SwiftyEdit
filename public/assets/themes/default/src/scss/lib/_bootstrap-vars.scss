@@ -1,0 +1,10 @@
+/**
+ * Bootstrap functions, variables and maps only - no compiled output.
+ * Import this (after the project's own _variables partials) in every
+ * component entry that needs Bootstrap SCSS variables/functions
+ * (e.g. $gray-500, darken(), tint-color()) without pulling in a second
+ * copy of Bootstrap's compiled CSS, which core.scss already provides.
+ */
+@import '../../../node_modules/bootstrap/scss/functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/maps';
