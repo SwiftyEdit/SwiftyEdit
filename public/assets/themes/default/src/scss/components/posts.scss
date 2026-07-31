@@ -5,11 +5,15 @@
 @import "../lib/variables";
 @import "../lib/variables-dark";
 @import "../lib/bootstrap-vars";
+@import "../lib/mixins";
 
 .post-list-entry {
-  border-bottom: 1px solid $gray-500;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
+  @include se-entry-hover-lift;
+  background: #fff;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: none;
+
   &.draft {
     opacity: 0.8;
     border: 1px solid $info;
@@ -29,7 +33,7 @@
 }
 
 [data-bs-theme="dark"] .post-list-entry {
-  border-bottom: 1px solid $border-color-dark;
+  background: $widget-bg-dark;
 }
 
 a.post-headline-link {
@@ -50,7 +54,8 @@ a.post-headline-link {
   float: left;
   width: 155px;
   height: 155px;
-  border-radius: 5px;
+  border-radius: $border-radius;
+  transition: box-shadow 0.2s ease;
 }
 
 .post-thumbnail:hover {

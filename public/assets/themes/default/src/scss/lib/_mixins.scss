@@ -1,0 +1,23 @@
+/**
+ * Shared mixin for list-entry cards (posts, products, events, comments)
+ * so every component file gets the same soft elevation + hover-lift
+ * treatment without duplicating the raw CSS in each component partial.
+ */
+@mixin se-entry-hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-soft;
+
+  [data-bs-theme="dark"] & {
+    box-shadow: $shadow-soft-dark;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: $shadow-soft-hover;
+  }
+
+  [data-bs-theme="dark"] &:hover {
+    box-shadow: $shadow-soft-hover-dark;
+  }
+}

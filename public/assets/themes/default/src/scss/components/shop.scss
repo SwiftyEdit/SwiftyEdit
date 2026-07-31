@@ -5,13 +5,17 @@
 @import "../lib/variables";
 @import "../lib/variables-dark";
 @import "../lib/bootstrap-vars";
+@import "../lib/mixins";
 
 @import '../../../node_modules/nouislider/dist/nouislider';
 
 .product-list-entry {
-  border-bottom: 1px solid $gray-500;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
+  @include se-entry-hover-lift;
+  background: #fff;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: none;
+
   &.draft {
     opacity: 0.8;
     border: 1px solid $info;
@@ -31,20 +35,23 @@
 }
 
 [data-bs-theme="dark"] .product-list-entry {
-  border-bottom: 1px solid $border-color-dark;
+  background: $widget-bg-dark;
 }
 
 [data-bs-theme=dark] .price-tag {
   background: $price-tag-bg-dark;
   color: $price-tag-color-dark;
+  box-shadow: $shadow-soft-dark;
 }
 
 .price-tag {
   background: $price-tag-bg;
   color: $price-tag-color;
-  padding: 5px 15px;
+  padding: 0.75rem 1.1rem;
 
   text-align: center;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-soft;
 
   &.price-tag-fix {
     float: right;

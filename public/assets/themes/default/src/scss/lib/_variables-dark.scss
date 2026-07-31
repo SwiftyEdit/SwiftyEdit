@@ -1,28 +1,31 @@
 // Dark color mode variables
 
-$primary-dark: #405894;
+$primary-dark: #8d89f2 !default;
 
-$body-bg-dark: mix($primary-dark,$dark,15) !default;
-$body-color-dark: #c0bebe !default;
+$body-bg-dark: #17152a !default;
+$body-color-dark: #d8d5ee !default;
 
-$header-bg-dark: mix($dark,$primary-dark,75) !default;
-$teaser-bg-dark: mix($dark,$primary-dark,95) !default;
-$footer-bg-dark: $navbar-bg !default;
+$header-bg-dark: linear-gradient(135deg, #6b3f86 0%, #4f3fae 55%, #3a3390 100%) !default;
+$teaser-bg-dark: #211c3d !default;
+$footer-bg-dark: #131025 !default;
 
-$widget-bg-dark: darken($body-bg-dark,5) !default;
+$widget-bg-dark: #1e1a38 !default;
 
-$price-tag-bg-dark: darken($body-bg-dark,5) !default;
-$price-tag-color-dark: #438555 !default;
+$price-tag-bg-dark: #241f45 !default;
+$price-tag-color-dark: #6fdc8c !default;
 
-$headings-color-dark: desaturate(lighten($primary-dark,15%),10) !default;
-$link-color-dark: lighten($primary-dark,25%) !default;
+$headings-color-dark: #d1cdfb !default;
+$link-color-dark: #a29dfb !default;
 
-$card-border-color-dark: mix($primary-dark,$dark,25) !default;
-$border-color-dark: lighten($body-bg-dark,15%) !default;
-$input-border-color-dark: mix($primary-dark,$dark,65) !default;
+$card-border-color-dark: #332c5c !default;
+$border-color-dark: #332c5c !default;
+$input-border-color-dark: #3d3568 !default;
 
-$list-group-color-dark: desaturate($link-color,15) !default;
-$list-group-bg-dark: $widget-bg !default;
-$list-group-hover-bg-dark: lighten($widget-bg,2) !default;
+$list-group-color-dark: $link-color-dark !default;
+$list-group-bg-dark: $widget-bg-dark !default;
+$list-group-hover-bg-dark: lighten($widget-bg-dark,4) !default;
 
 $popover-header-bg-dark: $widget-bg-dark;
+
+$shadow-soft-dark: 0 4px 18px rgba(0, 0, 0, 0.35) !default;
+$shadow-soft-hover-dark: 0 14px 32px rgba(0, 0, 0, 0.5) !default;

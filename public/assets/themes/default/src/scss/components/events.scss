@@ -5,12 +5,16 @@
 @import "../lib/variables";
 @import "../lib/variables-dark";
 @import "../lib/bootstrap-vars";
+@import "../lib/mixins";
 
 .event-list-entry,
 .event-entry {
-  border-bottom: 1px solid $gray-200;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
+  @include se-entry-hover-lift;
+  background: #fff;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: none;
+
   &.draft {
     opacity: 0.8;
     border: 1px solid $info;
@@ -29,31 +33,34 @@
   }
 
   .event-date {
-    background: $gray-200;
-    padding: 2px;
+    background: $widget-bg;
     text-align: center;
-    border-radius: 5px;
+    border-radius: $border-radius;
+    overflow: hidden;
 
     .event-date-header {
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
-      background: $gray-300;
-      padding: 3px;
-      margin: -2px -2px 0 -2px;
+      background: $accent-gradient;
+      color: $light;
+      padding: 6px 3px;
       font-size: 14px;
+      font-weight: 600;
     }
 
     .event-start-year {
       display: block;
       font-size: 35px;
-      line-height: 35px;
-      opacity: .5;
+      line-height: 1.4;
+      font-weight: 700;
+      color: $headings-color;
+      opacity: .8;
     }
 
     .event-end-date {
+      display: block;
+      padding-bottom: 6px;
       font-size: 12px;
       line-height: 14px;
-      opacity: .3;
+      opacity: .5;
     }
 
   }
@@ -61,11 +68,11 @@
 }
 
 [data-bs-theme=dark] .event-entry, [data-bs-theme=dark] .event-list-entry {
-  border-bottom: 1px solid $gray-800;
+  background: $widget-bg-dark;
   .event-date {
     background: $card-border-color-dark;
-    .event-date-header {
-      background: lighten($card-border-color-dark,5);
+    .event-start-year {
+      color: $headings-color-dark;
     }
   }
 }
