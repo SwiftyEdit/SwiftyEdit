@@ -25,6 +25,33 @@ rsync -a $EDITOR_EXCLUDES plugins/tinymce-editor/ dist/$BUILD/plugins/tinymce-ed
 rsync -a $EDITOR_EXCLUDES plugins/ace-editor/     dist/$BUILD/plugins/ace-editor/
 
 # Themes
+# The compiled dist/ assets (CSS/JS) of each theme are gitignored build
+# artifacts, so they have to be (re-)built here rather than relying on
+# whatever happens to already sit in the working tree.
+if ! command -v npm &> /dev/null; then
+    echo "Error: npm could not be found. Please install Node.js/npm to build theme assets."
+    exit 1
+fi
+
+for theme in administration default; do
+    theme_dir="public/assets/themes/$theme"
+    echo "Building theme assets: $theme"
+    if [ -f "$theme_dir/package-lock.json" ]; then
+        (cd "$theme_dir" && npm ci)
+    else
+        (cd "$theme_dir" && npm install)
+    fi
+    if [ $? -ne 0 ]; then
+        echo "Error: npm install failed for theme $theme."
+        exit 1
+    fi
+    (cd "$theme_dir" && npm run build)
+    if [ $? -ne 0 ]; then
+        echo "Error: npm run build failed for theme $theme."
+        exit 1
+    fi
+done
+
 rsync -a public/assets/themes/administration/ dist/$BUILD/public/assets/themes/administration/
 rsync -a public/assets/themes/default/ dist/$BUILD/public/assets/themes/default/
 
@@ -40,11 +67,17 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-find "${BUILD_DIR}/acp" "${BUILD_DIR}/app" "${BUILD_DIR}/install" "${BUILD_DIR}/languages" "${BUILD_DIR}/vendor" -type f | sed "s|^${BUILD_DIR}/||" | jq -R -s -c 'split("\n")[:-1]' > "${BUILD_DIR}/whitelist.json"
-
-# clean up
+# clean up (must run BEFORE the whitelist is generated, so build tooling
+# files like node_modules/src/package.json never end up in whitelist.json)
 find "${BUILD_DIR}/public/assets/themes/" -type d \( -name node_modules -o -name src \) -exec rm -rf '{}' +
 find "${BUILD_DIR}/public/assets/themes/" -type f \( -name package.json -o -name package-lock.json -o -name webpack.config.js \) -delete
 find "${BUILD_DIR}/plugins/" -name '*config.php' -type f -delete
+
+# The bundled themes (administration, default) are core parts of the release
+# just like acp/app/languages/vendor, so their files are whitelisted too -
+# this lets the updater clean up stale/renamed theme files on update.
+# User-installed/custom themes are NOT part of the whitelist and stay
+# untouched by the updater's cleanup.
+find "${BUILD_DIR}/acp" "${BUILD_DIR}/app" "${BUILD_DIR}/install" "${BUILD_DIR}/languages" "${BUILD_DIR}/vendor" "${BUILD_DIR}/public/assets/themes/administration" "${BUILD_DIR}/public/assets/themes/default" -type f | sed "s|^${BUILD_DIR}/||" | jq -R -s -c 'split("\n")[:-1]' > "${BUILD_DIR}/whitelist.json"
 
 echo "Build $BUILD ready with whitelist.json"
