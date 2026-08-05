@@ -154,6 +154,8 @@ $enable-dark-mode: true;
 
 #pageTeaser {
   background: $teaser-bg;
+  // Cancel .navbar-se's margin-bottom so the teaser background sits flush
+  // against the nav, with no visible page-background gap between them.
   margin-top: -1rem;
   padding-top: 1rem;
   padding-bottom: 1rem;

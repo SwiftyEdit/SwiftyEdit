@@ -2,6 +2,11 @@
   background: $navbar-bg;
   color: $navbar-color;
   box-shadow: 0 6px 20px rgba(20, 16, 46, 0.18);
+  // Space between nav and whatever follows (teaser or page content) - without
+  // this the content directly abuts the nav when there is no teaser. When a
+  // #pageTeaser follows, it cancels this exact margin (see core.scss) to sit
+  // flush against the nav instead - keep both values equal (1rem).
+  margin-bottom: 1rem;
 
   ul {
     li.nav-item {
