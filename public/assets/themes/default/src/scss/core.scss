@@ -1,0 +1,228 @@
+/**
+ * SwiftyEdit default Theme - core styles
+ * Always loaded. Component-specific styles (shop, events, comments, posts)
+ * live in their own entry files and are loaded conditionally, see
+ * php/page-values.php and templates/head.tpl.
+ */
+$enable-dark-mode: true;
+@import "lib/variables";
+@import "lib/variables-dark";
+@import "lib/mixins";
+
+// Bootstrap Core
+@import '../../node_modules/bootstrap/scss/bootstrap';
+
+@if $enable-dark-mode {
+  @include color-mode(dark, true) {
+    --#{$prefix}primary: #{$primary-dark};
+    --#{$prefix}primary-rgb: #{to-rgb($primary-dark)};
+  }
+}
+
+// Bootstrap Icons
+@import '../../node_modules/bootstrap-icons/font/bootstrap-icons';
+
+@import '../../node_modules/glightbox/dist/css/glightbox';
+
+@import 'helpers';
+@import 'navbar';
+
+
+[data-bs-theme=dark] #pageHeader .header-hero {
+  background: $header-bg-dark;
+}
+
+#pageHeader {
+
+  // No overflow: hidden here - .header-decoration is background-image only
+  // (inset: 0, so it never actually overflows its own box) and this
+  // container also holds the utility-bar dropdowns/offcanvas, whose menus
+  // need to extend past the hero's bottom edge without being clipped.
+  .header-hero {
+    position: relative;
+    background: $header-bg;
+  }
+
+  .header-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(38rem 22rem at 88% -12%, rgba(255, 255, 255, 0.28), transparent 60%),
+      radial-gradient(26rem 26rem at 8% 115%, rgba(255, 255, 255, 0.16), transparent 65%);
+  }
+
+  // Dropdowns/offcanvas opened from the header utility bar must outrank the
+  // sticky navbar's z-index (Bootstrap's .sticky-top sets 1020) - without an
+  // explicit z-index here they'd render underneath it once it's stuck.
+  .header-utility-bar .dropdown-menu {
+    z-index: 1030;
+  }
+
+  p.h1, p.h2 {
+    color: $light;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.12);
+
+    small {
+      display: block;
+      font-weight: 400;
+      font-size: 1rem;
+      opacity: 0.85;
+      letter-spacing: normal;
+    }
+  }
+
+  .header-utility-bar {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: 0.25rem;
+  }
+
+  .shopping-cart-container {
+    padding: 3px 5px;
+
+    a {
+      text-decoration: none;
+      padding: 3px 5px;
+      color: $light;
+    }
+
+    &.cart-bump i {
+      animation: cart-bump 0.6s ease-in-out;
+    }
+  }
+
+  .social-media {
+    a {
+      color: $light;
+      text-decoration: none;
+      padding: 3px 5px;
+      &:hover {
+        color: #eee;
+      }
+    }
+    padding: 3px 5px;
+  }
+  .legal-pages-container {
+    padding: 3px 5px;
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      li {
+        display: inline-block;
+        padding: 0;
+        a {
+          text-decoration: none;
+          padding: 3px 5px;
+          color: $light;
+        }
+      }
+    }
+  }
+
+  .styleswitch-container {
+    button.btn-link {
+      padding: 3px 5px;
+      color: $light;
+      text-decoration: none;
+    }
+  }
+
+  .user-status-container {
+    button.btn-link {
+      padding: 3px 5px;
+      color: $light;
+      text-decoration: none;
+    }
+  }
+
+}
+
+@keyframes cart-bump {
+  0%, 100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+    color: $success;
+  }
+}
+
+#pageTeaser {
+  background: $teaser-bg;
+  margin-top: -1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+[data-bs-theme=dark] #pageTeaser {
+  background: $teaser-bg-dark;
+}
+
+[data-bs-theme=dark] #pageFooter {
+  background: $footer-bg-dark;
+}
+
+#pageFooter {
+  background: $footer-bg;
+  padding-top: 2.5rem;
+  padding-bottom: 100px;
+  color: rgba(255, 255, 255, 0.82);
+
+  a {
+    color: #fff;
+  }
+
+  .breadcrumb {
+    --#{$prefix}breadcrumb-divider-color: rgba(255, 255, 255, 0.45);
+    --#{$prefix}breadcrumb-item-active-color: rgba(255, 255, 255, 0.65);
+
+    a {
+      color: rgba(255, 255, 255, 0.8);
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}
+
+[data-bs-theme="dark"] .card {
+  border-color: $card-border-color-dark;
+  .card-header {
+    border-bottom-color: $card-border-color-dark;
+  }
+  .card-footer {
+    border-top-color: $card-border-color-dark;
+  }
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  border-color: $input-border-color-dark;
+}
+
+// Subtle lift on interactive buttons for a livelier feel
+.btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-primary {
+  box-shadow: 0 6px 16px rgba(112, 106, 235, 0.28);
+
+  &:hover {
+    box-shadow: 0 10px 22px rgba(112, 106, 235, 0.36);
+  }
+}

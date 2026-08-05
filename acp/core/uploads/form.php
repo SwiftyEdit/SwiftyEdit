@@ -10,5 +10,3 @@ if(is_int($get_media_id)) {
     ]);
 
 }
-
-print_r($get_media);

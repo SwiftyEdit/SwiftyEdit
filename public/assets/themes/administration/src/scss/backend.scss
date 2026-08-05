@@ -400,6 +400,12 @@ hr.shadow-line:after {
   &-h500 {
     height: 500px;
   }
+  // Fixed (not max-) height variant: keeps the box's height constant while
+  // its hx-get content swaps from the loading indicator to the loaded
+  // table, instead of the surrounding layout jumping as the box grows.
+  &-h350 {
+    height: 350px;
+  }
 }
 
 .scroll-box {

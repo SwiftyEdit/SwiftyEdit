@@ -1,23 +1,45 @@
 .navbar-se {
   background: $navbar-bg;
   color: $navbar-color;
+  box-shadow: 0 6px 20px rgba(20, 16, 46, 0.18);
+
   ul {
     li.nav-item {
       a.nav-link {
         color: $navbar-color;
+        border-radius: $border-radius-pill;
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+        transition: color 0.15s ease, background-color 0.15s ease;
+
+        &:hover {
+          color: $navbar-color-active;
+          background-color: rgba(255, 255, 255, 0.08);
+        }
 
         &.active {
           color: $navbar-color-active;
+          background-color: rgba(255, 255, 255, 0.14);
         }
       }
     }
   }
 
   .searchbox {
-    background: darken($navbar-bg,5);
-    border-color: lighten($navbar-bg,10);;
-    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    border-radius: $border-radius-pill;
     color: $light;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    &:focus {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: none;
+    }
   }
 
 }

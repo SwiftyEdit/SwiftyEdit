@@ -34,12 +34,16 @@ Ein paar ACP-Editor-Assets fallen auf dieselbe Weise zurück, mit leicht abweich
   tinyMCE einfach seine eigene eingebaute Konfiguration statt der von `default`.
 
 Was gar nicht zurückfällt: Deine wichtigsten Frontend-Assets. `head.tpl` verlinkt
-`dist/default.css` und `dist/theme.js` mit `{$se_template}` fest im Pfad, ohne
+`dist/core.css` und `dist/core.js` mit `{$se_template}` fest im Pfad, ohne
 Existenzprüfung - fehlen diese beiden Dateien in Deinem Theme, sind die Links schlicht kaputt,
 sie werden nicht stillschweigend durch die Versionen von `default` ersetzt. Jedes Theme braucht
-also zwingend sein eigenes `dist/default.css` und `dist/theme.js`, auch wenn eine der beiden
-Dateien trivial ausfällt (z. B. nur ein `@import` des `default`-Stylesheets) - siehe
-[Theme-Assets bauen](09-01-00-themes.md#theme-assets-bauen).
+also zwingend sein eigenes `dist/core.css` und `dist/core.js`, auch wenn eine der beiden
+Dateien trivial ausfällt (z. B. nur ein `@import` des `default`-Stylesheets). Die optionalen
+Komponenten-Bundles von `default` (`shop.css`/`shop.js`, `events.css`, `comments.css`,
+`posts.css`) werden nur bedingt verlinkt und sind eine Besonderheit dieses Themes - Dein eigenes
+Theme braucht keine Entsprechungen dafür, siehe
+[Theme-Assets bauen](09-01-00-themes.md#theme-assets-bauen) und
+[Optionale Theme-Komponenten](09-01-00-themes.md#optionale-theme-komponenten).
 
 ## Übersicht der Template-Dateien
 

@@ -1,5 +1,12 @@
 <?php
 
+// Read-only w.r.t. $_SESSION (only compared below, never assigned) - safe to
+// release the session lock immediately. These counter badges fire alongside
+// the dashboard's other hx-trigger="load" widgets, all sharing one
+// PHPSESSID; without an early close here, the default file session handler
+// would force them to queue up and run one at a time instead of
+// concurrently. Do not add $_SESSION writes below without removing this first.
+session_write_close();
 
 if($_REQUEST['count'] == 'pages') {
     $count = $db_content->count("se_pages");

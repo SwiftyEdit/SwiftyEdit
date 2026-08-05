@@ -21,7 +21,6 @@ if(isset($_POST['blog_text_filter'])) {
 
 // remove keyword from filter list
 if(isset($_POST['rmkey'])) {
-    print_r($_POST);
     $all_filter = explode(" ", $_SESSION['posts_text_filter']);
     $_SESSION['posts_text_filter'] = '';
     foreach($all_filter as $f) {
@@ -215,6 +214,11 @@ if(isset($_POST['save_post'])) {
         $post_fixed = 2;
     }
 
+    $post_hide_detail_page = 0;
+    if(isset($_POST['posts_hide_detail_page'])) {
+        $post_hide_detail_page = 1;
+        $post_rss = 'off';
+    }
 
     /* metas */
     if($_POST['post_meta_title'] == '') {

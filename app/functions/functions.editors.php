@@ -53,12 +53,16 @@ function se_get_registered_editors(): array
  * render) and acp/header.php (the /admin-xhr/ read/write entry point used by
  * data-reader.php/data-writer.php).
  *
+ * @param array|null $all_plugins Result of se_get_all_addons(), if the caller
+ *        already has it - avoids re-scanning plugins/ and re-parsing every
+ *        info.json a second time in the same request. Falls back to scanning
+ *        itself when omitted.
  * @return array The $se_editor_addons list (se_get_editor_addons()), for
  *         callers that also need it (e.g. to build the format-switch dropdown).
  */
-function se_bootstrap_editor_plugins(): array
+function se_bootstrap_editor_plugins(?array $all_plugins = null): array
 {
-    $se_editor_addons = se_get_editor_addons();
+    $se_editor_addons = se_get_editor_addons($all_plugins);
     foreach ($se_editor_addons as $editor_addon) {
         $editor_bootstrap = SE_ROOT . 'plugins/' . $editor_addon['dir'] . '/global/index.php';
         if (is_file($editor_bootstrap)) {

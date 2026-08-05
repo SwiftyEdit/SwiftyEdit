@@ -10,6 +10,15 @@ $structuredDataContext = [
 ];
 
 /**
+ * decode this page's saved "Theme Values" (see the active theme's
+ * php/page-values.php for what gets written into page_template_values)
+ */
+$theme_values = json_decode($page_contents['page_template_values'] ?? '', true);
+if (!is_array($theme_values)) {
+    $theme_values = [];
+}
+
+/**
  * assign all translations to smarty
  */
 foreach($lang as $key => $val) {

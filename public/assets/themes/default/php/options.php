@@ -145,6 +145,27 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
         }
     }
 
+    /**
+     * which optional theme components (CSS+JS) to load on this page, auto-
+     * discovered from dist/ (see php/theme-components.php). Pages saved
+     * before this option existed (or with "all components" selected) get
+     * everything, matching the old single-bundle build.
+     */
+    require_once __DIR__.'/theme-components.php';
+
+    $theme_dist_dir = __DIR__.'/../dist';
+    $load_all_components = ($theme_values['components_mode'] ?? 'all') !== 'custom';
+
+    $se_theme_components = [];
+    foreach (se_theme_component_ids($theme_dist_dir) as $id) {
+        $se_theme_components[$id] = [
+            'enabled' => $load_all_components || ($theme_values['comp_'.$id] ?? '') == '1',
+            'has_css' => se_theme_component_has_css($theme_dist_dir, $id),
+            'has_js' => se_theme_component_has_js($theme_dist_dir, $id),
+        ];
+    }
+    $smarty->assign('se_theme_components', $se_theme_components);
+
     if($theme_values['teaser_text'] != '') {
         $teaser_text = html_entity_decode($theme_values['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
         $smarty->assign('teaser_text', $teaser_text);

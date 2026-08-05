@@ -1,0 +1,53 @@
+
+$primary: #706aeb;
+$secondary: #5e6270 !default;
+$success: #438555 !default;
+$info: #9bc4dc !default;
+$warning: #eecb6b !default;
+$danger: #862b33 !default;
+$light:  #f5f5f5 !default;
+$dark: #111111 !default;
+
+$body-bg:                   #f3f2fb !default;
+$body-color:                #16151f !default;
+$body-text-align:           null !default;
+
+$link-color: $primary;
+
+// Accent gradient derived from the SwiftyEdit logo (pink -> purple -> indigo)
+$accent-gradient: linear-gradient(135deg, #cd66e0 0%, #9f7ded 55%, #706aeb 100%) !default;
+
+$header-bg: $accent-gradient !default;
+$teaser-bg: #ece9fb !default;
+$footer-bg: linear-gradient(160deg, #453a86 0%, #2c2557 100%) !default;
+
+$price-tag-bg: #ffffff !default;
+$price-tag-color: #1e7c33 !default;
+
+$card-border-color: darken($body-bg,4) !default;
+
+$input-border-color: #d9d5ee !default;
+
+$border-color: #d9d5ee !default;
+$widget-bg: #f3f2fb !default;
+
+$headings-color: #2b2360 !default;
+
+$navbar-bg: #292152 !default;
+$navbar-color: rgba(255,255,255,.72) !default;
+$navbar-color-active: $light !default;
+
+$popover-header-bg: $widget-bg;
+
+// Softer, more modern shape scale (overrides Bootstrap's own !default values,
+// same mechanism already used above for $primary etc: since these are set
+// here, not with !default, they win over bootstrap/scss/variables' !default).
+$border-radius: 0.65rem;
+$border-radius-sm: 0.45rem;
+$border-radius-lg: 1rem;
+$border-radius-xl: 1.4rem;
+$border-radius-pill: 50rem;
+
+// Shared elevation for entry cards / interactive surfaces
+$shadow-soft: 0 4px 16px rgba(43, 35, 96, 0.08) !default;
+$shadow-soft-hover: 0 14px 30px rgba(43, 35, 96, 0.16) !default;

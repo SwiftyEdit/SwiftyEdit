@@ -1,0 +1,78 @@
+/**
+ * SwiftyEdit default Theme - events component
+ * Loaded only when the "events" theme component is enabled for a page.
+ */
+@import "../lib/variables";
+@import "../lib/variables-dark";
+@import "../lib/bootstrap-vars";
+@import "../lib/mixins";
+
+.event-list-entry,
+.event-entry {
+  @include se-entry-hover-lift;
+  background: #fff;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: none;
+
+  &.draft {
+    opacity: 0.8;
+    border: 1px solid $info;
+    padding: 15px;
+
+    .alert-draft {
+      margin-top: -15px;
+      margin-left: -15px;
+      margin-right: -15px;
+      border-radius: 0;
+      padding: 5px 15px;
+      background: #ddd;
+      color: $info;
+    }
+
+  }
+
+  .event-date {
+    background: $widget-bg;
+    text-align: center;
+    border-radius: $border-radius;
+    overflow: hidden;
+
+    .event-date-header {
+      background: $accent-gradient;
+      color: $light;
+      padding: 6px 3px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .event-start-year {
+      display: block;
+      font-size: 35px;
+      line-height: 1.4;
+      font-weight: 700;
+      color: $headings-color;
+      opacity: .8;
+    }
+
+    .event-end-date {
+      display: block;
+      padding-bottom: 6px;
+      font-size: 12px;
+      line-height: 14px;
+      opacity: .5;
+    }
+
+  }
+
+}
+
+[data-bs-theme=dark] .event-entry, [data-bs-theme=dark] .event-list-entry {
+  background: $widget-bg-dark;
+  .event-date {
+    background: $card-border-color-dark;
+    .event-start-year {
+      color: $headings-color-dark;
+    }
+  }
+}

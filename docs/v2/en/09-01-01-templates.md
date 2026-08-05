@@ -33,12 +33,15 @@ A couple of ACP editor assets fall back the same way, with slightly different ru
   simply uses its own built-in configuration instead of `default`'s.
 
 What does __not__ fall back at all: your main frontend assets. `head.tpl` links
-`dist/default.css` and `dist/theme.js` with `{$se_template}` baked directly into the URL, with no
+`dist/core.css` and `dist/core.js` with `{$se_template}` baked directly into the URL, with no
 existence check - if your theme doesn't ship those two files, the links are just broken, they do
 not silently resolve to `default`'s versions. Every theme therefore needs its own
-`dist/default.css` and `dist/theme.js`, even if either one is trivial (e.g. just `@import`ing
-`default`'s stylesheet) - see
-[Building the theme assets](09-01-00-themes.md#building-the-theme-assets).
+`dist/core.css` and `dist/core.js`, even if either one is trivial (e.g. just `@import`ing
+`default`'s stylesheet). `default`'s optional component bundles (`shop.css`/`shop.js`,
+`events.css`, `comments.css`, `posts.css`) are only linked conditionally and are specific to how
+that theme is built - your own theme is not required to have equivalents, see
+[Building the theme assets](09-01-00-themes.md#building-the-theme-assets) and
+[Optional theme components](09-01-00-themes.md#optional-theme-components).
 
 ## Template file overview
 

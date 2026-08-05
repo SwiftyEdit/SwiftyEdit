@@ -47,7 +47,11 @@
                 {/if}
                 <div class="col">
                     <span class="post-author">{$value.post_author}</span> <span class="post-releasedate">{$value.post_releasedate_str}</span>
+                    {if $value.post_href != false}
                     <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+                    {else}
+                        <h3>{$value.post_title}</h3>
+                    {/if}
                     {$value.post_teaser}
                 </div>
             </div>
@@ -75,7 +79,11 @@
         {* post type image *}
         {if $value.post_type == "i"}
             <span class="post-author">{$value.post_author}</span> <span class="post-releasedate">{$value.post_releasedate_str}</span>
+        {if $value.post_href != false}
             <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {else}
+            <h3>{$value.post_title}</h3>
+        {/if}
             {$value.post_teaser}
 
             <div class="card p-3">
@@ -88,7 +96,11 @@
         {if $value.post_type == "v"}
 
             <span class="post-author">{$value.post_author}</span> <span class="post-releasedate">{$value.post_releasedate_str}</span>
-            <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {if $value.post_href != false}
+                <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {else}
+                <h3>{$value.post_title}</h3>
+            {/if}
             {$value.post_teaser}
 
             <div class="card p-3">
@@ -109,7 +121,11 @@
         {if $value.post_type == "l"}
 
             <span class="post-author">{$value.post_author}</span> <span class="post-releasedate">{$value.post_releasedate_str}</span>
-            <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {if $value.post_href != false}
+                <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {else}
+                <h3>{$value.post_title}</h3>
+            {/if}
             {$value.post_teaser}
 
             <p>
@@ -123,7 +139,12 @@
         {if $value.post_type == "f"}
 
             <span class="post-author">{$value.post_author}</span> <span class="post-releasedate">{$value.post_releasedate_str}</span>
-            <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {if $value.post_href != false}
+                <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {else}
+                <h3>{$value.post_title}</h3>
+            {/if}
+
             {$value.post_teaser}
 
             <form action="{$form_action}" method="POST">
@@ -162,7 +183,9 @@
             </div>
         {/if}
             <div class="col text-end">
-            <a class="btn btn-primary {$read_more_class}" href="{$value.post_href}">{$value.btn_open_post}</a>
+                {if $value.post_href != false}
+                    <a class="btn btn-primary {$read_more_class}" href="{$value.post_href}">{$value.btn_open_post}</a>
+                {/if}
         </div>
 
         </div>

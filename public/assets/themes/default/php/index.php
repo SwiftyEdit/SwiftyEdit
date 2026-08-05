@@ -12,7 +12,10 @@
  */
 
 include __DIR__.'/definitions.php';
-$theme_values = json_decode($page_contents['page_template_values'],true);
+
+// $theme_values (decoded page_template_values) is provided by
+// app/template-setup.php before php/options.php runs - no need to decode
+// it again here.
 
 function theme_text_parser($str) {
 
