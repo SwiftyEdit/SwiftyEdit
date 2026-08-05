@@ -42,6 +42,7 @@ if($send_order == true) {
         if($cart_alert == '') {
             $cart_alert = $lang['msg_order_send'];
         }
+        $cart_alert = text_parser($cart_alert);
 
 
         /* remove items from se_carts */

@@ -102,6 +102,7 @@ if($send_request === true) {
         if($cart_alert == '') {
             $cart_alert = $lang['msg_request_send'];
         }
+        $cart_alert = text_parser($cart_alert);
 
         $smarty->assign("cart_alert_success",$cart_alert,true);
 
