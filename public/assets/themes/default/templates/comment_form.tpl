@@ -3,7 +3,18 @@
     <div id="commentFormResponse"></div>
 
     <p class="h3">{$comment_form_title}</p>
-    <p>{$comment_form_intro}</p>
+
+    {if $parent_id > 0 && $parent_comment_author != ''}
+    <div class="alert alert-secondary d-flex justify-content-between align-items-start">
+        <div>
+            <strong>{$label_comment_answer} {$parent_comment_author}:</strong>
+            <span class="text-muted">{$parent_comment_text}</span>
+        </div>
+        <button type="button" class="btn-close" aria-label="{$btn_cancel_answer}"
+                hx-get="{$cancel_reply_url}" hx-target="#comments_form" hx-swap="innerHTML"></button>
+    </div>
+    {/if}
+
     <form hx-post="/xhr/se/comments/" hx-target="#commentFormResponse">
         <div class="form-group">
             <label for="input_name">{$label_name}</label>
@@ -26,6 +37,7 @@
 
         <input type="hidden" name="page_id" value="{$page_id}">
         <input type="hidden" name="post_id" value="{$post_id}">
+        <input type="hidden" name="product_id" value="{$product_id}">
         <input type="hidden" name="parent_id" value="{$parent_id}">
         {$hidden_csrf_token}
     </form>

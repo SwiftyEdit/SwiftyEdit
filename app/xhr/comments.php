@@ -35,20 +35,42 @@ if($_REQUEST['form'] == 'comments') {
         $smarty->assign("post_id",$post_id);
     }
 
+    if(isset($_GET['product_id'])) {
+        $product_id = (int) $_GET['product_id'];
+        $smarty->assign("product_id",$product_id);
+    }
+
     if(isset($_GET['parent_id'])) {
         $parent_id = (int) $_GET['parent_id'];
         $smarty->assign("parent_id",$parent_id);
     }
 
-    if(isset($_GET['relation_id'])) {
-        $post_id = (int) $_GET['relation_id'];
-        $smarty->assign("post_id",$post_id);
+    /* replying to a comment: show what is being answered to, and a way back to the plain form */
+    if($parent_id > 0) {
+        $parent_comment = se_get_comment($parent_id);
+        if(is_array($parent_comment)) {
+            $smarty->assign("parent_comment_author", $parent_comment['comment_author']);
+            $smarty->assign("parent_comment_text", se_return_words_str(strip_tags($parent_comment['comment_text']), 15));
+
+            $cancel_reply_url = '/xhr/se/comments/?form=comments';
+            if(isset($product_id)) {
+                $cancel_reply_url .= '&product_id='.$product_id;
+            } else if(isset($post_id)) {
+                $cancel_reply_url .= '&post_id='.$post_id;
+            } else if(isset($page_id)) {
+                $cancel_reply_url .= '&page_id='.$page_id;
+            }
+            $smarty->assign("cancel_reply_url", $cancel_reply_url);
+        }
     }
 
+    $smarty->assign("comment_form_title",$lang['comment_form_title']);
     $smarty->assign("label_name",$lang['label_name']);
     $smarty->assign("label_mail",$lang['label_mail']);
     $smarty->assign("label_mail_helptext",$lang['label_mail_helptext']);
+    $smarty->assign("label_comment_answer",$lang['label_comment_answer']);
     $smarty->assign("btn_send_comment",$lang['btn_send_comment']);
+    $smarty->assign("btn_cancel_answer",$lang['btn_cancel_answer']);
 
     $smarty->assign("input_name",$_SESSION['user_nick']);
     $smarty->assign("input_mail",$_SESSION['user_mail']);
@@ -64,6 +86,11 @@ $show_thread = false;
 if(isset($_GET['post_id'])) {
     $filter['relation_id'] = (int) $_GET['post_id'];
     $filter['type'] = 'b';
+}
+
+if(isset($_GET['product_id'])) {
+    $filter['relation_id'] = (int) $_GET['product_id'];
+    $filter['type'] = 'c';
 }
 
 if(isset($_GET['page_id'])) {

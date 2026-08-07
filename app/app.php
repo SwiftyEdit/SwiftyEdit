@@ -118,6 +118,32 @@ foreach($valid_page_types as $handler) {
     }
 }
 
+/* comments: page-level flag comes from $page_contents, post-/product-level flags need
+   $post_data / $product_data, which are only populated once the handler above has run */
+$post_comments = 0;
+if(isset($post_data) AND $post_data['post_comments'] == 1) {
+    $post_comments = 1;
+}
+
+$product_comments = 0;
+if(isset($product_data) AND $product_data['comments'] == 1) {
+    $product_comments = 1;
+}
+
+if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_prefs['prefs_comments_mode'] != 3) {
+    $smarty->assign('show_page_comments', 'true', true);
+
+    if($post_comments == 1) {
+        $comments_filter = ['type' => 'b', 'relation_id' => (int) $post_data['post_id']];
+    } else if($product_comments == 1) {
+        $comments_filter = ['type' => 'c', 'relation_id' => (int) $product_data['id']];
+    } else {
+        $comments_filter = ['type' => 'p', 'relation_id' => (int) $page_contents['page_id']];
+    }
+    $cnt_comments = count(se_get_comments(0, 100, $comments_filter));
+    $smarty->assign('comments_title', str_replace('{cnt_comments}', $cnt_comments, $lang['comments_title']));
+}
+
 // if we have no page id and the slug is not a valid page type, show 404
 if (empty($page_contents['page_id']) AND !in_array(rtrim($swifty_slug, '/'), $valid_page_types)) {
     $error_code = 404;

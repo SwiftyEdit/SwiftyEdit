@@ -435,17 +435,6 @@ if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
 /* show or hide categories */
 $smarty->assign('page_categories_mode', $page_contents['page_categories_mode']);
 
-
-/* comments */
-$post_comments = 0;
-if(isset($post_data) AND $post_data['post_comments'] == 1) {
-    $post_comments = 1;
-}
-
-if(($page_comments == 1 OR $post_comments == 1) && $se_prefs['prefs_comments_mode'] != 3) {
-    $smarty->assign('show_page_comments', 'true', true);
-}
-
 // Final template assignments
 $smarty->assign("p","$p");
 $smarty->assign("se_include_path", SE_INCLUDE_PATH);

@@ -113,6 +113,10 @@ if($_REQUEST['action'] == 'list_comments') {
             echo '<div hx-get="/admin-xhr/inbox/read/?get_post_title='.$comment_relation_id.'" hx-trigger="load">Loading post data ...</div>';
         }
 
+        if($comment['comment_type'] == 'c') {
+            echo '<div hx-get="/admin-xhr/inbox/read/?get_product_title='.$comment_relation_id.'" hx-trigger="load">Loading product data ...</div>';
+        }
+
         echo '</div>';
         echo '<div class="col-md-3 text-end">';
 
@@ -189,5 +193,12 @@ if(isset($_GET['get_post_title'])) {
     $post_id = (int) $_GET['get_post_title'];
     $page_title = $db_posts->get("se_posts","post_title",['post_id'=>$post_id]);
     echo 'Post: '.$page_title;
+    exit;
+}
+
+if(isset($_GET['get_product_title'])) {
+    $product_id = (int) $_GET['get_product_title'];
+    $product_title = $db_posts->get("se_products","title",['id'=>$product_id]);
+    echo '<p class="my-0"><span class="text-muted">Product: '.$product_title.'</span></p>';
     exit;
 }

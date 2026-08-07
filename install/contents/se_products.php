@@ -6,6 +6,7 @@
  * parent_id -> if it's a variant store here the parent id
  *
  * status -> 1 = public, 2 = draft
+ * comments -> 1 = yes, 2 = no
  * rss -> 1 = yes, 2 = no
  * fixed -> 1 = yes, 2 = no
  * votings -> 1 = no, 2 = yes for registered useres, 3 = yes for everybody
@@ -62,6 +63,7 @@ $cols = array(
     "filter" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "author" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "status" => 'INTEGER(12)',
+    "comments" => 'INTEGER(12)',
     "rss" => 'INTEGER(12)',
     "rss_url" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_lang" => "VARCHAR(50) NOT NULL DEFAULT ''",
