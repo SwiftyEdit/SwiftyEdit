@@ -166,7 +166,16 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
     }
     $smarty->assign('se_theme_components', $se_theme_components);
 
-    if($theme_values['teaser_text'] != '') {
+    /**
+     * Shop/blog/event pages reuse the same $page_contents row (and thus the
+     * same $theme_values) for the category listing and for a single
+     * product/post/event display - the URL just carries an extra slug.
+     * Handlers set $display_mode to tell those cases apart; skip the page's
+     * own teaser on single-item displays, it belongs to the listing only.
+     */
+    $is_single_item_display = isset($display_mode) && in_array($display_mode, ['show_product', 'show_post', 'show_event'], true);
+
+    if(!$is_single_item_display && $theme_values['teaser_text'] != '') {
         $teaser_text = html_entity_decode($theme_values['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
         $smarty->assign('teaser_text', $teaser_text);
     }

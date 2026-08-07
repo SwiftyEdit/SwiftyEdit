@@ -168,13 +168,16 @@ function move_new_files($source) {
  * Delete local files that are no longer part of the new release.
  * Compares the current install against whitelist.json (built by
  * build_prepare.sh), which lists every file the release ships under
- * acp/, app/, languages/ and vendor/. Anything under those directories
- * that isn't in the whitelist is a leftover from an older build and gets
- * removed. install/ is already fully replaced in move_new_files(); data/,
- * plugins/ and public/ are intentionally left untouched (user data /
- * installed plugins / themes). acp/core/update/download/ is also skipped:
- * it's the updater's own runtime cache (gitignored, never part of the
- * release build), so it never appears in whitelist.json.
+ * acp/, app/, languages/, vendor/ and the two bundled themes
+ * (public/assets/themes/administration, public/assets/themes/default).
+ * Anything under those directories that isn't in the whitelist is a
+ * leftover from an older build (e.g. a renamed/removed compiled theme
+ * asset) and gets removed. install/ is already fully replaced in
+ * move_new_files(); data/, plugins/ and any other/custom theme under
+ * public/assets/themes/ are intentionally left untouched (user data /
+ * installed plugins / user themes). acp/core/update/download/ is also
+ * skipped: it's the updater's own runtime cache (gitignored, never part
+ * of the release build), so it never appears in whitelist.json.
  * @return void
  */
 function remove_obsolete_files($extracted_source_dir) {
@@ -194,7 +197,7 @@ function remove_obsolete_files($extracted_source_dir) {
 
     $whitelist = array_flip($whitelist);
 
-    foreach (['../acp', '../app', '../languages', '../vendor'] as $dir) {
+    foreach (['../acp', '../app', '../languages', '../vendor', '../public/assets/themes/administration', '../public/assets/themes/default'] as $dir) {
         if (!is_dir($dir)) {
             continue;
         }

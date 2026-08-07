@@ -110,11 +110,17 @@
                     <a href="/" title="{$prefs_pagetitle}"><img src="{$page_logo}" alt="Logo" title="{$prefs_pagetitle}"
                                                                 class="img-fluid"></a>
                 </div>
+                <div class="col-md-10 col-sm-12 text-sm-start d-none d-md-block">
+                    <p class="h1 mb-0">{$prefs_pagetitle} <small>{$prefs_pagesubtitle}</small></p>
+                </div>
+            {else}
+                {* No logo - the title takes the full row width instead of col-md-10, otherwise
+                   justify-content-center on the row would center that leftover 10/12 column and
+                   push the title off-center instead of flush with the container's left edge. *}
+                <div class="col-12 text-sm-start d-none d-md-block">
+                    <p class="h1 mb-0">{$prefs_pagetitle} <small>{$prefs_pagesubtitle}</small></p>
+                </div>
             {/if}
-
-            <div class="col-md-10 col-sm-12 text-sm-start d-none d-md-block">
-                <p class="h1 mb-0">{$prefs_pagetitle} <small>{$prefs_pagesubtitle}</small></p>
-            </div>
         </div>
     </div>
     </div>
