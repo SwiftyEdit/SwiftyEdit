@@ -16,7 +16,7 @@
                     </div>
                     <div class="card-footer p-1 text-muted">
                         <small>{$item['time']}</small>
-                        <button hx-get="{$item['url_answer_comment']}" hx-swap="none" class="btn btn-sm btn-outline-primary float-end">{$lang_answer}</button>
+                        <button hx-get="{$item['url_answer_comment']}" hx-target="#comments_form" hx-swap="innerHTML" class="btn btn-sm btn-outline-primary float-end">{$lang_answer}</button>
                     </div>
                 {if $item['childs']}
                     {call name=thread items=$item['childs']}

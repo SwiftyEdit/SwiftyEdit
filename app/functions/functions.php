@@ -242,6 +242,23 @@ function se_get_comments($start,$limit,$filter) {
 }
 
 /**
+ * return a single comment, e.g. to show what a reply is answering to
+ * @param int $comment_id
+ * @return array|null
+ */
+function se_get_comment($comment_id) {
+
+	global $db_content;
+
+	$comment_id = (int) $comment_id;
+	if($comment_id <= 0) {
+		return null;
+	}
+
+	return $db_content->get("se_comments", "*", ["comment_id" => $comment_id]);
+}
+
+/**
  * @param $array
  * @param $data
  * @return void
@@ -261,7 +278,10 @@ function se_build_thread_array(&$array, $data) {
     }
 
     $avatar_img_src = $comment_avatar;
-    $a_url = '/api/se/comments/?form=comments&parent_id='.$data['comment_id'].'&relation_id='.$data["comment_relation_id"].'#comment-form';
+    /* keep the relation typed (page vs. post), so a reply to a page comment
+       doesn't end up stored as a post comment, or vice versa */
+    $relation_param = ($data['comment_type'] == 'p') ? 'page_id' : 'post_id';
+    $a_url = '/api/se/comments/?form=comments&parent_id='.$data['comment_id'].'&'.$relation_param.'='.$data["comment_relation_id"].'#comment-form';
 
     if ($data["comment_parent_id"] == 0 OR $data["comment_parent_id"] == NULL) {
         $array[] = [
