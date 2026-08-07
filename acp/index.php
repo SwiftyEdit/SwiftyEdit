@@ -441,7 +441,8 @@ if (is_file('../maintenance.html')) {
         </p>
         <hr>
         <p><img src="/themes/administration/images/swiftyedit_icon.svg" alt="se-logo" width="60px"><br>
-            <b>SwiftyEdit</b><br>copyright © <?php echo date('Y'); ?>, <a href="https://swiftyedit.com/" target="_blank">SwiftyEdit.com</a></p>
+            <b>SwiftyEdit</b><br>copyright © <?php echo date('Y'); ?>, <a href="https://swiftyedit.com/" target="_blank">SwiftyEdit.com</a><br>
+            <small class="text-muted se-privacy-blur">Build <?php echo $se_version['build']; ?></small></p>
         <p class="d-none"><?php echo microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']; ?></p>
     </div>
 
