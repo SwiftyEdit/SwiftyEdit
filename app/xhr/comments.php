@@ -35,6 +35,11 @@ if($_REQUEST['form'] == 'comments') {
         $smarty->assign("post_id",$post_id);
     }
 
+    if(isset($_GET['product_id'])) {
+        $product_id = (int) $_GET['product_id'];
+        $smarty->assign("product_id",$product_id);
+    }
+
     if(isset($_GET['parent_id'])) {
         $parent_id = (int) $_GET['parent_id'];
         $smarty->assign("parent_id",$parent_id);
@@ -47,11 +52,13 @@ if($_REQUEST['form'] == 'comments') {
             $smarty->assign("parent_comment_author", $parent_comment['comment_author']);
             $smarty->assign("parent_comment_text", se_return_words_str(strip_tags($parent_comment['comment_text']), 15));
 
-            $cancel_reply_url = '/api/se/comments/?form=comments';
-            if(isset($page_id)) {
-                $cancel_reply_url .= '&page_id='.$page_id;
+            $cancel_reply_url = '/xhr/se/comments/?form=comments';
+            if(isset($product_id)) {
+                $cancel_reply_url .= '&product_id='.$product_id;
             } else if(isset($post_id)) {
                 $cancel_reply_url .= '&post_id='.$post_id;
+            } else if(isset($page_id)) {
+                $cancel_reply_url .= '&page_id='.$page_id;
             }
             $smarty->assign("cancel_reply_url", $cancel_reply_url);
         }
@@ -79,6 +86,11 @@ $show_thread = false;
 if(isset($_GET['post_id'])) {
     $filter['relation_id'] = (int) $_GET['post_id'];
     $filter['type'] = 'b';
+}
+
+if(isset($_GET['product_id'])) {
+    $filter['relation_id'] = (int) $_GET['product_id'];
+    $filter['type'] = 'c';
 }
 
 if(isset($_GET['page_id'])) {

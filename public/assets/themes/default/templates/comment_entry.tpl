@@ -1,5 +1,5 @@
 {function name=thread}
-    <ul>
+    <ul class="comment-thread">
         {foreach $items as $item}
             <li>
                 <div class="card comment-entry">

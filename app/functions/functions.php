@@ -278,10 +278,16 @@ function se_build_thread_array(&$array, $data) {
     }
 
     $avatar_img_src = $comment_avatar;
-    /* keep the relation typed (page vs. post), so a reply to a page comment
-       doesn't end up stored as a post comment, or vice versa */
-    $relation_param = ($data['comment_type'] == 'p') ? 'page_id' : 'post_id';
-    $a_url = '/api/se/comments/?form=comments&parent_id='.$data['comment_id'].'&'.$relation_param.'='.$data["comment_relation_id"].'#comment-form';
+    /* keep the relation typed (page, post or product), so a reply doesn't
+       end up stored under the wrong relation */
+    if($data['comment_type'] == 'p') {
+        $relation_param = 'page_id';
+    } else if($data['comment_type'] == 'c') {
+        $relation_param = 'product_id';
+    } else {
+        $relation_param = 'post_id';
+    }
+    $a_url = '/xhr/se/comments/?form=comments&parent_id='.$data['comment_id'].'&'.$relation_param.'='.$data["comment_relation_id"].'#comment-form';
 
     if ($data["comment_parent_id"] == 0 OR $data["comment_parent_id"] == NULL) {
         $array[] = [
@@ -350,7 +356,12 @@ function se_write_comment($data) {
 			$type = 'b';
 			$relation_id = (int) $data['post_id'];
 		}
-	
+
+		if(is_numeric($data['product_id'])) {
+			$type = 'c';
+			$relation_id = (int) $data['product_id'];
+		}
+
 		if(strlen($input_name) > 30) {
 			$input_name = substr($input_name, 0,30);
 		}

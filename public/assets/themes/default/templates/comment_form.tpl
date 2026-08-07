@@ -37,6 +37,7 @@
 
         <input type="hidden" name="page_id" value="{$page_id}">
         <input type="hidden" name="post_id" value="{$post_id}">
+        <input type="hidden" name="product_id" value="{$product_id}">
         <input type="hidden" name="parent_id" value="{$parent_id}">
         {$hidden_csrf_token}
     </form>
