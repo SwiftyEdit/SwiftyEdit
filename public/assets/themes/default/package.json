@@ -19,10 +19,10 @@
   "devDependencies": {
     "autoprefixer": "^10.5.4",
     "cssnano": "^7.1.9",
-    "fs-extra": "^11.3.6",
-    "sass": "^1.101.3",
-    "terser": "^5.49.0",
-    "vite": "^8.1.5"
+    "fs-extra": "^11.4.0",
+    "sass": "^1.102.0",
+    "terser": "^5.49.2",
+    "vite": "^8.2.1"
   },
   "repository": {},
   "scripts": {
