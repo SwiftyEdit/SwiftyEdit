@@ -176,6 +176,7 @@
   "label_comment_answer": "Ihre Antwort auf",
   "btn_send_comment": "Kommentar senden",
   "btn_send_answer": "Antwort",
+  "btn_cancel_answer": "Antwort verwerfen",
   "comment_msg_sucess": "Vielen Dank für Ihren Kommentar",
   "comment_msg_fail": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
   "comment_form_title": "Kommentar schreiben",
