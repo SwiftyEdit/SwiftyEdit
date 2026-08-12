@@ -41,5 +41,6 @@
   "db_psw_help": "Hasło do Twojej bazy danych",
   "db_prefix": "Prefiks",
   "db_sqlite_help": "Jeśli chcesz używać SQLite, nie musisz podawać żadnych dalszych informacji.",
-  "check_connection": "Sprawdź połączenie"
+  "check_connection": "Sprawdź połączenie",
+  "db_connection_success": "Connection successful! You can now start the installation."
 }
