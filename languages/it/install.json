@@ -41,5 +41,6 @@
   "db_psw_help": "La password per il database",
   "db_prefix": "Prefisso",
   "db_sqlite_help": "Se si desidera utilizzare SQLite, non è necessario fornire ulteriori informazioni.",
-  "check_connection": "Verifica Connessione"
+  "check_connection": "Verifica Connessione",
+  "db_connection_success": "Connessione riuscita! Ora puoi avviare l'installazione."
 }
