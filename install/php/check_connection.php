@@ -20,7 +20,7 @@ try {
 	]);
 	
 	$conn = true;
-	
+
 } catch (Exception $e) {
   $conn = false;
   $fail_msg  = '<div class="alert alert-danger">Database Connection failed<hr>';
@@ -28,8 +28,12 @@ try {
   $fail_msg .= '</div>';
 }
 
-if($_POST['prefs_database_name'] == '' || $_POST['prefs_database_host'] == '' || $_POST['prefs_database_username'] == '' || $_POST['prefs_database_psw'] == '') {
+if($_POST['prefs_database_name'] == '' || $_POST['prefs_database_host'] == '' || $_POST['prefs_database_username'] == '') {
 	$conn = false;
 }
-	
+
+if($conn === true) {
+	$success_msg = '<div class="alert alert-success">'.$lang['db_connection_success'].'</div>';
+}
+
 ?>
