@@ -227,6 +227,7 @@
   "msg_order_withdrawal_missing_fields": "Bitte geben Sie Ihre Bestellnummer und E-Mail-Adresse ein.",
   "msg_order_withdrawal_not_found": "Wir konnten keine Bestellung finden, die mit dieser Bestellnummer und E-Mail-Adresse übereinstimmt.",
   "msg_order_withdrawal_already_canceled": "Diese Bestellung wurde bereits storniert.",
+  "msg_order_withdrawal_already_requested": "You have already requested a withdrawal for this order. We will confirm receipt as soon as possible.",
   "msg_order_withdrawal_sent": "Ihr Widerruf wurde gesendet. Wir werden den Erhalt so bald als möglich bestätigen.",
   "msg_order_withdrawal_mail_error": "Ihr Widerruf konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.",
   "mail_subject_order_withdrawal": "Widerrufsanfrage",
