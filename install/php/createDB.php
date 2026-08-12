@@ -300,7 +300,55 @@ $initSettings = [
     "prefs_posts_price_mode" => 1,
     "prefs_posts_price_visibility" => 1,
     "prefs_mailer_type" => "mail",
-    "prefs_shipping_costs_mode" => 1
+    "prefs_shipping_costs_mode" => 1,
+
+    // page meta / images (added later, were missing here)
+    "prefs_pagedescription" => "",
+    "prefs_pagesglobalhead" => "",
+    "prefs_default_publisher" => "",
+    "prefs_pagelogo" => "null",
+    "prefs_pagethumbnail" => "null",
+    "prefs_pagefavicon" => "null",
+    "prefs_pagethumbnail_prefix" => "",
+    "prefs_uploads_remain_unchanged" => "",
+
+    // system / mail
+    "prefs_login_slug" => "",
+    "prefs_mailer_name" => "",
+    "prefs_mailer_adr" => "",
+    "prefs_notify_mail" => "",
+    "prefs_maintenance_code" => "",
+
+    // user / registration
+    "prefs_blacklist_usernames" => "",
+    "prefs_user_unlock_by_admin" => "no",
+    "prefs_required_fields_registration" => "",
+
+    // posts / events images
+    "prefs_posts_images_prefix" => "",
+    "prefs_posts_default_banner" => "null",
+    "prefs_events_entries_per_page" => 10,
+    "prefs_events_images_prefix" => "",
+    "prefs_events_default_banner" => "null",
+
+    // shop
+    "prefs_product_sorting" => 1,
+    "prefs_posts_guest_order_enable" => 0,
+    "prefs_posts_max_order_value" => "",
+    "prefs_wishlist_enabled" => 0,
+    "prefs_posts_order_withdrawal_days" => "",
+    "prefs_business_address" => "",
+    "prefs_business_taxnumber" => "",
+    "prefs_delivery_addons" => "",
+    "prefs_payment_addons" => "",
+    "prefs_shop_default_banner" => "",
+    "prefs_shipping_costs_flat" => "0,00",
+    "prefs_shipping_costs_cat1" => "0,00",
+    "prefs_shipping_costs_cat2" => "0,00",
+    "prefs_shipping_costs_cat3" => "0,00",
+
+    // languages
+    "prefs_deactivated_languages" => ""
 ];
 
 $insertData = array_map(function($key, $value) {

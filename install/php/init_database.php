@@ -40,6 +40,12 @@ echo '<h5 class="card-header">MySQL</h5>';
 echo '<div class="card-body">';
 if(isset($_POST['check_connection'])) {
 	include __DIR__.'/check_connection.php';
+
+	if($conn === true) {
+		echo $success_msg;
+	} else {
+		echo $fail_msg;
+	}
 }
 
 echo '<form action="index.php#mysql" method="POST">';
@@ -78,8 +84,6 @@ echo '<input type="submit" class="btn btn-outline-success" name="check_connectio
 
 if($conn === true) {
 	echo '<input type="submit" class="btn btn-success" name="install_mysql" value="'.$lang['start_install'].'">';
-} else {
-	echo $fail_msg;
 }
 echo '</form>';
 echo '</div>';
