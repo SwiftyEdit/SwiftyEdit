@@ -42,5 +42,5 @@
   "db_prefix": "Prefijo",
   "db_sqlite_help": "Si desea utilizar SQLite, no necesita proporcionar más información.",
   "check_connection": "Comprobar conexión",
-  "db_connection_success": "¡Conexión exitosa! Ahora puede iniciar la instalación."
+  "db_connection_success": "Connection successful! You can now start the installation."
 }
