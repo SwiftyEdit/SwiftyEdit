@@ -318,13 +318,13 @@ $smarty->assign('product_price_tag_label_gross', $lang['price_tag_label_gross'])
 $smarty->assign('product_price_tag_label_net', $lang['price_tag_label_net']);
 
 if($product_data['product_textlib_content'] != 'no_snippet' AND $product_data['product_textlib_content'] != '') {
-    $product_snippet_content = se_get_textlib($product_data['product_textlib_content'],$languagePack,'all');
+    $product_snippet_content = se_get_snippet($product_data['product_textlib_content'],$languagePack,'all');
     $smarty->assign('product_snippet_text', $product_snippet_content['snippet_content']);
     $smarty->assign('product_snippet_title', $product_snippet_content['snippet_title']);
 }
 
 if($product_data['product_textlib_price'] != 'no_snippet' AND $product_data['product_textlib_price'] != '') {
-    $product_snippet_price = se_get_textlib($product_data['product_textlib_price'],$languagePack,'all');
+    $product_snippet_price = se_get_snippet($product_data['product_textlib_price'],$languagePack,'all');
     $smarty->assign('label_prices_snippet', $lang['label_prices_snippet']);
     $smarty->assign('product_snippet_price', $product_snippet_price['snippet_content']);
 }

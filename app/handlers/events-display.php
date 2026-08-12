@@ -136,7 +136,7 @@ $this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
 
 if($event_data['product_textlib_content'] != 'no_snippet') {
-    $textlib_content = se_get_textlib($event_data['product_textlib_content'],$languagePack,'all');
+    $textlib_content = se_get_snippet($event_data['product_textlib_content'],$languagePack,'all');
     $smarty->assign('product_snippet_text', $textlib_content);
 }
 

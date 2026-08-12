@@ -404,7 +404,7 @@ $smarty->assign("snippet_footer","$snippet_footer");
 
 /* private pages, for admins only */
 if(($page_status == "private") AND ($_SESSION['user_class'] != "administrator")) {
-    $text = se_get_textlib("no_access", $languagePack,'content');
+    $text = se_get_snippet("no_access", $languagePack,'content');
     $smarty->assign('page_content', $text);
 }
 
@@ -421,14 +421,14 @@ if(isset($page_usergroup) AND $page_usergroup != "") {
     }
 
     if((!in_array("true",$is_user_in_group)) AND ($_SESSION['user_class'] != "administrator")) {
-        $text = se_get_textlib("no_access", $languagePack,'content');
+        $text = se_get_snippet("no_access", $languagePack,'content');
         $smarty->assign('page_content', $text);
     }
 }
 
 /* draft pages for administrators only */
 if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
-    $text = se_get_textlib("no_access", $languagePack,'content');
+    $text = se_get_snippet("no_access", $languagePack,'content');
     $smarty->assign('page_content', $text);
 }
 
