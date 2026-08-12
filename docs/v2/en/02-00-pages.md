@@ -112,71 +112,49 @@ via the corresponding select field.
 
 ### Usage {#page-usage}
 
-SwiftyEdit has a separate URL structure for each page type.
-Example: /profile/ for the profile page or /checkout/ for the shopping cart.
-If you want to customize these pages/URLs, you can simply create new pages and adjust the usage type accordingly.
+SwiftyEdit ships with built-in default URLs for the most important functional pages
+(registration, profile, search, password reset, checkout, orders, order withdrawal, lists,
+displaying posts/products/events, and the 404 page) — for example /profile/ for the profile
+page or /checkout/ for the shopping cart. These work automatically even if you haven't created
+a page for them.
 
-#### Normal Page
+If you create your own page with the matching usage type instead, that page (with its own
+permalink and surrounding content) replaces the default URL SwiftyEdit provides. This lets you,
+for example, replace /profile/ with /my-account/.
 
-This is the default value and is used for all pages that do not serve a specific purpose.
+Imprint, Privacy Policy, and Legal, on the other hand, have **no** built-in default URL — you
+need to create a page with the corresponding usage type yourself so it can, for example, be
+linked in the footer.
 
-#### Register
+| Usage type                      | Default URL*                                  | Description                                                                                                    |
+|----------------------------------|------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| Normal Page                     | –                                               | The default value, used for all pages that do not serve a specific purpose.                                    |
+| Register                        | `/register/`                                    | Used to create new users.                                                                                       |
+| Profile                         | `/profile/`                                     | Here, users can change their account details (contact information, password, etc.).                            |
+| Search                          | `/search/`                                      | The page for search results.                                                                                    |
+| Reset Password                  | `/password/`                                    | Used when a user needs to reset their password.                                                                 |
+| 404 (Page not found)            | *(automatically catches any unknown URL)*       | Displayed when a page cannot be found, i.e. when the requested URL does not exist.                              |
+| Display Posts / Products / Events | – (no fixed default path)                     | Displays all entries from the Blog, Shop, and Events modules on this page. Useful e.g. for extra catalog pages such as `/details/`. |
+| Imprint                         | – (no default URL)                              | Used for the imprint.                                                                                           |
+| Privacy Policy                  | – (no default URL)                              | Used for the privacy policy information.                                                                        |
+| Legal                           | – (no default URL)                              | For any other legal information.                                                                                |
+| Checkout                        | `/checkout/`                                    | For the shopping cart.                                                                                          |
+| Orders                          | `/orders/`                                      | Here the user can view their orders.                                                                            |
+| Order Withdrawal                | `/order_withdrawal/`                            | A form to withdraw from an order, see [below](#page-usage-order-withdrawal).                                    |
+| Lists                           | `/wishlist/`                                    | The page for the [wishlist / lists feature](05-00-shop.md#lists), see [below](#page-usage-lists).               |
 
-This page is used to create new users.
+\* The default URL only applies as long as no page with this usage type has been created.
+If you create a page with this usage type, its permalink replaces the default URL
+(see explanation above).
 
-#### Profile
-
-Here, users can change their account details (contact information, password, etc.).
-
-#### Search
-
-The page for search results
-
-#### Reset Password
-
-This page is used when a user needs to reset their password.
-
-#### 404 (Page not found)
-
-This page is displayed when a page cannot be found,
-i.e. when the requested URL does not exist.
-
-#### Display Posts / Products / Events
-
-As soon as you create a page with this usage type, all entries from the Blog, Shop, and Events modules
-are displayed on this page.
-
-For example, if you have multiple catalog pages (i.e., pages listing products from the shop)
-on which identical products are listed, you can display all products on the /details/ page.
-
-#### Imprint
-
-Used for the imprint.
-
-#### Privacy Policy
-
-Used for the privacy policy information.
-
-#### Legal
-
-For any other legal information.
-
-#### Checkout
-
-For the shopping cart.
-
-#### Orders
-
-Here the user can view their orders.
-
-#### Order Withdrawal
+#### Order Withdrawal {#page-usage-order-withdrawal}
 
 A form customers can use to withdraw from an order (e.g. to fulfil the EU right of
 withdrawal). The customer must enter the order number and the e-mail address stored
 on the order; the request is then sent to the site administrator by e-mail. From the
 "Orders" page, customers can open this form pre-filled for a specific order.
 
-#### Lists
+#### Lists {#page-usage-lists}
 
 The page for the [wishlist / lists feature](05-00-shop.md#lists). Logged-in customers
 use it to view and manage their personal lists; a single public list is also shown here

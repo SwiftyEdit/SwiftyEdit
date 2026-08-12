@@ -176,6 +176,7 @@
   "label_comment_answer": "Your answer to",
   "btn_send_comment": "Send Comment",
   "btn_send_answer": "Отговор",
+  "btn_cancel_answer": "Cancel reply",
   "comment_msg_sucess": "Thanks for your comment",
   "comment_msg_fail": "Възникна грешка. Моля, опитайте отново по-късно.",
   "comment_form_title": "Напишете коментар",

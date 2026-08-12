@@ -112,64 +112,42 @@ leitet die Seite sofort dorthin um. Den HTTP-Statuscode (z. B. 301 oder 302) kan
 
 ### Nutzungsart {#page-usage}
 
-SwiftyEdit verfügt für jeden Seitentyp über eine eigene URL-Struktur.
-Beispiel: /profile/ für die Profilseite oder /checkout/ für den Warenkorb.
-Wenn du diese Seiten/URLs anpassen möchtest, kannst du einfach neue Seiten erstellen und die Nutzungsart entsprechend anpassen.
+SwiftyEdit bringt für die wichtigsten Funktionsseiten (Registrierung, Profil, Suche, Passwort
+zurücksetzen, Warenkorb, Bestellungen, Bestellung widerrufen, Listen, Beiträge/Produkte/Events
+anzeigen sowie die 404-Seite) bereits fest einprogrammierte Standard-URLs mit, z. B. /profile/
+für die Profilseite oder /checkout/ für den Warenkorb. Diese funktionieren automatisch, auch
+wenn du dafür keine eigene Seite angelegt hast.
 
-#### Normale Seite
+Legst du stattdessen eine eigene Seite mit der passenden Nutzungsart an, ersetzt diese Seite
+(mit ihrem eigenen Permalink und Inhalt drumherum) die von SwiftyEdit vorgegebene Standard-URL.
+So kannst du z. B. /profile/ durch /mein-konto/ ersetzen.
 
-Dies ist der Standardwert und wird für alle Seiten verwendet, die keinem bestimmten Zweck dienen.
+Für Impressum, Datenschutz und Rechtliches gibt es dagegen **keine** vorgegebene Standard-URL –
+hier musst du selbst eine Seite mit der entsprechenden Nutzungsart anlegen, damit sie z. B. im
+Footer verlinkt werden kann.
 
-#### Registrierung
+| Nutzungsart                        | Standard-URL*                            | Beschreibung                                                                                                            |
+|-------------------------------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| Normale Seite                      | –                                         | Standardwert für alle Seiten, die keinem bestimmten Zweck dienen.                                                       |
+| Registrierung                      | `/register/`                              | Zum Anlegen neuer Benutzer.                                                                                              |
+| Profil                             | `/profile/`                               | Hier können Benutzer ihre persönlichen Daten (Kontaktinformationen, Passwort usw.) ändern.                              |
+| Suche                              | `/search/`                                | Die Seite für Suchergebnisse.                                                                                           |
+| Passwort zurücksetzen              | `/password/`                              | Wird verwendet, wenn ein Benutzer sein Passwort zurücksetzen muss.                                                      |
+| 404 (Page not found)               | *(greift automatisch bei jeder unbekannten URL)* | Wird angezeigt, wenn die aufgerufene URL nicht existiert.                                                        |
+| Posts / Produkte / Events anzeigen | – (kein fester Standardpfad)              | Zeigt alle Einträge aus Blog, Shop und Events auf dieser Seite an. Praktisch z. B. für zusätzliche Katalogseiten wie `/details/`. |
+| Impressum                          | – (keine Standard-URL)                    | Wird für das Impressum verwendet.                                                                                       |
+| Datenschutz                        | – (keine Standard-URL)                    | Wird für die Datenschutzinformationen verwendet.                                                                        |
+| Rechtliches                        | – (keine Standard-URL)                    | Für alle sonstigen rechtlichen Informationen.                                                                           |
+| Warenkorb                          | `/checkout/`                              | Für den Warenkorb.                                                                                                       |
+| Bestellungen                       | `/orders/`                                | Hier kann der Benutzer seine Bestellungen einsehen.                                                                     |
+| Bestellung widerrufen              | `/order_withdrawal/`                      | Formular zum Widerruf einer Bestellung, siehe [unten](#page-usage-order-withdrawal).                                    |
+| Listen                             | `/wishlist/`                              | Seite für die [Listen-Funktion](05-00-shop.md#listen), siehe [unten](#page-usage-lists).                                |
 
-Diese Seite wird zum Anlegen neuer Benutzer verwendet.
+\* Die Standard-URL gilt nur, solange keine eigene Seite mit dieser Nutzungsart existiert.
+Legst du eine Seite mit dieser Nutzungsart an, ersetzt deren Permalink die Standard-URL
+(siehe Erklärung oben).
 
-#### Profil
-
-Hier können Benutzer ihre persönlichen Daten (Kontaktinformationen, Passwort usw.) ändern.
-
-#### Suche
-
-Die Seite für Suchergebnisse
-
-#### Passwort zurücksetzen
-
-Diese Seite wird verwendet, wenn ein Benutzer sein Passwort zurücksetzen muss.
-
-#### 404 (Page not found)
-
-Diese Seite wird angezeigt, wenn eine Seite nicht gefunden wird. 
-Also, wenn die aufgerufene URL nicht existiert.
-
-#### Posts / Produkte / Events anzeigen
-
-Sobald du eine Seite mit dieser Nutzungsart erstellst, 
-werden alle Einträge aus den Modulen Blog, Shop und Events auf dieser Seite angezeigt.
-
-Wenn du beispielsweise mehrere Katalogseiten hast (Seiten, auf denen Produkte aus dem Shop aufgeführt werden),
-auf der identische Produkte aufgelistet sind, können diese z.B. auf der Seite /details/ anzeigt werden.
-
-#### Impressum
-
-Wird für das Impressum verwendet.
-
-#### Datenschutz
-
-Wird für die Datenschutzinformationen verwendet.
-
-#### Rechtliches
-
-Für alle sonstigen rechtlichen Informationen.
-
-#### Warenkorb
-
-Für den Warenkorb.
-
-#### Bestellungen
-
-Hier kann der Benutzer seine Bestellungen einsehen.
-
-#### Bestellung widerrufen
+#### Bestellung widerrufen {#page-usage-order-withdrawal}
 
 Ein Formular, mit dem Kunden eine Bestellung widerrufen können (z.B. zur Erfüllung des
 EU-Widerrufsrechts). Der Kunde muss dazu die Bestellnummer und die bei der Bestellung
@@ -177,7 +155,7 @@ hinterlegte E-Mail-Adresse eingeben; die Anfrage wird anschließend per E-Mail a
 Administrator gesendet. Von der Seite "Bestellungen" aus können Kunden dieses Formular
 vorausgefüllt für eine bestimmte Bestellung öffnen.
 
-#### Listen
+#### Listen {#page-usage-lists}
 
 Die Seite für die [Listen-Funktion](05-00-shop.md#listen). Angemeldete Kunden sehen und
 verwalten hier ihre persönlichen Listen; eine einzelne öffentliche Liste wird hier auch
