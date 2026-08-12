@@ -104,6 +104,39 @@ htmx.onLoad(function(content) {
             });
         }
     }
+
+    // gallery thumbnails - free drag & drop reordering within a single gallery
+    // (content itself can be the sortable container, e.g. when it is swapped
+    // in directly as the target of an hx-get, so it won't show up via
+    // querySelectorAll on itself - check both cases)
+    var gallerySortables = content.matches && content.matches(".gallery-thumbs-sortable")
+        ? [content]
+        : content.querySelectorAll(".gallery-thumbs-sortable");
+    if (gallerySortables.length > 0) {
+        for (var i = 0; i < gallerySortables.length; i++) {
+            var gallerySortable = gallerySortables[i];
+            new Sortable(gallerySortable, {
+                animation: 150,
+                ghostClass: 'bg-info-subtle',
+                draggable: ".tmb",
+                handle: ".tmb-drag-handle",
+                onEnd: function (evt) {
+                    var container = evt.to;
+                    var order = Array.from(container.querySelectorAll(".tmb")).map(function (item) {
+                        return item.getAttribute("data-id");
+                    });
+                    htmx.ajax('POST', '/admin-xhr/blog/write/', {
+                        swap: 'none',
+                        values: {
+                            reorder_gallery_tmbs: container.getAttribute('data-gallery-id'),
+                            order: JSON.stringify(order),
+                            csrf_token: container.getAttribute('data-csrf')
+                        }
+                    });
+                }
+            });
+        }
+    }
 })
 
 // image picker - sortablejs

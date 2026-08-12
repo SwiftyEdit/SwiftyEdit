@@ -284,8 +284,9 @@ if(isset($_POST['sfixed'])) {
     header( "HX-Trigger: update_posts_list");
 }
 
-if(isset($_POST['sort_gallery_tmb'])) {
-    se_rename_gallery_image($_POST['sort_gallery_tmb']);
+if(isset($_POST['reorder_gallery_tmbs'])) {
+    $order = json_decode($_POST['order'] ?? '', true);
+    se_reorder_gallery_tmbs($_POST['reorder_gallery_tmbs'], $order);
     header( "HX-Trigger: update_gallery_thumbs");
 }
 

@@ -1222,45 +1222,100 @@ function se_list_gallery_thumbs($gid) {
 
         $tmb_src = str_replace(SE_PUBLIC.'/assets/galleries/','/galleries/',$tmb);
 
-		$thumbs .= '<div class="tmb">';
+		$thumbs .= '<div class="tmb draggable" data-id="'.$tmb.'">';
+		$thumbs .= '<div class="tmb-drag-handle" title="Drag to reorder">'.$icon['grip_vertical'].'</div>';
 		$thumbs .= '<div class="tmb-preview"><img src="'.$tmb_src.'" class="img-fluid"></div>';
         $thumbs .= '<form hx-post="/admin-xhr/blog/write/">';
 		$thumbs .= '<div class="tmb-actions d-flex btn-group">';
-		$thumbs .= '<button type="submit" name="sort_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-primary w-100">'.$icon['arrow_up'].'</button>';
-		$thumbs .= '<button type="submit" name="delete_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-50">'.$icon['trash_alt'].'</button>';
+		$thumbs .= '<button type="submit" name="delete_gallery_tmb" value="'.$tmb.'" class="btn btn-sm btn-danger w-100">'.$icon['trash_alt'].'</button>';
 		$thumbs .= '</div>';
         $thumbs .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 		$thumbs .= '</form>';
         $thumbs .= '</div>';
 	}
-	
-	
-	$str = '';
+
+
+	// wrap everything in a drag-and-drop sortable container; drag order is
+	// submitted to se_reorder_gallery_tmbs() via JS (see backend.js)
+	$str = '<div class="gallery-thumbs-sortable" data-gallery-id="'.$gid.'" data-csrf="'.$_SESSION['token'].'">';
 	$str .= $thumbs;
-	
-	
+	$str .= '</div>';
+
+
 	return $str;
-		
+
 }
 
 
 
-function se_rename_gallery_image($thumb) {
-	
-	$timestring = microtime(true);
-	
+function se_rename_gallery_image($thumb, $timestring = null) {
+
+	if($timestring === null) {
+		$timestring = microtime(true);
+	}
+
 	$path_parts = pathinfo($thumb);
 	$dir = $path_parts['dirname'].'/';
 	$tmb = $dir.$path_parts['basename'];
 	$img = str_replace("_tmb", "_img", $tmb);
-	
+
 	$new_tmb = $dir.$timestring.'_tmb.jpg';
 	$new_img = $dir.$timestring.'_img.jpg';
 
-	
+
 	rename("$tmb", "$new_tmb");
 	rename("$img", "$new_img");
-	
+
+}
+
+
+
+/**
+ * Apply a drag-and-drop reorder of a gallery's thumbnails.
+ *
+ * The gallery thumbnail order is derived purely from the filename timestamp
+ * (see se_list_gallery_thumbs(), which sorts the files with arsort()) - there
+ * is no separate "sort order" column in the database. To keep existing
+ * galleries working exactly as before, this reuses that same mechanism: it
+ * simply re-applies se_rename_gallery_image() to every thumbnail in the
+ * requested order, handing out strictly descending timestamps so the first
+ * entry in $order ends up with the newest (and therefore first-sorted)
+ * filename.
+ *
+ * @param int   $gid   gallery / post id
+ * @param array $order list of thumbnail paths (as sent back by the client),
+ *                      top to bottom in the desired new order
+ */
+function se_reorder_gallery_tmbs($gid, $order) {
+
+	global $db_posts;
+	$gid = (int) $gid;
+
+	if(!is_array($order) || empty($order)) {
+		return;
+	}
+
+	$date = $db_posts->get("se_posts","post_date", [
+	"post_id" => $gid
+	]);
+
+	$gallery_dir = SE_PUBLIC.'/assets/galleries/'.date('Y',$date).'/gallery'.$gid.'/';
+
+	// only accept thumbnails that really exist inside this gallery's folder
+	$valid_order = [];
+	foreach($order as $tmb) {
+		$tmb = se_filter_filepath($tmb);
+		if(str_starts_with($tmb, $gallery_dir) && str_ends_with($tmb, '_tmb.jpg') && is_file($tmb)) {
+			$valid_order[] = $tmb;
+		}
+	}
+
+	$timestamp = microtime(true);
+	foreach($valid_order as $tmb) {
+		se_rename_gallery_image($tmb, $timestamp);
+		$timestamp -= 0.01;
+	}
+
 }
 
 

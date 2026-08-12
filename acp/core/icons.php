@@ -74,6 +74,7 @@ $icon = [
 
     "gear" => '<i class="bi bi-gear"></i>',
     "github" => '<i class="bi bi-github"></i>',
+    "grip_vertical" => '<i class="bi bi-grip-vertical"></i>',
 
     "home" => '<i class="bi bi-house"></i>',
     "house" => '<i class="bi bi-house"></i>',
