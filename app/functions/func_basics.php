@@ -34,7 +34,7 @@ function is_user_in_group(mixed $user_id, string $user_group): string {
  * @param string|null $parameters query
  */
 
-function buffer_script(string $script, string $parameters=NULL) {
+function buffer_script(string $script, ?string $parameters=NULL) {
 
     $parameter = '';
     $buffer = '';
@@ -229,7 +229,7 @@ function text_parser($text) {
         function ($m) {
             global $languagePack;
             se_store_admin_helper('s',$m[1]);
-            return se_get_textlib($m[1],$languagePack,'content');
+            return se_get_snippet($m[1],$languagePack,'content');
         },
         $text
     );
@@ -244,7 +244,7 @@ function text_parser($text) {
                 $tpl = 'tpl';
             }
             se_store_admin_helper('s',$m[1]);
-            return se_get_textlib($m[1],$languagePack,"$tpl");
+            return se_get_snippet($m[1],$languagePack,"$tpl");
         },
         $text
     );
@@ -254,7 +254,7 @@ function text_parser($text) {
         function ($m) {
             global $languagePack;
             se_store_admin_helper('s',$m[1]);
-            return se_get_textlib($m[1],$languagePack,'content');
+            return se_get_snippet($m[1],$languagePack,'content');
         },
         $text
     );
@@ -387,7 +387,7 @@ function se_store_admin_helper($trigger,$val) {
 	/* add a snippet */
 	if($trigger == 's') {
 		
-		$snippet_data = se_get_textlib($val,$languagePack,'all');
+		$snippet_data = se_get_snippet($val,$languagePack,'all');
 		
 		$stored_snippet = '<form action="/admin/snippets/edit/" method="POST" class="d-inline">';
 		$stored_snippet .= '<button class="btn btn-sm btn-secondary m-1">'.$val.'</button>';

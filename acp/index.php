@@ -56,6 +56,12 @@ if (is_file(SE_CONTENT . '/config_smtp.php')) {
     include SE_CONTENT . '/config_smtp.php';
 }
 
+// only show errors when explicitly running in development mode
+if ($se_environment === 'd') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
+
 $version_file = file_get_contents(SE_ROOT.'version.json');
 $se_version = json_decode($version_file, true);
 
@@ -171,7 +177,7 @@ foreach ($se_get_preferences as $k => $v) {
     $key = $se_get_preferences[$k]['option_key'];
     $value = $se_get_preferences[$k]['option_value'];
 
-    /* $se_prefs['prefs_pagetitle'] */
+    /* $se_settings['pagetitle'] */
     $se_prefs[$key] = $value;
 
     /* without the 'prefs_' prefix $se_prefs['pagetitle'] */
@@ -337,13 +343,18 @@ if (isset($set_acptheme)) {
     $acptheme = $_COOKIE["acptheme"];
 }
 
+// Keep the <title> tag readable even if the configured page name is very long.
+$se_title_pagename = se_return_first_chars($se_settings['pagename'], 30, false);
+if (strlen($se_settings['pagename']) > 30) {
+    $se_title_pagename .= '…';
+}
 
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo htmlentities($languagePack); ?>" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
-    <title>SwiftyEdit / <?php echo htmlentities($se_section); ?></title>
+    <title><?php echo htmlentities($se_title_pagename); ?> ~ <?php echo htmlentities($se_section); ?></title>
 
     <link rel="icon" type="image/png" sizes="32x32" href="/themes/administration/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
@@ -767,8 +778,8 @@ foreach ($se_editor_addons as $editor_addon) {
 
     <?php
     $gc_maxlifetime = ini_get("session.gc_maxlifetime");
-    if ($se_prefs['prefs_acp_session_lifetime'] > $gc_maxlifetime) {
-        $maxlifetime = $se_prefs['prefs_acp_session_lifetime'];
+    if ($se_settings['acp_session_lifetime'] > $gc_maxlifetime) {
+        $maxlifetime = $se_settings['acp_session_lifetime'];
     } else {
         $maxlifetime = $gc_maxlifetime;
     }

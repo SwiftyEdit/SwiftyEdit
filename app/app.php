@@ -130,7 +130,7 @@ if(isset($product_data) AND $product_data['comments'] == 1) {
     $product_comments = 1;
 }
 
-if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_prefs['prefs_comments_mode'] != 3) {
+if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_settings['comments_mode'] != 3) {
     $smarty->assign('show_page_comments', 'true', true);
 
     if($post_comments == 1) {

@@ -33,7 +33,7 @@ if($_GET['token'] != "") {
 		"user_id" => $user_id
 	]);
 
-    $email_content = se_get_textlib("mail_psw_updated","$languagePack",'content');
+    $email_content = se_get_snippet("mail_psw_updated","$languagePack",'content');
     if($email_content == '') {
         $email_content = $lang['forgotten_psw_mail_update'];
     }

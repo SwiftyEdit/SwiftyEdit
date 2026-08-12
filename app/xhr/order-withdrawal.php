@@ -29,6 +29,9 @@ if($order_nbr === '' || $mail === '') {
         $alert_text = $lang['msg_order_withdrawal_not_found'];
     } else if((int) $this_order['order_status'] === 3) {
         $alert_text = $lang['msg_order_withdrawal_already_canceled'];
+    } else if((int) ($this_order['order_withdrawal_requested'] ?? 0) > 0) {
+        $alert_text = $lang['msg_order_withdrawal_already_requested'];
+        $alert_type = 'success';
     } else {
 
         $subject = $lang['mail_subject_order_withdrawal'].' (#'.$this_order['order_nbr'].')';

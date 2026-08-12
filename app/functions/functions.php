@@ -504,7 +504,7 @@ function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
 
 function se_send_order_status($recipient,$order,$reason): int|string {
 
-    global $se_settings, $lang;
+    global $se_settings, $lang, $languagePack;
 
     $order_id = (int) $order;
     $this_order = se_get_order_details($order_id);
@@ -531,19 +531,19 @@ function se_send_order_status($recipient,$order,$reason): int|string {
 
     if($reason == 'notification') {
         $subject = $lang['mail_subject_order_notify']. ' (#'.$this_order['order_nbr'].')';
-        $salutation = se_get_textlib("mail_salutation_order_notify","$lang","content");
+        $salutation = se_get_snippet("mail_salutation_order_notify",$languagePack,"content");
     } else if($reason == 'change_payment_status') {
         $subject = $lang['mail_subject_order_change_status_pm']. ' (#'.$this_order['order_nbr'].')';
-        $salutation = se_get_textlib("mail_salutation_order_change_status_pm","$lang","content");
+        $salutation = se_get_snippet("mail_salutation_order_change_status_pm",$languagePack,"content");
     } else if($reason == 'change_shipping_status') {
         $subject = $lang['mail_subject_order_change_status_shipping']. ' (#'.$this_order['order_nbr'].')';
-        $salutation = se_get_textlib("mail_salutation_change_status_shipping","$lang","content");
+        $salutation = se_get_snippet("mail_salutation_change_status_shipping",$languagePack,"content");
     } else if($reason == 'order_confirmation') {
         $subject = $lang['mail_subject_order_sent']. ' (#'.$this_order['order_nbr'].')';
-        $salutation = se_get_textlib("mail_salutation_order_confirmation","$lang","content");
+        $salutation = se_get_snippet("mail_salutation_order_confirmation",$languagePack,"content");
     } else {
         $subject = $lang['mail_subject_order_changed']. ' (#'.$this_order['order_nbr'].')';
-        $salutation = se_get_textlib("mail_salutation_order_changed","$lang","content");
+        $salutation = se_get_snippet("mail_salutation_order_changed",$languagePack,"content");
     }
 
     $order_invoice_address = html_entity_decode($this_order['order_invoice_address']);
@@ -673,7 +673,7 @@ function se_build_html_file($data) {
 
 	$footer = $data['footer'];
 	if($data['footer'] == '') {
-		$footer = se_get_textlib('footer_text_mail','','content');
+		$footer = se_get_snippet('footer_text_mail','','content');
 	}
 
 	$tpl_file = str_replace('{styles}', $tpl_style, $tpl_file);

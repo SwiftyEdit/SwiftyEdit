@@ -15,11 +15,11 @@ function se_get_post_entries($start,$limit,$filter): array {
 	global $time_string_start;
 	global $time_string_end;
 	global $time_string_now;
-	global $se_prefs;
+	global $se_settings;
 	global $se_labels;
 	
 	if(SE_SECTION == 'frontend') {
-		global $se_prefs;
+		global $se_settings;
 	}
 	
 	if(empty($start)) {
@@ -216,7 +216,7 @@ function se_get_event_entries($start,$limit,$filter) {
     global $time_string_start;
     global $time_string_end;
     global $time_string_now;
-    global $se_prefs;
+    global $se_settings;
     global $se_labels;
 
     if(empty($start)) {
@@ -370,7 +370,7 @@ function se_get_event_entries($start,$limit,$filter) {
     if(SE_SECTION == 'frontend') {
         $ph_now = $bind($time_string_now);
         $sql_filter .= "AND releasedate <= $ph_now ";
-        $time_hide_events = $time_string_now-$se_prefs['prefs_posts_event_time_offset'];
+        $time_hide_events = $time_string_now-$se_settings['posts_event_time_offset'];
         $ph_hide = $bind($time_hide_events);
         $sql_filter .= "AND event_enddate >= $ph_hide ";
     }
@@ -378,7 +378,7 @@ function se_get_event_entries($start,$limit,$filter) {
     /* hide past events in backend */
     if(SE_SECTION !== 'frontend' AND $_SESSION['show_past_events'] == 2) {
         $time_string_now = time();
-        $time_hide_events = $time_string_now-$se_prefs['prefs_posts_event_time_offset'];
+        $time_hide_events = $time_string_now-$se_settings['posts_event_time_offset'];
         $ph_hide2 = $bind($time_hide_events);
         $sql_filter .= "AND event_enddate >= $ph_hide2 ";
     }

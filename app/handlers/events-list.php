@@ -4,7 +4,7 @@
  * global variables
  * @var object $db_content set in database.php
  * @var object $smarty
- * @var array $se_prefs set in index.php
+ * @var array $se_settings set in index.php
  * @var string $languagePack
  * @var array $lang
  * @var array $all_categories
@@ -144,11 +144,11 @@ foreach ($get_events as $k => $post) {
     $post_images = explode("<->", $get_events[$k]['images']);
     if(isset($post_images[1])) {
         $get_events[$k]['event_img_src'] = $post_images[1];
-    } else if(in_array($se_prefs['prefs_posts_default_banner'], ["without_image", "null", null, ""], true) ||
-        empty($se_prefs['prefs_posts_default_banner'])) {
+    } else if(in_array($se_settings['posts_default_banner'], ["without_image", "null", null, ""], true) ||
+        empty($se_settings['posts_default_banner'])) {
         $get_events[$k]['event_img_src'] = '';
     } else {
-        $get_events[$k]['event_img_src'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        $get_events[$k]['event_img_src'] = "/$img_path/" . $se_settings['posts_default_banner'];
     }
 
     $post_filename = basename($get_events[$k]['slug']);

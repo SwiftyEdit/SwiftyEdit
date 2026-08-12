@@ -55,7 +55,7 @@ $modal_tpl = file_get_contents('../acp/templates/bs-modal.tpl');
 
 for($i=0;$i<$cnt_messages;$i++) {
 
-    $format_time = $se_prefs['prefs_dateformat'].' '.$se_prefs['prefs_timeformat'];
+    $format_time = $se_settings['dateformat'].' '.$se_settings['timeformat'];
     $time_created = date("$format_time",$all_messages[$i]['time_created']);
     $time_lastedit = date("$format_time",$all_messages[$i]['time_lastedit']);
 

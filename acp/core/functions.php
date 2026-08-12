@@ -1488,7 +1488,7 @@ function se_parse_docs_file($file): array {
  * @param string|null $anchor
  * @return string
  */
-function se_print_docs_link(string $file, string $text = null, string $anchor = null): string {
+function se_print_docs_link(string $file, ?string $text = null, ?string $anchor = null): string {
     global $icon, $lang;
     $title = $lang['label_show_help'];
 
@@ -1513,7 +1513,7 @@ function se_print_docs_link(string $file, string $text = null, string $anchor = 
  * @param string|null $trigger_text
  * @return string
  */
-function se_print_docs_tip(string $file, string $trigger_text = null) :string {
+function se_print_docs_tip(string $file, ?string $trigger_text = null) :string {
     global $icon, $languagePack, $languagePackFallback;
 
     if ($trigger_text == null or $trigger_text == 'icon') {
@@ -1547,7 +1547,7 @@ function se_print_docs_tip(string $file, string $trigger_text = null) :string {
  * @return string
  */
 
-function se_return_tooltip($key,string $trigger = null) :string {
+function se_return_tooltip($key, ?string $trigger = null) :string {
     global $lang,$languagePackFallback,$icon;
 
     if ($trigger == null or $trigger == 'icon') {

@@ -119,6 +119,7 @@ if(isset($_GET['id'])) {
     $smarty->assign('order_page_uri', $order_page_uri);
     $smarty->assign('order_withdrawal_uri', $order_withdrawal_uri.'?order_nbr='.urlencode($get_order['order_nbr']).'&mail='.urlencode($get_order['order_invoice_mail']));
     $smarty->assign('order_withdrawal_eligible', se_order_withdrawal_eligible($get_order));
+    $smarty->assign('order_withdrawal_requested', $get_order['order_withdrawal_requested']);
 
     $smarty->display('order-item.tpl');
     exit;

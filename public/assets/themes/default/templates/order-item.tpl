@@ -96,7 +96,9 @@
             </table>
         </div>
         <div class="modal-footer">
-            {if $order_status != '3' AND $order_withdrawal_eligible}
+            {if $order_withdrawal_requested > 0}
+                <span class="badge text-bg-warning me-auto">{$lang_status_order_withdrawal_requested}</span>
+            {elseif $order_status != '3' AND $order_withdrawal_eligible}
                 <a class="btn btn-outline-danger" href="{$order_withdrawal_uri}">{$lang_button_order_withdrawal}</a>
             {/if}
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{$lang_close}</button>

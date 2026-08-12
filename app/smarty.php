@@ -14,16 +14,16 @@ $smarty->registerPlugin('modifier', 'trim', 'trim');
 
 $cache_id = md5($swifty_slug.$mod_slug);
 
-if($se_prefs['prefs_smarty_cache'] == 1) {
+if($se_settings['smarty_cache'] == 1) {
     $smarty->setCaching(Smarty::CACHING_LIFETIME_CURRENT);
-    if(is_numeric($se_prefs['prefs_smarty_cache_lifetime'])) {
-        $smarty->setCacheLifetime($se_prefs['prefs_smarty_cache_lifetime']);
+    if(is_numeric($se_settings['smarty_cache_lifetime'])) {
+        $smarty->setCacheLifetime($se_settings['smarty_cache_lifetime']);
     }
 } else {
     $smarty->setCaching(Smarty::CACHING_OFF);
 }
 
-if($se_prefs['prefs_smarty_compile_check'] == 1) {
+if($se_settings['smarty_compile_check'] == 1) {
     $smarty->compile_check = true;
 } else {
     $smarty->compile_check = false;
@@ -39,7 +39,7 @@ if(isset($_POST['reset_theme'])) {
  * this option is intended for theme developers
  */
 
-if($se_prefs['prefs_usertemplate'] == 'on' OR $se_prefs['prefs_usertemplate'] == 'overwrite') {
+if($se_settings['usertemplate'] == 'on' OR $se_settings['usertemplate'] == 'overwrite') {
 
     /* set the theme - defined by the user */
     if(isset($_POST['set_theme'])) {
@@ -72,29 +72,29 @@ if($se_prefs['prefs_usertemplate'] == 'on' OR $se_prefs['prefs_usertemplate'] ==
 
 
     if($_SESSION['prefs_template'] != '') {
-        $se_prefs['prefs_template'] = $_SESSION['prefs_template'];
+        $se_settings['template'] = $_SESSION['prefs_template'];
     }
 
     if($_SESSION['prefs_template_stylesheet'] != '') {
-        $se_prefs['prefs_template_stylesheet'] = $_SESSION['prefs_template_stylesheet'];
+        $se_settings['template_stylesheet'] = $_SESSION['prefs_template_stylesheet'];
     }
 
 }
 
 // default template
-$se_template = $se_prefs['prefs_template'] ?: 'default';
-$se_template_layout = $se_prefs['prefs_template_layout'] ?: 'layout_default.tpl';
+$se_template = $se_settings['template'] ?: 'default';
+$se_template_layout = $se_settings['template_layout'] ?: 'layout_default.tpl';
 $se_template_stylesheet = '';
-if(isset($se_prefs['prefs_template_stylesheet'])) {
-    $se_template_stylesheet = $se_prefs['prefs_template_stylesheet'];
+if(isset($se_settings['template_stylesheet'])) {
+    $se_template_stylesheet = $se_settings['template_stylesheet'];
 }
 
 if($page_contents['page_template'] == "use_standard") {
-    $se_template = $se_prefs['prefs_template'] ?: 'default';
+    $se_template = $se_settings['template'] ?: 'default';
 }
 
 if($page_contents['page_template_layout'] == "use_standard") {
-    $se_template_layout = $se_prefs['prefs_template_layout'] ?: 'layout_default.tpl';
+    $se_template_layout = $se_settings['template_layout'] ?: 'layout_default.tpl';
 }
 
 /* page has its own theme/template */
@@ -103,7 +103,7 @@ if(is_dir($themes_path.'/'.$page_contents['page_template'].'/templates/')) {
     $se_template_layout = $page_contents['page_template_layout'];
     $se_template_stylesheet = $page_contents['page_template_stylesheet'];
 
-    if($se_prefs['prefs_usertemplate'] == 'overwrite') {
+    if($se_settings['usertemplate'] == 'overwrite') {
         /* the user theme has the same tpl file, so we can overwrite */
         if(is_file($themes_path.'/'.$_SESSION['prefs_template'].'/templates/'.$page_contents['page_template_layout'])) {
             $se_template = $_SESSION['prefs_template'];

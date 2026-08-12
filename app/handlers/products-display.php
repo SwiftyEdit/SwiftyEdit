@@ -14,7 +14,7 @@
  * @var string $languagePack de | en ...
  * @var array $lang translations
  * @var string $swifty_slug query
- * @var array $se_prefs global preferences
+ * @var array $se_settings global preferences
  * @var string $se_base_url the base url
  * @var array $page_contents
  * @var array $cached_url_data
@@ -106,22 +106,22 @@ if($product_data['product_price_group'] != '' AND $product_data['product_price_g
 }
 
 if($product_tax == '1') {
-    $tax = $se_prefs['prefs_posts_products_default_tax'];
+    $tax = $se_settings['posts_products_default_tax'];
 } else if($product_tax == '2') {
-    $tax = $se_prefs['prefs_posts_products_tax_alt1'];
+    $tax = $se_settings['posts_products_tax_alt1'];
 } else {
-    $tax = $se_prefs['prefs_posts_products_tax_alt2'];
+    $tax = $se_settings['posts_products_tax_alt2'];
 }
 
 $post_prices = se_posts_calc_price($product_price_net,$tax);
 $post_price_net = $post_prices['net'];
 $post_price_gross = $post_prices['gross'];
 
-if ($se_prefs['prefs_posts_price_mode'] == 1) {
+if ($se_settings['posts_price_mode'] == 1) {
     // gross prices
     $product_price_tag = $post_price_gross;
     $product_tax_label = $lang['price_tag_label_gross'];
-} else if($se_prefs['prefs_posts_price_mode'] == 2) {
+} else if($se_settings['posts_price_mode'] == 2) {
     // gross and net prices
     $product_price_tag = $post_price_net. '/'. $post_price_gross;
     $product_tax_label = $lang['label_net']. ' / '. $lang['label_net'];
@@ -183,7 +183,7 @@ for($i=1;$i<6;$i++) {
 $product_images = explode("<->", $product_data['images']);
 $product_images = array_filter($product_images); /* remove empty elements */
 
-$product_datetimeformat = $se_prefs['dateformat'].' '.$se_prefs['timeformat'];
+$product_datetimeformat = $se_settings['dateformat'].' '.$se_settings['timeformat'];
 
 $post_releasedate = date("$product_datetimeformat",$product_data['releasedate']);
 $post_releasedate_year = date('Y',$product_data['releasedate']);
@@ -227,10 +227,10 @@ if($show_images[0]['media_file'] != "") {
     $first_product_img_title = $show_images[0]['media_title'];
     $first_product_img_caption = $show_images[0]['media_text'];
     $first_product_image = $first_product_img_src;
-} else if($se_prefs['prefs_shop_default_banner'] == "without_image") {
+} else if($se_settings['shop_default_banner'] == "without_image") {
     $first_product_image = '';
 } else {
-    $first_product_image = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+    $first_product_image = "/$img_path/" . $se_settings['posts_default_banner'];
 }
 
 
@@ -280,7 +280,7 @@ if($product_data['votings'] == 2 || $product_data['votings'] == 3) {
 $form_action = '/'.$swifty_slug.$mod_slug;
 $this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
-if($se_prefs['prefs_posts_products_cart'] == 1) {
+if($se_settings['posts_products_cart'] == 1) {
     // all shopping carts are disabled - overwrite products settings
     $product_data['product_cart_mode'] = 2;
 }
@@ -318,13 +318,13 @@ $smarty->assign('product_price_tag_label_gross', $lang['price_tag_label_gross'])
 $smarty->assign('product_price_tag_label_net', $lang['price_tag_label_net']);
 
 if($product_data['product_textlib_content'] != 'no_snippet' AND $product_data['product_textlib_content'] != '') {
-    $product_snippet_content = se_get_textlib($product_data['product_textlib_content'],$languagePack,'all');
+    $product_snippet_content = se_get_snippet($product_data['product_textlib_content'],$languagePack,'all');
     $smarty->assign('product_snippet_text', $product_snippet_content['snippet_content']);
     $smarty->assign('product_snippet_title', $product_snippet_content['snippet_title']);
 }
 
 if($product_data['product_textlib_price'] != 'no_snippet' AND $product_data['product_textlib_price'] != '') {
-    $product_snippet_price = se_get_textlib($product_data['product_textlib_price'],$languagePack,'all');
+    $product_snippet_price = se_get_snippet($product_data['product_textlib_price'],$languagePack,'all');
     $smarty->assign('label_prices_snippet', $lang['label_prices_snippet']);
     $smarty->assign('product_snippet_price', $product_snippet_price['snippet_content']);
 }
@@ -366,11 +366,11 @@ if(is_array($product_addons)) {
         }
 
         if($addon_product_tax == '1') {
-            $addon_tax = $se_prefs['prefs_posts_products_default_tax'];
+            $addon_tax = $se_settings['posts_products_default_tax'];
         } else if($addon_product_tax == '2') {
-            $addon_tax = $se_prefs['prefs_posts_products_tax_alt1'];
+            $addon_tax = $se_settings['posts_products_tax_alt1'];
         } else {
-            $addon_tax = $se_prefs['prefs_posts_products_tax_alt2'];
+            $addon_tax = $se_settings['posts_products_tax_alt2'];
         }
 
         $addon_prices = se_posts_calc_price($addon_price_net,$addon_tax);
@@ -378,9 +378,9 @@ if(is_array($product_addons)) {
         $addon_amount = $addon_data['product_amount'];
         $addon_unit = $addon_data['product_unit'];
 
-        if ($se_prefs['prefs_posts_price_mode'] == 1) {
+        if ($se_settings['posts_price_mode'] == 1) {
             $addon_price_tag = $addon_prices['gross'];
-        } else if($se_prefs['prefs_posts_price_mode'] == 2) {
+        } else if($se_settings['posts_price_mode'] == 2) {
             $addon_price_tag = $addon_prices['net'].' / '.$addon_prices['gross'];
         } else {
             $addon_price_tag = $addon_prices['net'];
@@ -512,10 +512,10 @@ if($cnt_variants > 1) {
         $product_images = explode("<->",$v['images']);
         if ($product_images[1] != "") {
             $var[$k]['image'] = str_replace('../images/', '/images/', $product_images[1]);
-        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+        } else if ($se_settings['posts_default_banner'] == "without_image") {
             $var[$k]['image'] = '';
         } else {
-            $var[$k]['image'] = str_replace('../images/', '/images/', $se_prefs['prefs_posts_default_banner']);
+            $var[$k]['image'] = str_replace('../images/', '/images/', $se_settings['posts_default_banner']);
         }
 
         $product_slug = basename($v['slug']);
@@ -565,10 +565,10 @@ if($product_data['product_related'] != '') {
         $product_images = explode("<->",$related_product['images']);
         if ($product_images[1] != "") {
             $rp[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
-        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+        } else if ($se_settings['posts_default_banner'] == "without_image") {
             $rp[$i]['image'] = '';
         } else {
-            $rp[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+            $rp[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
         }
         $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $related_product['id'] . ".html";
     }
@@ -595,10 +595,10 @@ if($product_data['product_accessories'] != '') {
         $product_images = explode("<->",$accessories_product['images']);
         if ($product_images[1] != "") {
             $ap[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
-        } else if ($se_prefs['prefs_posts_default_banner'] == "without_image") {
+        } else if ($se_settings['posts_default_banner'] == "without_image") {
             $ap[$i]['image'] = '';
         } else {
-            $ap[$i]['image'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+            $ap[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
         }
 
         $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $accessories_product['id'] . ".html";
