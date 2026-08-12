@@ -2,8 +2,7 @@
 
 ini_set("url_rewriter.tags", '');
 session_start();
-error_reporting(0);
-
+error_reporting(0); // safe default until $se_environment is known
 $se_start_time = microtime(true);
 
 require '../vendor/autoload.php';
@@ -14,6 +13,15 @@ use Smarty\Smarty;
  * @var array $se_page_types
  */
 require '../config.php';
+
+/**
+ * only show errors when explicitly running in development mode
+ * @var string $se_environment p = production, d = development
+ */
+if ($se_environment === 'd') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
 
 // resets and defaults
 $prepend_head_code = '';

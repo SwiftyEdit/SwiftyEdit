@@ -16,6 +16,12 @@ if(is_file('../'.SE_CONTENT.'/config.php')) {
     include '../'.SE_CONTENT.'/config.php';
 }
 
+// only show errors when explicitly running in development mode
+if ($se_environment === 'd') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
+
 $loader = new \Twig\Loader\FilesystemLoader(SE_ROOT.'/acp/templates');
 $twig = new \Twig\Environment($loader, [
     'cache' => SE_CONTENT.'/cache/twig',

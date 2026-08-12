@@ -56,6 +56,12 @@ if (is_file(SE_CONTENT . '/config_smtp.php')) {
     include SE_CONTENT . '/config_smtp.php';
 }
 
+// only show errors when explicitly running in development mode
+if ($se_environment === 'd') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
+
 $version_file = file_get_contents(SE_ROOT.'version.json');
 $se_version = json_decode($version_file, true);
 

@@ -14,6 +14,12 @@ if(is_file('../'.SE_CONTENT.'/config.php')) {
     include '../'.SE_CONTENT.'/config.php';
 }
 
+// only show errors when explicitly running in development mode
+if ($se_environment === 'd') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
+
 if(is_file('../config_database.php')) {
     include '../config_database.php';
     $db_type = 'mysql';
