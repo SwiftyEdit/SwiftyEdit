@@ -177,7 +177,7 @@ foreach ($se_get_preferences as $k => $v) {
     $key = $se_get_preferences[$k]['option_key'];
     $value = $se_get_preferences[$k]['option_value'];
 
-    /* $se_prefs['prefs_pagetitle'] */
+    /* $se_settings['pagetitle'] */
     $se_prefs[$key] = $value;
 
     /* without the 'prefs_' prefix $se_prefs['pagetitle'] */
@@ -778,8 +778,8 @@ foreach ($se_editor_addons as $editor_addon) {
 
     <?php
     $gc_maxlifetime = ini_get("session.gc_maxlifetime");
-    if ($se_prefs['prefs_acp_session_lifetime'] > $gc_maxlifetime) {
-        $maxlifetime = $se_prefs['prefs_acp_session_lifetime'];
+    if ($se_settings['acp_session_lifetime'] > $gc_maxlifetime) {
+        $maxlifetime = $se_settings['acp_session_lifetime'];
     } else {
         $maxlifetime = $gc_maxlifetime;
     }

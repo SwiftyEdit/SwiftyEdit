@@ -200,7 +200,7 @@ if($_POST['send_registerform']) {
 
         // Build mail content
         $mail_data['tpl'] = 'mail.tpl';
-        $mail_data['subject'] = "Account | ".$se_prefs['prefs_pagetitle'];
+        $mail_data['subject'] = "Account | ".$se_settings['pagetitle'];
         $mail_data['preheader'] = "Welcome | $username $mail";
         $mail_data['title'] = "Welcome | $username $mail";
         $mail_data['salutation'] = "Welcome $username";
@@ -217,8 +217,8 @@ if($_POST['send_registerform']) {
         record_log("user_register","new user $username","6");
 
         // Send notification to admin
-        $admin_mail['name'] = $se_prefs['prefs_mailer_name'];
-        $admin_mail['mail'] = $se_prefs['prefs_mailer_adr'];
+        $admin_mail['name'] = $se_settings['mailer_name'];
+        $admin_mail['mail'] = $se_settings['mailer_adr'];
 
         $admin_notification_text  = $lang['msg_register_admin_notification_text'].'<hr>';
         $admin_notification_text .= 'Username: <b>'.$username.'</b><br>';

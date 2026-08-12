@@ -56,9 +56,36 @@ function se_get_content($page, $mode = 'p') {
 		]);
 	
 	}
-				
 
-	if($page_contents['page_language'] == '') {
+	// Medoo's get() returns null when no row matches (e.g. unknown permalink/id);
+	// normalize to an empty array so callers can rely on the documented @return array
+	if (!is_array($page_contents)) {
+		$page_contents = [];
+	}
+
+	// callers throughout the frontend compare this against known type_of_use
+	// values (e.g. 'display_product', '404') without checking it's set first
+	$page_contents['page_type_of_use'] ??= '';
+
+	// same story for the posts/products/events type filter ('p', 'e', 'm', ...)
+	$page_contents['page_posts_types'] ??= '';
+
+	// posts-list.php/products-list.php/events.php explode() this on ',' without
+	// checking it's set - an unset key would pass null to explode() (deprecated)
+	$page_contents['page_posts_categories'] ??= '';
+
+	// smarty.php/error.php pick the theme/template based on these; also read
+	// by posts-list.php/products-list.php for per-page theme overrides
+	$page_contents['page_template'] ??= '';
+	$page_contents['page_template_layout'] ??= '';
+	$page_contents['page_template_stylesheet'] ??= '';
+
+	// template-setup.php reads these two directly off the array (not via the
+	// $$k convenience vars) to detect the homepage and the categories display mode
+	$page_contents['page_sort'] ??= '';
+	$page_contents['page_categories_mode'] ??= '';
+
+	if(($page_contents['page_language'] ?? '') == '') {
 		$page_contents['page_language'] = $languagePack;
 	} else {
 		$languagePack = $page_contents['page_language'];
@@ -114,12 +141,16 @@ function se_check_shortlinks($shortlink) {
 	
 	$page = $db_content->get("se_pages", ["page_permalink", "page_permalink_short_cnt"], [
 		"page_permalink_short" => $shortlink
-	]);	
-	
-	
+	]);
+
+	// no matching shortlink found
+	if (!is_array($page)) {
+		return;
+	}
+
 	/* increase page_permalink_short_cnt
 		 redirect to page_permalink	*/
-		 
+
 	if($page['page_permalink'] != '') {
 				
 		$page_permalink_short_cnt = (int) $page['page_permalink_short_cnt'] +1;
@@ -166,19 +197,24 @@ function se_check_funnel_uri($uri) {
 
 /**
  * @param $type
- * @return mixed array or NULL
+ * @return array empty array if no page of this type_of_use is configured
  */
 function se_get_type_of_use_pages($type) {
-	
+
 	global $db_content;
 	global $languagePack;
-	
+
 	$page = $db_content->get("se_pages", ["page_permalink", "page_funnel_uri"], [
 		"AND" => [
 			"page_type_of_use" => "$type",
 			"page_language" => "$languagePack"
 		]
 	]);
+
+	// no page configured for this type_of_use (e.g. no "orders" page set up yet)
+	if (!is_array($page)) {
+		$page = [];
+	}
 
 	return $page;
 }

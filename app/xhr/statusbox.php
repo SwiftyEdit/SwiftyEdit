@@ -25,7 +25,7 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
 
     $typeof_profile = se_get_type_of_use_pages('profile');
 
-    if($typeof_profile === NULL) {
+    if(empty($typeof_profile['page_permalink'])) {
         $link_profile = SE_INCLUDE_PATH . "/profile/";
     } else {
         $link_profile = SE_INCLUDE_PATH .'/'. $typeof_profile['page_permalink'];

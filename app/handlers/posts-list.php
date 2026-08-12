@@ -40,6 +40,9 @@ $array_mod_slug = explode("/", $mod_slug);
 
 $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 
+// only set below when the active category has matching theme values
+$category_template_data = null;
+
 foreach($all_categories as $cats) {
 
     if($page_contents['page_posts_categories'] != 'all') {
@@ -242,10 +245,10 @@ foreach($get_posts as $k => $post) {
     if(isset($post_images[1])) {
         $get_posts[$k]['post_tmb_src'] = $post_images[1];
     } else if(in_array($se_settings['posts_default_banner'], ["without_image", "null", null, ""], true) ||
-        empty($se_prefs['prefs_posts_default_banner'])) {
+        empty($se_settings['posts_default_banner'])) {
         $get_posts[$k]['post_tmb_src'] = '';
     } else {
-        $get_posts[$k]['post_tmb_src'] = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+        $get_posts[$k]['post_tmb_src'] = "/$img_path/" . $se_settings['posts_default_banner'];
     }
 	
 
@@ -353,7 +356,7 @@ foreach($get_posts as $k => $post) {
 	}
 	
 
-    $get_posts[$k]['post_releasedate_str'] = date($se_prefs['prefs_dateformat'], $get_posts[$k]['post_releasedate']);
+    $get_posts[$k]['post_releasedate_str'] = date($se_settings['dateformat'], $get_posts[$k]['post_releasedate']);
 
 	/* links */
 	$redirect = $swifty_slug.'?goto='.$get_posts[$k]['post_id'];

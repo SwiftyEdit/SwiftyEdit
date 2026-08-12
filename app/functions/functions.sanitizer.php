@@ -224,7 +224,7 @@ function clean_visitors_input($text) {
  */
 function se_sanitize_page_inputs($data) {
 
-    global $se_prefs;
+    global $se_settings;
 
     foreach($data as $key => $val) {
 
@@ -396,8 +396,8 @@ function se_sanitize_page_inputs($data) {
         $sanitized['page_sort'] = "";
     } else {
         $page_order = (int) $data['page_order'];
-        if(strlen($page_order) < $se_prefs['prefs_pagesort_minlength']) {
-            $page_order = str_pad($page_order, $se_prefs['prefs_pagesort_minlength'], "0", STR_PAD_LEFT);
+        if(strlen($page_order) < $se_settings['pagesort_minlength']) {
+            $page_order = str_pad($page_order, $se_settings['pagesort_minlength'], "0", STR_PAD_LEFT);
         }
         $sanitized['page_sort'] = $data['page_position'].'.'.$page_order;
     }

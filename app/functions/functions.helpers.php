@@ -51,21 +51,21 @@ function se_covert_big_int(int $number): string {
 function se_format_datetime($timestring): string {
 
     global $lang;
-    global $se_prefs;
+    global $se_settings;
 
     $timestring = (int) $timestring;
 
-    $date = date($se_prefs['prefs_dateformat'],$timestring);
+    $date = date($se_settings['dateformat'],$timestring);
 
-    if($date == date($se_prefs['prefs_dateformat'], time())) {
+    if($date == date($se_settings['dateformat'], time())) {
         $str_date = $lang['today'];
-    } else if($date == date($se_prefs['prefs_dateformat'], time() - (24 * 60 * 60))) {
+    } else if($date == date($se_settings['dateformat'], time() - (24 * 60 * 60))) {
         $str_date = $lang['yesterday'];
     } else {
         $str_date = $date;
     }
 
-    $time = date($se_prefs['prefs_timeformat'],$timestring);
+    $time = date($se_settings['timeformat'],$timestring);
 
     return $str_date. ' ' .$time;
 }

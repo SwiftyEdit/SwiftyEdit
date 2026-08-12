@@ -25,7 +25,7 @@ function se_get_products($start, $limit, $filter)
     global $db_posts, $time_string_start, $time_string_end, $time_string_now, $se_labels;
 
     if (SE_SECTION == 'frontend') {
-        global $se_prefs;
+        global $se_settings;
     }
 
     if (empty($start)) {
@@ -1477,7 +1477,7 @@ function se_reformat_payment_costs($amount) {
 function se_send_order($data) {
 	
 	global $db_content;
-	global $se_prefs;
+	global $se_settings;
 	
 	$user_id = $data['user_id'];
 	$order_nbr = $data['order_nbr'];
@@ -1512,7 +1512,7 @@ function se_send_order($data) {
 		"order_shipping_costs" => "$order_shipping_costs",
 		"order_payment_type" => "$order_payment_type",
 		"order_payment_costs" => "$order_payment_costs",
-		"order_currency" => $se_prefs['prefs_posts_products_default_currency'],
+		"order_currency" => $se_settings['posts_products_default_currency'],
         "order_user_comment" => "$order_comment"
 		
 	]);

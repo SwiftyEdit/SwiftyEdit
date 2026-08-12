@@ -6,7 +6,7 @@ $display_mode = 'list_events';
 
 /* defaults */
 $events_start = 0;
-$events_limit = (int) $se_prefs['prefs_posts_entries_per_page'];
+$events_limit = (int) $se_settings['posts_entries_per_page'];
 if($events_limit == '' || $events_limit < 1) {
     $events_limit = 10;
 }

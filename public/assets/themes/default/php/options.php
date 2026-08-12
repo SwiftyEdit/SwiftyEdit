@@ -180,8 +180,9 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
         $smarty->assign('teaser_text', $teaser_text);
     }
 
-    // overwrite teaser text from $theme_values['teaser_text']
-    if(is_array($category_template_data) && $category_template_data['teaser_text'] != '') {
+    // overwrite teaser text from $theme_values['teaser_text']; only set by
+    // products-list.php/posts-list.php when displaying a category
+    if(isset($category_template_data) && is_array($category_template_data) && $category_template_data['teaser_text'] != '') {
         $teaser_text = html_entity_decode($category_template_data['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
         $smarty->assign('teaser_text', $teaser_text);
     }

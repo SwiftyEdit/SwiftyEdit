@@ -34,7 +34,7 @@ function is_user_in_group(mixed $user_id, string $user_group): string {
  * @param string|null $parameters query
  */
 
-function buffer_script(string $script, string $parameters=NULL) {
+function buffer_script(string $script, ?string $parameters=NULL) {
 
     $parameter = '';
     $buffer = '';

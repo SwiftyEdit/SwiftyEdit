@@ -44,10 +44,10 @@ $entrydate_year = date('Y',$event_data['date']);
 if($event_images[1] != "") {
     $first_image = '/' . $img_path . '/' . str_replace('../content/images/','',$event_images[1]);
     $event_image_data = se_get_images_data($first_image,'data=array');
-} else if($se_prefs['prefs_posts_default_banner'] == "without_image") {
+} else if($se_settings['posts_default_banner'] == "without_image") {
     $first_image = '';
 } else {
-    $first_image = "/$img_path/" . $se_prefs['prefs_posts_default_banner'];
+    $first_image = "/$img_path/" . $se_settings['posts_default_banner'];
 }
 
 /* show guestlist */

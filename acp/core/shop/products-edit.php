@@ -321,7 +321,7 @@ $select_comments .= '</select>';
 /* votings/reactions no, yes for registered users, yes for all */
 
 if($product_data['votings'] == '') {
-    $product_data['votings'] = $se_prefs['prefs_posts_default_votings'];
+    $product_data['votings'] = $se_settings['posts_default_votings'];
 }
 
 if($product_data['votings'] == 1 OR $product_data['votings'] == '') {
@@ -351,12 +351,12 @@ if($product_data['author'] == '') {
     $product_data['author'] = $_SESSION['user_firstname'] .' '. $_SESSION['user_lastname'];
 }
 
-if($product_data['author'] == "" && $se_prefs['prefs_default_publisher'] != '') {
-    $product_data['author'] = $se_prefs['prefs_default_publisher'];
+if($product_data['author'] == "" && $se_settings['default_publisher'] != '') {
+    $product_data['author'] = $se_settings['default_publisher'];
 }
 
-if($se_prefs['prefs_publisher_mode'] == 'overwrite') {
-    $product_data['author'] = $se_prefs['prefs_default_publisher'];
+if($se_settings['publisher_mode'] == 'overwrite') {
+    $product_data['author'] = $se_settings['default_publisher'];
 }
 
 
@@ -449,23 +449,23 @@ if($product_data['product_tax'] == '2') {
     $sel_tax_2 = 'selected';
     $sel_tax_1 = '';
     $sel_tax_3 = '';
-    $get_tax = $se_prefs['prefs_posts_products_tax_alt1'];
+    $get_tax = $se_settings['posts_products_tax_alt1'];
 } else if($product_data['product_tax'] == '3') {
     $sel_tax_3 = 'selected';
     $sel_tax_2 = '';
     $sel_tax_1 = '';
-    $get_tax = $se_prefs['prefs_posts_products_tax_alt2'];
+    $get_tax = $se_settings['posts_products_tax_alt2'];
 } else {
     $sel_tax_1 = 'selected';
     $sel_tax_2 = '';
     $sel_tax_3 = '';
-    $get_tax = $se_prefs['prefs_posts_products_default_tax'];
+    $get_tax = $se_settings['posts_products_default_tax'];
 }
 
 $select_tax = "<select name='product_tax' class='form-control custom-select' id='tax'>";
-$select_tax .= '<option value="1" '.$sel_tax_1.'>'.$se_prefs['prefs_posts_products_default_tax'].'</option>';
-$select_tax .= '<option value="2" '.$sel_tax_2.'>'.$se_prefs['prefs_posts_products_tax_alt1'].'</option>';
-$select_tax .= '<option value="3" '.$sel_tax_3.'>'.$se_prefs['prefs_posts_products_tax_alt2'].'</option>';
+$select_tax .= '<option value="1" '.$sel_tax_1.'>'.$se_settings['posts_products_default_tax'].'</option>';
+$select_tax .= '<option value="2" '.$sel_tax_2.'>'.$se_settings['posts_products_tax_alt1'].'</option>';
+$select_tax .= '<option value="3" '.$sel_tax_3.'>'.$se_settings['posts_products_tax_alt2'].'</option>';
 $select_tax .= '</select>';
 
 /* select shipping mode */
@@ -778,7 +778,7 @@ if($product_price_net == '') {
 
 $product_currency = $product_data['product_currency'];
 if($product_currency == '') {
-    $product_currency = $se_prefs['prefs_posts_products_default_currency'];
+    $product_currency = $se_settings['posts_products_default_currency'];
 }
 
 if($product_data['product_price_addition'] == '') {

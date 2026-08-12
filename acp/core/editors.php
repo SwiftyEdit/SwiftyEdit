@@ -14,17 +14,17 @@
  *                                      the active theme; when present it
  *                                      replaces the plugin's built-in config
  *
- * @var array $se_prefs global preferences
+ * @var array $se_settings global preferences
  */
 
-$editor_tpl_folder = $se_prefs['prefs_template'];
+$editor_tpl_folder = $se_settings['template'];
 
 if (isset($page_template)) {
     $editor_tpl_folder = $page_template;
 }
 
 if ($editor_tpl_folder == 'use_standard') {
-    $editor_tpl_folder = $se_prefs['prefs_template'];
+    $editor_tpl_folder = $se_settings['template'];
 }
 
 /**

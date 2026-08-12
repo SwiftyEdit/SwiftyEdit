@@ -109,7 +109,7 @@ if($se_settings['posts_products_cart'] == 2 OR $se_settings['posts_products_cart
 
     // get permalink for shopping cart
     $checkout_page = se_get_type_of_use_pages('checkout');
-    if($checkout_page['page_permalink'] == '') {
+    if(($checkout_page['page_permalink'] ?? '') == '') {
         $sc_uri = '/checkout/';
     } else {
         $sc_uri = '/'.$checkout_page['page_permalink'];
@@ -129,15 +129,22 @@ if (is_array($page_contents)) {
     $show_404 = "true";
 }
 
+// $page_xxx vars above only get set by the $$k loop when the column is
+// non-empty (see "Process page contents" above) - default the rest so
+// this file (and code included after it) can read them without warnings
+if(!isset($page_sort)) {
+    $page_sort = '';
+}
+
 $current_page_sort = $page_sort;
 
 // Set default values
 if(!isset($page_title) OR $page_title == "") {
-    $page_title = $se_prefs['prefs_pagetitle'];
+    $page_title = $se_settings['pagetitle'];
 }
 
 if(!isset($page_favicon) OR $page_favicon == "") {
-    $page_favicon = $se_prefs['prefs_pagefavicon'];
+    $page_favicon = $se_settings['pagefavicon'];
 }
 
 if(!isset($page_meta_keywords)) {
@@ -146,6 +153,30 @@ if(!isset($page_meta_keywords)) {
 
 if(!isset($page_meta_description)) {
     $page_meta_description = '';
+}
+
+if(!isset($page_meta_author)) {
+    $page_meta_author = '';
+}
+
+if(!isset($page_lastedit)) {
+    $page_lastedit = null;
+}
+
+if(!isset($page_meta_robots)) {
+    $page_meta_robots = '';
+}
+
+if(!isset($page_status)) {
+    $page_status = '';
+}
+
+if(!isset($page_canonical_url)) {
+    $page_canonical_url = '';
+}
+
+if(!isset($snippet_footer)) {
+    $snippet_footer = '';
 }
 
 /**
@@ -331,7 +362,7 @@ if(isset($page_psw) && $page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) 
 
 /* page thumbnails */
 if(!isset($page_thumbnail)) {
-    $page_thumbnail = $se_prefs['prefs_pagethumbnail'];
+    $page_thumbnail = $se_settings['pagethumbnail'];
 } else {
     $page_thumbnail_array = explode("<->", $page_thumbnail);
     if(is_array($page_thumbnail_array)) {
@@ -350,7 +381,7 @@ if(!isset($page_thumbnail)) {
 
 /* page logo */
 if(!isset($page_logo)) {
-    $page_logo = $se_prefs['prefs_pagelogo'];
+    $page_logo = $se_settings['pagelogo'];
 }
 
 if(!isset($page_hash)) {
@@ -368,7 +399,7 @@ if($page_favicon != 'null' && $page_favicon != '') {
 }
 
 $smarty->assign('page_title', html_entity_decode($page_title));
-$smarty->assign('prefs_pagesglobalhead', $se_prefs['prefs_pagesglobalhead']);
+$smarty->assign('prefs_pagesglobalhead', $se_settings['pagesglobalhead'] ?? '');
 $smarty->assign('page_meta_author', $page_meta_author);
 $smarty->assign('page_meta_date', date('Y-m-d', $page_lastedit));
 $smarty->assign('page_meta_keywords', html_entity_decode($page_meta_keywords));

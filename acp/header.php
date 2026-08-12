@@ -69,7 +69,7 @@ foreach ($se_get_preferences as $k => $v) {
     $key = $se_get_preferences[$k]['option_key'];
     $value = $se_get_preferences[$k]['option_value'];
 
-    /* $se_prefs['prefs_pagetitle'] */
+    /* $se_settings['pagetitle'] */
     $se_prefs[$key] = $value;
 
     /* without the 'prefs_' prefix $se_prefs['pagetitle'] */
@@ -93,8 +93,8 @@ if ($se_settings['cms_ssl_domain'] != '') {
 $all_langs = get_all_languages();
 
 if (!isset($_SESSION['lang'])) {
-    if ($se_prefs['prefs_default_language'] != '') {
-        $_SESSION['lang'] = $se_prefs['prefs_default_language'];
+    if ($se_settings['default_language'] != '') {
+        $_SESSION['lang'] = $se_settings['default_language'];
     } else {
         $_SESSION['lang'] = $languagePack;
     }
@@ -118,8 +118,8 @@ require SE_ROOT.'languages/index.php';
  * hide languages from $prefs_deactivated_languages
  * all active languages are stored in $active_lang
  */
-if (isset($se_prefs['prefs_deactivated_languages']) AND $se_prefs['prefs_deactivated_languages'] != '') {
-    $arr_lang_deactivated = json_decode($se_prefs['prefs_deactivated_languages']);
+if (isset($se_settings['deactivated_languages']) AND $se_settings['deactivated_languages'] != '') {
+    $arr_lang_deactivated = json_decode($se_settings['deactivated_languages']);
 }
 
 foreach ($all_langs as $l) {

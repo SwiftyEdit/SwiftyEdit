@@ -13,6 +13,11 @@ function show_mainmenu(): array
 
 	global $se_nav,$current_page_sort,$se_defs;
 
+	// only set inside the loop below, when the current page's top-level
+	// category is found - stay '' otherwise (e.g. on the homepage)
+	$se_main_cat = '';
+	$se_toc_header = '';
+
 	$count_result = count($se_nav);
 	
 	for($i=0;$i<$count_result;$i++) {
@@ -200,11 +205,17 @@ function breadcrumbs_menu(): array {
             "page_status" => ['public','ghost']
         ]);
 
-        if($get_page_info['page_linkname'] != '') {
+        // no page matches this breadcrumb segment (e.g. an intermediate,
+        // non-page path part) - fall back to the values set above
+        if (!is_array($get_page_info)) {
+            $get_page_info = [];
+        }
+
+        if(($get_page_info['page_linkname'] ?? '') != '') {
             $label = $get_page_info['page_linkname'];
         }
 
-        if($get_page_info['page_title'] != '') {
+        if(($get_page_info['page_title'] ?? '') != '') {
             $title = $get_page_info['page_title'];
         }
 
