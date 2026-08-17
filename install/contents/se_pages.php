@@ -6,6 +6,13 @@ $table_name = "se_pages";
 $cols = array(
 	"page_id" => 'INTEGER(50) NOT NULL PRIMARY KEY AUTO_INCREMENT',
 	"page_parent_id" => 'INTEGER(12)',
+	// position: sort order among siblings under the same page_parent_id
+	// (NULL parent = top level per page_language). Gaps (10/20/30, ...) are
+	// intentional so a page can be inserted between two others without
+	// renumbering. Backfilled from the legacy page_sort dot-path by the
+	// 2026_08_17_000003_page_sort_to_parent_position migration; page_sort
+	// itself stays untouched for now as a fallback.
+	"position" => 'INTEGER(12) NOT NULL DEFAULT 0',
     "page_custom_id" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "page_custom_classes" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "page_hits" => 'INTEGER(12)',

@@ -224,12 +224,16 @@ $dbh_content->insert("se_pages", [
 	"page_template_layout" => "layout_default.tpl",
     "page_template_stylesheet" => "../styles/default/css/default.css",
 	"page_sort" => "portal",
+	"page_parent_id" => null,
+	"position" => 0,
 	"page_meta_author" => "$username",
 	"page_meta_date" => "$page_lastedit",
 	"page_meta_keywords" => "example,test,portal",
 	"page_meta_description" => "Example Meta Description for the portal page",
 	"page_meta_robots" => "all"
 ]);
+
+$portal_page_id = $dbh_content->id();
 
 $dbh_content->insert("se_pages", [
 	"page_language" => $_SESSION['lang'],
@@ -244,6 +248,8 @@ $dbh_content->insert("se_pages", [
 	"page_template" => "use_standard",
 	"page_template_layout" => "use_standard",
 	"page_sort" => "100",
+	"page_parent_id" => $portal_page_id,
+	"position" => 100,
 	"page_meta_author" => "$username",
 	"page_meta_date" => "$page_lastedit",
 	"page_meta_keywords" => "example,test",
