@@ -85,94 +85,11 @@ if($_POST['helper_update_table'] == 'se_posts') {
     exit;
 }
 
-if($_POST['helper_update_table'] == 'se_users_country') {
-    echo '<p>Migrating country fields to ISO 3166-1 alpha-2 codes ...</p>';
-
-    $migration_map = se_get_country_migration_map();
-    $users = $db_user->select("se_user", ["user_id", "ba_country", "sa_country"]);
-
-    $updated = 0;
-    $skipped = 0;
-
-    foreach ($users as $user) {
-        $ba_country = $migration_map[$user['ba_country']] ?? $user['ba_country'];
-        $sa_country = $migration_map[$user['sa_country']] ?? $user['sa_country'];
-
-        if ($ba_country !== $user['ba_country'] || $sa_country !== $user['sa_country']) {
-            $db_user->update("se_user", [
-                "ba_country" => $ba_country,
-                "sa_country" => $sa_country,
-            ], [
-                "user_id" => $user['user_id']
-            ]);
-            $updated++;
-        } else {
-            $skipped++;
-        }
-    }
-
-    echo '<p class="text-success">Updated <code>' . $updated . '</code> users, skipped <code>' . $skipped . '</code></p>';
-    exit;
-}
-
-if($_POST['helper_update_table'] == 'se_delivery_areas_country') {
-    echo '<p>Migrating delivery areas to ISO 3166-1 alpha-2 codes ...</p>';
-
-    $migration_map = se_get_country_migration_map();
-    $areas = $db_content->select("se_delivery_areas", ["id", "name", "code"]);
-
-    $updated = 0;
-    $skipped = 0;
-
-    foreach ($areas as $area) {
-        $code = $migration_map[$area['name']] ?? null;
-
-        if ($code && $code !== $area['code']) {
-            $db_content->update("se_delivery_areas", [
-                "code" => $code,
-            ], [
-                "id" => $area['id']
-            ]);
-            $updated++;
-        } else {
-            $skipped++;
-        }
-    }
-
-    echo '<p class="text-success">Updated <code>' . $updated . '</code> delivery areas, skipped <code>' . $skipped . '</code></p>';
-    exit;
-}
-
-// UUID in se_users
-if($_POST['helper_update_table'] == 'se_users_uuid') {
-    echo se_helper_fill_uuids($db_user, 'se_user', 'user_id', 'user_uuid');
-    exit;
-}
-
-// UUID in se_orders
-if($_POST['helper_update_table'] == 'se_orders_uuid') {
-    echo se_helper_fill_uuids($db_content, 'se_orders', 'id', 'uuid');
-    exit;
-}
-
-// UUID in se_products
-if($_POST['helper_update_table'] == 'se_products_uuid') {
-    echo se_helper_fill_uuids($db_posts, 'se_products', 'id', 'uuid');
-    exit;
-}
-
-// page_content_source column (content-format editor plugins, see app/functions/functions.editors.php)
-if($_POST['helper_update_table'] == 'page_content_source_column') {
-    foreach (['se_pages', 'se_pages_cache'] as $table) {
-        // Medoo runs with PDO::ERRMODE_SILENT by default, so a duplicate-column
-        // error (column already added by an earlier run) does not throw - check
-        // errorInfo instead of wrapping in try/catch.
-        update_table('page_content_source', "LONGTEXT NOT NULL DEFAULT ''", $table, 'content');
-        if ($db_content->errorInfo && $db_content->errorInfo[0] !== '00000') {
-            echo '<p class="text-muted">Skipped <code>' . $table . '</code> (column likely already exists).</p>';
-        } else {
-            echo '<p class="text-success">Added <code>page_content_source</code> to <code>' . $table . '</code>.</p>';
-        }
-    }
-    exit;
-}
+// The former se_users_country / se_delivery_areas_country / se_users_uuid /
+// se_orders_uuid / se_products_uuid buttons now run automatically as
+// migrations (see install/migrations/) instead of needing a manual click
+// here. The former page_content_source_column button is gone entirely -
+// that column has been part of install/contents/se_pages.php and
+// se_pages_cache.php for a while, so the regular additive schema-sync
+// (update_database()) already adds it on every update; the manual button
+// was redundant.

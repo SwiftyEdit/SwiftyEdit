@@ -7,6 +7,12 @@ if(!defined('INSTALLER')) {
 
 include_once SE_ROOT.'/acp/core/functions.php';
 
+// se_get_country_migration_map() / se_generate_uuid() - needed by migrations
+// in install/migrations/. This file is pure function definitions (no
+// top-level side effects), safe to load here even though most of it is
+// normally reached only through the frontend app/ layer.
+require_once SE_ROOT.'app/functions/functions.helpers.php';
+
 /* returns all cols of a existung database/table */
 function get_columns($database, $table_name) {
 	
@@ -228,7 +234,7 @@ function add_table($database,$table_name,$cols) {
 	}
 		
 	$sql = "CREATE TABLE $table_name ( $cols_string )";
-	
+
 	if($database == "content") {
 		$db_content->query($sql);
 	} else if($database == "user") {
@@ -239,4 +245,117 @@ function add_table($database,$table_name,$cols) {
 		$db_posts->query($sql);
 	}
 
+}
+
+/**
+ * Set a UUID on every row of $table that doesn't have one yet. Used by
+ * migrations that backfill UUID columns added after rows already existed.
+ * Already-filled rows are left untouched, so this is safe to call again.
+ *
+ * @return int number of rows updated
+ */
+function se_helper_fill_uuids($db, string $table, string $id_col, string $uuid_col): int {
+    $rows = $db->select($table, [$id_col, $uuid_col]);
+    $updated = 0;
+
+    foreach ($rows as $row) {
+        if ($row[$uuid_col] == '') {
+            $db->update($table, [
+                $uuid_col => se_generate_uuid()
+            ], [
+                $id_col => $row[$id_col]
+            ]);
+            $updated++;
+        }
+    }
+
+    return $updated;
+}
+
+/**
+ * Run any migrations from /install/migrations/ that haven't been applied yet.
+ *
+ * Called right after the additive schema-sync (update_database() /
+ * install/inc.update.php's inline equivalent), on both update paths - never
+ * on a fresh install, since createDB.php builds tables in their current
+ * shape directly. Applied migrations are tracked in se_migrations so each
+ * one runs at most once, ever.
+ *
+ * Every migration file returns a closure `function($db_content, $db_user,
+ * $db_posts) { ... }`. Its writes and the se_migrations tracking row are
+ * committed together in a transaction per involved database connection
+ * (deduplicated - on MySQL $db_content/$db_user/$db_posts are the very same
+ * connection, on SQLite they're three separate files/connections and can
+ * only be committed independently). If a migration throws, everything it did
+ * is rolled back, the run stops there, and later migrations are left for the
+ * next attempt - migrations 1..n-1 already committed stay applied.
+ *
+ * @return array{applied: string[], error: string|null}
+ */
+function se_run_pending_migrations(): array {
+
+    global $db_content, $db_user, $db_posts;
+
+    $result = ['applied' => [], 'error' => null];
+
+    $files = glob(SE_ROOT.'install/migrations/*.php');
+    if (!$files) {
+        return $result;
+    }
+    sort($files); // filenames start with a sortable timestamp
+
+    $already_applied = array_column($db_content->select('se_migrations', ['migration']), 'migration');
+
+    // dedupe connections: MySQL uses one shared Medoo instance for all three,
+    // SQLite has three independent ones - either way each unique PDO
+    // connection may only have beginTransaction() called on it once.
+    $connections = [];
+    foreach ([$db_content, $db_user, $db_posts] as $conn) {
+        $connections[spl_object_id($conn->pdo)] = $conn;
+    }
+
+    foreach ($files as $file) {
+        $name = basename($file, '.php');
+
+        if (in_array($name, $already_applied, true)) {
+            continue;
+        }
+
+        $migration = include $file;
+
+        if (!is_callable($migration)) {
+            $result['error'] = "Migration $name does not return a callable.";
+            break;
+        }
+
+        foreach ($connections as $conn) {
+            $conn->pdo->beginTransaction();
+        }
+
+        try {
+            $migration($db_content, $db_user, $db_posts);
+
+            $db_content->insert('se_migrations', [
+                'migration' => $name,
+                'applied_at' => time(),
+            ]);
+
+            foreach ($connections as $conn) {
+                $conn->pdo->commit();
+            }
+
+            $result['applied'][] = $name;
+        } catch (\Throwable $e) {
+            foreach ($connections as $conn) {
+                if ($conn->pdo->inTransaction()) {
+                    $conn->pdo->rollBack();
+                }
+            }
+
+            $result['error'] = "Migration $name failed: " . $e->getMessage();
+            break;
+        }
+    }
+
+    return $result;
 }

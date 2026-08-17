@@ -100,6 +100,17 @@ if(isset($_POST['install_update'])) {
     move_new_files($source_directory);
     update_database();
 
+    // data migrations run last, after files + schema are in their new shape
+    // (see install/migrations/, se_run_pending_migrations() in
+    // install/php/functions.php)
+    $migration_result = se_run_pending_migrations();
+    foreach ($migration_result['applied'] as $applied_migration) {
+        $_SESSION['protocol'] .= '<b class="text-success">migration applied:</b> '.htmlspecialchars($applied_migration, ENT_QUOTES).'<|>';
+    }
+    if ($migration_result['error'] !== null) {
+        $_SESSION['protocol'] .= '<b class="text-danger">MIGRATION ERROR:</b> '.htmlspecialchars($migration_result['error'], ENT_QUOTES).'<|>';
+    }
+
     echo '<div style="height:350px;overflow:auto;margin:0;" class="well well-sm">';
     echo '<h3>ERRORS: '.$_SESSION['errors_cnt'].'</h3>';
     $protocol = explode('<|>', $_SESSION['protocol']);
@@ -110,8 +121,13 @@ if(isset($_POST['install_update'])) {
     }
     echo '</ul>';
     echo '</div>';
-    $installer_url = '<a href="/install/">/install/</a>';
-    echo '<div class="alert alert-info">'.str_replace("{url}","$installer_url",$lang['update_msg_post_install']).'</div>';
+
+    if ($migration_result['error'] !== null) {
+        echo '<div class="alert alert-danger">A migration failed - the update is not complete. Fix the underlying issue and reload this page to retry; already-applied migrations will not run again.</div>';
+    } else {
+        $installer_url = '<a href="/install/">/install/</a>';
+        echo '<div class="alert alert-info">'.str_replace("{url}","$installer_url",$lang['update_msg_post_install']).'</div>';
+    }
 
     exit;
 
