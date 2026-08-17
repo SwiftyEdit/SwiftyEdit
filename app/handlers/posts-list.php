@@ -34,6 +34,7 @@ $posts_filter['languages'] = $page_contents['page_language'];
 $posts_filter['types'] = str_replace(",","-",$page_contents['page_posts_types']);
 $posts_filter['status'] = $str_status;
 $posts_filter['categories'] = $page_contents['page_posts_categories'];
+$posts_filter['tag'] = clean_filename($_GET['tag'] ?? '');
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
@@ -314,7 +315,20 @@ foreach($get_posts as $k => $post) {
         }
     }
     $get_posts[$k]['post_categories'] = $category;
-	
+
+    /* tags */
+    $tags = se_get_content_tags('post', (int) $get_posts[$k]['post_id']);
+    $content_tags = array();
+    foreach ($tags as $tag) {
+        $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+            ?? ('/' . $swifty_slug . $mod_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+        $content_tags[] = array(
+            "tag_href" => $tag_href,
+            "tag_title" => $tag['tag_name']
+        );
+    }
+    $get_posts[$k]['content_tags'] = $content_tags;
+
 
 	/* vote up or down this post */
 	if($get_posts[$k]['post_votings'] == 2 || $get_posts[$k]['post_votings'] == 3) {

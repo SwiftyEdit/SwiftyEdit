@@ -182,6 +182,15 @@
                 </div>
             </div>
         {/if}
+        {if $value.content_tags == true}
+            <div class="col-3">
+                <div class="m-0 content-tags">
+                {foreach $value.content_tags as $tag}
+                    <a href="{$tag.tag_href}" class="btn btn-sm btn-link" title="{$tag.tag_title}">#{$tag.tag_title}</a>
+                {/foreach}
+                </div>
+            </div>
+        {/if}
             <div class="col text-end">
                 {if $value.post_href != false}
                     <a class="btn btn-primary {$read_more_class}" href="{$value.post_href}">{$value.btn_open_post}</a>

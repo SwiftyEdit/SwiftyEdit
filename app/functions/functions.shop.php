@@ -206,6 +206,20 @@ function se_get_products($start, $limit, $filter)
         $sql_label_filter = rtrim($sql_label_filter, ' OR ');
     }
 
+    // Tag filter
+    // se_tags_relations lives in the content DB, not the posts DB this query
+    // runs on - resolve matching ids in PHP first
+    $sql_tag_filter = '';
+    if (!empty($filter['tag'])) {
+        $tag_content_ids = se_get_content_ids_by_tag('product', $filter['tag']);
+        if (empty($tag_content_ids)) {
+            $sql_tag_filter = '1=0';
+        } else {
+            $ph_ids = array_map(fn($id) => $bind($id), $tag_content_ids);
+            $sql_tag_filter = 'id IN (' . implode(',', $ph_ids) . ')';
+        }
+    }
+
     // Build complete filter for subquery
     $sql_filter = $sql_filter_start;
 
@@ -223,6 +237,9 @@ function se_get_products($start, $limit, $filter)
     }
     if ($sql_cat_filter != "") {
         $sql_filter .= " AND ($sql_cat_filter) ";
+    }
+    if ($sql_tag_filter != "") {
+        $sql_filter .= " AND ($sql_tag_filter) ";
     }
     if ($sql_label_filter != "") {
         $sql_filter .= " AND ($sql_label_filter) ";

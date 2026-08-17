@@ -466,6 +466,19 @@ if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
 /* show or hide categories */
 $smarty->assign('page_categories_mode', $page_contents['page_categories_mode']);
 
+/* tags */
+$page_content_tags = se_get_content_tags('page', (int) $page_contents['page_id']);
+$content_tags = array();
+foreach ($page_content_tags as $tag) {
+    $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+        ?? ('/' . $swifty_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+    $content_tags[] = array(
+        "tag_href" => $tag_href,
+        "tag_title" => $tag['tag_name']
+    );
+}
+$smarty->assign('content_tags', $content_tags);
+
 // Final template assignments
 $smarty->assign("p","$p");
 $smarty->assign("se_include_path", SE_INCLUDE_PATH);

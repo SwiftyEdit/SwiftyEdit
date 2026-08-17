@@ -132,6 +132,10 @@ if(isset($_POST['delete_page'])) {
     $db_content->delete("se_comments", [
         "comment_parent" => $comment_id
     ]);
+    $db_content->delete("se_tags_relations", [
+        "content_type" => "page",
+        "content_id" => $delete_id
+    ]);
 
     if($del_page->rowCount() > 0) {
         record_log($_SESSION['user_nick'],"deleted page id: $delete_id","10");

@@ -35,6 +35,13 @@
 
             <h1>{$product_title}</h1>
             {$product_teaser}
+            {if $content_tags == true}
+                <p class="m-0 content-tags">
+                    {foreach $content_tags as $tag}
+                        <a href="{$tag.tag_href}" class="btn btn-sm btn-link" title="{$tag.tag_title}">#{$tag.tag_title}</a>
+                    {/foreach}
+                </p>
+            {/if}
             {* wishlist button - shown next to "add to cart" when that button is
                rendered, or on its own nearby the price when it isn't (e.g.
                addon-only products, or cart/price hidden for this product) *}

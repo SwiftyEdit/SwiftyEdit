@@ -2,6 +2,17 @@
 {$products_content}
 {$page_content}
 
+{* content_tags is assigned on every page (its own tags, from template-setup.php),
+   but posts/products/events display pages already render their own item-level
+   badge inside their own template - skip here to avoid a duplicate *}
+{if $content_tags && !isset($product_id) && !isset($post_id) && !isset($event_id)}
+	<p class="m-0 content-tags">
+		{foreach $content_tags as $tag}
+			<a href="{$tag.tag_href}" class="btn btn-sm btn-link" title="{$tag.tag_title}">#{$tag.tag_title}</a>
+		{/foreach}
+	</p>
+{/if}
+
 {if $show_page_comments != ''}
 	<hr class="shadow">
 

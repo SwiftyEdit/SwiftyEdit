@@ -12,6 +12,7 @@ $writer = match (true) {
     str_starts_with($_REQUEST['query'], 'addons/') => 'core/addons/data-writer.php',
     str_starts_with($_REQUEST['query'], 'settings/') => 'core/settings/data-writer.php',
     str_starts_with($_REQUEST['query'], 'categories/') => 'core/categories/data-writer.php',
+    str_starts_with($_REQUEST['query'], 'tags/') => 'core/tags/data-writer.php',
     str_starts_with($_REQUEST['query'], 'pages/') => 'core/pages/data-writer.php',
     str_starts_with($_REQUEST['query'], 'snippets/') => 'core/snippets/data-writer.php',
     str_starts_with($_REQUEST['query'], 'uploads/') => 'core/uploads/data-writer.php',

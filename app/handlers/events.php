@@ -22,6 +22,7 @@ $events_filter['types'] = 'e';
 $events_filter['languages'] = $page_contents['page_language'];
 $events_filter['status'] = $str_status;
 $events_filter['categories'] = $page_contents['page_posts_categories'];
+$events_filter['tag'] = clean_filename($_GET['tag'] ?? '');
 
 
 if(substr("$mod_slug", -5) == '.html') {

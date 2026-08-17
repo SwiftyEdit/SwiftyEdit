@@ -122,7 +122,7 @@ $se_path = explode("/", $query);
 
 $se_sections = [
     "pages","snippets","shortcodes",
-    "addons","users","categories",
+    "addons","users","categories","tags",
     "settings","shop","events",
     "blog","inbox","uploads", "dashboard",
     "update"

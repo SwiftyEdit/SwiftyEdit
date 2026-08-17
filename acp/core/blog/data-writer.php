@@ -100,6 +100,10 @@ if(isset($_POST['delete_post'])) {
     ]);
 
     if($delete->rowCount() > 0) {
+        $db_content->delete("se_tags_relations", [
+            "content_type" => "post",
+            "content_id" => $del_id
+        ]);
         show_toast($lang['msg_success_entry_delete'],'success');
         record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
         header( "HX-Trigger: update_posts_list");
@@ -261,6 +265,8 @@ if(isset($_POST['save_post'])) {
         record_log($_SESSION['user_nick'],"updated post id: $post_id","3");
         show_toast($lang['msg_success_db_changed'],'success');
     }
+
+    se_set_content_tags('post', $post_id, explode(',', $_POST['content_tags'] ?? ''));
 
 }
 

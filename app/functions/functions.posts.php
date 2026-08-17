@@ -137,6 +137,21 @@ function se_get_post_entries($start,$limit,$filter): array {
 		$sql_cat_filter = substr("$sql_cat_filter", 0, -3); // cut the last ' OR'
 	}
 
+	/* tag filter */
+	if(empty($filter['tag'])) {
+		$sql_tag_filter = '';
+	} else {
+		// se_tags_relations lives in the content DB, not the posts DB
+		// this query runs on - resolve matching ids in PHP first
+		$tag_content_ids = se_get_content_ids_by_tag('post', $filter['tag']);
+		if(empty($tag_content_ids)) {
+			$sql_tag_filter = '1=0';
+		} else {
+			$ph_ids = array_map(fn($id) => $bind($id), $tag_content_ids);
+			$sql_tag_filter = 'post_id IN (' . implode(',', $ph_ids) . ')';
+		}
+	}
+
 	/* label filter */
 	if(!isset($filter['labels']) OR $filter['labels'] == 'all' OR $filter['labels'] == '') {
 		$sql_label_filter = '';
@@ -171,13 +186,16 @@ function se_get_post_entries($start,$limit,$filter): array {
 	if($sql_cat_filter != "") {
 		$sql_filter .= " AND ($sql_cat_filter) ";
 	}
+	if($sql_tag_filter != "") {
+		$sql_filter .= " AND ($sql_tag_filter) ";
+	}
 	if($sql_label_filter != "") {
 		$sql_filter .= " AND ($sql_label_filter) ";
 	}
     if($sql_text_filter != "") {
         $sql_filter .= " AND ($sql_text_filter) ";
     }
-	
+
 	if(SE_SECTION == 'frontend') {
 		$ph_now = $bind($time_string_now);
 		$sql_filter .= "AND post_releasedate <= $ph_now ";
@@ -346,6 +364,21 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql_label_filter = substr("$sql_label_filter", 0, -3); // cut the last ' OR'
     }
 
+    /* tag filter */
+    if(empty($filter['tag'])) {
+        $sql_tag_filter = '';
+    } else {
+        // se_tags_relations lives in the content DB, not the posts DB
+        // this query runs on - resolve matching ids in PHP first
+        $tag_content_ids = se_get_content_ids_by_tag('event', $filter['tag']);
+        if(empty($tag_content_ids)) {
+            $sql_tag_filter = '1=0';
+        } else {
+            $ph_ids = array_map(fn($id) => $bind($id), $tag_content_ids);
+            $sql_tag_filter = 'id IN (' . implode(',', $ph_ids) . ')';
+        }
+    }
+
     $sql_filter = $sql_filter_start;
 
     if($sql_lang_filter != "") {
@@ -357,6 +390,9 @@ function se_get_event_entries($start,$limit,$filter) {
     }
     if($sql_cat_filter != "") {
         $sql_filter .= " AND ($sql_cat_filter) ";
+    }
+    if($sql_tag_filter != "") {
+        $sql_filter .= " AND ($sql_tag_filter) ";
     }
     if($sql_label_filter != "") {
         $sql_filter .= " AND ($sql_label_filter) ";

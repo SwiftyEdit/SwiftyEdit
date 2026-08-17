@@ -17,6 +17,7 @@ $reader = match (true) {
     str_contains($_REQUEST['query'], 'users/') => 'core/users/data-reader.php',
     str_contains($_REQUEST['query'], 'settings/') => 'core/settings/data-reader.php',
     str_contains($_REQUEST['query'], 'categories/') => 'core/categories/data-reader.php',
+    str_contains($_REQUEST['query'], 'tags/') => 'core/tags/data-reader.php',
     str_contains($_REQUEST['query'], 'dashboard/') => 'core/dashboard/data-reader.php',
     str_contains($_REQUEST['query'], 'uploads/') => 'core/uploads/data-reader.php',
     str_contains($_REQUEST['query'], 'update/') => 'core/update/data-reader.php',

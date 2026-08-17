@@ -109,6 +109,14 @@ $input_text_page_hash = [
     "type" => "text"
 ];
 
+$input_text_content_tags = [
+    "input_name" => "content_tags",
+    "input_value" => se_tags_csv_for_content('page', (int)($page_id ?? 0)),
+    "label" => $lang['label_tags'],
+    "input_classes" => "form-control tags",
+    "type" => "text"
+];
+
 $input_text_page_permalink = [
     "input_name" => "page_permalink",
     "input_value" => $page_permalink,
@@ -492,6 +500,7 @@ $form_tpl .= '</div>';
 
 $form_tpl .= se_print_form_input($input_text_page_permalink);
 $form_tpl .= se_print_form_input($input_text_page_canonical_url);
+$form_tpl .= se_print_form_input($input_text_content_tags);
 
 if($page_translation_urls != '') {
     $page_translation_urls = html_entity_decode($page_translation_urls);

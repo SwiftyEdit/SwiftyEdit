@@ -103,6 +103,11 @@ echo $icon['bookmarks_fill'];
 echo '<span>'.$lang['categories'].'</span></a></li>';
 
 echo '<li class="sidebar-nav-item">';
+echo '<a class="sidebar-nav-link '.($se_section == "tags" ? 'sidebar-nav-active' :'').'" href="/admin/tags/">';
+echo $icon['tags'];
+echo '<span>'.$lang['tags'].'</span></a></li>';
+
+echo '<li class="sidebar-nav-item">';
 echo '<a data-bs-toggle="collapse" href="#sidebarPrefs" aria-expanded="false" aria-controls="sidebarPrefs" class="sidebar-nav-link d-block toggler">';
 echo $icon['gear'];
 echo '<span>'.$lang['nav_btn_settings'].'</span>';

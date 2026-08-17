@@ -17,6 +17,13 @@
         <div class="col-md-7">
             <p><span class="post-author">{$event_author}</span> <span class="post-releasedate">{$event_releasedate}</span></p>
             {$event_teaser}
+            {if $content_tags == true}
+                <p class="m-0 content-tags">
+                    {foreach $content_tags as $tag}
+                        <a href="{$tag.tag_href}" class="btn btn-sm btn-link" title="{$tag.tag_title}">#{$tag.tag_title}</a>
+                    {/foreach}
+                </p>
+            {/if}
         </div>
         <div class="col-md-3">
             <p><img src="{$event_img_src}" class="img-fluid" alt="{$event_img_caption}"><br><small>{$event_img_caption}</small></p>

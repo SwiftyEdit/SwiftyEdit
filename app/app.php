@@ -145,7 +145,12 @@ if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comm
 }
 
 // if we have no page id and the slug is not a valid page type, show 404
-if (empty($page_contents['page_id']) AND !in_array(rtrim($swifty_slug, '/'), $valid_page_types)) {
+// 'tagged' is excluded here (unlike profile/wishlist/etc.): it has no
+// implicit bare-URL fallback of its own (see routing.php's $a_allowed_p) -
+// a bare /tagged/ with no real "Tag Archive" page configured should 404
+// like any other unknown URL, not silently fall through to the blog list
+// (template-setup.php's page_type_of_use='' catch-all sets $p='posts').
+if (empty($page_contents['page_id']) AND !in_array(rtrim($swifty_slug, '/'), array_diff($valid_page_types, ['tagged']))) {
     $error_code = 404;
 }
 

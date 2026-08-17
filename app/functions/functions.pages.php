@@ -208,6 +208,8 @@ function se_save_page($data) {
         show_toast($lang['msg_error_page_saved'],'danger');
     }
 
+    se_set_content_tags('page', $new_page_id, explode(',', $data['content_tags'] ?? ''));
+
     return $new_page_id;
 }
 
@@ -253,6 +255,8 @@ function se_update_page($data,$id) {
     } else {
         show_toast($lang['msg_error_page_saved'],'danger');
     }
+
+    se_set_content_tags('page', $id, explode(',', $data['content_tags'] ?? ''));
 
 }
 

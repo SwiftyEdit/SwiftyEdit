@@ -191,6 +191,19 @@ foreach ($get_events as $k => $post) {
     }
     $get_events[$k]['event_categories'] = $category;
 
+    /* tags */
+    $tags = se_get_content_tags('event', (int) $get_events[$k]['id']);
+    $content_tags = array();
+    foreach ($tags as $tag) {
+        $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+            ?? ('/' . $swifty_slug . $mod_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+        $content_tags[] = array(
+            "tag_href" => $tag_href,
+            "tag_title" => $tag['tag_name']
+        );
+    }
+    $get_events[$k]['content_tags'] = $content_tags;
+
     /* vote up or down this product */
     if ($get_events[$k]['post_votings'] == 2 || $get_events[$k]['votings'] == 3) {
         $get_events[$k]['show_voting'] = true;

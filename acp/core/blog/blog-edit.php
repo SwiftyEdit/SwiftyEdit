@@ -363,6 +363,7 @@ $form_tpl = str_replace('{post_author}', $post_data['post_author'], $form_tpl);
 $form_tpl = str_replace('{post_source}', $post_data['post_source'], $form_tpl);
 $form_tpl = str_replace('{post_slug}', $post_data['post_slug'], $form_tpl);
 $form_tpl = str_replace('{post_tags}', $post_data['post_tags'], $form_tpl);
+$form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('post', (int)($post_data['post_id'] ?? 0)), $form_tpl);
 $form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
 $form_tpl = str_replace('{select_main_cat_page}', $select_main_cat_page, $form_tpl);
 $form_tpl = str_replace('{post_rss_url}', $post_data['post_rss_url'], $form_tpl);

@@ -290,6 +290,7 @@ $form_tpl = str_replace('{select_language}', $input_select_lang, $form_tpl);
 $form_tpl = str_replace('{author}', $post_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $post_data['slug'], $form_tpl);
 $form_tpl = str_replace('{tags}', $post_data['tags'], $form_tpl);
+$form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('event', (int)($id ?? 0)), $form_tpl);
 $form_tpl = str_replace('{rss_url}', $post_data['rss_url'], $form_tpl);
 $form_tpl = str_replace('{meta_title}', $post_data['meta_title'], $form_tpl);
 $form_tpl = str_replace('{meta_description}', $post_data['meta_description'], $form_tpl);

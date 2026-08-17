@@ -97,6 +97,14 @@
     <span class="post-author">{$post_author}</span> <span class="post-releasedate">{$post_releasedate_str}</span>
 </p>
 
+{if $content_tags == true}
+    <p class="m-0 content-tags text-end">
+        {foreach $content_tags as $tag}
+            <a href="{$tag.tag_href}" class="btn btn-sm btn-link" title="{$tag.tag_title}">#{$tag.tag_title}</a>
+        {/foreach}
+    </p>
+{/if}
+
 {if $show_voting == true}
     <div class="mb-3">
             {$hidden_csrf_token}

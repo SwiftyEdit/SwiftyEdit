@@ -695,7 +695,8 @@ function mods_check_in() {
             $items[$i]['page_type_of_use'] == "display_post" OR
             $items[$i]['page_type_of_use'] == "display_product" OR
             $items[$i]['page_type_of_use'] == "display_event" OR
-            $items[$i]['page_type_of_use'] == "wishlist") {
+            $items[$i]['page_type_of_use'] == "wishlist" OR
+            $items[$i]['page_type_of_use'] == "tagged") {
 
 			if($items[$i]['page_posts_categories'] != '') {
 				$items[$i]['page_modul'] = 'se_post';
@@ -713,7 +714,10 @@ function mods_check_in() {
             if($items[$i]['page_type_of_use'] == 'wishlist') {
                 $items[$i]['page_modul'] = 'se_wishlist';
             }
-			
+            if($items[$i]['page_type_of_use'] == 'tagged') {
+                $items[$i]['page_modul'] = 'se_tagged';
+            }
+
 			$string .= "\$active_mods[$x]['page_modul'] = \"" . $items[$i]['page_modul'] . "\";\n";
 			$string .= "\$active_mods[$x]['page_permalink'] = \"" . $items[$i]['page_permalink'] . "\";\n";			
 			$x++;

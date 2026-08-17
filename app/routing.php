@@ -21,7 +21,6 @@ $a_allowed_p = [
     'register',
     'search',
     'sitemap',
-    'tagged',
     'unlock',
     'wishlist'
 ];

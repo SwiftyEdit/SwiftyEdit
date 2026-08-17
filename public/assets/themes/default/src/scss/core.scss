@@ -228,3 +228,28 @@ $enable-dark-mode: true;
     box-shadow: 0 10px 22px rgba(112, 106, 235, 0.36);
   }
 }
+
+// Tags: badges appear across posts/products/events/plain-page content
+// (content.tpl et al.), so this lives in core rather than a conditionally
+// loaded component.
+.content-tags {
+  a {
+    text-decoration: none;
+  }
+}
+
+// Tag archive index (bare /tags/ page, see tagged-list.tpl) - tag-weight-1
+// (least used) through tag-weight-5 (most used) is computed server-side in
+// app/handlers/tagged-list.php from each tag's relative usage, so themes
+// can key emphasis off it without recalculating anything themselves.
+.tagged-archive-index {
+  a {
+    text-decoration: none;
+  }
+
+  .tag-weight-1 a { font-size: .8rem; }
+  .tag-weight-2 a { font-size: 1rem; }
+  .tag-weight-3 a { font-size: 1.2rem; }
+  .tag-weight-4 a { font-size: 1.4rem; }
+  .tag-weight-5 a { font-size: 1.6rem; font-weight: 600; }
+}
