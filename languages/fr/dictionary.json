@@ -69,6 +69,8 @@
   "no_snippet_selected": "Aucun Snippet sélectionné",
   "labels": "Étiquettes",
   "categories": "Catégories",
+  "tags": "Tags",
+  "label_tags": "Tags",
   "overview": "Aperçu",
   "label.date": "Date",
   "label.password": "Mot de passe",
