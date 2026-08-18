@@ -20,13 +20,6 @@ $input_event_time_offset = [
     "type" => "text"
 ];
 
-$input_images_prefix = [
-    "input_name" => "prefs_events_images_prefix",
-    "input_value" => $se_settings['events_images_prefix'],
-    "label" => $lang['label_settings_prefix'],
-    "type" => "text"
-];
-
 $arr_Images = se_get_all_images_rec();
 
 foreach ($arr_Images as $k => $v) {
@@ -67,7 +60,6 @@ echo se_print_form_input($input_event_time_offset);
 
 echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
-echo se_print_form_input($input_images_prefix);
 echo se_print_form_input($input_select_default_banner);
 
 echo '<h5 class="heading-line">'.$lang['label_guestlist'].'</h5>';

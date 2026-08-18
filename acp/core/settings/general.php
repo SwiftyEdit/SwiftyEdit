@@ -123,13 +123,6 @@ $input_select_favicon = [
     "type" => "select"
 ];
 
-$input_image_prefix = [
-    "input_name" => "prefs_pagethumbnail_prefix",
-    "input_value" => $se_settings['pagethumbnail_prefix'],
-    "label" => $lang['label_settings_prefix'],
-    "type" => "text"
-];
-
 $input_max_img_width = [
     "input_name" => "prefs_maximagewidth",
     "input_value" => $se_settings['maximagewidth'],
@@ -371,8 +364,6 @@ echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
 
 echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
-
-echo se_print_form_input($input_image_prefix);
 
 $input_group = [
     se_print_form_input($input_select_page_logo),

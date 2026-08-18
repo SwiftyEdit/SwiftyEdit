@@ -319,7 +319,6 @@ $initSettings = [
     "prefs_pagelogo" => "null",
     "prefs_pagethumbnail" => "null",
     "prefs_pagefavicon" => "null",
-    "prefs_pagethumbnail_prefix" => "",
     "prefs_uploads_remain_unchanged" => "",
 
     // system / mail
@@ -335,10 +334,8 @@ $initSettings = [
     "prefs_required_fields_registration" => "",
 
     // posts / events images
-    "prefs_posts_images_prefix" => "",
     "prefs_posts_default_banner" => "null",
     "prefs_events_entries_per_page" => 10,
-    "prefs_events_images_prefix" => "",
     "prefs_events_default_banner" => "null",
 
     // shop
