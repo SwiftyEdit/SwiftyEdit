@@ -198,6 +198,11 @@ foreach($mainmenu as $k => $v) {
     if(isset($mainmenu[$k]['page_linkname'])) {
         $mainmenu[$k]['page_linkname'] = text_parser($mainmenu[$k]['page_linkname']);
     }
+    if(!empty($mainmenu[$k]['children'])) {
+        foreach($mainmenu[$k]['children'] as $ck => $cv) {
+            $mainmenu[$k]['children'][$ck]['page_linkname'] = text_parser($cv['page_linkname']);
+        }
+    }
 }
 
 if(is_array($submenu)) {

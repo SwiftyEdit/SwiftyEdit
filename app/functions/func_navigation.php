@@ -64,6 +64,32 @@ function show_mainmenu(): array
 		}
 
 		$item['link'] = SE_INCLUDE_PATH . "/" . $page['page_permalink'];
+
+		// direct children of this top-level page, rendered as a dropdown in the main nav
+		$children = [];
+		foreach (se_get_page_children($index, $page['page_id']) as $child) {
+
+			if ($child['page_permalink'] == "") {
+				continue; // no permalink -> no menu item
+			}
+
+			$children[] = [
+				'page_id' => $child['page_id'],
+				'page_linkname' => stripslashes($child['page_linkname']),
+				'page_title' => stripslashes($child['page_title']),
+				'page_permalink' => $child['page_permalink'],
+				'page_target' => $child['page_target'],
+				'page_hash' => $child['page_hash'],
+				'page_classes' => $child['page_classes'],
+				'link' => SE_INCLUDE_PATH . "/" . $child['page_permalink'],
+				'link_status' => (int) $child['page_id'] === (int) $current_page_id ? $se_defs['main_nav_class_active'] : '',
+			];
+		}
+
+		if (!empty($children)) {
+			$item['children'] = $children;
+		}
+
 		$menu[] = $item;
 	}
 

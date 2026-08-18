@@ -20,6 +20,16 @@
 		{$se_snippet_footer_text}
 	</div>
 
+	{if is_array($legal_pages) }
+	<div class="container legal-pages-container">
+		<ul>
+			{foreach item=pages from=$legal_pages}
+				<li><a href="{$prefs_cms_base}{$pages.page_permalink}"
+					   title="{$pages.page_title}">{$pages.page_linkname}</a></li>
+			{/foreach}
+		</ul>
+	</div>
+	{/if}
 
 	<p class="text-center d-none">{$se_pageload_time} Sekunden</p>
 </footer>
