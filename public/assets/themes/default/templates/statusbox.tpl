@@ -4,12 +4,6 @@
 
         <div class="list-group list-group-flush">
 
-            {if link_acp != ''}
-                {if $smarty.session.user_class == 'administrator'}
-                    <a href="{$link_acp}" class="list-group-item link-admin">{$lang_button_acp}</a>
-                {/if}
-            {/if}
-
             <a href="{$link_profile}" class="list-group-item link-profile">{$lang_button_profile}</a>
 
             {if orders_uri != ''}
