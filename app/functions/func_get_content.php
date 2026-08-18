@@ -98,7 +98,7 @@ function se_get_content($page, $mode = 'p') {
 
 		if ($se_nav === null) {
 
-			$se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
+			$se_nav = $db_content->select("se_pages", ['page_id', 'page_parent_id', 'position', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
 					"AND" => [
 						"OR" => [
 							"page_status[!]" => ["draft","ghost"]
@@ -114,7 +114,7 @@ function se_get_content($page, $mode = 'p') {
 	} else {
 
 		// administrators always see a live query, including draft/ghost pages
-		$se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
+		$se_nav = $db_content->select("se_pages", ['page_id', 'page_parent_id', 'position', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
 				"page_language" => $languagePack
 			],[
 				"ORDER" => ["page_sort" => "DESC"]

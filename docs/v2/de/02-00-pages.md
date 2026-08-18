@@ -11,11 +11,11 @@ priority: 190
 <kbd>Backend</kbd> ▶ <kbd>Seiten</kbd>
 
 ## Geordnete Seiten {#ordered-pages}
-Die Seiten, die eine Sortierungsnummer enthalten, werden als geordnete Seiten aufgelistet.
-Diese Seiten werden automatisch in der (Haupt-)Navigation aufgeführt.
+Seiten, die im Navigationsbaum platziert sind (siehe [Sortierung](#sorting) weiter unten),
+werden als geordnete Seiten aufgelistet. Diese Seiten werden automatisch in der (Haupt-)Navigation aufgeführt.
 
 ## Einzelne Seiten {#single-pages}
-Die einzelnen Seiten werden nicht in die Navigation einbezogen –
+Einzelne Seiten werden nicht in die Navigation einbezogen –
 können aber dennoch in der Sitemap oder den Suchergebnissen enthalten sein.
 
 Du kannst die Seiten nach Status (Öffentlich, Unsichtbar, Privat, Entwurf) und Sprache filtern.
@@ -23,58 +23,48 @@ Zusätzlich gibt es natürlich eine Suchfunktion.
 
 ## Sortierung {#sorting}
 
-So sortierst Du Seiten ganz einfach.
+So platzierst Du eine Seite in der Navigation, im Tab *Position*.
+
+Drei sich gegenseitig ausschließende Rollen legen fest, was eine Seite ist:
 
 ### Einzelseite
 
-- Einzelseiten haben keine Sortierfunktion.
-- Sie sind nicht in der Navigation enthalten.
-- Das Eingabefeld für Position hat hier **keine** Funktion.
+- Einzelseiten sind nicht Teil des Navigationsbaums und tauchen nicht im Hauptmenü auf.
+- Sie können trotzdem in der Sitemap oder den Suchergebnissen erscheinen.
+- Ist "Einzelne Seite" ausgewählt, haben die Felder "Parent page"/"Insert position" darunter keine Wirkung.
 
 ### Portal
 
-- Portalseiten können auch als Startseiten bezeichnet werden.
-- Jede aktivierte oder verwendete Sprache sollte eine Portalseite haben.
-- Auch hier hat das Eingabefeld für Position **keine** Funktion.
+- Die Portalseite ist die Startseite einer Sprache.
+- Jede aktivierte Sprache sollte genau eine Portalseite haben.
+- Auch bei "Portal" haben "Parent page"/"Insert position" keine Wirkung.
 
 ### Hauptmenü
 
-- Hauptmenü-Seiten erstellen, wie der Name schon sagt, einen Eintrag im Hauptmenü.
-- Das Feld „Position“ bestimmt, wo die Seite einsortiert wird.
+- Platziert die Seite im Navigationsbaum - als Eintrag oberster Ebene oder verschachtelt unter einer anderen Seite.
+- **Parent page**: wählt aus, unter welcher Seite diese Seite eingehängt wird, oder bleibt bei
+  "Top level" für einen Eintrag oberster Ebene direkt unter der Portalseite.
+- **Insert position**: wählt aus, nach welcher der bestehenden Unterseiten des Parents diese Seite
+  eingefügt wird (das Pfeil-Icon markiert das) - oder "At the beginning" für die erste Position.
+  Eine Parent-Seite oder eine Einfügeposition auszuwählen aktiviert oben automatisch "Hauptmenü",
+  da die Auswahl sonst beim Speichern keine Wirkung hätte.
 
-### Diese Seite ist eine Unterseite von ...
+### Beispiel
 
-- Hier kann dem Menü eine Seite (als Unterseite) hinzugefügt werden.
-- Das Feld "Position" bestimmt auch hier wieder, an welcher Stelle die Seite einsortiert wird.
-
-Tipp: Das Feld "Position" darf nur eine Zahl oder das Wort portal enthalten. Oder leer bleiben.
-
-### Sortierbeispiel
-
-| Sortieren | Seite      |
-|-----------|------------|
-| 100       | Startseite |
-| 200       | Produkte   |
-| 200.100   | Äpfel      |
-| 200.200   | Birnen     |
-| 300       | Kontakt    |
-
-
-#### Ergebnis:
+Wird bei "Flyer" als Parent Page "Startseite" (oberste Ebene) gewählt und bei "Poster"
+als Parent Page "Flyer", eingefügt danach, ergibt das:
 
 - Startseite
-- Produkte
-    - Äpfel
-    - Birnen
+- Flyer
+    - Poster
 - Kontakt
 
 ```html
 <ul>
     <li>Startseite</li>
-    <li>Produkte
+    <li>Flyer
         <ul>
-            <li>Äpfel</li>
-            <li>Birnen</li>
+            <li>Poster</li>
         </ul>
     </li>
     <li>Kontakt</li>

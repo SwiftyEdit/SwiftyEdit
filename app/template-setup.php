@@ -137,6 +137,7 @@ if(!isset($page_sort)) {
 }
 
 $current_page_sort = $page_sort;
+$current_page_id = $page_contents['page_id'] ?? null;
 
 // Set default values
 if(!isset($page_title) OR $page_title == "") {
@@ -187,7 +188,7 @@ $submenu = array();
 
 $get_main_menu = show_mainmenu();
 $mainmenu = $get_main_menu['menu'];
-$submenu = show_menu($current_page_sort);
+$submenu = show_menu($current_page_id);
 $bcmenu = breadcrumbs_menu();
 
 /* shortcodes will be replaced in text_parser */
