@@ -361,7 +361,9 @@ if(isset($page_psw) && $page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) 
 
 /* page thumbnails */
 if(!isset($page_thumbnail)) {
-    $page_thumbnail = $se_settings['pagethumbnail'];
+    // existing installs may still have this setting as SQL NULL rather than
+    // an empty string (never saved/upgraded pre-dating this feature)
+    $page_thumbnail = $se_settings['pagethumbnail'] ?? '';
     if($page_thumbnail !== '' && $page_thumbnail !== 'null') {
         $page_thumbnail = '/' . $se_branding_path . '/' . $page_thumbnail;
     }
@@ -383,7 +385,8 @@ if(!isset($page_thumbnail)) {
 
 /* page logo */
 if(!isset($page_logo)) {
-    $page_logo = $se_settings['pagelogo'];
+    // see the page-thumbnail note above - same NULL-vs-empty-string gotcha
+    $page_logo = $se_settings['pagelogo'] ?? '';
     if($page_logo !== '' && $page_logo !== 'null') {
         $page_logo = '/' . $se_branding_path . '/' . $page_logo;
     }
@@ -402,8 +405,10 @@ if($page_thumbnail != 'null' && $page_thumbnail != '') {
 
 /* favicon set - generated as a fixed group of files under $se_branding_path
  * (see se_generate_favicon_set() in acp/core/widgets/upload.php); the
- * setting only stores the original source filename as a "configured?" flag */
-if($se_settings['pagefavicon'] !== '' && $se_settings['pagefavicon'] !== 'null') {
+ * setting only stores the original source filename as a "configured?" flag.
+ * Same NULL-vs-empty-string gotcha as page logo/thumbnail above. */
+$page_favicon_source = $se_settings['pagefavicon'] ?? '';
+if($page_favicon_source !== '' && $page_favicon_source !== 'null') {
     $smarty->assign('favicon_base', '/' . $se_branding_path);
 }
 
