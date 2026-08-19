@@ -137,14 +137,11 @@ if(!isset($page_sort)) {
 }
 
 $current_page_sort = $page_sort;
+$current_page_id = $page_contents['page_id'] ?? null;
 
 // Set default values
 if(!isset($page_title) OR $page_title == "") {
     $page_title = $se_settings['pagetitle'];
-}
-
-if(!isset($page_favicon) OR $page_favicon == "") {
-    $page_favicon = $se_settings['pagefavicon'];
 }
 
 if(!isset($page_meta_keywords)) {
@@ -187,7 +184,7 @@ $submenu = array();
 
 $get_main_menu = show_mainmenu();
 $mainmenu = $get_main_menu['menu'];
-$submenu = show_menu($current_page_sort);
+$submenu = show_menu($current_page_id);
 $bcmenu = breadcrumbs_menu();
 
 /* shortcodes will be replaced in text_parser */
@@ -196,6 +193,11 @@ $shortcodes = se_get_shortcodes();
 foreach($mainmenu as $k => $v) {
     if(isset($mainmenu[$k]['page_linkname'])) {
         $mainmenu[$k]['page_linkname'] = text_parser($mainmenu[$k]['page_linkname']);
+    }
+    if(!empty($mainmenu[$k]['children'])) {
+        foreach($mainmenu[$k]['children'] as $ck => $cv) {
+            $mainmenu[$k]['children'][$ck]['page_linkname'] = text_parser($cv['page_linkname']);
+        }
     }
 }
 
@@ -285,9 +287,6 @@ if(isset($page_modul) AND $page_modul != "") {
     if($mod['page_thumbnail'] != "") {
         $page_thumbnail = $mod['page_thumbnail'];
     }
-    if($mod['page_favicon'] != "") {
-        $page_favicon = $mod['page_favicon'];
-    }
     if($mod['page_description'] != "") {
         $page_meta_description = $mod['page_description'];
     }
@@ -363,6 +362,9 @@ if(isset($page_psw) && $page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) 
 /* page thumbnails */
 if(!isset($page_thumbnail)) {
     $page_thumbnail = $se_settings['pagethumbnail'];
+    if($page_thumbnail !== '' && $page_thumbnail !== 'null') {
+        $page_thumbnail = '/' . $se_branding_path . '/' . $page_thumbnail;
+    }
 } else {
     $page_thumbnail_array = explode("<->", $page_thumbnail);
     if(is_array($page_thumbnail_array)) {
@@ -382,6 +384,9 @@ if(!isset($page_thumbnail)) {
 /* page logo */
 if(!isset($page_logo)) {
     $page_logo = $se_settings['pagelogo'];
+    if($page_logo !== '' && $page_logo !== 'null') {
+        $page_logo = '/' . $se_branding_path . '/' . $page_logo;
+    }
 }
 
 if(!isset($page_hash)) {
@@ -394,8 +399,12 @@ if($page_logo != 'null' && $page_logo != '') {
 if($page_thumbnail != 'null' && $page_thumbnail != '') {
     $smarty->assign('page_thumbnail', $page_thumbnail);
 }
-if($page_favicon != 'null' && $page_favicon != '') {
-    $smarty->assign('page_favicon', $page_favicon);
+
+/* favicon set - generated as a fixed group of files under $se_branding_path
+ * (see se_generate_favicon_set() in acp/core/widgets/upload.php); the
+ * setting only stores the original source filename as a "configured?" flag */
+if($se_settings['pagefavicon'] !== '' && $se_settings['pagefavicon'] !== 'null') {
+    $smarty->assign('favicon_base', '/' . $se_branding_path);
 }
 
 $smarty->assign('page_title', html_entity_decode($page_title));
@@ -465,6 +474,19 @@ if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
 
 /* show or hide categories */
 $smarty->assign('page_categories_mode', $page_contents['page_categories_mode']);
+
+/* tags */
+$page_content_tags = se_get_content_tags('page', (int) $page_contents['page_id']);
+$content_tags = array();
+foreach ($page_content_tags as $tag) {
+    $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+        ?? ('/' . $swifty_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+    $content_tags[] = array(
+        "tag_href" => $tag_href,
+        "tag_title" => $tag['tag_name']
+    );
+}
+$smarty->assign('content_tags', $content_tags);
 
 // Final template assignments
 $smarty->assign("p","$p");

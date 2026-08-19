@@ -169,6 +169,7 @@ $products_filter['status'] = $str_status;
 $products_filter['categories'] = $page_contents['page_posts_categories'];
 $products_filter['custom_filter_groups'] = $parsed_filters['custom_filter_groups'];
 $products_filter['custom_range_filter'] = $parsed_filters['custom_range_filter'];
+$products_filter['tag'] = clean_filename($_GET['tag'] ?? '');
 
 
 // Sorting from URL (instead of session)
@@ -527,6 +528,19 @@ foreach ($get_products as $k => $post) {
         }
     }
     $get_products[$k]['product_categories'] = $category;
+
+    /* tags */
+    $tags = se_get_content_tags('product', (int) $get_products[$k]['id']);
+    $content_tags = array();
+    foreach ($tags as $tag) {
+        $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+            ?? ($filter_base_url . '?tag=' . urlencode($tag['tag_name_clean']));
+        $content_tags[] = array(
+            "tag_href" => $tag_href,
+            "tag_title" => $tag['tag_name']
+        );
+    }
+    $get_products[$k]['content_tags'] = $content_tags;
 
     /* vote up or down this product */
     if ($get_products[$k]['votings'] == 2 || $get_products[$k]['votings'] == 3) {

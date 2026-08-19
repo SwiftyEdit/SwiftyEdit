@@ -10,7 +10,7 @@
 
   ul {
     li.nav-item {
-      a.nav-link {
+      .nav-link {
         color: $navbar-color;
         border-radius: $border-radius-pill;
         padding-left: 0.9rem;
@@ -25,6 +25,138 @@
         &.active {
           color: $navbar-color-active;
           background-color: rgba(255, 255, 255, 0.14);
+        }
+      }
+
+      // Parent items with children: the linkname (navigates) and the
+      // dropdown-toggle caret (opens the submenu) are separate controls
+      // sitting side by side, instead of one link doing both jobs. Markup
+      // stays flat (<li> > a + button + ul) on purpose - Bootstrap's
+      // dropdown JS locates the menu as a sibling of the toggle button,
+      // so it can't be wrapped in its own container.
+      //
+      // That means we can't always give the <li> a single shared
+      // background for both controls: above the navbar-expand-lg
+      // breakpoint the submenu is `position: absolute` (Bootstrap's own
+      // override), so it never affects the <li>'s box and a flex row +
+      // one pill background on the <li> is safe. Below that breakpoint
+      // Bootstrap turns the submenu into a normal static block (its
+      // mobile "accordion" behavior - see width/tap-target rules below),
+      // which WOULD stretch a <li>-level background down around the open
+      // list. There, the linkname and caret each keep their own
+      // background instead, carved to their outer corner only so the two
+      // still read as one seamless pill when both are active/hovered.
+      &.dropdown {
+        > .nav-link {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+
+        > .dropdown-toggle-split {
+          position: relative;
+          // the button's only content is a visually-hidden label plus the
+          // small generated caret, so as a standalone flex item (mobile,
+          // no shared-stretch parent - see below) it would otherwise
+          // shrink to fit just that instead of matching the linkname
+          // control's height
+          min-height: 2.5rem;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+
+          // divider between the linkname and the caret - a short centered
+          // bar instead of a border, which would stretch the full height
+          // of the control and look oversized next to the text
+          &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 1.1em;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+          }
+
+          &::after {
+            vertical-align: 0.3em;
+          }
+        }
+
+        @include media-breakpoint-up(lg) {
+          display: flex;
+          align-items: stretch;
+          border-radius: $border-radius-pill;
+          transition: background-color 0.15s ease;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+          }
+
+          &.active {
+            background-color: rgba(255, 255, 255, 0.14);
+
+            > .nav-link,
+            > .dropdown-toggle-split {
+              color: $navbar-color-active;
+            }
+          }
+
+          // the <li> pill handles hover/active now - the individual
+          // controls stay transparent so it isn't painted twice
+          > .nav-link,
+          > .dropdown-toggle-split {
+            &:hover {
+              background: none;
+            }
+
+            &.active {
+              background: none;
+            }
+          }
+
+          > .nav-link {
+            padding-right: 0.5rem;
+          }
+
+          > .dropdown-toggle-split {
+            padding-left: 0.5rem;
+            padding-right: 0.75rem;
+            border: 0;
+            background: none;
+          }
+        }
+
+        @include media-breakpoint-down(lg) {
+          // no shared background here (see comment above) - each control
+          // keeps the generic .nav-link hover/active styling above as-is,
+          // just laid out inline instead of the default block stacking
+          > .nav-link,
+          > .dropdown-toggle-split {
+            display: inline-flex;
+            align-items: center;
+          }
+
+          > .dropdown-toggle-split {
+            border: 0;
+          }
+        }
+      }
+
+      // below the navbar-expand-lg breakpoint the submenu is Bootstrap's
+      // accordion-style static block (see bootstrap/scss/_navbar.scss),
+      // not a floating card - let it use the full nav width and give its
+      // links generously sized tap targets (Search Console flags anything
+      // under ~48px as too small to tap reliably)
+      @include media-breakpoint-down(lg) {
+        .dropdown-menu {
+          width: 100%;
+
+          .dropdown-item {
+            display: flex;
+            align-items: center;
+            min-height: 48px;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+          }
         }
       }
     }

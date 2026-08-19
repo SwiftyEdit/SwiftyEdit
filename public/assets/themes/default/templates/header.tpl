@@ -8,33 +8,10 @@
         <div class="header-utility-bar d-flex flex-wrap align-items-center mb-3">
 
             <div class="styleswitch-container">
-                <div class="dropdown">
-                    <button class="btn btn-link btn-sm dropdown-toggle" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
-                        <i class="bi theme-icon-active"></i>
-                        <span class="d-lg-none ms-2">Toggle theme</span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="bd-theme">
-                        <li>
-                            <button type="button" class="dropdown-item active" data-bs-theme-value="light">
-                                <i class="bi bi-sun-fill"></i>
-                                Light
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-theme-value="dark">
-                                <i class="bi bi-moon-stars-fill"></i>
-                                Dark
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-theme-value="auto">
-                                <i class="bi bi-circle-half"></i>
-                                Auto
-                            </button>
-                        </li>
-                    </ul>
-
-                </div>
+                <button class="btn btn-link btn-sm" id="themeToggle" type="button" aria-pressed="false">
+                    <i class="bi theme-icon-active"></i>
+                    <span class="visually-hidden">Toggle theme</span>
+                </button>
             </div>
 
             {if $show_shopping_cart == true}
@@ -88,17 +65,6 @@
 
             {if $social_media_block != ''}
                 {include file='socialmedia.tpl'}
-            {/if}
-
-            {if is_array($legal_pages) }
-                <div class="legal-pages-container">
-                    <ul>
-                        {foreach item=pages from=$legal_pages}
-                            <li><a class="" href="{$prefs_cms_base}{$pages.page_permalink}"
-                                   title="{$pages.page_title}">{$pages.page_linkname}</a></li>
-                        {/foreach}
-                    </ul>
-                </div>
             {/if}
 
         </div>

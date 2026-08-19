@@ -1,0 +1,10 @@
+{
+  "title": "Test: Auto-generated Product",
+  "link_name": "Test Product",
+  "product_number": "TEST-0001",
+  "slug": "test-product",
+  "price_net": "9,99",
+  "meta": {
+    "description": "This is a test product for Playwright E2E testing."
+  }
+}

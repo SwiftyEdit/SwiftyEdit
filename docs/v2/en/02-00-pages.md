@@ -11,70 +11,62 @@ priority: 190
 <kbd>Backend</kbd> ▶ <kbd>Pages</kbd>
 
 ## Ordered pages {#ordered-pages}
-The pages that contain a sorting number are listed as ordered pages.
+Pages placed in the navigation tree (see [Sorting](#sorting) below) are listed as ordered pages.
 These pages are automatically listed in the (main) navigation.
 On the overview they are listed in the left column.
 
 ## Single pages {#single-pages}
-The unordered pages are not included in the navigation -
+Single pages are not included in the navigation -
 but are still included in the sitemap or search results.
-The unordered pages are listed in the right column.
+They are listed in the right column.
 
 You can filter the pages by status (public, invisible, private, draft) and language.
 In addition, there is the search field.
 
 ## Sorting {#sorting}
 
-How to sort pages easily.
+How to place a page in the navigation, on the *Position* tab.
+
+Three mutually exclusive roles decide what a page is:
 
 ### Single page
 
-- Single pages do not have a sorting function.
-- They are not included in the navigation.
-- The Position input field has no function here.
+- Single pages are not part of the navigation tree and don't appear in the main menu.
+- They can still show up in the sitemap or search results.
+- With "Single page" selected, the "Parent page" / "Insert position" fields below have no effect.
 
 ### Portal
 
-- Portal pages could also be described as start pages.
-- Each activated or used language should have a portal page.
-- The Position input field also has no function here.
+- The portal page is a language's start page.
+- Each activated language should have exactly one portal page.
+- With "Portal" selected, "Parent page" / "Insert position" also have no effect.
 
 ### Main menu
 
-- Main menu pages, as the name suggests, create an entry in the main menu.
-- The Position field determines where the page is sorted.
+- Places the page in the navigation tree - as a top-level entry, or nested under another page.
+- **Parent page**: choose which page this one becomes a child of, or leave it at
+  "Top level" for a top-level main menu entry directly under the portal page.
+- **Insert position**: choose which of the parent's existing children this page is placed
+  directly after (the arrow icon marks that) - or "At the beginning" to make it the first child.
+  Picking a parent or an insert position automatically selects "Main menu" above, since
+  otherwise the choice wouldn't have any effect on save.
 
-### This page is a subpage of ...
+### Example
 
-- Here, a page (as a subpage) can be added to the menu.
-- The value from the Position field is automatically appended to the parent page.
-
-### Sorting example
-
-| Sorting | Page |
-| ---------- | ----- |
-| 100 | Home |
-| 200 | Products |
-| 200.100 | Apples |
-| 200.200 | Pears |
-| 300 | Contact |
-
-
-#### Result:
+Setting Flyer's parent page to "Home" (top level) and Posters' parent page to
+"Flyer", inserted after it, results in:
 
 - Home
-- Products
-    - Apples
-    - Pears
+- Flyer
+    - Posters
 - Contact
 
 ```html
 <ul>
     <li>Home</li>
-    <li>Products
+    <li>Flyer
         <ul>
-            <li>Apples</li>
-            <li>Pears</li>
+            <li>Posters</li>
         </ul>
     </li>
     <li>Contact</li>

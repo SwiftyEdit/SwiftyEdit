@@ -132,27 +132,44 @@ for($i=0;$i<count($all_tables);$i++) {
 
 if(is_array($fails)) {
 	echo "<h3>" . count($fails) . " ERRORS</h3>";
-	
+
 	foreach ($fails as $value) {
 			echo"<span class='text-danger'>$value</span><br />";
 		}
-	
+
 }
 if(is_array($wins)) {
 	echo "<h3>" . count($wins) . " Columns are ready</h3>";
-	
+
 	if(is_array($table_updates)) {
 		foreach ($table_updates as $value) {
 			echo"<span class='text-success'>$value</span><br />";
 		}
 	}
-	
+
 	if(is_array($col_updates)) {
 		foreach ($col_updates as $value) {
 			echo"<span class='text-success'>$value</span><br />";
 		}
 	}
-	
+
+}
+
+/* data migrations run last, after the schema above is in its new shape
+   (see install/migrations/, se_run_pending_migrations() in php/functions.php) */
+$migration_result = se_run_pending_migrations();
+
+if(!empty($migration_result['applied'])) {
+	echo "<h3>" . count($migration_result['applied']) . " migrations applied</h3>";
+	foreach ($migration_result['applied'] as $applied_migration) {
+		echo "<span class='text-success'>".htmlspecialchars($applied_migration, ENT_QUOTES)."</span><br />";
+	}
+}
+
+if($migration_result['error'] !== null) {
+	echo "<h3>MIGRATION ERROR</h3>";
+	echo "<span class='text-danger'>".htmlspecialchars($migration_result['error'], ENT_QUOTES)."</span><br />";
+	echo '<p>The update is not complete. Fix the underlying issue and reload this page to retry - already-applied migrations will not run again.</p>';
 }
 
 echo '<a href="/install/" class="btn btn-primary me-1">Reload</a>';

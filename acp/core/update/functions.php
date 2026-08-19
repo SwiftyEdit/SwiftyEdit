@@ -447,23 +447,5 @@ function update_htaccess_file(): void
     file_put_contents($htaccessFile, $newContent);
 }
 
-function se_helper_fill_uuids($db, string $table, string $id_col, string $uuid_col): string {
-    $rows = $db->select($table, [$id_col, $uuid_col]);
-    $updated = 0;
-    $skipped = 0;
-
-    foreach ($rows as $row) {
-        if($row[$uuid_col] == '') {
-            $db->update($table, [
-                $uuid_col => se_generate_uuid()
-            ],[
-                $id_col => $row[$id_col]
-            ]);
-            $updated++;
-        } else {
-            $skipped++;
-        }
-    }
-
-    return '<p class="text-success">Updated <code>' . $updated . '</code> rows, skipped <code>' . $skipped . '</code></p>';
-}
+// se_helper_fill_uuids() moved to install/php/functions.php (2026_08_17_000002_uuid_backfill
+// migration now owns this logic; the file is required by data-writer.php further up).

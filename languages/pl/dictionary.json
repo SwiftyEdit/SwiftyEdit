@@ -69,6 +69,8 @@
   "no_snippet_selected": "Nie wybrano żadnego fragmentu",
   "labels": "Etykiety",
   "categories": "Kategorie",
+  "tags": "Tags",
+  "label_tags": "Tags",
   "overview": "Przegląd",
   "label.date": "Data",
   "label.password": "Hasło",

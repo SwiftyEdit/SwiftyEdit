@@ -24,7 +24,7 @@ $se_upload_file_types = array('pdf','doc','docx','ppt','pptx','xls','xlsx','mp3'
 $se_upload_frontend_types = array('jpg','jpeg','png');
 
 /* page types */
-$se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders', 'order_withdrawal', 'wishlist');
+$se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders', 'order_withdrawal', 'wishlist', 'tagged');
 
 // limit login fails - integer || null
 $se_failed_logins_limit = null;
@@ -56,6 +56,10 @@ $img_path = "assets/images";
 $img_tmb_path = "assets/images_tmb";
 $files_path = "assets/files";
 $themes_path = "assets/themes";
+
+/* site branding (logo, page thumbnail, favicon set) - kept separate from
+ * assets/images so it never shows up in the media library / uploads browser */
+$se_branding_path = "assets/branding";
 
 /* Plugin/Addon upload - disabled by default for security reasons
  * To enable, add the following to SE_CONTENT/config.php:

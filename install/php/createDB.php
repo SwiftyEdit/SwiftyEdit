@@ -121,6 +121,8 @@ $sql_comments_table = se_generate_sql_query("se_comments.php",$db_type);
 $sql_media_table = se_generate_sql_query("se_media.php",$db_type);
 $sql_labels_table = se_generate_sql_query("se_labels.php",$db_type);
 $sql_categories_table = se_generate_sql_query("se_categories.php",$db_type);
+$sql_tags_table = se_generate_sql_query("se_tags.php",$db_type);
+$sql_tags_relations_table = se_generate_sql_query("se_tags_relations.php",$db_type);
 $sql_addons_table = se_generate_sql_query("se_addons.php",$db_type);
 $sql_posts_table = se_generate_sql_query("se_posts.php",$db_type);
 $sql_products_table = se_generate_sql_query("se_products.php",$db_type);
@@ -198,6 +200,8 @@ $dbh_content->query($sql_media_table);
 $dbh_content->query($sql_feeds_table);
 $dbh_content->query($sql_labels_table);
 $dbh_content->query($sql_categories_table);
+$dbh_content->query($sql_tags_table);
+$dbh_content->query($sql_tags_relations_table);
 $dbh_content->query($sql_addons_table);
 $dbh_content->query($sql_log_table);
 $dbh_content->query($sql_orders_table);
@@ -220,12 +224,16 @@ $dbh_content->insert("se_pages", [
 	"page_template_layout" => "layout_default.tpl",
     "page_template_stylesheet" => "../styles/default/css/default.css",
 	"page_sort" => "portal",
+	"page_parent_id" => null,
+	"position" => 0,
 	"page_meta_author" => "$username",
 	"page_meta_date" => "$page_lastedit",
 	"page_meta_keywords" => "example,test,portal",
 	"page_meta_description" => "Example Meta Description for the portal page",
 	"page_meta_robots" => "all"
 ]);
+
+$portal_page_id = $dbh_content->id();
 
 $dbh_content->insert("se_pages", [
 	"page_language" => $_SESSION['lang'],
@@ -240,6 +248,8 @@ $dbh_content->insert("se_pages", [
 	"page_template" => "use_standard",
 	"page_template_layout" => "use_standard",
 	"page_sort" => "100",
+	"page_parent_id" => $portal_page_id,
+	"position" => 100,
 	"page_meta_author" => "$username",
 	"page_meta_date" => "$page_lastedit",
 	"page_meta_keywords" => "example,test",
@@ -309,7 +319,6 @@ $initSettings = [
     "prefs_pagelogo" => "null",
     "prefs_pagethumbnail" => "null",
     "prefs_pagefavicon" => "null",
-    "prefs_pagethumbnail_prefix" => "",
     "prefs_uploads_remain_unchanged" => "",
 
     // system / mail
@@ -325,10 +334,8 @@ $initSettings = [
     "prefs_required_fields_registration" => "",
 
     // posts / events images
-    "prefs_posts_images_prefix" => "",
     "prefs_posts_default_banner" => "null",
     "prefs_events_entries_per_page" => 10,
-    "prefs_events_images_prefix" => "",
     "prefs_events_default_banner" => "null",
 
     // shop

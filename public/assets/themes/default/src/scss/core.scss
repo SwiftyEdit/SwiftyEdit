@@ -19,6 +19,21 @@ $enable-dark-mode: true;
   }
 }
 
+// Bootstrap's dropdown-item/pagination hover backgrounds default to a
+// plain neutral gray (var(--bs-tertiary-bg)), which reads as dirty/washed
+// out against this theme's purple palette - tint them with the brand
+// color instead. Both re-declare the component's own CSS var (rather than
+// $dropdown-link-hover-bg/$pagination-hover-bg before the bootstrap
+// import) specifically so the rgba() can reference --bs-primary-rgb and
+// stay correct across the light/dark toggle without a second dark-mode block.
+.dropdown-menu {
+  --#{$prefix}dropdown-link-hover-bg: #{unquote("rgba(var(--#{$prefix}primary-rgb), .14)")};
+}
+
+.pagination {
+  --#{$prefix}pagination-hover-bg: #{unquote("rgba(var(--#{$prefix}primary-rgb), .14)")};
+}
+
 // Bootstrap Icons
 @import '../../node_modules/bootstrap-icons/font/bootstrap-icons';
 
@@ -105,24 +120,6 @@ $enable-dark-mode: true;
     }
     padding: 3px 5px;
   }
-  .legal-pages-container {
-    padding: 3px 5px;
-
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      li {
-        display: inline-block;
-        padding: 0;
-        a {
-          text-decoration: none;
-          padding: 3px 5px;
-          color: $light;
-        }
-      }
-    }
-  }
 
   .styleswitch-container {
     button.btn-link {
@@ -191,6 +188,37 @@ $enable-dark-mode: true;
       }
     }
   }
+
+  .legal-pages-container {
+    margin-top: 1rem;
+    text-align: center;
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: inline-block;
+
+        // dividers between entries instead of after the last one
+        &:not(:last-child)::after {
+          content: "\00b7";
+          padding: 0 0.5rem;
+          color: rgba(255, 255, 255, 0.45);
+        }
+
+        a {
+          text-decoration: none;
+          color: rgba(255, 255, 255, 0.8);
+
+          &:hover {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
 }
 
 [data-bs-theme="dark"] .card {
@@ -208,8 +236,12 @@ $enable-dark-mode: true;
   border-color: $input-border-color-dark;
 }
 
-// Subtle lift on interactive buttons for a livelier feel
-.btn {
+// Subtle lift for a livelier feel on actual call-to-action buttons (e.g.
+// "read more" on a post/product card, "add to cart"). Excludes .btn-link
+// and .btn-outline-secondary, which this theme uses for neutral/utility
+// controls (menu toggles, sort buttons, quantity steppers, ...) where the
+// lift reads as an unintended glitch rather than an affordance.
+.btn:not(.btn-link):not(.btn-outline-secondary) {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {
@@ -227,4 +259,29 @@ $enable-dark-mode: true;
   &:hover {
     box-shadow: 0 10px 22px rgba(112, 106, 235, 0.36);
   }
+}
+
+// Tags: badges appear across posts/products/events/plain-page content
+// (content.tpl et al.), so this lives in core rather than a conditionally
+// loaded component.
+.content-tags {
+  a {
+    text-decoration: none;
+  }
+}
+
+// Tag archive index (bare /tags/ page, see tagged-list.tpl) - tag-weight-1
+// (least used) through tag-weight-5 (most used) is computed server-side in
+// app/handlers/tagged-list.php from each tag's relative usage, so themes
+// can key emphasis off it without recalculating anything themselves.
+.tagged-archive-index {
+  a {
+    text-decoration: none;
+  }
+
+  .tag-weight-1 a { font-size: .8rem; }
+  .tag-weight-2 a { font-size: 1rem; }
+  .tag-weight-3 a { font-size: 1.2rem; }
+  .tag-weight-4 a { font-size: 1.4rem; }
+  .tag-weight-5 a { font-size: 1.6rem; font-weight: 600; }
 }

@@ -79,6 +79,11 @@
                         <a href="{$category.cat_href}" class="btn btn-sm btn-link" title="{$category.cat_title}">{$category.cat_title}</a>
                     {/foreach}
                 </p>
+                <p class="m-0 content-tags">
+                    {foreach $value.content_tags as $tag}
+                        <a href="{$tag.tag_href}" class="btn btn-sm btn-link" title="{$tag.tag_title}">#{$tag.tag_title}</a>
+                    {/foreach}
+                </p>
                 <div class="row">
                     <div class="col-md-8 text-end">
 

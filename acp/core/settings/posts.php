@@ -12,13 +12,6 @@ $input_entries_per_page = [
     "type" => "text"
 ];
 
-$input_img_prefix = [
-    "input_name" => "prefs_posts_images_prefix",
-    "input_value" => $se_settings['posts_images_prefix'],
-    "label" => $lang['label_settings_prefix'],
-    "type" => "text"
-];
-
 $arr_Images = se_get_all_images_rec();
 
 foreach ($arr_Images as $k => $v) {
@@ -49,7 +42,6 @@ echo se_print_form_input($input_entries_per_page);
 
 echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
-echo se_print_form_input($input_img_prefix);
 echo se_print_form_input($input_select_default_banner);
 
 echo '<button type="submit" class="btn btn-primary" name="update_posts" value="update">'.$lang['btn_update'].'</button>';

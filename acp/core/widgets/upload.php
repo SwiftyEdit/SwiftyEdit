@@ -60,6 +60,42 @@ if($_POST['csrf_token'] !== $_SESSION['token']) {
 
 $time = time();
 
+/* branding uploads: page logo / page thumbnail / favicon source.
+ * Fixed filenames in their own folder, no se_media entry - see
+ * acp/core/settings/branding-widget.php for the field markup this responds to. */
+$branding_target = $_POST['branding_target'] ?? '';
+if (in_array($branding_target, ['logo', 'thumbnail', 'favicon'], true)) {
+    require_once '../acp/core/settings/branding-widget.php';
+
+    $result = se_handle_branding_upload(
+        $branding_target,
+        $se_branding_path,
+        $se_upload_img_types,
+        (int) ($_POST['w'] ?? 0),
+        (int) ($_POST['h'] ?? 0),
+        $_POST
+    );
+
+    if (isset($result['error'])) {
+        http_response_code(422);
+        exit;
+    }
+
+    // only the preview fragment is returned - the Uppy dropzone that triggered this
+    // upload (see backend.js) stays mounted and replaces #branding-preview-{target} itself.
+    // remove_label/confirm_text are translated strings threaded through as upload
+    // meta (set server-side in general.php, which has $lang - this bare endpoint doesn't)
+    echo se_render_branding_preview(
+        $branding_target,
+        $result['filename'],
+        $se_branding_path,
+        '/admin-xhr/settings/general/write/',
+        $_POST['remove_label'] ?? 'Remove',
+        $_POST['confirm_text'] ?? 'Are you sure you want to delete this file?'
+    );
+    exit;
+}
+
 $max_w = (int) $_POST['w']; // max image width
 $max_h = (int) $_POST['h']; // max image height
 $max_w_tmb = (int) $_POST['w_tmb']; // max thumbnail width
@@ -418,4 +454,249 @@ function se_create_gallery_thumbs($updir, $img, $name, $thumbnail_width, $thumbn
         imagejpeg($new_image,"$updir/$name",$quality);
         imagedestroy($new_image);
     }
+}
+
+
+/**
+ * Handle an upload for one of the fixed branding slots (logo/thumbnail/favicon).
+ * Stores the file under a fixed filename in $branding_path, updates the
+ * matching setting directly (bypassing the general settings "Update" button),
+ * and - for the favicon - generates the full icon set + web manifest.
+ *
+ * @return array{filename: string}|array{error: string}
+ */
+function se_handle_branding_upload(string $target, string $branding_path, array $allowed_types, int $max_w, int $max_h, array $post): array {
+
+    if (!array_key_exists('file', $_FILES) || $_FILES['file']['error'] != 0) {
+        return ['error' => 'no_file'];
+    }
+
+    $tmp_name = $_FILES['file']['tmp_name'];
+    $org_name = $_FILES['file']['name'];
+    $suffix = strtolower(substr(strrchr($org_name, '.'), 1));
+
+    $target_types = $allowed_types;
+    if ($target === 'favicon') {
+        // the favicon set is generated with GD, which can only read raster formats
+        $target_types = array_intersect($allowed_types, ['gif', 'jpg', 'jpe', 'jpeg', 'png', 'webp']);
+    }
+
+    if (!in_array($suffix, $target_types, true)) {
+        return ['error' => 'unsupported_type'];
+    }
+
+    // validate the upload is actually a readable image *before* touching anything
+    // already on disk, so a bad upload never wipes out a working file
+    if ($suffix !== 'svg') {
+        $details = @getimagesize($tmp_name);
+        if ($details === false) {
+            return ['error' => 'invalid_image'];
+        }
+    }
+
+    if (!is_dir($branding_path)) {
+        mkdir($branding_path, 0777, true);
+    }
+
+    $filename = "$target.$suffix";
+    $file_target = "$branding_path/$filename";
+
+    if ($target === 'favicon') {
+        // reads from $tmp_name directly (does its own size/format validation) and
+        // writes the derivative sizes in place - nothing old is touched until this succeeds
+        $set_result = se_generate_favicon_set(
+            $tmp_name,
+            $branding_path,
+            $post['manifest_name'] ?? '',
+            $post['manifest_short_name'] ?? ''
+        );
+
+        if ($set_result !== true) {
+            return ['error' => $set_result];
+        }
+
+        if (!move_uploaded_file($tmp_name, $file_target)) {
+            return ['error' => 'upload_failed'];
+        }
+    } else if (($post['unchanged'] ?? '') == 'yes' || $suffix == 'svg') {
+        if (!move_uploaded_file($tmp_name, $file_target)) {
+            return ['error' => 'upload_failed'];
+        }
+    } else {
+        resize_image($tmp_name, $file_target, $max_w ?: 1600, $max_h ?: 1600, 100);
+    }
+
+    // the new file is safely in place - now remove any leftover from a previous
+    // upload that used a different file extension. favicon.ico is deliberately
+    // excluded: it matches the "$target.*" glob too, but is (re)written by
+    // se_generate_favicon_set() above and must not be treated as a stale leftover.
+    foreach (glob("$branding_path/$target.*") as $old_file) {
+        if ($old_file === $file_target) {
+            continue;
+        }
+        if ($target === 'favicon' && basename($old_file) === 'favicon.ico') {
+            continue;
+        }
+        @unlink($old_file);
+    }
+
+    se_write_branding_option('prefs_page' . $target, $filename);
+
+    return ['filename' => $filename];
+}
+
+
+/**
+ * Minimal insert-or-update for a single "se_options" row. Deliberately not
+ * reusing se_write_option() from acp/core/functions.php: that file pulls in
+ * a large chain of ACP-only includes this bare upload endpoint does not (and
+ * should not need to) bootstrap.
+ */
+function se_write_branding_option(string $key, string $value): void {
+
+    global $db_content;
+
+    $entry = $db_content->get('se_options', '*', [
+        'option_key' => $key,
+        'option_module' => 'se'
+    ]);
+
+    if (!empty($entry['option_key'])) {
+        $db_content->update('se_options', [
+            'option_value' => $value
+        ], [
+            'AND' => [
+                'option_key' => $key,
+                'option_module' => 'se'
+            ]
+        ]);
+    } else {
+        $db_content->insert('se_options', [
+            'option_value' => $value,
+            'option_key' => $key,
+            'option_module' => 'se'
+        ]);
+    }
+}
+
+
+/**
+ * Generate the full favicon icon set (multiple PNG sizes + a PNG-based .ico
+ * + a site.webmanifest) from one uploaded source image. The source is
+ * center-cropped to a square first if it isn't already square.
+ *
+ * @return true|string true on success, otherwise an error code string
+ */
+function se_generate_favicon_set(string $source_path, string $branding_path, string $manifest_name, string $manifest_short_name) {
+
+    $details = @getimagesize($source_path);
+    if ($details === false) {
+        return 'invalid_image';
+    }
+
+    [$width, $height, $type] = $details;
+
+    if ($width < 512 || $height < 512) {
+        return 'too_small';
+    }
+
+    $loaders = [
+        IMAGETYPE_JPEG => 'imagecreatefromjpeg',
+        IMAGETYPE_PNG => 'imagecreatefrompng',
+        IMAGETYPE_GIF => 'imagecreatefromgif',
+        IMAGETYPE_WEBP => 'imagecreatefromwebp'
+    ];
+
+    if (!isset($loaders[$type])) {
+        return 'unsupported_format';
+    }
+
+    $source = $loaders[$type]($source_path);
+    if (!$source) {
+        return 'invalid_image';
+    }
+
+    // center-crop to square
+    $crop_size = min($width, $height);
+    $crop_x = intval(($width - $crop_size) / 2);
+    $crop_y = intval(($height - $crop_size) / 2);
+
+    $square = imagecreatetruecolor($crop_size, $crop_size);
+    imagealphablending($square, false);
+    imagesavealpha($square, true);
+    $transparent = imagecolorallocatealpha($square, 0, 0, 0, 127);
+    imagefilledrectangle($square, 0, 0, $crop_size, $crop_size, $transparent);
+    imagecopyresampled($square, $source, 0, 0, $crop_x, $crop_y, $crop_size, $crop_size, $crop_size, $crop_size);
+    imagedestroy($source);
+
+    $sizes = [16, 32, 180, 192, 512];
+    $ico_sizes = [16, 32];
+    $ico_images = [];
+
+    foreach ($sizes as $size) {
+        $resized = imagecreatetruecolor($size, $size);
+        imagealphablending($resized, false);
+        imagesavealpha($resized, true);
+        $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+        imagefilledrectangle($resized, 0, 0, $size, $size, $transparent);
+        imagecopyresampled($resized, $square, 0, 0, 0, 0, $size, $size, $crop_size, $crop_size);
+
+        imagepng($resized, "$branding_path/favicon-$size.png", 9);
+
+        if (in_array($size, $ico_sizes, true)) {
+            ob_start();
+            imagepng($resized);
+            $ico_images[] = ['size' => $size, 'data' => ob_get_clean()];
+        }
+
+        imagedestroy($resized);
+    }
+
+    imagedestroy($square);
+
+    file_put_contents("$branding_path/favicon.ico", se_build_ico($ico_images));
+
+    $manifest = [
+        'name' => $manifest_name !== '' ? $manifest_name : 'Website',
+        'short_name' => $manifest_short_name !== '' ? $manifest_short_name : ($manifest_name !== '' ? $manifest_name : 'Website'),
+        'icons' => [
+            ['src' => 'favicon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+            ['src' => 'favicon-512.png', 'sizes' => '512x512', 'type' => 'image/png']
+        ],
+        'theme_color' => '#ffffff',
+        'background_color' => '#ffffff',
+        'display' => 'standalone'
+    ];
+
+    file_put_contents("$branding_path/site.webmanifest", json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    return true;
+}
+
+
+/**
+ * Build a minimal .ico file wrapping one or more PNG images (a format
+ * supported since Windows Vista and by all current browsers). Avoids
+ * pulling in an image-manipulation library just for icon export.
+ *
+ * @param array<int, array{size:int, data:string}> $png_images
+ */
+function se_build_ico(array $png_images): string {
+
+    $count = count($png_images);
+    $header = pack('vvv', 0, 1, $count);
+
+    $entries = '';
+    $image_data = '';
+    $offset = 6 + ($count * 16);
+
+    foreach ($png_images as $img) {
+        $dimension = $img['size'] >= 256 ? 0 : $img['size']; // 0 means 256px in the ICO format
+        $bytes = strlen($img['data']);
+        $entries .= pack('CCCCvvVV', $dimension, $dimension, 0, 0, 1, 32, $bytes, $offset);
+        $image_data .= $img['data'];
+        $offset += $bytes;
+    }
+
+    return $header . $entries . $image_data;
 }

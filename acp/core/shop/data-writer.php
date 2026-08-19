@@ -103,6 +103,10 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
 
     if(($cnt_changes->rowCount()) > 0) {
         se_delete_wishlist_items_by_product($delete_id);
+        $db_content->delete("se_tags_relations", [
+            "content_type" => "product",
+            "content_id" => $delete_id
+        ]);
         show_toast($lang['msg_info_data_deleted'],'success');
         record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
         header( "HX-Redirect: /admin/shop/");
@@ -148,6 +152,8 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
     se_updateProductCache($id, $prepared_data);
     se_generate_xml_sitemap('products');
+
+    se_set_content_tags('product', $id, explode(',', $_POST['content_tags'] ?? ''));
 
     // build hook context
     $context = [

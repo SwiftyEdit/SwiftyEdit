@@ -13,6 +13,10 @@
         </div>
     </div>
     <div class="mb-2 pb-1 border-bottom">
+        <label>{label_tags}</label>
+        <input type="text" class="form-control tags" name="content_tags" value="{content_tags}">
+    </div>
+    <div class="mb-2 pb-1 border-bottom">
         <label>{label_releasedate}</label>
         <input class='dp form-control' name="post_releasedate" type="datetime-local" value="{post_releasedate}">
     </div>

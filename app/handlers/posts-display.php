@@ -35,6 +35,19 @@ foreach($all_categories as $cats) {
 	}
 }
 
+/* tags */
+$tags = se_get_content_tags('post', (int) $get_post_id);
+$content_tags = array();
+foreach ($tags as $tag) {
+    $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+        ?? ('/' . $swifty_slug . $mod_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+    $content_tags[] = array(
+        "tag_href" => $tag_href,
+        "tag_title" => $tag['tag_name']
+    );
+}
+$smarty->assign('content_tags', $content_tags);
+
 
 /* entry date */
 $entrydate_year = date('Y',$post_data['post_date']);

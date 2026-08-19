@@ -1,0 +1,6 @@
+{
+  "name": "Test: Auto-generated Category",
+  "slug": "test-category",
+  "title": "Test Category",
+  "description": "This is a test category for Playwright E2E testing."
+}

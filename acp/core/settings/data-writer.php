@@ -6,8 +6,41 @@
  * @var object $db_content
  * @var array $icon
  * @var array $se_settings
+ * @var string $se_branding_path
  */
 
+
+// remove a branding image (page logo / page thumbnail / favicon set)
+if (isset($_POST['delete_branding'])) {
+    require_once __DIR__ . '/branding-widget.php';
+
+    $target = $_POST['delete_branding'];
+    if (in_array($target, ['logo', 'thumbnail', 'favicon'], true)) {
+
+        foreach (glob($se_branding_path . '/' . $target . '.*') as $old_file) {
+            @unlink($old_file);
+        }
+        if ($target === 'favicon') {
+            foreach (glob($se_branding_path . '/favicon-*.png') as $old_file) {
+                @unlink($old_file);
+            }
+            @unlink($se_branding_path . '/favicon.ico');
+            @unlink($se_branding_path . '/site.webmanifest');
+        }
+
+        se_write_option(['prefs_page' . $target => ''], 'se');
+
+        // only the preview fragment - the persistent Uppy dropzone next to it is untouched
+        echo se_render_branding_preview(
+            $target,
+            '',
+            $se_branding_path,
+            '/admin-xhr/settings/general/write/',
+            $lang['btn_delete'],
+            $lang['msg_confirm_delete_file']
+        );
+    }
+}
 
 // write event settings
 if (isset($_POST['update_events'])) {

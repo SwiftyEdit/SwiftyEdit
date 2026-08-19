@@ -28,7 +28,12 @@
 						</div>
 					</div>
 					<!-- if we have uploaded images, show a thumbnail list -->
-					{thumbnail_list_form}
+							<div class="card p-3 mt-3">
+								<div class="card-header">Uploads</div>
+								<div class="card-body">
+								<div id="listGalThumbs" hx-get="/admin-xhr/blog/read/?gallery_thumbs={post_id}" hx-trigger="load, update_gallery_thumbs from:body">Loading thumbnails ...</div>
+								</div>
+							</div>
 				</div>
 				
 				<div class="tab-pane fade" id="meta">
@@ -85,15 +90,6 @@
 		</div>
 	</div>
 </form>
-
-<div class="container p-3">
-<div class="card p-3">
-<div id="listGalThumbs" hx-get="/admin-xhr/blog/read/?gallery_thumbs={post_id}" hx-trigger="load, update_gallery_thumbs from:body">Loading thumbnails ...</div>
-</div>
-</div>
-
-<!-- if we have a gallery id, show the upload form -->
-{modal_upload_form}
 
 
 

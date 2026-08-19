@@ -18,7 +18,13 @@
 {if $page_canonical_url != ''}
 	<link rel=“canonical“ href="{$page_canonical_url}" />
 {/if}
-<link rel="icon" href="{$page_favicon}">
+{if $favicon_base != ''}
+	<link rel="icon" type="image/png" sizes="32x32" href="{$favicon_base}/favicon-32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="{$favicon_base}/favicon-16.png">
+	<link rel="icon" href="{$favicon_base}/favicon.ico">
+	<link rel="apple-touch-icon" sizes="180x180" href="{$favicon_base}/favicon-180.png">
+	<link rel="manifest" href="{$favicon_base}/site.webmanifest">
+{/if}
 <link rel="alternate" type="application/rss+xml" title="{$prefs_pagetitle} | RSS" href="/rss.php" />
 
 

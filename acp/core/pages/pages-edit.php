@@ -67,19 +67,6 @@ if(isset($_POST['restore_id']) && is_numeric($_POST['restore_id'])) {
 
 $record_data = $get_page ?? [];
 
-if(str_contains($page_sort, '.')) {
-    $last_part_page_sort = substr($page_sort, strrpos($page_sort, '.') + 1);
-} else {
-    $last_part_page_sort = $page_sort;
-}
-
-$input_text_page_sort = [
-    "input_name" => "page_order",
-    "input_value" => $last_part_page_sort,
-    "label" => $lang['label_pages_position'].' '.se_print_docs_link("02-00-pages.md#sorting"),
-    "type" => "text"
-];
-
 $input_text_page_linkname = [
     "input_name" => "page_linkname",
     "input_value" => $get_page['page_linkname'],
@@ -106,6 +93,14 @@ $input_text_page_hash = [
     "input_name" => "page_hash",
     "input_value" => $page_hash,
     "label" => $lang['label_pages_hash'],
+    "type" => "text"
+];
+
+$input_text_content_tags = [
+    "input_name" => "content_tags",
+    "input_value" => se_tags_csv_for_content('page', (int)($page_id ?? 0)),
+    "label" => $lang['label_tags'],
+    "input_classes" => "form-control tags",
     "type" => "text"
 ];
 
@@ -351,125 +346,114 @@ $form_tpl .= '<div class="tab-content" id="myTabContent">';
 
 $form_tpl .= '<div class="tab-pane fade show active" id="position-tab" role="tabpanel" tabindex="0">';
 
-$form_tpl .= '<div class="row">';
-$form_tpl .= '<div class="col-md-9">';
+// page_parent_id / position drive the tree now (see
+// app/functions/functions.pages.php's se_index_pages_by_parent() /
+// se_flatten_page_tree()) - page_sort is only still read here for the
+// 'portal' marker, which has no equivalent in the new fields.
+$current_page_id = is_int($get_page_id ?? null) ? $get_page_id : null;
+$current_page_parent_id = ($page_parent_id ?? '') !== '' ? (int) $page_parent_id : null;
+$current_position = (int) ($position ?? 0);
 
-$all_pages = $db_content->select("se_pages",
-    ["page_linkname","page_sort","page_title","page_language","page_status"],
-    ["page_sort[!]" => "portal",
-        "ORDER" => [
-            "page_language" => "ASC",
-            "page_sort" => "ASC"
-        ]
-    ]
+if ($page_sort === 'portal') {
+    $page_role = 'portal';
+} else if ($current_page_parent_id === null) {
+    $page_role = 'single';
+} else {
+    $page_role = 'tree';
+}
+
+$pages_in_language = $db_content->select("se_pages",
+    ["page_id", "page_parent_id", "position", "page_linkname", "page_title", "page_permalink", "page_sort"],
+    ["page_language" => $page_language]
 );
 
-$all_pages = se_array_multisort($all_pages, 'page_language', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);
-
-$cnt_all_pages = count($all_pages);
-$sm_string = '<ul class="page-list">';
-
-for($i=0;$i<$cnt_all_pages;$i++) {
-
-    $sm_page_id = $all_pages[$i]['page_id'];
-    $sm_page_sort = $all_pages[$i]['page_sort'];
-    $sm_page_linkname = $all_pages[$i]['page_linkname'];
-    $sm_page_title = $all_pages[$i]['page_title'];
-    $sm_page_status = $all_pages[$i]['page_status'];
-    $sm_page_permalink = $all_pages[$i]['page_permalink'];
-    $sm_page_lang = $all_pages[$i]['page_language'];
-
-    $flag = '<img src="'.return_language_flag_src($sm_page_lang).'" alt="'.$sm_page_lang.'" width="15">';
-    $short_title = first_words($all_pages[$i]['page_title'], 6);
-
-    if($sm_page_sort == '') { continue; }
-
-    $points_of_item[$i] = substr_count($sm_page_sort, '.');
-
-    // new level
-    $start_ul = '';
-    if($points_of_item[$i] > $points_of_item[$i-1]) {
-        $start_ul = '<ul>';
-        $sm_string = substr(trim($sm_string), 0, -5);
+$portal_id = null;
+foreach ($pages_in_language as &$lp) {
+    $lp['page_id'] = (int) $lp['page_id'];
+    $lp['page_parent_id'] = ($lp['page_parent_id'] ?? '') !== '' ? (int) $lp['page_parent_id'] : null;
+    $lp['position'] = (int) $lp['position'];
+    if ($lp['page_sort'] === 'portal') {
+        $portal_id = $lp['page_id'];
     }
-
-    // end this level </ul>
-    $end_ul = '';
-    if($points_of_item[$i] < $points_of_item[$i-1]) {
-        $div_level = abs($points_of_item[$i] - $points_of_item[$i-1]);
-        $end_ul = str_repeat("</ul>", $div_level);
-        $end_ul .= '</li>';
-    }
-
-    $start_li = '<li>';
-    $end_li = '</li>';
-
-
-    if($pos = strripos($page_sort,".")) {
-        $string = substr($page_sort,0,$pos);
-    }
-
-    $checked = '';
-    if($sm_page_sort != "" && $sm_page_sort == "$string" && $page_language == $sm_page_lang) {
-        $checked = 'checked';
-    }
-
-    $disabled = '';
-    if($sm_page_sort == $page_sort) {
-        $disabled = 'disabled';
-    }
-
-    $sm_string .= "$start_ul";
-    $sm_string .= "$end_ul";
-    $sm_string .= $start_li;
-    $sm_string .= '<label class="page-container" for="radio'.$i.'">';
-    $sm_string .= '<code>'.$sm_page_sort.'</code> - <strong>'.$sm_page_linkname.'</strong> '.$short_title.' '.$flag;
-    $sm_string .= '<span class="page-toggler"><input type="radio" id="radio'.$i.'" name="page_position" value="'.$sm_page_sort.'" '.$checked.' '.$disabled.'></span>';
-    $sm_string .= '</label>';
-    $sm_string .= $end_li;
 }
-$sm_string .= '</ul>';
+unset($lp);
 
-$form_tpl .= $lang['label_page_position'];
+// the parent dropdown's "top level" option (an empty <select> value) always
+// means "parent = the portal page", never a literal NULL - a page with no
+// parent_id recorded yet (new page, or currently role=single/portal) still
+// needs to show *some* siblings if the dropdown defaults to "top level"
+$effective_parent_id = $current_page_parent_id ?? $portal_id;
 
-$form_tpl .= '<ul class="page-list-top">';
+// current siblings under the page's existing parent, and which one it's
+// currently placed right after - so the initial render already reflects
+// where the page actually is (the HTMX swap below recomputes this fresh
+// whenever the parent dropdown changes, always defaulting to "at the end")
+$siblings = array_values(array_filter($pages_in_language, function ($p) use ($effective_parent_id, $current_page_id) {
+    return $p['page_parent_id'] === $effective_parent_id && $p['page_id'] !== $current_page_id;
+}));
+usort($siblings, function ($a, $b) { return $a['position'] <=> $b['position']; });
 
-if($page_sort == "portal") {
-    $sel_page_sort_portal = 'checked';
-} else if(ctype_digit($page_sort)) {
-    $sel_page_sort_mainpage = 'checked';
-} else {
-    $sel_page_sort_default = 'checked';
+$selected_after_page_id = null;
+foreach ($siblings as $sibling) {
+    if ($sibling['position'] < $current_position) {
+        $selected_after_page_id = $sibling['page_id'];
+    }
 }
 
-$form_tpl .= '<li><label class="page-container">';
-$form_tpl .= $lang['label_pages_single'];
-$form_tpl .= '<span class="page-toggler"><input type="radio" name="page_position" value="null" '.$sel_page_sort_default.'></span>';
-$form_tpl .= '</label></li>';
+// three mutually exclusive page roles, styled as toggle buttons (not the
+// .page-container list style used for the insert-position radios below) so
+// they read as one setting, distinct from the picker beneath them. No
+// separate "Position" heading here - we're already on the Position tab; the
+// docs link sits right after the buttons instead.
+$form_tpl .= '<div class="d-flex align-items-center mb-3">';
+$form_tpl .= '<div class="btn-group" role="group">';
 
-$form_tpl .= '<li><label class="page-container">';
-$form_tpl .= $lang['label_pages_portal'];
-$form_tpl .= '<span class="page-toggler"><input type="radio" name="page_position" value="portal" '.$sel_page_sort_portal.'></span>';
-$form_tpl .= '</label></li>';
+$form_tpl .= '<input type="radio" class="btn-check" name="page_role" id="page_role_single" value="single" autocomplete="off"'.($page_role === 'single' ? ' checked' : '').' onchange="sePageRoleToggle()">';
+$form_tpl .= '<label class="btn btn-outline-primary" for="page_role_single">'.$lang['label_pages_single'].'</label>';
 
-$form_tpl .= '<li><label class="page-container">';
-$form_tpl .= $lang['label_pages_mainmenu'];
-$form_tpl .= '<span class="page-toggler"><input type="radio" name="page_position" value="mainpage" '.$sel_page_sort_mainpage.'></span>';
-$form_tpl .= '</label></li>';
+$form_tpl .= '<input type="radio" class="btn-check" name="page_role" id="page_role_portal" value="portal" autocomplete="off"'.($page_role === 'portal' ? ' checked' : '').' onchange="sePageRoleToggle()">';
+$form_tpl .= '<label class="btn btn-outline-primary" for="page_role_portal">'.$lang['label_pages_portal'].'</label>';
 
-$form_tpl .= '</ul>';
-
-// print the generated sitemap
-$form_tpl .= $lang['label_pages_position_sub'];
-
-$form_tpl .= '<div class="scroll-container">'.$sm_string.'</div>';
-
+$form_tpl .= '<input type="radio" class="btn-check" id="page_role_tree" name="page_role" value="tree" autocomplete="off"'.($page_role === 'tree' ? ' checked' : '').' onchange="sePageRoleToggle()">';
+$form_tpl .= '<label class="btn btn-outline-primary" for="page_role_tree">'.$lang['label_pages_mainmenu'].'</label>';
 
 $form_tpl .= '</div>';
-$form_tpl .= '<div class="col-md-3">';
-$form_tpl .= se_print_form_input($input_text_page_sort);
+$form_tpl .= se_print_docs_link('02-00-pages.md#sorting');
 $form_tpl .= '</div>';
+
+// Parent page / Insert position only have any effect once "Hauptmenü" is
+// selected above (page_role=tree) - see se_sanitize_page_inputs() in
+// app/functions/functions.sanitizer.php. Rather than leave them visible but
+// inert (confusing - opacity alone didn't read as "disabled" clearly
+// enough), this whole block is hidden until "Hauptmenü" is picked, via
+// sePageRoleToggle() below. A hidden field's value is still submitted
+// normally, so nothing about saving changes - only what's shown does.
+$parent_picker_display = $page_role === 'tree' ? 'block' : 'none';
+$form_tpl .= '<div id="parentPickerGroup" style="display:'.$parent_picker_display.';">';
+
+$form_tpl .= '<label class="form-label mt-2">'.$lang['label_pages_parent_page'].'</label>';
+$form_tpl .= '<select name="new_parent_id" class="form-select custom-select mb-2"';
+$form_tpl .= ' hx-get="/admin-xhr/pages/read/?action=page_siblings"';
+$form_tpl .= ' hx-target="#siblingPicker" hx-swap="innerHTML"';
+$form_tpl .= ' hx-include="[name=\'new_parent_id\'],[name=\'csrf_token\']"';
+$form_tpl .= ' hx-vals=\''.json_encode(['language' => $page_language, 'exclude_page_id' => (int) ($current_page_id ?? 0)]).'\'';
+$form_tpl .= ' hx-trigger="change">';
+$form_tpl .= se_build_parent_options($pages_in_language, $portal_id, $current_page_id, $current_page_parent_id);
+$form_tpl .= '</select>';
+
+$form_tpl .= '<label class="form-label mb-0">'.$lang['label_pages_insert_position'].'</label>';
+$form_tpl .= '<p class="text-muted small">'.$lang['label_pages_insert_position_sub'].'</p>';
+$form_tpl .= '<div id="siblingPicker" class="scroll-container">';
+$form_tpl .= se_build_sibling_picker($siblings, $selected_after_page_id);
 $form_tpl .= '</div>';
+
+$form_tpl .= '</div>'; // parentPickerGroup
+
+$form_tpl .= '<script>function sePageRoleToggle() {
+    var t = document.getElementById("page_role_tree");
+    var g = document.getElementById("parentPickerGroup");
+    if (t && g) { g.style.display = t.checked ? "block" : "none"; }
+}</script>';
 
 $form_tpl .= '</div>'; // position tab
 
@@ -492,6 +476,7 @@ $form_tpl .= '</div>';
 
 $form_tpl .= se_print_form_input($input_text_page_permalink);
 $form_tpl .= se_print_form_input($input_text_page_canonical_url);
+$form_tpl .= se_print_form_input($input_text_content_tags);
 
 if($page_translation_urls != '') {
     $page_translation_urls = html_entity_decode($page_translation_urls);
@@ -931,7 +916,7 @@ $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
 $form_tpl .= '<div class="d-flex justify-content">';
-$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" hx-disabled-elt="this" class="btn btn-success w-100" name="save_page" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 if($form_mode != 'new') {
     $form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="'.$get_page_id.'">'.$lang['btn_delete'].'</button>';
 }

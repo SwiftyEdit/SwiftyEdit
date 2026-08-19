@@ -15,6 +15,7 @@ $cols = array(
 	"page_cache_type" => "VARCHAR(20) NOT NULL DEFAULT ''",
 
 	"page_parent_id" => 'INTEGER(12)',
+	"position" => 'INTEGER(12) NOT NULL DEFAULT 0',
     "page_custom_id" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "page_custom_classes" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "page_hits" => 'INTEGER(12)',

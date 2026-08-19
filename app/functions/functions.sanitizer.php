@@ -224,7 +224,7 @@ function clean_visitors_input($text) {
  */
 function se_sanitize_page_inputs($data) {
 
-    global $se_settings;
+    global $se_settings, $db_content;
 
     foreach($data as $key => $val) {
 
@@ -387,19 +387,35 @@ function se_sanitize_page_inputs($data) {
     $sanitized['page_meta_date'] = time();
     $sanitized['page_lastedit_from'] = $_SESSION['user_nick'];
 
-    // page sort
-    if($data['page_position'] == "portal") {
-        $sanitized['page_sort'] = "portal";
-    } else if($data['page_position'] == "mainpage") {
-        $sanitized['page_sort'] = (int) $data['page_order'];
-    } else if($data['page_position'] == "null") {
-        $sanitized['page_sort'] = "";
+    // page_role: single (not in the tree) / portal (this language's root) /
+    // tree (placed under a parent - see the Position tab in pages-edit.php).
+    // page_sort is only still written for 'portal' (its literal marker - see
+    // se_get_portal_page_id() - and there's no equivalent for it in the new
+    // fields) and 'single' (kept empty, matching the column default). It's
+    // *not* kept in sync for 'tree' pages any more - see
+    // install/contents/se_pages.php's "position" column doc for why.
+    //
+    // position for 'tree' pages is deliberately not set here: it needs this
+    // page's own page_id to exclude it from its own sibling query (see
+    // se_compute_child_position() in app/functions/functions.pages.php),
+    // which only exists once se_save_page()/se_update_page() have actually
+    // written the row - they compute and set it as a follow-up step.
+    $page_language = $data['page_language'] ?? '';
+    $page_role = $data['page_role'] ?? 'single';
+
+    if ($page_role === 'portal') {
+        $sanitized['page_sort'] = 'portal';
+        $sanitized['page_parent_id'] = null;
+        $sanitized['position'] = 0;
+    } else if ($page_role === 'single') {
+        $sanitized['page_sort'] = '';
+        $sanitized['page_parent_id'] = null;
+        $sanitized['position'] = 0;
     } else {
-        $page_order = (int) $data['page_order'];
-        if(strlen($page_order) < $se_settings['pagesort_minlength']) {
-            $page_order = str_pad($page_order, $se_settings['pagesort_minlength'], "0", STR_PAD_LEFT);
-        }
-        $sanitized['page_sort'] = $data['page_position'].'.'.$page_order;
+        $new_parent_id = $data['new_parent_id'] ?? '';
+        $sanitized['page_parent_id'] = $new_parent_id !== ''
+            ? (int) $new_parent_id
+            : se_get_portal_page_id($db_content, $page_language);
     }
 
     // resets

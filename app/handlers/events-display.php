@@ -19,6 +19,19 @@ $event_releasedate_time = date('H:i:s',$event_data['releasedate']);
 $event_lastedit = date('Y-m-d H:i',$event_data['lastedit']);
 $event_lastedit_from = $event_data['lastedit_from'];
 
+/* tags */
+$tags = se_get_content_tags('event', (int) $get_event_id);
+$content_tags = array();
+foreach ($tags as $tag) {
+    $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+        ?? ('/' . $swifty_slug . $mod_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+    $content_tags[] = array(
+        "tag_href" => $tag_href,
+        "tag_title" => $tag['tag_name']
+    );
+}
+$smarty->assign('content_tags', $content_tags);
+
 $event_start_day = date('d',$event_data['event_startdate']);
 $event_start_month = date('m',$event_data['event_startdate']);
 $event_start_month_text = $lang["m".$event_start_month];

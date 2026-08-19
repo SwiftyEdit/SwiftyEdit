@@ -199,6 +199,14 @@ function se_save_page($data) {
     $cnt_changes = $db_content->insert("se_pages",$insert);
     $new_page_id = $db_content->id();
 
+    // position needs this page's own page_id to exclude it from its own
+    // sibling query, so it's only known now - see se_compute_child_position()
+    if (($data['page_role'] ?? '') === 'tree') {
+        $after_page_id = ($data['insert_after_page_id'] ?? '') !== '' ? (int) $data['insert_after_page_id'] : null;
+        $position = se_compute_child_position($db_content, $sanitized_data['page_parent_id'] ?? null, $new_page_id, $after_page_id);
+        $db_content->update('se_pages', ['position' => $position], ['page_id' => $new_page_id]);
+    }
+
     if($cnt_changes->rowCount() > 0) {
         $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>","5");
@@ -207,6 +215,8 @@ function se_save_page($data) {
     } else {
         show_toast($lang['msg_error_page_saved'],'danger');
     }
+
+    se_set_content_tags('page', $new_page_id, explode(',', $data['content_tags'] ?? ''));
 
     return $new_page_id;
 }
@@ -245,6 +255,14 @@ function se_update_page($data,$id) {
         "page_id" => $id
     ]);
 
+    // position needs this page's own page_id to exclude it from its own
+    // sibling query - see se_compute_child_position()
+    if (($data['page_role'] ?? '') === 'tree') {
+        $after_page_id = ($data['insert_after_page_id'] ?? '') !== '' ? (int) $data['insert_after_page_id'] : null;
+        $position = se_compute_child_position($db_content, $sanitized_data['page_parent_id'] ?? null, $id, $after_page_id);
+        $db_content->update('se_pages', ['position' => $position], ['page_id' => $id]);
+    }
+
     if($cnt_changes->rowCount() > 0) {
         $page_title = $sanitized_data['page_title'];
         record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;","5");
@@ -253,6 +271,8 @@ function se_update_page($data,$id) {
     } else {
         show_toast($lang['msg_error_page_saved'],'danger');
     }
+
+    se_set_content_tags('page', $id, explode(',', $data['content_tags'] ?? ''));
 
 }
 
@@ -408,7 +428,7 @@ function se_build_navigation_cache($lang = null) {
 
     foreach ($languages as $language) {
 
-        $se_nav = $db_content->select("se_pages", ['page_id', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
+        $se_nav = $db_content->select("se_pages", ['page_id', 'page_parent_id', 'position', 'page_classes', 'page_hash', 'page_language', 'page_linkname', 'page_permalink', 'page_target', 'page_title', 'page_sort', 'page_status'], [
                 "AND" => [
                     "OR" => [
                         "page_status[!]" => ["draft","ghost"]
@@ -422,5 +442,212 @@ function se_build_navigation_cache($lang = null) {
 
         $cache_file = se_getNavigationCachePath($language);
         file_put_contents($cache_file, json_encode($se_nav, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}
+
+/**
+ * Page tree helpers, shared by frontend navigation (func_navigation.php) and
+ * the backend pages list / position picker (acp/core/pages/). Building
+ * blocks around page_parent_id + position instead of parsing the legacy
+ * page_sort dot-path - see the 2026_08_17_000003_page_sort_to_parent_position
+ * migration and install/contents/se_pages.php.
+ */
+
+/**
+ * Index a flat page list by page_id, for O(1) lookups (e.g. resolving a
+ * page's parent row while walking up the tree).
+ * @return array<int, array>
+ */
+function se_index_pages_by_id(array $pages): array {
+    $by_id = [];
+    foreach ($pages as $page) {
+        $by_id[(int) $page['page_id']] = $page;
+    }
+    return $by_id;
+}
+
+/**
+ * Index a flat page list by page_parent_id, each bucket already sorted by
+ * position, for O(1) "children of X" lookups. Top-level pages (NULL parent)
+ * are filed under the 'root' key.
+ * @return array<int|string, array>
+ */
+function se_index_pages_by_parent(array $pages): array {
+    $by_parent = [];
+    foreach ($pages as $page) {
+        $parent_key = $page['page_parent_id'] ?? 'root';
+        $by_parent[$parent_key][] = $page;
+    }
+    foreach ($by_parent as &$children) {
+        usort($children, function ($a, $b) {
+            return ($a['position'] <=> $b['position']) ?: ($a['page_id'] <=> $b['page_id']);
+        });
+    }
+    unset($children);
+    return $by_parent;
+}
+
+/**
+ * @param array $index result of se_index_pages_by_parent()
+ * @param int|null $parent_id null for top-level pages
+ * @return array children of $parent_id, sorted by position
+ */
+function se_get_page_children(array $index, $parent_id): array {
+    return $index[$parent_id ?? 'root'] ?? [];
+}
+
+/**
+ * Depth-first flatten of the tree rooted at $parent_id, each row tagged with
+ * a 'tree_depth' key (0 for the direct children of $parent_id). Used for
+ * indentation in flat list views (backend pages list, position picker).
+ *
+ * @param array $index result of se_index_pages_by_parent()
+ * @param int|null $parent_id where to start ("root" tree, or a subtree)
+ * @param int|null $exclude_page_id skip this page - and, since we never
+ *   recurse into a skipped page, its whole subtree. Used to keep a page
+ *   (and its descendants) out of its own "choose new parent" picker.
+ */
+function se_flatten_page_tree(array $index, $parent_id = null, int $depth = 0, ?int $exclude_page_id = null): array {
+    $flat = [];
+    foreach (se_get_page_children($index, $parent_id) as $page) {
+        if ($exclude_page_id !== null && (int) $page['page_id'] === $exclude_page_id) {
+            continue;
+        }
+        $page['tree_depth'] = $depth;
+        $flat[] = $page;
+        foreach (se_flatten_page_tree($index, (int) $page['page_id'], $depth + 1, $exclude_page_id) as $child) {
+            $flat[] = $child;
+        }
+    }
+    return $flat;
+}
+
+/**
+ * Chain of ancestor page_ids for $page_id, from the top-level page (a direct
+ * child of the portal page) down to $page_id itself - the portal page is
+ * deliberately excluded, so count($chain) is the page's nav depth (1 for a
+ * top-level page, matching the old page_sort segment-count convention).
+ * Empty for the portal page itself, or a page with no resolvable path to the
+ * portal (unsorted page, or $portal_id not given/found).
+ *
+ * @param array $pages_by_id result of se_index_pages_by_id()
+ * @param int|null $portal_id the language's portal page_id
+ */
+function se_get_page_ancestor_chain(array $pages_by_id, $page_id, $portal_id = null): array {
+    $chain = [];
+    $seen = [];
+
+    while ($page_id !== null && isset($pages_by_id[$page_id]) && !isset($seen[$page_id])) {
+        if ($portal_id !== null && (int) $page_id === (int) $portal_id) {
+            break; // stop at (and exclude) the portal page
+        }
+        $seen[$page_id] = true;
+        array_unshift($chain, (int) $page_id);
+        $page_id = $pages_by_id[$page_id]['page_parent_id'];
+    }
+
+    return $chain;
+}
+
+/**
+ * @return int|null the page_id of $language's portal page, or null if it
+ *   has none (shouldn't normally happen, but a page_role='tree' page with
+ *   "top level" chosen needs somewhere to point page_parent_id at)
+ */
+function se_get_portal_page_id($db_content, string $language): ?int {
+    $portal = $db_content->get('se_pages', ['page_id'], [
+        'page_sort' => 'portal',
+        'page_language' => $language,
+    ]);
+    return is_array($portal) ? (int) $portal['page_id'] : null;
+}
+
+/**
+ * Compute the position for placing $moving_page_id as a child of $parent_id,
+ * immediately after $after_page_id (first child if null). Uses the midpoint
+ * of the surrounding siblings' positions (matching the 10/20/30-with-gaps
+ * scheme the page_sort->parent_id/position migration seeded); if there's no
+ * room left (adjacent siblings with no gap between them), renumbers all of
+ * $parent_id's children first and retries once - see se_renumber_children().
+ *
+ * Called after the page itself has already been inserted/updated (see
+ * se_save_page()/se_update_page() in this file), since it needs the page's
+ * own page_id to exclude it from its own sibling query.
+ *
+ * @param int|null $parent_id
+ * @param int $moving_page_id
+ * @param int|null $after_page_id null = place as the first child
+ */
+function se_compute_child_position($db_content, ?int $parent_id, int $moving_page_id, ?int $after_page_id): int {
+
+    $position = se_find_gap_position($db_content, $parent_id, $moving_page_id, $after_page_id);
+
+    if ($position === null) {
+        se_renumber_children($db_content, $parent_id, $moving_page_id);
+        $position = se_find_gap_position($db_content, $parent_id, $moving_page_id, $after_page_id) ?? 10;
+    }
+
+    return $position;
+}
+
+/**
+ * @return int|null null means "no room for a clean midpoint" - caller should
+ *   renumber the siblings and retry
+ */
+function se_find_gap_position($db_content, ?int $parent_id, int $moving_page_id, ?int $after_page_id): ?int {
+
+    $siblings = $db_content->select('se_pages', ['page_id', 'position'], [
+        'page_parent_id' => $parent_id,
+        'page_id[!]' => $moving_page_id,
+        'ORDER' => ['position' => 'ASC'],
+    ]);
+
+    if (empty($siblings)) {
+        return 10;
+    }
+
+    if ($after_page_id === null) {
+        $first_position = (int) $siblings[0]['position'];
+        return $first_position > 1 ? intdiv($first_position, 2) : null;
+    }
+
+    foreach ($siblings as $i => $sibling) {
+        if ((int) $sibling['page_id'] !== $after_page_id) {
+            continue;
+        }
+
+        $prev_position = (int) $sibling['position'];
+        $next_position = isset($siblings[$i + 1]) ? (int) $siblings[$i + 1]['position'] : null;
+
+        if ($next_position === null) {
+            return $prev_position + 10;
+        }
+
+        $mid = intdiv($prev_position + $next_position, 2);
+        return $mid > $prev_position ? $mid : null;
+    }
+
+    // $after_page_id is stale (no longer a child of $parent_id) - append at the end
+    $last_sibling = end($siblings);
+    return ((int) $last_sibling['position']) + 10;
+}
+
+/**
+ * Reassign fresh 10/20/30... positions to all children of $parent_id (except
+ * $exclude_page_id), in their current order. Only called by
+ * se_compute_child_position() when the existing gaps have run out.
+ */
+function se_renumber_children($db_content, ?int $parent_id, int $exclude_page_id): void {
+
+    $siblings = $db_content->select('se_pages', ['page_id'], [
+        'page_parent_id' => $parent_id,
+        'page_id[!]' => $exclude_page_id,
+        'ORDER' => ['position' => 'ASC'],
+    ]);
+
+    $position = 10;
+    foreach ($siblings as $sibling) {
+        $db_content->update('se_pages', ['position' => $position], ['page_id' => $sibling['page_id']]);
+        $position += 10;
     }
 }

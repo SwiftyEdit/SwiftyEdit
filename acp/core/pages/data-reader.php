@@ -55,22 +55,22 @@ if($_REQUEST['action'] == 'list_pages') {
         $limit_start = ($limit_start*$nbr_show_items);
     }
 
+    // "sorted" (type 1) = part of the page tree: has a parent, or is the
+    // portal itself (the portal's own page_parent_id is NULL, like an
+    // unsorted page's - page_sort = 'portal' is what tells them apart).
+    // "single" (type 2) = not in the tree at all.
     if ($type == 1) {
         $filter_base = [
-            'AND' => [
-                'AND' => [
-                    'page_sort[!]' => null,
-                    'page_sort[!] #empty' => ''
-                ]
+            'OR' => [
+                'page_parent_id[!]' => null,
+                'page_sort' => 'portal'
             ]
         ];
     } else {
         $filter_base = [
             'AND' => [
-                'OR' => [
-                    'page_sort' => null,
-                    'page_sort #empty' => ''
-                ]
+                'page_parent_id' => null,
+                'page_sort[!]' => 'portal'
             ]
         ];
     }
@@ -175,20 +175,60 @@ if($_REQUEST['action'] == 'list_pages') {
         ]
     ];
 
-    if($type == 1) {
-        $db_order = [
-            "ORDER" => Medoo::raw("page_language ASC, page_sort *1 ASC, LENGTH(page_sort), page_sort ASC")
-        ];
-    }
-
     $db_limit = [
         "LIMIT" => [$limit_start, $nbr_show_items]
     ];
 
     $pages_data_cnt = $db_content->count("se_pages", $db_where);
-    $pages_data = $db_content->select("se_pages","*",
-        $db_where+$db_order+$db_limit
-    );
+
+    if ($type == 1) {
+
+        // "sorted" pages are a tree (page_parent_id/position), not a flat
+        // SQL order - fetch everything matching the filter (typical page
+        // counts make this cheap), flatten depth-first per language in PHP,
+        // then paginate the flattened list. See se_index_pages_by_parent()/
+        // se_flatten_page_tree() in app/functions/functions.pages.php.
+        $all_matching_pages = $db_content->select("se_pages", "*", $db_where);
+
+        $pages_by_language = [];
+        foreach ($all_matching_pages as $page) {
+            $pages_by_language[$page['page_language']][] = $page;
+        }
+        ksort($pages_by_language); // page_language ASC, same primary order as before
+
+        $flattened = [];
+        foreach ($pages_by_language as $language_pages) {
+
+            $tree_index = se_index_pages_by_parent($language_pages);
+            $flat = se_flatten_page_tree($tree_index, null);
+
+            // a page whose page_parent_id doesn't resolve within this same
+            // filtered set (e.g. its parent got unsorted/deleted, or a data
+            // inconsistency) would otherwise silently vanish from the list -
+            // append it unindented instead of losing it
+            $included = [];
+            foreach ($flat as $row) {
+                $included[(int) $row['page_id']] = true;
+            }
+            foreach ($language_pages as $page) {
+                if (!isset($included[(int) $page['page_id']])) {
+                    $page['tree_depth'] = 0;
+                    $flat[] = $page;
+                }
+            }
+
+            foreach ($flat as $row) {
+                $flattened[] = $row;
+            }
+        }
+
+        $pages_data = array_slice($flattened, $limit_start, $nbr_show_items);
+
+    } else {
+        $pages_data = $db_content->select("se_pages","*",
+            $db_where+$db_order+$db_limit
+        );
+    }
 
     $nbr_pag_pages = ceil($pages_data_cnt/$nbr_show_items);
     
@@ -314,6 +354,35 @@ if(isset($_REQUEST['content_field'])) {
     exit;
 }
 
+// rebuild the "insert after which sibling" radio list on the Position tab
+// when the parent dropdown changes (see se_build_parent_options() /
+// se_build_sibling_picker() in functions.php) - an HTMX partial swap
+// targeting #siblingPicker.
+if ($_REQUEST['action'] == 'page_siblings') {
+    require_once __DIR__ . '/functions.php';
+
+    $language = $_REQUEST['language'] ?? '';
+    $exclude_page_id = (int) ($_REQUEST['exclude_page_id'] ?? 0);
+    $parent_value = $_REQUEST['new_parent_id'] ?? '';
+
+    $parent_id = $parent_value !== '' ? (int) $parent_value : se_get_portal_page_id($db_content, $language);
+
+    $siblings = $db_content->select('se_pages', ['page_id', 'page_linkname', 'page_title', 'page_permalink', 'position'], [
+        'page_parent_id' => $parent_id,
+        'page_id[!]' => $exclude_page_id ?: -1,
+        'ORDER' => ['position' => 'ASC'],
+    ]);
+
+    // a freshly chosen parent has no "current position" to preselect -
+    // default to appending at the end (or "at the start" if it has no
+    // children yet)
+    $last_sibling = end($siblings);
+    $selected_after_page_id = $last_sibling !== false ? (int) $last_sibling['page_id'] : null;
+
+    echo se_build_sibling_picker($siblings, $selected_after_page_id);
+    exit;
+}
+
 // show snapshots of pages
 if(isset($_REQUEST['snapshots']) && is_numeric($_REQUEST['snapshots'])) {
     $snapshot_id = (int) $_REQUEST['snapshots'];
@@ -407,6 +476,20 @@ function se_list_pages($data) {
 
         $page_id = $data[$i]['page_id'];
         $page_sort = $data[$i]['page_sort'];
+
+        // the {item-pagesort} badge: page_sort itself is only a frozen
+        // snapshot from the page_sort->parent_id/position migration and
+        // isn't kept in sync by new saves - show the real position instead.
+        // tree_depth is only set on type==1 (sorted) rows, see the flatten
+        // above; single/unsorted pages show nothing here, same as before.
+        if ($page_sort == 'portal') {
+            $page_position_display = 'portal';
+        } elseif (isset($data[$i]['tree_depth'])) {
+            $page_position_display = (string) ($data[$i]['position'] ?? '');
+        } else {
+            $page_position_display = '';
+        }
+
         $page_linkname = $data[$i]['page_linkname'];
         $page_title = $data[$i]['page_title'];
         $page_description = $data[$i]['page_meta_description'];
@@ -463,8 +546,9 @@ function se_list_pages($data) {
             $page_linkname = $icon['home'].' ' . $page_linkname;
         }
 
-        $points_of_page = substr_count($page_sort, '.');
-        $indent = ($points_of_page)*10 . 'px';
+        // tree_depth is set by the type==1 (sorted) tree flatten above;
+        // single/unsorted pages have no tree position, so no indent
+        $indent = ($data[$i]['tree_depth'] ?? 0)*10 . 'px';
 
         if($page_status == "public") {
             $item_class = 'page-list-item-public';
@@ -545,7 +629,7 @@ function se_list_pages($data) {
         $replace = array(
             $status_label,$page_linkname,$page_title,$page_thumb_src,$lang['edit'],
             $page_modul,$item_class,$indent,$edit_button,$duplicate_button,$info_button,
-            $page_comments_link,$page_permalink,$last_edit,$page_sort, $show_template_name,
+            $page_comments_link,$page_permalink,$last_edit,$page_position_display, $show_template_name,
             $page_redirect,$frontend_link,$page_description,$page_lang_thumb,$label,$pi,$hidden_csrf_token
         );
 

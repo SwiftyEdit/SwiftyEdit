@@ -64,6 +64,19 @@ if ($show_wishlist_button) {
 $hits = (int) $product_data['hits'];
 se_increase_product_hits($get_product_id);
 
+/* tags */
+$tags = se_get_content_tags('product', (int) $get_product_id);
+$content_tags = array();
+foreach ($tags as $tag) {
+    $tag_href = se_get_tagged_page_url($tag['tag_name_clean'], $page_contents['page_language'])
+        ?? ('/' . $swifty_slug . $mod_slug . '?tag=' . urlencode($tag['tag_name_clean']));
+    $content_tags[] = array(
+        "tag_href" => $tag_href,
+        "tag_title" => $tag['tag_name']
+    );
+}
+$smarty->assign('content_tags', $content_tags);
+
 // get the product-page by 'type_of_use' and $languagePack
 // we need this if we link to product variants
 // if $swifty_slug is not equal, we set a canonical link
