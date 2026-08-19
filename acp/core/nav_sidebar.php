@@ -120,6 +120,9 @@ echo '<li><a class="sidebar-nav '.($subinc == "posts" ? 'sidebar-nav-active' :''
 echo '<li><a class="sidebar-nav '.($subinc == "shop" ? 'sidebar-nav-active' :'').'" href="/admin/settings/shop/">'.$icon['dot'].' '.$lang['nav_btn_shop'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "events" ? 'sidebar-nav-active' :'').'" href="/admin/settings/events/">'.$icon['dot'].' '.$lang['nav_btn_events'].'</a></li>';
 echo '<li><a class="sidebar-nav '.($subinc == "labels" ? 'sidebar-nav-active' :'').'" href="/admin/settings/labels/">'.$icon['dot'].' '.$lang['labels'].'</a></li>';
+if ($db_type == 'sqlite') {
+    echo '<li><a class="sidebar-nav '.($subinc == "database" ? 'sidebar-nav-active' :'').'" href="/admin/settings/database/">'.$icon['dot'].' '.$lang['nav_btn_database'].'</a></li>';
+}
 echo '</ul>';
 echo '</div>';
 echo '</li>';

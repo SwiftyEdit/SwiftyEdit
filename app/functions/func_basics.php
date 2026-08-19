@@ -871,15 +871,12 @@ function se_increase_pageimpression($id) {
         return;
     }
 
-    $counter = $db_content->get("se_pages", "page_hits", [
-            "page_id" => $id
-        ]);
-
-
-    $set_counter = ($counter !== '' && $counter !== null) ? ((int)$counter + 1) : 1;
-
+    // atomic increment - a separate get()+update() would race under concurrent
+    // requests and silently lose hits (each request reading the same value
+    // before either has written it back). page_hits has no NOT NULL default,
+    // so COALESCE it - NULL + 1 would otherwise stay NULL forever.
     $db_content->update("se_pages", [
-        "page_hits" => $set_counter
+        "page_hits" => \Medoo\Medoo::raw("COALESCE(<page_hits>, 0) + 1")
     ], [
         "page_id" => $id
     ]);

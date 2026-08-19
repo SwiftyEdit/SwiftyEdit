@@ -971,14 +971,14 @@ function se_increase_downloads_hits($product_id) {
 
     global $db_posts;
 
-    $product_file_hits = $db_posts->get("se_products","file_attachment_hits", [
-        "id" => $product_id
-    ]);
+    // User-Agent
+    if (se_is_bot()) {
+        return;
+    }
 
-    $product_file_hits = ((int) $product_file_hits)+1;
-
-    $update = $db_posts->update("se_products", [
-        "file_attachment_hits" => $product_file_hits
+    // atomic increment, NULL-safe (see se_increase_product_hits below)
+    $db_posts->update("se_products", [
+        "file_attachment_hits" => \Medoo\Medoo::raw("COALESCE(<file_attachment_hits>, 0) + 1")
     ],[
         "id" => $product_id
     ]);
@@ -1002,14 +1002,11 @@ function se_increase_product_hits($product_id) {
         return;
     }
 
-    $product_data_hits = $db_posts->get("se_products","hits", [
-        "id" => $product_id
-    ]);
-
-    $product_data_hits = ((int) $product_data_hits)+1;
-
+    // atomic increment - a separate get()+update() would race under concurrent
+    // requests and silently lose hits. COALESCE guards against a NULL start
+    // value (no NOT NULL default on this column).
     $db_posts->update("se_products", [
-        "hits" => $product_data_hits
+        "hits" => \Medoo\Medoo::raw("COALESCE(<hits>, 0) + 1")
     ],[
         "id" => $product_id
     ]);
