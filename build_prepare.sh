@@ -81,3 +81,23 @@ find "${BUILD_DIR}/plugins/" -name '*config.php' -type f -delete
 find "${BUILD_DIR}/acp" "${BUILD_DIR}/app" "${BUILD_DIR}/install" "${BUILD_DIR}/languages" "${BUILD_DIR}/vendor" "${BUILD_DIR}/public/assets/themes/administration" "${BUILD_DIR}/public/assets/themes/default" -type f | sed "s|^${BUILD_DIR}/||" | jq -R -s -c 'split("\n")[:-1]' > "${BUILD_DIR}/whitelist.json"
 
 echo "Build $BUILD ready with whitelist.json"
+
+# Strip macOS metadata that can sneak into the build via rsync from a Mac
+# working copy (Finder .DS_Store files, AppleDouble resource-fork files),
+# so the release zip stays clean.
+find "${BUILD_DIR}" -type f \( -name '.DS_Store' -o -name '._*' \) -delete
+find "${BUILD_DIR}" -type d -name '__MACOSX' -exec rm -rf '{}' +
+
+# check zip
+if ! command -v zip &> /dev/null; then
+    echo "Error: zip could not be found. Please install zip to create the release archive."
+    exit 1
+fi
+
+# Zip the build for distribution. -X drops extra file attributes
+# (resource forks/ACLs) so no macOS-specific cruft ends up in the archive.
+ZIP_NAME="${BUILD}.zip"
+rm -f "dist/${ZIP_NAME}"
+(cd dist && zip -rq -X "${ZIP_NAME}" "${BUILD}")
+
+echo "Created release archive: dist/${ZIP_NAME}"
