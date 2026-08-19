@@ -40,12 +40,19 @@
  */
 function se_render_branding_preview(
     string $target,
-    string $current_filename,
+    ?string $current_filename,
     string $branding_web_path,
     string $delete_uri,
-    string $remove_label = 'Remove',
-    string $confirm_text = 'Are you sure you want to delete this file?'
+    ?string $remove_label = 'Remove',
+    ?string $confirm_text = 'Are you sure you want to delete this file?'
 ): string {
+
+    // existing installs may still have these settings as SQL NULL rather than
+    // an empty string (never saved/upgraded pre-dating this feature) - treat
+    // that the same as "not set" instead of letting the typed params below reject it
+    $current_filename = $current_filename ?? '';
+    $remove_label = $remove_label ?? 'Remove';
+    $confirm_text = $confirm_text ?? 'Are you sure you want to delete this file?';
 
     $preview_id = 'branding-preview-' . $target;
     $has_file = ($current_filename !== '' && $current_filename !== 'null');
@@ -99,20 +106,28 @@ function se_render_branding_preview(
  */
 function se_render_branding_field(
     string $target,
-    string $label,
-    string $current_filename,
+    ?string $label,
+    ?string $current_filename,
     string $branding_web_path,
     string $upload_uri,
     string $delete_uri,
     string $csrf_token,
-    string $remove_label,
-    string $confirm_text,
+    ?string $remove_label,
+    ?string $confirm_text,
     int $max_w = 0,
     int $max_h = 0,
     array $extra_meta = [],
     string $hint = '',
-    string $unchanged = ''
+    ?string $unchanged = ''
 ): string {
+
+    // see se_render_branding_preview() - pre-existing installs can have these
+    // settings as SQL NULL instead of an empty string
+    $label = $label ?? '';
+    $current_filename = $current_filename ?? '';
+    $remove_label = $remove_label ?? 'Remove';
+    $confirm_text = $confirm_text ?? 'Are you sure you want to delete this file?';
+    $unchanged = $unchanged ?? '';
 
     $dropzone_id = 'branding-dropzone-' . $target;
 
