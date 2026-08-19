@@ -113,6 +113,14 @@ $color-mode-type: data;
 
 }
 
+// Uppy's own dark theme (see node_modules/@uppy/dashboard/dist/style.css)
+// only overrides the background of .uppy-Dashboard-inner, not its border,
+// leaving a light border behind in dark mode - align it with the widget
+// border token used everywhere else in the backend
+[data-bs-theme="dark"] .uppy-Dashboard-inner {
+  border-color: var(--#{$prefix}widget-border);
+}
+
 
 ::selection {
   background-color: $primary;

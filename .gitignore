@@ -50,6 +50,7 @@ config_database.php
 
 /public/assets/config.php
 /public/assets/avatars/*
+/public/assets/branding/*
 /public/assets/cache/active_mods.php
 /public/assets/files/*
 /public/assets/galleries/*

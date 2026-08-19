@@ -66,6 +66,32 @@ document.addEventListener('htmx:afterRequest', function(evt) {
 import htmx from "htmx.org/dist/htmx.esm";
 window.htmx = htmx;
 
+const _initializedBrandingDropzones = new WeakSet();
+
+// keep every Uppy Dashboard (global upload modal + branding dropzones) in
+// sync with the ACP's own light/dark toggle (see components/color-mode.js) -
+// Uppy has no idea that toggle exists, so without this its Dashboard always
+// renders in light mode regardless of the rest of the backend
+function currentBsTheme() {
+    return document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+}
+
+const _uppyInstancesForTheme = [];
+
+function registerUppyThemeSync(uppyInstance) {
+    _uppyInstancesForTheme.push(uppyInstance);
+}
+
+new MutationObserver(function () {
+    var theme = currentBsTheme();
+    _uppyInstancesForTheme.forEach(function (uppyInstance) {
+        var dashboard = uppyInstance.getPlugin('Dashboard');
+        if (dashboard) {
+            dashboard.setOptions({ theme: theme });
+        }
+    });
+}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
 htmx.onLoad(function(content) {
 
     var sortables_src = content.querySelectorAll(".sortable_source");
@@ -137,6 +163,74 @@ htmx.onLoad(function(content) {
             });
         }
     }
+
+    // branding uploads (page logo / page thumbnail / favicon) - one small Uppy
+    // Dashboard per field, mounted once and left in place; each upload replaces
+    // itself immediately (autoProceed) and only swaps its own preview fragment.
+    // See acp/core/settings/branding-widget.php for the markup/data-* this reads.
+    var brandingDropzones = content.matches && content.matches('.branding-dropzone')
+        ? [content]
+        : content.querySelectorAll('.branding-dropzone');
+
+    brandingDropzones.forEach(function (dropzoneEl) {
+        if (_initializedBrandingDropzones.has(dropzoneEl)) return;
+        _initializedBrandingDropzones.add(dropzoneEl);
+
+        var meta = JSON.parse(dropzoneEl.dataset.meta);
+        var previewTargetId = dropzoneEl.dataset.previewTarget;
+
+        var brandingUppy = new Uppy({
+            restrictions: { maxNumberOfFiles: 1, allowedFileTypes: ['image/*'] },
+            autoProceed: true
+        })
+            .use(Dashboard, {
+                inline: true,
+                target: dropzoneEl,
+                width: '100%',
+                height: 150,
+                proudlyDisplayPoweredByUppy: false,
+                theme: currentBsTheme(),
+                // we render our own server-side preview after upload, and the
+                // file is cleared right after completion - Uppy's own thumbnail
+                // would just race that removal and log a spurious warning
+                disableThumbnailGenerator: true
+            })
+            .use(XHRUpload, {
+                endpoint: dropzoneEl.dataset.uploadUri,
+                fieldName: 'file',
+                formData: true,
+                responseType: 'text',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                // @uppy/xhr-upload 5.x passes the raw XMLHttpRequest here, not
+                // the response text - our endpoint returns an HTML fragment
+                // (not JSON), so read xhr.responseText directly
+                getResponseData: function (xhr) {
+                    return { html: xhr.responseText };
+                }
+            });
+
+        brandingUppy.setMeta(meta);
+        registerUppyThemeSync(brandingUppy);
+
+        // 'complete' (not 'upload-success') so this runs after Uppy's own
+        // internal post-processing (e.g. thumbnail generation) has settled -
+        // clearing the file earlier races with that and Dashboard shows a
+        // spurious "upload failed" even though the request itself succeeded
+        brandingUppy.on('complete', function (result) {
+            var successfulFile = result.successful && result.successful[0];
+            var previewEl = document.getElementById(previewTargetId);
+            if (successfulFile && previewEl && successfulFile.response
+                && typeof successfulFile.response.body?.html === 'string') {
+                previewEl.outerHTML = successfulFile.response.body.html;
+                // this swap didn't go through htmx, so the htmx:afterRequest-driven
+                // registerElements() call won't pick up the new popover trigger
+                registerElements();
+            }
+            brandingUppy.clear();
+        });
+    });
 })
 
 // image picker - sortablejs
@@ -234,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uppy.use(Dashboard, {
         inline: true,
         target: '.dropper-form',
+        theme: currentBsTheme(),
     })
     uppy.use(XHRUpload, {
         endpoint: '/admin-xhr/widgets/upload/',
@@ -241,6 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
+
+    registerUppyThemeSync(uppy);
 
     uppy.on('complete', (result) => {
         htmx.trigger("body", "update_uploads_list");

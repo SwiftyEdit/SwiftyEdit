@@ -67,6 +67,7 @@ function checkexistingdir($path) {
 
 $check_this[] = SE_CONTENT . "/";
 $check_this[] = SE_PUBLIC . "/assets/avatars";
+$check_this[] = SE_PUBLIC . "/assets/branding";
 $check_this[] = SE_PUBLIC . '/assets/files';
 $check_this[] = SE_PUBLIC . "/assets/galleries";
 $check_this[] = SE_PUBLIC . '/assets/images';

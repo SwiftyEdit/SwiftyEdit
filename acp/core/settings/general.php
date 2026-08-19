@@ -4,7 +4,10 @@
  * @var array $se_settings
  * @var array $icon
  * @var array $lang
+ * @var string $se_branding_path
  */
+
+require_once __DIR__ . '/branding-widget.php';
 
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
 echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</div>';
@@ -12,6 +15,7 @@ echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang
 
 $writer_uri = '/admin-xhr/settings/general/write/';
 $reader_uri = '/admin-xhr/settings/general/read/';
+$branding_upload_uri = '/admin-xhr/settings/general/upload/';
 
 $input_page_name = [
     "input_name" => "prefs_pagename",
@@ -79,49 +83,6 @@ $input_pagesort_minlength = [
     "type" => "text"
 ];
 
-
-$arr_Images = se_get_all_images_rec();
-$select_images = [];
-foreach ($arr_Images as $k => $v) {
-    $select_images[basename($v)] = $v;
-}
-
-$select_nothing = ['label_no_file_selected' => "null"];
-$select_images = $select_nothing+$select_images;
-
-$input_select_page_logo = [
-    "input_name" => "prefs_pagelogo",
-    "input_value" => $se_settings['pagelogo'],
-    "label" => 'Page Logo',
-    "options" => $select_images,
-    "type" => "select"
-];
-
-$input_select_thumbnail = [
-    "input_name" => "prefs_pagethumbnail",
-    "input_value" => $se_settings['pagethumbnail'],
-    "label" => $lang['label_pages_thumbnail'],
-    "options" => $select_images,
-    "type" => "select"
-];
-
-$select_favicons = [];
-foreach ($arr_Images as $k => $v) {
-    if(!str_ends_with("$v",'.png')) {
-        continue;
-    }
-    $select_favicons[basename($v)] = $v;
-}
-
-$select_favicons = $select_nothing+$select_favicons;
-
-$input_select_favicon = [
-    "input_name" => "prefs_pagefavicon",
-    "input_value" => $se_settings['pagefavicon'],
-    "label" => 'Favicon',
-    "options" => $select_favicons,
-    "type" => "select"
-];
 
 $input_max_img_width = [
     "input_name" => "prefs_maximagewidth",
@@ -364,11 +325,57 @@ echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
 
 echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
 
-
 $input_group = [
-    se_print_form_input($input_select_page_logo),
-    se_print_form_input($input_select_thumbnail),
-    se_print_form_input($input_select_favicon)
+    se_render_branding_field(
+        'logo',
+        'Page Logo',
+        $se_settings['pagelogo'],
+        $se_branding_path,
+        $branding_upload_uri,
+        $writer_uri,
+        $_SESSION['token'],
+        $lang['btn_delete'],
+        $lang['msg_confirm_delete_file'],
+        (int) $se_settings['maximagewidth'],
+        (int) $se_settings['maximageheight'],
+        [],
+        '',
+        $se_settings['uploads_remain_unchanged']
+    ),
+    se_render_branding_field(
+        'thumbnail',
+        $lang['label_pages_thumbnail'],
+        $se_settings['pagethumbnail'],
+        $se_branding_path,
+        $branding_upload_uri,
+        $writer_uri,
+        $_SESSION['token'],
+        $lang['btn_delete'],
+        $lang['msg_confirm_delete_file'],
+        (int) $se_settings['maximagewidth'],
+        (int) $se_settings['maximageheight'],
+        [],
+        '',
+        $se_settings['uploads_remain_unchanged']
+    ),
+    se_render_branding_field(
+        'favicon',
+        'Favicon',
+        $se_settings['pagefavicon'],
+        $se_branding_path,
+        $branding_upload_uri,
+        $writer_uri,
+        $_SESSION['token'],
+        $lang['btn_delete'],
+        $lang['msg_confirm_delete_file'],
+        0,
+        0,
+        [
+            'manifest_name' => $se_settings['pagetitle'],
+            'manifest_short_name' => $se_settings['pagename']
+        ],
+        'PNG, JPG or WebP, at least 512×512px. A full icon set (incl. Apple Touch Icon) is generated automatically.'
+    )
 ];
 
 echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);

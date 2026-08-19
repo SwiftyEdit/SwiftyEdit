@@ -57,6 +57,10 @@ $img_tmb_path = "assets/images_tmb";
 $files_path = "assets/files";
 $themes_path = "assets/themes";
 
+/* site branding (logo, page thumbnail, favicon set) - kept separate from
+ * assets/images so it never shows up in the media library / uploads browser */
+$se_branding_path = "assets/branding";
+
 /* Plugin/Addon upload - disabled by default for security reasons
  * To enable, add the following to SE_CONTENT/config.php:
  * $se_upload_addons = true;
