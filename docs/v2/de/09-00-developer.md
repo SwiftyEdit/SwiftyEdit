@@ -43,6 +43,14 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   mit Multisite, `2` bereitgestelltes Multisite-Hosting. Multisite ist experimentell und noch
   nicht vollständig ausgereift - verlasse Dich in eigenem Code nicht darauf, ohne den jeweiligen
   Codepfad selbst zu prüfen.
+* __Bot-Liste__ (`$se_bot_list` in `config.php`) - eine einfache Liste von Teilstrings
+  (`googlebot`, `bingbot`, ...), die case-insensitiv gegen den `User-Agent` des Besuchers
+  geprüft werden, per `se_is_bot()`. Wird verwendet, um Crawler von den Hit-Countern
+  (Seitenaufrufe, Produkt-/Blog-/Event-Aufrufe, Datei-Downloads) auszuschließen, damit sie
+  weder die Zahlen aufblähen noch bei viel Traffic unnötige Schreiblast erzeugen. Überschreibe
+  die Liste in `data/config.php`, wenn Du Einträge hinzufügen oder entfernen willst - es ist
+  ein simpler Substring-Abgleich, keine vollständige Bot-Erkennung, also eher "gut genug für
+  Zähler" als eine Sicherheitsmaßnahme.
 
 ## Themes
 

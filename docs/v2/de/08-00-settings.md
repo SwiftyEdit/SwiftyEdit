@@ -128,6 +128,32 @@ aktiviert werden sollen.
 Sämtliche Einträge und Daten im Backend können mit Labels versehen werden.
 Wenn Du viele Daten und Einträge verwaltest, helfen diese Labels den Überblick zu behalten.
 
+## Database {#database}
+Dieser Tab erscheint nur, wenn die Seite mit SQLite betrieben wird (bei MySQL-Installationen
+wird er ausgeblendet, da dort nicht relevant).
+
+**Enable WAL mode** schaltet den Journal-Modus von SQLite vom Standard `DELETE` auf `WAL`
+(Write-Ahead Logging) um. Im `DELETE`-Modus sperrt ein Schreibvorgang die gesamte
+Datenbankdatei, sodass gleichzeitige Lesezugriffe warten müssen, bis der Schreibvorgang
+abgeschlossen ist. Im `WAL`-Modus können Lesezugriffe weiterlaufen, während geschrieben
+wird, statt die komplette Datei zu sperren. Auf Seiten mit viel gleichzeitigem Traffic kann
+das `database is locked`-Fehler und Zugriffszeiten spürbar reduzieren. Die Einstellung wird
+sofort auf alle drei SQLite-Datenbanken (content, user, posts) angewendet und lässt sich
+jederzeit wieder deaktivieren - es handelt sich um eine dauerhafte Eigenschaft der
+Datenbankdateien, die nicht bei jedem Request neu gesetzt werden muss.
+
+Zwei Dinge solltest Du vor dem Aktivieren wissen:
+
+- **Storage:** WAL-Modus benötigt funktionierendes Shared-Memory-Locking auf dem
+  Dateisystem. Auf normalem lokalem Storage ist das unproblematisch, auf
+  Netzwerk-Dateisystemen (z. B. NFS) oder bestimmten nicht-lokalen Docker-Volume-Mounts
+  kann es unzuverlässig sein.
+- **Backups:** Der WAL-Modus legt zwei zusätzliche Dateien (`-wal` und `-shm`) neben jeder
+  Datenbankdatei an. Ein Backup-Prozess, der nur die `.sqlite3`-Datei kopiert, kann aktuelle,
+  noch nicht in die Hauptdatei übernommene Änderungen verpassen. Stelle sicher, dass Dein
+  Backup die `-wal`/`-shm`-Dateien mit einschließt, oder führe vor dem Kopieren einen
+  Checkpoint aus (`PRAGMA wal_checkpoint(TRUNCATE)`).
+
 ---
 
 ## Update {#update}

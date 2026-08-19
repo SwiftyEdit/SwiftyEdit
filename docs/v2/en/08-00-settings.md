@@ -119,6 +119,29 @@ should be activated.
 Most entries and data in the Backend can be provided with labels.
 If you manage a lot of data and entries, these labels help you to keep an overview.
 
+## Database {#database}
+This tab only appears when the site runs on SQLite (it is hidden on MySQL installations,
+where it does not apply).
+
+**Enable WAL mode** switches SQLite's journal mode from the default `DELETE` mode to
+`WAL` (Write-Ahead Logging). In `DELETE` mode, a write locks the entire database file, so
+concurrent reads have to wait until the write is finished. `WAL` mode lets reads continue
+while a write is in progress, instead of locking the whole file. On a site with a lot of
+concurrent traffic, this can noticeably reduce `database is locked` errors and response
+times. The setting is applied immediately to all three SQLite databases (content, user,
+posts) and can be turned off again at any time - it's a persistent property of the
+database files, not something that needs to be re-applied on every request.
+
+Two things to know before enabling it:
+
+- **Storage:** WAL mode needs working shared-memory locking on the filesystem. It is safe
+  on normal local storage, but can be unreliable on network filesystems (e.g. NFS) or
+  certain non-local Docker volume mounts.
+- **Backups:** WAL mode adds two extra files (`-wal` and `-shm`) next to each database
+  file. A backup process that only copies the `.sqlite3` file can miss recent changes that
+  haven't been checkpointed yet. Make sure your backup includes the `-wal`/`-shm` files, or
+  runs a checkpoint (`PRAGMA wal_checkpoint(TRUNCATE)`) before copying.
+
 ---
 
 ## Update {#update}
