@@ -69,6 +69,8 @@
   "no_snippet_selected": "Не е избран фрагмент",
   "labels": "Labels",
   "categories": "Категории",
+  "tags": "Tags",
+  "label_tags": "Tags",
   "overview": "Преглед",
   "label.date": "Дата",
   "label.password": "Парола",

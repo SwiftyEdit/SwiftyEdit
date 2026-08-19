@@ -69,6 +69,8 @@
   "no_snippet_selected": "Ningún Snippet seleccionado",
   "labels": "Etiquetas",
   "categories": "Categorías",
+  "tags": "Tags",
+  "label_tags": "Tags",
   "overview": "Resumen",
   "label.date": "Fecha",
   "label.password": "Contraseña",
