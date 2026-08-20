@@ -59,9 +59,33 @@ function se_smarty_function_img($params, $template)
     }
 
     // Plain HTML passthrough attributes - never touched by the filter above.
+    // isset() only, deliberately NOT "&& !== ''": a template that writes
+    // alt="{$maybe_empty_var}" means alt="" whenever that var is empty, not
+    // "no alt attribute at all" - those are not the same thing for
+    // accessibility (alt="" marks the image as decorative for screen
+    // readers; a missing alt attribute does not, and can fall back to
+    // announcing the filename instead).
     foreach (['alt', 'class', 'id', 'loading', 'width', 'height', 'title'] as $passthrough) {
-        if (isset($params[$passthrough]) && $params[$passthrough] !== '') {
+        if (isset($params[$passthrough])) {
             $attrs[$passthrough] = $params[$passthrough];
+        }
+    }
+
+    // Auto-fill width/height when the template didn't set both explicitly,
+    // so the browser can reserve the correct box before the image loads
+    // (avoids layout shift - CLS). Only ever fills in a pair that's
+    // guaranteed to match what's actually served, never a guess: derived
+    // from "ratio" when a crop was requested (that's what will actually be
+    // served), or read from the original file when it wasn't (the served
+    // image then preserves the original's own proportions). If neither is
+    // possible to determine safely, width/height are simply omitted rather
+    // than risking a mismatched aspect ratio, which would visually distort
+    // the image (default object-fit is "fill", not "contain"/"cover").
+    if (!isset($attrs['width']) || !isset($attrs['height'])) {
+        $dims = se_img_natural_dimensions($src, $params['widths'] ?? '', $params['ratio'] ?? '');
+        if ($dims !== null) {
+            $attrs['width'] = $attrs['width'] ?? $dims[0];
+            $attrs['height'] = $attrs['height'] ?? $dims[1];
         }
     }
 
@@ -72,4 +96,55 @@ function se_smarty_function_img($params, $template)
     $html .= '>';
 
     return $html;
+}
+
+/**
+ * Compute a [width, height] pair for the <img> width/height attributes that
+ * is guaranteed to reflect the aspect ratio actually served, or null if
+ * that can't be determined safely. The absolute numbers only matter for
+ * their ratio (CSS height:auto scales the real rendered size) - this
+ * deliberately never returns a guess that risks a mismatched, visually
+ * distorting aspect ratio.
+ */
+function se_img_natural_dimensions($src, $widths, $ratio)
+{
+    $maxWidth = 0;
+    if ($widths !== '') {
+        $parsed = array_filter(array_map('intval', explode(',', $widths)), fn($w) => $w > 0);
+        if (!empty($parsed)) {
+            $maxWidth = max($parsed);
+        }
+    }
+
+    if (preg_match('/^(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$/', (string) $ratio, $m) && (float) $m[2] > 0) {
+        // A crop ratio was requested - that's what will actually be served,
+        // regardless of the original file's own proportions.
+        $ratioValue = (float) $m[1] / (float) $m[2];
+        $width = $maxWidth > 0 ? $maxWidth : 1600;
+        return [$width, (int) round($width / $ratioValue)];
+    }
+
+    // No crop ratio - the served image preserves the original file's own
+    // proportions, so read those directly. Only works for local uploads
+    // (/images/...), the same convention {img} assumes elsewhere.
+    if (!str_starts_with($src, '/images/')) {
+        return null;
+    }
+    $relative = substr($src, strlen('/images/'));
+    $resolved = se_resolve_within(SE_PUBLIC . '/assets/images', $relative);
+    if ($resolved === false || !is_file($resolved)) {
+        return null;
+    }
+    $size = @getimagesize($resolved);
+    if ($size === false || $size[0] <= 0 || $size[1] <= 0) {
+        return null;
+    }
+
+    if ($maxWidth > 0) {
+        // Scale the real file's ratio to the largest requested srcset
+        // width, so the declared box matches the largest served variant.
+        return [$maxWidth, (int) round($maxWidth * $size[1] / $size[0])];
+    }
+
+    return [$size[0], $size[1]];
 }
