@@ -735,6 +735,29 @@ function mods_check_in() {
 
     $file = SE_CONTENT . "/cache/active_addons.json";
     file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+    /**
+     * Registry of activated plugins that ship a bootstrap-free endpoint.php,
+     * read by public/dispatch.php. This is what lets a plugin run before
+     * app.php's DB/session/Smarty bootstrap (e.g. for a fast asset endpoint)
+     * without dispatch.php trusting the request to say which plugin is
+     * allowed - only plugins that are both activated (present in $mods,
+     * straight from se_addons) AND ship an endpoint.php end up here. A
+     * plugin already gets full code-execution trust the moment it's
+     * activated (via hooks-global/hooks-frontend/global/index.php on every
+     * normal request) - this only adds one more entry point to that same,
+     * already-granted trust, it does not grant anything new.
+     */
+    $bootstrap_endpoints = [];
+    foreach ($mods as $mod) {
+        if (is_file(SE_PLUGINS . '/' . $mod . '/endpoint.php')) {
+            $bootstrap_endpoints[$mod] = true;
+        }
+    }
+    file_put_contents(
+        SE_CONTENT . '/cache/bootstrap_endpoints.json',
+        json_encode($bootstrap_endpoints, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+    );
 }
 
 /**
