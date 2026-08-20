@@ -84,7 +84,7 @@
             {if $value.product_img_src != ''}
             <div class="col-md-4">
                 <div class="teaser-image">
-                    <img src="{$value.product_img_src}" class="img-fluid">
+                    {img src="{$value.product_img_src}" widths="400,800,1200" sizes="(max-width: 767px) 100vw, (max-width: 991px) 210px, (max-width: 1199px) 290px, (max-width: 1399px) 350px, 410px" alt="{$value.product_title|escape}" class="img-fluid"}
                 </div>
             </div>
             {/if}
