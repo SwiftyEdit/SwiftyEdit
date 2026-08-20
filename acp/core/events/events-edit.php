@@ -289,7 +289,10 @@ $form_tpl = str_replace('{event_end}', $event_enddate, $form_tpl);
 $form_tpl = str_replace('{select_language}', $input_select_lang, $form_tpl);
 $form_tpl = str_replace('{author}', $post_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $post_data['slug'], $form_tpl);
-$form_tpl = str_replace('{tags}', $post_data['tags'], $form_tpl);
+// note: placeholder is {keywords}, not {tags} - the latter collides with the
+// "tags" language key (used for the site-wide content tags feature) and would
+// get overwritten by the earlier `foreach($lang as $k => $v)` replacement loop
+$form_tpl = str_replace('{keywords}', $post_data['tags'], $form_tpl);
 $form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('event', (int)($id ?? 0)), $form_tpl);
 $form_tpl = str_replace('{rss_url}', $post_data['rss_url'], $form_tpl);
 $form_tpl = str_replace('{meta_title}', $post_data['meta_title'], $form_tpl);

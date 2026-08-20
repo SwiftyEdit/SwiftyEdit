@@ -561,7 +561,7 @@
                             </div>
                             <div class="form-group">
                                 <label>{label_keywords}</label>
-                                <input type="text" class='form-control tags' name="tags" value="{tags}">
+                                <input type="text" class='form-control tags' name="tags" value="{keywords}">
                             </div>
 
                             <div class="row">

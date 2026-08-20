@@ -1077,7 +1077,10 @@ $form_tpl = str_replace('{translation_inputs}', $translation_inputs, $form_tpl);
 $form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
 $form_tpl = str_replace('{select_main_catalog_page}', $select_main_catalog_page, $form_tpl);
 
-$form_tpl = str_replace('{tags}', $product_data['tags'], $form_tpl);
+// note: placeholder is {keywords}, not {tags} - the latter collides with the
+// "tags" language key (used for the site-wide content tags feature) and would
+// get overwritten by the earlier `foreach($lang as $k => $v)` replacement loop
+$form_tpl = str_replace('{keywords}', $product_data['tags'], $form_tpl);
 $form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('product', (int)($product_data['id'] ?? 0)), $form_tpl);
 $form_tpl = str_replace('{rss_url}', $product_data['rss_url'], $form_tpl);
 $form_tpl = str_replace('{select_rss}', $select_rss, $form_tpl);
