@@ -41,6 +41,17 @@ return [
             'context' => ['page_data', 'query'],
         ],
 
+        // ----- Images -----
+
+        // Requested by the {img} Smarty function (app/functions/functions.img.php)
+        // for every tag call. An active image-processing plugin returns
+        // ['src' => ..., 'srcset' => ...] to enable responsive variants;
+        // returning the value unchanged (null) falls back to a plain <img src>.
+        'image.variants' => [
+            'type' => 'filter',
+            'context' => ['src', 'widths', 'ratio', 'fit'],
+        ],
+
     ],
 
 

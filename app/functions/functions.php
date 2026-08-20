@@ -20,6 +20,7 @@ include_once 'functions.pages.php';
 include_once 'functions.snippets.php';
 include_once 'functions.editors.php';
 include_once 'functions.tags.php';
+include_once 'functions.img.php';
 
 /**
  * Retrieves all active system preferences
