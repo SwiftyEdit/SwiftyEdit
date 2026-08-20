@@ -671,6 +671,7 @@ function mods_check_in() {
 	global $db_content;
 
     $m = [];
+    $data = [];
 
 	$mods = $db_content->select("se_addons", "addon_dir", [
 	    "addon_type" => ["module","plugin"]
@@ -679,15 +680,20 @@ function mods_check_in() {
     foreach ($mods as $mod) {
         $m[] = [
             'page_modul' => $mod,
-            'page_permalink' => 'NULL'
+            'page_permalink' => 'NULL',
+            // $pages entries (below) come from a select() with these
+            // columns - plugins/modules don't have pages, so default them
+            // to the same "empty" shape to avoid undefined-key warnings
+            // once $pages and $m are merged into $items.
+            'page_posts_categories' => '',
+            'page_type_of_use' => '',
         ];
     }
-		
-	$pages = $db_content->select("se_pages", ["page_modul","page_permalink","page_posts_categories","page_type_of_use"]);	
+
+	$pages = $db_content->select("se_pages", ["page_modul","page_permalink","page_posts_categories","page_type_of_use"]);
 	$items = array_merge($pages, $m);
-	
+
 	$cnt_items = count($items);
-	$x = 0;
 	for($i=0;$i<$cnt_items;$i++) {
 	
 		if($items[$i]['page_modul'] != "" OR
@@ -717,10 +723,6 @@ function mods_check_in() {
             if($items[$i]['page_type_of_use'] == 'tagged') {
                 $items[$i]['page_modul'] = 'se_tagged';
             }
-
-			$string .= "\$active_mods[$x]['page_modul'] = \"" . $items[$i]['page_modul'] . "\";\n";
-			$string .= "\$active_mods[$x]['page_permalink'] = \"" . $items[$i]['page_permalink'] . "\";\n";			
-			$x++;
 
             $data[] = [
                 'page_modul' => $items[$i]['page_modul'],
