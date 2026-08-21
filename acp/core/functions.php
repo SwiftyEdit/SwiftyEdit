@@ -162,8 +162,15 @@ function se_write_option($data,$module): void
 				"option_key" => $key,
 				"option_module" => $module
 			]);
-			
+
 		}
+	}
+
+	// se_get_preferences() serves the "se" module from a cache file (see
+	// app/functions/functions.php) - keep it in sync right away instead of
+	// leaving it stale until the next unrelated rebuild
+	if ($module === 'se') {
+		se_build_preferences_cache();
 	}
 }
 

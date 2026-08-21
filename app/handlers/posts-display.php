@@ -2,8 +2,8 @@
 
 $post_data = se_get_post_data($get_post_id);
 
-$hits = (int) $post_data['hits'];
-se_increase_posts_hits($get_product_id);
+$hits = (int) $post_data['post_hits'];
+se_increase_posts_hits($get_post_id);
 
 $post_teaser = text_parser(htmlspecialchars_decode($post_data['post_teaser']));
 $post_text = text_parser(htmlspecialchars_decode($post_data['post_text']));

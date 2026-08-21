@@ -11,6 +11,7 @@ $smarty->setCacheDir('../data/cache/cache/');
 $smarty->registerPlugin('modifier', 'htmlentities', 'htmlentities');
 $smarty->registerPlugin('modifier', 'strtolower', 'strtolower');
 $smarty->registerPlugin('modifier', 'trim', 'trim');
+$smarty->registerPlugin('function', 'img', 'se_smarty_function_img');
 
 $cache_id = md5($swifty_slug.$mod_slug);
 

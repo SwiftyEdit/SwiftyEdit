@@ -20,6 +20,7 @@ include_once 'functions.pages.php';
 include_once 'functions.snippets.php';
 include_once 'functions.editors.php';
 include_once 'functions.tags.php';
+include_once 'functions.img.php';
 
 /**
  * Retrieves all active system preferences
@@ -38,12 +39,73 @@ include_once 'functions.tags.php';
 
 function se_get_preferences(): array
 {
+    $prefs = se_get_preferences_from_cache();
+
+    if ($prefs !== null) {
+        return $prefs;
+    }
+
+    return se_build_preferences_cache();
+}
+
+/**
+ * path to the preferences cache file - cache directory is created on first use
+ */
+function se_getPreferencesCachePath() {
+
+    $dir = SE_CONTENT . '/cache/preferences';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    return $dir . '/options.json';
+}
+
+/**
+ * read the cached "se" module preferences
+ * @return array|null null if no valid cache file exists
+ */
+function se_get_preferences_from_cache() {
+
+    $cache_file = se_getPreferencesCachePath();
+
+    if (!file_exists($cache_file) || !is_readable($cache_file)) {
+        return null;
+    }
+
+    $content = file_get_contents($cache_file);
+    if ($content === false) {
+        return null;
+    }
+
+    $data = json_decode($content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        return null;
+    }
+
+    return $data;
+}
+
+/**
+ * rebuild the preferences cache file from the database and return the fresh data.
+ * called after every write to the "se" module options (se_write_option() in
+ * acp/core/functions.php, se_write_branding_option() in acp/core/widgets/upload.php)
+ * so the cache is never stale for longer than the request that changed it -
+ * every frontend request otherwise did a full "SELECT *" on every single
+ * page view.
+ *
+ * @return array the freshly read preferences (same shape se_get_preferences() returns)
+ */
+function se_build_preferences_cache(): array {
 
     global $db_content;
 
     $prefs = $db_content->select("se_options", "*", [
         "option_module" => "se"
     ]);
+
+    $cache_file = se_getPreferencesCachePath();
+    file_put_contents($cache_file, json_encode($prefs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
     return $prefs;
 }

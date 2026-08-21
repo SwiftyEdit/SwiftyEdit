@@ -589,23 +589,45 @@ function se_set_pagination_query($display_mode,$start) {
 /**
  * increase the hits counter
  */
- 
-function se_increase_posts_hits($post_id) {
-	
-	global $db_posts;
-	
-	$post_data_hits = $db_posts->get("se_posts","post_hits", [
-		"post_id" => $post_id
-	]);
-	
-	$post_data_hits = ((int) $post_data_hits)+1;
 
-	$update = $db_posts->update("se_posts", [
-		"post_hits" => $post_data_hits
+function se_increase_posts_hits($post_id) {
+
+	global $db_posts;
+
+	// User-Agent
+	if (se_is_bot()) {
+		return;
+	}
+
+	// atomic increment, NULL-safe (post_hits has no NOT NULL default) - see
+	// se_increase_pageimpression() in func_basics.php for why this matters
+	$db_posts->update("se_posts", [
+		"post_hits" => \Medoo\Medoo::raw("COALESCE(<post_hits>, 0) + 1")
 	],[
 		"post_id" => $post_id
 	]);
-		
+
+}
+
+/**
+ * increase the hits counter for events
+ */
+
+function se_increase_events_hits($event_id) {
+
+	global $db_posts;
+
+	// User-Agent
+	if (se_is_bot()) {
+		return;
+	}
+
+	$db_posts->update("se_events", [
+		"hits" => \Medoo\Medoo::raw("COALESCE(<hits>, 0) + 1")
+	],[
+		"id" => $event_id
+	]);
+
 }
 
 /**

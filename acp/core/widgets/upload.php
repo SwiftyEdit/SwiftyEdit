@@ -577,6 +577,10 @@ function se_write_branding_option(string $key, string $value): void {
             'option_module' => 'se'
         ]);
     }
+
+    // keep se_get_preferences()'s cache file in sync - see se_write_option()
+    // in acp/core/functions.php for the other write path that does the same
+    se_build_preferences_cache();
 }
 
 

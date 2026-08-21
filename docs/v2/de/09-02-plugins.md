@@ -58,6 +58,7 @@ Folgende Includes sind möglich:
 3. `/plugins/{plugin}/global/index.php`
 4. `/plugins/{plugin}/global/xhr.php`
 5. `/plugins/{plugin}/backend/{page|product|post}-values.php`
+6. `/plugins/{plugin}/endpoint.php`
 
 ---
 
@@ -70,6 +71,22 @@ Folgende Includes sind möglich:
    Das Plugin muss dafür aktiviert sein. Die korrekte Route ist `/xhr/plugins/{plugin}/`
 5. Wenn der Seiten-, Produkt- oder Post-Editor seinen "Addons"-Tab rendert - einmal für
    jedes Plugin, das im Backend aktiviert ist (siehe unten).
+6. Wenn eine Anfrage `/dispatch.php?p={plugin}&...` trifft (`public/dispatch.php`) - die eine
+   Ausnahme von "jede Plugin-Datei läuft innerhalb des vollständigen App-Bootstraps". Dieser
+   Einstiegspunkt überspringt `app/app.php` komplett (kein DB-Connect, keine Session, kein
+   Smarty/Twig), damit ein Plugin so schnell wie ein statisches Asset antworten kann - nützlich
+   für alles, was viele Male pro Seitenaufruf angefragt wird, wie die `srcset`-Varianten des
+   mitgelieferten `image-resizer`-Plugins. `mods_check_in()` (`acp/core/functions_addons.php`)
+   schreibt `data/cache/bootstrap_endpoints.json`, sobald ein Plugin aktiviert/deaktiviert oder
+   eine Seite gespeichert wird - dort stehen alle aktuell aktivierten Plugins (direkt aus
+   `se_addons`), die eine `endpoint.php` mitbringen. `dispatch.php` löst einen Plugin-Namen
+   ausschließlich gegen diese bereits freigegebene Liste auf, nie gegen die Anfrage selbst - ein
+   inaktives oder `endpoint.php`-loses Plugin kann darüber also nie erreichbar werden. Da ein
+   aktiviertes Plugin über die obigen Einstiegspunkte ohnehin schon volles
+   Code-Ausführungs-Vertrauen bei jeder normalen Anfrage hat, verleiht eine mitgelieferte
+   `endpoint.php` nichts Neues - nur einen weiteren, bootstrap-freien Einstiegspunkt in dasselbe
+   Vertrauen. Innerhalb von `endpoint.php` stehen nur die `SE_*`-Pfad-Konstanten aus `config.php`
+   zur Verfügung - `$db_content`/`$se_settings`/Session/etc. dürfen nicht vorausgesetzt werden.
 
 ### Addon-Felder im Seiten-/Produkt-/Post-Editor
 

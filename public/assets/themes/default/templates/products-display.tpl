@@ -10,7 +10,7 @@
 
         {if $product_img_src != ''}
         <div class="col-md-4">
-            <img src="{$product_img_src}" alt="{$product_img_alt}" title="{$product_img_title}" class="img-fluid"><br>
+            {img src="{$product_img_src}" widths="400,800,1200" sizes="(max-width: 767px) 100vw, (max-width: 991px) 210px, (max-width: 1199px) 290px, (max-width: 1399px) 350px, 410px" alt="{$product_img_alt}" title="{$product_img_title}" class="img-fluid"}<br>
             <small>{$product_img_caption}</small>
 
             {if is_array($product_show_images)}
@@ -428,7 +428,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Download</h1>
+                <p class="h1 modal-title fs-5" id="exampleModalLabel">Download</p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -461,7 +461,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="wishlistPickerModalLabel">{$lang_legend_add_to_wishlist}</h1>
+                <p class="h1 modal-title fs-5" id="wishlistPickerModalLabel">{$lang_legend_add_to_wishlist}</p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="wishlist-picker-modal-body">

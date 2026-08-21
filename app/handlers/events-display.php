@@ -2,7 +2,7 @@
 
 $event_data = se_get_event_data($get_event_id);
 $hits = (int) $event_data['hits'];
-se_increase_posts_hits($get_event_id);
+se_increase_events_hits($get_event_id);
 
 
 $event_teaser = text_parser(htmlspecialchars_decode($event_data['teaser']));

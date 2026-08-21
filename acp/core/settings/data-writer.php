@@ -4,6 +4,9 @@
  * global variables
  * @var array $lang
  * @var object $db_content
+ * @var object $db_user
+ * @var object $db_posts
+ * @var string $db_type
  * @var array $icon
  * @var array $se_settings
  * @var string $se_branding_path
@@ -191,6 +194,37 @@ if (isset($_POST['update_general'])) {
 
     se_write_option($data,'se');
     show_toast($lang['msg_success_db_changed'],'success');
+}
+
+// write database (SQLite WAL mode) settings
+if (isset($_POST['update_database']) && $db_type === 'sqlite') {
+
+    $wal_enabled = isset($_POST['prefs_wal_mode']);
+    $target_mode = $wal_enabled ? 'wal' : 'delete';
+    $sqlite_error = '';
+
+    // the journal mode is stored persistently in each database file, so this
+    // only needs to run when the admin actually toggles it - not on every request.
+    // PRAGMA journal_mode=... returns the resulting mode as a row, so it must
+    // be run through query() - exec() silently fails to apply it.
+    foreach ([$db_content, $db_user, $db_posts] as $db_conn) {
+        try {
+            $result_mode = strtolower((string) $db_conn->pdo->query('PRAGMA journal_mode = ' . $target_mode)->fetchColumn());
+            if ($result_mode !== $target_mode) {
+                $sqlite_error = 'unexpected journal_mode "'.$result_mode.'"';
+            }
+        } catch (\PDOException $e) {
+            $sqlite_error = $e->getMessage();
+        }
+    }
+
+    if ($sqlite_error === '') {
+        $data['prefs_wal_mode'] = $wal_enabled ? 'yes' : '';
+        se_write_option($data,'se');
+        show_toast($lang['msg_success_db_changed'],'success');
+    } else {
+        show_toast($lang['msg_error_wal_mode'].' '.$sqlite_error,'danger');
+    }
 }
 
 // write domain and server settings

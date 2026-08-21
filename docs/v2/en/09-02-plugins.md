@@ -58,6 +58,7 @@ The following includes are possible:
 3. `/plugins/{plugin}/global/index.php`
 4. `/plugins/{plugin}/global/xhr.php`
 5. `/plugins/{plugin}/backend/{page|product|post}-values.php`
+6. `/plugins/{plugin}/endpoint.php`
 
 ---
 
@@ -70,6 +71,20 @@ The following includes are possible:
    The plugin must be activated for this. The correct route is `/xhr/plugins/{plugin}/`
 5. When the Page, Product or Post editor renders its "Addons" tab - once for every
    plugin that is activated in the backend (see below).
+6. When a request hits `/dispatch.php?p={plugin}&...` (`public/dispatch.php`) - the one exception
+   to "every plugin file runs inside the full app bootstrap". This entry point skips
+   `app/app.php` entirely (no DB connection, no session, no Smarty/Twig) so a plugin can answer as
+   fast as a static asset - useful for something requested many times per page load, like the
+   bundled `image-resizer` plugin's `srcset` variants. `mods_check_in()`
+   (`acp/core/functions_addons.php`) writes `data/cache/bootstrap_endpoints.json` whenever a
+   plugin is activated/deactivated or a page is saved, listing every currently activated plugin
+   (straight from `se_addons`) that ships an `endpoint.php` - `dispatch.php` only ever resolves a
+   plugin name against that pre-approved list, never against the request directly, so an inactive
+   or `endpoint.php`-less plugin can never become reachable this way. Since an activated plugin
+   already has full code-execution trust on every normal request (via the entries above), shipping
+   an `endpoint.php` doesn't grant it anything new - it's one more, bootstrap-free entry point into
+   that same trust. Inside `endpoint.php`, only the `SE_*` path constants from `config.php` are
+   available - do not assume `$db_content`/`$se_settings`/session/etc. exist.
 
 ### Addon fields in the Page/Product/Post editor
 

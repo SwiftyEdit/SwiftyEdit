@@ -42,6 +42,13 @@ A few more small things worth knowing:
 * __Operating mode__ (`$se_mode` in `config.php`) - `0` self-hosting (default), `1` self-hosting
   with multisite, `2` provided multisite hosting. Multisite is experimental and not fully
   finished - don't rely on it in your own code without checking the relevant code path yourself.
+* __Bot list__ (`$se_bot_list` in `config.php`) - a plain list of substrings (`googlebot`,
+  `bingbot`, ...) matched case-insensitively against the visitor's `User-Agent` by `se_is_bot()`.
+  It's used to exclude crawlers from the hit counters (page views, product/blog/event views,
+  file downloads) so they don't inflate the numbers or add unnecessary write load on high-traffic
+  sites. Override the list in `data/config.php` if you need to add or remove entries - it's a
+  simple substring match, not a full bot-detection library, so treat it as "good enough for
+  counters", not as a security control.
 
 ## Themes
 
