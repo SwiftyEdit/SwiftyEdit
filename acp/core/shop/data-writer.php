@@ -514,14 +514,7 @@ if(isset($_POST['products_cache'])) {
 
    if($_POST['products_cache'] == 'update') {
 
-       $products = $db_posts->select("se_products", "*", [
-           "status" => ['1','3']
-       ]);
-       foreach ($products as $product) {
-           $product['context'] = 'cache';
-           $prepared = se_prepareProductData($product);
-           se_updateProductCache($product['id'], $prepared);
-       }
+       se_rebuild_all_product_cache();
        echo '<span class="badge rounded-pill text-bg-success alert-auto-close">'.$icon['check'].'</span>';
        exit;
    }

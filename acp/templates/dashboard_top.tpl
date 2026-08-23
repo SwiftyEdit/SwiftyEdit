@@ -39,6 +39,11 @@
 							<sup class="d-none d-sm-inline"><span id="countUser" hx-get="/admin-xhr/counter/read/?count=users" hx-trigger="load" class="badge bg-secondary">0</span></sup>
 						</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" data-bs-target="#cache_list" data-bs-toggle="tab">
+							{tab_cache}
+						</a>
+					</li>
 				</ul>
 			</div>
 			<div class="card-body">
@@ -52,22 +57,6 @@
 							</div>
 							<div class="row mt-auto g-1">
 								<div class="col">{btn_page_overview} {btn_new_page}</div>
-								<div class="col">
-									<div class="input-group">
-									<button hx-post="/admin-xhr/widgets/write/"
-											hx-trigger="click"
-											hx-swap="none"
-											hx-include="[name='csrf_token']"
-											name="delete_smarty_cache" class="btn btn-default ms-auto">
-											{label_btn_delete_cache}
-									</button>
-									<span id="cntCacheSize" class="input-group-text"
-										  hx-get="{reader_uri}?action=calculate_cache_size"
-										  hx-trigger="load, deleted_cache from:body">
-											0 KB
-									</span>
-									</div>
-								</div>
 							</div>
 						</div>
 					</div>
@@ -142,6 +131,15 @@
 								<div class="col">
 									{btn_user_overview}
 								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade h-100" id="cache_list">
+						<div class="d-flex flex-column h-100">
+							<div id="getCache" class="p-1 scroll-container scroll-container-h350"
+								 hx-get="{reader_uri}?action=list_cache"
+								 hx-trigger="shown.bs.tab from:[data-bs-target='#cache_list'] once, cache_rebuilt from:body">
+								<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
 							</div>
 						</div>
 					</div>

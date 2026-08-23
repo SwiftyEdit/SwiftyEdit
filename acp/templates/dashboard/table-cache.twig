@@ -1,0 +1,61 @@
+<div class="d-flex justify-content-end mb-2">
+    <button hx-post="/admin-xhr/dashboard/write/"
+            hx-vals='{"cache_target":"all","csrf_token":"{{ csrf_token }}"}'
+            hx-target="#cacheStatus_all"
+            hx-swap="innerHTML"
+            hx-indicator=".htmx-indicator"
+            class="btn btn-default btn-sm">
+        {{ icon.arrow_clockwise|raw }} {{ lang.cache_btn_rebuild_all }}
+    </button>
+    <span id="cacheStatus_all" class="ms-2 align-self-center"></span>
+</div>
+
+<div class="list-group list-group-flush">
+    {% for cache in caches %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <div>{{ cache.label }}</div>
+                <small class="text-secondary">{{ cache.size }}</small>
+            </div>
+            <div class="d-flex align-items-center">
+                <span id="cacheStatus_{{ cache.target }}" class="me-2"></span>
+                {% if cache.clear_only %}
+                    <button hx-post="/admin-xhr/dashboard/write/"
+                            hx-vals='{"cache_target":"{{ cache.target }}","csrf_token":"{{ csrf_token }}"}'
+                            hx-target="#cacheStatus_{{ cache.target }}"
+                            hx-swap="innerHTML"
+                            hx-indicator=".htmx-indicator"
+                            class="btn btn-default btn-sm" title="{{ lang.btn_delete_cache }}">
+                        {{ icon.trash|raw }} {{ lang.btn_delete_cache }}
+                    </button>
+                {% elseif cache.clear_and_rebuild %}
+                    <button hx-post="/admin-xhr/dashboard/write/"
+                            hx-vals='{"cache_target":"products_clear","csrf_token":"{{ csrf_token }}"}'
+                            hx-target="#cacheStatus_{{ cache.target }}"
+                            hx-swap="innerHTML"
+                            hx-indicator=".htmx-indicator"
+                            class="btn btn-default btn-sm me-1" title="{{ lang.btn_delete_cache }}">
+                        {{ icon.trash|raw }} {{ lang.btn_delete_cache }}
+                    </button>
+                    <button hx-post="/admin-xhr/dashboard/write/"
+                            hx-vals='{"cache_target":"products_rebuild","csrf_token":"{{ csrf_token }}"}'
+                            hx-target="#cacheStatus_{{ cache.target }}"
+                            hx-swap="innerHTML"
+                            hx-indicator=".htmx-indicator"
+                            class="btn btn-default btn-sm" title="{{ lang.cache_btn_rebuild }}">
+                        {{ icon.arrow_clockwise|raw }} {{ lang.cache_btn_rebuild }}
+                    </button>
+                {% else %}
+                    <button hx-post="/admin-xhr/dashboard/write/"
+                            hx-vals='{"cache_target":"{{ cache.target }}","csrf_token":"{{ csrf_token }}"}'
+                            hx-target="#cacheStatus_{{ cache.target }}"
+                            hx-swap="innerHTML"
+                            hx-indicator=".htmx-indicator"
+                            class="btn btn-default btn-sm" title="{{ lang.cache_btn_rebuild }}">
+                        {{ icon.arrow_clockwise|raw }} {{ lang.cache_btn_rebuild }}
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

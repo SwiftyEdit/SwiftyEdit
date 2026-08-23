@@ -333,6 +333,24 @@ function se_updateSlugMap($lang) {
 }
 
 /**
+ * rebuild the cache files (+ slug maps) for all published/hidden products
+ * called from the products overview ("update" action) and from the
+ * dashboard's central cache management tab
+ */
+function se_rebuild_all_product_cache() {
+    global $db_posts;
+
+    $products = $db_posts->select("se_products", "*", [
+        "status" => ['1', '3']
+    ]);
+    foreach ($products as $product) {
+        $product['context'] = 'cache';
+        $prepared = se_prepareProductData($product);
+        se_updateProductCache($product['id'], $prepared);
+    }
+}
+
+/**
  * @return int number of deleted files
  */
 function se_clearProductCache() {
