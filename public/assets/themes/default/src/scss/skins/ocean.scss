@@ -1,0 +1,40 @@
+// "Ocean" color skin - a vivid electric-blue/cyan alternative to the
+// default theme's purple/indigo brand palette, modeled on an actual coral
+// reef photo (deep saturated blue water, a bright cyan light shaft from
+// above). Loaded after dist/core.css when selected under Admin -> Addons ->
+// Themes (Stylesheet dropdown).
+//
+// Same approach as Sunset (see sunset.scss's own comment for the full
+// reasoning): skin-tokens() gives the baseline (primary accent, links,
+// alert/subtle tokens, light-mode surfaces - none of that needs hand-
+// tuning here, blue doesn't have the "darkens into a muddy different
+// color" problem warm hues do), then the header/footer/navbar gradients
+// and dark-mode surfaces are hand-picked from the reference photo instead
+// of formula-derived, for a richer, more electric result than one flat
+// teal can produce on its own.
+@import "skin-tokens";
+
+$skin-primary: #0f9fc4;
+$skin-primary-dark: #3dd6ef;
+
+@include skin-tokens($skin-primary, $skin-primary-dark);
+
+:root {
+  // Deep water -> ocean blue -> vivid cyan -> the light shaft itself,
+  // same shape as the reference photo's light rays.
+  --se-header-bg: linear-gradient(135deg, #0a2472 0%, #0d7ab8 40%, #22c3e6 70%, #8ff0f5 100%);
+  --se-footer-bg: linear-gradient(160deg, #072048 0%, #051530 100%);
+  --se-navbar-bg: #0d3d78;
+  --se-teaser-bg: #e3f7fb;
+}
+
+[data-bs-theme="dark"] {
+  --se-header-bg: linear-gradient(135deg, #051530 0%, #0d5a94 40%, #1ec8e6 70%, #6be0ee 100%);
+  --se-footer-bg: linear-gradient(160deg, #030d20 0%, #050a18 100%);
+  --se-teaser-bg: #0a2035;
+  --bs-body-bg: #050e24;
+  --bs-body-color: #d8f0f5;
+  --bs-border-color: #163a5c;
+  --se-widget-bg: #0a1a38;
+  --bs-heading-color: #a8ecf5;
+}

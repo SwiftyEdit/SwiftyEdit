@@ -1,0 +1,162 @@
+// Shared recipe for a color skin's custom properties (see core.scss for
+// the full token list and why exposing just these is enough to reskin the
+// whole theme). A skin only has to pick one $primary color - header,
+// footer, teaser and navbar are derived from it here, the same way the
+// default palette's own $header-bg/$footer-bg/$teaser-bg/$navbar-bg (light)
+// and their *-dark counterparts in lib/_variables(-dark).scss are
+// hand-tuned shades of $primary/$primary-dark - so every skin automatically
+// reads as "the theme, in this color" in both light and dark mode, instead
+// of a patchwork of loosely related picks. Leading underscore: a Sass
+// partial, not a build entry - see discoverSkinEntries() in vite.config.js.
+@import "../../../node_modules/bootstrap/scss/functions";
+
+// $primary-dark: the dark-mode primary. Auto-derived (brighter, slightly
+// more saturated - dark backgrounds need a lighter accent to stay legible
+// and vivid, the same relationship this theme's own $primary/$primary-dark
+// pair has) unless a skin wants to hand-pick one instead.
+@mixin skin-tokens($primary, $primary-dark: null) {
+  @if $primary-dark == null {
+    $primary-dark: scale-color($primary, $lightness: 18%, $saturation: 6%);
+  }
+
+  // Navbar: a fixed dark bar in both modes (see _navbar.scss), so it's
+  // derived once from the light-mode primary and not redeclared in the
+  // dark block below. Saturation goes *up*, not down, while darkening -
+  // darkening a warm hue (orange/red) while also desaturating it is the
+  // textbook recipe for "brown", which reads as a different, muddier color
+  // rather than a dark version of the skin's own color.
+  $navbar: scale-color($primary, $lightness: -36%, $saturation: 10%);
+
+  :root {
+    --bs-primary: #{$primary};
+    --bs-primary-rgb: #{to-rgb($primary)};
+    --bs-link-color: #{$primary};
+    --bs-link-color-rgb: #{to-rgb($primary)};
+    // Bootstrap's own root token for a:hover - shade-color(20%), the same
+    // formula Bootstrap itself uses for $link-hover-color (scss/_variables.scss).
+    --bs-link-hover-color: #{shade-color($primary, 20%)};
+    --bs-link-hover-color-rgb: #{to-rgb(shade-color($primary, 20%))};
+    // Bootstrap's own "subtle/emphasis" tokens (same weights Bootstrap
+    // itself uses in scss/_variables.scss to compute these from $primary) -
+    // .alert-primary and a few other components already read these live,
+    // so re-deriving them here is enough to reskin those too, no per-
+    // component overrides needed. .btn-primary and similar "solid" Bootstrap
+    // components don't use these - see the .btn-primary block in core.scss.
+    --bs-primary-text-emphasis: #{shade-color($primary, 60%)};
+    --bs-primary-bg-subtle: #{tint-color($primary, 80%)};
+    --bs-primary-border-subtle: #{tint-color($primary, 60%)};
+    --se-navbar-bg: #{$navbar};
+    @include skin-surface-tokens-light($primary);
+  }
+
+  [data-bs-theme="dark"] {
+    --bs-primary: #{$primary-dark};
+    --bs-primary-rgb: #{to-rgb($primary-dark)};
+    --bs-link-color: #{$primary-dark};
+    --bs-link-color-rgb: #{to-rgb($primary-dark)};
+    // Bootstrap's dark-mode a:hover token *tints* instead of shading (a
+    // dark page needs a brighter hover, not a darker one) - same formula
+    // Bootstrap itself uses for $link-hover-color-dark.
+    --bs-link-hover-color: #{tint-color($primary-dark, 20%)};
+    --bs-link-hover-color-rgb: #{to-rgb(tint-color($primary-dark, 20%))};
+    // Same idea as above, mirroring Bootstrap's own dark-mode weights
+    // (scss/_variables-dark.scss) - fed $primary-dark rather than $primary
+    // so these follow this theme's own dark-mode primary substitution.
+    --bs-primary-text-emphasis: #{tint-color($primary-dark, 40%)};
+    --bs-primary-bg-subtle: #{shade-color($primary-dark, 80%)};
+    --bs-primary-border-subtle: #{shade-color($primary-dark, 40%)};
+    @include skin-surface-tokens-dark($primary-dark);
+  }
+}
+
+// Light-mode header/footer/teaser/page-canvas, derived from $color
+// (typically $primary). Backgrounds around these elements are
+// white/near-white, so every tint mixes towards white and the header/
+// footer stay bright.
+@mixin skin-surface-tokens-light($color) {
+  // Header hero: a brighter, slightly desaturated corner fading through
+  // $color itself into a deeper, richer corner - mirrors the shape of the
+  // default theme's own accent gradient (light accent -> primary).
+  $header-1: scale-color($color, $lightness: 26%, $saturation: -8%);
+  $header-2: scale-color($color, $lightness: -20%, $saturation: 10%);
+
+  // Footer: dark shades of the same hue, well below body-text contrast
+  // range so white footer text stays readable. Saturation goes up (see the
+  // navbar comment above) so a warm hue darkens towards a rich version of
+  // itself instead of towards brown.
+  $footer-1: scale-color($color, $lightness: -40%, $saturation: 8%);
+  $footer-2: scale-color($color, $lightness: -58%, $saturation: 8%);
+
+  // Teaser: a light, mostly-white tint - just enough of $color to read as
+  // "branded", not a colored block.
+  $teaser: mix($color, white, 8%);
+
+  // Page canvas: --bs-body-bg/-color/-border-color are Bootstrap's own
+  // root tokens (body background, body text, .card/.form-control borders
+  // etc. - see core.scss), already this theme's own faint tint of $primary
+  // rather than plain white/black. A skin has to retint these too, or the
+  // whole page canvas keeps the *old* primary's tint while only isolated
+  // elements (buttons, header, ...) pick up the skin's color.
+  $body-bg: mix($color, white, 5%);
+  $body-color: mix($color, black, 15%);
+  $border-color: mix($color, white, 15%);
+
+  // Widget/card surface (comments, posts, events, shop - see their
+  // component .scss files): the same tint as $body-bg in light mode, same
+  // as this theme's own $widget-bg/$body-bg being the same hex already.
+  $widget-bg: $body-bg;
+
+  // Headings (h1-h6): richer/darker than $body-color, same relationship as
+  // this theme's own $headings-color/$body-color pair - a heading needs
+  // more visual weight than plain text, not just "the same tint again".
+  $headings-color: mix($color, black, 35%);
+
+  --se-header-bg: linear-gradient(135deg, #{$header-1} 0%, #{$color} 55%, #{$header-2} 100%);
+  --se-footer-bg: linear-gradient(160deg, #{$footer-1} 0%, #{$footer-2} 100%);
+  --se-teaser-bg: #{$teaser};
+  --se-widget-bg: #{$widget-bg};
+  --bs-body-bg: #{$body-bg};
+  --bs-body-color: #{$body-color};
+  --bs-border-color: #{$border-color};
+  --bs-heading-color: #{$headings-color};
+}
+
+// Dark-mode header/footer/teaser/page-canvas, derived from $color
+// (typically $primary-dark). The page itself is near-black here, so every
+// stop is pulled a lot darker than the light-mode equivalent above and
+// every tint mixes towards black instead of white - otherwise a "light
+// tint" teaser or body background would come out looking like a stray
+// white box on a dark page.
+@mixin skin-surface-tokens-dark($color) {
+  // Saturation goes up while darkening here too - see the light-mode
+  // navbar/footer comments above for why.
+  $header-1: scale-color($color, $lightness: -14%, $saturation: 8%);
+  $header-2: scale-color($color, $lightness: -45%, $saturation: 12%);
+
+  $footer-1: scale-color($color, $lightness: -55%, $saturation: 8%);
+  $footer-2: scale-color($color, $lightness: -68%, $saturation: 8%);
+
+  $teaser: mix($color, black, 22%);
+
+  // See the light-mode comment above for why these three exist at all.
+  $body-bg: mix($color, black, 16%);
+  $body-color: mix($color, white, 34%);
+  $border-color: mix($color, black, 30%);
+
+  // Widget/card surface, a little lighter than $body-bg - dark-mode cards
+  // need to visibly lift off the page background, unlike light mode where
+  // they're the same tone and rely on box-shadow alone (see above).
+  $widget-bg: mix($color, black, 19%);
+
+  // See the light-mode comment above for why this exists at all.
+  $headings-color: mix($color, white, 38%);
+
+  --se-header-bg: linear-gradient(135deg, #{$header-1} 0%, #{$color} 55%, #{$header-2} 100%);
+  --se-footer-bg: linear-gradient(160deg, #{$footer-1} 0%, #{$footer-2} 100%);
+  --se-teaser-bg: #{$teaser};
+  --se-widget-bg: #{$widget-bg};
+  --bs-body-bg: #{$body-bg};
+  --bs-body-color: #{$body-color};
+  --bs-border-color: #{$border-color};
+  --bs-heading-color: #{$headings-color};
+}

@@ -41,6 +41,9 @@
 
 <!-- CSS -->
 <link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/core.css" />
+{if $se_template_stylesheet != ''}
+	<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/skins/{$se_template_stylesheet}" />
+{/if}
 {foreach $se_theme_components as $component_id => $component}
 	{if $component.enabled && $component.has_css}
 		<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.css" />

@@ -1,0 +1,50 @@
+// "Sunset" color skin - a warm orange/gold alternative to the default
+// theme's purple/indigo brand palette, modeled on an actual tropical
+// sunset photo (indigo/purple sky fading through magenta into orange and
+// gold near the horizon, deep blue-teal water). Loaded after dist/core.css
+// when selected under Admin -> Addons -> Themes (Stylesheet dropdown).
+//
+// Unlike Ocean (see ocean.scss), this doesn't just call skin-tokens() with
+// one color: a real sunset's *dark* areas (night sky, deep water) are
+// blue-violet, not a darkened version of the orange itself - darkening a
+// warm hue on its own reads as brown almost immediately (that's what brown
+// perceptually *is*), no matter how much skin-tokens()'s own saturation
+// bump helps. So this keeps skin-tokens() for the primary accent (buttons,
+// links, alert/subtle tokens) and light-mode surfaces (already fine - nothing
+// there gets dark enough to muddy), then overrides the header/footer/navbar
+// gradients and dark-mode surfaces below with colors hand-picked from the
+// reference photo instead of derived from $skin-primary.
+@import "skin-tokens";
+
+$skin-primary: #ff7a32;
+$skin-primary-dark: #ffa855;
+
+@include skin-tokens($skin-primary, $skin-primary-dark);
+
+:root {
+  // Sky gradient: indigo -> magenta -> orange -> gold, same shape as the
+  // reference photo's horizon.
+  --se-header-bg: linear-gradient(135deg, #2c1f5c 0%, #b32e82 30%, #f2643c 65%, #ffce54 100%);
+  // Night bookend at the bottom of the page - deep indigo/plum, not a dark
+  // orange, so it never turns brown.
+  --se-footer-bg: linear-gradient(160deg, #241a4a 0%, #33193a 100%);
+  --se-navbar-bg: #3a1f4d;
+  --se-teaser-bg: #fdeee3;
+}
+
+[data-bs-theme="dark"] {
+  --se-header-bg: linear-gradient(135deg, #1c1440 0%, #8a2a72 30%, #e05a35 65%, #f2b23e 100%);
+  --se-footer-bg: linear-gradient(160deg, #150f30 0%, #20112a 100%);
+  // Was a literal dark brown here (#2c1c10) - the exact same "darkened
+  // orange reads as brown" mistake the rest of this dark block avoids, just
+  // missed on the first pass. Deep plum instead, same family as --se-navbar-bg.
+  --se-teaser-bg: #2c1830;
+  // Page canvas/card surfaces lean into deep blue-violet (night sky, deep
+  // water in the photo) instead of a darkened orange - see the comment at
+  // the top of this file for why that's the actual fix for "looks brown".
+  --bs-body-bg: #1a1330;
+  --bs-body-color: #f7dfc4;
+  --bs-border-color: #3d2a52;
+  --se-widget-bg: #241a3d;
+  --bs-heading-color: #ffd9a8;
+}

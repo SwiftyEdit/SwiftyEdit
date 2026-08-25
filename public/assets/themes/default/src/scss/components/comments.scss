@@ -24,19 +24,23 @@
 }
 
 [data-bs-theme=dark] .comment-entry {
-  background: $widget-bg-dark;
   border: none;
   box-shadow: $shadow-soft-dark;
 
   .card-footer {
-    border-top: 1px solid lighten($widget-bg-dark,5);
+    // was lighten($widget-bg-dark, 5) - color-mix() instead so this stays
+    // relative to --se-widget-bg (and so follows a skin) instead of baking
+    // in the default palette's own dark widget color.
+    border-top: 1px solid color-mix(in srgb, var(--se-widget-bg) 90%, white);
   }
 
 }
 
 .comment-entry {
+  // var(--se-widget-bg) instead of $widget-bg/$widget-bg-dark so this
+  // follows a skin (or dark mode, above) - see core.scss/_skin-tokens.scss.
   border: none;
-  background: $widget-bg;
+  background: var(--se-widget-bg);
   margin: 0.75rem 0;
   border-radius: $border-radius;
   box-shadow: $shadow-soft;
@@ -53,7 +57,9 @@
     display: inline-block;
     width: auto;
     float: right;
-    background: $accent-gradient;
+    // var(--se-header-bg) instead of $accent-gradient - same gradient, but
+    // this way it follows a skin too (see core.scss's own #pageHeader use).
+    background: var(--se-header-bg);
     color: $light;
     padding: 5px 10px;
     border-bottom-left-radius: $border-radius;

@@ -35,11 +35,16 @@
 }
 
 [data-bs-theme="dark"] .product-list-entry {
-  background: $widget-bg-dark;
+  // var(--se-widget-bg) instead of $widget-bg-dark so this follows a skin
+  // too - see core.scss/_skin-tokens.scss.
+  background: var(--se-widget-bg);
 }
 
 [data-bs-theme=dark] .price-tag {
-  background: $price-tag-bg-dark;
+  // var(--se-widget-bg) instead of the literal $price-tag-bg-dark - it's a
+  // card-like surface same as the others above, not the semantic
+  // price/success green ($price-tag-color-dark, kept as-is on purpose).
+  background: var(--se-widget-bg);
   color: $price-tag-color-dark;
   box-shadow: $shadow-soft-dark;
 }
@@ -133,10 +138,12 @@
 .range-slider {
 
     height: 10px;
-    border-color: darken($primary, 15%);
+    // var(--bs-primary(-rgb)) instead of the literal $primary so this
+    // follows a skin (or dark mode) too - see core.scss/_skin-tokens.scss.
+    border-color: color-mix(in srgb, var(--#{$prefix}primary) 85%, black);
 
   .noUi-connect {
-    background: $primary;
+    background: var(--#{$prefix}primary);
   }
 
   .noUi-tooltip {
@@ -155,7 +162,7 @@
       right: -10px; /* half the width */
       border-radius: 50%;
       background: $secondary;
-      border-color: $primary;
+      border-color: var(--#{$prefix}primary);
       box-shadow: none;
       &::after, &::before {
         display: none;

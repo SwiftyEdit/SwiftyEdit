@@ -406,18 +406,24 @@ if($_REQUEST['action'] == 'list_themes') {
         }
         echo '</select>';
 
-        $stylesheets = glob(SE_PUBLIC."/assets/themes/".$template."/css/theme_*.css");
+        // Color variants of this theme, e.g. src/scss/skins/ocean.scss in
+        // the default theme's Vite build -> dist/skins/ocean.css. Loaded
+        // in addition to the theme's core stylesheet - see
+        // templates/head.tpl in the theme itself.
+        $stylesheets = glob(SE_PUBLIC."/assets/themes/".$template."/dist/skins/*.css");
         echo '<label>Stylesheet</label>';
         echo '<select name="select_template_sytlesheet" class="form-control">';
-        echo '<option value=""></option>'; //blank
+        echo '<option value="">'.$lang['label_default_template'].'</option>';
         foreach($stylesheets as $css) {
 
+            $css_file = basename($css);
             $active = '';
-            if($css == $se_settings['template_stylesheet']) {
+            if($css_file == $se_settings['template_stylesheet']) {
                 $active = 'selected';
             }
 
-            echo '<option value="'.$css.'" '.$active.'>'.$css.'</option>';
+            $css_name = ucfirst(basename($css, '.css'));
+            echo '<option value="'.htmlspecialchars($css_file, ENT_QUOTES).'" '.$active.'>'.htmlspecialchars($css_name, ENT_QUOTES).'</option>';
         }
 
         echo '</select><hr>';
