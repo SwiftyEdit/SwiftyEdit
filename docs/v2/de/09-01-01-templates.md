@@ -39,7 +39,7 @@ Existenzprüfung - fehlen diese beiden Dateien in Deinem Theme, sind die Links s
 sie werden nicht stillschweigend durch die Versionen von `default` ersetzt. Jedes Theme braucht
 also zwingend sein eigenes `dist/core.css` und `dist/core.js`, auch wenn eine der beiden
 Dateien trivial ausfällt (z. B. nur ein `@import` des `default`-Stylesheets). Die optionalen
-Komponenten-Bundles von `default` (`shop.css`/`shop.js`, `events.css`, `comments.css`,
+Komponenten-Bundles von `default` (`shop.css` / `shop.js`, `events.css`, `comments.css`,
 `posts.css`) werden nur bedingt verlinkt und sind eine Besonderheit dieses Themes - Dein eigenes
 Theme braucht keine Entsprechungen dafür, siehe
 [Theme-Assets bauen](09-01-00-themes.md#theme-assets-bauen) und
@@ -229,12 +229,13 @@ Ein paar Startpunkte:
 | `events-display.tpl`                                        | `app/handlers/events-display.php`           |
 | `wishlist_overview.tpl` / `wishlist_public.tpl`          | `app/handlers/wishlist.php`                 |
 | `orders.tpl` / `orders-list.tpl`                          | `app/handlers/orders.php`                   |
-| alles Weitere (Seiteninhalt, Layout-Variablen)            | `app/app.php`                                |
+| alles Weitere (Seiteninhalt, Layout-Variablen)            | `app/template-setup.php`                     |
 
-Als Beispiel: `products-list.tpl` kann sich unter anderem auf `$products` (die aktuelle
-Ergebnisseite), `$product_filter`, `$sort_urls`, `$pagination`, `$active_filter_tags` /
-`$has_active_filters`, `$show_shopping_cart`, `$wishlist_login_uri` und `$categories` verlassen.
-`wishlist_public.tpl` kann sich auf `$wishlist`, `$wishlist_items`, `$wishlist_is_owner` und
-`$form_action` verlassen. Variablen, die mit dem dritten `$smarty->assign()`-Argument `true`
-(nocache) zugewiesen werden, lassen sich auch dann sicher verwenden, wenn für diese Seite
-Smarty-Caching aktiv ist.
+Variablen, die mit dem dritten `$smarty->assign()`-Argument `true` (nocache) zugewiesen werden,
+lassen sich auch dann sicher verwenden, wenn für diese Seite Smarty-Caching aktiv ist.
+
+Eine kuratierte Referenz, welche Variablen die einzelnen Templates tatsächlich bekommen -
+gruppiert nach Bereich, mit der Bedeutung jedes Werts - gibt es unter
+[Template-Variablen](09-01-02-template-variables.md). Das ersetzt die Debug-Konsole oben nicht
+(die Referenz deckt nur die am häufigsten angepassten Templates ab und kann veralten), erspart
+aber im Regelfall den Umweg über den Handler-Quellcode.

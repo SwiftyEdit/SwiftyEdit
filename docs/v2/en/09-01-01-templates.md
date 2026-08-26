@@ -37,7 +37,7 @@ What does __not__ fall back at all: your main frontend assets. `head.tpl` links
 existence check - if your theme doesn't ship those two files, the links are just broken, they do
 not silently resolve to `default`'s versions. Every theme therefore needs its own
 `dist/core.css` and `dist/core.js`, even if either one is trivial (e.g. just `@import`ing
-`default`'s stylesheet). `default`'s optional component bundles (`shop.css`/`shop.js`,
+`default`'s stylesheet). `default`'s optional component bundles (`shop.css` / `shop.js`,
 `events.css`, `comments.css`, `posts.css`) are only linked conditionally and are specific to how
 that theme is built - your own theme is not required to have equivalents, see
 [Building the theme assets](09-01-00-themes.md#building-the-theme-assets) and
@@ -222,11 +222,13 @@ just see it), search the responsible handler for `smarty->assign` calls. Some st
 | `events-display.tpl`                                 | `app/handlers/events-display.php`       |
 | `wishlist_overview.tpl` / `wishlist_public.tpl`    | `app/handlers/wishlist.php`             |
 | `orders.tpl` / `orders-list.tpl`                   | `app/handlers/orders.php`               |
-| everything else (page content, layout variables)  | `app/app.php`                            |
+| everything else (page content, layout variables)  | `app/template-setup.php`                 |
 
-As an example, `products-list.tpl` can rely on (among others): `$products` (the current page of
-results), `$product_filter`, `$sort_urls`, `$pagination`, `$active_filter_tags` /
-`$has_active_filters`, `$show_shopping_cart`, `$wishlist_login_uri`, `$categories`. `wishlist_public.tpl`
-can rely on `$wishlist`, `$wishlist_items`, `$wishlist_is_owner` and `$form_action`. Variables
-assigned with the third `$smarty->assign()` argument set to `true` (nocache) are safe to use
-even when Smarty caching is enabled for that page.
+Variables assigned with the third `$smarty->assign()` argument set to `true` (nocache) are safe
+to use even when Smarty caching is enabled for that page.
+
+For a curated reference of the variables each of these templates actually receives - grouped by
+area, with the meaning of each value - see [Template Variables](09-01-02-template-variables.md).
+It's not a substitute for the debug console above (it only covers the templates that get
+customized most often, and can go stale), but it saves the trip through the handler source for
+the common case.
