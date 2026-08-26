@@ -403,7 +403,11 @@ if(is_array($product_addons)) {
         $filtered = array_filter($addon_images);
         $addon_thumb_src = reset($filtered);
 
-        $addon_href = SE_INCLUDE_PATH . "/" . $target_page.$addon_data['slug'];
+        if (!empty($addon_data['main_catalog_slug']) && $addon_data['main_catalog_slug'] !== 'default') {
+            $addon_href = SE_INCLUDE_PATH . "/" . $addon_data['main_catalog_slug'].$addon_data['slug'];
+        } else {
+            $addon_href = SE_INCLUDE_PATH . "/" . $target_page.$addon_data['slug'];
+        }
 
         /* delivery time */
         $addon_delivery_time = (int) $addon_data['product_delivery_time'];
@@ -583,7 +587,11 @@ if($product_data['product_related'] != '') {
         } else {
             $rp[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
         }
-        $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $related_product['id'] . ".html";
+        if (!empty($related_product['main_catalog_slug']) && $related_product['main_catalog_slug'] !== 'default') {
+            $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $related_product['main_catalog_slug'].$related_product['slug'];
+        } else {
+            $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $related_product['id'] . ".html";
+        }
     }
     $smarty->assign('show_related', $rp);
 }
@@ -614,7 +622,11 @@ if($product_data['product_accessories'] != '') {
             $ap[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
         }
 
-        $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $accessories_product['id'] . ".html";
+        if (!empty($accessories_product['main_catalog_slug']) && $accessories_product['main_catalog_slug'] !== 'default') {
+            $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $accessories_product['main_catalog_slug'].$accessories_product['slug'];
+        } else {
+            $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $accessories_product['id'] . ".html";
+        }
     }
     $smarty->assign('show_accessories', $ap);
 }
