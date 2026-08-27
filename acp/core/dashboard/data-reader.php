@@ -217,15 +217,66 @@ if ($_REQUEST['action'] === 'list_user') {
 
 
 /**
- * print smarty cache size
+ * central cache management ("Cache" tab)
+ * lists every cache the application writes, with its current size and
+ * either a single "rebuild" action or (products, smarty) their existing
+ * dedicated actions
  */
 
-if($_REQUEST['action'] == 'calculate_cache_size') {
-    $cache_size = se_dir_size(SE_CONTENT.'/cache/cache/');
-    $compile_size = se_dir_size(SE_CONTENT.'/cache/templates_c/');
-    $complete_size = readable_filesize($cache_size+$compile_size);
-    se_plain_response($complete_size);
+if ($_REQUEST['action'] === 'list_cache') {
+
+    $caches = [
+        [
+            'target' => 'smarty',
+            'label' => $lang['cache_label_smarty'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/cache/') + se_dir_size(SE_CONTENT.'/cache/templates_c/')),
+            'clear_only' => true
+        ],
+        [
+            'target' => 'navigation',
+            'label' => $lang['cache_label_navigation'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/navigation/'))
+        ],
+        [
+            'target' => 'urls',
+            'label' => $lang['cache_label_urls'],
+            'size' => readable_filesize(is_file(SE_CONTENT.'/cache/active_urls.json') ? filesize(SE_CONTENT.'/cache/active_urls.json') : 0)
+        ],
+        [
+            'target' => 'categories',
+            'label' => $lang['label_categories'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/categories/'))
+        ],
+        [
+            'target' => 'tags',
+            'label' => $lang['label_keywords'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/tags/'))
+        ],
+        [
+            'target' => 'snippets',
+            'label' => $lang['cache_label_snippets'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/snippets/'))
+        ],
+        [
+            'target' => 'preferences',
+            'label' => $lang['cache_label_preferences'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/preferences/'))
+        ],
+        [
+            'target' => 'products',
+            'label' => $lang['label_products'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/products/')),
+            'clear_and_rebuild' => true
+        ]
+    ];
+
+    $html = $twig->render('dashboard/table-cache.twig', [
+        'caches' => $caches
+    ]);
+
+    se_html_response($html);
 }
+
 
 /**
  * logfile

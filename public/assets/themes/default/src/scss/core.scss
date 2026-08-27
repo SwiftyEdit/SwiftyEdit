@@ -19,6 +19,36 @@ $enable-dark-mode: true;
   }
 }
 
+// Skin tokens - the small set of custom properties a color skin (selected
+// under Admin -> Addons -> Themes, see php/theme-components.php's sibling
+// stylesheet picker and templates/head.tpl) is allowed to override. A skin
+// file only needs to redeclare these plus Bootstrap's own --bs-primary(-rgb)
+// and --bs-link-color(-rgb) - everything below already reads from them, so
+// the rest of the theme (buttons, links, --bs-primary-rgb-based shadows)
+// follows automatically. Defaults here match this theme's own palette, so
+// loading no skin changes nothing.
+//
+// header/footer/teaser get a separate value under [data-bs-theme="dark"]
+// (mirroring how --bs-primary is re-pointed to $primary-dark above) so a
+// skin can follow the light/dark toggle too - see _skin-tokens.scss's own
+// dark block. --se-navbar-bg has no dark variant: the navbar is a fixed
+// dark bar in both modes already (see _navbar.scss), only its hue moves
+// with the skin.
+:root {
+  --se-header-bg: #{$header-bg};
+  --se-footer-bg: #{$footer-bg};
+  --se-teaser-bg: #{$teaser-bg};
+  --se-navbar-bg: #{$navbar-bg};
+  --se-widget-bg: #{$widget-bg};
+}
+
+[data-bs-theme="dark"] {
+  --se-header-bg: #{$header-bg-dark};
+  --se-footer-bg: #{$footer-bg-dark};
+  --se-widget-bg: #{$widget-bg-dark};
+  --se-teaser-bg: #{$teaser-bg-dark};
+}
+
 // Bootstrap's dropdown-item/pagination hover backgrounds default to a
 // plain neutral gray (var(--bs-tertiary-bg)), which reads as dirty/washed
 // out against this theme's purple palette - tint them with the brand
@@ -43,10 +73,6 @@ $enable-dark-mode: true;
 @import 'navbar';
 
 
-[data-bs-theme=dark] #pageHeader .header-hero {
-  background: $header-bg-dark;
-}
-
 #pageHeader {
 
   // No overflow: hidden here - .header-decoration is background-image only
@@ -55,7 +81,7 @@ $enable-dark-mode: true;
   // need to extend past the hero's bottom edge without being clipped.
   .header-hero {
     position: relative;
-    background: $header-bg;
+    background: var(--se-header-bg);
   }
 
   .header-decoration {
@@ -150,7 +176,7 @@ $enable-dark-mode: true;
 }
 
 #pageTeaser {
-  background: $teaser-bg;
+  background: var(--se-teaser-bg);
   // Cancel .navbar-se's margin-bottom so the teaser background sits flush
   // against the nav, with no visible page-background gap between them.
   margin-top: -1rem;
@@ -159,16 +185,8 @@ $enable-dark-mode: true;
   margin-bottom: 1rem;
 }
 
-[data-bs-theme=dark] #pageTeaser {
-  background: $teaser-bg-dark;
-}
-
-[data-bs-theme=dark] #pageFooter {
-  background: $footer-bg-dark;
-}
-
 #pageFooter {
-  background: $footer-bg;
+  background: var(--se-footer-bg);
   padding-top: 2.5rem;
   padding-bottom: 100px;
   color: rgba(255, 255, 255, 0.82);
@@ -221,19 +239,25 @@ $enable-dark-mode: true;
   }
 }
 
+// var(--bs-border-color) instead of the literal $card-border-color-dark/
+// $input-border-color-dark (they're equal anyway - #332c5c) so these follow
+// a skin's own --bs-border-color override too, same as --bs-primary above.
 [data-bs-theme="dark"] .card {
-  border-color: $card-border-color-dark;
+  border-color: var(--#{$prefix}border-color);
   .card-header {
-    border-bottom-color: $card-border-color-dark;
+    border-bottom-color: var(--#{$prefix}border-color);
   }
   .card-footer {
-    border-top-color: $card-border-color-dark;
+    border-top-color: var(--#{$prefix}border-color);
   }
 }
 
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-  border-color: $input-border-color-dark;
+.form-control,
+.form-select {
+  // Bakes in a literal color otherwise (Bootstrap's own $input-border-color),
+  // in both light and dark mode - light mode's default already equals
+  // $border-color anyway, so this loses no distinction there.
+  border-color: var(--#{$prefix}border-color);
 }
 
 // Subtle lift for a livelier feel on actual call-to-action buttons (e.g.
@@ -254,11 +278,87 @@ $enable-dark-mode: true;
 }
 
 .btn-primary {
-  box-shadow: 0 6px 16px rgba(112, 106, 235, 0.28);
+  // rgba(var(--bs-primary-rgb), ...) instead of a literal color so this
+  // follows --bs-primary(-rgb) automatically, whether that's changed by
+  // dark mode above or by a skin's own override.
+  box-shadow: 0 6px 16px rgba(var(--#{$prefix}primary-rgb), 0.28);
 
   &:hover {
-    box-shadow: 0 10px 22px rgba(112, 106, 235, 0.36);
+    box-shadow: 0 10px 22px rgba(var(--#{$prefix}primary-rgb), 0.36);
   }
+}
+
+// Bootstrap bakes .btn-primary/.btn-outline-primary/.table-primary's exact
+// shades in as literal compile-time hex (button-variant()/table-variant()
+// in Bootstrap's own scss), unlike most other "-primary" utilities and
+// components (links, .bg-/.text-/.border-primary, .alert-primary via the
+// *-subtle/-emphasis tokens) which already read --bs-primary(-rgb) live -
+// see skins/_skin-tokens.scss. Re-point just these three so a skin (or
+// dark mode, above) recolors them too, using color-mix() to keep computing
+// hover/active/disabled shades instead of hardcoding a second color
+// per skin.
+.btn-primary {
+  --#{$prefix}btn-bg: var(--#{$prefix}primary);
+  --#{$prefix}btn-border-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-hover-bg: color-mix(in srgb, var(--#{$prefix}primary) 85%, white);
+  --#{$prefix}btn-hover-border-color: color-mix(in srgb, var(--#{$prefix}primary) 80%, white);
+  --#{$prefix}btn-active-bg: color-mix(in srgb, var(--#{$prefix}primary) 80%, white);
+  --#{$prefix}btn-active-border-color: color-mix(in srgb, var(--#{$prefix}primary) 75%, white);
+  --#{$prefix}btn-disabled-bg: var(--#{$prefix}primary);
+  --#{$prefix}btn-disabled-border-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-focus-shadow-rgb: var(--#{$prefix}primary-rgb);
+}
+
+.btn-outline-primary {
+  --#{$prefix}btn-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-border-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-hover-bg: var(--#{$prefix}primary);
+  --#{$prefix}btn-hover-border-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-active-bg: var(--#{$prefix}primary);
+  --#{$prefix}btn-active-border-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-disabled-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-disabled-border-color: var(--#{$prefix}primary);
+  --#{$prefix}btn-focus-shadow-rgb: var(--#{$prefix}primary-rgb);
+}
+
+.table-primary {
+  --#{$prefix}table-bg: var(--#{$prefix}primary-bg-subtle);
+  --#{$prefix}table-border-color: var(--#{$prefix}primary-border-subtle);
+  --#{$prefix}table-striped-bg: color-mix(in srgb, var(--#{$prefix}primary-bg-subtle) 95%, black);
+  --#{$prefix}table-active-bg: color-mix(in srgb, var(--#{$prefix}primary-bg-subtle) 90%, black);
+  --#{$prefix}table-hover-bg: color-mix(in srgb, var(--#{$prefix}primary-bg-subtle) 92%, black);
+}
+
+// The active page number (.pagination) bakes in a literal color the same
+// way .btn-primary does above - everything else on .pagination already
+// reads --bs-primary(-rgb) live (including the hover tint further below).
+.pagination {
+  --#{$prefix}pagination-active-bg: var(--#{$prefix}primary);
+  --#{$prefix}pagination-active-border-color: var(--#{$prefix}primary);
+  --#{$prefix}pagination-focus-box-shadow: 0 0 0 0.25rem rgba(var(--#{$prefix}primary-rgb), 0.25);
+}
+
+// Same "bakes in a literal color" issue as .btn-primary above, for the
+// three other solid-primary-colored components actually used on this site
+// (shop category filter, checkboxes/radios/switches, active nav pills).
+.list-group {
+  --#{$prefix}list-group-active-bg: var(--#{$prefix}primary);
+  --#{$prefix}list-group-active-border-color: var(--#{$prefix}primary);
+}
+
+.form-check-input {
+  &:checked {
+    background-color: var(--#{$prefix}primary);
+    border-color: var(--#{$prefix}primary);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--#{$prefix}primary-rgb), 0.25);
+  }
+}
+
+.nav-pills {
+  --#{$prefix}nav-pills-link-active-bg: var(--#{$prefix}primary);
 }
 
 // Tags: badges appear across posts/products/events/plain-page content

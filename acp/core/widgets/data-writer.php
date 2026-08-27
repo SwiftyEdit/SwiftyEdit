@@ -37,13 +37,3 @@ if(isset($_POST['set_global_filter'])) {
     exit;
 }
 
-/**
- * delete smarty cache
- */
-
-if(isset($_POST['delete_smarty_cache'])) {
-    se_delete_smarty_cache('all');
-    header( "HX-Trigger: deleted_cache");
-    exit;
-}
-

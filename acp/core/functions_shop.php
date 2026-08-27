@@ -242,7 +242,18 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
-
+    // canonical url: keep an explicit value if one was set (backend form,
+    // or an already-populated row when rebuilding the cache); otherwise
+    // build it once here from main_catalog_slug + slug. This used to be
+    // recomputed on every frontend request (see app/handlers/products-display.php),
+    // but main_catalog_slug above is already resolved to a concrete catalog
+    // page, so there's no reason to redo that work on every page view.
+    // Variants ignore their own value and always inherit their parent's
+    // canonical url on the frontend, same as before.
+    $product_canonical_url = trim($product_canonical_url ?? '');
+    if ($product_canonical_url === '') {
+        $product_canonical_url = $se_base_url . $main_catalog_slug . $slug;
+    }
 
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);
@@ -330,6 +341,24 @@ function se_updateSlugMap($lang) {
 
     $file = SE_CONTENT . '/cache/products/slug-map-'.$lang.'.json';
     file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+/**
+ * rebuild the cache files (+ slug maps) for all published/hidden products
+ * called from the products overview ("update" action) and from the
+ * dashboard's central cache management tab
+ */
+function se_rebuild_all_product_cache() {
+    global $db_posts;
+
+    $products = $db_posts->select("se_products", "*", [
+        "status" => ['1', '3']
+    ]);
+    foreach ($products as $product) {
+        $product['context'] = 'cache';
+        $prepared = se_prepareProductData($product);
+        se_updateProductCache($product['id'], $prepared);
+    }
 }
 
 /**

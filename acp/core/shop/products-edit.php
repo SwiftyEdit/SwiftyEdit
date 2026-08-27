@@ -1088,6 +1088,8 @@ $form_tpl = str_replace('{select_status}', $select_status, $form_tpl);
 
 $form_tpl = str_replace('{meta_title}', $product_data['meta_title'], $form_tpl);
 $form_tpl = str_replace('{meta_description}', $product_data['meta_description'], $form_tpl);
+$form_tpl = str_replace('{product_canonical_url}', $product_data['product_canonical_url'] ?? '', $form_tpl);
+$form_tpl = str_replace('{canonical_url_tooltip}', se_print_docs_link("05-00-shop.md", null, "canonical-url"), $form_tpl);
 
 $form_tpl = str_replace('{checkboxes_lang}', $select_lang, $form_tpl);
 $form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);

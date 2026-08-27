@@ -102,7 +102,14 @@ if($page_contents['page_template_layout'] == "use_standard") {
 if(is_dir($themes_path.'/'.$page_contents['page_template'].'/templates/')) {
     $se_template = $page_contents['page_template'];
     $se_template_layout = $page_contents['page_template_layout'];
-    $se_template_stylesheet = $page_contents['page_template_stylesheet'];
+
+    // Only override the site-wide stylesheet when the page actually pins its
+    // own (there's no page-editor UI for this yet - see docs/v2/*/09-01-00-themes.md
+    // - so this is normally empty). Otherwise a page that merely pins its own
+    // theme/layout would always lose the site-wide stylesheet selection.
+    if($page_contents['page_template_stylesheet'] != '') {
+        $se_template_stylesheet = $page_contents['page_template_stylesheet'];
+    }
 
     if($se_settings['usertemplate'] == 'overwrite') {
         /* the user theme has the same tpl file, so we can overwrite */

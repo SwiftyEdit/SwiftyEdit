@@ -77,34 +77,10 @@ foreach ($tags as $tag) {
 }
 $smarty->assign('content_tags', $content_tags);
 
-// get the product-page by 'type_of_use' and $languagePack
-// we need this if we link to product variants
-// if $swifty_slug is not equal, we set a canonical link
-
-$target_page = '';
-foreach ($cached_url_data as $page) {
-    if ($page['page_language'] === $page_contents['page_language'] && $page['page_type_of_use'] === 'display_product') {
-        $target_page = $page['page_permalink'];
-        break;
-    }
-}
-if ($target_page === '') {
-    $target_page = $swifty_slug;
-}
-
-$canonical_url = '';
-
-if (!empty($product_data['main_catalog_slug']) && $product_data['main_catalog_slug'] !== 'default') {
-    $canonical_url = $se_base_url.$product_data['main_catalog_slug'].$product_data['slug'];
-} elseif ($target_page !== $swifty_slug && $target_page !== '') {
-    // fallback: target page (when different from swifty slug)
-    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
-} else {
-    // final fallback: self (swifty_slug + product slug)
-    $canonical_url = $se_base_url.$swifty_slug.$product_data['slug'];
-}
-
-$smarty->assign('page_canonical_url', $canonical_url);
+// canonical link: stored on the product itself (auto-built from
+// main_catalog_slug + slug at save time unless the admin set an explicit
+// override) - see se_prepareProductData() in acp/core/functions_shop.php.
+$smarty->assign('page_canonical_url', $product_data['product_canonical_url'] ?? '');
 
 // get price from price groups or from products data
 if($product_data['product_price_group'] != '' AND $product_data['product_price_group'] != 'null') {
@@ -403,7 +379,13 @@ if(is_array($product_addons)) {
         $filtered = array_filter($addon_images);
         $addon_thumb_src = reset($filtered);
 
-        $addon_href = SE_INCLUDE_PATH . "/" . $target_page.$addon_data['slug'];
+        if (!empty($addon_data['main_catalog_slug']) && $addon_data['main_catalog_slug'] !== 'default') {
+            $addon_href = SE_INCLUDE_PATH . "/" . $addon_data['main_catalog_slug'].$addon_data['slug'];
+        } else {
+            // $target_page is never set on this display path - fall back to the
+            // currently requested page's own slug, same as before dfc8d0e4
+            $addon_href = SE_INCLUDE_PATH . "/" . $swifty_slug.$addon_data['slug'];
+        }
 
         /* delivery time */
         $addon_delivery_time = (int) $addon_data['product_delivery_time'];
@@ -488,16 +470,10 @@ if($product_data['type'] == 'v') {
 
     $parent_product = se_get_product_data($product_data['parent_id']);
 
-    if (!empty($parent_product['main_catalog_slug']) && $parent_product['main_catalog_slug'] !== 'default') {
-        $canonical_url = $se_base_url.$parent_product['main_catalog_slug'].$parent_product['slug'];
-    } elseif ($target_page !== $swifty_slug && $target_page !== '') {
-        // fallback: target page (when different from swifty slug)
-        $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
-    } else {
-        // final fallback: self (swifty_slug + parent product slug)
-        $canonical_url = $se_base_url.$swifty_slug.$parent_product['slug'];
-    }
-    $smarty->assign('page_canonical_url', $canonical_url);
+    // variants always use the main product's canonical url, ignoring
+    // their own (an override on a variant would only create duplicate
+    // content pointing away from the product it's a variant of)
+    $smarty->assign('page_canonical_url', $parent_product['product_canonical_url'] ?? '');
     $smarty->assign('product_type', "v");
 
 } else {
@@ -532,18 +508,29 @@ if($cnt_variants > 1) {
         }
 
         $product_slug = basename($v['slug']);
+
+        // use the variant's own main_catalog_slug when it pins an explicit
+        // catalog, same as addons/related/accessories above. $target_page is
+        // never set on this display path - fall back to the currently
+        // requested page's own slug, same as before dfc8d0e4
+        if (!empty($v['main_catalog_slug']) && $v['main_catalog_slug'] !== 'default') {
+            $product_catalog_base = $v['main_catalog_slug'];
+        } else {
+            $product_catalog_base = $swifty_slug;
+        }
+
         if($product_data['product_variant_type'] == 2 OR $parent_product['product_variant_type'] == 2) {
             // link with params
-            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug".'/?v=' . $v['id'];
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base . "$product_slug".'/?v=' . $v['id'];
         } else {
             // link to a page
-            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base . "$product_slug-" . $v['id'] . ".html";
         }
 
         $var[$k]['type'] = 'v';
         if($v['type'] == 'p') {
             // link to the main product
-            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page.$product_slug.'/';
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base.$product_slug.'/';
             $var[$k]['type'] = 'p';
         }
 
@@ -583,7 +570,13 @@ if($product_data['product_related'] != '') {
         } else {
             $rp[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
         }
-        $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $related_product['id'] . ".html";
+        if (!empty($related_product['main_catalog_slug']) && $related_product['main_catalog_slug'] !== 'default') {
+            $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $related_product['main_catalog_slug'].$related_product['slug'];
+        } else {
+            // $target_page is never set on this display path - fall back to the
+            // currently requested page's own slug, same as before dfc8d0e4
+            $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . "$product_slug-" . $related_product['id'] . ".html";
+        }
     }
     $smarty->assign('show_related', $rp);
 }
@@ -614,7 +607,13 @@ if($product_data['product_accessories'] != '') {
             $ap[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
         }
 
-        $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $accessories_product['id'] . ".html";
+        if (!empty($accessories_product['main_catalog_slug']) && $accessories_product['main_catalog_slug'] !== 'default') {
+            $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $accessories_product['main_catalog_slug'].$accessories_product['slug'];
+        } else {
+            // $target_page is never set on this display path - fall back to the
+            // currently requested page's own slug, same as before dfc8d0e4
+            $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . "$product_slug-" . $accessories_product['id'] . ".html";
+        }
     }
     $smarty->assign('show_accessories', $ap);
 }
@@ -633,7 +632,7 @@ $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_pr
 
 /* delivery time */
 $product_delivery_time = (int) $product_data['product_delivery_time'];
-$get_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_content"], [
+$get_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_content","snippet_classes"], [
     "snippet_id" => $product_delivery_time
 ]);
 
@@ -722,7 +721,17 @@ $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
 $smarty->assign('text_scope_of_delivery', $text_scope_of_delivery);
 $smarty->assign('product_text_label', $text_label);
-$smarty->assign('product_href', SE_INCLUDE_PATH . '/' . $target_page . $product_data['slug']);
+// same main_catalog_slug fallback as addons/related/accessories/variants above -
+// $target_page is never set on this display path, only on the redirect branch
+// in products.php, so relying on it here produced hrefs missing the catalog
+// prefix. Fall back to the currently requested page's own slug instead, same
+// as before dfc8d0e4
+if (!empty($product_data['main_catalog_slug']) && $product_data['main_catalog_slug'] !== 'default') {
+    $product_href_base = $product_data['main_catalog_slug'];
+} else {
+    $product_href_base = $swifty_slug;
+}
+$smarty->assign('product_href', SE_INCLUDE_PATH . '/' . $product_href_base . $product_data['slug']);
 
 
 $smarty->assign('product_pricetag_mode', $product_data['product_pricetag_mode']);
@@ -734,6 +743,7 @@ $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
 $smarty->assign('label_delivery_time', $lang['label_product_delivery_time']);
 $smarty->assign('product_delivery_time_title', $get_delivery_text['snippet_title']);
 $smarty->assign('product_delivery_time_text', $get_delivery_text['snippet_content']);
+$smarty->assign('product_delivery_time_classes', $get_delivery_text['snippet_classes']);
 
 $smarty->assign('data_source', $product_data['data_source']); // cache or database
 

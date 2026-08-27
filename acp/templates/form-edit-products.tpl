@@ -585,7 +585,10 @@
                                 </div>
                             </div>
 
-
+                            <div class="form-group">
+                                <label>Canonical URL {canonical_url_tooltip}</label>
+                                <input class='form-control' name="product_canonical_url" type="text" value="{product_canonical_url}">
+                            </div>
 
 
 

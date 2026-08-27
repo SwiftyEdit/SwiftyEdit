@@ -32,14 +32,17 @@
 
   }
 
+  // var(--se-widget-bg)/var(--se-header-bg) instead of $widget-bg/
+  // $accent-gradient so these follow a skin (or dark mode, below) - see
+  // core.scss/_skin-tokens.scss.
   .event-date {
-    background: $widget-bg;
+    background: var(--se-widget-bg);
     text-align: center;
     border-radius: $border-radius;
     overflow: hidden;
 
     .event-date-header {
-      background: $accent-gradient;
+      background: var(--se-header-bg);
       color: $light;
       padding: 6px 3px;
       font-size: 14px;
@@ -51,7 +54,9 @@
       font-size: 35px;
       line-height: 1.4;
       font-weight: 700;
-      color: $headings-color;
+      // var(--bs-heading-color) instead of $headings-color so this follows
+      // a skin (or dark mode, below) too - see _skin-tokens.scss.
+      color: var(--#{$prefix}heading-color);
       opacity: .8;
     }
 
@@ -68,11 +73,11 @@
 }
 
 [data-bs-theme=dark] .event-entry, [data-bs-theme=dark] .event-list-entry {
-  background: $widget-bg-dark;
+  background: var(--se-widget-bg);
   .event-date {
-    background: $card-border-color-dark;
-    .event-start-year {
-      color: $headings-color-dark;
-    }
+    // var(--bs-border-color) instead of $card-border-color-dark - they're
+    // the same value in the default palette anyway (see core.scss), and
+    // this way it follows a skin too.
+    background: var(--#{$prefix}border-color);
   }
 }

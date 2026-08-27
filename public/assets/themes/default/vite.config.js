@@ -23,6 +23,30 @@ function discoverComponentEntries() {
     return entries;
 }
 
+/**
+ * Every *.scss file directly under src/scss/skins/ becomes its own CSS-only
+ * build entry, output to dist/skins/<name>.css. This is the "Stylesheet"
+ * (color variant) picker under Admin -> Addons -> Themes - see
+ * acp/core/addons/data-reader.php, which globs this same dist/skins/
+ * directory to build the picker, and templates/head.tpl, which links the
+ * selected one in after core.css.
+ */
+function discoverSkinEntries() {
+    const dir = 'src/scss/skins';
+    const entries = {};
+    if (!fs.existsSync(dir)) {
+        return entries;
+    }
+    for (const file of fs.readdirSync(dir)) {
+        // Leading underscore = a Sass partial (e.g. _skin-tokens.scss),
+        // meant to be @imported by actual skins, not built standalone.
+        if (file.endsWith('.scss') && !file.startsWith('_')) {
+            entries[`skins/${path.basename(file, '.scss')}`] = `./${dir}/${file}`;
+        }
+    }
+    return entries;
+}
+
 function copyAssets() {
     return {
         name: 'copy-assets',
@@ -55,6 +79,7 @@ export default defineConfig({
             input: {
                 core: './src/js/frontend.js',
                 ...discoverComponentEntries(),
+                ...discoverSkinEntries(),
             },
             output: {
                 entryFileNames: '[name].js',

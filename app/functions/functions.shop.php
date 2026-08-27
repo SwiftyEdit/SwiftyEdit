@@ -831,7 +831,7 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
 function se_get_product_variants($id) {
     global $db_posts;
 
-    $get_columns = ["id","type","title","teaser","images","slug","product_variant_title","product_variant_description"];
+    $get_columns = ["id","type","title","teaser","images","slug","main_catalog_slug","product_variant_title","product_variant_description"];
 
     $main_product = $db_posts->select("se_products", $get_columns, [
         "id" => $id
