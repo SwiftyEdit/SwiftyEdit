@@ -382,7 +382,9 @@ if(is_array($product_addons)) {
         if (!empty($addon_data['main_catalog_slug']) && $addon_data['main_catalog_slug'] !== 'default') {
             $addon_href = SE_INCLUDE_PATH . "/" . $addon_data['main_catalog_slug'].$addon_data['slug'];
         } else {
-            $addon_href = SE_INCLUDE_PATH . "/" . $target_page.$addon_data['slug'];
+            // $target_page is never set on this display path - fall back to the
+            // currently requested page's own slug, same as before dfc8d0e4
+            $addon_href = SE_INCLUDE_PATH . "/" . $swifty_slug.$addon_data['slug'];
         }
 
         /* delivery time */
@@ -506,18 +508,29 @@ if($cnt_variants > 1) {
         }
 
         $product_slug = basename($v['slug']);
+
+        // use the variant's own main_catalog_slug when it pins an explicit
+        // catalog, same as addons/related/accessories above. $target_page is
+        // never set on this display path - fall back to the currently
+        // requested page's own slug, same as before dfc8d0e4
+        if (!empty($v['main_catalog_slug']) && $v['main_catalog_slug'] !== 'default') {
+            $product_catalog_base = $v['main_catalog_slug'];
+        } else {
+            $product_catalog_base = $swifty_slug;
+        }
+
         if($product_data['product_variant_type'] == 2 OR $parent_product['product_variant_type'] == 2) {
             // link with params
-            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug".'/?v=' . $v['id'];
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base . "$product_slug".'/?v=' . $v['id'];
         } else {
             // link to a page
-            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $v['id'] . ".html";
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base . "$product_slug-" . $v['id'] . ".html";
         }
 
         $var[$k]['type'] = 'v';
         if($v['type'] == 'p') {
             // link to the main product
-            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page.$product_slug.'/';
+            $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base.$product_slug.'/';
             $var[$k]['type'] = 'p';
         }
 
@@ -560,7 +573,9 @@ if($product_data['product_related'] != '') {
         if (!empty($related_product['main_catalog_slug']) && $related_product['main_catalog_slug'] !== 'default') {
             $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $related_product['main_catalog_slug'].$related_product['slug'];
         } else {
-            $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $related_product['id'] . ".html";
+            // $target_page is never set on this display path - fall back to the
+            // currently requested page's own slug, same as before dfc8d0e4
+            $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . "$product_slug-" . $related_product['id'] . ".html";
         }
     }
     $smarty->assign('show_related', $rp);
@@ -595,7 +610,9 @@ if($product_data['product_accessories'] != '') {
         if (!empty($accessories_product['main_catalog_slug']) && $accessories_product['main_catalog_slug'] !== 'default') {
             $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $accessories_product['main_catalog_slug'].$accessories_product['slug'];
         } else {
-            $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $target_page . "$product_slug-" . $accessories_product['id'] . ".html";
+            // $target_page is never set on this display path - fall back to the
+            // currently requested page's own slug, same as before dfc8d0e4
+            $ap[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $swifty_slug . "$product_slug-" . $accessories_product['id'] . ".html";
         }
     }
     $smarty->assign('show_accessories', $ap);
@@ -704,7 +721,17 @@ $smarty->assign('product_teaser', $teaser);
 $smarty->assign('product_text', $text);
 $smarty->assign('text_scope_of_delivery', $text_scope_of_delivery);
 $smarty->assign('product_text_label', $text_label);
-$smarty->assign('product_href', SE_INCLUDE_PATH . '/' . $target_page . $product_data['slug']);
+// same main_catalog_slug fallback as addons/related/accessories/variants above -
+// $target_page is never set on this display path, only on the redirect branch
+// in products.php, so relying on it here produced hrefs missing the catalog
+// prefix. Fall back to the currently requested page's own slug instead, same
+// as before dfc8d0e4
+if (!empty($product_data['main_catalog_slug']) && $product_data['main_catalog_slug'] !== 'default') {
+    $product_href_base = $product_data['main_catalog_slug'];
+} else {
+    $product_href_base = $swifty_slug;
+}
+$smarty->assign('product_href', SE_INCLUDE_PATH . '/' . $product_href_base . $product_data['slug']);
 
 
 $smarty->assign('product_pricetag_mode', $product_data['product_pricetag_mode']);
