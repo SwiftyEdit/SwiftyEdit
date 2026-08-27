@@ -63,6 +63,8 @@ The following includes are possible:
 ---
 
 1. When a plugin is integrated via shortcode: `[plugin={plugin}]foo=bar[/plugin]`
+   - the theme-template equivalent is `{plugin name="{plugin}"}foo=bar{/plugin}`, see
+     [Themes → Embedding plugins directly with {plugin}](09-01-00-themes.md#embedding-plugins-directly-with-plugin)
 2. When a plugin is integrated within a page, i.e., activated in the plugin tab,
    the page content is replaced by the plugin in the frontend.
 3. When a plugin is active. This means that it has either been integrated into a page via the plugin tab

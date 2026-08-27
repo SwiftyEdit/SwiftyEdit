@@ -63,6 +63,8 @@ Folgende Includes sind möglich:
 ---
 
 1. Wenn ein Plugin über einen Shortcode eingebunden wird: `[plugin={plugin}]foo=bar[/plugin]`
+   - im Theme-Template gibt es dafür das Äquivalent `{plugin name="{plugin}"}foo=bar{/plugin}`,
+     siehe [Themes → Plugins direkt einbinden mit {plugin}](09-01-00-themes.md#plugins-direkt-einbinden-mit-plugin)
 2. Wenn ein Plugin innerhalb einer Seite eingebunden wird, also im Plugin-Tab aktiviert ist,
    wird der Seiteninhalt im Frontend durch das Plugin ersetzt.
 3. Wenn ein Plugin aktiv ist. Das bedeutet, es wurde entweder über den Plugin-Tab
