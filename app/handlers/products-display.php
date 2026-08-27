@@ -632,7 +632,7 @@ $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_pr
 
 /* delivery time */
 $product_delivery_time = (int) $product_data['product_delivery_time'];
-$get_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_content"], [
+$get_delivery_text = $db_content->get("se_snippets", ["snippet_title","snippet_content","snippet_classes"], [
     "snippet_id" => $product_delivery_time
 ]);
 
@@ -743,6 +743,7 @@ $smarty->assign('btn_add_to_cart', $lang['btn_add_to_cart']);
 $smarty->assign('label_delivery_time', $lang['label_product_delivery_time']);
 $smarty->assign('product_delivery_time_title', $get_delivery_text['snippet_title']);
 $smarty->assign('product_delivery_time_text', $get_delivery_text['snippet_content']);
+$smarty->assign('product_delivery_time_classes', $get_delivery_text['snippet_classes']);
 
 $smarty->assign('data_source', $product_data['data_source']); // cache or database
 

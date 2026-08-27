@@ -76,7 +76,7 @@
                 </div>
 
                 <div class="delivery-time">
-                    {$label_delivery_time}: <span><strong>{$product_delivery_time_title}</strong> {$product_delivery_time_text}</span>
+                    {$label_delivery_time}: <span class="{$product_delivery_time_classes}">{$product_delivery_time_title} {$product_delivery_time_text}</span>
                 </div>
                 {if $product_cart_mode != "2"}
                 {if $is_addon_only}
