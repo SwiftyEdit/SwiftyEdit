@@ -53,8 +53,41 @@ function buffer_script(string $script, ?string $parameters=NULL) {
 
 	$content = ob_get_clean();
 	$buffer = $parameter . $content;
-	
+
 	return $buffer;
+}
+
+
+/**
+ * Smarty {plugin} block - runs an installed plugin directly from a theme
+ * template, the same way [plugin=name]query[/plugin] does inside a content
+ * field (see text_parser()). Reuses buffer_script() so both entry points
+ * share identical behavior.
+ *
+ * Template usage:
+ *   {plugin name="former"}form_id=1{/plugin}
+ *
+ * @param array $params Smarty tag attributes, expects 'name'
+ * @param string|null $content block content (the query), null on the opening tag
+ * @param object $template Smarty template instance (unused, required by Smarty's block plugin signature)
+ * @param bool $repeat set by Smarty; unused here since we only act once, on the closing tag
+ * @return string
+ */
+
+function se_smarty_block_plugin($params, $content, $template, &$repeat) {
+
+	if(!isset($content)) {
+		return '';
+	}
+
+	$name = $params['name'] ?? '';
+	if($name === '') {
+		return '';
+	}
+
+	se_store_admin_helper('p', $name);
+
+	return buffer_script($name, $content);
 }
 
 

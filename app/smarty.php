@@ -12,6 +12,7 @@ $smarty->registerPlugin('modifier', 'htmlentities', 'htmlentities');
 $smarty->registerPlugin('modifier', 'strtolower', 'strtolower');
 $smarty->registerPlugin('modifier', 'trim', 'trim');
 $smarty->registerPlugin('function', 'img', 'se_smarty_function_img');
+$smarty->registerPlugin('block', 'plugin', 'se_smarty_block_plugin');
 
 $cache_id = md5($swifty_slug.$mod_slug);
 
