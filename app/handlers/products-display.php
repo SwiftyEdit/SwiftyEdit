@@ -77,34 +77,10 @@ foreach ($tags as $tag) {
 }
 $smarty->assign('content_tags', $content_tags);
 
-// get the product-page by 'type_of_use' and $languagePack
-// we need this if we link to product variants
-// if $swifty_slug is not equal, we set a canonical link
-
-$target_page = '';
-foreach ($cached_url_data as $page) {
-    if ($page['page_language'] === $page_contents['page_language'] && $page['page_type_of_use'] === 'display_product') {
-        $target_page = $page['page_permalink'];
-        break;
-    }
-}
-if ($target_page === '') {
-    $target_page = $swifty_slug;
-}
-
-$canonical_url = '';
-
-if (!empty($product_data['main_catalog_slug']) && $product_data['main_catalog_slug'] !== 'default') {
-    $canonical_url = $se_base_url.$product_data['main_catalog_slug'].$product_data['slug'];
-} elseif ($target_page !== $swifty_slug && $target_page !== '') {
-    // fallback: target page (when different from swifty slug)
-    $canonical_url = $se_base_url.$target_page.$product_data['slug'];
-} else {
-    // final fallback: self (swifty_slug + product slug)
-    $canonical_url = $se_base_url.$swifty_slug.$product_data['slug'];
-}
-
-$smarty->assign('page_canonical_url', $canonical_url);
+// canonical link: stored on the product itself (auto-built from
+// main_catalog_slug + slug at save time unless the admin set an explicit
+// override) - see se_prepareProductData() in acp/core/functions_shop.php.
+$smarty->assign('page_canonical_url', $product_data['product_canonical_url'] ?? '');
 
 // get price from price groups or from products data
 if($product_data['product_price_group'] != '' AND $product_data['product_price_group'] != 'null') {
@@ -492,16 +468,10 @@ if($product_data['type'] == 'v') {
 
     $parent_product = se_get_product_data($product_data['parent_id']);
 
-    if (!empty($parent_product['main_catalog_slug']) && $parent_product['main_catalog_slug'] !== 'default') {
-        $canonical_url = $se_base_url.$parent_product['main_catalog_slug'].$parent_product['slug'];
-    } elseif ($target_page !== $swifty_slug && $target_page !== '') {
-        // fallback: target page (when different from swifty slug)
-        $canonical_url = $se_base_url.$target_page.$parent_product['slug'];
-    } else {
-        // final fallback: self (swifty_slug + parent product slug)
-        $canonical_url = $se_base_url.$swifty_slug.$parent_product['slug'];
-    }
-    $smarty->assign('page_canonical_url', $canonical_url);
+    // variants always use the main product's canonical url, ignoring
+    // their own (an override on a variant would only create duplicate
+    // content pointing away from the product it's a variant of)
+    $smarty->assign('page_canonical_url', $parent_product['product_canonical_url'] ?? '');
     $smarty->assign('product_type', "v");
 
 } else {

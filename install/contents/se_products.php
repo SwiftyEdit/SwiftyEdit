@@ -69,6 +69,7 @@ $cols = array(
     "product_lang" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "slug" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "main_catalog_slug" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_canonical_url" => "VARCHAR(500) NOT NULL DEFAULT ''",
     "translation_urls" => "LONGTEXT NOT NULL DEFAULT ''",
     "priority" => 'INTEGER(12)',
     "fixed" => 'INTEGER(12)',
