@@ -69,15 +69,17 @@ $color-mode-type: data;
 
   // Per-section accent colors, shared with the sidebar's .color-* icon tints
   // (see _sidebar.scss) so the dashboard cards read as the same section.
-  --section-color-contents: #{$section_color_contents};
-  --section-color-blog: #{$section_color_blog};
-  --section-color-shop: #{$section_color_shop};
-  --section-color-events: #{$section_color_events};
-  --section-color-addons: #{$section_color_addons};
-  --section-color-uploads: #{$section_color_uploads};
-  --section-color-reactions: #{$section_color_reactions};
-  --section-color-user: #{$section_color_user};
-  --section-color-system: #{$section_color_dashboard};
+  // Darkened _lm variants here (see _variables.scss) - the sidebar's own
+  // bright originals stay as-is since its background is dark in both themes.
+  --section-color-contents: #{$section_color_contents_lm};
+  --section-color-blog: #{$section_color_blog_lm};
+  --section-color-shop: #{$section_color_shop_lm};
+  --section-color-events: #{$section_color_events_lm};
+  --section-color-addons: #{$section_color_addons_lm};
+  --section-color-uploads: #{$section_color_uploads_lm};
+  --section-color-reactions: #{$section_color_reactions_lm};
+  --section-color-user: #{$section_color_user_lm};
+  --section-color-system: #{$section_color_dashboard_lm};
 }
 
 [data-bs-theme="dark"] {
@@ -124,9 +126,9 @@ $color-mode-type: data;
     --#{$prefix}input-bg: #{$input_bg_dark};
     --#{$prefix}input-border-color: #{$input_border_color_dark};
 
-    // Section colors don't currently have dedicated dark-mode variants (see
-    // _variables-dark.scss) - same tokens as light mode, kept here so callers
-    // never have to care which theme is active.
+    // The original bright/pastel tokens (light mode uses darkened _lm
+    // variants instead, see the :root block above) - these already have good
+    // contrast against this theme's dark card surface.
     --section-color-contents: #{$section_color_contents};
     --section-color-blog: #{$section_color_blog};
     --section-color-shop: #{$section_color_shop};

@@ -1,8 +1,15 @@
 .card {
 	background: $widget_background;
 	//border-color: darken($widget_background,5);
+	// darken() works in HSL percentage-points, so the same number reads very
+	// differently depending on how light/dark the base already is: 7 points off
+	// $widget_background (very light) barely shows, while the old 5 points off
+	// $widget_background_dark (already near-black, see the dark-mode block
+	// below) was a ~34% relative drop - much starker than intended. 12/2 points
+	// here instead both land on roughly the same ~13% relative difference from
+	// the card body, so the header reads equally "a little darker" in both themes.
 	.card-header {
-		background: darken($widget_background,7);
+		background: darken($widget_background,12);
 	}
 	.card-header-tabs {
 		// Never let a tab wrap onto a second line: on narrow viewports (or long
@@ -81,8 +88,10 @@
 	.card {
 		background: $widget_background_dark;
 		//border-color: lighten($widget_background_dark,10);
+		// See the light-mode comment above - 2 points here matches the same
+		// ~13% relative drop as the 12 points used against $widget_background.
 		.card-header {
-			background: darken($widget_background_dark,5);
+			background: darken($widget_background_dark,2);
 		}
 		.card-body {
 			background: $widget_background_dark;

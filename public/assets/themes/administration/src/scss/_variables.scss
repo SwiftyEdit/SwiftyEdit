@@ -87,12 +87,17 @@ $widget-bg-900: mix($darken,$widget_background,40%);
 $body-color: #252525;
 $body-bg: #f1f1f1 !default;
 $body-gradient-top: rgba($gray-600,0.1);
-$body-gradient-bottom: rgba($spot,0.3);
+$body-gradient-bottom: rgba($primary,0.3);
 
 $body-secondary-color:         rgba($body-color, .75) !default;
 $body-secondary-bg:            $gray-400 !default;
 $body-tertiary-color:          rgba($body-color, .5) !default;
-$body-tertiary-bg:             mix($gray-400, $gray-500, 50%) !default;
+// Was a raw $gray-400/$gray-500 mix, i.e. Bootstrap's own unthemed default -
+// it drives list-group/dropdown/pagination hover backgrounds, which then read
+// as a foreign, slightly cool-toned gray next to the rest of the ACP. Reuse
+// the theme's own widget-bg scale instead, which is mixed from $primary
+// (see $lighten/$darken above), so hovers stay on-brand.
+$body-tertiary-bg:             $widget-bg-700 !default;
 $body-emphasis-color:          $black !default;
 $border-color: $widget_border_color !default;
 $border-color-translucent:     rgba($black, .15) !default;
@@ -123,6 +128,26 @@ $section_color_reactions: #bede97;
 $section_color_uploads: #c9b2f5;
 $section_color_user: #e3b981;
 $section_color_settings: $spot;
+
+// These are tuned bright/pastel for the sidebar icons (_sidebar.scss), whose
+// background stays near-black in both themes. The dashboard cards' accent
+// icon/badge (--card-color, see backend.scss and _dashboard.scss) sit on the
+// light theme's light card surface instead, where that same pastel lightness
+// reads as barely-there low-contrast icons. Darkened variants, used only for
+// the light-mode --section-color-* custom properties below, fix that without
+// touching the sidebar or dark mode (which already has good contrast there).
+$section_color_contents_lm: darken($section_color_contents, 20%);
+$section_color_dashboard_lm: darken($section_color_dashboard, 20%);
+// Blog's cyan, shop's green and addons' mint stay lighter than the rest at
+// the same 20% (their pastels start from higher lightness), so they get a
+// bit more here.
+$section_color_blog_lm: darken($section_color_blog, 28%);
+$section_color_shop_lm: darken($section_color_shop, 28%);
+$section_color_events_lm: darken($section_color_events, 20%);
+$section_color_addons_lm: darken($section_color_addons, 28%);
+$section_color_reactions_lm: darken($section_color_reactions, 20%);
+$section_color_uploads_lm: darken($section_color_uploads, 20%);
+$section_color_user_lm: darken($section_color_user, 20%);
 
 $table-bg: transparent;
 

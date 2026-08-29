@@ -197,9 +197,15 @@
 	border-color: color-mix(in srgb, var(--card-color) 22%, transparent);
 	color: var(--card-color);
 
+	// .btn-default:hover (_buttons.scss) sets its own color with !important,
+	// which otherwise beats this rule's color on :hover regardless of the
+	// extra specificity .btn-accent has here - the icon/text would flip to
+	// the flat default hover color (#eee) instead of staying tinted, and
+	// against this card's light tint that's low-contrast enough to look like
+	// the icon vanished/the label jumped. !important here is required to win.
 	&:hover {
 		background: color-mix(in srgb, var(--card-color) 16%, transparent);
 		border-color: color-mix(in srgb, var(--card-color) 22%, transparent);
-		color: var(--card-color);
+		color: var(--card-color) !important;
 	}
 }

@@ -64,12 +64,16 @@ $subHeader_bg_dark: desaturate(#191A1A,5%);
 $body-color-dark: #e5e5e5 !default;
 $body-bg-dark: #151515 !default;
 $body-dark-gradient-top: rgba(#191A1A,1);
-$body-dark-gradient-bottom: rgba($spot,0.3);
+$body-dark-gradient-bottom: rgba($primary-dark,0.3);
 
 $body-secondary-color-dark:         rgba($body-color-dark, .75) !default;
 $body-secondary-bg-dark:            $gray-800 !default;
 $body-tertiary-color-dark:          rgba($body-color-dark, .5) !default;
-$body-tertiary-bg-dark:             mix($gray-800, $gray-900, 50%) !default;
+// Same reasoning as the light $body-tertiary-bg override: use the theme's own
+// widget-bg-dark scale (mixed from $primary-dark) instead of a raw Bootstrap
+// gray mix, so hovers (list-group/dropdown/pagination) don't read as an
+// unthemed blue-gray next to the rest of the dark ACP.
+$body-tertiary-bg-dark:             $widget-bg-dark-300 !default;
 $body-emphasis-color-dark:          $white !default;
 $border-color-dark:                 $widget_border_color_dark !default;
 $border-color-translucent-dark:     rgba($gray-600, .05) !default;
