@@ -337,8 +337,19 @@ if ($page_content_editor !== null) {
  * unset session via ?reset_page_psw
  */
 if(isset($_POST['page_psw']) && $_POST['page_psw'] != '') {
-    if(md5($_POST['page_psw']) === $page_psw) {
-        $_SESSION['page_psw'] = md5($_POST['page_psw']);
+    // legacy page passwords were stored as a plain md5 hash (32 hex chars); pages
+    // saved since the password_hash() migration carry its longer, salted format.
+    // Existing installs keep working on the md5 path until the password is re-saved.
+    if(strlen($page_psw) === 32 && ctype_xdigit($page_psw)) {
+        $page_psw_valid = hash_equals($page_psw, md5($_POST['page_psw']));
+    } else {
+        $page_psw_valid = password_verify($_POST['page_psw'], $page_psw);
+    }
+
+    if($page_psw_valid) {
+        // cache the DB hash itself, not a fresh hash of the input: password_hash()
+        // salts each call, so recomputing it would never match $page_psw again.
+        $_SESSION['page_psw'] = $page_psw;
     }
 }
 

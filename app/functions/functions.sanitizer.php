@@ -284,7 +284,7 @@ function se_sanitize_page_inputs($data) {
         // password
         if($key == 'page_psw') {
             if($val != '') {
-                $sanitized['page_psw'] = md5($val);
+                $sanitized['page_psw'] = password_hash($val, PASSWORD_DEFAULT);
             }
         }
         if($key == 'page_psw_reset') {
