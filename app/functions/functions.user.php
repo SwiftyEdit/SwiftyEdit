@@ -213,41 +213,49 @@ function se_handle_failed_logins($user) {
     $failed_user_data = $db_user->get("se_user", "*", ["user_nick" => $user]);
     $failed_logins = $failed_user_data['user_failed_logins']+1;
 
+    // update failed_logins on every attempt, not just below the limit
+    $db_user->update("se_user",[
+        "user_failed_logins" => $failed_logins
+    ],[
+        "user_nick" => $user
+    ]);
+
     if($failed_logins >= $se_failed_logins_limit) {
-        // generate and save unlock code
+        // generate and save unlock code; only rows without an unlock code yet are
+        // eligible, so an already-locked account isn't re-locked (and re-mailed)
+        // on every further failed attempt. NULL and '' both count as "not set",
+        // matching the login gate's own check.
         $unlock_code = bin2hex(random_bytes(16));
-        $db_user->update("se_user",[
+        $update = $db_user->update("se_user",[
             "user_unlock_code" => $unlock_code
         ],[
             "user_nick" => $user,
-            "user_unlock_code" => ""
+            "OR" => [
+                "user_unlock_code" => null,
+                "AND #Empty" => [
+                    "user_unlock_code" => ""
+                ]
+            ]
         ]);
 
-        // send mail to user
-        $unlock_link = $se_base_url."unlock/?code=$unlock_code";
-        $email_msg = str_replace("{USERNAME}","$user",$lang['account_temporarily_locked']);
-        $email_msg = str_replace("{RESET_LINK}","$unlock_link",$email_msg);
+        // only mail the account owner when this attempt actually triggered the lock
+        if($update->rowCount() > 0) {
+            $unlock_link = $se_base_url."unlock/?code=$unlock_code";
+            $email_msg = str_replace("{USERNAME}","$user",$lang['account_temporarily_locked']);
+            $email_msg = str_replace("{RESET_LINK}","$unlock_link",$email_msg);
 
-        $mail_data['tpl'] = 'mail.tpl';
-        $mail_data['subject'] = 'Account / '.$se_base_url;
-        $mail_data['preheader'] = 'Unlock your Account at '.$se_base_url;
-        $mail_data['title'] = 'Unlock your Account at  '.$se_base_url;
-        $mail_data['salutation'] = "Unlock your Account | $user";
-        $mail_data['body'] = "$email_msg";
+            $mail_data['tpl'] = 'mail.tpl';
+            $mail_data['subject'] = 'Account / '.$se_base_url;
+            $mail_data['preheader'] = 'Unlock your Account at '.$se_base_url;
+            $mail_data['title'] = 'Unlock your Account at  '.$se_base_url;
+            $mail_data['salutation'] = "Unlock your Account | $user";
+            $mail_data['body'] = "$email_msg";
 
-        $build_html_mail = se_build_html_file($mail_data);
+            $build_html_mail = se_build_html_file($mail_data);
 
-        $recipient = array('name' => $user, 'mail' => $failed_user_data['user_mail']);
-        $send_reset_mail = se_send_mail($recipient,$mail_data['subject'],$build_html_mail);
-
-
-    } else {
-        // update failed_logins
-        $db_user->update("se_user",[
-            "user_failed_logins" => $failed_logins
-        ],[
-            "user_nick" => $user
-        ]);
+            $recipient = array('name' => $user, 'mail' => $failed_user_data['user_mail']);
+            $send_reset_mail = se_send_mail($recipient,$mail_data['subject'],$build_html_mail);
+        }
     }
 
 
