@@ -5,9 +5,19 @@
 		background: darken($widget_background,7);
 	}
 	.card-header-tabs {
+		// Never let a tab wrap onto a second line: on narrow viewports (or long
+		// translated labels, e.g. German "Veranstaltungen") the bar scrolls
+		// horizontally instead of breaking one tab off into an ugly orphan row.
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scrollbar-width: thin;
+
 		li {
+			flex: 0 0 auto;
 
 			a {
+				white-space: nowrap;
 				&:hover {
 					border-bottom: 1px solid var(--bs-widget-bg-500);
 				}

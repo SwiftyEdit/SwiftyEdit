@@ -48,6 +48,13 @@ if($_REQUEST['count'] == 'users') {
     se_plain_response(se_covert_big_int($count));
 }
 
+if($_REQUEST['count'] == 'addons') {
+    // Same filter se_get_addons('plugin') uses - only activated plugins,
+    // not every plugin installed under plugins/.
+    $count = $db_content->count("se_addons", ["addon_type" => "plugin"]);
+    se_plain_response(se_covert_big_int($count).' '.$lang['status_active']);
+}
+
 if($_REQUEST['count'] == 'count_global_filters') {
 
     $cnt_global_filters = 0;

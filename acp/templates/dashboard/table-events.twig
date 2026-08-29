@@ -1,19 +1,11 @@
-<table class="table table-sm">
+<div class="list-group list-group-flush">
     {% for event in get_events %}
-        <tr>
-            <td class="text-nowrap">{{ event.lastedit_formatted }}</td>
-            <td class="w-100">
-                <h6 class="mb-0">{{ event.title }}</h6>
-                <small>{{ event.teaser_trimmed }}</small>
-            </td>
-            <td>
-                <form action="/admin/events/edit/" method="post">
-                    <button class="btn btn-default" name="id" value="{{ event.id }}">
-                        {{ icon.edit|raw }}
-                    </button>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                </form>
-            </td>
-        </tr>
+        <button type="submit" form="eventsEditForm" class="list-group-item list-group-item-action" name="id" value="{{ event.id }}">
+            <span class="dash-row-title">{{ event.title }}</span>
+            <span class="dash-row-meta">{{ event.lastedit_formatted }}</span>
+        </button>
     {% endfor %}
-</table>
+</div>
+<form id="eventsEditForm" action="/admin/events/edit/" method="post" class="d-none">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>

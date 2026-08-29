@@ -529,7 +529,10 @@ function se_show_log($limit=10) {
 
     if($cnt_result > 0) {
 
-        $table = '<table class="table table-sm">';
+        // Same row shape as the dashboard's other cards (title line, meta
+        // line below) instead of the old 3-column table, so the Activity
+        // card reads consistently with the rest of the grid.
+        $list = '<div class="list-group list-group-flush">';
 
         for ($i = 0; $i < $cnt_result; $i++) {
 
@@ -537,17 +540,19 @@ function se_show_log($limit=10) {
             $date = date("d.m.Y", $result[$i]['time']);
             $log_priority = 'log_priority' . $result[$i]['priority'];
 
-            $table .= '<tr>';
-            $table .= '<td><span class="se-privacy-blur"><span class="priority-indicator ' . $log_priority . '" title="' . $result[$i]['priority'] . '"></span></span></td>';
-            $table .= '<td><span class="se-privacy-blur">' . $date . ' ' . $time . '</span></td>';
-            $table .= '<td><span class="se-privacy-blur">' . $result[$i]['source'] . ' - ' . $result[$i]['entry'] . '</span></td>';
-            $table .= '</tr>';
+            $list .= '<div class="list-group-item d-flex align-items-center gap-2 se-privacy-blur">';
+            $list .= '<span class="priority-indicator ' . $log_priority . ' flex-shrink-0" title="' . $result[$i]['priority'] . '"></span>';
+            $list .= '<span class="dash-min-w-0">';
+            $list .= '<span class="dash-row-title">' . $result[$i]['source'] . ' - ' . $result[$i]['entry'] . '</span>';
+            $list .= '<span class="dash-row-meta">' . $date . ' ' . $time . '</span>';
+            $list .= '</span>';
+            $list .= '</div>';
 
         }
 
-        $table .= '</table>';
+        $list .= '</div>';
 
-        $logs .= $table;
+        $logs .= $list;
 
     } else {
         $logs .= '<div class="alert alert-secondary">'.$lang['msg_info_no_data_so_far'].'</div>';

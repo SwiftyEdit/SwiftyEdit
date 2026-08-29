@@ -1,0 +1,205 @@
+/**
+ * Dashboard: card grid (see acp/templates/dashboard_top.tpl)
+ *
+ * Built on top of Bootstrap's own components (.row/.row-cols-*, .card,
+ * .list-group/.list-group-item-action, .btn-sm) rather than parallel
+ * bespoke ones, so theming (light/dark, borders, hover/focus colors) and
+ * layout breakpoints keep coming from the same system the rest of the ACP
+ * already uses. .row-cols-* (rather than assigning .col-lg-4 etc. to each
+ * card by hand) is Bootstrap's own tool for "N even cards per row,
+ * responsive" - it also keeps scaling the column count on very wide
+ * screens (row-cols-xxl-5 for the 5-card content group) instead of capping
+ * at whatever fixed .col-* width was picked. Custom classes below are only
+ * for things Bootstrap has no equivalent for: the header icon chip, the
+ * header count badge, and each card's dynamic per-section accent color.
+ *
+ * Each card picks up its section's accent color via a local custom property
+ * (--card-color) set inline in the template from the --section-color-*
+ * tokens defined in backend.scss, so the accent always matches the
+ * section's sidebar icon color in both themes.
+ *
+ * There used to also be a KPI strip above the grid (count tiles for
+ * Seiten/Snippets/Blog/Produkte/Veranstaltungen/Benutzer) - dropped once the
+ * same six card headers below got their own clickable title + count, which
+ * made the strip a duplicate of information already on screen.
+ */
+
+.dash-group-label {
+	font-size: 11.5px;
+	text-transform: uppercase;
+	letter-spacing: .07em;
+	font-weight: 650;
+	opacity: .55;
+	margin: 0 0 12px 2px;
+
+	&:not(:first-child) {
+		margin-top: 28px;
+	}
+}
+
+// Icon chip in a card header - no Bootstrap equivalent.
+.dash-card-icon {
+	width: 28px;
+	height: 28px;
+	border-radius: 8px;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: color-mix(in srgb, var(--card-color) 22%, transparent);
+	color: var(--card-color);
+
+	i {
+		font-size: 13.5px;
+	}
+}
+
+// Card title doubling as the "overview" link (the .card-footer's overview
+// button is still there for a clear, explicit action - this is just a
+// faster, more obvious click target for the same destination).
+.dash-card-title {
+	color: inherit;
+	text-decoration: none;
+
+	&:hover {
+		color: var(--card-color);
+		text-decoration: underline;
+	}
+}
+
+// The 5 top-row content cards (Seiten/Snippets/Blog/Produkte/
+// Veranstaltungen) only - not the system-row cards, which also carry
+// --card-color but weren't asked to get a colored border. Qualified as
+// .card.dash-card-accent-border (not just the class alone) so it outranks
+// .card's own same-specificity border-color rule regardless of import order.
+//
+// Same 22% tint as .dash-card-icon's background, not the full-saturation
+// --card-color - a solid-color border read as too loud/harsh next to the
+// muted card surface.
+.card.dash-card-accent-border {
+	border-color: color-mix(in srgb, var(--card-color) 22%, transparent);
+}
+
+// Count badge in the header, replacing the old separate KPI tile for the
+// same number - tinted the same way .dash-card-icon is, so the two read as
+// one accent language.
+.dash-card-count {
+	font-size: .75rem;
+	font-weight: 700;
+	padding: 2px 9px;
+	border-radius: 100px;
+	background: color-mix(in srgb, var(--card-color) 20%, transparent);
+	color: var(--card-color);
+	font-variant-numeric: tabular-nums;
+}
+
+// Recent-item lists inside a content card (Seiten/Snippets/Blog/Produkte/
+// Veranstaltungen/Benutzer), built on .list-group/.list-group-item-action.
+// Each row's submit <button> - not an <a> - carries list-group-item-action
+// and is itself the whole row (edit navigation is CSRF-protected everywhere
+// in the ACP, see pages-edit.php et al., so it has to be a real POST).
+//
+// All rows in one card post to the same URL with the same csrf_token, only
+// the id differs - so there's a single shared <form> per card (hidden,
+// after the list) that every button targets via the HTML form="" attribute,
+// rather than one <form> wrapper per row. That also means the buttons are
+// plain direct children of .list-group-flush again, so Bootstrap's own
+// border-collapse between items (`.list-group-flush > .list-group-item`)
+// applies natively - no custom divider CSS needed here.
+
+.dash-row-title {
+	display: block;
+	color: var(--bs-heading-color);
+	font-weight: 600;
+	font-size: .95rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dash-row-meta {
+	display: block;
+	font-size: .75rem;
+	opacity: .6;
+	margin-top: 2px;
+}
+
+// A flex item's default min-width:auto refuses to shrink below its content's
+// natural width, which silently defeats dash-row-title's text-overflow
+// ellipsis whenever that title sits inside a flex row (log rows, plugin
+// tiles below). This is the fix, as its own class since it's needed from
+// plain PHP-built markup (functions.php) as well as Twig templates.
+.dash-min-w-0 {
+	min-width: 0;
+}
+
+// Snippet's machine name (e.g. "shop_delivery_time") - identifying but
+// secondary to the human title next to it, so it stays visually quiet
+// instead of competing with it as a saturated badge would.
+.dash-row-tag {
+	display: inline-block;
+	font-family: var(--bs-font-monospace);
+	font-size: .68rem;
+	font-weight: 600;
+	color: var(--bs-secondary-color);
+	background: var(--bs-widget-bg-300);
+	border-radius: 4px;
+	padding: 1px 5px;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+
+// Addons card: 2 tiles per row instead of one row per plugin - there are
+// usually only a handful of active plugins, and each one only carries a
+// name + version, so a single-column list would leave most of the card
+// empty width-ways.
+.dash-plugin-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.dash-plugin-tile {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border-radius: 8px;
+	background: var(--bs-widget-bg-300);
+	color: inherit;
+	text-decoration: none;
+
+	&:hover {
+		background: var(--bs-widget-bg-400);
+		color: inherit;
+	}
+}
+
+.dash-plugin-dot {
+	width: 7px;
+	height: 7px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--card-color);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--card-color) 25%, transparent);
+}
+
+// "+ Neu": .btn-sm handles sizing, this just tints it with the card's own
+// section color instead of the generic default button, so it reads as this
+// card's primary action. No fixed Bootstrap outline-* variant fits since
+// the color is per-section/dynamic rather than one of the theme's named
+// semantic colors.
+//
+// Qualified as .btn.btn-accent (not just .btn-accent) to outrank
+// .btn-default's same-specificity color rule regardless of import order -
+// .btn-default's own file is imported after this one.
+.btn.btn-accent {
+	border-color: color-mix(in srgb, var(--card-color) 22%, transparent);
+	color: var(--card-color);
+
+	&:hover {
+		background: color-mix(in srgb, var(--card-color) 16%, transparent);
+		border-color: color-mix(in srgb, var(--card-color) 22%, transparent);
+		color: var(--card-color);
+	}
+}

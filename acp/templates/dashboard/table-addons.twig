@@ -1,0 +1,11 @@
+<div class="dash-plugin-grid">
+    {% for addon in addons %}
+        <a href="{{ addon.link }}" class="dash-plugin-tile">
+            <span class="dash-plugin-dot"></span>
+            <span class="dash-min-w-0">
+                <span class="dash-row-title">{{ addon.name }}</span>
+                <span class="dash-row-meta">v{{ addon.version }}</span>
+            </span>
+        </a>
+    {% endfor %}
+</div>

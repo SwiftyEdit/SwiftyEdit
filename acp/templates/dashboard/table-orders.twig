@@ -1,0 +1,8 @@
+<div class="list-group list-group-flush">
+    {% for order in get_orders %}
+        <div class="list-group-item se-privacy-blur">
+            <span class="dash-row-title">#{{ order.order_nbr }} &ndash; {{ order.order_invoice_mail }}</span>
+            <span class="dash-row-meta">{{ order.order_time_formatted }} &middot; {{ order.order_price_formatted }} &middot; {{ order.order_status_label }}</span>
+        </div>
+    {% endfor %}
+</div>

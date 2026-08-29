@@ -12,6 +12,7 @@ $color-mode-type: data;
 @import "collapse";
 @import "pages";
 @import "cards";
+@import "dashboard";
 @import "table";
 @import "tooltips";
 @import "form";
@@ -65,6 +66,18 @@ $color-mode-type: data;
   --#{$prefix}border-color-translucent: #{$border-color-translucent};
   --#{$prefix}input-bg: var(--#{$prefix}body-bg);
   --#{$prefix}input-border-color: #{$widget_border_color};
+
+  // Per-section accent colors, shared with the sidebar's .color-* icon tints
+  // (see _sidebar.scss) so the dashboard cards read as the same section.
+  --section-color-contents: #{$section_color_contents};
+  --section-color-blog: #{$section_color_blog};
+  --section-color-shop: #{$section_color_shop};
+  --section-color-events: #{$section_color_events};
+  --section-color-addons: #{$section_color_addons};
+  --section-color-uploads: #{$section_color_uploads};
+  --section-color-reactions: #{$section_color_reactions};
+  --section-color-user: #{$section_color_user};
+  --section-color-system: #{$section_color_dashboard};
 }
 
 [data-bs-theme="dark"] {
@@ -111,6 +124,18 @@ $color-mode-type: data;
     --#{$prefix}input-bg: #{$input_bg_dark};
     --#{$prefix}input-border-color: #{$input_border_color_dark};
 
+    // Section colors don't currently have dedicated dark-mode variants (see
+    // _variables-dark.scss) - same tokens as light mode, kept here so callers
+    // never have to care which theme is active.
+    --section-color-contents: #{$section_color_contents};
+    --section-color-blog: #{$section_color_blog};
+    --section-color-shop: #{$section_color_shop};
+    --section-color-events: #{$section_color_events};
+    --section-color-addons: #{$section_color_addons};
+    --section-color-uploads: #{$section_color_uploads};
+    --section-color-reactions: #{$section_color_reactions};
+    --section-color-user: #{$section_color_user};
+    --section-color-system: #{$section_color_dashboard};
 }
 
 // Uppy's own dark theme (see node_modules/@uppy/dashboard/dist/style.css)
@@ -413,6 +438,18 @@ hr.shadow-line:after {
   // table, instead of the surrounding layout jumping as the box grows.
   &-h350 {
     height: 350px;
+  }
+  // Compact variant for the dashboard's card grid (see _dashboard.scss),
+  // where several cards sit side by side and don't need h350's tall preview.
+  // No padding here (dashboard rows sit flush against the card edge), which
+  // means content/buttons can end up flush against the right edge too -
+  // Safari then paints its overlay scrollbar right on top of them instead
+  // of beside them. scrollbar-gutter reserves that sliver of space back
+  // without bringing back a visible padding gap when there's nothing to
+  // scroll.
+  &-h240 {
+    height: 240px;
+    scrollbar-gutter: stable;
   }
 }
 
