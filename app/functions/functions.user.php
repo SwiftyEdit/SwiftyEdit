@@ -340,7 +340,7 @@ function randpsw(int $length=8): string {
     $random_s = '';
     $cnt_chars = strlen($chars);
     for($i=0;$i<$length;$i++) {
-        $random_s .= $chars[mt_rand(0, $cnt_chars - 1)];
+        $random_s .= $chars[random_int(0, $cnt_chars - 1)];
     }
     return $random_s;
 }
