@@ -101,7 +101,11 @@ $body-tertiary-bg:             $widget-bg-700 !default;
 $body-emphasis-color:          $black !default;
 $border-color: $widget_border_color !default;
 $border-color-translucent:     rgba($black, .15) !default;
-$headings-color: darken($primary,10%);
+// Was darken($primary,10%) - read as too dark/muddy for things like the
+// dashboard card titles ("Addons", "Bestellungen"). Plain $primary keeps
+// headings distinguishable from $link-color (darken($primary,5%) below)
+// while landing noticeably lighter.
+$headings-color: $primary;
 $link-color:                   darken($primary, 5%) !default;
 $link-hover-color:             lighten($link-color, 10%) !default;
 $code-color: rgb(193, 64, 216);
@@ -142,9 +146,9 @@ $section_color_dashboard_lm: darken($section_color_dashboard, 20%);
 // the same 20% (their pastels start from higher lightness), so they get a
 // bit more here.
 $section_color_blog_lm: darken($section_color_blog, 28%);
-$section_color_shop_lm: darken($section_color_shop, 28%);
+$section_color_shop_lm: darken($section_color_shop, 34%);
 $section_color_events_lm: darken($section_color_events, 20%);
-$section_color_addons_lm: darken($section_color_addons, 28%);
+$section_color_addons_lm: darken($section_color_addons, 34%);
 $section_color_reactions_lm: darken($section_color_reactions, 20%);
 $section_color_uploads_lm: darken($section_color_uploads, 20%);
 $section_color_user_lm: darken($section_color_user, 20%);
