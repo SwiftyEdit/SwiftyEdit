@@ -14,7 +14,43 @@ echo '<button class="btn btn-link me-2 d-none d-lg-inline-flex" id="sidebarToggl
 echo '<button class="btn btn-link me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">'.$icon['three_dots'].'</button>';
 
 
-echo '<div class="opacity-25 me-auto">'.htmlentities($_SERVER['SERVER_NAME']).'</div>';
+echo '<div class="opacity-25 me-auto d-none d-lg-inline">'.htmlentities($_SERVER['SERVER_NAME']).'</div>';
+
+/**
+ * global live search - pages, snippets, products, blog posts, events, users.
+ * No dedicated search results page: acp/core/search/data-reader.php renders
+ * grouped matches straight into #globalSearchResults on every keystroke.
+ * Each content type self-filters by the same se_hasPermission() check its
+ * own module uses, so a restricted admin account never sees more here than
+ * it could already reach via that module's own list.
+ */
+echo '<div class="position-relative me-1 d-none d-md-block" id="globalSearchWrapper" style="width:220px;">';
+echo '<span class="position-absolute top-50 translate-middle-y text-body-secondary" style="left:0.9rem; pointer-events:none;">'.$icon['search'].'</span>';
+echo '<input type="text" id="globalSearchInput" name="q" class="form-control form-control-sm rounded-pill no-enter" style="padding-left:2.1rem;" autocomplete="off" placeholder="'.$lang['search'].'"';
+echo ' hx-post="/admin-xhr/search/read/?live"';
+echo ' hx-trigger="keyup changed delay:300ms"';
+echo ' hx-target="#globalSearchResults"';
+echo ' hx-swap="innerHTML"';
+echo ' hx-vals=\'{"csrf_token":"'.$_SESSION['token'].'"}\'';
+echo ' hx-on::after-request="document.getElementById(\'globalSearchResults\').classList.toggle(\'show\', this.value.trim().length > 1 && document.getElementById(\'globalSearchResults\').innerHTML.trim() !== \'\')">';
+echo '<div id="globalSearchResults" class="dropdown-menu" style="max-height:70vh; overflow-y:auto; width:320px;"></div>';
+echo '</div>';
+
+echo '<script>
+document.addEventListener("click", function (e) {
+    var wrapper = document.getElementById("globalSearchWrapper");
+    var results = document.getElementById("globalSearchResults");
+    if (!wrapper || !results || wrapper.contains(e.target)) { return; }
+    results.classList.remove("show");
+});
+document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") { return; }
+    var input = document.getElementById("globalSearchInput");
+    var results = document.getElementById("globalSearchResults");
+    if (results) { results.classList.remove("show"); }
+    if (input && document.activeElement === input) { input.blur(); }
+});
+</script>';
 
 /**
  * Filter modal

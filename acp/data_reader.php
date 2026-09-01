@@ -25,6 +25,7 @@ $reader = match (true) {
     str_contains($_REQUEST['query'], 'widgets/') => 'core/widgets/widgets.php',
     str_contains($_REQUEST['query'], 'docs/') => 'core/docs/data-reader.php',
     str_contains($_REQUEST['query'], 'addons/') => 'core/addons/data-reader.php',
+    str_contains($_REQUEST['query'], 'search/') => 'core/search/data-reader.php',
     default => ''
 };
 

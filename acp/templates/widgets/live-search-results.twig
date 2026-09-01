@@ -1,0 +1,31 @@
+{# Live-search results dropdown, rendered by acp/core/search/data-reader.php.
+   No dedicated search page - this partial is only ever swapped into the
+   header dropdown (see acp/core/nav_top.php). Empty output = no matches
+   (or query too short), the header JS hides the dropdown in that case. #}
+{% for group in groups %}
+    <h6 class="dropdown-header">{{ group.icon|raw }} {{ group.label }}</h6>
+    {% for item in group.items %}
+        {# Content titles (pages/snippets/products/blog/events) are already
+           sanitized at save time and every other ACP list prints them
+           unescaped - re-escaping here would double-encode entities. User
+           names are the one field not pre-sanitized, so they keep Twig's
+           normal auto-escaping (see acp/core/search/data-reader.php).
+           The |raw has to sit directly in each {{ }} below - piping into
+           a {% set %} variable first would drop the "safe" marker and
+           get it escaped anyway on output. #}
+        {% if item.href is defined and item.href is not empty %}
+            <a class="dropdown-item" href="{{ item.href }}">{{ item.raw_label|default(false) ? item.label|raw : item.label }}</a>
+        {% elseif item.form_action is defined %}
+            <form method="post" action="{{ item.form_action }}" class="d-block">
+                <input type="hidden" name="{{ item.form_field }}" value="{{ item.form_value }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="dropdown-item text-start w-100 border-0 bg-transparent">{{ item.raw_label|default(false) ? item.label|raw : item.label }}</button>
+            </form>
+        {% else %}
+            <span class="dropdown-item disabled">{{ item.raw_label|default(false) ? item.label|raw : item.label }}</span>
+        {% endif %}
+    {% endfor %}
+    {% if not loop.last %}
+        <div class="dropdown-divider"></div>
+    {% endif %}
+{% endfor %}
