@@ -104,7 +104,7 @@ if ($_REQUEST['action'] === 'list_posts') {
 
     // no entries
     if (count($get_posts) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_posts as &$post) {
@@ -133,7 +133,7 @@ if ($_REQUEST['action'] === 'list_products') {
     ]);
 
     if (count($get_products) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_products as &$product) {
@@ -162,7 +162,7 @@ if ($_REQUEST['action'] === 'list_events') {
     ]);
 
     if (count($get_events) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_events as &$event) {
@@ -202,7 +202,7 @@ if ($_REQUEST['action'] === 'list_addons') {
     }
 
     if (count($addons) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     $html = $twig->render('dashboard/table-addons.twig', [
@@ -225,7 +225,7 @@ if ($_REQUEST['action'] === 'list_orders') {
     ]);
 
     if (count($get_orders) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     $show_order_status = [
@@ -275,7 +275,7 @@ if ($_REQUEST['action'] === 'list_user') {
     ]);
 
     if (count($get_user) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_user as &$user) {
@@ -415,7 +415,7 @@ if($_REQUEST['action'] === 'list_alerts') {
     }
 
     if (count($se_check_messages) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     // Same row shape as the dashboard's other list-based cards instead of a

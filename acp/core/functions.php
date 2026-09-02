@@ -555,7 +555,7 @@ function se_show_log($limit=10) {
         $logs .= $list;
 
     } else {
-        $logs .= '<div class="alert alert-secondary">'.$lang['msg_info_no_data_so_far'].'</div>';
+        $logs .= '<div class="dash-empty-hint">'.$lang['msg_info_no_data_so_far'].'</div>';
 	}
 
     return $logs;

@@ -124,6 +124,16 @@
 	margin-top: 2px;
 }
 
+// "No entries yet" empty state for a card's list - was a full .alert-info
+// box, which read as more urgent/heavier than an empty list warrants next
+// to the rest of the (now alert-free) dashboard.
+.dash-empty-hint {
+	padding: 16px 4px;
+	font-size: .8rem;
+	color: var(--bs-secondary-color);
+	text-align: center;
+}
+
 // A flex item's default min-width:auto refuses to shrink below its content's
 // natural width, which silently defeats dash-row-title's text-overflow
 // ellipsis whenever that title sits inside a flex row (log rows, plugin
