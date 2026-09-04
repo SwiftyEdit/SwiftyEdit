@@ -111,7 +111,7 @@
   "msg_wishlist_added_to_cart": "Added to cart.",
   "msg_added_to_cart": "Added to cart.",
   "btn_pay_with_paypal": "Pay with PayPal",
-  "btn_all": "Tout",
+  "btn_all": "All",
   "btn_run_commands": "Exécuter des commandes",
   "msg_missingfield": "Tous les champs sont obligatoires",
   "msg_login_false": "Il n'y a aucune donnée utilisateur correspondante disponible.",
