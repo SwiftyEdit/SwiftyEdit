@@ -179,7 +179,7 @@
 			<span id="countAddons" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=addons" hx-trigger="load">0</span>
 		</div>
 		<div class="card-body p-0">
-			<div id="getAddons" class="p-0 scroll-container scroll-container-h240"
+			<div id="getAddons" class="p-2 scroll-container scroll-container-h240"
 				 hx-get="{reader_uri}?action=list_addons"
 				 hx-trigger="load">
 				<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
@@ -213,7 +213,7 @@
 			<h2 class="h6 mb-0">{label_settings}</h2>
 		</div>
 		<div class="card-body p-0">
-			<div id="getInfos" class="p-0 scroll-container scroll-container-h240"
+			<div id="getInfos" class="p-2 scroll-container scroll-container-h240"
 				 hx-get="{reader_uri}?action=list_infos"
 				 hx-trigger="load">
 				<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
