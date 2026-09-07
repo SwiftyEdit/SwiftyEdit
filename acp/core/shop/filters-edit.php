@@ -102,7 +102,7 @@ if(isset($_POST['edit_group'])) {
 
     $array_categories = array();
     if($group_data['filter_categories'] != '') {
-        $array_categories = explode("<->", $group_data['filter_categories']);
+        $array_categories = explode(",", $group_data['filter_categories']);
     }
 
     $checkboxes_cat = '<div class="card">';

@@ -104,7 +104,7 @@ if ($_REQUEST['action'] === 'list_posts') {
 
     // no entries
     if (count($get_posts) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_posts as &$post) {
@@ -133,7 +133,7 @@ if ($_REQUEST['action'] === 'list_products') {
     ]);
 
     if (count($get_products) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_products as &$product) {
@@ -162,7 +162,7 @@ if ($_REQUEST['action'] === 'list_events') {
     ]);
 
     if (count($get_events) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_events as &$event) {
@@ -172,6 +172,81 @@ if ($_REQUEST['action'] === 'list_events') {
 
     $html = $twig->render('dashboard/table-events.twig', [
         'get_events' => $get_events
+    ]);
+
+    se_html_response($html);
+}
+
+
+// activated plugins
+
+if ($_REQUEST['action'] === 'list_addons') {
+
+    $activated = se_get_addons('plugin');
+    $all_addons = se_get_all_addons();
+
+    $addons = [];
+    foreach ($activated as $a) {
+        $dir = $a['addon_dir'];
+        // First entry in the addon's own nav (its "overview" tab, by
+        // convention always named 'start') is the closest thing to a
+        // detail page for it - fall back to the addons list if a plugin
+        // happens to ship no navigation at all.
+        $nav_file = $all_addons[$dir]['navigation'][0]['file'] ?? null;
+        $addons[] = [
+            'dir' => $dir,
+            'name' => $all_addons[$dir]['addon']['name'] ?? $dir,
+            'version' => $all_addons[$dir]['addon']['version'] ?? '',
+            'link' => $nav_file ? '/admin/addons/plugin/'.$dir.'/'.$nav_file.'/' : '/admin/addons/'
+        ];
+    }
+
+    if (count($addons) < 1) {
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
+    }
+
+    $html = $twig->render('dashboard/table-addons.twig', [
+        'addons' => $addons
+    ]);
+
+    se_html_response($html);
+}
+
+
+// orders
+
+if ($_REQUEST['action'] === 'list_orders') {
+
+    $get_orders = $db_content->select("se_orders", [
+        "id", "order_nbr", "order_time", "order_invoice_mail", "order_price_total", "order_status"
+    ], [
+        "ORDER" => ["order_time" => "DESC"],
+        "LIMIT" => 5
+    ]);
+
+    if (count($get_orders) < 1) {
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
+    }
+
+    $show_order_status = [
+        "1" => $lang['status_order_received'],
+        "2" => $lang['status_order_completed'],
+        "3" => $lang['status_order_canceled']
+    ];
+
+    // Plain number_format() instead of se_post_print_currency() here - that
+    // helper always wraps the price in <span class="price-predecimal/decimal">
+    // for frontend styling, which would need |raw in the template to render
+    // (it's also used by the frontend cart/checkout, so not worth changing
+    // its contract just for this one plain-text row).
+    foreach ($get_orders as &$order) {
+        $order['order_time_formatted'] = se_format_datetime($order['order_time']);
+        $order['order_price_formatted'] = number_format($order['order_price_total'], 2, ',', '.') . ' ' . $se_settings['posts_products_default_currency'];
+        $order['order_status_label'] = $show_order_status[$order['order_status']] ?? '';
+    }
+
+    $html = $twig->render('dashboard/table-orders.twig', [
+        'get_orders' => $get_orders
     ]);
 
     se_html_response($html);
@@ -200,7 +275,7 @@ if ($_REQUEST['action'] === 'list_user') {
     ]);
 
     if (count($get_user) < 1) {
-        se_html_response('<div class="alert alert-info">' . $lang['msg_no_entries_found'] . '</div>');
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
 
     foreach ($get_user as &$user) {
@@ -339,16 +414,19 @@ if($_REQUEST['action'] === 'list_alerts') {
         }
     }
 
-    foreach($se_check_messages as $alert) {
-
-        echo $twig->render('components/alert.twig', [
-            'message' => $alert,
-            'type' => 'info',
-            'icon' => 'info-circle',
-            'allow_html' => true,
-            'dismissible' => false
-        ]);
+    if (count($se_check_messages) < 1) {
+        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
     }
+
+    // Same row shape as the dashboard's other list-based cards instead of a
+    // full-weight .alert per message - a bank of alert boxes crammed into a
+    // compact card looked heavier than the content warranted; a plain list
+    // reads just as clearly here.
+    echo '<div class="list-group list-group-flush">';
+    foreach($se_check_messages as $alert) {
+        echo '<div class="list-group-item">'.$alert.'</div>';
+    }
+    echo '</div>';
     exit;
 }
 

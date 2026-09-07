@@ -284,7 +284,7 @@ function se_sanitize_page_inputs($data) {
         // password
         if($key == 'page_psw') {
             if($val != '') {
-                $sanitized['page_psw'] = md5($val);
+                $sanitized['page_psw'] = password_hash($val, PASSWORD_DEFAULT);
             }
         }
         if($key == 'page_psw_reset') {
@@ -474,13 +474,15 @@ function se_generate_token() {
  */
 function se_validate_token($token): void {
 
-    $token =  htmlspecialchars($token);
+    // cast first: htmlspecialchars() throws a TypeError under PHP 8 if $token is
+    // null, which happens whenever the csrf_token field is missing from $_POST.
+    $token = htmlspecialchars((string) $token);
 
     if(empty($token)) {
         header('Location: /');
         exit;
     }
-    if($token !== ($_SESSION['token'] ?? null)) {
+    if(!hash_equals((string) ($_SESSION['token'] ?? ''), $token)) {
         header('Location: /');
         exit;
     }

@@ -1,15 +1,3 @@
-<div class="d-flex justify-content-end mb-2">
-    <button hx-post="/admin-xhr/dashboard/write/"
-            hx-vals='{"cache_target":"all","csrf_token":"{{ csrf_token }}"}'
-            hx-target="#cacheStatus_all"
-            hx-swap="innerHTML"
-            hx-indicator=".htmx-indicator"
-            class="btn btn-default btn-sm">
-        {{ icon.arrow_clockwise|raw }} {{ lang.cache_btn_rebuild_all }}
-    </button>
-    <span id="cacheStatus_all" class="ms-2 align-self-center"></span>
-</div>
-
 <div class="list-group list-group-flush">
     {% for cache in caches %}
         <div class="list-group-item d-flex justify-content-between align-items-center">

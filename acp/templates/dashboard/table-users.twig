@@ -1,19 +1,11 @@
-<table class="table table-sm">
+<div class="list-group list-group-flush">
     {% for user in get_user %}
-        <tr>
-            <td class="text-nowrap">{{ user.user_registerdate_formatted }}</td>
-            <td class="w-100">
-                <h6 class="mb-0">{{ user.user_nick }}</h6>
-                <small>{{ user.user_mail }}</small>
-            </td>
-            <td>
-                <form action="/admin/users/edit/" method="post">
-                    <button class="btn btn-default" name="user_id" value="{{ user.user_id }}">
-                        {{ icon.edit|raw }}
-                    </button>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                </form>
-            </td>
-        </tr>
+        <button type="submit" form="usersEditForm" class="list-group-item list-group-item-action" name="user_id" value="{{ user.user_id }}">
+            <span class="dash-row-title">{{ user.user_nick }}</span>
+            <span class="dash-row-meta">{{ user.user_registerdate_formatted }}</span>
+        </button>
     {% endfor %}
-</table>
+</div>
+<form id="usersEditForm" action="/admin/users/edit/" method="post" class="d-none">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>

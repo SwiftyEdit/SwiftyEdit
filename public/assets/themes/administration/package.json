@@ -26,12 +26,12 @@
     "sortablejs": "^1.15.7"
   },
   "devDependencies": {
-    "autoprefixer": "^10.5.4",
-    "cssnano": "^7.1.9",
+    "autoprefixer": "^10.5.5",
+    "cssnano": "^9.0.3",
     "fs-extra": "^11.4.0",
-    "sass": "^1.102.0",
-    "terser": "^5.49.2",
-    "vite": "^8.2.1"
+    "sass": "^1.104.0",
+    "terser": "^5.51.2",
+    "vite": "^8.2.2"
   },
   "scripts": {
     "build": "vite build",

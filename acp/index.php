@@ -360,7 +360,7 @@ if (strlen($se_settings['pagename']) > 30) {
     <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
 
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2026-08-18b" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2026-09-01a" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo htmlentities($languagePack); ?>";

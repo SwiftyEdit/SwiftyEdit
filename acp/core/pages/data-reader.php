@@ -458,7 +458,7 @@ function se_list_pages($data) {
     $item_template_vars = array(
         '{status-label}','{item-linkname}','{item-title}','{item-tmb-src}','{label_edit}',
         '{item-mod}','{item-class}','{item-indent}','{edit-btn}','{duplicate-btn}','{info-btn}',
-        '{comment-btn}','{item-permalink}','{item-lastedit}','{item-pagesort}','{item-template}',
+        '{comment-btn}','{item-permalink}','{item-lastedit}','{item-template}',
         '{item-redirect}','{frontend-link}','{item-description}','{item-lang}', '{page_labels}','{item-pi}','{hidden_csrf_tokken}'
     );
 
@@ -476,19 +476,6 @@ function se_list_pages($data) {
 
         $page_id = $data[$i]['page_id'];
         $page_sort = $data[$i]['page_sort'];
-
-        // the {item-pagesort} badge: page_sort itself is only a frozen
-        // snapshot from the page_sort->parent_id/position migration and
-        // isn't kept in sync by new saves - show the real position instead.
-        // tree_depth is only set on type==1 (sorted) rows, see the flatten
-        // above; single/unsorted pages show nothing here, same as before.
-        if ($page_sort == 'portal') {
-            $page_position_display = 'portal';
-        } elseif (isset($data[$i]['tree_depth'])) {
-            $page_position_display = (string) ($data[$i]['position'] ?? '');
-        } else {
-            $page_position_display = '';
-        }
 
         $page_linkname = $data[$i]['page_linkname'];
         $page_title = $data[$i]['page_title'];
@@ -629,7 +616,7 @@ function se_list_pages($data) {
         $replace = array(
             $status_label,$page_linkname,$page_title,$page_thumb_src,$lang['edit'],
             $page_modul,$item_class,$indent,$edit_button,$duplicate_button,$info_button,
-            $page_comments_link,$page_permalink,$last_edit,$page_position_display, $show_template_name,
+            $page_comments_link,$page_permalink,$last_edit,$show_template_name,
             $page_redirect,$frontend_link,$page_description,$page_lang_thumb,$label,$pi,$hidden_csrf_token
         );
 

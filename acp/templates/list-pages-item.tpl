@@ -30,7 +30,7 @@
 				</div>
 
 				<div class="text-muted small">
-					<p class="my-1"><i class="bi bi-sort-down"></i> {item-pagesort} | {item-lang}</p>
+					<p class="my-1"><i class="bi bi-translate"></i> {item-lang}</p>
 					<p class="my-1"><i class="bi-palette"></i> {item-template}</p>
 					<p class="my-1"><i class="bi bi-tag"></i> {page_labels}</p>
 					<p>{item-mod}</p>

@@ -1,19 +1,11 @@
-<table class="table table-sm">
+<div class="list-group list-group-flush">
     {% for page in getPages %}
-        <tr>
-            <td class="text-nowrap">{{ page.page_se_format_datetime }}</td>
-            <td class="w-100">
-                <h6 class="mb-0">{{ page.page_title }}</h6>
-                <small>{{ page.page_meta_description }}</small>
-            </td>
-            <td>
-                <form action="/admin/pages/edit/" method="post">
-                    <button class="btn btn-default" name="page_id" value="{{ page.page_id }}">
-                        {{ icon.edit|raw }}
-                    </button>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                </form>
-            </td>
-        </tr>
+        <button type="submit" form="pagesEditForm" class="list-group-item list-group-item-action" name="page_id" value="{{ page.page_id }}">
+            <span class="dash-row-title">{{ page.page_title }}</span>
+            <span class="dash-row-meta">{{ page.page_se_format_datetime }}</span>
+        </button>
     {% endfor %}
-</table>
+</div>
+<form id="pagesEditForm" action="/admin/pages/edit/" method="post" class="d-none">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>
