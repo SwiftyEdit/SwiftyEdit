@@ -5,6 +5,15 @@
  * @var array $lang
  */
 
+// Read-only w.r.t. $_SESSION (se_add_to_cart() only reads $_SESSION['user_id']
+// / ['token'] below, never assigns them) - safe to release the session lock
+// immediately. This fires alongside other hx-trigger="load" widgets on the
+// same page, all sharing one PHPSESSID; without an early close here, the
+// default file session handler would force them to queue up and run one at
+// a time instead of concurrently. Do not add $_SESSION writes below without
+// removing this first.
+session_write_close();
+
 // CSRF is already validated globally by bootstrap.php for every POST
 // request, no manual se_validate_token() call needed here.
 if (isset($_POST['add_to_cart'])) {

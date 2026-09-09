@@ -12,6 +12,15 @@
  * @var array $se_settings
  */
 
+// Read-only w.r.t. $_SESSION (only read below, and by se_add_to_cart() -
+// never assigned) - safe to release the session lock immediately. This
+// fires alongside other hx-trigger="load" widgets on the same page, all
+// sharing one PHPSESSID; without an early close here, the default file
+// session handler would force them to queue up and run one at a time
+// instead of concurrently. Do not add $_SESSION writes below without
+// removing this first.
+session_write_close();
+
 if(($se_settings['wishlist_enabled'] ?? 0) != 1) {
     http_response_code(404);
     exit;

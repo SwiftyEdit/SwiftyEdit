@@ -4,6 +4,14 @@
  * @var object $db_posts
  */
 
+// Read-only w.r.t. $_SESSION - safe to release the session lock immediately.
+// This endpoint fires alongside other hx-trigger="load" widgets on the same
+// page, all sharing one PHPSESSID; without an early close here, the
+// default file session handler would force them to queue up and run one
+// at a time instead of concurrently. Do not add $_SESSION writes below
+// without removing this first.
+session_write_close();
+
 // count product filters
 if(isset($_GET['filter']) && is_numeric($_GET['filter'])) {
 
