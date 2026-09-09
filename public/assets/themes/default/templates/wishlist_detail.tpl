@@ -23,7 +23,7 @@
                        {if $wishlist.is_public == 1}checked{/if}
                        hx-post="/xhr/se/wishlist/"
                        hx-vals='{ldelim}"toggle_wishlist_public": 1, "wishlist_id": {$wishlist.id}, "is_public": {if $wishlist.is_public == 1}0{else}1{/if}{rdelim}'
-                       hx-include="[name='csrf_token']"
+                       hx-include="previous [name='csrf_token']"
                        hx-swap="none">
                 <label class="form-check-label" for="wishlist-visibility-{$wishlist.id}">{$lang_label_wishlist_visibility}</label>
             </div>

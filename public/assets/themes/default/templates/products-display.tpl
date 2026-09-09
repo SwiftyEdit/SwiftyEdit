@@ -410,13 +410,13 @@
     {if $show_voting == true}
         <div class="mb-3">
             {$hidden_csrf_token}
-            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="[name='csrf_token']"
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="previous [name='csrf_token']"
                     name="vote" value="up-product-{$product_id}" {$votes_status_up}>
-                <i class="bi bi-hand-thumbs-up-fill"></i> <span hx-get="/xhr/se/votes/?section=s&upv={$product_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$product_id} from:body">0</span>
+                <i class="bi bi-hand-thumbs-up-fill"></i> <span hx-include="this" hx-get="/xhr/se/votes/?section=s&upv={$product_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$product_id} from:body">0</span>
             </button>
-            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="[name='csrf_token']"
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="previous [name='csrf_token']"
                     name="vote" value="dn-product-{$product_id}" {$votes_status_dn}>
-                <i class="bi bi-hand-thumbs-down-fill"></i> <span hx-get="/xhr/se/votes/?section=s&dnv={$product_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$product_id} from:body">0</span>
+                <i class="bi bi-hand-thumbs-down-fill"></i> <span hx-include="this" hx-get="/xhr/se/votes/?section=s&dnv={$product_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$product_id} from:body">0</span>
             </button>
         </div>
     {/if}

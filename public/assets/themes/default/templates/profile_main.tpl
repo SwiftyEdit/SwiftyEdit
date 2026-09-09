@@ -57,9 +57,10 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
+        {$hidden_csrf_token}
         <button name="delete_avatar"
                 hx-post="/xhr/se/profile/"
-                hx-include="[name='csrf_token']"
+                hx-include="previous [name='csrf_token']"
                 hx-swap="none">
             {$lang_delete}
         </button>

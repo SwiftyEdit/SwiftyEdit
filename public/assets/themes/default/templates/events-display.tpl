@@ -59,7 +59,7 @@
             </div>
 
             {$hidden_csrf_token}
-            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/guestlist/" hx-swap="none" hx-include="[name='csrf_token']" name="val" value="confirm-{$event_id}" {$disabled}>{$sign_guestlist}</button>
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/guestlist/" hx-swap="none" hx-include="previous [name='csrf_token']" name="val" value="confirm-{$event_id}" {$disabled}>{$sign_guestlist}</button>
         </div>
     </div>
     {/if}
@@ -71,13 +71,13 @@
     {if $show_voting == true}
         <div class="mb-3">
             {$hidden_csrf_token}
-            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="[name='csrf_token']"
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="previous [name='csrf_token']"
                     name="vote" value="up-event-{$event_id}" {$votes_status_up}>
-                <i class="bi bi-hand-thumbs-up-fill"></i> <span hx-get="/xhr/se/votes/?section=e&upv={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$event_id} from:body">0</span>
+                <i class="bi bi-hand-thumbs-up-fill"></i> <span hx-include="this" hx-get="/xhr/se/votes/?section=e&upv={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$event_id} from:body">0</span>
             </button>
-            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="[name='csrf_token']"
+            <button class="btn btn-sm btn-outline-secondary" hx-post="/xhr/se/vote/" hx-swap="none" hx-include="previous [name='csrf_token']"
                     name="vote" value="dn-event-{$event_id}" {$votes_status_dn}>
-                <i class="bi bi-hand-thumbs-down-fill"></i> <span hx-get="/xhr/se/votes/?section=e&dnv={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$event_id} from:body">0</span>
+                <i class="bi bi-hand-thumbs-down-fill"></i> <span hx-include="this" hx-get="/xhr/se/votes/?section=e&dnv={$event_id}" hx-swap="innerHTML" hx-trigger="load, update_votings_{$event_id} from:body">0</span>
             </button>
         </div>
     {/if}
