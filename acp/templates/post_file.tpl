@@ -7,7 +7,7 @@
 				<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{nav_btn_intro}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{nav_btn_content}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#file">{nav_btn_files}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_metas}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_seo}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{nav_btn_settings}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#addons" title="{nav_btn_addons}">{icon_addons}</a></li>
 			</ul>
@@ -76,9 +76,35 @@
 					<div class="form-group">
 						<label>{label_keywords}</label>
 						<input type="text" class='form-control tags' name="post_tags" value="{post_tags}">
-					</div>		
+					</div>
+
+					<div class="row">
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_pages_permalink}</label>
+								<input type="text" id="disabledTextInput" class="form-control" value="{se_base_url}" disabled>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_main_category_page}</label>
+								{select_main_cat_page}
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_slug}</label>
+								<input class='form-control' name="post_slug" type="text" value="{post_slug}">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label>Canonical URL {canonical_url_tooltip}</label>
+						<input class='form-control' name="post_canonical_url" type="text" value="{post_canonical_url}">
+					</div>
 				</div>
-				
+
 				<div class="tab-pane fade" id="prefs">
 					<div class="form-group">
 						<label>{label_author}</label>
@@ -87,10 +113,6 @@
 					<div class="form-group">
 						<label>{label_source}</label>
 						<input class='form-control' name="post_source" type="text" value="{post_source}">
-					</div>
-					<div class="form-group">
-						<label>{label_slug}</label>
-						<input class='form-control' name="post_slug" type="text" value="{post_slug}">
 					</div>
 
 					<h5 class="heading-line">RSS</h5>
