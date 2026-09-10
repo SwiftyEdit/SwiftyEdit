@@ -161,6 +161,7 @@
   "msg_search_undersized": "La consulta debe tener al menos 3 letras.",
   "msg_search_results": "La consulta devolvió %d coincide:",
   "msg_search_no_results": "Su búsqueda no ha devuelto resultados",
+  "btn_show_all_results": "Show all results",
   "label_payment_completed": "Payment process successfully completed!",
   "msg_payment_completed": "Thank you for your order. The payment has been completed.",
   "forgotten_psw": "¿Olvidaste tu contraseña?",
