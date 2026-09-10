@@ -161,6 +161,7 @@
   "msg_search_undersized": "La query deve essere lunga almeno 3 lettere.",
   "msg_search_results": "La query ha restituito %d partite:",
   "msg_search_no_results": "La tua ricerca non ha prodotto alcun risultato",
+  "btn_show_all_results": "Show all results",
   "label_payment_completed": "Payment process successfully completed!",
   "msg_payment_completed": "Thank you for your order. The payment has been completed.",
   "forgotten_psw": "Hai dimenticato la password?",
