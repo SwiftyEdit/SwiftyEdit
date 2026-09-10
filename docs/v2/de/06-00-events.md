@@ -39,3 +39,9 @@ können:
 * <kbd>Gästelistenlimit</kbd> hinterlegt eine Anzahl verfügbarer Plätze, die auf der Event-Seite als
   Information angezeigt wird. Das Limit wird nicht automatisch durchgesetzt - weitere Zusagen sind auch
   nach Erreichen der Anzahl weiterhin möglich.
+
+### Canonical URL {#canonical-url}
+
+Jedes Event bekommt automatisch eine Canonical URL, die aus seiner Detailseite und seinem Slug gebildet wird. Damit teilst Du Suchmaschinen mit, welche URL für ein Event die maßgebliche ist.
+
+Soll die Canonical URL stattdessen woanders hinzeigen - z.B. auf eine eigens dafür gebaute Landingpage, oder auf die URL, die das Event vor einer Umbenennung hatte - trägst Du diese URL in das Feld *Canonical URL* auf dem Tab <kbd>SEO</kbd> ein. Bleibt es leer, gilt weiterhin der automatisch gebildete Wert.

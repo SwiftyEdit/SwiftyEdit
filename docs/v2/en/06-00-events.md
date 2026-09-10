@@ -41,3 +41,9 @@ event:
 * <kbd>Guestlist limit</kbd> stores a number of available seats, shown as information on the event page.
   The limit is not enforced automatically - further commitments remain possible even after the number is
   reached.
+
+### Canonical URL {#canonical-url}
+
+Every event gets a canonical URL automatically, built from its detail page and its slug. This tells search engines which URL for an event is the authoritative one.
+
+If you need the canonical URL to point somewhere else instead - for example a dedicated landing page you built for it, or a URL the event used before it was renamed - enter that URL in the *Canonical URL* field on the <kbd>SEO</kbd> tab. Leave it empty to keep the automatic value.

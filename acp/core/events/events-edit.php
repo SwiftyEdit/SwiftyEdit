@@ -55,6 +55,26 @@ $input_select_language = [
     "type" => "select"
 ];
 
+// main category page: any page that accepts event content (page_posts_types
+// contains "e"), same pattern as the blog's "Hauptkategorie-Seite" selector.
+$all_event_pages = $db_content->select("se_pages", "page_permalink", [
+    "page_posts_types[~]" => "e"
+]);
+
+array_unshift($all_event_pages, "default");
+
+$event_main_cat_slug = $post_data['main_category_slug'] ?? '';
+
+$select_main_cat_page = '<select name="main_category_slug" class="custom-select form-control">';
+foreach($all_event_pages as $permalink) {
+    $label = $permalink;
+    if($permalink == 'default') {
+        $label = $lang['label_use_default'];
+    }
+    $select_main_cat_page .= "<option value='$permalink'".($event_main_cat_slug == "$permalink" ? 'selected="selected"' :'').">$label</option>";
+}
+$select_main_cat_page .= '</select>';
+
 // checkboxes for categories
 $get_categories = se_get_categories();
 
@@ -289,6 +309,8 @@ $form_tpl = str_replace('{event_end}', $event_enddate, $form_tpl);
 $form_tpl = str_replace('{select_language}', $input_select_lang, $form_tpl);
 $form_tpl = str_replace('{author}', $post_data['author'], $form_tpl);
 $form_tpl = str_replace('{slug}', $post_data['slug'], $form_tpl);
+$form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
+$form_tpl = str_replace('{select_main_cat_page}', $select_main_cat_page, $form_tpl);
 // note: placeholder is {keywords}, not {tags} - the latter collides with the
 // "tags" language key (used for the site-wide content tags feature) and would
 // get overwritten by the earlier `foreach($lang as $k => $v)` replacement loop
@@ -297,6 +319,8 @@ $form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('event', (int)
 $form_tpl = str_replace('{rss_url}', $post_data['rss_url'], $form_tpl);
 $form_tpl = str_replace('{meta_title}', $post_data['meta_title'], $form_tpl);
 $form_tpl = str_replace('{meta_description}', $post_data['meta_description'], $form_tpl);
+$form_tpl = str_replace('{canonical_url}', $post_data['canonical_url'] ?? '', $form_tpl);
+$form_tpl = str_replace('{canonical_url_tooltip}', se_print_docs_link("06-00-events.md", null, "canonical-url"), $form_tpl);
 $form_tpl = str_replace('{priority}', $post_data['priority'], $form_tpl);
 $form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
 $form_tpl = str_replace('{checkbox_fixed}', $checkbox_fixed, $form_tpl);

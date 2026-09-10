@@ -96,12 +96,35 @@ if(isset($_POST['save_post'])) {
     }
 
     $clean_title = clean_filename($_POST['title']);
-    $date_year = date("Y",$releasedate);
-    $date_month = date("m",$releasedate);
-    $date_day = date("d",$releasedate);
 
     if($_POST['slug'] == "") {
-        $slug = "$date_year/$date_month/$date_day/$clean_title/";
+        $slug = $clean_title.'/';
+    } else {
+        $slug = se_clean_permalink($_POST['slug']);
+    }
+
+    if($_POST['main_category_slug'] == "default") {
+        // find a page that accepts event content, same pattern as the
+        // blog's "Hauptkategorie-Seite" resolution.
+        $main_category_slug = $db_content->get("se_pages", "page_permalink", [
+            "AND" => [
+                "page_posts_types[~]" => "e",
+                "page_language" => $event_lang
+            ]
+        ]);
+    } else {
+        $main_category_slug = se_clean_permalink($_POST['main_category_slug']);
+    }
+
+    if(is_numeric($id)) {
+        $filename = str_replace("/", "", $slug) . '-' . $id . '.html';
+
+        // canonical url: keep an explicit value if one was set on the form,
+        // otherwise build it from the main category page + slug, same
+        // pattern as product and post canonical urls.
+        if ($_POST['canonical_url'] == "") {
+            $canonical_url = $se_base_url . $main_category_slug . $filename;
+        }
     }
 
     $categories = '';
