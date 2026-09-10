@@ -354,6 +354,21 @@ if ($_REQUEST['action'] === 'list_cache') {
 
 
 /**
+ * OPcache status ("OPcache" card, see dashboard_top.tpl / index.php - the
+ * whole card is only wired in for admins, see se_hasPermission() there, but
+ * the read is harmless on its own so no extra check is repeated here).
+ */
+
+if ($_REQUEST['action'] === 'list_opcache') {
+    $html = $twig->render('dashboard/table-opcache.twig', [
+        'opcache' => se_get_opcache_status()
+    ]);
+
+    se_html_response($html);
+}
+
+
+/**
  * logfile
  */
 

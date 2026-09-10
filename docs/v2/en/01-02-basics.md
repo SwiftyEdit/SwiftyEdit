@@ -19,6 +19,20 @@ On the right-hand side you will find a log, current warnings and information on 
 Tip: If you are working on a theme or similar and have not activated the “Smarty Compile Check” option,
 you can also clear the Smarty cache here.
 
+### OPcache {#opcache}
+
+If [OPcache](https://www.php.net/manual/en/book.opcache.php) is enabled on your server, the "OPcache" card
+on the dashboard shows its current status: memory usage, the number of cached files relative to the limit
+(`opcache.max_accelerated_files`), and the hit rate. If the cache is full or timestamp validation
+(`opcache.validate_timestamps`) is disabled, a warning is shown as well.
+
+If timestamp validation is disabled, PHP does not detect file changes automatically - in that case you
+need to clear the cache manually after your own changes to PHP files for them to take effect. Use the
+"Clear cache" button on the same card for that. SwiftyEdit's own update process (core updates as well as
+plugin/theme installation via URL) already does this automatically, so there's nothing to do there.
+
+The card is only visible to users with the "can upload sensitive files" permission.
+
 ---
 
 ### Categories {#categories}

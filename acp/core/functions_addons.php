@@ -436,6 +436,19 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
     $zip->close();
     unlink($tmp_zip);
 
+    // Plugin/theme PHP files just changed on disk (install or update, both
+    // go through here) - clear OPcache's bytecode cache the same way the core
+    // migration runner does (see se_run_pending_migrations() in
+    // install/php/functions.php) so a running worker doesn't keep serving a
+    // stale cached version of them. No-op when OPcache isn't available/active.
+    if (
+        function_exists('opcache_reset')
+        && function_exists('opcache_get_status')
+        && (@opcache_get_status(false)['opcache_enabled'] ?? false)
+    ) {
+        opcache_reset();
+    }
+
     return ['success' => true, 'message' => $label.' successfully installed.'];
 }
 

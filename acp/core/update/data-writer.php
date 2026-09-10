@@ -109,6 +109,10 @@ if(isset($_POST['install_update'])) {
     }
     if ($migration_result['error'] !== null) {
         $_SESSION['protocol'] .= '<b class="text-danger">MIGRATION ERROR:</b> '.htmlspecialchars($migration_result['error'], ENT_QUOTES).'<|>';
+    } elseif ($migration_result['opcache_reset'] === 'reset') {
+        $_SESSION['protocol'] .= '<b class="text-success">OPcache:</b> cleared<|>';
+    } elseif ($migration_result['opcache_reset'] === 'failed') {
+        $_SESSION['protocol'] .= '<b class="text-danger">OPcache:</b> could not be cleared - clear it manually (e.g. restart PHP-FPM) so the updated files are picked up<|>';
     }
 
     echo '<div style="height:350px;overflow:auto;margin:0;" class="well well-sm">';

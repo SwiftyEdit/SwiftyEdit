@@ -290,13 +290,13 @@ function se_helper_fill_uuids($db, string $table, string $id_col, string $uuid_c
  * is rolled back, the run stops there, and later migrations are left for the
  * next attempt - migrations 1..n-1 already committed stay applied.
  *
- * @return array{applied: string[], error: string|null}
+ * @return array{applied: string[], error: string|null, opcache_reset: string}
  */
 function se_run_pending_migrations(): array {
 
     global $db_content, $db_user, $db_posts;
 
-    $result = ['applied' => [], 'error' => null];
+    $result = ['applied' => [], 'error' => null, 'opcache_reset' => 'unavailable'];
 
     $files = glob(SE_ROOT.'install/migrations/*.php');
     if (!$files) {
@@ -354,6 +354,24 @@ function se_run_pending_migrations(): array {
 
             $result['error'] = "Migration $name failed: " . $e->getMessage();
             break;
+        }
+    }
+
+    // Data migrations run at the very end of both update flows, right after
+    // files + schema are already in their new shape (see the callers in
+    // install/inc.update.php and acp/core/update/data-writer.php) - so this
+    // is also the right place to invalidate OPcache's bytecode cache, once,
+    // instead of after every single migration. Skipped (not an error) when
+    // OPcache isn't installed/enabled, or opcache_reset() itself is blocked
+    // via disable_functions; not attempted at all if a migration above
+    // failed, since the update isn't complete in that case.
+    if ($result['error'] === null) {
+        if (
+            function_exists('opcache_reset')
+            && function_exists('opcache_get_status')
+            && (@opcache_get_status(false)['opcache_enabled'] ?? false)
+        ) {
+            $result['opcache_reset'] = opcache_reset() ? 'reset' : 'failed';
         }
     }
 

@@ -51,6 +51,7 @@ $icon = [
     "comments" => '<i class="bi bi-chat"></i>',
     "compress" => '<i class="bi bi-file-earmark-zip"></i>',
     "copy" => '<i class="bi bi-clipboard-plus"></i>',
+    "cpu" => '<i class="bi bi-cpu"></i>',
 
     "database" => '<i class="bi bi-database"></i>',
     "diagram_3" => '<i class="bi bi-diagram-3"></i>',

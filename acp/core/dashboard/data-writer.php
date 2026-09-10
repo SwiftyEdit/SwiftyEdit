@@ -5,6 +5,7 @@
  *
  * @var object $db_content
  * @var array $icon
+ * @var array $lang
  */
 
 if (isset($_POST['cache_target'])) {
@@ -67,5 +68,37 @@ if (isset($_POST['cache_target'])) {
 
     header("HX-Trigger: cache_rebuilt");
     echo '<span class="badge rounded-pill text-bg-success alert-auto-close">'.$icon['check'].'</span>';
+    exit;
+}
+
+// manually flush OPcache ("OPcache leeren" card). Resetting the server's
+// bytecode cache is a sensitive, server-wide operation, so it's gated the
+// same way as the update/addon installers instead of just the general
+// dashboard access every backend user already has (see
+// acp/core/update/data-writer.php, acp/core/addons/data-writer.php).
+if (isset($_POST['opcache_reset'])) {
+
+    if (!se_hasPermission('drm_acp_sensitive_files')) {
+        http_response_code(403);
+        echo '<span class="badge rounded-pill text-bg-danger alert-auto-close">'.$lang['rm_no_access'].'</span>';
+        exit;
+    }
+
+    $status = se_get_opcache_status();
+
+    if (empty($status['available']) || empty($status['enabled'])) {
+        echo '<span class="badge rounded-pill text-bg-warning alert-auto-close">'.$lang['opcache_msg_reset_unavailable'].'</span>';
+        exit;
+    }
+
+    if (opcache_reset()) {
+        record_log($_SESSION['user_nick'], 'cleared OPcache', '6');
+        header("HX-Trigger: opcache_reset");
+        echo '<span class="badge rounded-pill text-bg-success alert-auto-close">'.$icon['check'].' '.$lang['opcache_msg_reset_success'].'</span>';
+    } else {
+        // e.g. blocked via opcache.restrict_api
+        echo '<span class="badge rounded-pill text-bg-danger alert-auto-close">'.$lang['opcache_msg_reset_failed'].'</span>';
+    }
+
     exit;
 }

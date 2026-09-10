@@ -169,7 +169,7 @@
 
 </div>
 
-<div class="row g-3 row-cols-1 row-cols-md-2 row-cols-lg-3 mt-3">
+<div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xxl-4 mt-3">
 
 	<div>
 	<section class="card" style="--card-color: var(--section-color-addons)">
@@ -205,6 +205,8 @@
 		<div class="card-footer d-flex align-items-center gap-2">{btn_cache_rebuild_all}</div>
 	</section>
 	</div>
+
+	{opcache_card}
 
 	<div>
 	<section class="card" style="--card-color: var(--section-color-system)">
