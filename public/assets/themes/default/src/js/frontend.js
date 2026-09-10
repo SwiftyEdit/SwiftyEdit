@@ -20,6 +20,28 @@ function registerElements() {
 
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+    // Instant-search modal (see navigation.tpl): focus its input as soon as
+    // the modal has finished opening, and reset query + results on close so
+    // the next open always starts from a clean state instead of showing the
+    // previous search.
+    const searchModal = document.getElementById('searchModal');
+    if (searchModal) {
+        const searchModalInput = searchModal.querySelector('#searchModalInput');
+
+        searchModal.addEventListener('shown.bs.modal', function() {
+            searchModalInput.focus();
+        });
+
+        searchModal.addEventListener('hidden.bs.modal', function() {
+            searchModalInput.value = '';
+            const suggestions = searchModal.querySelector('.search-suggestions');
+            if (suggestions) {
+                suggestions.classList.remove('show');
+                suggestions.innerHTML = '';
+            }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {

@@ -299,55 +299,6 @@ function se_reorder_wishlist_items(int $wishlist_id, int $user_id, array $ordere
 }
 
 /**
- * compute the price tag for a product row, mirroring the "cheapest price
- * wins" logic in app/handlers/products-list.php (lines ~604-634): shows
- * the lowest volume-discount/variant price with a "from" label if it
- * undercuts the base price, otherwise the base price - formatted the
- * same way (gross/net/both) as the shop listing, per posts_price_mode.
- * @param array $product a product row from se_get_product_data()
- * @return array ['price_tag' => string, 'price_tag_label_from' => string]
- */
-function se_get_wishlist_item_price_tag(array $product): array {
-
-    global $se_settings, $lang;
-
-    $product_tax = $product['product_tax'] ?? '';
-    if($product_tax == '1') {
-        $tax = $se_settings['posts_products_default_tax'];
-    } else if($product_tax == '2') {
-        $tax = $se_settings['posts_products_tax_alt1'];
-    } else {
-        $tax = $se_settings['posts_products_tax_alt2'];
-    }
-
-    $product_price_net = $product['product_price_net'] ?? 0;
-    $price_tag_label_from = '';
-
-    $lowest_price = se_get_product_lowest_price((int) ($product['id'] ?? 0));
-    if($lowest_price !== null) {
-        if(se_commaToFloat($lowest_price) < se_commaToFloat($product_price_net)) {
-            $price_tag_label_from = $lang['price_tag_label_from'];
-        }
-        $product_price_net = $lowest_price;
-    }
-
-    $post_prices = se_posts_calc_price($product_price_net, $tax);
-
-    if($se_settings['posts_price_mode'] == 1) {
-        $price_tag = $post_prices['gross'];
-    } else if($se_settings['posts_price_mode'] == 2) {
-        $price_tag = $post_prices['net'] . '/' . $post_prices['gross'];
-    } else {
-        $price_tag = $post_prices['net'];
-    }
-
-    return [
-        'price_tag' => $price_tag,
-        'price_tag_label_from' => $price_tag_label_from
-    ];
-}
-
-/**
  * get all items of a wishlist, enriched with product data, ordered by position
  * @param int $wishlist_id
  * @return array
@@ -375,7 +326,7 @@ function se_get_wishlist_items(int $wishlist_id): array {
             $product['product_teaser'] = htmlspecialchars_decode($product['teaser'] ?? '');
             $post_images = explode("<->", $product['images'] ?? '');
             $product['product_img_src'] = ($post_images[1] ?? '') !== '' ? $post_images[1] : '';
-            $product = array_merge($product, se_get_wishlist_item_price_tag($product));
+            $product = array_merge($product, se_get_product_price_tag($product));
         }
         $items[$key]['product'] = $product;
         $items[$key]['product_href'] = ($item['item_product_href'] ?? '') !== '' ? $item['item_product_href'] : '#';
