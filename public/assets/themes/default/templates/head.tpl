@@ -16,7 +16,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 {if $page_canonical_url != ''}
-	<link rel=“canonical“ href="{$page_canonical_url}" />
+	<link rel="canonical" href="{$page_canonical_url}" />
 {/if}
 {if $favicon_base != ''}
 	<link rel="icon" type="image/png" sizes="32x32" href="{$favicon_base}/favicon-32.png">
