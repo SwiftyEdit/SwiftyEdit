@@ -63,6 +63,28 @@
                 </div>
             {/if}
 
+            {if $show_shopping_cart == true}
+                {* opened automatically (see frontend.js) right after a product is
+                   added to the cart, so customers immediately see it worked and
+                   how to get to checkout *}
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="miniCartOffcanvas" aria-labelledby="miniCartOffcanvasLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="miniCartOffcanvasLabel">{$lang_label_shopping_cart}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body"
+                         id="mini-cart-body"
+                         hx-get="/xhr/se/cart/"
+                         hx-trigger="load, cart_item_added from:body"
+                         hx-swap="innerHTML">
+                        <div class="d-flex align-items-center htmx-indicator">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            <span class="sr-only">{$lang_loading}</span>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+
             {if $social_media_block != ''}
                 {include file='socialmedia.tpl'}
             {/if}

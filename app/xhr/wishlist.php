@@ -40,7 +40,7 @@ if(isset($_POST['add_to_cart'])) {
 
     se_add_to_cart();
 
-    header("HX-Trigger: update_user_status");
+    header("HX-Trigger: update_user_status, cart_item_added");
     echo '<div class="text-success small mt-auto"><i class="bi bi-check2-circle"></i> ' . $lang['msg_wishlist_added_to_cart'] . '</div>';
     exit;
 }

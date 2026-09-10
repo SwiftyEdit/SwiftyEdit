@@ -54,14 +54,21 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     registerElements()
 
-    // briefly bump the shopping cart icon when a product was added to the cart
+    // when a product was added to the cart: briefly bump the shopping cart
+    // icon and open the mini cart sidebar, so customers immediately see
+    // that it worked and how to get to checkout
     document.body.addEventListener('cart_item_added', function() {
         const cartIcon = document.querySelector('.shopping-cart-container');
-        if (!cartIcon) return;
+        if (cartIcon) {
+            cartIcon.classList.remove('cart-bump');
+            void cartIcon.offsetWidth; // restart the animation on repeated triggers
+            cartIcon.classList.add('cart-bump');
+        }
 
-        cartIcon.classList.remove('cart-bump');
-        void cartIcon.offsetWidth; // restart the animation on repeated triggers
-        cartIcon.classList.add('cart-bump');
+        const miniCart = document.getElementById('miniCartOffcanvas');
+        if (miniCart) {
+            bootstrap.Offcanvas.getOrCreateInstance(miniCart).show();
+        }
     });
 
 });
