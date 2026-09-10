@@ -161,6 +161,7 @@
   "msg_search_undersized": "La requête doit contenir au moins 3 lettres.",
   "msg_search_results": "La requête a renvoyé %d correspondances :",
   "msg_search_no_results": "Votre recherche n'a retourné aucun résultat",
+  "btn_show_all_results": "Show all results",
   "label_payment_completed": "Payment process successfully completed!",
   "msg_payment_completed": "Thank you for your order. The payment has been completed.",
   "forgotten_psw": "Mot de passe oublié ?",
