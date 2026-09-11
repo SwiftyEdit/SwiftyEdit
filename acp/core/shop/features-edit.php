@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/shop/write/';
+$writer_uri = '/admin-xhr/shop/write/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_shop'];
@@ -10,17 +10,32 @@ echo '</div>';
 
 
 $mode = 'new';
-$submit_btn = '<button 
-                hx-post="/admin-xhr/shop/write/"
+$delete_btn = '';
+$submit_btn = '<button
+                hx-post="'.$writer_uri.'"
                 hx-trigger="click"
-                hx-swap="none"
+                hx-target="#formResponse"
+                hx-swap="innerHTML"
                 hx-include="[name=\'csrf_token\']"
                 name="save_feature"
                 value="new"
-                class="btn btn-success">SAVE</button>';
+                class="btn btn-success">'.$lang['btn_save'].'</button>';
 
+// the id can either come from the edit-button form (POST) or, after a
+// redirect from a freshly created feature, from the URL itself
+$get_feature_id = null;
 if(is_numeric($_POST['features-form'])) {
     $get_feature_id = (int) $_POST['features-form'];
+} else {
+    $path = parse_url($query, PHP_URL_PATH);
+    $segments = explode('/', rtrim($path, '/'));
+    $last_segment = end($segments);
+    if(is_numeric($last_segment)) {
+        $get_feature_id = (int) $last_segment;
+    }
+}
+
+if($get_feature_id !== null) {
     $mode = 'edit';
 
     $feature_data = $db_content->get("se_snippets","*",[
@@ -33,14 +48,25 @@ if(is_numeric($_POST['features-form'])) {
     $feature_text = $feature_data['snippet_content'];
     $feature_priority = $feature_data['snippet_priority'];
     $feature_lang = $feature_data['snippet_lang'];
-    $submit_btn = '<button 
-                hx-post="/admin-xhr/shop/write/"
+    $submit_btn = '<button
+                hx-post="'.$writer_uri.'"
                 hx-trigger="click"
-                hx-swap="beforeend"
+                hx-target="#formResponse"
+                hx-swap="innerHTML"
                 hx-include="[name=\'csrf_token\']"
                 name="save_feature"
                 value="'.$get_feature_id.'"
-                class="btn btn-success">UPDATE</button>';
+                class="btn btn-success">'.$lang['btn_update'].'</button>';
+    $delete_btn = '<button
+                hx-post="'.$writer_uri.'"
+                hx-trigger="click"
+                hx-target="#formResponse"
+                hx-swap="innerHTML"
+                hx-include="[name=\'csrf_token\']"
+                hx-confirm="'.$lang['msg_confirm_delete'].'"
+                name="delete_feature"
+                value="'.$get_feature_id.'"
+                class="btn btn-danger ms-1">'.$icon['trash_alt'].'</button>';
 }
 
 
@@ -82,6 +108,7 @@ $input_feature_content = [
     "mode" => "wysiwyg"
 ];
 
+echo '<div id="formResponse"></div>';
 echo '<form>';
 echo '<div class="card">';
 echo '<div class="card-header">'.$mode.'</div>';
@@ -101,6 +128,7 @@ echo se_print_form_input($input_feature_content);
 echo '</div>';
 echo '<div class="card-footer">';
 echo $submit_btn;
+echo $delete_btn;
 echo '</div>';
 echo '</div>';
 echo '</form>';

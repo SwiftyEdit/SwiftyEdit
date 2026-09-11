@@ -320,6 +320,7 @@ if(isset($_POST['save_feature'])) {
         ],[
             "snippet_id" => $id
         ]);
+        show_toast($lang['msg_success_db_changed'],'success');
     } else {
         $db_content->insert("se_snippets", [
             "snippet_title" => $feature_title,
@@ -329,11 +330,35 @@ if(isset($_POST['save_feature'])) {
             "snippet_lang" => $feature_lang,
             "snippet_type" => 'post_feature'
         ]);
+        $new_id = $db_content->id();
+
+        show_toast($lang['msg_success_new_record'],'success');
+        // switch the form into edit mode for the new feature, so an
+        // unintended second click on "save" updates it instead of
+        // creating another one
+        header( "HX-Redirect: /admin/shop/features/edit/$new_id/");
     }
 
-
-    show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: update_feature_list");
+}
+
+// delete feature
+if(isset($_POST['delete_feature']) && is_numeric($_POST['delete_feature'])) {
+    $delete_id = (int) $_POST['delete_feature'];
+    $cnt_changes = $db_content->delete("se_snippets", [
+        "AND" => [
+            "snippet_type" => "post_feature",
+            "snippet_id" => $delete_id
+        ]
+    ]);
+
+    if(($cnt_changes->rowCount()) > 0) {
+        show_toast($lang['msg_info_data_deleted'],'success');
+        record_log($_SESSION['user_nick'],"deleted feature id: $delete_id","10");
+        header( "HX-Redirect: /admin/shop/features/");
+    } else {
+        show_toast($lang['msg_error_db_changed'],'error');
+    }
 }
 
 // save options
@@ -358,11 +383,42 @@ if(isset($_POST['save_option'])) {
         $db_content->update("se_snippets", $insert_data, [
             "snippet_id" => $id
         ]);
+        show_toast($lang['msg_success_db_changed'],'success');
+        // reload the edit form so the value list (and the empty "add value"
+        // field) reflect what was just saved - otherwise a newly added value
+        // only becomes visible/addable-to after leaving and reopening the form
+        header( "HX-Redirect: /admin/shop/options/edit/$id/");
     } else {
         $db_content->insert("se_snippets", $insert_data);
+        $new_id = $db_content->id();
+
+        show_toast($lang['msg_success_new_record'],'success');
+        // switch the form into edit mode for the new option, so an
+        // unintended second click on "save" updates it instead of
+        // creating another one
+        header( "HX-Redirect: /admin/shop/options/edit/$new_id/");
     }
-    show_toast($lang['msg_success_db_changed'],'success');
+
     header( "HX-Trigger: update_options_list");
+}
+
+// delete option
+if(isset($_POST['delete_option']) && is_numeric($_POST['delete_option'])) {
+    $delete_id = (int) $_POST['delete_option'];
+    $cnt_changes = $db_content->delete("se_snippets", [
+        "AND" => [
+            "snippet_type" => "post_option",
+            "snippet_id" => $delete_id
+        ]
+    ]);
+
+    if(($cnt_changes->rowCount()) > 0) {
+        show_toast($lang['msg_info_data_deleted'],'success');
+        record_log($_SESSION['user_nick'],"deleted option id: $delete_id","10");
+        header( "HX-Redirect: /admin/shop/options/");
+    } else {
+        show_toast($lang['msg_error_db_changed'],'error');
+    }
 }
 
 // save filter group
