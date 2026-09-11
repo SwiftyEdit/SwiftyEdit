@@ -103,6 +103,13 @@ function se_prepareProductData($data, $id = null) {
         $product_options = json_encode($data['option_keys'],JSON_FORCE_OBJECT);
         $filter = json_encode($data['product_filter'],JSON_FORCE_OBJECT);
 
+        // assigned features (checkboxes) and their per-product text values -
+        // both are arrays, so the generic htmlspecialchars loop above skips
+        // them and they need to be encoded explicitly, same as the options/
+        // filter fields
+        $product_features = json_encode($data['product_features'] ?? [], JSON_FORCE_OBJECT);
+        $product_features_values = json_encode($data['product_features_values'] ?? [], JSON_FORCE_OBJECT);
+
         if(isset($data['type'])) {
             $type = clean_filename($data['type']);
         }
