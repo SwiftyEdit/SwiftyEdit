@@ -1181,6 +1181,17 @@ function se_add_to_cart() {
                 $addon_tax = $se_settings['posts_products_tax_alt2'];
             }
 
+            // options chosen for this addon (e.g. size/color), same format as the main product's
+            $addon_option_string = '';
+            if(isset($_POST['addon_options'][$addon_id]) && is_array($_POST['addon_options'][$addon_id])) {
+                foreach($_POST['addon_options'][$addon_id] as $addon_option) {
+                    $addon_option_string .= '<span>'.$addon_option.'</span>';
+                }
+            }
+
+            // free-text comment for this addon's own product_options_comment_label field
+            $addon_option_comment = clean_visitors_input($_POST['addon_options_comment'][$addon_id] ?? '');
+
             $db_content->insert("se_carts", [
                 "cart_time" =>  $cart_time,
                 "cart_user_hash" =>  $cart_user_hash,
@@ -1193,8 +1204,8 @@ function se_add_to_cart() {
                 "cart_product_price_net" =>  $addon_item['product_price_net'],
                 "cart_product_tax" =>  $addon_tax,
                 "cart_product_title" =>  $addon_item['title'],
-                "cart_product_options" =>  '',
-                "cart_product_options_comment" =>  '',
+                "cart_product_options" =>  $addon_option_string,
+                "cart_product_options_comment" =>  $addon_option_comment,
                 "cart_product_number" =>  $addon_item['product_number'],
                 "cart_status" =>  $cart_status
             ]);

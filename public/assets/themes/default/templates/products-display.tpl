@@ -115,6 +115,21 @@
                                         <span class="pt-1 flex-grow-1 form-checked-content">
                                         <strong>{$addon.title}</strong>
                                         <span class="d-block text-muted">(+ {$product_currency} {$addon.price} <span class="product-amount">{$addon.amount}</span> <span class="product-unit">{$addon.unit}</span>)</span>
+                                        {if is_array($addon.options)}
+                                            <!-- addon's own options (e.g. size/color) -->
+                                            {foreach $addon.options as $addon_option}
+                                                <label class="form-label d-block mb-0 mt-1">{$addon_option.title}</label>
+                                                <select class="form-select form-select-sm w-auto" name="addon_options[{$addon.id}][]">
+                                                    {foreach $addon_option.values as $value}
+                                                        <option value="{$addon_option.title}: {$value}">{$value}</option>
+                                                    {/foreach}
+                                                </select>
+                                            {/foreach}
+                                        {/if}
+                                        {if $addon.options_comment_label != ""}
+                                            <label class="form-label d-block mb-0 mt-1">{$addon.options_comment_label}</label>
+                                            <textarea class="form-control form-control-sm" name="addon_options_comment[{$addon.id}]"></textarea>
+                                        {/if}
                                         </span>
                                         <span class="flex-shrink-0 mt-1 rounded" style="background-image: url('{$addon.image_src}');width:45px;height:45px;background-size: cover;background-position: center;background-repeat: no-repeat;">
                                        </span>
