@@ -34,6 +34,36 @@ function se_delete_smarty_cache($cache_id): void {
 
 
 /**
+ * delete twig's compiled template cache (acp/header.php sets its cache dir
+ * to SE_CONTENT.'/cache/twig'). Twig has no bulk "clear all" API - the
+ * cache interface only supports removing one compiled template at a time -
+ * so just wipe the directory on disk; Twig recreates the hashed
+ * subdirectories on demand as templates are rendered again.
+ */
+
+function se_delete_twig_cache(): void {
+
+	$cache_dir = SE_CONTENT.'/cache/twig';
+
+	if (is_dir($cache_dir)) {
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($cache_dir, FilesystemIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach ($files as $file) {
+			$file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+		}
+	} else {
+		mkdir($cache_dir, 0777, true);
+	}
+
+}
+
+
+
+
+/**
  * cache all saved url paths
  * generate array from pages where permalink is not empty
  * store in ... cache/active_urls.json

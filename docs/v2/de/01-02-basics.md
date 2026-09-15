@@ -19,6 +19,29 @@ Auf der rechten Seite findest Du ein Protokoll, aktuelle Warnungen und Informati
 Tipp: Falls du an einem Theme o.ä. arbeitest und die Option "Smarty Compile Check" nicht aktiviert hast,
 kannst du hier auch den Smarty Cache leeren.
 
+### Cache {#cache}
+
+Die Karte „Cache“ im Dashboard listet alle Caches auf, die SwiftyEdit pflegt, mit ihrer
+aktuellen Größe und einem Button zum Leeren (und bei manchen zusätzlich zum Neuaufbauen).
+Die meisten davon werden automatisch aktuell gehalten, sobald du Änderungen über die ACP
+vornimmst - die manuellen Buttons hier sind vor allem ein Werkzeug zur Fehlerbehebung bzw.
+Wiederherstellung, nötig z. B. nach direkten Datenbankänderungen, Massenimporten oder um
+eine beschädigte Cache-Datei zu reparieren.
+
+| Cache                        | Was gespeichert wird                                                                 | Wann manuelles Leeren/Neuaufbauen nötig ist                                                                                              |
+|-------------------------------|----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Template Cache (Smarty)      | Kompilierte Frontend-Theme-Templates (`.tpl`-Dateien unter `public/assets/themes/`).   | Nach direkter Bearbeitung von Theme-Dateien auf dem Server, wenn „Smarty Compile Check“ deaktiviert ist (siehe Tipp oben).                 |
+| Template Cache (Twig / ACP)  | Kompilierte Backend-/ACP-Templates (`acp/templates/*.tpl`).                            | Nach direkter Bearbeitung von ACP-Templates auf dem Server. Wird beim eigenen Update-Prozess von SwiftyEdit automatisch geleert, nach einem normalen Core-Update ist also nichts weiter zu tun. |
+| Navigation                   | Der Seitenbaum je Sprache, aus dem die Frontend-Menüs gebaut werden.                   | Wird normalerweise automatisch bei jeder Seitenänderung neu aufgebaut. Nur nach einer direkten Datenbankänderung an Seiten nötig.          |
+| URL-Pfade                    | Die Liste der aktiven Permalinks, die für das Routing eingehender Anfragen genutzt wird. | Nach einer direkten Datenbankänderung an Seiten-Permalinks.                                                                                |
+| Kategorien                   | Alle Kategorien.                                                                        | Wird normalerweise automatisch bei jeder Kategorieänderung neu aufgebaut. Nur nach einer direkten Datenbankänderung an Kategorien nötig.   |
+| Tags                         | Alle Schlagwörter.                                                                      | Wird normalerweise automatisch bei jeder Tag-Änderung neu aufgebaut. Nur nach einer direkten Datenbankänderung an Tags nötig.              |
+| Snippets                     | Eine Cache-Datei je Snippet (siehe [Snippets](03-00-snippets.md)).                     | Nach einer direkten Datenbankänderung an Snippets.                                                                                          |
+| Präferenzen                  | Globale Einstellungen und Branding.                                                     | Wird normalerweise automatisch bei jedem Speichern einer Einstellung neu aufgebaut. Nur nach einer direkten Datenbankänderung an Optionen nötig. |
+| Produkte                     | Eine Cache-Datei je Produkt sowie Slug-Maps je Sprache, genutzt vom Shop-Frontend.      | Nach Massenimporten (Preise/Bestand) oder direkten Datenbankänderungen an Produkten. „Leeren“ entfernt veraltete Dateien, „Neu aufbauen“ erzeugt sie wieder aus der Datenbank. |
+
+---
+
 ### OPcache {#opcache}
 
 Ist auf deinem Server [OPcache](https://www.php.net/manual/de/book.opcache.php) aktiviert, zeigt dir die

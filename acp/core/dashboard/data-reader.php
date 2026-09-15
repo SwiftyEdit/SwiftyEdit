@@ -308,6 +308,12 @@ if ($_REQUEST['action'] === 'list_cache') {
             'clear_only' => true
         ],
         [
+            'target' => 'twig',
+            'label' => $lang['cache_label_twig'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/twig/')),
+            'clear_only' => true
+        ],
+        [
             'target' => 'navigation',
             'label' => $lang['cache_label_navigation'],
             'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/navigation/'))

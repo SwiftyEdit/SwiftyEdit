@@ -19,6 +19,28 @@ On the right-hand side you will find a log, current warnings and information on 
 Tip: If you are working on a theme or similar and have not activated the “Smarty Compile Check” option,
 you can also clear the Smarty cache here.
 
+### Cache {#cache}
+
+The "Cache" card on the dashboard lists every cache SwiftyEdit maintains, with its current
+size and a button to clear (and, for some, rebuild) it. Most of these are kept up to date
+automatically whenever you make changes through the ACP - the manual buttons here are mainly
+a troubleshooting/recovery tool, needed after direct database edits, bulk imports, or to
+recover from a corrupted cache file.
+
+| Cache                        | What it stores                                                                     | When you need to clear/rebuild it manually                                                                                              |
+|-------------------------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| Template cache (Smarty)      | Compiled frontend theme templates (`.tpl` files under `public/assets/themes/`).     | After editing theme files directly on the server while "Smarty Compile Check" is disabled (see the tip above).                            |
+| Template cache (Twig / ACP)  | Compiled backend/ACP templates (`acp/templates/*.tpl`).                             | After editing ACP templates directly on the server. Automatically cleared by SwiftyEdit's own update process, so no action is needed after a regular core update. |
+| Navigation                   | The page tree per language, used to build frontend menus.                          | Normally rebuilt automatically whenever a page is created, edited, or deleted. Only needed after a direct database change to pages.       |
+| URL paths                    | The list of active page permalinks, used for routing incoming requests.            | After a direct database change to page permalinks.                                                                                        |
+| Categories                   | All categories.                                                                     | Normally rebuilt automatically on every category change. Only needed after a direct database change to categories.                        |
+| Tags                         | All tags.                                                                           | Normally rebuilt automatically on every tag change. Only needed after a direct database change to tags.                                   |
+| Snippets                     | One cache file per snippet (see [Snippets](03-00-snippets.md)).                    | After a direct database change to snippets.                                                                                                |
+| Preferences                  | Site-wide settings and branding.                                                    | Normally rebuilt automatically whenever a setting is saved. Only needed after a direct database change to options.                        |
+| Products                     | One cache file per product plus per-language slug maps, used by the shop frontend. | After bulk price/stock imports or direct database changes to products. Use "Clear" to remove stale files, "Rebuild" to regenerate them from the database. |
+
+---
+
 ### OPcache {#opcache}
 
 If [OPcache](https://www.php.net/manual/en/book.opcache.php) is enabled on your server, the "OPcache" card

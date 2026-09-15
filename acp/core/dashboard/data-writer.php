@@ -18,6 +18,10 @@ if (isset($_POST['cache_target'])) {
             se_delete_smarty_cache('all');
             break;
 
+        case 'twig':
+            se_delete_twig_cache();
+            break;
+
         case 'navigation':
             se_build_navigation_cache();
             break;
@@ -52,6 +56,7 @@ if (isset($_POST['cache_target'])) {
 
         case 'all':
             se_delete_smarty_cache('all');
+            se_delete_twig_cache();
             se_build_navigation_cache();
             cache_url_paths();
             se_updateCategoriesCache();
