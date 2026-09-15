@@ -33,6 +33,7 @@
   "btn.new.directory": "Нова директория",
   "btn.delete.cache": "Изтриване на кеша",
   "cache.label.smarty": "Template cache (Smarty)",
+  "cache.label.twig": "Template cache (Twig / ACP)",
   "cache.label.navigation": "Navigation",
   "cache.label.urls": "URL paths",
   "cache.label.snippets": "Snippets",
