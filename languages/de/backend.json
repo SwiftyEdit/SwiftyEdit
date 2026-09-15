@@ -33,6 +33,7 @@
   "btn.new.directory": "Neues Verzeichnis",
   "btn.delete.cache": "Cache leeren",
   "cache.label.smarty": "Template-Cache (Smarty)",
+  "cache.label.twig": "Template-Cache (Twig / ACP)",
   "cache.label.navigation": "Navigation",
   "cache.label.urls": "URL-Pfade",
   "cache.label.snippets": "Snippets",
