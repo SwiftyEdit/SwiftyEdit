@@ -33,6 +33,22 @@ return [
             'context' => ['product_id', 'product'],
         ],
 
+        // Extra HTML block on the product detail page (e.g. reviews, FAQs).
+        // Value starts as '' and each callback appends its own HTML - unlike
+        // product.display.actions, the callback owns its markup completely,
+        // there's no typed entry format for the core to render.
+        'product.display.content' => [
+            'type' => 'filter',
+            'context' => ['product_id', 'product', 'user'],
+        ],
+
+        // Extra HTML block per product card on a product listing page (e.g. a
+        // rating badge). Same '' + append convention as product.display.content.
+        'product.list.item' => [
+            'type' => 'filter',
+            'context' => ['product_id', 'product'],
+        ],
+
         // ----- Pages -----
 
         // After the page has been rendered (tracking, recommendations, etc.)

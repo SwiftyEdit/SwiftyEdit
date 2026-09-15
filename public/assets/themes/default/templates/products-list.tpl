@@ -110,6 +110,9 @@
 
                 <span class="post-author">{$value.product_author}</span> <span class="post-releasedate">{$pvalue.product_releasedate}</span>
                 <a class="post-headline-link" href="{$value.product_href}"><h3>{$value.product_title}</h3></a>
+                {if $value.plugin_list_item != ''}
+                    {$value.plugin_list_item}
+                {/if}
                 {$value.product_teaser}
             </div>
         </div>
