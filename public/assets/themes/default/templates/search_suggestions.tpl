@@ -2,7 +2,7 @@
 {if $search_undersized_msg}
 <div class="dropdown-item-text text-muted small">{$search_undersized_msg}</div>
 {elseif $is_open}
-    {if $pages_total == 0 && $products_total == 0 && $posts_total == 0 && $events_total == 0}
+    {if $pages_total == 0 && $products_total == 0 && $posts_total == 0 && $events_total == 0 && $external_results|@count == 0}
     <div class="dropdown-item-text text-muted small">{$msg_no_search_results}</div>
     {else}
         {if $pages_total > 0}
@@ -35,6 +35,13 @@
             <a class="dropdown-item" href="{$event.href}">{$event.title}</a>
             {/foreach}
         {/if}
+        {foreach $external_results as $card}
+            {if $pages_total > 0 || $products_total > 0 || $posts_total > 0 || $events_total > 0 || !$card@first}<div class="dropdown-divider"></div>{/if}
+            <h6 class="dropdown-header">{$card.title} ({$card.total})</h6>
+            {foreach $card.items as $item}
+            <a class="dropdown-item" href="{$item.href}">{$item.title}</a>
+            {/foreach}
+        {/foreach}
         <div class="dropdown-divider"></div>
         <a class="dropdown-item text-center small" href="{$search_uri}?s={$search_string|escape:'url'}">{$lang_btn_show_all_results}</a>
     {/if}

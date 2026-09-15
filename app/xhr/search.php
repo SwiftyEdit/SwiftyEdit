@@ -108,6 +108,14 @@ foreach ($get_events['events'] as $event) {
 // template-setup.php).
 $tyo_search = se_get_type_of_use_pages('search');
 
+// additional result cards from plugins (e.g. a docs-reader plugin) - one
+// array entry per plugin/source, no pagination (see hooks-map.php)
+$external_results = se_apply_frontend_filters('search.results.external', [], [
+    'search_string' => $s,
+    'mode'           => 'suggestions',
+]);
+$smarty->assign('external_results', $external_results, true);
+
 $smarty->assign('search_string', $s, true);
 $smarty->assign('search_uri', '/' . $tyo_search['page_permalink'], true);
 $smarty->assign('pages', $pages, true);
