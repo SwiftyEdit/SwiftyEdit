@@ -43,6 +43,30 @@ function se_get_backend_hook_callbacks(string $prefix = ''): array
 
 
 /**
+ * Execute all registered callbacks for a backend action hook unconditionally.
+ *
+ * Unlike se_do_backend_hook_selected(), there is no per-save checkbox opt-in -
+ * use this for hooks that fire outside a save form (e.g. on delete), where
+ * every registered callback must run every time, the same way plugins rely
+ * on frontend/global action hooks always running.
+ *
+ * @param string $hookName The backend hook name, e.g. 'product.deleted'
+ * @param array  $context  Context passed to each callback
+ */
+function se_do_backend_hook(string $hookName, array $context = []): void
+{
+    $hooks = se_get_backend_hook_callbacks($hookName);
+
+    if (empty($hooks[$hookName]) || !is_array($hooks[$hookName])) {
+        return;
+    }
+
+    foreach ($hooks[$hookName] as $callback) {
+        call_user_func($callback, $context);
+    }
+}
+
+/**
  * Execute only selected callbacks for a backend action hook.
  *
  * @param string $hookName   The backend hook name, e.g. 'page.updated'
