@@ -10,6 +10,12 @@
  * @var string $languagePack
  */
 
+// Doesn't touch $_SESSION at all - safe to release the session lock
+// immediately, so this request doesn't block other widgets sharing the
+// same PHPSESSID (default file session handler serializes them otherwise).
+// Do not add $_SESSION usage below without removing this first.
+session_write_close();
+
 $order_nbr = sanitizeUserInputs($_POST['order_nbr'] ?? '');
 $mail = sanitizeUserInputs($_POST['mail'] ?? '');
 $reason = clean_visitors_input($_POST['reason'] ?? '');

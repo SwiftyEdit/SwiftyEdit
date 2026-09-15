@@ -308,6 +308,12 @@ if ($_REQUEST['action'] === 'list_cache') {
             'clear_only' => true
         ],
         [
+            'target' => 'twig',
+            'label' => $lang['cache_label_twig'],
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/twig/')),
+            'clear_only' => true
+        ],
+        [
             'target' => 'navigation',
             'label' => $lang['cache_label_navigation'],
             'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/navigation/'))
@@ -347,6 +353,21 @@ if ($_REQUEST['action'] === 'list_cache') {
 
     $html = $twig->render('dashboard/table-cache.twig', [
         'caches' => $caches
+    ]);
+
+    se_html_response($html);
+}
+
+
+/**
+ * OPcache status ("OPcache" card, see dashboard_top.tpl / index.php - the
+ * whole card is only wired in for admins, see se_hasPermission() there, but
+ * the read is harmless on its own so no extra check is repeated here).
+ */
+
+if ($_REQUEST['action'] === 'list_opcache') {
+    $html = $twig->render('dashboard/table-opcache.twig', [
+        'opcache' => se_get_opcache_status()
     ]);
 
     se_html_response($html);

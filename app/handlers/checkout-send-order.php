@@ -55,6 +55,12 @@ if($send_order == true) {
         $recipient['type'] = 'client';
         $reason = 'order_confirmation';
 
+        // release the session lock before calling out to the payment addon and
+        // sending mail, so other concurrent requests from this visitor (other
+        // tabs, HTMX polling, cart updates) don't block on a slow API call or
+        // SMTP send. No more $_SESSION writes happen below this point.
+        session_write_close();
+
         // include after sale script from payment addon
         $aftersale_script = SE_ROOT.'/plugins/'.basename($payment_addon).'/aftersale.php';
         if(is_file($aftersale_script)) {

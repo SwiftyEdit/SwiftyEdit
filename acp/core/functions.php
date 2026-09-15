@@ -1817,3 +1817,55 @@ function se_get_my_presets() {
     $presets = $db_user->get("se_user","user_acp_settings",["user_id"=>$_SESSION['user_id']]);
     return json_decode($presets,true);
 }
+
+/**
+ * Read the current OPcache state into a flat array for display (Dashboard
+ * "OPcache" card, see acp/core/dashboard/data-reader.php). Tolerates OPcache
+ * being off entirely, or opcache_get_status()/opcache_get_configuration()
+ * being blocked via php.ini's disable_functions - both just report as
+ * unavailable instead of throwing.
+ *
+ * @return array{available: bool, enabled?: bool, cache_full?: bool,
+ *     memory_used_mb?: float, memory_free_mb?: float, memory_wasted_mb?: float,
+ *     memory_used_percent?: float, num_cached_scripts?: int,
+ *     max_accelerated_files?: int, hit_rate?: float,
+ *     validate_timestamps?: bool, start_time?: int|null}
+ */
+function se_get_opcache_status(): array {
+
+    if(!function_exists('opcache_get_status')) {
+        return ['available' => false];
+    }
+
+    // false = skip the per-script listing, we only need the aggregate numbers
+    $status = @opcache_get_status(false);
+
+    if($status === false) {
+        return ['available' => false];
+    }
+
+    $config = function_exists('opcache_get_configuration') ? @opcache_get_configuration() : false;
+    $directives = $config['directives'] ?? [];
+    $memory = $status['memory_usage'] ?? [];
+    $stats = $status['opcache_statistics'] ?? [];
+
+    $used = $memory['used_memory'] ?? 0;
+    $free = $memory['free_memory'] ?? 0;
+    $wasted = $memory['wasted_memory'] ?? 0;
+    $total = $used + $free + $wasted;
+
+    return [
+        'available' => true,
+        'enabled' => (bool) ($status['opcache_enabled'] ?? false),
+        'cache_full' => (bool) ($status['cache_full'] ?? false),
+        'memory_used_mb' => round($used / 1048576, 1),
+        'memory_free_mb' => round($free / 1048576, 1),
+        'memory_wasted_mb' => round($wasted / 1048576, 1),
+        'memory_used_percent' => $total > 0 ? round((($used + $wasted) / $total) * 100, 1) : 0,
+        'num_cached_scripts' => $stats['num_cached_scripts'] ?? 0,
+        'max_accelerated_files' => $directives['opcache.max_accelerated_files'] ?? 0,
+        'hit_rate' => round($stats['opcache_hit_rate'] ?? 0, 1),
+        'validate_timestamps' => (bool) ($directives['opcache.validate_timestamps'] ?? true),
+        'start_time' => $stats['start_time'] ?? null,
+    ];
+}

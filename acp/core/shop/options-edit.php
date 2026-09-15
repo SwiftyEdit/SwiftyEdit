@@ -1,6 +1,6 @@
 <?php
 
-$writer_uri = '/admin/shop/write/';
+$writer_uri = '/admin-xhr/shop/write/';
 
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_shop'];
@@ -10,17 +10,32 @@ echo '</div>';
 
 
 $mode = 'new';
-$submit_btn = '<button 
-                hx-post="/admin-xhr/shop/write/"
+$delete_btn = '';
+$submit_btn = '<button
+                hx-post="'.$writer_uri.'"
                 hx-trigger="click"
-                hx-swap="none"
+                hx-target="#formResponse"
+                hx-swap="innerHTML"
                 hx-include="[name=\'csrf_token\']"
                 name="save_option"
                 value="new"
-                class="btn btn-success">SAVE</button>';
+                class="btn btn-success">'.$lang['btn_save'].'</button>';
 
+// the id can either come from the edit-button form (POST) or, after a
+// redirect from a freshly created option, from the URL itself
+$get_option_id = null;
 if(is_numeric($_POST['options-form'])) {
     $get_option_id = (int) $_POST['options-form'];
+} else {
+    $path = parse_url($query, PHP_URL_PATH);
+    $segments = explode('/', rtrim($path, '/'));
+    $last_segment = end($segments);
+    if(is_numeric($last_segment)) {
+        $get_option_id = (int) $last_segment;
+    }
+}
+
+if($get_option_id !== null) {
     $mode = 'edit';
 
     $option_data = $db_content->get("se_snippets","*",[
@@ -33,14 +48,25 @@ if(is_numeric($_POST['options-form'])) {
     $option_text_array = json_decode($option_data['snippet_content'],true);
     $option_priority = $option_data['snippet_priority'];
     $option_lang = $option_data['snippet_lang'];
-    $submit_btn = '<button 
-                hx-post="/admin-xhr/shop/write/"
+    $submit_btn = '<button
+                hx-post="'.$writer_uri.'"
                 hx-trigger="click"
-                hx-swap="beforeend"
+                hx-target="#formResponse"
+                hx-swap="innerHTML"
                 hx-include="[name=\'csrf_token\']"
                 name="save_option"
                 value="'.$get_option_id.'"
-                class="btn btn-success">UPDATE</button>';
+                class="btn btn-success">'.$lang['btn_update'].'</button>';
+    $delete_btn = '<button
+                hx-post="'.$writer_uri.'"
+                hx-trigger="click"
+                hx-target="#formResponse"
+                hx-swap="innerHTML"
+                hx-include="[name=\'csrf_token\']"
+                hx-confirm="'.$lang['msg_confirm_delete'].'"
+                name="delete_option"
+                value="'.$get_option_id.'"
+                class="btn btn-danger ms-1">'.$icon['trash_alt'].'</button>';
 }
 
 
@@ -83,7 +109,6 @@ $input_option_values = [
 
 
 if(is_array($option_text_array)) {
-    echo "ARRAY";
     $inputs_tpl = '<div class="sortableListGroup list-group mt-1">';
     foreach($option_text_array as $option_value) {
         $inputs_tpl .= '<div class="list-group-item">';
@@ -100,6 +125,7 @@ if(is_array($option_text_array)) {
 
 
 
+echo '<div id="formResponse"></div>';
 echo '<form>';
 echo '<div class="card">';
 echo '<div class="card-header">'.$mode.'</div>';
@@ -120,6 +146,7 @@ echo $inputs_tpl;
 echo '</div>';
 echo '<div class="card-footer">';
 echo $submit_btn;
+echo $delete_btn;
 echo '</div>';
 echo '</div>';
 echo '</form>';

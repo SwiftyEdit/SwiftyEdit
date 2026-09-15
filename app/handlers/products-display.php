@@ -393,6 +393,19 @@ if(is_array($product_addons)) {
             "snippet_id" => $addon_delivery_time
         ]);
 
+        /* the addon product's own options (e.g. size/color), same handling as the main product's */
+        $addon_options = json_decode($addon_data['product_options'] ?? '', JSON_FORCE_OBJECT);
+        $addon_select_options = [];
+        if(is_array($addon_options)) {
+            $get_addon_options = se_get_posts_options($addon_options);
+            foreach($get_addon_options as $addon_option) {
+                $addon_select_options[] = [
+                    "title" => $addon_option['snippet_title'],
+                    "values" => json_decode($addon_option['snippet_content'], JSON_FORCE_OBJECT)
+                ];
+            }
+        }
+
         $select_addons[] = [
             "id" => (int) $addon_id,
             "href" => $addon_href,
@@ -403,7 +416,9 @@ if(is_array($product_addons)) {
             "price" => $addon_price_tag,
             "sku" => $addon_data['product_number'],
             "unit" => $addon_unit,
-            "amount" => $addon_amount
+            "amount" => $addon_amount,
+            "options" => $addon_select_options,
+            "options_comment_label" => $addon_data['product_options_comment_label']
         ];
     }
     if(!empty($select_addons)) {

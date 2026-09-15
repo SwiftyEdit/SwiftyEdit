@@ -6,6 +6,14 @@
  * ($db_content, session, csrf validation, functions.posts.php)
  */
 
+// Read-only w.r.t. $_SESSION (only read below, never assigned) - safe to
+// release the session lock immediately. This fires alongside other
+// hx-trigger="load" widgets on the same page, all sharing one PHPSESSID;
+// without an early close here, the default file session handler would
+// force them to queue up and run one at a time instead of concurrently.
+// Do not add $_SESSION writes below without removing this first.
+session_write_close();
+
 if(isset($_GET['evc'])) {
 	$event_relation_id = (int) $_GET['evc'];
 	$nbr_of_confirmations = se_get_event_confirmation_data($event_relation_id);

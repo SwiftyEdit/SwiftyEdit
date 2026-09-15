@@ -1,0 +1,53 @@
+{% if not opcache.available %}
+    <div class="dash-empty-hint">{{ lang.opcache_status_unavailable }}</div>
+{% else %}
+    <table class="table table-sm mb-0">
+        <tr>
+            <td>{{ lang.opcache_label_status }}</td>
+            <td>
+                {% if opcache.enabled %}
+                    <span class="badge text-bg-success">{{ lang.status_active }}</span>
+                {% else %}
+                    <span class="badge text-bg-secondary">{{ lang.status_inactive }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% if opcache.enabled %}
+            <tr>
+                <td>{{ lang.opcache_label_memory }}</td>
+                <td>
+                    <div class="progress" role="progressbar" style="height: 6px;">
+                        <div class="progress-bar{{ opcache.cache_full ? ' bg-danger' : '' }}" style="width: {{ opcache.memory_used_percent }}%"></div>
+                    </div>
+                    <small class="text-secondary">{{ opcache.memory_used_mb }} MB / {{ (opcache.memory_used_mb + opcache.memory_free_mb + opcache.memory_wasted_mb)|round(1) }} MB ({{ opcache.memory_used_percent }}%)</small>
+                </td>
+            </tr>
+            <tr>
+                <td>{{ lang.opcache_label_cached_scripts }}</td>
+                <td>{{ opcache.num_cached_scripts }} / {{ opcache.max_accelerated_files }}</td>
+            </tr>
+            <tr>
+                <td>{{ lang.opcache_label_hit_rate }}</td>
+                <td>{{ opcache.hit_rate }}%</td>
+            </tr>
+            <tr>
+                <td>{{ lang.opcache_label_validate_timestamps }}</td>
+                <td>{{ opcache.validate_timestamps ? lang.opcache_label_validate_timestamps_on : lang.opcache_label_validate_timestamps_off }}</td>
+            </tr>
+            {% if opcache.start_time %}
+                <tr>
+                    <td>{{ lang.opcache_label_running_since }}</td>
+                    <td>{{ opcache.start_time|date('Y-m-d H:i') }}</td>
+                </tr>
+            {% endif %}
+        {% endif %}
+    </table>
+
+    {% if opcache.enabled and opcache.cache_full %}
+        <div class="alert alert-danger py-2 px-3 mt-2 mb-0">{{ lang.opcache_label_cache_full }}</div>
+    {% endif %}
+
+    {% if opcache.enabled and not opcache.validate_timestamps %}
+        <div class="alert alert-warning py-2 px-3 mt-2 mb-0">{{ lang.opcache_hint_validate_timestamps_off }}</div>
+    {% endif %}
+{% endif %}

@@ -377,7 +377,7 @@ if (strlen($se_settings['pagename']) > 30) {
         }
     </script>
 
-    <script src="/themes/administration/dist/backend.js?v=2026-08-18b"></script>
+    <script src="/themes/administration/dist/backend.js?v=2026-09-11a"></script>
     <?php
     /* load the <head> assets of every installed editor plugin */
     foreach ($se_editor_addons as $editor_addon) {

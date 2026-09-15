@@ -5,6 +5,12 @@
  * @var array $lang
  */
 
+// Doesn't touch $_SESSION at all - safe to release the session lock
+// immediately. These live-validation checks fire on every keystroke in the
+// registration form; without an early close here, the default file session
+// handler would force concurrent checks to queue up and run one at a time.
+// Do not add $_SESSION usage below without removing this first.
+session_write_close();
 
 // check if username is valid and if it exists
 if(isset($_GET['check']) && $_GET['check'] == "username") {

@@ -188,6 +188,13 @@ if(isset($_POST['save_post'])) {
         if ($_POST['post_rss_url'] == "") {
             $post_rss_url = $se_base_url . $target_page[0] . $filename;
         }
+
+        // canonical url: keep an explicit value if one was set on the form,
+        // otherwise build it from the detail page + slug, same pattern as
+        // product canonical urls (see acp/core/functions_shop.php).
+        if ($_POST['post_canonical_url'] == "") {
+            $post_canonical_url = $se_base_url . $target_page[0] . $filename;
+        }
     }
 
     $post_categories = '';

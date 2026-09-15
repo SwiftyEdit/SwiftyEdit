@@ -170,6 +170,10 @@ if($migration_result['error'] !== null) {
 	echo "<h3>MIGRATION ERROR</h3>";
 	echo "<span class='text-danger'>".htmlspecialchars($migration_result['error'], ENT_QUOTES)."</span><br />";
 	echo '<p>The update is not complete. Fix the underlying issue and reload this page to retry - already-applied migrations will not run again.</p>';
+} elseif($migration_result['opcache_reset'] === 'reset') {
+	echo "<span class='text-success'>OPcache was cleared.</span><br />";
+} elseif($migration_result['opcache_reset'] === 'failed') {
+	echo "<span class='text-danger'>OPcache could not be cleared - clear it manually (e.g. restart PHP-FPM) so the updated files are picked up.</span><br />";
 }
 
 echo '<a href="/install/" class="btn btn-primary me-1">Reload</a>';

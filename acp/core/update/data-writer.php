@@ -100,6 +100,14 @@ if(isset($_POST['install_update'])) {
     move_new_files($source_directory);
     update_database();
 
+    // move_new_files() explicitly skips /data/ (see rmdir_recursive() callers
+    // above), so the compiled Twig template cache under SE_CONTENT/cache/twig
+    // survives an update untouched. With auto_reload off in production
+    // (acp/header.php), stale compiled templates would otherwise keep being
+    // served after the update even though the new .tpl sources are in place.
+    se_delete_twig_cache();
+    $_SESSION['protocol'] .= '<b class="text-success">Twig cache:</b> cleared<|>';
+
     // data migrations run last, after files + schema are in their new shape
     // (see install/migrations/, se_run_pending_migrations() in
     // install/php/functions.php)
@@ -109,6 +117,10 @@ if(isset($_POST['install_update'])) {
     }
     if ($migration_result['error'] !== null) {
         $_SESSION['protocol'] .= '<b class="text-danger">MIGRATION ERROR:</b> '.htmlspecialchars($migration_result['error'], ENT_QUOTES).'<|>';
+    } elseif ($migration_result['opcache_reset'] === 'reset') {
+        $_SESSION['protocol'] .= '<b class="text-success">OPcache:</b> cleared<|>';
+    } elseif ($migration_result['opcache_reset'] === 'failed') {
+        $_SESSION['protocol'] .= '<b class="text-danger">OPcache:</b> could not be cleared - clear it manually (e.g. restart PHP-FPM) so the updated files are picked up<|>';
     }
 
     echo '<div style="height:350px;overflow:auto;margin:0;" class="well well-sm">';

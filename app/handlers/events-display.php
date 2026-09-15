@@ -174,6 +174,10 @@ $smarty->assign('page_meta_description', html_entity_decode($event_data['meta_de
 $smarty->assign('page_meta_keywords', html_entity_decode($event_data['tags']));
 $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
 
+// canonical link: stored on the event itself (auto-built from its detail
+// page + slug at save time, see acp/core/events/data-writer.php), same
+// pattern as post and product canonical urls.
+$smarty->assign('page_canonical_url', $event_data['canonical_url'] ?? '');
 
 $smarty->assign('votes_status_up', $event_data['votes_status_up']);
 $smarty->assign('votes_status_dn', $event_data['votes_status_dn']);

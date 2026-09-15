@@ -603,6 +603,49 @@ function se_get_activated_addons() {
 }
 
 
+/**
+ * Build a "every word has to occur somewhere" LIKE condition: the search
+ * string is split into individual words (on whitespace and dashes), and
+ * each word must match at least one of the given fields (OR across fields
+ * per word, AND across words) - instead of requiring the whole string to
+ * occur as one literal substring in some field.
+ *
+ * Without this, searching "flyer a4" finds nothing for a product titled
+ * "Flyer DIN A4" - the words are there, just not adjacent, so a single
+ * "%flyer a4%" LIKE never matches. Splitting also replaces the old
+ * dash-vs-space special case (a hyphenated word like "flyer-a4" now simply
+ * becomes two words, same as "flyer a4").
+ *
+ * Relevance ranking is unaffected by this - callers still build their own
+ * CASE ladder against the original, unsplit $str, so an exact-phrase match
+ * still ranks above a same-words-scattered one; this only widens which
+ * rows are considered a match at all.
+ *
+ * @param string $str the (already trimmed, non-empty) search string
+ * @param array $fields column names to search in
+ * @return array [sql fragment using ? placeholders, flat param list]
+ */
+function se_build_multiword_like_clause(string $str, array $fields): array {
+
+    $words = preg_split('/[\s\-]+/', $str, -1, PREG_SPLIT_NO_EMPTY);
+    if (empty($words)) {
+        return ['1=0', []];
+    }
+
+    $params = [];
+    $wordClauses = [];
+    foreach ($words as $word) {
+        $fieldClauses = [];
+        foreach ($fields as $field) {
+            $fieldClauses[] = "$field LIKE ?";
+            $params[] = "%$word%";
+        }
+        $wordClauses[] = '(' . implode(' OR ', $fieldClauses) . ')';
+    }
+
+    return [implode(' AND ', $wordClauses), $params];
+}
+
 function se_search_pages($str, $lang, $currentPage = 1, $itemsPerPage = 25) {
 
     global $db_content;
@@ -612,31 +655,16 @@ function se_search_pages($str, $lang, $currentPage = 1, $itemsPerPage = 25) {
         return ["totalResults" => 0, "pages" => []];
     }
 
-    // Two variants of the search term: original + without dashes
-    $searchVariants = [$str];
-    if (strpos($str, '-') !== false) {
-        $searchVariants[] = str_replace('-', ' ', $str);
-    }
-
     // Fields to search in
     $searchFields = [
         'page_content', 'page_title',
         'page_meta_description', 'page_meta_keywords'
     ];
 
-    // Build OR conditions dynamically
-    $orParts = [];
-    $searchParams = [];
-    foreach ($searchFields as $field) {
-        foreach ($searchVariants as $variant) {
-            $orParts[] = "$field LIKE ?";
-            $searchParams[] = "%$variant%";
-        }
-    }
-    $orSql = implode(' OR ', $orParts);
+    [$matchSql, $searchParams] = se_build_multiword_like_clause($str, $searchFields);
 
     // WHERE
-    $where = "WHERE (page_language LIKE ? AND page_status = ?) AND ($orSql)";
+    $where = "WHERE (page_language LIKE ? AND page_status = ?) AND ($matchSql)";
     $baseParams = array_merge([$lang, 'public'], $searchParams);
 
     // COUNT
@@ -702,12 +730,6 @@ function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
         return ["totalResults" => 0, "products" => []];
     }
 
-    // Two variants of the search term: original + without dashes
-    $searchVariants = [$str];
-    if (strpos($str, '-') !== false) {
-        $searchVariants[] = str_replace('-', ' ', $str);
-    }
-
     // Fields to search in
     $searchFields = [
         "title","teaser","text",
@@ -716,19 +738,10 @@ function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
         "meta_title","meta_description","product_number"
     ];
 
-    // Build OR conditions dynamically
-    $orParts = [];
-    $searchParams = [];
-    foreach ($searchFields as $f) {
-        foreach ($searchVariants as $variant) {
-            $orParts[] = "$f LIKE ?";
-            $searchParams[] = "%" . $variant . "%";
-        }
-    }
-    $orSql = implode(" OR ", $orParts);
+    [$matchSql, $searchParams] = se_build_multiword_like_clause($str, $searchFields);
 
     // WHERE
-    $where = "(product_lang = ? AND (status = ? OR status = ?)) AND ($orSql)";
+    $where = "(product_lang = ? AND (status = ? OR status = ?)) AND ($matchSql)";
 
     // COUNT query
     $countSql = "SELECT COUNT(*) FROM se_products WHERE $where";
@@ -776,6 +789,159 @@ function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
     return [
         "totalResults" => $totalResults,
         "products" => $products
+    ];
+}
+
+function se_search_posts($str, $lang, $currentPage = 1, $itemsPerPage = 25) {
+
+    global $db_posts;
+
+    $str = trim($str);
+    if ($str === '') {
+        return ["totalResults" => 0, "posts" => []];
+    }
+
+    // Fields to search in
+    $searchFields = [
+        'post_title', 'post_teaser', 'post_text',
+        'post_meta_title', 'post_meta_description', 'post_tags'
+    ];
+
+    [$matchSql, $searchParams] = se_build_multiword_like_clause($str, $searchFields);
+
+    // WHERE - public posts only, already released (frontend visibility rule,
+    // see se_get_post_entries()'s own "post_releasedate <= now" filter)
+    $where = "WHERE (post_lang LIKE ? AND post_status = ? AND post_releasedate <= ?) AND ($matchSql)";
+    $baseParams = array_merge([$lang, '1', time()], $searchParams);
+
+    // COUNT
+    $countSth = $db_posts->pdo->prepare("SELECT COUNT(*) FROM se_posts $where");
+    $countSth->execute($baseParams);
+    $totalResults = (int) $countSth->fetchColumn();
+
+    // Pagination
+    $offset = (int) $itemsPerPage * (max(1, (int) $currentPage) - 1);
+
+    // CASE relevance - posts have no permalink/meta_keywords like pages do,
+    // so rank by slug/title match first, then teaser/body text
+    $like = "%$str%";
+    $caseParams = [
+        $str,   // post_slug exact
+        $like,  // post_slug LIKE
+        $str,   // post_title exact
+        $like,  // post_title LIKE
+        $like,  // post_meta_description
+        $like,  // post_teaser
+        $like,  // post_text
+    ];
+
+    $postsSql = "
+        SELECT *,
+            (CASE
+                WHEN post_slug = ?              THEN 7
+                WHEN post_slug LIKE ?           THEN 6
+                WHEN post_title = ?             THEN 5
+                WHEN post_title LIKE ?          THEN 4
+                WHEN post_meta_description LIKE ? THEN 3
+                WHEN post_teaser LIKE ?         THEN 2
+                WHEN post_text LIKE ?           THEN 1
+                ELSE 0
+            END) AS relevance
+        FROM se_posts
+        $where
+        ORDER BY relevance DESC, post_fixed ASC, post_priority DESC
+        LIMIT ? OFFSET ?
+    ";
+
+    $postsParams = array_merge(
+        $caseParams,
+        $baseParams,
+        [$itemsPerPage, $offset]
+    );
+
+    $sth = $db_posts->pdo->prepare($postsSql);
+    $sth->execute($postsParams);
+    $posts = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    return [
+        "totalResults" => $totalResults,
+        "posts"        => $posts
+    ];
+}
+
+function se_search_events($str, $lang, $currentPage = 1, $itemsPerPage = 25) {
+
+    global $db_posts;
+
+    $str = trim($str);
+    if ($str === '') {
+        return ["totalResults" => 0, "events" => []];
+    }
+
+    // Fields to search in
+    $searchFields = [
+        'title', 'teaser', 'text',
+        'meta_title', 'meta_description', 'tags'
+    ];
+
+    [$matchSql, $searchParams] = se_build_multiword_like_clause($str, $searchFields);
+
+    // WHERE - public events only, already released (same visibility rule as
+    // se_get_event_entries(), independent of the event's own start/end date)
+    $where = "WHERE (event_lang LIKE ? AND status = ? AND releasedate <= ?) AND ($matchSql)";
+    $baseParams = array_merge([$lang, '1', time()], $searchParams);
+
+    // COUNT
+    $countSth = $db_posts->pdo->prepare("SELECT COUNT(*) FROM se_events $where");
+    $countSth->execute($baseParams);
+    $totalResults = (int) $countSth->fetchColumn();
+
+    // Pagination
+    $offset = (int) $itemsPerPage * (max(1, (int) $currentPage) - 1);
+
+    // CASE relevance - mirrors se_search_posts()
+    $like = "%$str%";
+    $caseParams = [
+        $str,   // slug exact
+        $like,  // slug LIKE
+        $str,   // title exact
+        $like,  // title LIKE
+        $like,  // meta_description
+        $like,  // teaser
+        $like,  // text
+    ];
+
+    $eventsSql = "
+        SELECT *,
+            (CASE
+                WHEN slug = ?              THEN 7
+                WHEN slug LIKE ?           THEN 6
+                WHEN title = ?             THEN 5
+                WHEN title LIKE ?          THEN 4
+                WHEN meta_description LIKE ? THEN 3
+                WHEN teaser LIKE ?         THEN 2
+                WHEN text LIKE ?           THEN 1
+                ELSE 0
+            END) AS relevance
+        FROM se_events
+        $where
+        ORDER BY relevance DESC, fixed ASC, event_startdate DESC
+        LIMIT ? OFFSET ?
+    ";
+
+    $eventsParams = array_merge(
+        $caseParams,
+        $baseParams,
+        [$itemsPerPage, $offset]
+    );
+
+    $sth = $db_posts->pdo->prepare($eventsSql);
+    $sth->execute($eventsParams);
+    $events = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    return [
+        "totalResults" => $totalResults,
+        "events"       => $events
     ];
 }
 

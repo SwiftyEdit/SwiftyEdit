@@ -8,6 +8,14 @@
  *
  */
 
+// Read-only w.r.t. $_SESSION (only read below, never assigned) - safe to
+// release the session lock immediately. This fires alongside other
+// hx-trigger="load" widgets on the same page, all sharing one PHPSESSID;
+// without an early close here, the default file session handler would
+// force them to queue up and run one at a time instead of concurrently.
+// Do not add $_SESSION writes below without removing this first.
+session_write_close();
+
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
 }

@@ -61,6 +61,39 @@ $tpl_file = str_replace('{btn_reload_alerts}', $btn_reload_alerts, $tpl_file);
 $btn_orders_overview = '<a href="/admin/shop/orders/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
 $tpl_file = str_replace('{btn_orders_overview}', $btn_orders_overview, $tpl_file);
 
+// OPcache status + manual reset - one card, right next to the Cache card
+// (see acp/core/dashboard/data-reader.php and data-writer.php), only wired
+// in for admins with the "sensitive files" right (same right that gates the
+// update/addon installers - resetting the server's bytecode cache is just as
+// server-wide/sensitive). Built here as a single HTML block instead of
+// per-placeholder substitution so it can be left out entirely for everyone
+// else, since dashboard_top.tpl itself has no conditionals.
+$opcache_card = '';
+if (se_hasPermission('drm_acp_sensitive_files')) {
+    $btn_opcache_reset = '<button hx-post="/admin-xhr/dashboard/write/" '
+        .'hx-vals=\'{"opcache_reset":1,"csrf_token":"'.$_SESSION['token'].'"}\' '
+        .'hx-target="#opcacheStatus" hx-swap="innerHTML" hx-indicator=".htmx-indicator" '
+        .'class="btn btn-default btn-sm">'.$icon['trash'].' '.$lang['btn_delete_cache'].'</button>'
+        .'<span id="opcacheStatus" class="align-self-center"></span>';
+
+    $opcache_card = '<div>'
+        .'<section class="card" style="--card-color: var(--section-color-system)">'
+        .'<div class="card-header d-flex align-items-center gap-2">'
+        .'<span class="dash-card-icon">'.$icon['cpu'].'</span>'
+        .'<h2 class="h6 mb-0">'.$lang['opcache_title'].'</h2>'
+        .'</div>'
+        .'<div class="card-body p-0">'
+        .'<div id="getOpcache" class="p-2 scroll-container scroll-container-h240" '
+        .'hx-get="'.$reader_uri.'?action=list_opcache" hx-trigger="load, opcache_reset from:body">'
+        .'<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>'
+        .'</div>'
+        .'</div>'
+        .'<div class="card-footer d-flex align-items-center gap-2">'.$btn_opcache_reset.'</div>'
+        .'</section>'
+        .'</div>';
+}
+$tpl_file = str_replace('{opcache_card}', $opcache_card, $tpl_file);
+
 $btn_page_overview = '<a href="/admin/pages/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
 $tpl_file = str_replace('{btn_page_overview}', $btn_page_overview, $tpl_file);
 $btn_page_new = '<a href="/admin/pages/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';

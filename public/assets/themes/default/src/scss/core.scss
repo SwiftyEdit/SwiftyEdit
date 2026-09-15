@@ -72,6 +72,51 @@ $enable-dark-mode: true;
 @import 'helpers';
 @import 'navbar';
 
+// Instant-search results (nav searchbox modal + standalone search page both
+// render the same search_suggestions.tpl partial into a ".search-suggestions"
+// container - see navigation.tpl / search.tpl). Reuses Bootstrap's
+// .dropdown-menu look/visibility (".show" toggled server-side depending on
+// whether there's anything to display).
+.search-suggestions {
+  width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  // Bootstrap's .dropdown-item is white-space: nowrap by default, fine for
+  // short menu labels but not for page/product titles - without this a long
+  // title just overflows past the box instead of wrapping, which on the
+  // standalone search page's dropdown widened the whole page and caused a
+  // horizontal scrollbar.
+  .dropdown-item {
+    white-space: normal;
+  }
+
+  // Product rows pair a title with a price on the same line (see
+  // search_suggestions.tpl) - truncate the title with an ellipsis instead
+  // of wrapping it, so it never pushes the price out of view. Needs its own
+  // min-width: 0 since flex items don't shrink below their content size by
+  // default, which would defeat text-overflow otherwise.
+  .search-result-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  // The nav searchbox opens this inside #searchModal (see navigation.tpl)
+  // instead of as a floating dropdown - the modal card itself is already the
+  // floating surface, so drop the positioning/border/shadow and just let it
+  // sit in the modal body. Always visible (no ".show" toggling needed, the
+  // modal's own open/close state already handles that).
+  &.search-suggestions-modal {
+    position: static;
+    display: block;
+    width: auto;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+}
 
 #pageHeader {
 

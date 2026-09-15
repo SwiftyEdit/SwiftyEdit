@@ -131,6 +131,24 @@ htmx.onLoad(function(content) {
         }
     }
 
+    // simple single-list drag-to-reorder groups (e.g. shop option values,
+    // selected images in the image picker) - dragging just reorders the DOM
+    // nodes, the new order is picked up automatically the next time the
+    // surrounding form is submitted, no separate AJAX call needed
+    var sortableListGroups = content.matches && content.matches(".sortableListGroup")
+        ? [content]
+        : content.querySelectorAll(".sortableListGroup");
+    if (sortableListGroups.length > 0) {
+        for (var i = 0; i < sortableListGroups.length; i++) {
+            new Sortable(sortableListGroups[i], {
+                animation: 150,
+                ghostClass: 'bg-info-subtle',
+                draggable: ".list-group-item",
+                handle: ".input-group-text"
+            });
+        }
+    }
+
     // gallery thumbnails - free drag & drop reordering within a single gallery
     // (content itself can be the sortable container, e.g. when it is swapped
     // in directly as the target of an hx-get, so it won't show up via

@@ -8,7 +8,7 @@
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{nav_btn_content}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#info">{nav_btn_info}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prices">{nav_btn_prices}</a></li>
-				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_metas}</a></li>
+				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{nav_btn_seo}</a></li>
 				<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{nav_btn_settings}</a></li>
 			</ul>
 				</div>
@@ -126,16 +126,37 @@
 						<label>{label_keywords}</label>
 						<input type="text" class='form-control tags' name="tags" value="{keywords}">
 					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_pages_permalink}</label>
+								<input type="text" id="disabledTextInput" class="form-control" value="{se_base_url}" disabled>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_main_category_page}</label>
+								{select_main_cat_page}
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="mb-2">
+								<label>{label_slug}</label>
+								<input class='form-control' name="slug" type="text" value="{slug}">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label>Canonical URL {canonical_url_tooltip}</label>
+						<input class='form-control' name="canonical_url" type="text" value="{canonical_url}">
+					</div>
 				</div>
-				
+
 				<div class="tab-pane fade" id="prefs">
 					<div class="form-group">
 						<label>{label_author}</label>
 						<input class='form-control' name="author" type="text" value="{author}">
-					</div>
-					<div class="form-group">
-						<label>{label_slug}</label>
-						<input class='form-control' name="slug" type="text" value="{slug}">
 					</div>
 
 					<fieldset>

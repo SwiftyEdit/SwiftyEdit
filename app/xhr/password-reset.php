@@ -9,6 +9,12 @@
  * @var string $languagePack
  */
 
+// Doesn't touch $_SESSION at all - safe to release the session lock
+// immediately, so this request doesn't block other widgets sharing the
+// same PHPSESSID (default file session handler serializes them otherwise).
+// Do not add $_SESSION usage below without removing this first.
+session_write_close();
+
 $mail = strip_tags($_POST['mail']);
 $send_data = 'false';
 $msg_mail_format = '';

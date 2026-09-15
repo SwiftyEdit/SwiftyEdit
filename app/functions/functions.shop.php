@@ -927,7 +927,72 @@ function se_get_product_lowest_price(int $id) {
     return str_replace('.', ',', $lowestPrice);
 }
 
+/**
+ * compute the display price tag for a product row - the "cheapest price
+ * wins" logic used by the shop listing (app/handlers/products-list.php,
+ * ~lines 596-648): resolve tax/net price from a price group if the product
+ * has one, then check for a lower variant/volume-discount price via
+ * se_get_product_lowest_price() and show it with a "from" label if it
+ * undercuts the base price. Formats gross/net/both per posts_price_mode,
+ * same as the shop listing.
+ *
+ * Not for the product detail page's quantity-based recalculation (see
+ * app/xhr/products.php calc=price) - that already has one specific
+ * variant selected, so a "lowest price across variants" override would be
+ * wrong there.
+ *
+ * @param array $product a product row (from se_search_products(),
+ *                        se_get_product_data(), or similar - needs at least
+ *                        id, product_tax, product_price_net,
+ *                        product_price_group)
+ * @return array ['price_tag' => string, 'price_tag_label_from' => string]
+ */
+function se_get_product_price_tag(array $product): array {
 
+    global $se_settings, $lang;
+
+    if (!empty($product['product_price_group']) && $product['product_price_group'] !== 'null') {
+        $price_data = se_get_price_group_data($product['product_price_group']);
+        $product_tax = $price_data['tax'];
+        $product_price_net = $price_data['price_net'];
+    } else {
+        $product_tax = $product['product_tax'] ?? '';
+        $product_price_net = $product['product_price_net'] ?? 0;
+    }
+
+    if ($product_tax == '1') {
+        $tax = $se_settings['posts_products_default_tax'];
+    } else if ($product_tax == '2') {
+        $tax = $se_settings['posts_products_tax_alt1'];
+    } else {
+        $tax = $se_settings['posts_products_tax_alt2'];
+    }
+
+    $price_tag_label_from = '';
+
+    $lowest_price = se_get_product_lowest_price((int) ($product['id'] ?? 0));
+    if ($lowest_price !== null) {
+        if (se_commaToFloat($lowest_price) < se_commaToFloat($product_price_net)) {
+            $price_tag_label_from = $lang['price_tag_label_from'];
+        }
+        $product_price_net = $lowest_price;
+    }
+
+    $post_prices = se_posts_calc_price($product_price_net, $tax);
+
+    if ($se_settings['posts_price_mode'] == 1) {
+        $price_tag = $post_prices['gross'];
+    } else if ($se_settings['posts_price_mode'] == 2) {
+        $price_tag = $post_prices['net'] . '/' . $post_prices['gross'];
+    } else {
+        $price_tag = $post_prices['net'];
+    }
+
+    return [
+        'price_tag' => $price_tag,
+        'price_tag_label_from' => $price_tag_label_from
+    ];
+}
 
 /**
  * @param $id
@@ -1116,6 +1181,17 @@ function se_add_to_cart() {
                 $addon_tax = $se_settings['posts_products_tax_alt2'];
             }
 
+            // options chosen for this addon (e.g. size/color), same format as the main product's
+            $addon_option_string = '';
+            if(isset($_POST['addon_options'][$addon_id]) && is_array($_POST['addon_options'][$addon_id])) {
+                foreach($_POST['addon_options'][$addon_id] as $addon_option) {
+                    $addon_option_string .= '<span>'.$addon_option.'</span>';
+                }
+            }
+
+            // free-text comment for this addon's own product_options_comment_label field
+            $addon_option_comment = clean_visitors_input($_POST['addon_options_comment'][$addon_id] ?? '');
+
             $db_content->insert("se_carts", [
                 "cart_time" =>  $cart_time,
                 "cart_user_hash" =>  $cart_user_hash,
@@ -1128,8 +1204,8 @@ function se_add_to_cart() {
                 "cart_product_price_net" =>  $addon_item['product_price_net'],
                 "cart_product_tax" =>  $addon_tax,
                 "cart_product_title" =>  $addon_item['title'],
-                "cart_product_options" =>  '',
-                "cart_product_options_comment" =>  '',
+                "cart_product_options" =>  $addon_option_string,
+                "cart_product_options_comment" =>  $addon_option_comment,
                 "cart_product_number" =>  $addon_item['product_number'],
                 "cart_status" =>  $cart_status
             ]);
