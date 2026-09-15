@@ -100,6 +100,13 @@ if(isset($_POST['save_user'])) {
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
             record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>","5");
+
+            se_do_backend_hook('user.updated', [
+                'user_id' => $edit_user_id,
+                'data'    => $columns,
+                'changes' => $_POST,
+                'updated_by' => $_SESSION['user_id'],
+            ]);
         }
 
         if($_POST['deleteAvatar'] == 'on') {
@@ -118,6 +125,12 @@ if(isset($_POST['save_user'])) {
         if($edituser > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
             record_log($_SESSION['user_nick'],"new user <i>$user_nick</i>","5");
+
+            se_do_backend_hook('user.created', [
+                'user_id' => $edituser,
+                'data'    => $columns,
+                'created_by' => $_SESSION['user_id'],
+            ]);
         }
     }
 
