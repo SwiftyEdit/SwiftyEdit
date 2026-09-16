@@ -150,6 +150,14 @@ if($s != '' && $start_search == "true") {
     $smarty->assign('posts_total', $get_posts['totalResults'], true);
     $smarty->assign('events_total', $get_events['totalResults'], true);
 
+    // additional result cards from plugins (e.g. a docs-reader plugin) - one
+    // array entry per plugin/source, no pagination (see hooks-map.php)
+    $external_results = se_apply_frontend_filters('search.results.external', [], [
+        'search_string' => $s,
+        'mode'           => 'page',
+    ]);
+    $smarty->assign('external_results', $external_results, true);
+
     // only set once an actual search ran (not on the bare/undersized-query
     // page load) - searchresults.tpl uses this to show $msg_no_search_results
     // instead of four empty "(0)" cards.
@@ -158,7 +166,8 @@ if($s != '' && $start_search == "true") {
         $get_pages['totalResults'] == 0 &&
         $get_products['totalResults'] == 0 &&
         $get_posts['totalResults'] == 0 &&
-        $get_events['totalResults'] == 0
+        $get_events['totalResults'] == 0 &&
+        empty($external_results)
     ), true);
 
 }

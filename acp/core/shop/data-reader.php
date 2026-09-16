@@ -774,9 +774,7 @@ if($_REQUEST['action'] == 'list_filters') {
         $cat_filter = explode(" ",$_SESSION['filter_prod_categories']);
         $cat_filter = array_filter($cat_filter);
         $filter_by_category = [
-            "OR" => [
-                "filter_categories" => $cat_filter
-            ]
+            "filter_categories[~]" => $cat_filter
         ];
     }
 

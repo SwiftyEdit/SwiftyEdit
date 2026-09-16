@@ -107,6 +107,12 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
             "content_type" => "product",
             "content_id" => $delete_id
         ]);
+
+        se_do_backend_hook('product.deleted', [
+            'product_id' => $delete_id,
+            'user_id'    => $_SESSION['user_id'],
+        ]);
+
         show_toast($lang['msg_info_data_deleted'],'success');
         record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
         header( "HX-Redirect: /admin/shop/");

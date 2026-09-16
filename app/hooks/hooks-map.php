@@ -33,12 +33,48 @@ return [
             'context' => ['product_id', 'product'],
         ],
 
+        // Extra HTML block on the product detail page (e.g. reviews, FAQs).
+        // Value starts as '' and each callback appends its own HTML - unlike
+        // product.display.actions, the callback owns its markup completely,
+        // there's no typed entry format for the core to render.
+        'product.display.content' => [
+            'type' => 'filter',
+            'context' => ['product_id', 'product', 'user'],
+        ],
+
+        // Extra HTML block per product card on a product listing page (e.g. a
+        // rating badge). Same '' + append convention as product.display.content.
+        'product.list.item' => [
+            'type' => 'filter',
+            'context' => ['product_id', 'product'],
+        ],
+
         // ----- Pages -----
 
         // After the page has been rendered (tracking, recommendations, etc.)
         'page.display.after' => [
             'type' => 'generic',
             'context' => ['page_data', 'query'],
+        ],
+
+        // ----- Search -----
+
+        // External search results contributed by a plugin (e.g. a docs-reader
+        // plugin indexing content outside se_content/se_posts, which the core
+        // search functions can never find). Value starts as [] and each
+        // callback with matches appends one card:
+        // ['title' => 'Documentation', 'total' => 3, 'items' => [
+        //     ['title' => '...', 'href' => '...', 'description' => '...', 'thumbnail_src' => '...'],
+        // ]]
+        // Fired on both the full search page and the instant suggestions
+        // dropdown - 'mode' ('page'|'suggestions') tells the callback which
+        // one, since result count and rendering differ there (same reasoning
+        // as se_search_products() using a different limit for each entry
+        // point). No pagination - a plugin with more results than fit should
+        // link its own listing page instead.
+        'search.results.external' => [
+            'type' => 'filter',
+            'context' => ['search_string', 'mode'],
         ],
 
         // ----- Images -----

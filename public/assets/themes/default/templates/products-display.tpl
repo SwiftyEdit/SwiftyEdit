@@ -471,6 +471,10 @@
     {/if}
 {/foreach}
 
+{if $product_plugin_content != ''}
+    {$product_plugin_content}
+{/if}
+
 {if $prefs_wishlist_enabled == 1}
 <div class="modal fade" id="wishlist-picker-modal" tabindex="-1" aria-labelledby="wishlistPickerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

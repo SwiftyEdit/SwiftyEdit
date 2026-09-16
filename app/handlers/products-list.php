@@ -691,6 +691,13 @@ foreach ($get_products as $k => $post) {
         se_store_admin_helper("prod", $get_products[$k]['id']);
     }
 
+    /* extra content block per product card - e.g. a reviews plugin's rating
+       badge. Same '' + append convention as product.display.content. */
+    $get_products[$k]['plugin_list_item'] = se_apply_frontend_filters('product.list.item', '', [
+        'product_id' => $get_products[$k]['id'],
+        'product'    => $get_products[$k],
+    ]);
+
 }
 
 if($status_404 === true) {

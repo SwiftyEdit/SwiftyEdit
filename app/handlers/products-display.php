@@ -42,6 +42,16 @@ $productActions = se_apply_frontend_filters('product.display.actions', $productA
 
 $smarty->assign('product_plugin_actions', $productActions);
 
+/* extra content block below the product description - e.g. a reviews
+   plugin's rating summary/list/form. Each callback appends its own HTML,
+   unlike product.display.actions there's no typed entry format to render. */
+$productPluginContent = se_apply_frontend_filters('product.display.content', '', [
+    'product_id' => $product_data['id'] ?? null,
+    'product'    => $product_data,
+    'user'       => $currentUser ?? null,
+]);
+$smarty->assign('product_plugin_content', $productPluginContent);
+
 /* "add to wishlist" button - a core feature, not a plugin action, so it's
    computed directly here (same pattern as products-list.php) instead of
    going through the product.display.actions plugin filter above */

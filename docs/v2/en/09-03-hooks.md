@@ -50,8 +50,9 @@ run code but don't transform a value.
 ### Frontend hooks
 
 The frontend hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
-`page.display.after`) are documented together with the template variables and rendering
-conventions they affect - see [Hooks](09-01-00-themes.md#hooks) in the Themes chapter.
+`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`)
+are documented together with the template variables and rendering conventions they affect - see
+[Hooks](09-01-00-themes.md#hooks) in the Themes chapter.
 
 ### Global hooks
 

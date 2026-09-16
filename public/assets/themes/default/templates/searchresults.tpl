@@ -140,6 +140,28 @@
 		</div>
 		{/if}
 
+		{foreach $external_results as $card}
+		<div class="card mb-3">
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<span>{$card.title} ({$card.total})</span>
+			</div>
+			<ul class="list-group list-group-flush">
+				{foreach $card.items as $item}
+					<li class="list-group-item d-flex align-items-center gap-2">
+						{if $item.thumbnail_src != ""}
+							<img src="{$item.thumbnail_src}" alt="{$item.thumbnail_src}" class="flex-shrink-0" style="width:60px;height:60px;object-fit:cover;">
+						{/if}
+						<div class="flex-grow-1">
+							<div class="fw-semibold">{$item.title}</div>
+							{if $item.description != ""}<div class="text-muted small">{$item.description}</div>{/if}
+						</div>
+						<a href="{$item.href}" class="stretched-link"></a>
+					</li>
+				{/foreach}
+			</ul>
+		</div>
+		{/foreach}
+
 	</div>
 </div>
 {/if}
