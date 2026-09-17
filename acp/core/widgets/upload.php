@@ -110,11 +110,17 @@ if($max_h_tmb < 1) {
     $max_h_tmb = 250;
 }
 
-if(str_contains($_POST['upload_destination'], "/images")) {
-    $destination = se_filter_filepath($_POST['upload_destination']);
+// confine the destination to assets/images or assets/files - str_contains() alone
+// only checks that the substring appears anywhere, it does not stop "../" traversal
+// (se_filter_filepath() deliberately keeps ".." for callers that need it, see its docblock)
+$upload_destination = $_POST['upload_destination'] ?? '';
+$resolved_destination = se_resolve_within(SE_PUBLIC, $upload_destination);
+
+if ($resolved_destination !== false && str_starts_with($resolved_destination . '/', SE_PUBLIC . '/assets/images/')) {
+    $destination = se_filter_filepath($upload_destination);
     $upload_type = 'images';
-} else if(str_contains($_POST['upload_destination'], "/files")) {
-    $destination = se_filter_filepath($_POST['upload_destination']);
+} else if ($resolved_destination !== false && str_starts_with($resolved_destination . '/', SE_PUBLIC . '/assets/files/')) {
+    $destination = se_filter_filepath($upload_destination);
     $upload_type = 'files';
 }
 
