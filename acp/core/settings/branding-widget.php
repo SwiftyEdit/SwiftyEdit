@@ -76,13 +76,13 @@ function se_render_branding_preview(
             . ' hx-post="' . htmlspecialchars($delete_uri, ENT_QUOTES) . '"'
             . ' hx-vals="' . $remove_vals . '"'
             . ' hx-include="[name=\'csrf_token\']"'
-            . ' hx-target="#' . $preview_id . '"'
+            . ' hx-target="#' . htmlspecialchars($preview_id, ENT_QUOTES) . '"'
             . ' hx-swap="outerHTML"'
             . ' hx-confirm="' . htmlspecialchars($confirm_text, ENT_QUOTES) . '">'
             . '<i class="bi bi-trash"></i> ' . htmlspecialchars($remove_label, ENT_QUOTES) . '</button>';
     }
 
-    return '<div id="' . $preview_id . '" class="mb-2 d-flex align-items-center justify-content-between">' . $preview . $remove_button . '</div>';
+    return '<div id="' . htmlspecialchars($preview_id, ENT_QUOTES) . '" class="mb-2 d-flex align-items-center justify-content-between">' . $preview . $remove_button . '</div>';
 }
 
 /**
