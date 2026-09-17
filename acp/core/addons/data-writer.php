@@ -9,13 +9,20 @@
 
 // give the plugins the possibility to write via xhr
 $path = explode('/', $_REQUEST['query']);
-$plugin = basename($path[2]);
-$plugin_base = '/admin/addons/plugin/' . $plugin . '/';
-$plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
-$plugin_writer_file = SE_ROOT.'plugins/'.$plugin.'/backend/writer.php';
-if(is_file("$plugin_writer_file")) {
-    include_once "$plugin_writer_file";
-    exit;
+// strict whitelist instead of basename() - basename() alone still lets a bare
+// ".." through (no "/" for it to strip), which would point $plugin_root one
+// level above plugins/; this also rules out reaching any plugin that hasn't
+// been activated, see se_is_plugin_activated()
+$plugin = preg_replace('/[^a-zA-Z0-9_-]/', '', $path[2] ?? '');
+
+if ($plugin !== '' && se_is_plugin_activated($plugin)) {
+    $plugin_base = '/admin/addons/plugin/' . $plugin . '/';
+    $plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
+    $plugin_writer_file = SE_ROOT.'plugins/'.$plugin.'/backend/writer.php';
+    if(is_file("$plugin_writer_file")) {
+        include_once "$plugin_writer_file";
+        exit;
+    }
 }
 
 // save the default template

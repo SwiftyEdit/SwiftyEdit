@@ -15,13 +15,20 @@ if(!isset($languagePack)) {
 
 // give the plugins the possibility to read via xhr
 $path = explode('/', $_REQUEST['query']);
-$plugin = basename($path[2]);
-$plugin_base = '/admin/addons/plugin/' . $plugin . '/';
-$plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
-$plugin_reader_file = $plugin_root.'backend/reader.php';
-if(is_file("$plugin_reader_file")) {
-    include_once "$plugin_reader_file";
-    exit;
+// strict whitelist instead of basename() - basename() alone still lets a bare
+// ".." through (no "/" for it to strip), which would point $plugin_root one
+// level above plugins/; this also rules out reaching any plugin that hasn't
+// been activated, see se_is_plugin_activated()
+$plugin = preg_replace('/[^a-zA-Z0-9_-]/', '', $path[2] ?? '');
+
+if ($plugin !== '' && se_is_plugin_activated($plugin)) {
+    $plugin_base = '/admin/addons/plugin/' . $plugin . '/';
+    $plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
+    $plugin_reader_file = $plugin_root.'backend/reader.php';
+    if(is_file("$plugin_reader_file")) {
+        include_once "$plugin_reader_file";
+        exit;
+    }
 }
 
 
@@ -309,6 +316,14 @@ if($_REQUEST['action'] == 'list_catalog') {
 
 // check if a plugin is up to date
 if(isset($_REQUEST['check_plugin'])) {
+
+    // same "can upload sensitive files" right as install/router.php - this
+    // triggers an outbound request to the plugin's own self-declared
+    // update_url (see se_check_addon_update()), so it needs the same gate
+    // as the install/update actions in data-writer.php, not just any admin
+    if(!se_hasPermission('drm_acp_sensitive_files')) {
+        exit;
+    }
 
     $plugin_dir = basename($_REQUEST['check_plugin']);
 
