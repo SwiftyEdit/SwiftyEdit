@@ -874,6 +874,34 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
     return null; // Product doesn't exists
 }
 
+/**
+ * Whether a product row exists for this slug, regardless of its status/
+ * releasedate visibility. Returns only a boolean, never product data - used
+ * by products.php to tell "this slug was never a product" (fall through to
+ * the category listing) apart from "a product exists here but is hidden
+ * from this visitor" (show a 404 instead of a misleading empty listing).
+ *
+ * @param string $slug
+ * @param string|null $lang
+ * @return bool
+ */
+function se_product_slug_exists($slug, $lang = null): bool
+{
+    global $languagePack, $db_posts;
+
+    $lang = $lang ?: $languagePack;
+    $slug = rtrim($slug, "/") . "/";
+
+    $id = $db_posts->get("se_products", "id", [
+        "AND" => [
+            "slug" => $slug,
+            "product_lang" => $lang
+        ]
+    ]);
+
+    return is_numeric($id);
+}
+
 
 /**
  * @param $id integer id of the main product
