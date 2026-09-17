@@ -3,6 +3,23 @@
     @extend .table;
   }
 
+  .alert {
+    border-width: 0 0 0 2px;
+    border-radius: 0;
+  }
+
+  kbd {
+    padding: .25rem .5rem;
+    color: var(--bs-primary);
+    background-color: transparent;
+    border: 1px solid var(--bs-primary);
+    border-radius: var(--bs-border-radius-sm);
+  }
+
+  .doc-arrow {
+    color: var(--bs-primary);
+  }
+
   .list-group-item-action button {
     border-radius: 0;
   }
