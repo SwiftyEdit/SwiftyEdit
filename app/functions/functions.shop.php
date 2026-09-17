@@ -730,6 +730,7 @@ function se_get_product_data($id, $lang = null) {
     global $db_posts,$se_settings,$languagePack;
 
     $lang = $lang ?: $languagePack;
+    $canSeeAllStatuses = se_frontend_visitor_can_see_drafts();
 
     // try cache first
     if($se_settings['products_cache'] == 1) {
@@ -738,6 +739,9 @@ function se_get_product_data($id, $lang = null) {
         if (file_exists($cacheFile)) {
             $data = json_decode(file_get_contents($cacheFile), true);
             if ($data) {
+                if (!$canSeeAllStatuses && !se_product_is_publicly_visible($data)) {
+                    return null;
+                }
                 $data['data_source'] = 'cache';
                 return $data;
             }
@@ -751,11 +755,50 @@ function se_get_product_data($id, $lang = null) {
     ]);
 
     if ($data) {
+        if (!$canSeeAllStatuses && !se_product_is_publicly_visible($data)) {
+            return null;
+        }
         $data['data_source'] = 'database';
         return $data;
     }
 
     return null; // Product doesn't exists
+}
+
+/**
+ * Whether the current request context is allowed to see draft products
+ * (ACP / backend code, and admins previewing the frontend).
+ *
+ * @return bool
+ */
+function se_frontend_visitor_can_see_drafts(): bool
+{
+    return SE_SECTION != 'frontend'
+        || (isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator');
+}
+
+/**
+ * Whether a product row is visible to a non-admin frontend visitor:
+ * draft products ("status" == 2) are never visible, and unreleased
+ * products (future "releasedate") are hidden until release. Ghost
+ * products ("status" == 3) stay visible via direct link on purpose -
+ * they're only omitted from listings/search.
+ *
+ * @param array $data
+ * @return bool
+ */
+function se_product_is_publicly_visible(array $data): bool
+{
+    if (($data['status'] ?? null) == '2') {
+        return false;
+    }
+
+    $releasedate = $data['releasedate'] ?? null;
+    if ($releasedate !== null && $releasedate !== '' && (int)$releasedate > time()) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -769,6 +812,7 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
     global $languagePack, $db_posts, $se_settings;
 
     $lang = $lang ?: $languagePack;
+    $canSeeAllStatuses = se_frontend_visitor_can_see_drafts();
 
     // normalize slug, add slash if needed
     $slug = rtrim($slug, "/") . "/";
@@ -793,8 +837,13 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
                 $cacheFile = se_getProductCachePath($productId, $lang);
                 if (file_exists($cacheFile)) {
                     $data = json_decode(file_get_contents($cacheFile), true);
-                    $data['data_source'] = 'cache';
-                    return $data;
+                    if ($data) {
+                        if (!$canSeeAllStatuses && !se_product_is_publicly_visible($data)) {
+                            return null;
+                        }
+                        $data['data_source'] = 'cache';
+                        return $data;
+                    }
                 }
             }
         }
@@ -815,6 +864,9 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
     $data = $db_posts->get("se_products", "*", $where);
 
     if ($data) {
+        if (!$canSeeAllStatuses && !se_product_is_publicly_visible($data)) {
+            return null;
+        }
         $data['data_source'] = 'database';
         return $data;
     }
@@ -831,7 +883,7 @@ function se_get_product_data_by_slug($slug, $lang = null, $variantId = null): mi
 function se_get_product_variants($id) {
     global $db_posts;
 
-    $get_columns = ["id","type","title","teaser","images","slug","main_catalog_slug","product_variant_title","product_variant_description"];
+    $get_columns = ["id","type","title","teaser","images","slug","main_catalog_slug","product_variant_title","product_variant_description","status","releasedate"];
 
     $main_product = $db_posts->select("se_products", $get_columns, [
         "id" => $id
@@ -843,6 +895,16 @@ function se_get_product_variants($id) {
     ]);
 
     $products = array_merge($main_product, $variants);
+
+    if (!se_frontend_visitor_can_see_drafts()) {
+        $products = array_values(array_filter($products, 'se_product_is_publicly_visible'));
+    }
+
+    // internal columns, not meant for template output
+    foreach ($products as &$product) {
+        unset($product['status'], $product['releasedate']);
+    }
+    unset($product);
 
     return $products;
 }
@@ -1116,6 +1178,10 @@ function se_add_to_cart() {
 	
 	/* we store tax and price_net from item */
 	$this_item = se_get_product_data($cart_product_id);
+
+	if(empty($this_item)) {
+		return 0;
+	}
 
 	/* addon-only products can only be booked as an addon, not added on their own */
 	if(($this_item['product_addon_only'] ?? '2') == 1) {
