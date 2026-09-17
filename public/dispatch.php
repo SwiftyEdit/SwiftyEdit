@@ -29,7 +29,13 @@
 
 require __DIR__ . '/../config.php';
 
-$plugin = basename($_GET['p'] ?? '');
+// strict whitelist instead of basename() alone - basename('..') returns '..'
+// unchanged (nothing to strip, no "/" present), so on its own it still lets a
+// bare ".." through. The empty($registry[$plugin]) lookup below already makes
+// that harmless in practice (a real traversal segment can never be a key in
+// bootstrap_endpoints.json - see the file docblock), but this closes it at
+// the source instead of relying solely on that lookup.
+$plugin = preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['p'] ?? '');
 $registryFile = SE_CONTENT . '/cache/bootstrap_endpoints.json';
 
 $registry = [];

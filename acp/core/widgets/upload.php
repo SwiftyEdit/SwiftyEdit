@@ -141,7 +141,10 @@ if($upload_type == 'images') {
     if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
         $tmp_name = $_FILES['file']['tmp_name'];
         $org_name = $_FILES['file']['name'];
-        $suffix = substr(strrchr($org_name,'.'),1);
+        // strip anything but letters/digits from the client-supplied extension so a
+        // crafted filename (e.g. containing "../") can never reach $target below,
+        // regardless of the $se_upload_img_types whitelist check further down
+        $suffix = preg_replace('/[^A-Za-z0-9]/', '', substr(strrchr($org_name,'.'),1));
         $prefix = basename($org_name,".$suffix");
         $img_name = generate_filename($prefix,$suffix);
         $target = "$destination/$img_name";
@@ -178,7 +181,9 @@ if($upload_type == 'files') {
     if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
         $tmp_name = $_FILES["file"]["tmp_name"];
         $org_name = $_FILES["file"]["name"];
-        $suffix = substr(strrchr($org_name,'.'),1);
+        // strip anything but letters/digits from the client-supplied extension - see
+        // the images branch above for why this must happen before $target is built
+        $suffix = preg_replace('/[^A-Za-z0-9]/', '', substr(strrchr($org_name,'.'),1));
         $prefix = basename($org_name,".$suffix");
         $files_name = generate_filename($prefix,$suffix);
         $target = "$destination/$files_name";
@@ -220,7 +225,9 @@ if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
         $timestring = microtime(true);
         $random_int = random_int(0, 999);
 
-        $suffix = substr(strrchr($_FILES["file"]["name"],"."),1);
+        // strip anything but letters/digits from the client-supplied extension - see
+        // the images branch above for why this must happen before $org_name is built
+        $suffix = preg_replace('/[^A-Za-z0-9]/', '', substr(strrchr($_FILES["file"]["name"],"."),1));
         $org_name = $timestring .'.'. $suffix;
         $img_name = $timestring.$random_int."_img.jpg";
         $tmb_name = $timestring.$random_int."_tmb.jpg";
@@ -479,7 +486,9 @@ function se_handle_branding_upload(string $target, string $branding_path, array 
 
     $tmp_name = $_FILES['file']['tmp_name'];
     $org_name = $_FILES['file']['name'];
-    $suffix = strtolower(substr(strrchr($org_name, '.'), 1));
+    // strip anything but letters/digits from the client-supplied extension so a
+    // crafted filename can never reach $file_target below, see se_handle_branding_upload()
+    $suffix = preg_replace('/[^A-Za-z0-9]/', '', strtolower(substr(strrchr($org_name, '.'), 1)));
 
     $target_types = $allowed_types;
     if ($target === 'favicon') {

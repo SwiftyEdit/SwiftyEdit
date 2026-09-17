@@ -245,7 +245,53 @@ function se_unpublish_editor_assets(string $plugin_dir): void {
 }
 
 
+/**
+ * Guard against SSRF for every outbound addon-related fetch (info.json load,
+ * update check, ZIP download). Callers upstream may already restrict the
+ * user-typed URL to "https://" (see acp/core/addons/data-writer.php), but
+ * that alone still allows requests into the internal network - a plugin's
+ * own info.json can also point "update_url"/"download_url" at anything
+ * (see se_check_addon_update() below, reached via data-reader.php's
+ * check_plugin action with no extra permission gate), so the check has to
+ * live here, at the actual file_get_contents() call, not just at the form.
+ *
+ * Requires https and resolves the host to reject loopback/private/link-local
+ * targets (127.0.0.1, 169.254.169.254 cloud metadata, RFC1918 ranges, etc.).
+ */
+function se_is_safe_remote_url(string $url): bool {
+
+    $parts = parse_url($url);
+    if ($parts === false || ($parts['scheme'] ?? '') !== 'https' || empty($parts['host'])) {
+        return false;
+    }
+
+    $host = $parts['host'];
+
+    if (filter_var($host, FILTER_VALIDATE_IP)) {
+        $ips = [$host];
+    } else {
+        $records = @dns_get_record($host, DNS_A + DNS_AAAA);
+        $ips = array_filter(array_map(static fn($r) => $r['ip'] ?? $r['ipv6'] ?? null, $records ?: []));
+    }
+
+    if (empty($ips)) {
+        return false;
+    }
+
+    foreach ($ips as $ip) {
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function se_load_addon_info(string $url): array {
+
+    if (!se_is_safe_remote_url($url)) {
+        return ['success' => false, 'message' => 'URL not allowed.'];
+    }
 
     // Load info.json
     $json = @file_get_contents($url);
@@ -301,6 +347,13 @@ function se_check_addon_update(array $addon_info): array {
 
     // Return unknown if update_url or build is not defined
     if(!isset($addon_info['addon']['update_url']) || !isset($addon_info['addon']['build'])) {
+        return ['status' => 'unknown'];
+    }
+
+    // update_url comes straight from the addon's own (self-declared) info.json,
+    // not from a form the "https only" checks elsewhere validate - see
+    // se_is_safe_remote_url()
+    if (!se_is_safe_remote_url($addon_info['addon']['update_url'])) {
         return ['status' => 'unknown'];
     }
 
@@ -370,6 +423,13 @@ function se_install_theme(string $theme_id, string $download_url): array {
  * which directory the ZIP is unpacked into.
  */
 function se_install_addon_zip(string $addon_id, string $download_url, string $target_root, string $label): array {
+
+    // download_url can originate from a remote update_url's own response (see
+    // se_check_addon_update()), not only the https-checked install form - see
+    // se_is_safe_remote_url()
+    if (!se_is_safe_remote_url($download_url)) {
+        return ['success' => false, 'message' => 'URL not allowed.'];
+    }
 
     // Download ZIP to temporary file
     $tmp_zip = tempnam(sys_get_temp_dir(), 'se_addon_');
@@ -495,6 +555,20 @@ function se_get_addons($t='module') {
 	]);
 
 	return $result;
+}
+
+
+/**
+ * True if $dir is an activated plugin's directory name (has a row in
+ * se_addons). Guards the plugin backend reader/writer XHR bridge in
+ * acp/core/addons/{data-reader,data-writer}.php - without this, dropping a
+ * plugin's files into plugins/<dir>/ would let its backend/reader.php or
+ * backend/writer.php run for any admin request, even though it was never
+ * activated (see mods_check_in()'s docblock above: a plugin is only meant to
+ * get code-execution trust once it's activated).
+ */
+function se_is_plugin_activated(string $dir): bool {
+	return in_array($dir, array_column(se_get_addons('plugin'), 'addon_dir'), true);
 }
 
 
