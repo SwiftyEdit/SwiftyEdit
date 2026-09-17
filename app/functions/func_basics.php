@@ -740,12 +740,13 @@ function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
 
     [$matchSql, $searchParams] = se_build_multiword_like_clause($str, $searchFields);
 
-    // WHERE
-    $where = "(product_lang = ? AND (status = ? OR status = ?)) AND ($matchSql)";
+    // WHERE - public products only, already released (frontend visibility rule,
+    // see se_get_products()'s own "releasedate <= now" filter)
+    $where = "(product_lang = ? AND status = ? AND releasedate <= ?) AND ($matchSql)";
 
     // COUNT query
     $countSql = "SELECT COUNT(*) FROM se_products WHERE $where";
-    $countParams = array_merge([$lang, "1", "3"], $searchParams);
+    $countParams = array_merge([$lang, "1", time()], $searchParams);
     $countSth = $db_posts->pdo->prepare($countSql);
     $countSth->execute($countParams);
     $totalResults = (int) $countSth->fetchColumn();
@@ -776,7 +777,7 @@ function se_search_products($str, $lang, $currentPage = 1, $itemsPerPage = 10) {
     // Complete parameter list
     $productsParams = array_merge(
         $caseParams,
-        [$lang, "1", "3"],
+        [$lang, "1", time()],
         $searchParams,
         [$itemsPerPage, $offset]
     );

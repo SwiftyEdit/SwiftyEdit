@@ -43,7 +43,8 @@ if(isset($_REQUEST['v']) && (is_numeric($_REQUEST['v']))) {
 
 // 3. Check if $mod_slug is a product slug
 if($mod_slug != '' && $display_mode == 'list_products') {
-    $get_data_from_slug = se_get_product_data_by_slug(se_getLastSlug($mod_slug));
+    $get_last_slug = se_getLastSlug($mod_slug);
+    $get_data_from_slug = se_get_product_data_by_slug($get_last_slug);
     if (is_array($get_data_from_slug)) {
         $get_product_id = (int)$get_data_from_slug['id'];
         $product_data = $get_data_from_slug;
@@ -51,6 +52,12 @@ if($mod_slug != '' && $display_mode == 'list_products') {
         if (is_array($product_data)) {
             $status_404 = false;
         }
+        $display_mode = 'show_product';
+    } elseif (se_product_slug_exists($get_last_slug)) {
+        // a product exists at this slug but isn't visible to this visitor
+        // (draft/unreleased) - 404 instead of silently falling through to
+        // the category listing as if this slug meant nothing
+        $product_data = null;
         $display_mode = 'show_product';
     }
 }

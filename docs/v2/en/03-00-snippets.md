@@ -16,10 +16,12 @@ used via shortcode.
 The overview lists all snippets. You can sort the list, filter it by language and, of course,
 search it. If you work with a large number of snippets, you can keep order with the labels.
 
+{alert:info}
 __Advice:__ The snippets are multilingual. When you use a multilingual page,
 the snippet with the matching language is always loaded into your content.
 If the snippet is not available in the desired language, the snippet in the default language
 is automatically loaded.
+{/alert}
 
 ## Embedding snippets
 
@@ -34,8 +36,10 @@ as a shortcode. There are three notations:
 
 Replace `name` with the name you assigned to the snippet.
 
+{alert:info}
 __Note:__ Inside `<pre>` and `<code>` blocks, shortcodes are __not__ replaced. This lets you
 show the syntax in tutorials without the snippet being embedded.
+{/alert}
 
 ## Input fields
 

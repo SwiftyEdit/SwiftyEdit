@@ -55,7 +55,9 @@ erledigst du über den Button „Cache leeren“ auf derselben Karte. Bei Swifty
 (Core-Updates sowie Plugin-/Theme-Installation über die URL) geschieht das bereits automatisch, dort musst
 du nichts weiter tun.
 
+{alert:info}
 Die Karte ist nur für Benutzer mit der Berechtigung „kann sensible Dateien hochladen“ sichtbar.
+{/alert}
 
 ---
 

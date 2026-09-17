@@ -1525,6 +1525,33 @@ function se_parse_docs_file($file): array {
             $content
         );
 
+        // shared Bootstrap contextual types for {alert:} and {badge:}
+        $bs_context_types = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+
+        // {alert:info}...{/alert} -> Bootstrap alert box, content still parsed as markdown
+        $content = preg_replace_callback(
+            '/\{alert:([a-z0-9_-]+)\}/i',
+            function ($m) use ($bs_context_types) {
+                $type = in_array(strtolower($m[1]), $bs_context_types, true) ? strtolower($m[1]) : 'info';
+                return '<div class="alert alert-'.$type.'" role="alert" markdown="1">';
+            },
+            $content
+        );
+        $content = preg_replace('/\{\/alert\}/i', '</div>', $content);
+
+        // {badge:info}text{/badge} -> inline Bootstrap badge
+        $content = preg_replace_callback(
+            '/\{badge:([a-z0-9_-]+)\}(.*?)\{\/badge\}/si',
+            function ($m) use ($bs_context_types) {
+                $type = in_array(strtolower($m[1]), $bs_context_types, true) ? strtolower($m[1]) : 'info';
+                return '<span class="badge text-bg-'.$type.'">'.$m[2].'</span>';
+            },
+            $content
+        );
+
+        // colorize the breadcrumb arrow used between <kbd> tags (e.g. <kbd>Backend</kbd> ▶ <kbd>Snippets</kbd>)
+        $content = str_replace('▶', '<span class="doc-arrow">▶</span>', $content);
+
         $parsed_header = Spyc::YAMLLoadString($src_content[1]);
         $parsed_content = $Parsedown->text("$content");
 
