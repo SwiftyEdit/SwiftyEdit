@@ -53,7 +53,9 @@ need to clear the cache manually after your own changes to PHP files for them to
 "Clear cache" button on the same card for that. SwiftyEdit's own update process (core updates as well as
 plugin/theme installation via URL) already does this automatically, so there's nothing to do there.
 
+{alert:info}
 The card is only visible to users with the "can upload sensitive files" permission.
+{/alert}
 
 ---
 

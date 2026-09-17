@@ -17,10 +17,12 @@ Auf der Übersicht werden alle Snippets aufgelistet.
 Du kannst die Liste sortieren, nach Sprachen filtern und natürlich auch durchsuchen.
 Falls Du mit sehr vielen Snippets arbeitest, kannst Du mit den Labels Ordnung halten.
 
+{alert:info}
 __Tipp:__ Die Snippets sind mehrsprachig. Wenn Du eine mehrsprachige Seite verwendest,
 wird immer das Snippet mit der passenden Sprache in Deinen Inhalt geladen.
 Sollte das Snippet nicht in der gewünschten Sprache verfügbar sein, wird automatisch das Snippet
 in der Standard-Sprache geladen.
+{/alert}
 
 ## Snippets einbinden
 
@@ -35,8 +37,10 @@ ein anderes Snippet) eingebunden. Es gibt drei Schreibweisen:
 
 Ersetze `name` jeweils durch den Namen, den Du dem Snippet vergeben hast.
 
+{alert:info}
 __Hinweis:__ Innerhalb von `<pre>`- und `<code>`-Blöcken werden Shortcodes __nicht__ ersetzt.
 So kannst Du die Syntax in Anleitungen darstellen, ohne dass das Snippet eingebunden wird.
+{/alert}
 
 ## Eingabefelder
 
