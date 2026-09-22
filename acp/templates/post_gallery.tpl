@@ -113,5 +113,8 @@
 	</div>
 </form>
 
+<!-- if we have a gallery id, show the upload form -->
+{modal_upload_form}
+
 
 

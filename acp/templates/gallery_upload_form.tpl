@@ -7,7 +7,7 @@
         </button>
       </div>
       <div class="modal-body">
-				<form method="post" action="/admin/upload/" id="dropper" class="dropper-form">
+				<form method="post" action="/admin/upload/" id="dropperGallery" class="dropper-form">
 					<div class="fallback">
 						<input name="file" type="file" multiple />
 					</div>
