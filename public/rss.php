@@ -26,9 +26,14 @@ $rssItems = $db_content->select("se_feeds", "*",[
 	]
 ]);
 
-$prefs = $db_content->select("se_options", "*", [
+$prefs_rows = $db_content->select("se_options", "*", [
     "option_module" => "se"
 ]);
+
+$prefs = [];
+foreach ($prefs_rows as $prefs_row) {
+	$prefs[$prefs_row['option_key']] = $prefs_row['option_value'];
+}
 
 $cms_domain = $prefs['prefs_cms_ssl_domain'];
 if($cms_domain == '') {
@@ -74,6 +79,7 @@ $entry_atom_tpl = '	<entry>
 $end_rss_tpl = '</channel></rss>';
 $end_atom_tpl = '</feed>';
 
+$entry_str = '';
 
 for($i=0;$i<$cnt_rssItems;$i++) {
 
@@ -113,11 +119,11 @@ for($i=0;$i<$cnt_rssItems;$i++) {
 if($type == 'rss') {
 	header("Content-Type: application/rss+xml");
 	echo $header_rss_tpl;
-	echo $item_tpl;
+	echo $entry_str;
 	echo $end_rss_tpl;
 } else {
 	header("Content-Type: application/atom+xml");
 	echo $header_atom_tpl;
-	echo $item_tpl;
+	echo $entry_str;
 	echo $end_atom_tpl;
 }
