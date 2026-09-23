@@ -125,6 +125,12 @@ $plugin_form_tpl .= '</div>';
 - The submitted values are stored as JSON in the record's `addon_string` column
   (`se_pages`, `se_products` or `se_posts`).
 
+### Custom placeholders for snippets
+
+With `se_set_snippet_var('name', $value)` a plugin can provide its own placeholders such as
+`{name}`, which can then be used in any snippet.
+See [Snippets → Placeholders](03-00-snippets.md#placeholders) for details.
+
 ## The info.json file {#the-infojson-file}
 
 Every plugin must have an `info.json` file in its root directory. This file contains

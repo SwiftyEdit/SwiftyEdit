@@ -147,6 +147,10 @@ if($product_volume_discounts_json != '') {
 }
 
 
+/* placeholders for snippets used on this product page, e.g. {sku} */
+se_set_snippet_var('sku', $product_data['product_number'] ?? '');
+se_set_snippet_var('page_title', ($product_data['meta_title'] ?? '') != '' ? $product_data['meta_title'] : ($product_data['title'] ?? ''));
+
 $teaser = text_parser(htmlspecialchars_decode($product_data['teaser']));
 $text = text_parser(htmlspecialchars_decode($product_data['text']));
 $text_scope_of_delivery = text_parser(htmlspecialchars_decode($product_data['text_scope_of_delivery']));

@@ -807,15 +807,19 @@ function se_get_snippet($name, $lang, $type) {
     }
 
     // Return based on type
+    // placeholders like {sku} are replaced, see se_set_snippet_var()
     switch ($type) {
         case 'content':
-            return $snippetData['snippet_content'] ?? '';
+            return se_replace_snippet_vars($snippetData['snippet_content'] ?? '');
 
         case 'tpl':
-            return se_render_snippet_template($snippetData);
+            // replace after rendering, the template escapes its values itself
+            return se_replace_snippet_vars(se_render_snippet_template($snippetData));
 
         case 'all':
         default:
+            $snippetData['snippet_content'] = se_replace_snippet_vars($snippetData['snippet_content'] ?? '');
+            $snippetData['snippet_title'] = se_replace_snippet_vars($snippetData['snippet_title'] ?? '');
             return $snippetData;
     }
 }

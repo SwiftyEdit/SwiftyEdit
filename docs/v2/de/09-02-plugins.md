@@ -127,6 +127,12 @@ $plugin_form_tpl .= '</div>';
 - Die übermittelten Werte werden als JSON in der Spalte `addon_string` des Datensatzes
   gespeichert (`se_pages`, `se_products` bzw. `se_posts`).
 
+### Eigene Platzhalter für Snippets
+
+Mit `se_set_snippet_var('name', $value)` kann ein Plugin eigene Platzhalter wie `{name}`
+bereitstellen, die dann in allen Snippets verwendet werden können.
+Details siehe [Snippets → Platzhalter](03-00-snippets.md#platzhalter).
+
 ## Die info.json Datei {#die-infojson-datei}
 
 Jedes Plugin muss eine `info.json` Datei in seinem Stammverzeichnis haben. Diese Datei

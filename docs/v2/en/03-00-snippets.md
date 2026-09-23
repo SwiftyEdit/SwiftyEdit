@@ -41,6 +41,50 @@ __Note:__ Inside `<pre>` and `<code>` blocks, shortcodes are __not__ replaced. T
 show the syntax in tutorials without the snippet being embedded.
 {/alert}
 
+## Placeholders {#placeholders}
+
+You can use placeholders in a snippet's content and title. They are replaced by the current value
+on output, e.g. "The product with item number `{sku}` requires consultation."
+
+| Placeholder    | Value                                                                        |
+|----------------|------------------------------------------------------------------------------|
+| `{site_name}`  | The site name from the settings.                                             |
+| `{page_title}` | The title of the current page. On product pages, the product's title.        |
+| `{page_url}`   | The URL of the current page.                                                 |
+| `{date}`       | The current date in the format from the settings.                            |
+| `{time}`       | The current time in the format from the settings.                            |
+| `{date_iso}`   | The current date as `YYYY-MM-DD`.                                            |
+| `{year}`       | The current year.                                                            |
+| `{sku}`        | The item number (SKU) of the current product. Empty outside of product pages. |
+
+Anything else in curly braces is left unchanged.
+
+{alert:info}
+__Note:__ Product-related values (`{sku}`, the product's `{page_title}`) are available in the
+product's snippet and in the product texts. If the Smarty cache is enabled, date and time are
+cached for the cache's lifetime as well.
+{/alert}
+
+### Custom placeholders (for developers)
+
+Plugins and themes can add their own placeholders with `se_set_snippet_var()`.
+Pass the name without curly braces. The value is escaped for HTML automatically.
+
+```php
+<?php
+// e.g. plugins/my-plugin/global/index.php or the theme's php/index.php
+se_set_snippet_var('hotline', '+49 123 456789');
+```
+
+After that, `{hotline}` can be used in any snippet.
+
+- The placeholder must be set __before__ the snippet is rendered. Suitable places are
+  `/plugins/{plugin}/global/index.php` and the theme's `php/index.php` – both are loaded
+  early enough.
+- Don't use any of the names listed above. SwiftyEdit sets them while building the page and
+  would overwrite your value.
+- A placeholder that was never set is left unchanged in the text.
+
 ## Input fields
 
 | Field           | Description                                                                                                                                                                                              |
