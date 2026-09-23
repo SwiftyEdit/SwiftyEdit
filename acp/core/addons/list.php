@@ -37,6 +37,8 @@ echo '<div class="card">';
 echo '<div class="card-header">Themes</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
+// receives the toast of a refused theme deletion (see delete_theme in data-writer.php)
+echo '<div id="theme-delete-response"></div>';
 echo '<div id="listThemes" hx-get="/admin-xhr/addons/read/?action=list_themes" hx-trigger="load, update_themes_list from:body"></div></div>';
 echo '</div>';
 echo '</div>';

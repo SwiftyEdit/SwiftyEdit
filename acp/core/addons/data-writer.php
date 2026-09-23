@@ -4,6 +4,7 @@
  * global variables
  * @var array $lang
  * @var object $db_content
+ * @var array $se_settings
  * @var bool $se_upload_addons from config.php
  */
 
@@ -249,7 +250,8 @@ if(isset($_POST['update_addon_from_url'])) {
         return;
     }
 
-    $plugin_id = trim($_POST['plugin_id']);
+    // strict whitelist - the id becomes the target directory of the ZIP
+    $plugin_id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['plugin_id'] ?? '');
     $download_url = trim($_POST['download_url']);
 
     if(empty($plugin_id) || empty($download_url)) {
@@ -263,8 +265,13 @@ if(isset($_POST['update_addon_from_url'])) {
         return;
     }
 
-    // Update plugin
-    $result = se_install_plugin($plugin_id, $download_url);
+    // Update plugin or theme
+    if(($_POST['addon_type'] ?? 'plugin') === 'theme') {
+        $result = se_install_theme($plugin_id, $download_url);
+        se_delete_smarty_cache('all');
+    } else {
+        $result = se_install_plugin($plugin_id, $download_url);
+    }
     echo $result['message'];
 }
 
@@ -276,4 +283,33 @@ if(isset($_POST['delete_plugin'])) {
 
     se_delete_addon($_POST['delete_plugin'],'plugin');
     header( "HX-Trigger: update_plugins_list");
+}
+
+if(isset($_POST['delete_theme'])) {
+
+    if(!se_hasPermission('drm_acp_sensitive_files')) {
+        return;
+    }
+
+    $theme = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['delete_theme']);
+
+    // the default and the backend theme are always required, and the
+    // currently active theme would leave the frontend without a template
+    if($theme === '' || in_array($theme, ['default', 'administration', $se_settings['template']], true)) {
+        show_toast($lang['msg_error_theme_in_use'],'danger');
+        return;
+    }
+
+    // pages can override the default theme (se_pages.page_template)
+    $cnt_pages = $db_content->count("se_pages", [
+        "page_template" => $theme
+    ]);
+    if($cnt_pages > 0) {
+        show_toast($lang['msg_error_theme_in_use'],'danger');
+        return;
+    }
+
+    se_delete_addon($theme,'theme');
+    se_delete_smarty_cache('all');
+    header( "HX-Trigger: update_themes_list");
 }

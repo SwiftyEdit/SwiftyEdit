@@ -331,43 +331,55 @@ if($_REQUEST['action'] == 'list_catalog') {
     exit;
 }
 
-// check if a plugin is up to date
-if(isset($_REQUEST['check_plugin'])) {
+// check if a plugin or theme is up to date
+if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
 
     // same "can upload sensitive files" right as install/router.php - this
-    // triggers an outbound request to the plugin's own self-declared
+    // triggers an outbound request to the addon's own self-declared
     // update_url (see se_check_addon_update()), so it needs the same gate
     // as the install/update actions in data-writer.php, not just any admin
     if(!se_hasPermission('drm_acp_sensitive_files')) {
         exit;
     }
 
-    $plugin_dir = basename($_REQUEST['check_plugin']);
+    if(isset($_REQUEST['check_theme'])) {
+        $addon_type = 'theme';
+        $addon_root = SE_THEMES;
+        $plugin_dir = basename($_REQUEST['check_theme']);
+        // themes use a prefixed id, a plugin may share the same directory name
+        $response_id = 'update-response-theme-'.$plugin_dir;
+    } else {
+        $addon_type = 'plugin';
+        $addon_root = SE_PLUGINS;
+        $plugin_dir = basename($_REQUEST['check_plugin']);
+        $response_id = 'update-response-'.$plugin_dir;
+    }
 
-    // confine the info file to the plugins directory (traversal safeguard, see #338)
-    $addon_info_file = se_resolve_within(SE_PLUGINS, $plugin_dir . '/info.json');
+    // confine the info file to the addon directory (traversal safeguard, see #338)
+    $addon_info_file = se_resolve_within($addon_root, $plugin_dir . '/info.json');
     if ($addon_info_file === false) {
         exit;
     }
 
-    // load plugin info
+    // load addon info
     $json = @file_get_contents($addon_info_file);
     $plugin_info = json_decode($json, true);
 
-    $update_info = se_check_addon_update($plugin_info);
+    $update_info = se_check_addon_update($plugin_info ?? []);
 
     if($update_info['status'] == 'update_available') {
 
         $vals = [
             'csrf_token' => $_SESSION['token'],
             'plugin_id' => $plugin_dir,
+            'addon_type' => $addon_type,
             'download_url' => $update_info['download_url']
         ];
 
-        $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success" 
+        $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success"
                             hx-post="/admin-xhr/addons/write/"
                             hx-vals=\''.json_encode($vals).'\'
-                            hx-target="#update-response-'.htmlspecialchars($plugin_dir, ENT_QUOTES).'"
+                            hx-target="#'.htmlspecialchars($response_id, ENT_QUOTES).'"
                             >Update '.$icon['arrow_clockwise'].'</button>';
         echo $update_btn;
     } else if($update_info['status'] == 'up_to_date') {
@@ -413,12 +425,19 @@ if($_REQUEST['action'] == 'list_themes') {
         $theme_version = htmlspecialchars($theme_addon['version'] ?? '', ENT_QUOTES);
 
         echo '<div class="card mb-3 '.$class.'">';
-        echo '<div class="card-header">'.$theme_name;
+        echo '<div class="card-header d-flex justify-content-between align-items-center">';
+        echo '<div>'.$theme_name;
         if($theme_version !== '') {
             echo ' <span class="badge badge-se">'.$theme_version.'</span>';
         }
         echo ' '.$active.'</div>';
+        // the default theme ships with the core and is updated along with it
+        if($template != 'default' && se_hasPermission('drm_acp_sensitive_files')) {
+            echo '<div hx-get="/admin-xhr/addons/read/?check_theme='.urlencode($template).'" hx-trigger="load"></div>';
+        }
+        echo '</div>';
         echo '<div class="card-body">';
+        echo '<div id="update-response-theme-'.htmlspecialchars($template, ENT_QUOTES).'"></div>';
 
         echo '<div class="row">';
         echo '<div class="col-md-8">';
@@ -474,6 +493,18 @@ if($_REQUEST['action'] == 'list_themes') {
         }
         echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
         echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
+
+        // the default theme and the active theme can't be deleted,
+        // pages still using the theme are checked in data-writer.php
+        if($template != 'default' && $template != $se_settings['template'] && se_hasPermission('drm_acp_sensitive_files')) {
+            $vals = ['csrf_token' => $_SESSION['token']];
+            echo '<button name="delete_theme" value="'.htmlspecialchars($template, ENT_QUOTES).'" class="btn btn-default btn-sm text-danger mt-1 w-100"
+                        hx-post="/admin-xhr/addons/write/"
+                        hx-confirm="'.$lang['msg_confirm_delete'].'"
+                        hx-vals=\''.json_encode($vals).'\'
+                        hx-target="#theme-delete-response"
+                        >'.$icon['trash_alt'].' '.$lang['btn_delete'].'</button>';
+        }
         echo '</div>';
         echo '</div>';
 

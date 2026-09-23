@@ -687,9 +687,19 @@ function se_delete_addon($addon,$type) {
 		$dir = SE_PLUGINS;
 	} else if($type == 'theme') {
 		$dir = SE_THEMES;
+	} else {
+		return false;
 	}
-	
-	$remove_dir = $dir.'/'.basename($addon);
+
+	// strict whitelist instead of basename() - an empty name or a bare ".."
+	// would otherwise point $remove_dir at the plugins/themes root itself
+	// or one level above it
+	$addon = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $addon);
+	if($addon === '' || !is_dir($dir.'/'.$addon)) {
+		return false;
+	}
+
+	$remove_dir = $dir.'/'.$addon;
 	se_reomove_addon_files($remove_dir);
 	$record_msg = 'removed addon: <strong>'.$addon.' ('.$type.')</strong>';
 	record_log($_SESSION['user_nick'],$record_msg,"8");
