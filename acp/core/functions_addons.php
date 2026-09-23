@@ -418,6 +418,18 @@ function se_install_theme(string $theme_id, string $download_url): array {
 
 
 /**
+ * Metadata macOS adds when zipping in Finder (__MACOSX/ folder, .DS_Store,
+ * AppleDouble "._*" files). Skipped entirely by the addon installer.
+ */
+function se_is_macos_zip_artifact(string $filename): bool {
+    $basename = basename($filename);
+    return str_starts_with($filename, '__MACOSX/')
+        || str_contains($filename, '/__MACOSX/')
+        || $basename === '.DS_Store'
+        || str_starts_with($basename, '._');
+}
+
+/**
  * Download and extract an addon ZIP (plugin or theme) into $target_root/$addon_id,
  * shared by se_install_plugin() and se_install_theme() - the two only differ in
  * which directory the ZIP is unpacked into.
@@ -450,10 +462,13 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
     }
 
     // Validate file types – only allowed extensions
-    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3'];
+    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3', 'woff', 'woff2', 'ttf', 'otf'];
 
     for($i = 0; $i < $zip->numFiles; $i++) {
         $filename = $zip->getNameIndex($i);
+        if(se_is_macos_zip_artifact($filename)) {
+            continue;
+        }
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         if($ext !== '' && !in_array($ext, $allowed_extensions)) {
             $zip->close();
@@ -473,6 +488,10 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
     // Extract ZIP – strip root folder, skip /data/ directory
     for($i = 0; $i < $zip->numFiles; $i++) {
         $filename = $zip->getNameIndex($i);
+
+        if(se_is_macos_zip_artifact($filename)) {
+            continue;
+        }
 
         // Strip first folder
         $relative_path = preg_replace('#^[^/]+/#', '', $filename);

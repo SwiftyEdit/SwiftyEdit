@@ -265,7 +265,9 @@ sodass dort gespeicherte Nutzerdaten sicher sind.
 Bei der Installation oder Aktualisierung eines Plugins über eine URL prüft SwiftyEdit
 den Inhalt der ZIP-Datei. Nur folgende Dateitypen sind erlaubt:
 
-`php`, `tpl`, `json`, `js`, `css`, `html`, `svg`, `png`, `jpg`, `jpeg`, `gif`, `webp`, `txt`, `md`, `sqlite3`
+`php`, `tpl`, `json`, `js`, `css`, `html`, `svg`, `png`, `jpg`, `jpeg`, `gif`, `webp`, `txt`, `md`, `sqlite3`, `woff`, `woff2`, `ttf`, `otf`
+
+macOS-Metadaten (`__MACOSX/`, `.DS_Store`, `._*`) werden beim Installieren ignoriert.
 
 ### Plugin hosten
 
