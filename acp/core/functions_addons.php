@@ -896,7 +896,7 @@ function se_write_theme_options($data) {
 }
 
 /**
- * Load the catalog of installable plugins from the SwiftyEdit catalog
+ * Load the catalog of installable plugins and themes from the SwiftyEdit catalog
  * service (swiftyedit.net/api - syncs the swiftyedit/registry GitHub repo
  * into a small REST API; version/build/download_url are resolved there
  * live from each entry's own info.json on every sync, not stored in the
@@ -905,17 +905,27 @@ function se_write_theme_options($data) {
  * SE_CONTENT/cache/<subdir>/ convention already used by mods_check_in()
  * and se_get_categories()).
  *
+ * The service splits entries by type into separate endpoints
+ * (/api/plugins, /api/themes) - both are fetched and merged into one list.
+ * Every entry carries a "type" field ("plugin" or "theme").
+ *
  * A stale-but-present cache is preferred over an empty catalog when the
  * live fetch fails - the service being temporarily unreachable shouldn't
- * blank out an otherwise-working page.
+ * blank out an otherwise-working page. A failure of any single endpoint
+ * counts as a failed fetch, so a partial result never overwrites a
+ * complete cache.
  *
  * @return array{success: bool, source: string, entries: array, message: string}
  */
 function se_get_catalog_entries(bool $force_refresh = false): array {
 
 	$cache_dir  = SE_CONTENT.'/cache/registry';
-	$cache_file = $cache_dir.'/plugins.json';
+	$cache_file = $cache_dir.'/catalog.json';
 	$ttl        = 3600;
+	$endpoints  = [
+		'plugin' => 'https://swiftyedit.net/api/plugins',
+		'theme'  => 'https://swiftyedit.net/api/themes'
+	];
 
 	$is_fresh = is_file($cache_file) && (filemtime($cache_file) >= time() - $ttl);
 
@@ -926,10 +936,36 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 		}
 	}
 
-	$json = @file_get_contents('https://swiftyedit.net/api/plugins');
+	$entries = [];
+	$message = '';
+	foreach($endpoints as $type => $endpoint) {
 
-	if($json === false || !is_array($rows = json_decode($json, true))) {
-		$message = $json === false ? 'Could not reach the plugin catalog.' : 'Unexpected catalog response.';
+		$json = @file_get_contents($endpoint);
+
+		if($json === false || !is_array($rows = json_decode($json, true))) {
+			$message = $json === false ? 'Could not reach the addon catalog.' : 'Unexpected catalog response.';
+			break;
+		}
+
+		foreach($rows as $row) {
+
+			if(empty($row['slug'])) {
+				continue;
+			}
+
+			// The catalog service stores tags as a JSON-encoded string column
+			// and returns it as such via SELECT * - decode here so every
+			// caller always gets a real array, never a raw JSON string.
+			$row['tags'] = is_string($row['tags'] ?? null) ? (json_decode($row['tags'], true) ?: []) : ($row['tags'] ?? []);
+
+			// fall back to the endpoint's type if the service omits it
+			$row['type'] = $row['type'] ?? $type;
+
+			$entries[$row['slug']] = $row;
+		}
+	}
+
+	if($message !== '') {
 		if(is_file($cache_file)) {
 			$cached = json_decode(file_get_contents($cache_file), true);
 			if(is_array($cached)) {
@@ -937,21 +973,6 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 			}
 		}
 		return ['success' => false, 'source' => 'none', 'entries' => [], 'message' => $message];
-	}
-
-	$entries = [];
-	foreach($rows as $row) {
-
-		if(empty($row['slug'])) {
-			continue;
-		}
-
-		// The catalog service stores tags as a JSON-encoded string column
-		// and returns it as such via SELECT * - decode here so every
-		// caller always gets a real array, never a raw JSON string.
-		$row['tags'] = is_string($row['tags'] ?? null) ? (json_decode($row['tags'], true) ?: []) : ($row['tags'] ?? []);
-
-		$entries[$row['slug']] = $row;
 	}
 
 	if(!is_dir($cache_dir)) {

@@ -202,25 +202,26 @@ if($_REQUEST['action'] == 'list_catalog') {
         $latest        = htmlspecialchars($entry['version'] ?? '', ENT_QUOTES);
         $tags          = $entry['tags'] ?? [];
         $screenshots   = $entry['screenshots'] ?? [];
+        $type_attr     = htmlspecialchars(strtolower($entry['type'] ?? 'plugin'), ENT_QUOTES);
         $fallback_poster = '/assets/themes/administration/images/poster-addons.png';
-        // poster.png (the plugin's own icon, optional per its own repo - see
-        // docs/v2/en/09-02-plugins.md) takes priority as the card thumbnail
-        // over a screenshot, since it's the plugin's actual branding. Not
-        // every plugin has one, so the <img onerror> below falls back
-        // client-side instead of doing an extra existence-check request
-        // per card on every cache refresh.
-        $poster = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'poster.png') ?: (($screenshots[0] ?? null) ?: $fallback_poster);
+        // The addon's own icon (poster.png for plugins, optional per its own
+        // repo - see docs/v2/en/09-02-plugins.md; images/icon.png for themes)
+        // takes priority as the card thumbnail over a screenshot, since it's
+        // the addon's actual branding. Not every addon has one, so the
+        // <img onerror> below falls back client-side instead of doing an
+        // extra existence-check request per card on every cache refresh.
+        $poster_path = $type_attr === 'theme' ? 'images/icon.png' : 'poster.png';
+        $poster = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', $poster_path) ?: (($screenshots[0] ?? null) ?: $fallback_poster);
 
         $info_json_url = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'info.json');
         $modal_id      = 'catalog-screenshots-'.preg_replace('/[^a-zA-Z0-9_-]/', '', $slug);
 
-        // Small circular thumbnail, matching the installed-plugins list's
-        // own poster styling (acp/core/addons/data-reader.php's
-        // list_plugins block) rather than a large banner image. The
+        // Small square thumbnail with rounded corners - addon icons (theme
+        // icons in particular) are square, a circle would crop them. The
         // screenshots gallery gets its own explicit link below (see
         // $screenshots_link) instead of being a silent click-target on the
         // image itself, which nobody would discover on their own.
-        $poster_attrs = 'src="'.htmlspecialchars($poster, ENT_QUOTES).'" class="img-fluid rounded-circle" onerror="this.onerror=null;this.src=\''.$fallback_poster.'\';"';
+        $poster_attrs = 'src="'.htmlspecialchars($poster, ENT_QUOTES).'" class="rounded flex-shrink-0" width="48" height="48" style="object-fit: cover;" alt="" onerror="this.onerror=null;this.src=\''.$fallback_poster.'\';"';
 
         $screenshots_link = '';
         if(!empty($screenshots)) {
@@ -247,41 +248,59 @@ if($_REQUEST['action'] == 'list_catalog') {
         }
 
         $tags_attr = htmlspecialchars(implode(',', array_map('strtolower', $tags)), ENT_QUOTES);
-        echo '<div class="col-md-4 mb-3" data-catalog-tags="'.$tags_attr.'">';
+        // Card layout: header (icon, type, name, author), description,
+        // tags as plain text, and a card-footer with version/requirement and
+        // the action - the footer keeps the action aligned across a grid row
+        // regardless of description length. The type line (Theme/Plugin)
+        // keeps both distinguishable while the "all" filter is active.
+        if($type_attr === 'theme') {
+            $type_label = '<div class="small text-info">'.$icon['palette'].' Theme</div>';
+        } else {
+            $type_label = '<div class="small text-muted">'.$icon['plugin'].' Plugin</div>';
+        }
+        $repo_url_attr = htmlspecialchars($entry['repo_url'] ?? '', ENT_QUOTES);
+
+        echo '<div class="col-md-4 mb-3" data-catalog-type="'.$type_attr.'" data-catalog-tags="'.$tags_attr.'">';
         echo '<div class="card h-100">';
         echo '<div class="card-body d-flex flex-column">';
-        echo '<div class="row mb-2">';
-        echo '<div class="col-3 text-center"><img '.$poster_attrs.'></div>';
-        echo '<div class="col-9">';
-        echo '<div class="card-title d-flex justify-content-between">';
-        echo '<span>'.$name.'</span><span class="badge badge-se">'.$latest.'</span>';
+
+        echo '<div class="d-flex align-items-center gap-3 mb-3">';
+        echo '<img '.$poster_attrs.'>';
+        echo '<div style="min-width: 0;">';
+        echo $type_label;
+        echo '<div class="fw-semibold text-truncate">'.$name.'</div>';
+        echo '<div class="small text-muted">'.$lang['catalog_by'].' <a href="'.$repo_url_attr.'" target="_blank" rel="noopener">'.$author.'</a></div>';
         echo '</div>';
-        $repo_url_attr = htmlspecialchars($entry['repo_url'] ?? '', ENT_QUOTES);
-        echo '<div class="card-text small text-muted">'.$lang['catalog_by'].' <a href="'.$repo_url_attr.'" target="_blank" rel="noopener">'.$author.'</a></div>';
+        echo '</div>';
+
+        // clamped to three lines so long descriptions don't stretch the
+        // whole grid row - the full text stays available via title
+        echo '<div class="flex-grow-1">';
+        echo '<p class="card-text small mb-2" title="'.$description.'" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">'.$description.'</p>';
+        echo '</div>';
+
+        if(!empty($tags)) {
+            echo '<div class="small text-muted">'.htmlspecialchars(implode(' · ', $tags), ENT_QUOTES).'</div>';
+        }
         if($screenshots_link !== '') {
             echo '<div class="small mt-1">'.$screenshots_link.'</div>';
         }
-        echo '</div>'; // col-9
-        echo '</div>'; // row
 
-        echo '<div class="card-text flex-grow-1">'.$description.'</div>';
+        echo '</div>'; // card-body
 
-        if(!empty($tags)) {
-            echo '<div class="mb-1">';
-            foreach($tags as $tag) {
-                echo '<span class="badge badge-se me-1">'.htmlspecialchars($tag, ENT_QUOTES).'</span>';
-            }
-            echo '</div>';
+        $meta = [];
+        if($latest !== '') {
+            $meta[] = 'v'.$latest;
         }
-
         if($requires_build !== '') {
-            echo '<div class="small text-muted mt-2">'.$lang['catalog_requires'].' '.$requires_build.'</div>';
+            $meta[] = $lang['catalog_requires'].' '.$requires_build;
         }
 
-        echo '<div class="btn-toolbar mt-2">';
+        echo '<div class="card-footer d-flex justify-content-between align-items-center gap-2">';
+        echo '<span class="small text-muted">'.implode(' · ', $meta).'</span>';
 
         if(in_array($slug, $installed, true)) {
-            echo '<span class="badge text-bg-success">'.$lang['catalog_installed'].'</span>';
+            echo '<span class="small text-success text-nowrap">'.$icon['check'].' '.$lang['catalog_installed'].'</span>';
         } elseif($info_json_url) {
             // Targets the shared #catalogInstallModalBody (see catalog.php)
             // instead of an inline per-card div - swapping the confirm/
@@ -300,12 +319,10 @@ if($_REQUEST['action'] == 'list_catalog') {
                     data-bs-target="#catalogInstallModal">'
                     .$lang['btn_install'].'</button>';
         } else {
-            echo '<span class="badge text-bg-danger">'.$lang['catalog_invalid_repo'].'</span>';
+            echo '<span class="small text-danger">'.$lang['catalog_invalid_repo'].'</span>';
         }
 
-        echo '</div>';
-
-        echo '</div>'; // card-body
+        echo '</div>'; // card-footer
         echo '</div>'; // card
         echo '</div>'; // col
     }
