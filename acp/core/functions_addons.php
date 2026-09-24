@@ -592,6 +592,53 @@ function se_is_plugin_activated(string $dir): bool {
 
 
 /**
+ * True if activating the plugin in $dir would actually change anything, i.e.
+ * the plugin ships at least one of the entry points that are gated by a row
+ * in se_addons. Used by the addons list to hide the enable button for
+ * plugins that work without activation (e.g. plugins that are only
+ * integrated into a page via frontend/index.php and bring their own backend
+ * pages).
+ *
+ * An explicit "activation": true|false in the addon block of info.json
+ * overrides the detection.
+ *
+ * @param string $dir  plugin directory name
+ * @param array  $info decoded info.json of the plugin
+ */
+function se_plugin_needs_activation(string $dir, array $info): bool {
+
+	if (isset($info['addon']['activation'])) {
+		return (bool) $info['addon']['activation'];
+	}
+
+	// non-core editors are only offered in the editor switch once activated
+	if (($info['addon']['type'] ?? '') === 'editor' && empty($info['editor']['core'])) {
+		return true;
+	}
+
+	$root = SE_PLUGINS . '/' . $dir . '/';
+
+	$gated_files = [
+		'global/index.php',
+		'global/xhr.php',
+		'backend/reader.php',
+		'backend/writer.php',
+		'backend/page-values.php',
+		'backend/product-values.php',
+		'backend/post-values.php',
+		'endpoint.php'
+	];
+	foreach ($gated_files as $file) {
+		if (is_file($root . $file)) {
+			return true;
+		}
+	}
+
+	return is_dir($root . 'hooks-global') || is_dir($root . 'hooks-frontend');
+}
+
+
+/**
  * Sanitize + JSON-encode posted addon_values (already plugin-prefixed by the browser,
  * see se_render_record_addons()). Handles both scalar fields (addon_values[key]) and
  * array fields (addon_values[key][], e.g. multi-select/checkboxes).

@@ -87,13 +87,20 @@ if($_REQUEST['action'] == 'list_plugins') {
                             hx-swap="none"
                             >'.$icon['trash_alt'].'</button>';
 
-        $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-default text-success"
+        // only offer activation if the plugin ships something that depends on it,
+        // see se_plugin_needs_activation()
+        $activate_btn = '';
+        if(se_plugin_needs_activation($k, $v ?? [])) {
+            $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-default text-success"
                                 hx-post="/admin-xhr/addons/write/"
                                 hx-trigger="click"
                                 hx-vals=\''.json_encode($vals).'\'
                                 hx-swap="none"
                                 >'.$lang['btn_addon_enable'].'</button>';
+        }
 
+        // an already activated plugin can always be deactivated, even if it
+        // no longer needs activation (e.g. after an update)
         foreach($se_addons as $a) {
             if($k == $a['addon_dir']) {
                 $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger"

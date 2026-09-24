@@ -49,6 +49,22 @@ Ein Plugin muss aktiviert sein, damit es
 - eigene Felder im "Addons"-Tab des Seiten-/Produkt-/Post-Editors anzeigen kann
   (`{page|product|post}-values.php`, siehe unten)
 
+Der "Aktivieren"-Button in der Addon-Liste im Backend wird nur für Plugins angezeigt,
+die mindestens eine Datei mitbringen, die von der Aktivierung abhängt:
+
+- `global/index.php`, `global/xhr.php`
+- `hooks-global/`, `hooks-frontend/`
+- `backend/reader.php`, `backend/writer.php`
+- `backend/{page|product|post}-values.php`
+- `endpoint.php`
+- oder das Plugin ist ein Editor (`"type": "editor"`) ohne `"core": true`
+
+Ein Plugin, das nur in eine Seite eingebunden wird (`frontend/index.php`) und eigene
+Backend-Seiten mitbringt, funktioniert ohne Aktivierung - dort erscheint kein Button.
+Die Erkennung lässt sich mit `"activation": true|false` im `addon`-Block der
+[info.json](#die-infojson-datei) überschreiben. Ein bereits aktiviertes Plugin kann
+immer deaktiviert werden.
+
 ### Wann werden welche Plugin-Dateien geladen?
 
 Folgende Includes sind möglich:
@@ -188,6 +204,7 @@ im Backend anzuzeigen und Updates zu verwalten.
 | `author` | ja | Name des Autors |
 | `description` | ja | Kurze Beschreibung des Plugins |
 | `update_url` | optional | URL zur externen `info.json`. Erforderlich für automatische Update-Prüfungen. |
+| `activation` | optional | `true`/`false` - erzwingt, dass der "Aktivieren"-Button in der Addon-Liste angezeigt bzw. ausgeblendet wird. Ohne Angabe wird es anhand der Plugin-Dateien erkannt (siehe [Aktivierte Plugins](#aktivierte-plugins)). |
 
 #### versions
 

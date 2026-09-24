@@ -49,6 +49,21 @@ A plugin must be activated so that it
 - can show its own fields in the "Addons" tab of the Page/Product/Post editor
   (`{page|product|post}-values.php`, see below)
 
+The "Enable" button in the backend's addon list is only shown for plugins that ship at
+least one file that depends on activation:
+
+- `global/index.php`, `global/xhr.php`
+- `hooks-global/`, `hooks-frontend/`
+- `backend/reader.php`, `backend/writer.php`
+- `backend/{page|product|post}-values.php`
+- `endpoint.php`
+- or the plugin is an editor (`"type": "editor"`) without `"core": true`
+
+A plugin that is only integrated into a page (`frontend/index.php`) and brings its own
+backend pages works without activation, so no button is shown. The detection can be
+overridden with `"activation": true|false` in the `addon` block of the
+[info.json](#the-infojson-file). An already activated plugin can always be deactivated.
+
 ### When are which plugin files loaded?
 
 The following includes are possible:
@@ -186,6 +201,7 @@ in the backend and to manage updates.
 | `author` | yes | Name of the author |
 | `description` | yes | Short description of the plugin |
 | `update_url` | optional | URL to the remote `info.json`. Required for automatic update checks. |
+| `activation` | optional | `true`/`false` - forces the "Enable" button in the addon list to be shown/hidden. If omitted, it is detected from the plugin's files (see [Activated plugins](#activated-plugins)). |
 
 #### versions
 
