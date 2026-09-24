@@ -579,6 +579,7 @@
   "msg.success.psw_changed": "The password has been changed",
   "msg.error.mandatory": "Not all mandatory information has been provided",
   "msg.error.deleting_sub_pages": "You cannot delete pages with subpages. To do this, you must first delete all subpages contained.",
+  "msg.error.theme_in_use": "This theme is still in use (default theme, active theme or assigned to pages) and cannot be deleted.",
   "msg.success.page_saved": "Page has been saved",
   "msg.error.page_saved": "An error has occurred, the page has not been saved",
   "msg.success.page_deleted": "Page has been deleted",
