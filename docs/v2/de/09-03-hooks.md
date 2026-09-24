@@ -8,11 +8,11 @@ priority: 200
 
 # Inhalte mit Hooks manipulieren
 
-Es gibt drei Arten von Hooks.
-Einmal für das Backend. Diese Hooks sind immer verfügbar, 
-sobald ein Plugin mit entsprechenden Funktionen installiert wurde.
-Hooks für das Frontend sind nur dann verfügbar, wenn das Plugin 
-auch aktiviert wurde.
+Es gibt drei Arten von Hooks: Backend-, Frontend- und globale Hooks.
+Alle werden nur für Plugins geladen, die aktiv sind, also im Backend
+aktiviert oder in eine Seite eingebunden wurden. Die Installation allein
+reicht nicht aus - so führen Plugin-Dateien, die lediglich nach `plugins/`
+kopiert wurden, nie Code aus.
 Globale Hooks feuern unabhängig davon, ob die auslösende Aktion im Backend
 oder im Frontend passiert ist - etwa wenn eine Bestellung sowohl manuell
 im ACP als auch automatisch durch ein Zahlungsplugin als bezahlt markiert

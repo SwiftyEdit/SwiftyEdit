@@ -592,6 +592,40 @@ function se_is_plugin_activated(string $dir): bool {
 
 
 /**
+ * Reduce $all_plugins (result of se_get_all_addons()) to the plugins whose
+ * hooks-backend/ and hooks-global/ callbacks may be loaded in the ACP.
+ *
+ * Same set the frontend uses for hooks-global/ and hooks-frontend/ (see
+ * app/routing.php via mods_check_in()): plugins activated in the backend
+ * (se_addons) plus plugins integrated into a page (se_pages.page_modul).
+ * Without this, dropping a plugin's files into plugins/<dir>/ would run its
+ * hook code on every ACP request, although it was never activated.
+ *
+ * The ACP header (acp/index.php) and the XHR bootstrap (acp/header.php) must
+ * both use this, since se_do_backend_hook_selected() matches the checked
+ * hook boxes against the callbacks by position.
+ *
+ * @param array $all_plugins plugin infos keyed by plugin directory
+ * @return array the filtered $all_plugins
+ */
+function se_get_hook_enabled_plugins(array $all_plugins): array {
+
+	global $db_content;
+
+	$enabled = array_column(se_get_addons('plugin'), 'addon_dir');
+
+	$page_mods = $db_content->select("se_pages", "page_modul", [
+		"page_modul[!]" => ""
+	]);
+	if (is_array($page_mods)) {
+		$enabled = array_merge($enabled, $page_mods);
+	}
+
+	return array_intersect_key($all_plugins, array_flip($enabled));
+}
+
+
+/**
  * True if activating the plugin in $dir would actually change anything, i.e.
  * the plugin ships at least one of the entry points that are gated by a row
  * in se_addons. Used by the addons list to hide the enable button for
@@ -634,7 +668,9 @@ function se_plugin_needs_activation(string $dir, array $info): bool {
 		}
 	}
 
-	return is_dir($root . 'hooks-global') || is_dir($root . 'hooks-frontend');
+	return is_dir($root . 'hooks-backend')
+		|| is_dir($root . 'hooks-global')
+		|| is_dir($root . 'hooks-frontend');
 }
 
 

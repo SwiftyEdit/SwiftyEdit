@@ -45,7 +45,7 @@ manuell aktiviert wurden.
 Ein Plugin muss aktiviert sein, damit es
 
 - XHR-Anfragen im Frontend verarbeiten kann
-- Hooks im Frontend ausgeführt werden können
+- seine Hooks (Backend, Frontend und global) geladen werden, siehe [Hooks](09-03-hooks.md)
 - eigene Felder im "Addons"-Tab des Seiten-/Produkt-/Post-Editors anzeigen kann
   (`{page|product|post}-values.php`, siehe unten)
 
@@ -53,7 +53,7 @@ Der "Aktivieren"-Button in der Addon-Liste im Backend wird nur für Plugins ange
 die mindestens eine Datei mitbringen, die von der Aktivierung abhängt:
 
 - `global/index.php`, `global/xhr.php`
-- `hooks-global/`, `hooks-frontend/`
+- `hooks-backend/`, `hooks-global/`, `hooks-frontend/`
 - `backend/reader.php`, `backend/writer.php`
 - `backend/{page|product|post}-values.php`
 - `endpoint.php`

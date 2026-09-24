@@ -45,7 +45,7 @@ or have been manually activated in the backend.
 A plugin must be activated so that it
 
 - can process XHR requests in the frontend
-- hooks can be executed in the frontend
+- its hooks (backend, frontend and global) are loaded, see [Hooks](09-03-hooks.md)
 - can show its own fields in the "Addons" tab of the Page/Product/Post editor
   (`{page|product|post}-values.php`, see below)
 
@@ -53,7 +53,7 @@ The "Enable" button in the backend's addon list is only shown for plugins that s
 least one file that depends on activation:
 
 - `global/index.php`, `global/xhr.php`
-- `hooks-global/`, `hooks-frontend/`
+- `hooks-backend/`, `hooks-global/`, `hooks-frontend/`
 - `backend/reader.php`, `backend/writer.php`
 - `backend/{page|product|post}-values.php`
 - `endpoint.php`
