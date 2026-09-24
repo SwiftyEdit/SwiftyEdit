@@ -1077,6 +1077,20 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 }
 
 /**
+ * Mark the addon catalog cache as expired (used by the dashboard's cache
+ * management). The file is only backdated, not deleted, so the next visit to
+ * the catalog fetches fresh data but can still fall back to this copy if the
+ * catalog service is unreachable. No live fetch here on purpose - "rebuild all
+ * caches" shouldn't block on an external HTTP request.
+ */
+function se_expire_catalog_cache(): void {
+	$cache_file = SE_CONTENT.'/cache/registry/catalog.json';
+	if(is_file($cache_file)) {
+		touch($cache_file, 0);
+	}
+}
+
+/**
  * Derive a raw.githubusercontent.com URL for a file at the root of a
  * registry entry's "repo" field (e.g. "info.json" for the existing
  * get_addon_info_from_url install pipeline, or "poster.png" for the

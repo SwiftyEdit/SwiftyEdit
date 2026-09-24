@@ -64,6 +64,7 @@ if (isset($_POST['cache_target'])) {
             se_build_preferences_cache();
             se_rebuild_all_snippets_cache();
             se_rebuild_all_product_cache();
+            se_expire_catalog_cache();
             break;
 
         default:
