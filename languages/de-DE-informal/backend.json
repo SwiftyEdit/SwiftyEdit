@@ -517,6 +517,7 @@
   "msg.success.psw_changed": "Das Passwort wurde geändert",
   "msg.error.mandatory": "Nicht alle obligatorischen Informationen wurden angegeben",
   "msg.error.deleting_sub_pages": "Du kannst keine Seiten mit Unterseiten löschen. Um dies zu tun, musst du zuerst alle Unterseiten löschen.",
+  "msg.error.theme_in_use": "Dieses Theme wird noch verwendet (Standard-Theme, aktives Theme oder Seiten zugewiesen) und kann nicht gelöscht werden.",
   "msg.success.page_saved": "Seite wurde gespeichert",
   "msg.error.page_saved": "Ein Fehler ist aufgetreten, die Seite wurde nicht gespeichert",
   "msg.success.page_deleted": "Seite wurde gelöscht",

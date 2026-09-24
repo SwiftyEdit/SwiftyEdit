@@ -517,6 +517,7 @@
   "msg.success.psw_changed": "Ο κωδικός πρόσβασης έχει αλλάξει",
   "msg.error.mandatory": "Δεν έχουν παρασχεθεί όλες οι υποχρεωτικές πληροφορίες",
   "msg.error.deleting_sub_pages": "Δεν μπορείτε να διαγράψετε σελίδες με υποσελίδες. Για να γίνει αυτό, πρέπει πρώτα να διαγράψετε όλες τις υποσελίδες που περιέχονται.",
+  "msg.error.theme_in_use": "This theme is still in use (default theme, active theme or assigned to pages) and cannot be deleted.",
   "msg.success.page_saved": "Η σελίδα έχει αποθηκευτεί",
   "msg.error.page_saved": "Παρουσιάστηκε σφάλμα, η σελίδα δεν έχει αποθηκευτεί",
   "msg.success.page_deleted": "Η σελίδα έχει διαγραφεί",
