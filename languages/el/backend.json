@@ -41,7 +41,7 @@
   "cache.btn.rebuild": "Rebuild",
   "cache.btn.rebuild_all": "Rebuild all caches",
   "opcache.title": "OPcache",
-  "opcache.status.unavailable": "OPcache is not enabled on this server.",
+  "opcache.status.unavailable": "Το OPcache δεν είναι ενεργοποιημένο σε αυτόν τον διακομιστή.",
   "opcache.label.status": "Status",
   "opcache.label.memory": "Memory usage",
   "opcache.label.cache_full": "OPcache is full - new files are no longer being cached.",
