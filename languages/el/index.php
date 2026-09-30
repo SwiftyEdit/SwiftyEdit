@@ -4,6 +4,6 @@
  * language file | greek
  */
 
-$lang_sign = "gr";
+$lang_sign = "el";
 $lang_desc = "Greek";
 $languagePackFallback = 'en';

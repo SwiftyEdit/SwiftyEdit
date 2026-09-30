@@ -110,6 +110,12 @@ if (isset($_GET['set_lang'])) {
 if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
+
+// the session may still point to a language pack that no longer exists (e.g. renamed gr -> el)
+if (!is_file(SE_ROOT.'languages/'.$languagePack.'/index.php')) {
+    $languagePack = is_file(SE_ROOT.'languages/'.basename($se_settings['default_language']).'/index.php') ? basename($se_settings['default_language']) : 'en';
+    $_SESSION['lang'] = $languagePack;
+}
 require SE_ROOT.'/languages/'.$languagePack.'/index.php';
 require SE_ROOT.'languages/index.php';
 
