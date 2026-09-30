@@ -418,6 +418,18 @@ function se_install_theme(string $theme_id, string $download_url): array {
 
 
 /**
+ * Metadata macOS adds when zipping in Finder (__MACOSX/ folder, .DS_Store,
+ * AppleDouble "._*" files). Skipped entirely by the addon installer.
+ */
+function se_is_macos_zip_artifact(string $filename): bool {
+    $basename = basename($filename);
+    return str_starts_with($filename, '__MACOSX/')
+        || str_contains($filename, '/__MACOSX/')
+        || $basename === '.DS_Store'
+        || str_starts_with($basename, '._');
+}
+
+/**
  * Download and extract an addon ZIP (plugin or theme) into $target_root/$addon_id,
  * shared by se_install_plugin() and se_install_theme() - the two only differ in
  * which directory the ZIP is unpacked into.
@@ -450,10 +462,13 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
     }
 
     // Validate file types – only allowed extensions
-    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3'];
+    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3', 'woff', 'woff2', 'ttf', 'otf'];
 
     for($i = 0; $i < $zip->numFiles; $i++) {
         $filename = $zip->getNameIndex($i);
+        if(se_is_macos_zip_artifact($filename)) {
+            continue;
+        }
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         if($ext !== '' && !in_array($ext, $allowed_extensions)) {
             $zip->close();
@@ -473,6 +488,10 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
     // Extract ZIP – strip root folder, skip /data/ directory
     for($i = 0; $i < $zip->numFiles; $i++) {
         $filename = $zip->getNameIndex($i);
+
+        if(se_is_macos_zip_artifact($filename)) {
+            continue;
+        }
 
         // Strip first folder
         $relative_path = preg_replace('#^[^/]+/#', '', $filename);
@@ -573,6 +592,89 @@ function se_is_plugin_activated(string $dir): bool {
 
 
 /**
+ * Reduce $all_plugins (result of se_get_all_addons()) to the plugins whose
+ * hooks-backend/ and hooks-global/ callbacks may be loaded in the ACP.
+ *
+ * Same set the frontend uses for hooks-global/ and hooks-frontend/ (see
+ * app/routing.php via mods_check_in()): plugins activated in the backend
+ * (se_addons) plus plugins integrated into a page (se_pages.page_modul).
+ * Without this, dropping a plugin's files into plugins/<dir>/ would run its
+ * hook code on every ACP request, although it was never activated.
+ *
+ * The ACP header (acp/index.php) and the XHR bootstrap (acp/header.php) must
+ * both use this, since se_do_backend_hook_selected() matches the checked
+ * hook boxes against the callbacks by position.
+ *
+ * @param array $all_plugins plugin infos keyed by plugin directory
+ * @return array the filtered $all_plugins
+ */
+function se_get_hook_enabled_plugins(array $all_plugins): array {
+
+	global $db_content;
+
+	$enabled = array_column(se_get_addons('plugin'), 'addon_dir');
+
+	$page_mods = $db_content->select("se_pages", "page_modul", [
+		"page_modul[!]" => ""
+	]);
+	if (is_array($page_mods)) {
+		$enabled = array_merge($enabled, $page_mods);
+	}
+
+	return array_intersect_key($all_plugins, array_flip($enabled));
+}
+
+
+/**
+ * True if activating the plugin in $dir would actually change anything, i.e.
+ * the plugin ships at least one of the entry points that are gated by a row
+ * in se_addons. Used by the addons list to hide the enable button for
+ * plugins that work without activation (e.g. plugins that are only
+ * integrated into a page via frontend/index.php and bring their own backend
+ * pages).
+ *
+ * An explicit "activation": true|false in the addon block of info.json
+ * overrides the detection.
+ *
+ * @param string $dir  plugin directory name
+ * @param array  $info decoded info.json of the plugin
+ */
+function se_plugin_needs_activation(string $dir, array $info): bool {
+
+	if (isset($info['addon']['activation'])) {
+		return (bool) $info['addon']['activation'];
+	}
+
+	// non-core editors are only offered in the editor switch once activated
+	if (($info['addon']['type'] ?? '') === 'editor' && empty($info['editor']['core'])) {
+		return true;
+	}
+
+	$root = SE_PLUGINS . '/' . $dir . '/';
+
+	$gated_files = [
+		'global/index.php',
+		'global/xhr.php',
+		'backend/reader.php',
+		'backend/writer.php',
+		'backend/page-values.php',
+		'backend/product-values.php',
+		'backend/post-values.php',
+		'endpoint.php'
+	];
+	foreach ($gated_files as $file) {
+		if (is_file($root . $file)) {
+			return true;
+		}
+	}
+
+	return is_dir($root . 'hooks-backend')
+		|| is_dir($root . 'hooks-global')
+		|| is_dir($root . 'hooks-frontend');
+}
+
+
+/**
  * Sanitize + JSON-encode posted addon_values (already plugin-prefixed by the browser,
  * see se_render_record_addons()). Handles both scalar fields (addon_values[key]) and
  * array fields (addon_values[key][], e.g. multi-select/checkboxes).
@@ -668,9 +770,19 @@ function se_delete_addon($addon,$type) {
 		$dir = SE_PLUGINS;
 	} else if($type == 'theme') {
 		$dir = SE_THEMES;
+	} else {
+		return false;
 	}
-	
-	$remove_dir = $dir.'/'.basename($addon);
+
+	// strict whitelist instead of basename() - an empty name or a bare ".."
+	// would otherwise point $remove_dir at the plugins/themes root itself
+	// or one level above it
+	$addon = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $addon);
+	if($addon === '' || !is_dir($dir.'/'.$addon)) {
+		return false;
+	}
+
+	$remove_dir = $dir.'/'.$addon;
 	se_reomove_addon_files($remove_dir);
 	$record_msg = 'removed addon: <strong>'.$addon.' ('.$type.')</strong>';
 	record_log($_SESSION['user_nick'],$record_msg,"8");
@@ -877,7 +989,7 @@ function se_write_theme_options($data) {
 }
 
 /**
- * Load the catalog of installable plugins from the SwiftyEdit catalog
+ * Load the catalog of installable plugins and themes from the SwiftyEdit catalog
  * service (swiftyedit.net/api - syncs the swiftyedit/registry GitHub repo
  * into a small REST API; version/build/download_url are resolved there
  * live from each entry's own info.json on every sync, not stored in the
@@ -886,17 +998,27 @@ function se_write_theme_options($data) {
  * SE_CONTENT/cache/<subdir>/ convention already used by mods_check_in()
  * and se_get_categories()).
  *
+ * The service splits entries by type into separate endpoints
+ * (/api/plugins, /api/themes) - both are fetched and merged into one list.
+ * Every entry carries a "type" field ("plugin" or "theme").
+ *
  * A stale-but-present cache is preferred over an empty catalog when the
  * live fetch fails - the service being temporarily unreachable shouldn't
- * blank out an otherwise-working page.
+ * blank out an otherwise-working page. A failure of any single endpoint
+ * counts as a failed fetch, so a partial result never overwrites a
+ * complete cache.
  *
  * @return array{success: bool, source: string, entries: array, message: string}
  */
 function se_get_catalog_entries(bool $force_refresh = false): array {
 
 	$cache_dir  = SE_CONTENT.'/cache/registry';
-	$cache_file = $cache_dir.'/plugins.json';
+	$cache_file = $cache_dir.'/catalog.json';
 	$ttl        = 3600;
+	$endpoints  = [
+		'plugin' => 'https://swiftyedit.net/api/plugins',
+		'theme'  => 'https://swiftyedit.net/api/themes'
+	];
 
 	$is_fresh = is_file($cache_file) && (filemtime($cache_file) >= time() - $ttl);
 
@@ -907,10 +1029,36 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 		}
 	}
 
-	$json = @file_get_contents('https://swiftyedit.net/api/plugins');
+	$entries = [];
+	$message = '';
+	foreach($endpoints as $type => $endpoint) {
 
-	if($json === false || !is_array($rows = json_decode($json, true))) {
-		$message = $json === false ? 'Could not reach the plugin catalog.' : 'Unexpected catalog response.';
+		$json = @file_get_contents($endpoint);
+
+		if($json === false || !is_array($rows = json_decode($json, true))) {
+			$message = $json === false ? 'Could not reach the addon catalog.' : 'Unexpected catalog response.';
+			break;
+		}
+
+		foreach($rows as $row) {
+
+			if(empty($row['slug'])) {
+				continue;
+			}
+
+			// The catalog service stores tags as a JSON-encoded string column
+			// and returns it as such via SELECT * - decode here so every
+			// caller always gets a real array, never a raw JSON string.
+			$row['tags'] = is_string($row['tags'] ?? null) ? (json_decode($row['tags'], true) ?: []) : ($row['tags'] ?? []);
+
+			// fall back to the endpoint's type if the service omits it
+			$row['type'] = $row['type'] ?? $type;
+
+			$entries[$row['slug']] = $row;
+		}
+	}
+
+	if($message !== '') {
 		if(is_file($cache_file)) {
 			$cached = json_decode(file_get_contents($cache_file), true);
 			if(is_array($cached)) {
@@ -920,27 +1068,26 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 		return ['success' => false, 'source' => 'none', 'entries' => [], 'message' => $message];
 	}
 
-	$entries = [];
-	foreach($rows as $row) {
-
-		if(empty($row['slug'])) {
-			continue;
-		}
-
-		// The catalog service stores tags as a JSON-encoded string column
-		// and returns it as such via SELECT * - decode here so every
-		// caller always gets a real array, never a raw JSON string.
-		$row['tags'] = is_string($row['tags'] ?? null) ? (json_decode($row['tags'], true) ?: []) : ($row['tags'] ?? []);
-
-		$entries[$row['slug']] = $row;
-	}
-
 	if(!is_dir($cache_dir)) {
 		mkdir($cache_dir, 0777, true);
 	}
 	file_put_contents($cache_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
 	return ['success' => true, 'source' => 'live', 'entries' => $entries, 'message' => ''];
+}
+
+/**
+ * Mark the addon catalog cache as expired (used by the dashboard's cache
+ * management). The file is only backdated, not deleted, so the next visit to
+ * the catalog fetches fresh data but can still fall back to this copy if the
+ * catalog service is unreachable. No live fetch here on purpose - "rebuild all
+ * caches" shouldn't block on an external HTTP request.
+ */
+function se_expire_catalog_cache(): void {
+	$cache_file = SE_CONTENT.'/cache/registry/catalog.json';
+	if(is_file($cache_file)) {
+		touch($cache_file, 0);
+	}
 }
 
 /**

@@ -45,9 +45,25 @@ manuell aktiviert wurden.
 Ein Plugin muss aktiviert sein, damit es
 
 - XHR-Anfragen im Frontend verarbeiten kann
-- Hooks im Frontend ausgeführt werden können
+- seine Hooks (Backend, Frontend und global) geladen werden, siehe [Hooks](09-03-hooks.md)
 - eigene Felder im "Addons"-Tab des Seiten-/Produkt-/Post-Editors anzeigen kann
   (`{page|product|post}-values.php`, siehe unten)
+
+Der "Aktivieren"-Button in der Addon-Liste im Backend wird nur für Plugins angezeigt,
+die mindestens eine Datei mitbringen, die von der Aktivierung abhängt:
+
+- `global/index.php`, `global/xhr.php`
+- `hooks-backend/`, `hooks-global/`, `hooks-frontend/`
+- `backend/reader.php`, `backend/writer.php`
+- `backend/{page|product|post}-values.php`
+- `endpoint.php`
+- oder das Plugin ist ein Editor (`"type": "editor"`) ohne `"core": true`
+
+Ein Plugin, das nur in eine Seite eingebunden wird (`frontend/index.php`) und eigene
+Backend-Seiten mitbringt, funktioniert ohne Aktivierung - dort erscheint kein Button.
+Die Erkennung lässt sich mit `"activation": true|false` im `addon`-Block der
+[info.json](#die-infojson-datei) überschreiben. Ein bereits aktiviertes Plugin kann
+immer deaktiviert werden.
 
 ### Wann werden welche Plugin-Dateien geladen?
 
@@ -127,6 +143,12 @@ $plugin_form_tpl .= '</div>';
 - Die übermittelten Werte werden als JSON in der Spalte `addon_string` des Datensatzes
   gespeichert (`se_pages`, `se_products` bzw. `se_posts`).
 
+### Eigene Platzhalter für Snippets
+
+Mit `se_set_snippet_var('name', $value)` kann ein Plugin eigene Platzhalter wie `{name}`
+bereitstellen, die dann in allen Snippets verwendet werden können.
+Details siehe [Snippets → Platzhalter](03-00-snippets.md#platzhalter).
+
 ## Die info.json Datei {#die-infojson-datei}
 
 Jedes Plugin muss eine `info.json` Datei in seinem Stammverzeichnis haben. Diese Datei
@@ -182,6 +204,7 @@ im Backend anzuzeigen und Updates zu verwalten.
 | `author` | ja | Name des Autors |
 | `description` | ja | Kurze Beschreibung des Plugins |
 | `update_url` | optional | URL zur externen `info.json`. Erforderlich für automatische Update-Prüfungen. |
+| `activation` | optional | `true`/`false` - erzwingt, dass der "Aktivieren"-Button in der Addon-Liste angezeigt bzw. ausgeblendet wird. Ohne Angabe wird es anhand der Plugin-Dateien erkannt (siehe [Aktivierte Plugins](#aktivierte-plugins)). |
 
 #### versions
 
@@ -259,7 +282,9 @@ sodass dort gespeicherte Nutzerdaten sicher sind.
 Bei der Installation oder Aktualisierung eines Plugins über eine URL prüft SwiftyEdit
 den Inhalt der ZIP-Datei. Nur folgende Dateitypen sind erlaubt:
 
-`php`, `tpl`, `json`, `js`, `css`, `html`, `svg`, `png`, `jpg`, `jpeg`, `gif`, `webp`, `txt`, `md`, `sqlite3`
+`php`, `tpl`, `json`, `js`, `css`, `html`, `svg`, `png`, `jpg`, `jpeg`, `gif`, `webp`, `txt`, `md`, `sqlite3`, `woff`, `woff2`, `ttf`, `otf`
+
+macOS-Metadaten (`__MACOSX/`, `.DS_Store`, `._*`) werden beim Installieren ignoriert.
 
 ### Plugin hosten
 

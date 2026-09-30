@@ -23,23 +23,26 @@ echo '<div class="app-container">';
 echo '<div class="max-height-container">';
 
 // Client-side only - the grid is already fully loaded, no need for a
-// server round-trip per filter click. Categories come from each entry's
+// server round-trip per filter click. Plugins vs. themes come from each
+// entry's registry "type" (se_get_catalog_entries() merges /api/plugins and
+// /api/themes). Sub-categories of plugins (editor, payment) come from the
 // registry "tags" (see CONTRIBUTING.md), not from slug naming conventions
 // (e.g. a "-editor"/"-pay" suffix) - tags are explicit and reviewed at
 // submission time, a naming convention could misfire on an unrelated slug.
-// "theme" is a tag like any other here - the install pipeline
-// (data-writer.php) already handles a "theme" addon_type end to end, so
-// entries the registry (se_get_catalog_entries(), https://swiftyedit.net/api/plugins)
-// tags as "theme" install correctly today; this button just surfaces them.
 echo '<div class="btn-group mb-3" data-catalog-filter>';
 echo '<button type="button" class="btn btn-sm btn-default active" data-filter-tag="">'.$lang['catalog_filter_all'].'</button>';
 echo '<button type="button" class="btn btn-sm btn-default" data-filter-tag="__plain__">'.$lang['catalog_filter_plugins'].'</button>';
-echo '<button type="button" class="btn btn-sm btn-default" data-filter-tag="theme">'.$lang['catalog_filter_themes'].'</button>';
+echo '<button type="button" class="btn btn-sm btn-default" data-filter-tag="__theme__">'.$lang['catalog_filter_themes'].'</button>';
 echo '<button type="button" class="btn btn-sm btn-default" data-filter-tag="editor">'.$lang['catalog_filter_editors'].'</button>';
 echo '<button type="button" class="btn btn-sm btn-default" data-filter-tag="payment">'.$lang['catalog_filter_payment'].'</button>';
 echo '</div>';
 
+// .app-container is sized to the viewport by backend.js, so the grid needs
+// its own .scroll-box (same pattern as addons/list.php and pages-list.php)
+// instead of overflowing the container and sliding over the footer.
+echo '<div class="scroll-box">';
 echo '<div id="catalogGrid" hx-get="/admin-xhr/addons/read/?action=list_catalog" hx-trigger="load, refresh_catalog from:body"></div>';
+echo '</div>';
 echo '</div>';
 echo '</div>';
 
@@ -74,9 +77,17 @@ echo '<script>
         var tag = btn.getAttribute("data-filter-tag");
         document.querySelectorAll("#catalogGrid [data-catalog-tags]").forEach(function (card) {
             var tags = card.getAttribute("data-catalog-tags").split(",").filter(Boolean);
-            var show = tag === ""
-                ? true
-                : (tag === "__plain__" ? (tags.indexOf("editor") === -1 && tags.indexOf("payment") === -1 && tags.indexOf("theme") === -1) : tags.indexOf(tag) !== -1);
+            var isTheme = card.getAttribute("data-catalog-type") === "theme";
+            var show;
+            if (tag === "") {
+                show = true;
+            } else if (tag === "__theme__") {
+                show = isTheme;
+            } else if (tag === "__plain__") {
+                show = !isTheme && tags.indexOf("editor") === -1 && tags.indexOf("payment") === -1;
+            } else {
+                show = !isTheme && tags.indexOf(tag) !== -1;
+            }
             card.style.display = show ? "" : "none";
         });
     });

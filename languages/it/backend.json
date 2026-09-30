@@ -517,6 +517,7 @@
   "msg.success.psw_changed": "La password è stata cambiata",
   "msg.error.mandatory": "Non tutte le informazioni obbligatorie sono state fornite",
   "msg.error.deleting_sub_pages": "Non puoi eliminare pagine con sotto-pagine. Per fare questo, devi prima eliminare tutte le sotto-pagine contenute.",
+  "msg.error.theme_in_use": "This theme is still in use (default theme, active theme or assigned to pages) and cannot be deleted.",
   "msg.success.page_saved": "La pagina è stata salvata",
   "msg.error.page_saved": "Si è verificato un errore, la pagina non è stata salvata",
   "msg.success.page_deleted": "La pagina è stata cancellata",

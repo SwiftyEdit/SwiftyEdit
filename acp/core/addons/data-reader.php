@@ -87,13 +87,20 @@ if($_REQUEST['action'] == 'list_plugins') {
                             hx-swap="none"
                             >'.$icon['trash_alt'].'</button>';
 
-        $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-default text-success"
+        // only offer activation if the plugin ships something that depends on it,
+        // see se_plugin_needs_activation()
+        $activate_btn = '';
+        if(se_plugin_needs_activation($k, $v ?? [])) {
+            $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-default text-success"
                                 hx-post="/admin-xhr/addons/write/"
                                 hx-trigger="click"
                                 hx-vals=\''.json_encode($vals).'\'
                                 hx-swap="none"
                                 >'.$lang['btn_addon_enable'].'</button>';
+        }
 
+        // an already activated plugin can always be deactivated, even if it
+        // no longer needs activation (e.g. after an update)
         foreach($se_addons as $a) {
             if($k == $a['addon_dir']) {
                 $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger"
@@ -202,25 +209,26 @@ if($_REQUEST['action'] == 'list_catalog') {
         $latest        = htmlspecialchars($entry['version'] ?? '', ENT_QUOTES);
         $tags          = $entry['tags'] ?? [];
         $screenshots   = $entry['screenshots'] ?? [];
+        $type_attr     = htmlspecialchars(strtolower($entry['type'] ?? 'plugin'), ENT_QUOTES);
         $fallback_poster = '/assets/themes/administration/images/poster-addons.png';
-        // poster.png (the plugin's own icon, optional per its own repo - see
-        // docs/v2/en/09-02-plugins.md) takes priority as the card thumbnail
-        // over a screenshot, since it's the plugin's actual branding. Not
-        // every plugin has one, so the <img onerror> below falls back
-        // client-side instead of doing an extra existence-check request
-        // per card on every cache refresh.
-        $poster = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'poster.png') ?: (($screenshots[0] ?? null) ?: $fallback_poster);
+        // The addon's own icon (poster.png for plugins, optional per its own
+        // repo - see docs/v2/en/09-02-plugins.md; images/icon.png for themes)
+        // takes priority as the card thumbnail over a screenshot, since it's
+        // the addon's actual branding. Not every addon has one, so the
+        // <img onerror> below falls back client-side instead of doing an
+        // extra existence-check request per card on every cache refresh.
+        $poster_path = $type_attr === 'theme' ? 'images/icon.png' : 'poster.png';
+        $poster = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', $poster_path) ?: (($screenshots[0] ?? null) ?: $fallback_poster);
 
         $info_json_url = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'info.json');
         $modal_id      = 'catalog-screenshots-'.preg_replace('/[^a-zA-Z0-9_-]/', '', $slug);
 
-        // Small circular thumbnail, matching the installed-plugins list's
-        // own poster styling (acp/core/addons/data-reader.php's
-        // list_plugins block) rather than a large banner image. The
+        // Small square thumbnail with rounded corners - addon icons (theme
+        // icons in particular) are square, a circle would crop them. The
         // screenshots gallery gets its own explicit link below (see
         // $screenshots_link) instead of being a silent click-target on the
         // image itself, which nobody would discover on their own.
-        $poster_attrs = 'src="'.htmlspecialchars($poster, ENT_QUOTES).'" class="img-fluid rounded-circle" onerror="this.onerror=null;this.src=\''.$fallback_poster.'\';"';
+        $poster_attrs = 'src="'.htmlspecialchars($poster, ENT_QUOTES).'" class="rounded flex-shrink-0" width="48" height="48" style="object-fit: cover;" alt="" onerror="this.onerror=null;this.src=\''.$fallback_poster.'\';"';
 
         $screenshots_link = '';
         if(!empty($screenshots)) {
@@ -247,41 +255,59 @@ if($_REQUEST['action'] == 'list_catalog') {
         }
 
         $tags_attr = htmlspecialchars(implode(',', array_map('strtolower', $tags)), ENT_QUOTES);
-        echo '<div class="col-md-4 mb-3" data-catalog-tags="'.$tags_attr.'">';
+        // Card layout: header (icon, type, name, author), description,
+        // tags as plain text, and a card-footer with version/requirement and
+        // the action - the footer keeps the action aligned across a grid row
+        // regardless of description length. The type line (Theme/Plugin)
+        // keeps both distinguishable while the "all" filter is active.
+        if($type_attr === 'theme') {
+            $type_label = '<div class="small text-info">'.$icon['palette'].' Theme</div>';
+        } else {
+            $type_label = '<div class="small text-muted">'.$icon['plugin'].' Plugin</div>';
+        }
+        $repo_url_attr = htmlspecialchars($entry['repo_url'] ?? '', ENT_QUOTES);
+
+        echo '<div class="col-md-4 mb-3" data-catalog-type="'.$type_attr.'" data-catalog-tags="'.$tags_attr.'">';
         echo '<div class="card h-100">';
         echo '<div class="card-body d-flex flex-column">';
-        echo '<div class="row mb-2">';
-        echo '<div class="col-3 text-center"><img '.$poster_attrs.'></div>';
-        echo '<div class="col-9">';
-        echo '<div class="card-title d-flex justify-content-between">';
-        echo '<span>'.$name.'</span><span class="badge badge-se">'.$latest.'</span>';
+
+        echo '<div class="d-flex align-items-center gap-3 mb-3">';
+        echo '<img '.$poster_attrs.'>';
+        echo '<div style="min-width: 0;">';
+        echo $type_label;
+        echo '<div class="fw-semibold text-truncate">'.$name.'</div>';
+        echo '<div class="small text-muted">'.$lang['catalog_by'].' <a href="'.$repo_url_attr.'" target="_blank" rel="noopener">'.$author.'</a></div>';
         echo '</div>';
-        $repo_url_attr = htmlspecialchars($entry['repo_url'] ?? '', ENT_QUOTES);
-        echo '<div class="card-text small text-muted">'.$lang['catalog_by'].' <a href="'.$repo_url_attr.'" target="_blank" rel="noopener">'.$author.'</a></div>';
+        echo '</div>';
+
+        // clamped to three lines so long descriptions don't stretch the
+        // whole grid row - the full text stays available via title
+        echo '<div class="flex-grow-1">';
+        echo '<p class="card-text small mb-2" title="'.$description.'" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">'.$description.'</p>';
+        echo '</div>';
+
+        if(!empty($tags)) {
+            echo '<div class="small text-muted">'.htmlspecialchars(implode(' · ', $tags), ENT_QUOTES).'</div>';
+        }
         if($screenshots_link !== '') {
             echo '<div class="small mt-1">'.$screenshots_link.'</div>';
         }
-        echo '</div>'; // col-9
-        echo '</div>'; // row
 
-        echo '<div class="card-text flex-grow-1">'.$description.'</div>';
+        echo '</div>'; // card-body
 
-        if(!empty($tags)) {
-            echo '<div class="mb-1">';
-            foreach($tags as $tag) {
-                echo '<span class="badge badge-se me-1">'.htmlspecialchars($tag, ENT_QUOTES).'</span>';
-            }
-            echo '</div>';
+        $meta = [];
+        if($latest !== '') {
+            $meta[] = 'v'.$latest;
         }
-
         if($requires_build !== '') {
-            echo '<div class="small text-muted mt-2">'.$lang['catalog_requires'].' '.$requires_build.'</div>';
+            $meta[] = $lang['catalog_requires'].' '.$requires_build;
         }
 
-        echo '<div class="btn-toolbar mt-2">';
+        echo '<div class="card-footer d-flex justify-content-between align-items-center gap-2">';
+        echo '<span class="small text-muted">'.implode(' · ', $meta).'</span>';
 
         if(in_array($slug, $installed, true)) {
-            echo '<span class="badge text-bg-success">'.$lang['catalog_installed'].'</span>';
+            echo '<span class="small text-success text-nowrap">'.$icon['check'].' '.$lang['catalog_installed'].'</span>';
         } elseif($info_json_url) {
             // Targets the shared #catalogInstallModalBody (see catalog.php)
             // instead of an inline per-card div - swapping the confirm/
@@ -300,12 +326,10 @@ if($_REQUEST['action'] == 'list_catalog') {
                     data-bs-target="#catalogInstallModal">'
                     .$lang['btn_install'].'</button>';
         } else {
-            echo '<span class="badge text-bg-danger">'.$lang['catalog_invalid_repo'].'</span>';
+            echo '<span class="small text-danger">'.$lang['catalog_invalid_repo'].'</span>';
         }
 
-        echo '</div>';
-
-        echo '</div>'; // card-body
+        echo '</div>'; // card-footer
         echo '</div>'; // card
         echo '</div>'; // col
     }
@@ -314,43 +338,55 @@ if($_REQUEST['action'] == 'list_catalog') {
     exit;
 }
 
-// check if a plugin is up to date
-if(isset($_REQUEST['check_plugin'])) {
+// check if a plugin or theme is up to date
+if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
 
     // same "can upload sensitive files" right as install/router.php - this
-    // triggers an outbound request to the plugin's own self-declared
+    // triggers an outbound request to the addon's own self-declared
     // update_url (see se_check_addon_update()), so it needs the same gate
     // as the install/update actions in data-writer.php, not just any admin
     if(!se_hasPermission('drm_acp_sensitive_files')) {
         exit;
     }
 
-    $plugin_dir = basename($_REQUEST['check_plugin']);
+    if(isset($_REQUEST['check_theme'])) {
+        $addon_type = 'theme';
+        $addon_root = SE_THEMES;
+        $plugin_dir = basename($_REQUEST['check_theme']);
+        // themes use a prefixed id, a plugin may share the same directory name
+        $response_id = 'update-response-theme-'.$plugin_dir;
+    } else {
+        $addon_type = 'plugin';
+        $addon_root = SE_PLUGINS;
+        $plugin_dir = basename($_REQUEST['check_plugin']);
+        $response_id = 'update-response-'.$plugin_dir;
+    }
 
-    // confine the info file to the plugins directory (traversal safeguard, see #338)
-    $addon_info_file = se_resolve_within(SE_PLUGINS, $plugin_dir . '/info.json');
+    // confine the info file to the addon directory (traversal safeguard, see #338)
+    $addon_info_file = se_resolve_within($addon_root, $plugin_dir . '/info.json');
     if ($addon_info_file === false) {
         exit;
     }
 
-    // load plugin info
+    // load addon info
     $json = @file_get_contents($addon_info_file);
     $plugin_info = json_decode($json, true);
 
-    $update_info = se_check_addon_update($plugin_info);
+    $update_info = se_check_addon_update($plugin_info ?? []);
 
     if($update_info['status'] == 'update_available') {
 
         $vals = [
             'csrf_token' => $_SESSION['token'],
             'plugin_id' => $plugin_dir,
+            'addon_type' => $addon_type,
             'download_url' => $update_info['download_url']
         ];
 
-        $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success" 
+        $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success"
                             hx-post="/admin-xhr/addons/write/"
                             hx-vals=\''.json_encode($vals).'\'
-                            hx-target="#update-response-'.htmlspecialchars($plugin_dir, ENT_QUOTES).'"
+                            hx-target="#'.htmlspecialchars($response_id, ENT_QUOTES).'"
                             >Update '.$icon['arrow_clockwise'].'</button>';
         echo $update_btn;
     } else if($update_info['status'] == 'up_to_date') {
@@ -396,12 +432,19 @@ if($_REQUEST['action'] == 'list_themes') {
         $theme_version = htmlspecialchars($theme_addon['version'] ?? '', ENT_QUOTES);
 
         echo '<div class="card mb-3 '.$class.'">';
-        echo '<div class="card-header">'.$theme_name;
+        echo '<div class="card-header d-flex justify-content-between align-items-center">';
+        echo '<div>'.$theme_name;
         if($theme_version !== '') {
             echo ' <span class="badge badge-se">'.$theme_version.'</span>';
         }
         echo ' '.$active.'</div>';
+        // the default theme ships with the core and is updated along with it
+        if($template != 'default' && se_hasPermission('drm_acp_sensitive_files')) {
+            echo '<div hx-get="/admin-xhr/addons/read/?check_theme='.urlencode($template).'" hx-trigger="load"></div>';
+        }
+        echo '</div>';
         echo '<div class="card-body">';
+        echo '<div id="update-response-theme-'.htmlspecialchars($template, ENT_QUOTES).'"></div>';
 
         echo '<div class="row">';
         echo '<div class="col-md-8">';
@@ -457,6 +500,18 @@ if($_REQUEST['action'] == 'list_themes') {
         }
         echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
         echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
+
+        // the default theme and the active theme can't be deleted,
+        // pages still using the theme are checked in data-writer.php
+        if($template != 'default' && $template != $se_settings['template'] && se_hasPermission('drm_acp_sensitive_files')) {
+            $vals = ['csrf_token' => $_SESSION['token']];
+            echo '<button name="delete_theme" value="'.htmlspecialchars($template, ENT_QUOTES).'" class="btn btn-default btn-sm text-danger mt-1 w-100"
+                        hx-post="/admin-xhr/addons/write/"
+                        hx-confirm="'.$lang['msg_confirm_delete'].'"
+                        hx-vals=\''.json_encode($vals).'\'
+                        hx-target="#theme-delete-response"
+                        >'.$icon['trash_alt'].' '.$lang['btn_delete'].'</button>';
+        }
         echo '</div>';
         echo '</div>';
 

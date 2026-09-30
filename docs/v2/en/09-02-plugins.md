@@ -45,9 +45,24 @@ or have been manually activated in the backend.
 A plugin must be activated so that it
 
 - can process XHR requests in the frontend
-- hooks can be executed in the frontend
+- its hooks (backend, frontend and global) are loaded, see [Hooks](09-03-hooks.md)
 - can show its own fields in the "Addons" tab of the Page/Product/Post editor
   (`{page|product|post}-values.php`, see below)
+
+The "Enable" button in the backend's addon list is only shown for plugins that ship at
+least one file that depends on activation:
+
+- `global/index.php`, `global/xhr.php`
+- `hooks-backend/`, `hooks-global/`, `hooks-frontend/`
+- `backend/reader.php`, `backend/writer.php`
+- `backend/{page|product|post}-values.php`
+- `endpoint.php`
+- or the plugin is an editor (`"type": "editor"`) without `"core": true`
+
+A plugin that is only integrated into a page (`frontend/index.php`) and brings its own
+backend pages works without activation, so no button is shown. The detection can be
+overridden with `"activation": true|false` in the `addon` block of the
+[info.json](#the-infojson-file). An already activated plugin can always be deactivated.
 
 ### When are which plugin files loaded?
 
@@ -125,6 +140,12 @@ $plugin_form_tpl .= '</div>';
 - The submitted values are stored as JSON in the record's `addon_string` column
   (`se_pages`, `se_products` or `se_posts`).
 
+### Custom placeholders for snippets
+
+With `se_set_snippet_var('name', $value)` a plugin can provide its own placeholders such as
+`{name}`, which can then be used in any snippet.
+See [Snippets → Placeholders](03-00-snippets.md#placeholders) for details.
+
 ## The info.json file {#the-infojson-file}
 
 Every plugin must have an `info.json` file in its root directory. This file contains
@@ -180,6 +201,7 @@ in the backend and to manage updates.
 | `author` | yes | Name of the author |
 | `description` | yes | Short description of the plugin |
 | `update_url` | optional | URL to the remote `info.json`. Required for automatic update checks. |
+| `activation` | optional | `true`/`false` - forces the "Enable" button in the addon list to be shown/hidden. If omitted, it is detected from the plugin's files (see [Activated plugins](#activated-plugins)). |
 
 #### versions
 
@@ -258,7 +280,9 @@ making it safe to store user-generated content there.
 When installing or updating a plugin via URL, SwiftyEdit validates the contents
 of the ZIP file. Only the following file types are allowed:
 
-`php`, `tpl`, `json`, `js`, `css`, `html`, `svg`, `png`, `jpg`, `jpeg`, `gif`, `webp`, `txt`, `md`, `sqlite3`
+`php`, `tpl`, `json`, `js`, `css`, `html`, `svg`, `png`, `jpg`, `jpeg`, `gif`, `webp`, `txt`, `md`, `sqlite3`, `woff`, `woff2`, `ttf`, `otf`
+
+macOS metadata (`__MACOSX/`, `.DS_Store`, `._*`) is ignored during installation.
 
 ### Hosting your plugin
 

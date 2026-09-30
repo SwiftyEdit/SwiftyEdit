@@ -296,7 +296,7 @@ function text_parser($text) {
     if(is_array($shortcodes)) {
         foreach($shortcodes as $k => $v) {
 
-            $text = str_replace($v['snippet_shortcode'], $v['snippet_content'], $text,$count);
+            $text = str_replace($v['snippet_shortcode'], se_replace_snippet_vars($v['snippet_content']), $text,$count);
             if($count > 0) {
                 se_store_admin_helper('sc',$v['snippet_shortcode']);
             }

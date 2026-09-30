@@ -42,6 +42,51 @@ __Hinweis:__ Innerhalb von `<pre>`- und `<code>`-Blöcken werden Shortcodes __ni
 So kannst Du die Syntax in Anleitungen darstellen, ohne dass das Snippet eingebunden wird.
 {/alert}
 
+## Platzhalter {#platzhalter}
+
+Im Inhalt und im Titel eines Snippets kannst Du Platzhalter verwenden. Sie werden bei der Ausgabe
+durch den aktuellen Wert ersetzt, z.B.
+„Das Produkt mit der Artikelnummer `{sku}` benötigt eine Beratung.“
+
+| Platzhalter    | Wert                                                                                   |
+|----------------|----------------------------------------------------------------------------------------|
+| `{site_name}`  | Der Seitenname aus den Einstellungen.                                                  |
+| `{page_title}` | Der Titel der aktuellen Seite. Auf Produktseiten der Titel des Produkts.               |
+| `{page_url}`   | Die URL der aktuellen Seite.                                                           |
+| `{date}`       | Das aktuelle Datum im Format aus den Einstellungen.                                    |
+| `{time}`       | Die aktuelle Uhrzeit im Format aus den Einstellungen.                                  |
+| `{date_iso}`   | Das aktuelle Datum im Format `JJJJ-MM-TT`.                                             |
+| `{year}`       | Das aktuelle Jahr.                                                                     |
+| `{sku}`        | Die Artikelnummer des aktuellen Produkts. Außerhalb von Produktseiten bleibt sie leer. |
+
+Andere Angaben in geschweiften Klammern bleiben unverändert.
+
+{alert:info}
+__Hinweis:__ Die produktbezogenen Werte (`{sku}`, `{page_title}` des Produkts) stehen im Snippet
+des Produkts und in den Produkttexten zur Verfügung. Ist der Smarty-Cache aktiv, werden Datum und
+Uhrzeit für die Dauer des Caches mit zwischengespeichert.
+{/alert}
+
+### Eigene Platzhalter (für Entwickler)
+
+Plugins und Themes können mit `se_set_snippet_var()` eigene Platzhalter ergänzen.
+Der Name wird ohne geschweifte Klammern übergeben. Der Wert wird automatisch für HTML escaped.
+
+```php
+<?php
+// e.g. plugins/my-plugin/global/index.php or the theme's php/index.php
+se_set_snippet_var('hotline', '+49 123 456789');
+```
+
+Danach kann `{hotline}` in jedem Snippet verwendet werden.
+
+- Der Platzhalter muss gesetzt sein, __bevor__ das Snippet ausgegeben wird. Geeignet sind
+  `/plugins/{plugin}/global/index.php` und die `php/index.php` des Themes – beide werden früh
+  genug geladen.
+- Verwende keine der oben aufgeführten Namen. Diese werden von SwiftyEdit beim Aufbau der Seite
+  gesetzt und würden Deinen Wert überschreiben.
+- Ein Platzhalter, der nie gesetzt wurde, bleibt im Text unverändert stehen.
+
 ## Eingabefelder
 
 | Feld             | Beschreibung                                                                                                                                                                                                     |

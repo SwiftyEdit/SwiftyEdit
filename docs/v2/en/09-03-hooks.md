@@ -8,11 +8,11 @@ priority: 200
 
 # Manipulate contents with hooks
 
-There are three types of hooks.
-One is for the backend. These hooks are always available
-once a plugin with the corresponding functions has been installed.
-Hooks for the frontend are only available if the plugin
-has also been activated.
+There are three types of hooks: backend, frontend and global hooks.
+All of them are only loaded for plugins that are active, i.e. activated in
+the backend or integrated into a page. Installing a plugin alone is not
+enough - this way, plugin files that were merely copied into `plugins/`
+never run any code.
 Global hooks fire regardless of whether the triggering action happened in
 the backend or the frontend - for example, an order can be marked as paid
 either manually in the ACP or automatically by a payment plugin. Since ACP

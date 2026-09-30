@@ -213,6 +213,12 @@ if (isset($_SESSION['lang'])) {
     $languagePack = basename($_SESSION['lang']);
 }
 
+// the session may still point to a language pack that no longer exists (e.g. renamed gr -> el)
+if (!is_file(SE_ROOT.'languages/'.$languagePack.'/index.php')) {
+    $languagePack = is_file(SE_ROOT.'languages/'.basename($se_settings['default_language']).'/index.php') ? basename($se_settings['default_language']) : 'en';
+    $_SESSION['lang'] = $languagePack;
+}
+
 $languagePack = $purifier->purify($languagePack);
 require SE_ROOT.'/languages/'.$languagePack.'/index.php';
 require SE_ROOT.'/languages/index.php';
@@ -264,8 +270,12 @@ require_once SE_ROOT . 'app/hooks/hooks-backend.php';
 
 
 
+// hooks are only loaded for activated or page-integrated plugins,
+// see se_get_hook_enabled_plugins()
+$hook_plugins = se_get_hook_enabled_plugins($all_plugins);
+
 // hooks - register meta information
-foreach ($all_plugins as $pluginDir => $pluginData) {
+foreach ($hook_plugins as $pluginDir => $pluginData) {
     $metaPath = SE_ROOT . 'plugins/' . $pluginDir . '/hooks-backend/meta.php';
     if (!is_file($metaPath)) {
         continue;
@@ -283,8 +293,8 @@ foreach ($all_plugins as $pluginDir => $pluginData) {
     se_register_backend_hook_meta($pluginDir, $meta);
 }
 
-// Load backend hook handlers for all plugins
-foreach ($all_plugins as $pluginDir => $pluginData) {
+// Load backend hook handlers
+foreach ($hook_plugins as $pluginDir => $pluginData) {
     $backendHooksPath = SE_ROOT . 'plugins/' . $pluginDir . '/hooks-backend';
     if (!is_dir($backendHooksPath)) {
         continue;
@@ -299,10 +309,9 @@ foreach ($all_plugins as $pluginDir => $pluginData) {
 }
 
 // Load global hook handlers (fire on both frontend and backend triggers)
-// for all plugins
 require_once SE_ROOT . 'app/hooks/hooks-global.php';
 
-foreach ($all_plugins as $pluginDir => $pluginData) {
+foreach ($hook_plugins as $pluginDir => $pluginData) {
     $globalHooksPath = SE_ROOT . 'plugins/' . $pluginDir . '/hooks-global';
     if (!is_dir($globalHooksPath)) {
         continue;

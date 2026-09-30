@@ -275,6 +275,14 @@ if(isset($_POST['save_post'])) {
 
     se_set_content_tags('post', $post_id, explode(',', $_POST['content_tags'] ?? ''));
 
+    // send to rss feed
+    if($_POST['post_rss'] == 'on' && $target_page[0] != '') {
+        if($post_rss_url == '') {
+            $post_rss_url = $se_base_url . $target_page[0] . str_replace("/", "", $post_slug) . '-' . $post_id . '.html';
+        }
+        add_feed($post_title, $_POST['post_teaser'], $post_rss_url, "post_$post_id", "", $post_releasedate);
+    }
+
 }
 
 if(isset($_POST['rfixed'])) {

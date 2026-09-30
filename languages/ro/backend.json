@@ -517,6 +517,7 @@
   "msg.success.psw_changed": "Parola a fost schimbată",
   "msg.error.mandatory": "Nu toate informațiile obligatorii au fost furnizate",
   "msg.error.deleting_sub_pages": "Nu puteți șterge pagini cu subpagini. Pentru a face acest lucru, trebuie mai întâi să ștergeți toate subpaginile conținute.",
+  "msg.error.theme_in_use": "This theme is still in use (default theme, active theme or assigned to pages) and cannot be deleted.",
   "msg.success.page_saved": "Pagina a fost salvată",
   "msg.error.page_saved": "A apărut o eroare, pagina nu a fost salvată",
   "msg.success.page_deleted": "Pagina a fost ștearsă",

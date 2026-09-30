@@ -517,6 +517,7 @@
   "msg.success.psw_changed": "Hasło zostało zmienione",
   "msg.error.mandatory": "Nie podano wszystkich obowiązkowych informacji",
   "msg.error.deleting_sub_pages": "Nie możesz usunąć stron zawierających podstrony. Aby to zrobić, musisz najpierw usunąć wszystkie zawarte w nich podstrony.",
+  "msg.error.theme_in_use": "This theme is still in use (default theme, active theme or assigned to pages) and cannot be deleted.",
   "msg.success.page_saved": "Strona została zapisana",
   "msg.error.page_saved": "Wystąpił błąd, strona nie została zapisana",
   "msg.success.page_deleted": "Strona została usunięta",

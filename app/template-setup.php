@@ -177,6 +177,19 @@ if(!isset($snippet_footer)) {
 }
 
 /**
+ * placeholders for snippets, e.g. {page_title} - see se_set_snippet_var()
+ * handlers (e.g. products-display.php) may overwrite or add values
+ */
+se_set_snippet_var('site_name', $se_settings['pagename'] ?? '');
+se_set_snippet_var('page_title', $page_title);
+se_set_snippet_var('page_url', rtrim($se_base_url, '/').'/'.ltrim($swifty_slug, '/'));
+se_set_snippet_var('date', date($se_settings['dateformat']));
+se_set_snippet_var('time', date($se_settings['timeformat']));
+se_set_snippet_var('date_iso', date('Y-m-d'));
+se_set_snippet_var('year', date('Y'));
+se_set_snippet_var('sku', '');
+
+/**
  * generate mainmenu, submenu, breadcrumps and sitemap
  */
 $mainmenu = array();
@@ -267,12 +280,12 @@ for($i=0;$i<$cnt_snippets;$i++) {
     $snippet_key = "se_snippet_" . str_replace("-","_",$all_snippets[$i]['snippet_name']);
     /* assign the correct snippet by $languagePack */
     if($snippet_lang == $languagePack) {
-        $smarty->assign("$snippet_key", text_parser(stripslashes($all_snippets[$i]['snippet_content'])));
+        $smarty->assign("$snippet_key", text_parser(se_replace_snippet_vars(stripslashes($all_snippets[$i]['snippet_content']))));
         $matched_snippets[] = $all_snippets[$i]['snippet_name'];
     }
     /* if we have no match by $languagePack - assign the last snippet with the same snippet_name */
     if(!in_array($all_snippets[$i]['snippet_name'], $matched_snippets)) {
-        $smarty->assign("$snippet_key", text_parser(stripslashes($all_snippets[$i]['snippet_content'])));
+        $smarty->assign("$snippet_key", text_parser(se_replace_snippet_vars(stripslashes($all_snippets[$i]['snippet_content']))));
     }
 }
 

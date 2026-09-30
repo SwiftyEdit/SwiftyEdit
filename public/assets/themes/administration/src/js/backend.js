@@ -333,32 +333,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // uploads
-    const uppy = new Uppy({
-        debug: false,
-        autoProceed: false,
-    })
+    // uploads - one Uppy instance per form, so the global upload modal and
+    // e.g. the gallery upload modal can both exist on the same page
+    document.querySelectorAll('.dropper-form').forEach((dropperForm) => {
+        const uppy = new Uppy({
+            id: 'uppy-' + dropperForm.id,
+            debug: false,
+            autoProceed: false,
+        })
 
-    uppy.use(Form, {
-        target: '.dropper-form',
-    })
+        uppy.use(Form, {
+            target: dropperForm,
+        })
 
-    uppy.use(Dashboard, {
-        inline: true,
-        target: '.dropper-form',
-        theme: currentBsTheme(),
-    })
-    uppy.use(XHRUpload, {
-        endpoint: '/admin-xhr/widgets/upload/',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
+        uppy.use(Dashboard, {
+            inline: true,
+            target: dropperForm,
+            theme: currentBsTheme(),
+        })
+        uppy.use(XHRUpload, {
+            endpoint: '/admin-xhr/widgets/upload/',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
 
-    registerUppyThemeSync(uppy);
+        registerUppyThemeSync(uppy);
 
-    uppy.on('complete', (result) => {
-        htmx.trigger("body", "update_uploads_list");
+        uppy.on('complete', (result) => {
+            htmx.trigger("body", "update_uploads_list");
+            htmx.trigger("body", "update_gallery_thumbs");
+        });
     });
 
     document.getElementById('sidebarToggleDesktop')

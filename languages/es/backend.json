@@ -517,6 +517,7 @@
   "msg.success.psw_changed": "La contraseña ha sido cambiada",
   "msg.error.mandatory": "No se ha proporcionado toda la información obligatoria",
   "msg.error.deleting_sub_pages": "No puede eliminar páginas con subpáginas. Para hacer esto, primero debe eliminar todas las subpáginas contenidas.",
+  "msg.error.theme_in_use": "This theme is still in use (default theme, active theme or assigned to pages) and cannot be deleted.",
   "msg.success.page_saved": "La página se ha guardado",
   "msg.error.page_saved": "Ha ocurrido un error, la página no ha sido guardada",
   "msg.success.page_deleted": "La página ha sido eliminada",
