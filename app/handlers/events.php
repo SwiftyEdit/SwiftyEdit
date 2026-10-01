@@ -105,6 +105,17 @@ if($page_contents['page_type_of_use'] == 'display_event' AND $get_event_id == ''
 }
 
 
+// unknown events, drafts and events with a future release date get a 404 -
+// administrators can still preview drafts (same as products, see products.php)
+if($display_mode == 'show_event') {
+    $requested_event = se_get_event_data($get_event_id);
+    if(!is_array($requested_event) || (!se_frontend_visitor_can_see_drafts() && !se_event_is_publicly_visible($requested_event))) {
+        $error_code = 404;
+        include __DIR__.'/../error.php';
+        exit;
+    }
+}
+
 switch ($display_mode) {
     case "list_events_category":
     case "list_events":
