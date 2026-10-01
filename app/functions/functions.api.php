@@ -606,6 +606,94 @@ function se_api_format_event(array $event, array $options = []): array {
 }
 
 /**
+ * Turn a page row into its public API representation
+ * whitelist only - internal columns (password hash, user groups, editor
+ * source, template settings, ...) must never reach the API
+ *
+ * @param array $page row from se_pages
+ * @param array $options 'render' => bool (resolve snippets/shortcodes in the content)
+ * @return array
+ */
+function se_api_format_page(array $page, array $options = []): array {
+
+    global $se_base_url;
+
+    // on SQLite, columns a page was saved without are NULL rather than ''
+    // (the schema generator drops defaults) - normalize everything but the
+    // parent id, where NULL means "no parent"
+    foreach ($page as $key => $value) {
+        if ($value === null && $key !== 'page_parent_id') {
+            $page[$key] = '';
+        }
+    }
+
+    $base = rtrim($se_base_url, '/') . '/';
+    $url = $page['page_canonical_url'] !== '' ? $page['page_canonical_url'] : $base . ltrim($page['page_permalink'], '/');
+
+    // final HTML (see install/contents/se_pages.php) - stripslashes() like
+    // the frontend does in app/template-setup.php
+    $content = stripslashes((string) $page['page_content']);
+    if (!empty($options['render'])) {
+        $content = se_api_render_text($content, $page['page_language'], [
+            'page_title' => $page['page_title'],
+            'page_url' => $url
+        ]);
+    }
+
+    // {"de":"/de/seite/","en":""} - stored as JSON, possibly HTML-encoded
+    $translations = [];
+    $translation_urls = json_decode(html_entity_decode((string) $page['page_translation_urls'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), true);
+    if (is_array($translation_urls)) {
+        foreach ($translation_urls as $translation_lang => $translation_url) {
+            if (is_string($translation_url) && $translation_url !== '') {
+                $translations[$translation_lang] = str_starts_with($translation_url, 'http') ? $translation_url : $base . ltrim($translation_url, '/');
+            }
+        }
+    }
+
+    // tree, see install/contents/se_pages.php: pages without a parent are
+    // either the language's home page ("portal") or single pages that are
+    // not part of the navigation
+    $parent_id = ($page['page_parent_id'] !== null && $page['page_parent_id'] !== '') ? (int) $page['page_parent_id'] : null;
+    $is_home = $page['page_sort'] === 'portal';
+    $in_navigation = $page['page_status'] === 'public' && ($parent_id !== null || $is_home);
+
+    $redirect = null;
+    if ($page['page_redirect'] !== '') {
+        $redirect = [
+            'url' => $page['page_redirect'],
+            'code' => $page['page_redirect_code'] !== '' ? (int) $page['page_redirect_code'] : null
+        ];
+    }
+
+    return [
+        'id' => (int) $page['page_id'],
+        'lang' => $page['page_language'],
+        'title' => se_api_plain($page['page_title']),
+        'linkname' => se_api_plain($page['page_linkname']),
+        'content' => $content,
+        'slug' => $page['page_permalink'],
+        'url' => $url,
+        'parent_id' => $parent_id,
+        'position' => (int) $page['position'],
+        'is_home' => $is_home,
+        'in_navigation' => $in_navigation,
+        'type' => $page['page_type_of_use'] !== '' ? $page['page_type_of_use'] : 'normal',
+        'module' => $page['page_modul'] !== '' ? $page['page_modul'] : null,
+        'redirect' => $redirect,
+        'target' => $page['page_target'] !== '' ? $page['page_target'] : null,
+        'translations' => (object) $translations,
+        'images' => se_api_image_urls($page['page_thumbnail']),
+        'tags' => se_api_tags('page', (int) $page['page_id']),
+        'meta_description' => se_api_plain($page['page_meta_description']),
+        'meta_keywords' => se_api_plain($page['page_meta_keywords']),
+        'meta_robots' => $page['page_meta_robots'],
+        'meta_author' => se_api_plain($page['page_meta_author']),
+        'updated_at' => !empty($page['page_lastedit']) ? (int) $page['page_lastedit'] : null
+    ];
+}
+
+/**
  * Get all API keys, newest first (without the hash)
  *
  * @return array

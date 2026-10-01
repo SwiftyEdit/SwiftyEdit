@@ -87,14 +87,14 @@ After that, `{hotline}` can be used in any snippet.
 
 ## Snippets in the API {#api}
 
-By default, the public API (`/api/v1/products/`, `/api/v1/posts/`, `/api/v1/events/`) returns
-the teaser and text of a product, blog post or event as they are stored – shortcodes stay in the
+By default, the public API (`/api/v1/products/`, `/api/v1/posts/`, `/api/v1/events/`,
+`/api/v1/pages/`) returns texts and page contents as they are stored – shortcodes stay in the
 text as `[snippet=name]` etc.
 
 With the parameter `?render=1`, snippets and shortcodes are resolved:
 
-- Snippets are loaded in the __language of the product, post or event__, not the language of
-  the request. If the snippet doesn't exist in that language, the same fallback as in the frontend
+- Snippets are loaded in the __language of the record__ (product, post, event or page), not
+  the language of the request. If the snippet doesn't exist in that language, the same fallback as in the frontend
   applies.
 - The [placeholders](#placeholders) get the same values as on the detail page, e.g. the
   product's `{sku}` and `{page_title}`.

@@ -134,6 +134,7 @@ permissions:
 | Read prices, even if they are only shown to logged-in customers | Only relevant if the shop setting allows prices for logged-in customers only. Without this permission, the API returns no prices in that case. |
 | Read blog posts | The key can fetch public blog posts. |
 | Read events | The key can fetch public events. |
+| Read pages | The key can fetch public pages. Password protected pages and pages for user groups stay hidden. |
 
 {alert:warning}
 __The key is shown only once__, right after creating it. Copy it and store it in a safe place -

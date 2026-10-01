@@ -638,5 +638,6 @@
   "api_keys.scope.products_read": "Read products",
   "api_keys.scope.products_prices": "Read prices, even if they are only shown to logged-in customers",
   "api_keys.scope.posts_read": "Read blog posts",
-  "api_keys.scope.events_read": "Read events"
+  "api_keys.scope.events_read": "Read events",
+  "api_keys.scope.pages_read": "Read pages"
 }

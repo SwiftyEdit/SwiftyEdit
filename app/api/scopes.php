@@ -33,4 +33,8 @@ return [
         'label' => 'api_keys.scope.events_read',
     ],
 
+    'pages:read' => [
+        'label' => 'api_keys.scope.pages_read',
+    ],
+
 ];
