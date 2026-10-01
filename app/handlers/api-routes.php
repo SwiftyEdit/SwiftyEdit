@@ -61,6 +61,44 @@ if (!is_file($api_endpoint)) {
     se_api_error(404, 'Unknown resource');
 }
 
+// the required scope follows from resource + method:
+// GET/HEAD need "{resource}:read", everything else "{resource}:write"
+$api_method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$api_access = in_array($api_method, ['GET', 'HEAD'], true) ? 'read' : 'write';
+$api_required_scope = $api_resource . ':' . $api_access;
+
+if (!array_key_exists($api_required_scope, se_api_get_scopes())) {
+    $api_allowed_methods = [];
+    if (array_key_exists($api_resource . ':read', se_api_get_scopes())) {
+        $api_allowed_methods = ['GET', 'HEAD'];
+    }
+    if (array_key_exists($api_resource . ':write', se_api_get_scopes())) {
+        $api_allowed_methods = array_merge($api_allowed_methods, ['POST', 'PUT', 'PATCH', 'DELETE']);
+    }
+    header('Allow: ' . implode(', ', $api_allowed_methods));
+    se_api_error(405, 'Method not allowed for this resource');
+}
+
+// authentication: Authorization: Bearer <key>
+$api_key = se_api_get_bearer_token();
+
+if ($api_key === null) {
+    header('WWW-Authenticate: Bearer');
+    se_api_error(401, 'Missing API key');
+}
+
+$api_key_data = se_api_authenticate($api_key);
+
+if ($api_key_data === null) {
+    header('WWW-Authenticate: Bearer error="invalid_token"');
+    se_api_error(401, 'Invalid or revoked API key');
+}
+
+if (!in_array($api_required_scope, $api_key_data['scopes'], true)) {
+    header('WWW-Authenticate: Bearer error="insufficient_scope", scope="' . $api_required_scope . '"');
+    se_api_error(403, 'API key lacks scope ' . $api_required_scope);
+}
+
 include $api_endpoint;
 
 // endpoints are expected to respond themselves - this is only a fallback
