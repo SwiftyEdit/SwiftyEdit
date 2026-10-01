@@ -1,7 +1,15 @@
 <?php
 
 ini_set("url_rewriter.tags", '');
-session_start();
+
+// the public API (/api/, see app/handlers/api-routes.php) is stateless -
+// no session for its requests, so no cookie and no session file. $_SESSION
+// stays an empty array, like for a new anonymous visitor.
+if (preg_match('#^/?api(/|$)#', (string) ($_GET['query'] ?? ''))) {
+    $_SESSION = [];
+} else {
+    session_start();
+}
 error_reporting(0); // safe default until $se_environment is known
 $se_start_time = microtime(true);
 
