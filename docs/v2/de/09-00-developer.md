@@ -73,6 +73,12 @@ Ausgabe verändern oder auf Ereignisse wie eine aktualisierte Seite reagieren, g
 Kernfunktionen anzurühren. Wie das im Detail funktioniert, erfährst Du im Kapitel
 [Hooks](09-03-hooks.md).
 
+## API
+
+Über die öffentliche REST-API können andere Anwendungen Deine Inhalte lesen - etwa eine zweite
+Website, die Deine Produkte anzeigt. Wie Du API-Keys nutzt, welche Endpunkte es gibt und wie
+die Antworten aufgebaut sind, beschreibt das Kapitel [API](09-04-api.md).
+
 ## Mitarbeit
 
 SwiftyEdit ist Open Source und freut sich über Beiträge. Das Projekt liegt auf

@@ -70,6 +70,12 @@ Hooks let you step in at precisely defined moments - reshaping content before it
 reacting to events like a page being updated - all without changing core code. The
 [Hooks](09-03-hooks.md) chapter covers how it all works.
 
+## API
+
+The public REST API lets other applications read your content - for example a second website
+that displays your products. How to use API keys, which endpoints exist and how the responses
+are structured is covered in the [API](09-04-api.md) chapter.
+
 ## Contributing
 
 SwiftyEdit is open source and welcomes contributions. The project is hosted on

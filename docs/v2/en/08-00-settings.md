@@ -18,6 +18,7 @@ The settings are divided into the following sub-categories
 * Shop
 * Events
 * Labels
+* API keys
 
 ## General
 
@@ -118,6 +119,32 @@ should be activated.
 ## Labels
 Most entries and data in the Backend can be provided with labels.
 If you manage a lot of data and entries, these labels help you to keep an overview.
+
+## API keys {#api-keys}
+API keys give other applications access to the public API - for example a second website that
+displays your products. Developers can find out how to use the API in the [API](09-04-api.md)
+chapter.
+
+To create a key, enter a name (e.g. the name of the application using it) and select the
+permissions:
+
+| Permission | Meaning |
+|------------|---------|
+| Read products | The key can fetch public products. |
+| Read prices, even if they are only shown to logged-in customers | Only relevant if the shop setting allows prices for logged-in customers only. Without this permission, the API returns no prices in that case. |
+
+{alert:warning}
+__The key is shown only once__, right after creating it. Copy it and store it in a safe place -
+SwiftyEdit only stores a fingerprint (hash) of the key and can't show it again later. If a key
+gets lost, simply create a new one.
+{/alert}
+
+The list shows the beginning of each key so you can tell them apart, as well as when the key was
+last used and how many requests it made.
+
+* __Revoke__ blocks a key immediately - applications using it lose access. Revoking can't be
+  undone.
+* Only revoked keys can be __deleted__.
 
 ## Database {#database}
 This tab only appears when the site runs on SQLite (it is hidden on MySQL installations,
