@@ -181,39 +181,18 @@ function se_api_format_product(array $product, array $options = []): array {
     $restricted_prices = !empty($options['restricted_prices']);
     $render = !empty($options['render']);
 
-    global $se_base_url;
-
-    // images: stored as "<->" separated paths like "/images/foo.jpg"
-    $images = [];
-    foreach (explode('<->', (string) $product['images']) as $image) {
-        $image = trim($image);
-        if ($image !== '') {
-            $images[] = rtrim($se_base_url, '/') . '/' . ltrim($image, '/');
-        }
-    }
-
-    // categories: stored as comma separated cat_hash values
-    $categories = [];
-    $product_cat_hashes = array_filter(explode(',', (string) $product['categories']));
-    if (!empty($product_cat_hashes)) {
-        foreach (se_get_categories() as $category) {
-            if (in_array($category['cat_hash'], $product_cat_hashes, true)) {
-                $categories[] = [
-                    'name' => se_api_plain($category['cat_name']),
-                    'slug' => $category['cat_name_clean']
-                ];
-            }
-        }
-    }
-
-    $tags = array_values(array_filter(array_map('trim', explode(',', se_api_plain($product['tags'])))));
-
     // HTML as stored, or with snippets/shortcodes resolved on request (?render=1)
     $teaser = htmlspecialchars_decode((string) $product['teaser']);
     $text = htmlspecialchars_decode((string) $product['text']);
     if ($render) {
-        $teaser = se_api_render_text($teaser, $product);
-        $text = se_api_render_text($text, $product);
+        // same placeholder values as on the product page
+        $render_vars = [
+            'page_title' => $product['meta_title'] != '' ? $product['meta_title'] : $product['title'],
+            'page_url' => $product['product_canonical_url'],
+            'sku' => $product['product_number']
+        ];
+        $teaser = se_api_render_text($teaser, $product['product_lang'], $render_vars);
+        $text = se_api_render_text($text, $product['product_lang'], $render_vars);
     }
 
     return [
@@ -228,9 +207,9 @@ function se_api_format_product(array $product, array $options = []): array {
         'text' => $text,
         'slug' => $product['slug'],
         'url' => $product['product_canonical_url'],
-        'images' => $images,
-        'categories' => $categories,
-        'tags' => $tags,
+        'images' => se_api_image_urls($product['images']),
+        'categories' => se_api_categories($product['categories']),
+        'tags' => se_api_tags('product', (int) $product['id']),
         'product_number' => se_api_plain($product['product_number']),
         'manufacturer' => se_api_plain($product['product_manufacturer']),
         'ean' => $product['product_ean'],
@@ -240,27 +219,94 @@ function se_api_format_product(array $product, array $options = []): array {
         'unit_content' => se_api_plain($product['product_unit_content']),
         'meta_title' => se_api_plain($product['meta_title']),
         'meta_description' => se_api_plain($product['meta_description']),
+        // the "tags" column holds the meta keywords, tags live in se_tags_relations
+        'meta_keywords' => se_api_plain($product['tags']),
         'released_at' => !empty($product['releasedate']) ? (int) $product['releasedate'] : null,
         'updated_at' => !empty($product['lastedit']) ? (int) $product['lastedit'] : null
     ];
 }
 
 /**
- * Resolve snippets and shortcodes in a product text for the API (?render=1)
+ * Absolute URLs for a "<->" separated list of image paths ("/images/foo.jpg")
+ *
+ * @param mixed $images
+ * @return array
+ */
+function se_api_image_urls(mixed $images): array {
+
+    global $se_base_url;
+
+    $urls = [];
+    foreach (explode('<->', (string) $images) as $image) {
+        $image = trim($image);
+        if ($image !== '') {
+            $urls[] = rtrim($se_base_url, '/') . '/' . ltrim($image, '/');
+        }
+    }
+    return $urls;
+}
+
+/**
+ * Categories of a record - stored as "<->" separated cat_hash values
+ *
+ * @param mixed $hashes
+ * @return array list of ['name' => string, 'slug' => string]
+ */
+function se_api_categories(mixed $hashes): array {
+
+    $record_hashes = array_filter(explode('<->', (string) $hashes));
+    if (empty($record_hashes)) {
+        return [];
+    }
+
+    $categories = [];
+    foreach (se_get_categories() as $category) {
+        if (in_array($category['cat_hash'], $record_hashes, true)) {
+            $categories[] = [
+                'name' => se_api_plain($category['cat_name']),
+                'slug' => $category['cat_name_clean']
+            ];
+        }
+    }
+    return $categories;
+}
+
+/**
+ * Tags of a record, from se_tags_relations (same source as the frontend)
+ *
+ * @param string $type 'post' | 'product' | ...
+ * @param int $id
+ * @return array list of ['name' => string, 'slug' => string]
+ */
+function se_api_tags(string $type, int $id): array {
+
+    $tags = [];
+    foreach (se_get_content_tags($type, $id) as $tag) {
+        $tags[] = [
+            'name' => se_api_plain($tag['tag_name']),
+            'slug' => $tag['tag_name_clean']
+        ];
+    }
+    return $tags;
+}
+
+/**
+ * Resolve snippets and shortcodes in a text for the API (?render=1)
  *
  * A reduced version of text_parser() (app/functions/func_basics.php):
- * - snippets are loaded in the product's language, not the visitor's
- * - placeholders get the same product values as on the product page
+ * - snippets are loaded in the record's language, not the visitor's
+ * - placeholders get the same values as on the record's detail page
  * - [script], [plugin] and [include] are left untouched - they execute PHP
  *   or read files and produce theme markup that is meaningless for an
  *   external client
  * - theme_text_parser() and the admin helpers are not used
  *
  * @param string $html decoded HTML
- * @param array $product row from se_products
+ * @param string $lang language of the record
+ * @param array $vars 'page_title', 'page_url', 'sku' of the record
  * @return string
  */
-function se_api_render_text(string $html, array $product): string {
+function se_api_render_text(string $html, string $lang, array $vars): string {
 
     global $se_settings;
     static $shortcodes = null;
@@ -269,16 +315,16 @@ function se_api_render_text(string $html, array $product): string {
         return '';
     }
 
-    // placeholders, same values as on the product page
+    // placeholders, same values as on the detail page
     // (app/template-setup.php + app/handlers/products-display.php)
     se_set_snippet_var('site_name', $se_settings['pagename'] ?? '');
-    se_set_snippet_var('page_title', ($product['meta_title'] ?? '') != '' ? $product['meta_title'] : ($product['title'] ?? ''));
-    se_set_snippet_var('page_url', $product['product_canonical_url'] ?? '');
+    se_set_snippet_var('page_title', $vars['page_title'] ?? '');
+    se_set_snippet_var('page_url', $vars['page_url'] ?? '');
     se_set_snippet_var('date', date($se_settings['dateformat']));
     se_set_snippet_var('time', date($se_settings['timeformat']));
     se_set_snippet_var('date_iso', date('Y-m-d'));
     se_set_snippet_var('year', date('Y'));
-    se_set_snippet_var('sku', $product['product_number'] ?? '');
+    se_set_snippet_var('sku', $vars['sku'] ?? '');
 
     // remove <p> tags around shortcodes, like text_parser()
     $html = str_replace(['<p>[', ']</p>'], ['[', ']'], $html);
@@ -289,8 +335,6 @@ function se_api_render_text(string $html, array $product): string {
         fn($m) => str_replace(['[', ']'], ['&#91;', '&#93;'], $m[0]),
         $html
     );
-
-    $lang = (string) $product['product_lang'];
 
     // [snippet]name[/snippet]
     $html = preg_replace_callback(
