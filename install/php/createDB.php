@@ -134,6 +134,9 @@ $sql_log_table = se_generate_sql_query("se_log.php",$db_type);
 $sql_mailbox_table = se_generate_sql_query("se_mailbox.php",$db_type);
 $sql_orders_table = se_generate_sql_query("se_orders.php",$db_type);
 $sql_delivery_areas_table = se_generate_sql_query("se_delivery_areas.php",$db_type);
+$sql_wishlists_table = se_generate_sql_query("se_wishlists.php",$db_type);
+$sql_wishlist_items_table = se_generate_sql_query("se_wishlist_items.php",$db_type);
+$sql_migrations_table = se_generate_sql_query("se_migrations.php",$db_type);
 
 
 if($db_type == 'mysql') {
@@ -208,6 +211,23 @@ $dbh_content->query($sql_orders_table);
 $dbh_content->query($sql_carts_table);
 $dbh_content->query($sql_filter_table);
 $dbh_content->query($sql_delivery_areas_table);
+$dbh_content->query($sql_wishlists_table);
+$dbh_content->query($sql_wishlist_items_table);
+$dbh_content->query($sql_migrations_table);
+
+/* tables above are already built in their current shape, so every
+   migration that ships with this release counts as applied - otherwise
+   the first update would run all of them against a fresh database
+   (see se_run_pending_migrations() in functions.php) */
+$shipped_migrations = glob(__DIR__."/../migrations/*.php");
+if(is_array($shipped_migrations)) {
+	foreach($shipped_migrations as $migration_file) {
+		$dbh_content->insert("se_migrations", [
+			"migration" => basename($migration_file, '.php'),
+			"applied_at" => time()
+		]);
+	}
+}
 
 /* insert two example pages */
 
