@@ -135,6 +135,7 @@ permissions:
 | Read blog posts | The key can fetch public blog posts. |
 | Read events | The key can fetch public events. |
 | Read pages | The key can fetch public pages. Password protected pages and pages for user groups stay hidden. |
+| Read categories | The key can fetch the categories of products, posts and events. |
 
 {alert:warning}
 __The key is shown only once__, right after creating it. Copy it and store it in a safe place -

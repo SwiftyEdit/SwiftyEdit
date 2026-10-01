@@ -239,7 +239,8 @@ function se_api_image_urls(mixed $images): array {
     $urls = [];
     foreach (explode('<->', (string) $images) as $image) {
         $image = trim($image);
-        if ($image !== '') {
+        // "null" is stored as a placeholder for "no image" (e.g. category thumbnails)
+        if ($image !== '' && $image !== 'null') {
             $urls[] = rtrim($se_base_url, '/') . '/' . ltrim($image, '/');
         }
     }
@@ -690,6 +691,44 @@ function se_api_format_page(array $page, array $options = []): array {
         'meta_robots' => $page['page_meta_robots'],
         'meta_author' => se_api_plain($page['page_meta_author']),
         'updated_at' => !empty($page['page_lastedit']) ? (int) $page['page_lastedit'] : null
+    ];
+}
+
+/**
+ * Turn a category row into its public API representation
+ * whitelist only - template settings must never reach the API
+ *
+ * @param array $category row from se_categories
+ * @param array $options 'render' => bool (resolve snippets/shortcodes in texts)
+ * @return array
+ */
+function se_api_format_category(array $category, array $options = []): array {
+
+    // HTML as stored (the category pages output it as is), or with
+    // snippets/shortcodes resolved on request (?render=1)
+    $teaser = (string) $category['cat_teaser'];
+    $text = (string) $category['cat_text'];
+    if (!empty($options['render'])) {
+        $render_vars = [
+            'page_title' => $category['cat_title'] != '' ? $category['cat_title'] : $category['cat_name']
+        ];
+        $teaser = se_api_render_text($teaser, (string) $category['cat_lang'], $render_vars);
+        $text = se_api_render_text($text, (string) $category['cat_lang'], $render_vars);
+    }
+
+    return [
+        'id' => (int) $category['cat_id'],
+        'uuid' => ($category['uuid'] ?? '') !== '' ? $category['uuid'] : null,
+        'lang' => $category['cat_lang'],
+        'name' => se_api_plain($category['cat_name']),
+        'slug' => $category['cat_name_clean'],
+        'title' => se_api_plain($category['cat_title']),
+        'teaser' => $teaser,
+        'text' => $text,
+        'description' => se_api_plain($category['cat_description']),
+        'keywords' => se_api_plain($category['cat_keywords']),
+        'images' => se_api_image_urls($category['cat_thumbnail']),
+        'sort' => (int) $category['cat_sort']
     ];
 }
 

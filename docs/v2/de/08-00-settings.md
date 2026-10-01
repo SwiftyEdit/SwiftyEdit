@@ -144,6 +144,7 @@ wählst die Berechtigungen aus:
 | Blog-Beiträge lesen | Der Key kann öffentliche Blog-Beiträge abrufen. |
 | Veranstaltungen lesen | Der Key kann öffentliche Veranstaltungen abrufen. |
 | Seiten lesen | Der Key kann öffentliche Seiten abrufen. Passwortgeschützte Seiten und Seiten für Benutzergruppen bleiben verborgen. |
+| Kategorien lesen | Der Key kann die Kategorien von Produkten, Beiträgen und Veranstaltungen abrufen. |
 
 {alert:warning}
 __Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn

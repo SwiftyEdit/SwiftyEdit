@@ -37,4 +37,8 @@ return [
         'label' => 'api_keys.scope.pages_read',
     ],
 
+    'categories:read' => [
+        'label' => 'api_keys.scope.categories_read',
+    ],
+
 ];
