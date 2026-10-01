@@ -22,6 +22,16 @@
 
 return function ($db_content, $db_user, $db_posts) {
 
+    // page_sort is no longer kept in sync for tree pages (see
+    // se_sanitize_page_inputs() in app/functions/functions.sanitizer.php), so
+    // running this against a tree that's already in use would detach or
+    // move pages. Any page with a parent means the tree is in use - legacy
+    // installs only have NULL here, since the column is added without default.
+    if ($db_content->has('se_pages', ['page_parent_id[!]' => null])) {
+        $_SESSION['protocol'] .= '<b class="text-warning">migration: page tree already in use, page_sort backfill skipped</b><|>';
+        return;
+    }
+
     $pages = $db_content->select('se_pages', ['page_id', 'page_language', 'page_sort']);
 
     $by_language = [];
