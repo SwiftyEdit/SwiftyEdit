@@ -50,7 +50,7 @@ function se_get_all_products() {
 
 function se_prepareProductData($data, $id = null) {
 
-    global $languagePack,$se_base_url,$db_content;
+    global $languagePack,$se_base_url,$db_content,$db_posts;
 
     if(!isset($data['product_lang'])) {
         $data['product_lang'] = $languagePack;
@@ -75,6 +75,19 @@ function se_prepareProductData($data, $id = null) {
             if (is_string($val)) {
                 $$key = @htmlspecialchars($val, ENT_QUOTES);
             }
+        }
+
+        // uuid is not part of the form - every column below is written from
+        // a same-named variable, so without this every save would store an
+        // empty uuid. Keep the existing one on update (or generate one if it
+        // was lost earlier), generate a new one for new products/variants.
+        // Set after the loop above, so a posted "uuid" can't override it.
+        $uuid = '';
+        if ($id !== null) {
+            $uuid = (string) $db_posts->get("se_products", "uuid", ["id" => (int) $id]);
+        }
+        if ($uuid === '') {
+            $uuid = se_generate_uuid();
         }
 
         $addon_string = se_encode_addon_values($data['addon_values'] ?? null);
