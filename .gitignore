@@ -23,6 +23,8 @@ composer.phar
 # Database files and generated content #
 *.sqlite
 *.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
 
 *.zip
 
