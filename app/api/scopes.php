@@ -25,4 +25,8 @@ return [
         'label' => 'api_keys.scope.products_prices',
     ],
 
+    'posts:read' => [
+        'label' => 'api_keys.scope.posts_read',
+    ],
+
 ];

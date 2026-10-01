@@ -423,6 +423,99 @@ function se_api_format_product_price(array $product, bool $restricted_prices = f
 }
 
 /**
+ * Turn a blog post row into its public API representation
+ * whitelist only - internal columns (editor, hits, template values, ...)
+ * must never reach the API
+ *
+ * @param array $post row from se_posts
+ * @param array $options 'render' => bool (resolve snippets/shortcodes in texts)
+ * @return array
+ */
+function se_api_format_post(array $post, array $options = []): array {
+
+    global $se_base_url;
+
+    $types = ['m' => 'message', 'i' => 'image', 'g' => 'gallery', 'v' => 'video', 'l' => 'link', 'f' => 'file'];
+    $base = rtrim($se_base_url, '/') . '/';
+
+    // no detail page -> no url, like the post_href in posts-list.php
+    $url = $post['post_canonical_url'];
+    if ((int) $post['post_hide_detail_page'] === 1 || $url === '') {
+        $url = null;
+    }
+
+    // HTML as stored, or with snippets/shortcodes resolved on request (?render=1)
+    $teaser = htmlspecialchars_decode((string) $post['post_teaser']);
+    $text = htmlspecialchars_decode((string) $post['post_text']);
+    if (!empty($options['render'])) {
+        $render_vars = [
+            'page_title' => $post['post_meta_title'] != '' ? $post['post_meta_title'] : $post['post_title'],
+            'page_url' => (string) $url
+        ];
+        $teaser = se_api_render_text($teaser, $post['post_lang'], $render_vars);
+        $text = se_api_render_text($text, $post['post_lang'], $render_vars);
+    }
+
+    // gallery images live in public/assets/galleries/{year of post_date}/gallery{id}/
+    // (see posts-display.php), newest first like in the frontend
+    $gallery = [];
+    if ($post['post_type'] === 'g') {
+        $gallery_dir = 'assets/galleries/' . date('Y', (int) $post['post_date']) . '/gallery' . (int) $post['post_id'] . '/';
+        $gallery_files = glob(SE_ROOT . 'public/' . $gallery_dir . '*_img.jpg') ?: [];
+        rsort($gallery_files);
+        foreach ($gallery_files as $gallery_file) {
+            $gallery[] = $base . $gallery_dir . basename($gallery_file);
+        }
+    }
+
+    $link = null;
+    if ($post['post_link'] !== '') {
+        $link = [
+            'url' => $post['post_link'],
+            'text' => se_api_plain($post['post_link_text'])
+        ];
+    }
+
+    $file = null;
+    if ($post['post_file_attachment'] !== '' || $post['post_file_attachment_external'] !== '') {
+        $file = [
+            // stored relative, e.g. "../files/manual.pdf" (see posts-display.php)
+            'url' => $post['post_file_attachment'] !== '' ? $base . ltrim(str_replace('../', '/', $post['post_file_attachment']), '/') : null,
+            'external_url' => $post['post_file_attachment_external'] !== '' ? $post['post_file_attachment_external'] : null,
+            'license' => se_api_plain($post['post_file_license']),
+            'version' => se_api_plain($post['post_file_version'])
+        ];
+    }
+
+    return [
+        'id' => (int) $post['post_id'],
+        'uuid' => $post['post_uuid'] !== '' ? $post['post_uuid'] : null,
+        'type' => $types[$post['post_type']] ?? $post['post_type'],
+        'lang' => $post['post_lang'],
+        'title' => se_api_plain($post['post_title']),
+        'teaser' => $teaser,
+        'text' => $text,
+        'slug' => $post['post_slug'],
+        'url' => $url,
+        'images' => se_api_image_urls($post['post_images']),
+        'gallery' => $gallery,
+        'video_url' => $post['post_video_url'] !== '' ? $post['post_video_url'] : null,
+        'link' => $link,
+        'file' => $file,
+        'categories' => se_api_categories($post['post_categories']),
+        'tags' => se_api_tags('post', (int) $post['post_id']),
+        'author' => se_api_plain($post['post_author']),
+        'source' => se_api_plain($post['post_source']),
+        'meta_title' => se_api_plain($post['post_meta_title']),
+        'meta_description' => se_api_plain($post['post_meta_description']),
+        // like products, the "post_tags" column holds the meta keywords
+        'meta_keywords' => se_api_plain($post['post_tags']),
+        'released_at' => !empty($post['post_releasedate']) ? (int) $post['post_releasedate'] : null,
+        'updated_at' => !empty($post['post_lastedit']) ? (int) $post['post_lastedit'] : null
+    ];
+}
+
+/**
  * Get all API keys, newest first (without the hash)
  *
  * @return array

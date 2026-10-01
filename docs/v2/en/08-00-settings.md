@@ -132,6 +132,7 @@ permissions:
 |------------|---------|
 | Read products | The key can fetch public products. |
 | Read prices, even if they are only shown to logged-in customers | Only relevant if the shop setting allows prices for logged-in customers only. Without this permission, the API returns no prices in that case. |
+| Read blog posts | The key can fetch public blog posts. |
 
 {alert:warning}
 __The key is shown only once__, right after creating it. Copy it and store it in a safe place -

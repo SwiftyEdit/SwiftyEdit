@@ -89,14 +89,15 @@ Danach kann `{hotline}` in jedem Snippet verwendet werden.
 
 ## Snippets in der API {#api}
 
-Die öffentliche API (`/api/v1/products/`) liefert Teaser und Text eines Produkts standardmäßig so,
-wie sie gespeichert sind – Shortcodes bleiben also als `[snippet=name]` usw. im Text stehen.
+Die öffentliche API (`/api/v1/products/`, `/api/v1/posts/`) liefert Teaser und Text eines
+Produkts oder Blog-Beitrags standardmäßig so, wie sie gespeichert sind – Shortcodes bleiben also
+als `[snippet=name]` usw. im Text stehen.
 
 Mit dem Parameter `?render=1` werden Snippets und Shortcodes aufgelöst:
 
-- Snippets werden in der __Sprache des Produkts__ geladen, nicht in der Sprache der Anfrage.
-  Fehlt das Snippet in dieser Sprache, gilt dieselbe Ausweichregel wie im Frontend.
-- Die [Platzhalter](#platzhalter) erhalten dieselben Werte wie auf der Produktseite, also z.B.
+- Snippets werden in der __Sprache des Produkts bzw. Beitrags__ geladen, nicht in der Sprache
+  der Anfrage. Fehlt das Snippet in dieser Sprache, gilt dieselbe Ausweichregel wie im Frontend.
+- Die [Platzhalter](#platzhalter) erhalten dieselben Werte wie auf der Detailseite, also z.B.
   `{sku}` und `{page_title}` des Produkts.
 - Innerhalb von `<pre>`- und `<code>`-Blöcken wird nichts ersetzt.
 - `[script]`, `[plugin]` und `[include]` werden __nicht__ ausgeführt und bleiben unverändert im
