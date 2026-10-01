@@ -272,6 +272,24 @@ function se_api_categories(mixed $hashes): array {
 }
 
 /**
+ * All cat_hash values of a category slug - a slug can exist once per
+ * language, so it can stand for several categories
+ *
+ * @param string $slug cat_name_clean
+ * @return array
+ */
+function se_api_category_hashes(string $slug): array {
+
+    $hashes = [];
+    foreach (se_get_categories() as $category) {
+        if ($category['cat_name_clean'] === $slug) {
+            $hashes[] = $category['cat_hash'];
+        }
+    }
+    return $hashes;
+}
+
+/**
  * Tags of a record, from se_tags_relations (same source as the frontend)
  *
  * @param string $type 'post' | 'product' | ...
@@ -512,6 +530,78 @@ function se_api_format_post(array $post, array $options = []): array {
         'meta_keywords' => se_api_plain($post['post_tags']),
         'released_at' => !empty($post['post_releasedate']) ? (int) $post['post_releasedate'] : null,
         'updated_at' => !empty($post['post_lastedit']) ? (int) $post['post_lastedit'] : null
+    ];
+}
+
+/**
+ * Turn an event row into its public API representation
+ * whitelist only - internal columns (editor, hits, template values, ...)
+ * must never reach the API
+ *
+ * @param array $event row from se_events
+ * @param array $options 'render' => bool (resolve snippets/shortcodes in texts)
+ * @return array
+ */
+function se_api_format_event(array $event, array $options = []): array {
+
+    // HTML as stored, or with snippets/shortcodes resolved on request (?render=1)
+    $teaser = htmlspecialchars_decode((string) $event['teaser']);
+    $text = htmlspecialchars_decode((string) $event['text']);
+    if (!empty($options['render'])) {
+        $render_vars = [
+            'page_title' => $event['meta_title'] != '' ? $event['meta_title'] : $event['title'],
+            'page_url' => $event['canonical_url']
+        ];
+        $teaser = se_api_render_text($teaser, $event['event_lang'], $render_vars);
+        $text = se_api_render_text($text, $event['event_lang'], $render_vars);
+    }
+
+    // event_guestlist: 1 = deactivated, 2 = registered users, 3 = everybody
+    // the number of confirmations is only public if event_guestlist_public_nbr = 2
+    // (same as on the event page, see events-display.php)
+    $guestlist = null;
+    if ((int) $event['event_guestlist'] === 2 || (int) $event['event_guestlist'] === 3) {
+        $confirmed = null;
+        if ((int) $event['event_guestlist_public_nbr'] === 2) {
+            $confirmed = (int) se_get_event_confirmation_data($event['id'])['evc'];
+        }
+        $guestlist = [
+            'access' => (int) $event['event_guestlist'] === 2 ? 'registered' : 'everybody',
+            'limit' => $event['event_guestlist_limit'] !== '' ? (int) $event['event_guestlist_limit'] : null,
+            'confirmed' => $confirmed
+        ];
+    }
+
+    return [
+        'id' => (int) $event['id'],
+        'uuid' => $event['uuid'] !== '' ? $event['uuid'] : null,
+        'lang' => $event['event_lang'],
+        'title' => se_api_plain($event['title']),
+        'teaser' => $teaser,
+        'text' => $text,
+        'slug' => $event['slug'],
+        'url' => $event['canonical_url'] !== '' ? $event['canonical_url'] : null,
+        'start_at' => !empty($event['event_startdate']) ? (int) $event['event_startdate'] : null,
+        'end_at' => !empty($event['event_enddate']) ? (int) $event['event_enddate'] : null,
+        'location' => [
+            'street' => se_api_plain($event['event_street']),
+            'street_nbr' => se_api_plain($event['event_street_nbr']),
+            'zip' => se_api_plain($event['event_zip']),
+            'city' => se_api_plain($event['event_city'])
+        ],
+        // HTML, decoded the same way as on the event page
+        'price_note' => html_entity_decode((string) $event['event_price_note'], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+        'guestlist' => $guestlist,
+        'images' => se_api_image_urls($event['images']),
+        'categories' => se_api_categories($event['categories']),
+        'tags' => se_api_tags('event', (int) $event['id']),
+        'author' => se_api_plain($event['author']),
+        'meta_title' => se_api_plain($event['meta_title']),
+        'meta_description' => se_api_plain($event['meta_description']),
+        // like products and posts, the "tags" column holds the meta keywords
+        'meta_keywords' => se_api_plain($event['tags']),
+        'released_at' => !empty($event['releasedate']) ? (int) $event['releasedate'] : null,
+        'updated_at' => !empty($event['lastedit']) ? (int) $event['lastedit'] : null
     ];
 }
 

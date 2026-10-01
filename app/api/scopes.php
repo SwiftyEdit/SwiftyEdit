@@ -29,4 +29,8 @@ return [
         'label' => 'api_keys.scope.posts_read',
     ],
 
+    'events:read' => [
+        'label' => 'api_keys.scope.events_read',
+    ],
+
 ];

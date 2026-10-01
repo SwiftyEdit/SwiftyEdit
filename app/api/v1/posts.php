@@ -78,13 +78,7 @@ if (isset($_GET['type']) && $_GET['type'] !== '') {
 }
 
 if (isset($_GET['category']) && $_GET['category'] !== '') {
-    // a slug can exist once per language, so it can stand for several hashes
-    $api_cat_hashes = [];
-    foreach (se_get_categories() as $category) {
-        if ($category['cat_name_clean'] === $_GET['category']) {
-            $api_cat_hashes[] = $category['cat_hash'];
-        }
-    }
+    $api_cat_hashes = se_api_category_hashes($_GET['category']);
     if (empty($api_cat_hashes)) {
         se_api_error(400, 'Unknown category');
     }

@@ -142,6 +142,7 @@ wählst die Berechtigungen aus:
 | Produkte lesen | Der Key kann öffentliche Produkte abrufen. |
 | Preise lesen, auch wenn sie nur angemeldeten Kunden angezeigt werden | Nur relevant, wenn der Shop Preise laut Einstellung nur angemeldeten Kunden zeigt. Ohne diese Berechtigung liefert die API in dem Fall keine Preise. |
 | Blog-Beiträge lesen | Der Key kann öffentliche Blog-Beiträge abrufen. |
+| Veranstaltungen lesen | Der Key kann öffentliche Veranstaltungen abrufen. |
 
 {alert:warning}
 __Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn
