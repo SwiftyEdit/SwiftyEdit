@@ -19,4 +19,10 @@ return [
         'label' => 'api_keys.scope.products_read',
     ],
 
+    // additional permission, checked inside the products endpoint: prices
+    // are returned even if the shop only shows them to logged-in customers
+    'products:prices' => [
+        'label' => 'api_keys.scope.products_prices',
+    ],
+
 ];

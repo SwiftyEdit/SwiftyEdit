@@ -85,6 +85,20 @@ After that, `{hotline}` can be used in any snippet.
   would overwrite your value.
 - A placeholder that was never set is left unchanged in the text.
 
+## Snippets in the API {#api}
+
+By default, the public API (`/api/v1/products/`) returns a product's teaser and text as they are
+stored – shortcodes stay in the text as `[snippet=name]` etc.
+
+With the parameter `?render=1`, snippets and shortcodes are resolved:
+
+- Snippets are loaded in the __product's language__, not the language of the request.
+  If the snippet doesn't exist in that language, the same fallback as in the frontend applies.
+- The [placeholders](#placeholders) get the same values as on the product page, e.g. the
+  product's `{sku}` and `{page_title}`.
+- Nothing is replaced inside `<pre>` and `<code>` blocks.
+- `[script]`, `[plugin]` and `[include]` are __not__ executed and stay unchanged in the text.
+
 ## Input fields
 
 | Field           | Description                                                                                                                                                                                              |

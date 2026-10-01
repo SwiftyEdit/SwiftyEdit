@@ -635,5 +635,6 @@
   "api_keys.confirm_revoke": "Revoke this API key? Applications using it will lose access immediately. This cannot be undone.",
   "api_keys.msg_created": "Copy this key now - it will not be shown again.",
   "api_keys.msg_missing_input": "Please enter a name and select at least one permission.",
-  "api_keys.scope.products_read": "Read products"
+  "api_keys.scope.products_read": "Read products",
+  "api_keys.scope.products_prices": "Read prices, even if they are only shown to logged-in customers"
 }

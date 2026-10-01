@@ -7,6 +7,11 @@
  *     ?page=1&per_page=20          pagination, per_page max. 100
  * GET /api/v1/products/{id}/       a single product or variant,
  *                                  products include their variants
+ *     ?render=1                    (both) resolve snippets/shortcodes in
+ *                                  teaser and text, see se_api_render_text()
+ *
+ * Prices are null if the shop only shows them to logged-in customers,
+ * unless the key also has the products:prices scope.
  *
  * Visibility mirrors the frontend: drafts (status 2) and unreleased
  * products are never returned, "ghost" products (status 3) are left out
@@ -15,9 +20,16 @@
  * variables
  * @var array $requestPathParts from routing.php
  * @var object $db_posts
+ * @var array $api_key_data from api-routes.php
  */
 
 $api_product_id = $requestPathParts[3] ?? '';
+
+$api_format_options = [
+    'restricted_prices' => in_array('products:prices', $api_key_data['scopes'], true),
+    'render' => ($_GET['render'] ?? '') === '1'
+];
+$api_format = fn($product) => se_api_format_product($product, $api_format_options);
 
 // released: no release date, or one in the past
 // (Medoo needs a named key for a nested OR group)
@@ -47,7 +59,7 @@ if ($api_product_id !== '') {
         se_api_error(404, 'Product not found');
     }
 
-    $data = se_api_format_product($product);
+    $data = $api_format($product);
 
     if ($product['type'] === 'p') {
         $variants = $db_posts->select('se_products', '*', [
@@ -59,7 +71,7 @@ if ($api_product_id !== '') {
             ],
             'ORDER' => ['priority' => 'DESC', 'id' => 'DESC']
         ]);
-        $data['variants'] = array_map('se_api_format_product', $variants);
+        $data['variants'] = array_map($api_format, $variants);
     }
 
     se_api_respond(['data' => $data]);
@@ -93,7 +105,7 @@ $products = $db_posts->select('se_products', '*', [
 ]);
 
 se_api_respond([
-    'data' => array_map('se_api_format_product', $products),
+    'data' => array_map($api_format, $products),
     'meta' => [
         'page' => $api_page,
         'per_page' => $api_per_page,

@@ -172,9 +172,14 @@ function se_api_plain(mixed $value): string {
  * files, ...) must never reach the API
  *
  * @param array $product row from se_products
+ * @param array $options 'restricted_prices' => bool (key has products:prices),
+ *                       'render' => bool (resolve snippets/shortcodes in texts)
  * @return array
  */
-function se_api_format_product(array $product): array {
+function se_api_format_product(array $product, array $options = []): array {
+
+    $restricted_prices = !empty($options['restricted_prices']);
+    $render = !empty($options['render']);
 
     global $se_base_url;
 
@@ -203,6 +208,14 @@ function se_api_format_product(array $product): array {
 
     $tags = array_values(array_filter(array_map('trim', explode(',', se_api_plain($product['tags'])))));
 
+    // HTML as stored, or with snippets/shortcodes resolved on request (?render=1)
+    $teaser = htmlspecialchars_decode((string) $product['teaser']);
+    $text = htmlspecialchars_decode((string) $product['text']);
+    if ($render) {
+        $teaser = se_api_render_text($teaser, $product);
+        $text = se_api_render_text($text, $product);
+    }
+
     return [
         'id' => (int) $product['id'],
         'uuid' => $product['uuid'] !== '' ? $product['uuid'] : null,
@@ -211,10 +224,8 @@ function se_api_format_product(array $product): array {
         'lang' => $product['product_lang'],
         'title' => se_api_plain($product['title']),
         'variant_title' => se_api_plain($product['product_variant_title']),
-        // HTML as stored - shortcodes/snippets are not resolved, since
-        // text_parser() depends on the visitor's frontend context
-        'teaser' => htmlspecialchars_decode((string) $product['teaser']),
-        'text' => htmlspecialchars_decode((string) $product['text']),
+        'teaser' => $teaser,
+        'text' => $text,
         'slug' => $product['slug'],
         'url' => $product['product_canonical_url'],
         'images' => $images,
@@ -224,7 +235,7 @@ function se_api_format_product(array $product): array {
         'manufacturer' => se_api_plain($product['product_manufacturer']),
         'ean' => $product['product_ean'],
         'mpn' => se_api_plain($product['product_mpn']),
-        'price' => se_api_format_product_price($product),
+        'price' => se_api_format_product_price($product, $restricted_prices),
         'unit' => se_api_plain($product['product_unit']),
         'unit_content' => se_api_plain($product['product_unit_content']),
         'meta_title' => se_api_plain($product['meta_title']),
@@ -235,20 +246,108 @@ function se_api_format_product(array $product): array {
 }
 
 /**
+ * Resolve snippets and shortcodes in a product text for the API (?render=1)
+ *
+ * A reduced version of text_parser() (app/functions/func_basics.php):
+ * - snippets are loaded in the product's language, not the visitor's
+ * - placeholders get the same product values as on the product page
+ * - [script], [plugin] and [include] are left untouched - they execute PHP
+ *   or read files and produce theme markup that is meaningless for an
+ *   external client
+ * - theme_text_parser() and the admin helpers are not used
+ *
+ * @param string $html decoded HTML
+ * @param array $product row from se_products
+ * @return string
+ */
+function se_api_render_text(string $html, array $product): string {
+
+    global $se_settings;
+    static $shortcodes = null;
+
+    if ($html === '') {
+        return '';
+    }
+
+    // placeholders, same values as on the product page
+    // (app/template-setup.php + app/handlers/products-display.php)
+    se_set_snippet_var('site_name', $se_settings['pagename'] ?? '');
+    se_set_snippet_var('page_title', ($product['meta_title'] ?? '') != '' ? $product['meta_title'] : ($product['title'] ?? ''));
+    se_set_snippet_var('page_url', $product['product_canonical_url'] ?? '');
+    se_set_snippet_var('date', date($se_settings['dateformat']));
+    se_set_snippet_var('time', date($se_settings['timeformat']));
+    se_set_snippet_var('date_iso', date('Y-m-d'));
+    se_set_snippet_var('year', date('Y'));
+    se_set_snippet_var('sku', $product['product_number'] ?? '');
+
+    // remove <p> tags around shortcodes, like text_parser()
+    $html = str_replace(['<p>[', ']</p>'], ['[', ']'], $html);
+
+    // shortcodes inside <pre> and <code> stay as they are
+    $html = preg_replace_callback(
+        '#<(pre|code)\b[^>]*>.*?</\1>#si',
+        fn($m) => str_replace(['[', ']'], ['&#91;', '&#93;'], $m[0]),
+        $html
+    );
+
+    $lang = (string) $product['product_lang'];
+
+    // [snippet]name[/snippet]
+    $html = preg_replace_callback(
+        '/\[snippet\](.*?)\[\/snippet\]/si',
+        fn($m) => se_get_snippet($m[1], $lang, 'content'),
+        $html
+    );
+
+    // [snippet=name]tpl[/snippet] or [snippet=name]...[/snippet]
+    $html = preg_replace_callback(
+        '/\[snippet=(.*?)\](.*?)\[\/snippet\]/si',
+        fn($m) => se_get_snippet($m[1], $lang, $m[2] == 'tpl' ? 'tpl' : 'content'),
+        $html
+    );
+
+    // [snippet=name]
+    $html = preg_replace_callback(
+        '/\[snippet=(.*?)\]/si',
+        fn($m) => se_get_snippet($m[1], $lang, 'content'),
+        $html
+    );
+
+    // shortcodes are not language specific, same as in text_parser()
+    if ($shortcodes === null) {
+        $shortcodes = se_get_shortcodes();
+    }
+    foreach ($shortcodes as $shortcode) {
+        if ($shortcode['snippet_shortcode'] != '') {
+            $html = str_replace($shortcode['snippet_shortcode'], se_replace_snippet_vars($shortcode['snippet_content']), $html);
+        }
+    }
+
+    return $html;
+}
+
+/**
  * Price of a product for the API, null if prices are not public
  * mirrors se_get_product_price_tag() (price group, tax class), but returns
  * numbers instead of a formatted price tag and without the "lowest price
  * across variants" logic - variants are returned with their own price
  *
  * @param array $product
+ * @param bool $restricted_prices the key may see prices that the shop only
+ *                                shows to logged-in customers (products:prices)
  * @return array|null ['net' => float, 'gross' => float, 'tax_rate' => float, 'currency' => string]
  */
-function se_api_format_product_price(array $product): ?array {
+function se_api_format_product_price(array $product, bool $restricted_prices = false): ?array {
 
     global $se_settings;
 
-    // prices hidden for this product, or only shown to logged-in users
-    if ((int) $product['product_pricetag_mode'] === 2 || (int) $se_settings['posts_price_visibility'] === 2) {
+    // price hidden for this product - a display decision, applies to every key
+    if ((int) $product['product_pricetag_mode'] === 2) {
+        return null;
+    }
+
+    // prices only for logged-in customers - needs the products:prices scope
+    if ((int) $se_settings['posts_price_visibility'] === 2 && !$restricted_prices) {
         return null;
     }
 
