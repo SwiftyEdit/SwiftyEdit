@@ -21,6 +21,7 @@ include_once 'functions.snippets.php';
 include_once 'functions.editors.php';
 include_once 'functions.tags.php';
 include_once 'functions.img.php';
+include_once 'functions.api.php';
 
 /**
  * Retrieves all active system preferences

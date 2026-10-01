@@ -106,6 +106,74 @@ if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_coun
     echo '</form>';
 }
 
+// API keys (Settings > API keys)
+if(isset($_GET['load_api_keys'])) {
+
+    if(!se_hasPermission('drm_acp_system')) {
+        http_response_code(403);
+        exit;
+    }
+
+    $writer_uri = '/admin-xhr/settings/api-keys/write/';
+    $api_keys = se_api_get_keys();
+
+    if(count($api_keys) < 1) {
+        echo '<p class="mb-0 text-muted">'.$lang['api_keys_none'].'</p>';
+        exit;
+    }
+
+    echo '<table class="table table-sm align-middle mb-0">';
+    echo '<thead><tr>';
+    echo '<th>'.$lang['api_keys_label'].'</th>';
+    echo '<th>'.$lang['api_keys_key'].'</th>';
+    echo '<th>'.$lang['api_keys_scopes'].'</th>';
+    echo '<th>'.$lang['api_keys_created'].'</th>';
+    echo '<th>'.$lang['api_keys_last_used'].'</th>';
+    echo '<th class="text-end">'.$lang['api_keys_requests'].'</th>';
+    echo '<th>'.$lang['api_keys_status'].'</th>';
+    echo '<th></th>';
+    echo '</tr></thead>';
+    echo '<tbody>';
+
+    foreach($api_keys as $api_key) {
+
+        $key_id = (int) $api_key['id'];
+        $is_active = ((int) $api_key['is_active'] === 1);
+        $last_used = ((int) $api_key['last_used_at'] > 0) ? se_format_datetime($api_key['last_used_at']) : '-';
+        $scopes = array_filter(explode(',', (string) $api_key['scopes']));
+
+        echo '<tr class="'.($is_active ? '' : 'text-muted').'">';
+        echo '<td>'.htmlspecialchars($api_key['label'], ENT_QUOTES).'</td>';
+        echo '<td><code>'.htmlspecialchars($api_key['key_prefix'], ENT_QUOTES).'…</code></td>';
+        echo '<td>';
+        foreach($scopes as $scope) {
+            echo '<code class="me-1">'.htmlspecialchars($scope, ENT_QUOTES).'</code>';
+        }
+        echo '</td>';
+        echo '<td>'.se_format_datetime($api_key['created_at']).'</td>';
+        echo '<td>'.$last_used.'</td>';
+        echo '<td class="text-end">'.(int) $api_key['request_count'].'</td>';
+        echo '<td>'.($is_active ? '<span class="badge text-bg-success">'.$lang['api_keys_active'].'</span>' : '<span class="badge text-bg-secondary">'.$lang['api_keys_revoked'].'</span>').'</td>';
+        echo '<td class="text-end">';
+        echo '<form class="d-inline">';
+        echo '<input type="hidden" name="api_key_id" value="'.$key_id.'">';
+        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+        // revoking is final - a revoked key can only be deleted, not reactivated
+        if($is_active) {
+            echo '<button hx-post="'.$writer_uri.'" hx-confirm="'.htmlspecialchars($lang['api_keys_confirm_revoke'], ENT_QUOTES).'" hx-target="#apiKeyCreated" name="revoke_api_key" value="'.$key_id.'" class="btn btn-sm btn-default text-danger" title="'.$lang['api_keys_btn_revoke'].'">'.$icon['ban'].' '.$lang['api_keys_btn_revoke'].'</button>';
+        } else {
+            echo '<button hx-post="'.$writer_uri.'" hx-confirm="'.htmlspecialchars($lang['msg_confirm_delete'], ENT_QUOTES).'" hx-target="#apiKeyCreated" name="delete_api_key" value="'.$key_id.'" class="btn btn-sm btn-default text-danger" title="'.$lang['btn_delete'].'">'.$icon['trash_alt'].'</button>';
+        }
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+
+    echo '</tbody>';
+    echo '</table>';
+    exit;
+}
+
 if(isset($_GET['load_labels'])) {
 
 

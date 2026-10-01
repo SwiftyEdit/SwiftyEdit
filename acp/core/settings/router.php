@@ -7,6 +7,7 @@ $subinc = match (true) {
     str_starts_with($query, 'settings/shop/') => 'shop',
     str_starts_with($query, 'settings/database/') => 'database',
     str_starts_with($query, 'settings/user/') => 'user',
+    str_starts_with($query, 'settings/api-keys/') => 'api-keys',
     default => 'general'
 };
 
