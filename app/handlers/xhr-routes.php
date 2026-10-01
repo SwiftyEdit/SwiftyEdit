@@ -1,6 +1,6 @@
 <?php
 /**
- * XHR and API Routes Handler
+ * XHR Routes Handler (public API: see api-routes.php)
  * SwiftyEdit CMS
  */
 

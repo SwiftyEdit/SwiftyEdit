@@ -33,10 +33,16 @@ require_once __DIR__.'/routing.php';
 // Initialize Smarty
 require_once __DIR__.'/smarty.php';
 
-// Handle XHR/API requests early
-if ($requestPathParts[0] === 'xhr' OR $requestPathParts[0] === 'api') {
+// Handle XHR requests early (browser sessions, HTMX)
+if ($requestPathParts[0] === 'xhr') {
     require_once __DIR__.'/handlers/xhr-routes.php';
     // Exit happens in xhr-routes.php
+}
+
+// Handle public API requests early (external clients, API keys)
+if ($requestPathParts[0] === 'api') {
+    require_once __DIR__.'/handlers/api-routes.php';
+    // Exit happens in api-routes.php
 }
 
 // Determine page ID and type
