@@ -248,6 +248,19 @@ if(isset($_POST['save_post'])) {
 
     se_generate_xml_sitemap('posts');
 
+    // post_uuid is not part of the form - every column below is written from
+    // a same-named variable, so without this every save would store an empty
+    // uuid. Keep the existing one on update (or generate one if it is
+    // missing), generate a new one for new posts. Set after the $_POST loop
+    // above, so a posted "post_uuid" can't override it.
+    $post_uuid = '';
+    if($_POST['save_post'] == 'update') {
+        $post_uuid = (string) $db_posts->get("se_posts", "post_uuid", ["post_id" => (int) $_POST['post_id']]);
+    }
+    if($post_uuid === '') {
+        $post_uuid = se_generate_uuid();
+    }
+
     // get all $cols
     require SE_ROOT.'install/contents/se_posts.php';
     foreach($cols as $k => $v) {
