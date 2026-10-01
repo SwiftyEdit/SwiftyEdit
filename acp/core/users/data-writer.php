@@ -120,6 +120,8 @@ if(isset($_POST['save_user'])) {
     } else {
 
         $columns["user_registerdate"] = time();
+        // the uuid is only set for new users, updates keep it
+        $columns["user_uuid"] = se_generate_uuid();
         $cnt_changes = $db_user->insert("se_user",$columns);
         $edituser = $db_user->id();
         if($edituser > 0) {

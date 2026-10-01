@@ -152,6 +152,7 @@ if($_POST['send_registerform']) {
 
         // Insert new user into database
         $db_user->insert("se_user", [
+            "user_uuid" => se_generate_uuid(),
             "user_nick" => "$username",
             "user_registerdate" => "$user_registerdate",
             "user_verified" => "$user_verified",

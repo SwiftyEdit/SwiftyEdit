@@ -160,6 +160,7 @@ $dbh_user->query($sql_groups_table);
 $dbh_user->query($sql_api_keys_table);
 
 $dbh_user->insert("se_user", [
+	"user_uuid" => se_generate_uuid(),
 	"user_class" => "administrator",
 	"user_nick" => "$username",
 	"user_verified" => "verified",

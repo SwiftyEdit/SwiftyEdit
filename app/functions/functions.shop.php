@@ -1681,6 +1681,7 @@ function se_send_order($data) {
     $order_comment = clean_visitors_input($data['order_comment']);
 	
 	$db_content->insert("se_orders", [
+		"uuid" => se_generate_uuid(),
 		"user_id" => $user_id !== null ? (int) $user_id : null,
 		"order_nbr" => "$order_nbr",
 		"order_time" => "$order_time",
