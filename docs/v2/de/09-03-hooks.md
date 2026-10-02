@@ -1,6 +1,6 @@
 ---
 title: Hooks
-description: Hooks
+description: Mit Backend-, Frontend- und globalen Hooks in Abläufe eingreifen
 btn: Hooks
 group: developer
 priority: 200

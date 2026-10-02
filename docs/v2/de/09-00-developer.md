@@ -1,7 +1,7 @@
 ---
-title: Developer
-description: Developer notes and instructions
-btn: Developer
+title: Entwickler
+description: Eigene Themes und Plugins entwickeln, Konfiguration und Mitarbeit am Projekt
+btn: Entwickler
 group: developer
 priority: 200
 ---

@@ -1,6 +1,6 @@
 ---
 title: Events
-description: Create events or edit existing events
+description: Veranstaltungen anlegen und bearbeiten, inklusive Gästelisten
 btn: Events
 group: backend
 priority: 500
