@@ -90,6 +90,13 @@ if($page_contents['page_redirect'] != '') {
     exit;
 }
 
+// bootstrap.php loaded $lang for the default language, but se_get_content()
+// switches $languagePack to the page language - reload the translations
+if($languagePack != $lang_sign && is_dir(SE_ROOT.'languages/'.basename($languagePack))) {
+    $languagePack = basename($languagePack);
+    require SE_ROOT.'languages/index.php';
+}
+
 // Load plugin/module content
 if(!empty($page_contents['page_modul'])) {
     include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/frontend/index.php';

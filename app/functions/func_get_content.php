@@ -124,8 +124,46 @@ function se_get_content($page, $mode = 'p') {
 	}
 
 	$contents = array($page_contents,$se_nav);
-	
+
 	return $contents;
+}
+
+/**
+ * get the language of the page behind a (frontend) url
+ * used by xhr requests, which don't belong to a page themselves
+ * the path is shortened segment by segment until it matches a permalink,
+ * so detail urls like /en/blog/my-post/ resolve to the page /en/blog/
+ *
+ * @param string $url e.g. the HX-Current-URL or Referer header
+ * @return string|null the page language or null if no page matches
+ */
+function se_get_page_language_by_url(string $url): ?string {
+
+	global $db_content, $se_settings;
+
+	$path = (string) parse_url($url, PHP_URL_PATH);
+	$path = strtolower(urldecode($path));
+
+	// strip the installation base (e.g. /subfolder/)
+	$cms_base = trim($se_settings['cms_base'] ?? '', '/');
+	$path = trim($path, '/');
+	if($cms_base != '' && str_starts_with($path, $cms_base)) {
+		$path = trim(substr($path, strlen($cms_base)), '/');
+	}
+
+	$segments = ($path == '') ? [] : explode('/', $path);
+
+	while(count($segments) > 0) {
+		$page_language = $db_content->get("se_pages", "page_language", [
+			"page_permalink" => implode('/', $segments).'/'
+		]);
+		if(!empty($page_language)) {
+			return $page_language;
+		}
+		array_pop($segments);
+	}
+
+	return null;
 }
 
 
