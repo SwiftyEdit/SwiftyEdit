@@ -1,6 +1,6 @@
 ---
 title: Hooks
-description: Hooks
+description: Hook into backend, frontend and global processes
 btn: Hooks
 group: developer
 priority: 200

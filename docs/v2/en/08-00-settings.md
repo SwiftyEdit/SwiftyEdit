@@ -1,6 +1,6 @@
 ---
 title: Settings
-description: Settings
+description: All global SwiftyEdit settings in one place
 btn: Settings
 group: backend
 priority: 900

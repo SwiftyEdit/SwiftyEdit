@@ -1,6 +1,6 @@
 ---
 title: Shop - Options
-description: Shop Options
+description: Choices like size or color that customers select when ordering
 btn: Options
 group: backend
 priority: 400

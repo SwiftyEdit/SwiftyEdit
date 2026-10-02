@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Install SwiftyEdit in less than 5 minutes
+description: Install SwiftyEdit in minutes – requirements, database, installation and updates
 btn: Installation
 group: developer
 priority: 100

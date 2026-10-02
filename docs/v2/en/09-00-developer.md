@@ -1,6 +1,6 @@
 ---
 title: Developer
-description: Developer notes and instructions
+description: Build your own themes and plugins, configuration and contributing to the project
 btn: Developer
 group: developer
 priority: 200

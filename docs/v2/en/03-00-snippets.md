@@ -1,6 +1,6 @@
 ---
 title: Snippets
-description: Manage and use Snippets
+description: Manage and use snippets
 btn: Snippets
 group: backend
 priority: 200

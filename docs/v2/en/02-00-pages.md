@@ -1,6 +1,6 @@
 ---
 title: Pages
-description: Manage all created pages
+description: Create, edit and manage pages
 btn: Pages
 group: backend
 priority: 190
