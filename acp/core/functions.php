@@ -616,14 +616,6 @@ function se_generate_xml_sitemap($mode): void
     $tpl_sitemap = file_get_contents('../acp/templates/sitemap.tpl');
     $tpl_sitemap_urlset = file_get_contents('../acp/templates/sitemap_urlset.tpl');
 
-    // create index
-    $lastmod = date("Y-m-d",time());
-    $tpl_sitemap_index = file_get_contents('../acp/templates/sitemap-index.tpl');
-
-    $tpl_sitemap_index = str_replace('{lastmod}', $lastmod, $tpl_sitemap_index);
-    $tpl_sitemap_index = str_replace('{se_base_url}', $se_base_url, $tpl_sitemap_index);
-    file_put_contents($file_sitemap_index, $tpl_sitemap_index, LOCK_EX);
-
     if ($mode == 'pages') {
 
         $pages_data = $db_content->select("se_pages", "*", [
@@ -638,6 +630,12 @@ function se_generate_xml_sitemap($mode): void
 
         $url_set_list = '';
         foreach ($pages_data as $page) {
+
+            // pages with a redirect must not be listed in the sitemap
+            if (trim((string) $page['page_redirect']) !== '') {
+                continue;
+            }
+
             $page_lastedit = date("Y-m-d", $page['page_lastedit']);
             $link = $se_base_url.'/'.$page['page_permalink'];
 
@@ -646,8 +644,7 @@ function se_generate_xml_sitemap($mode): void
             $url_set_list .= $url_set . "\r\n";
         }
 
-        $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
-        file_put_contents($file_sitemap_pages, $sitemap_data, LOCK_EX);
+        se_write_xml_sitemap_file($file_sitemap_pages, $url_set_list, $tpl_sitemap);
     }
 
     if ($mode == 'products') {
@@ -671,8 +668,7 @@ function se_generate_xml_sitemap($mode): void
             $url_set_list .= $url_set . "\r\n";
         }
 
-        $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
-        file_put_contents($file_sitemap_products, $sitemap_data, LOCK_EX);
+        se_write_xml_sitemap_file($file_sitemap_products, $url_set_list, $tpl_sitemap);
     }
 
     if ($mode == 'posts') {
@@ -699,11 +695,49 @@ function se_generate_xml_sitemap($mode): void
             $url_set = str_replace('{lastmod}', $post_lastedit, $url_set);
             $url_set_list .= $url_set . "\r\n";
         }
-        $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
-        file_put_contents($file_sitemap_posts, $sitemap_data, LOCK_EX);
+        se_write_xml_sitemap_file($file_sitemap_posts, $url_set_list, $tpl_sitemap);
 
     }
 
+    // create index - only list sitemaps which exist and contain entries
+    $tpl_sitemap_index = file_get_contents('../acp/templates/sitemap-index.tpl');
+    $tpl_sitemap_index_entry = file_get_contents('../acp/templates/sitemap-index_entry.tpl');
+
+    $sitemap_list = '';
+    foreach ([$file_sitemap_pages, $file_sitemap_products, $file_sitemap_posts] as $file) {
+        if (!is_file($file)) {
+            continue;
+        }
+        $entry = str_replace('{url}', $se_base_url.'/'.basename($file), $tpl_sitemap_index_entry);
+        $entry = str_replace('{lastmod}', date("Y-m-d", filemtime($file)), $entry);
+        $sitemap_list .= $entry . "\r\n";
+    }
+
+    $tpl_sitemap_index = str_replace('{sitemap_list}', $sitemap_list, $tpl_sitemap_index);
+    file_put_contents($file_sitemap_index, $tpl_sitemap_index, LOCK_EX);
+}
+
+/**
+ * write a single sitemap file
+ * if there are no entries, an existing file is removed
+ * so it will not be listed in the sitemap index
+ *
+ * @param string $file
+ * @param string $url_set_list
+ * @param string $tpl_sitemap
+ * @return void
+ */
+function se_write_xml_sitemap_file(string $file, string $url_set_list, string $tpl_sitemap): void
+{
+    if (trim($url_set_list) === '') {
+        if (is_file($file)) {
+            unlink($file);
+        }
+        return;
+    }
+
+    $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
+    file_put_contents($file, $sitemap_data, LOCK_EX);
 }
 
 
