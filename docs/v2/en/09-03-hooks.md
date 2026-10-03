@@ -45,7 +45,6 @@ run code but don't transform a value.
 | `product.deleted`   | `product_id`, `user_id`                        | A product has been deleted in the ACP. |
 | `user.created`      | `user_id`, `data`, `created_by`                | A user account has been created.      |
 | `user.updated`      | `user_id`, `data`, `changes`, `updated_by`     | A user account has been saved.        |
-| `user.deleted`      | `user_id`, `deleted_by`                        | A user account has been deleted.      |
 
 ### Frontend hooks
 

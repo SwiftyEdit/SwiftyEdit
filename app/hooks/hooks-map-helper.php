@@ -1,16 +1,16 @@
 <?php
 
-// app/hooks-map-helper.php
+// app/hooks/hooks-map-helper.php
 
 /**
- * Load the global hooks map from app/hooks-map.php.
+ * Load the global hooks map from app/hooks/hooks-map.php.
  */
 function se_get_hooks_map(): array
 {
     static $map = null;
 
     if ($map === null) {
-        $file = SE_ROOT . 'app/hooks-map.php';
+        $file = __DIR__ . '/hooks-map.php';
         $map = is_file($file) ? include $file : [];
     }
 

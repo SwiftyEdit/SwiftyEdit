@@ -36,6 +36,7 @@ Assigned by `app/template-setup.php` and `app/smarty.php`, available on **every*
 | `$page_logo`, `$favicon_base`, `$page_hash` | Only set when configured in the ACP. |
 | `$page_thumbnail`, `$page_thumbnails` (array) | Absolute URL(s) for `og:image`. Posts, events and products set their first image; without one, the page's own thumbnail or the global thumbnail from the ACP is used. Not set when none of these exists. |
 | `$se_template`, `$se_template_layout`, `$se_template_stylesheet` | Active theme, chosen page layout, chosen stylesheet variant (color-skin picker). |
+| `$se_assets_version` | Cache-busting version for theme assets: timestamp of the newest file in `dist/` (including `dist/skins/`). Append it as `?v={$se_assets_version}` to CSS/JS URLs so a new build reaches all visitors immediately. |
 | `$body_template` | Alias for `$se_template_layout`, as used by `index.tpl` to include the layout template. |
 | `$hidden_csrf_token` | Ready-made `<input type="hidden" name="csrf_token" ...>` HTML - embed directly in every `<form method="POST">`. |
 | `$arr_menue`, `$homepage_linkname`, `$homepage_title`, `$homepage_permalink`, `$link_home`, `$homelink_status` | Main navigation (see `navigation.tpl`). Each entry in `$arr_menue` can carry `children` (array, same shape) for dropdown submenus. |

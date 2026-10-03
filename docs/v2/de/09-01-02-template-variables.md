@@ -36,6 +36,7 @@ verfügbar (auch innerhalb Blog/Shop/Events-Templates).
 | `$page_logo`, `$favicon_base`, `$page_hash` | Nur gesetzt, wenn im ACP hinterlegt. |
 | `$page_thumbnail`, `$page_thumbnails` (Array) | Absolute URL(s) für `og:image`. Beiträge, Events und Produkte setzen ihr erstes Bild; ohne eigenes Bild gilt das Vorschaubild der Seite bzw. das globale Vorschaubild aus dem ACP. Nicht gesetzt, wenn nichts davon vorhanden ist. |
 | `$se_template`, `$se_template_layout`, `$se_template_stylesheet` | Aktives Theme, gewähltes Seitenlayout, gewählte Stylesheet-Variante (Farbschema-Picker). |
+| `$se_assets_version` | Cache-Busting-Version für die Theme-Assets: Zeitstempel der neuesten Datei in `dist/` (inkl. `dist/skins/`). Als `?v={$se_assets_version}` an CSS-/JS-URLs anhängen, damit ein neuer Build sofort bei allen Besuchern ankommt. |
 | `$body_template` | Alias für `$se_template_layout`, wie er von `index.tpl` zum Einbinden des Layout-Templates verwendet wird. |
 | `$hidden_csrf_token` | Fertiges `<input type="hidden" name="csrf_token" ...>`-HTML - direkt in jedes `<form method="POST">` einbetten. |
 | `$arr_menue`, `$homepage_linkname`, `$homepage_title`, `$homepage_permalink`, `$link_home`, `$homelink_status` | Hauptnavigation (siehe `navigation.tpl`). Jeder Eintrag in `$arr_menue` kann `children` (Array, gleiche Struktur) für Dropdown-Untermenüs enthalten. |
