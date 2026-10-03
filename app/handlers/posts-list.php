@@ -243,14 +243,7 @@ foreach($get_posts as $k => $post) {
 	/* post images */
 	$first_post_image = '';
 	$post_images = explode("<->", $get_posts[$k]['post_images']);
-    if(isset($post_images[1])) {
-        $get_posts[$k]['post_tmb_src'] = $post_images[1];
-    } else if(in_array($se_settings['posts_default_banner'], ["without_image", "null", null, ""], true) ||
-        empty($se_settings['posts_default_banner'])) {
-        $get_posts[$k]['post_tmb_src'] = '';
-    } else {
-        $get_posts[$k]['post_tmb_src'] = "/$img_path/" . $se_settings['posts_default_banner'];
-    }
+    $get_posts[$k]['post_tmb_src'] = $post_images[1] ?? '';
 	
 
 	if($get_posts[$k]['post_type'] == 'g') {

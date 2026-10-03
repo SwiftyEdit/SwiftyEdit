@@ -230,10 +230,8 @@ if($show_images[0]['media_file'] != "") {
     $first_product_img_title = $show_images[0]['media_title'];
     $first_product_img_caption = $show_images[0]['media_text'];
     $first_product_image = $first_product_img_src;
-} else if($se_settings['shop_default_banner'] == "without_image") {
-    $first_product_image = '';
 } else {
-    $first_product_image = "/$img_path/" . $se_settings['posts_default_banner'];
+    $first_product_image = '';
 }
 
 
@@ -530,10 +528,8 @@ if($cnt_variants > 1) {
         $product_images = explode("<->",$v['images']);
         if ($product_images[1] != "") {
             $var[$k]['image'] = str_replace('../images/', '/images/', $product_images[1]);
-        } else if ($se_settings['posts_default_banner'] == "without_image") {
-            $var[$k]['image'] = '';
         } else {
-            $var[$k]['image'] = str_replace('../images/', '/images/', $se_settings['posts_default_banner']);
+            $var[$k]['image'] = '';
         }
 
         $product_slug = basename($v['slug']);
@@ -594,10 +590,8 @@ if($product_data['product_related'] != '') {
         $product_images = explode("<->",$related_product['images']);
         if ($product_images[1] != "") {
             $rp[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
-        } else if ($se_settings['posts_default_banner'] == "without_image") {
-            $rp[$i]['image'] = '';
         } else {
-            $rp[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
+            $rp[$i]['image'] = '';
         }
         if (!empty($related_product['main_catalog_slug']) && $related_product['main_catalog_slug'] !== 'default') {
             $rp[$i]['product_href'] = SE_INCLUDE_PATH . "/" . $related_product['main_catalog_slug'].$related_product['slug'];
@@ -630,10 +624,8 @@ if($product_data['product_accessories'] != '') {
         $product_images = explode("<->",$accessories_product['images']);
         if ($product_images[1] != "") {
             $ap[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
-        } else if ($se_settings['posts_default_banner'] == "without_image") {
-            $ap[$i]['image'] = '';
         } else {
-            $ap[$i]['image'] = "/$img_path/" . $se_settings['posts_default_banner'];
+            $ap[$i]['image'] = '';
         }
 
         if (!empty($accessories_product['main_catalog_slug']) && $accessories_product['main_catalog_slug'] !== 'default') {
@@ -657,7 +649,6 @@ if($product_data['meta_description'] == '') {
     $product_data['meta_description'] = substr(strip_tags($post_teaser),0,160);
 }
 
-$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_product_image);
 
 /* delivery time */
 $product_delivery_time = (int) $product_data['product_delivery_time'];
@@ -722,7 +713,11 @@ $structuredDataContext = [
 $smarty->assign('page_title', html_entity_decode($product_data['meta_title']));
 $smarty->assign('page_meta_description', html_entity_decode($product_data['meta_description']));
 $smarty->assign('page_meta_keywords', html_entity_decode($product_data['tags']));
-$smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
+// without an image, keep the page/global thumbnail set in template-setup.php
+if($first_product_image != '') {
+    $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_product_image);
+    $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
+}
 
 $smarty->assign('product_options_comment_label', $product_data['product_options_comment_label']);
 

@@ -57,10 +57,8 @@ $entrydate_year = date('Y',$event_data['date']);
 if($event_images[1] != "") {
     $first_image = '/' . $img_path . '/' . str_replace('../content/images/','',$event_images[1]);
     $event_image_data = se_get_images_data($first_image,'data=array');
-} else if($se_settings['posts_default_banner'] == "without_image") {
-    $first_image = '';
 } else {
-    $first_image = "/$img_path/" . $se_settings['posts_default_banner'];
+    $first_image = '';
 }
 
 /* show guestlist */
@@ -167,12 +165,15 @@ if($event_data['meta_description'] == '') {
 }
 
 
-$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_image);
-
 $smarty->assign('page_title', html_entity_decode($event_data['meta_title']));
 $smarty->assign('page_meta_description', html_entity_decode($event_data['meta_description']));
 $smarty->assign('page_meta_keywords', html_entity_decode($event_data['tags']));
-$smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
+
+// without an image, keep the page/global thumbnail set in template-setup.php
+if($first_image != '') {
+    $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_image);
+    $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
+}
 
 // canonical link: stored on the event itself (auto-built from its detail
 // page + slug at save time, see acp/core/events/data-writer.php), same

@@ -392,18 +392,17 @@ if(!isset($page_thumbnail)) {
         $page_thumbnail = '/' . $se_branding_path . '/' . $page_thumbnail;
     }
 } else {
+    // first image is the main thumbnail, any further ones become additional og:image tags
     $page_thumbnail_array = explode("<->", $page_thumbnail);
-    if(is_array($page_thumbnail_array)) {
-        $page_thumbnail = $page_thumbnail_array[0];
-        if(count($page_thumbnail_array) > 0) {
-            $page_thumbnail = array_shift($page_thumbnail_array);
-            $thumb = array();
-            foreach($page_thumbnail_array as $t) {
-                $t = str_replace('/content/', $se_base_url.'content/', $t);
-                $thumb[] = $t;
-            }
-            $smarty->assign('page_thumbnails', $thumb);
+    $page_thumbnail = array_shift($page_thumbnail_array);
+    $thumb = array();
+    foreach($page_thumbnail_array as $t) {
+        if($t != '' && $t != 'null') {
+            $thumb[] = se_absolute_thumbnail_url($t);
         }
+    }
+    if(count($thumb) > 0) {
+        $smarty->assign('page_thumbnails', $thumb);
     }
 }
 
@@ -424,7 +423,7 @@ if($page_logo != 'null' && $page_logo != '') {
     $smarty->assign('page_logo', $page_logo);
 }
 if($page_thumbnail != 'null' && $page_thumbnail != '') {
-    $smarty->assign('page_thumbnail', $page_thumbnail);
+    $smarty->assign('page_thumbnail', se_absolute_thumbnail_url($page_thumbnail));
 }
 
 /* favicon set - generated as a fixed group of files under $se_branding_path

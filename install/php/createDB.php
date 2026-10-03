@@ -356,10 +356,8 @@ $initSettings = [
     "prefs_user_unlock_by_admin" => "no",
     "prefs_required_fields_registration" => "",
 
-    // posts / events images
-    "prefs_posts_default_banner" => "null",
+    // events
     "prefs_events_entries_per_page" => 10,
-    "prefs_events_default_banner" => "null",
 
     // shop
     "prefs_product_sorting" => 1,
@@ -371,7 +369,6 @@ $initSettings = [
     "prefs_business_taxnumber" => "",
     "prefs_delivery_addons" => "",
     "prefs_payment_addons" => "",
-    "prefs_shop_default_banner" => "",
     "prefs_shipping_costs_flat" => "0,00",
     "prefs_shipping_costs_cat1" => "0,00",
     "prefs_shipping_costs_cat2" => "0,00",

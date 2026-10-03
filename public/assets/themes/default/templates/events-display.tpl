@@ -26,7 +26,9 @@
             {/if}
         </div>
         <div class="col-md-3">
+            {if $event_img_src != ""}
             <p><img src="{$event_img_src}" class="img-fluid" alt="{$event_img_caption}"><br><small>{$event_img_caption}</small></p>
+            {/if}
         </div>
     </div>
 

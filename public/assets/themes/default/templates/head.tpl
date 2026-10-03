@@ -34,10 +34,12 @@
 <meta property="og:title" content="{$page_title|htmlentities}">
 <meta property="og:site_name" content="{$prefs_pagetitle}">
 
+{if $page_thumbnail != ""}
 <meta property="og:image" content="{$page_thumbnail}">
 {foreach $page_thumbnails as $thumbs}
 <meta property="og:image" content="{$thumbs}">
 {/foreach}
+{/if}
 
 <!-- CSS -->
 <link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/core.css" />
