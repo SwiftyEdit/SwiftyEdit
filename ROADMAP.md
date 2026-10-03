@@ -7,7 +7,7 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 - [x] Complete the transformation from flatCore CMS to SwiftyEdit CMS.
 
 ## Upcoming
-### Version 2.0 (Summer 2026)
+### Version 2.0 (Autumn 2026)
 
 - [x] Complete the Documentation
 - [x] Add a cancellation button, form, or page
@@ -26,7 +26,8 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 - [x] Integrate third-party System for translations 
 - [x] Exclude certain usernames [#237](https://github.com/SwiftyEdit/SwiftyEdit/issues/237)
 
-### Version 2.5 (~Q2 2026)
+### Version 2.1
+- [ ] Add write access (create/update) for pages, posts and products to the REST API
 - [ ] Database overhaul (merging the SQLite files, add MariaDB support)
 
 
