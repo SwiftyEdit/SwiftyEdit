@@ -602,7 +602,7 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 function se_generate_xml_sitemap($mode): void
 {
 
-    global $se_base_url,$db_content,$db_posts,$target_page;
+    global $se_base_url,$db_content,$db_posts;
 
     if($mode == '') { return; }
 
@@ -682,6 +682,9 @@ function se_generate_xml_sitemap($mode): void
             ]
         ]);
 
+        // detail page per language - same lookup as acp/core/blog/data-writer.php
+        $post_target_pages = [];
+
         $url_set_list = '';
         foreach ($posts_data as $post) {
 
@@ -690,7 +693,33 @@ function se_generate_xml_sitemap($mode): void
             }
 
             $post_lastedit = date("Y-m-d", $post['post_lastedit']);
-            $link = $se_base_url.'/'.$target_page[0].$post['post_slug'];
+
+            // prefer the stored canonical url (built at save time from detail
+            // page + slug + id), but only if it points to this site
+            $link = (string) $post['post_canonical_url'];
+            if ($link === '' || !str_starts_with($link, $se_base_url.'/')) {
+                $post_lang = $post['post_lang'];
+                if (!isset($post_target_pages[$post_lang])) {
+                    $target = $db_content->get("se_pages", "page_permalink", [
+                        "AND" => [
+                            "page_type_of_use" => "display_post",
+                            "page_language" => $post_lang
+                        ]
+                    ]);
+                    if (empty($target)) {
+                        $target = $db_content->get("se_pages", "page_permalink", [
+                            "AND" => [
+                                "page_posts_types[~]" => "m",
+                                "page_language" => $post_lang
+                            ]
+                        ]);
+                    }
+                    $post_target_pages[$post_lang] = (string) $target;
+                }
+                $filename = str_replace("/", "", $post['post_slug']) . '-' . $post['post_id'] . '.html';
+                $link = $se_base_url.'/'.$post_target_pages[$post_lang].$filename;
+            }
+
             $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
             $url_set = str_replace('{lastmod}', $post_lastedit, $url_set);
             $url_set_list .= $url_set . "\r\n";
