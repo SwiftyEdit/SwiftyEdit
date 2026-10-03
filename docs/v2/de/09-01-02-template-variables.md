@@ -33,7 +33,8 @@ verfügbar (auch innerhalb Blog/Shop/Events-Templates).
 | `$msg_content` | Einmalige Statusmeldung (z. B. nach Logout), meist leer. `nocache`. |
 | `$content_tags` | Tags des aktuellen Inhalts (Seite/Post/Produkt/Event) als Array `tag_href` / `tag_title`. Wird zusätzlich von jedem Post/Produkt/Event-Handler für den jeweiligen Eintrag neu gesetzt. |
 | `$page_title`, `$page_meta_description`, `$page_meta_keywords`, `$page_meta_author`, `$page_meta_robots`, `$page_canonical_url` | Meta-Angaben der aktuellen Seite, bereits `html_entity_decode()`t. |
-| `$page_logo`, `$page_thumbnail`, `$page_thumbnails` (Array), `$favicon_base`, `$page_hash` | Nur gesetzt, wenn im ACP hinterlegt. |
+| `$page_logo`, `$favicon_base`, `$page_hash` | Nur gesetzt, wenn im ACP hinterlegt. |
+| `$page_thumbnail`, `$page_thumbnails` (Array) | Absolute URL(s) für `og:image`. Beiträge, Events und Produkte setzen ihr erstes Bild; ohne eigenes Bild gilt das Vorschaubild der Seite bzw. das globale Vorschaubild aus dem ACP. Nicht gesetzt, wenn nichts davon vorhanden ist. |
 | `$se_template`, `$se_template_layout`, `$se_template_stylesheet` | Aktives Theme, gewähltes Seitenlayout, gewählte Stylesheet-Variante (Farbschema-Picker). |
 | `$body_template` | Alias für `$se_template_layout`, wie er von `index.tpl` zum Einbinden des Layout-Templates verwendet wird. |
 | `$hidden_csrf_token` | Fertiges `<input type="hidden" name="csrf_token" ...>`-HTML - direkt in jedes `<form method="POST">` einbetten. |
@@ -72,7 +73,7 @@ Zugewiesen von `app/handlers/posts-list.php` bzw. `app/handlers/posts-display.ph
 |---|---|
 | `$post_id`, `$post_type` | `post_type`: `m` Nachricht, `i` Bild, `g` Galerie, `v` Video, `l` Link, `d` Download. |
 | `$post_title`, `$post_teaser`, `$post_text`, `$post_author`, `$post_releasedate_str` | Grunddaten. |
-| `$post_tmb_src` | Erstes Bild. |
+| `$post_tmb_src` | Erstes Bild oder leer. Es gibt kein Standardbild - ein Platzhalter ist Sache des Themes. |
 | `$gallery_thumbs` | Nur `post_type` `g`: Array `tmb_src` / `img_src`. |
 | `$video_id` | Nur `post_type` `v`: YouTube-Video-ID. |
 | `$post_external_link`, `$post_external_redirect`, `$post_link_text` | Nur `post_type` `l`. |
@@ -125,7 +126,7 @@ Das umfangreichste Template im Shop-Bereich - hier die vollständige Liste:
 | `$product_text_label`, `$label_product_features`, `$product_features` (Array `snippet_title` / `snippet_content`) | Beschreibungs- und Merkmale-Tab. |
 | `$text_additional1` … `$text_additional5`, `$text_additional1_label` … `$text_additional5_label` | Bis zu 5 frei benannte zusätzliche Text-Tabs; Label leer ⇒ Tab ausblenden. |
 | `$text_scope_of_delivery` | Lieferumfang-Tab. |
-| `$show_variants`, `$show_related`, `$show_accessories` | Je ein Array mit gleicher Struktur: `title` / `teaser` / `image` / `product_href` / `class` (`class == 'active'` markiert das gerade angezeigte Produkt innerhalb der Varianten). |
+| `$show_variants`, `$show_related`, `$show_accessories` | Je ein Array mit gleicher Struktur: `title` / `teaser` / `image` (leer ohne Bild) / `product_href` / `class` (`class == 'active'` markiert das gerade angezeigte Produkt innerhalb der Varianten). |
 | `$product_snippet_text` / `_title`, `$product_snippet_price`, `$label_prices_snippet` | Optionale Snippet-Blöcke (frei verknüpfbarer Text-/Preis-Baustein aus dem ACP). |
 | `$attachment_filename`, `$download_title` / `_text` / `_credit` / `_version` / `_license`, `$se_snippet_downloading_modal` | Nur gesetzt, wenn ein Anhang hinterlegt ist. |
 | `$show_voting`, `$votes_status_up` / `$votes_status_dn`, `$votes_up` / `$votes_dn` | Wie bei Posts/Events. |
@@ -140,7 +141,7 @@ ist weitgehend analog zu Blog/Shop.
 
 **`events-list.tpl`**
 
-`$events` (Array analog `$posts`, mit `event_title`, `event_teaser` / `event_text`, `event_img_src`,
+`$events` (Array analog `$posts`, mit `event_title`, `event_teaser` / `event_text`, `event_img_src` (Bild oder leer),
 `event_href`, `event_releasedate`, `event_start_day` / `_month` / `_month_text` / `_year`,
 `event_end_day` / `_month` / `_year`, `event_categories`, `content_tags`, `show_voting`, `votes_*`,
 `draft_message`), `$events_cnt`, `$show_events_list`, `$show_pagination`, `$pagination`,
@@ -150,7 +151,7 @@ ist weitgehend analog zu Blog/Shop.
 
 | Variable | Bedeutung |
 |---|---|
-| `$event_id`, `$event_title`, `$event_teaser`, `$event_text`, `$event_img_src` | Grunddaten. |
+| `$event_id`, `$event_title`, `$event_teaser`, `$event_text`, `$event_img_src` | Grunddaten. `$event_img_src` ist leer, wenn kein Bild hinterlegt ist. |
 | `$event_start_day` / `_month` / `_month_text` / `_year`, `$event_end_day` / `_month` / `_year` | |
 | `$event_price_note` | Freitext-Preishinweis. |
 | `$show_guestlist` | Gästeliste aktiv (ACP: `event_guestlist == 2` registrierte Nutzer, `== 3` alle). |

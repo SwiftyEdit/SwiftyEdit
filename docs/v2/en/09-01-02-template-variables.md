@@ -33,7 +33,8 @@ Assigned by `app/template-setup.php` and `app/smarty.php`, available on **every*
 | `$msg_content` | A one-off status message (e.g. after logout), usually empty. `nocache`. |
 | `$content_tags` | Tags of the current content (page/post/product/event) as an array of `tag_href` / `tag_title`. Also re-assigned by every post/product/event handler for that specific entry. |
 | `$page_title`, `$page_meta_description`, `$page_meta_keywords`, `$page_meta_author`, `$page_meta_robots`, `$page_canonical_url` | Meta info for the current page, already `html_entity_decode()`d. |
-| `$page_logo`, `$page_thumbnail`, `$page_thumbnails` (array), `$favicon_base`, `$page_hash` | Only set when configured in the ACP. |
+| `$page_logo`, `$favicon_base`, `$page_hash` | Only set when configured in the ACP. |
+| `$page_thumbnail`, `$page_thumbnails` (array) | Absolute URL(s) for `og:image`. Posts, events and products set their first image; without one, the page's own thumbnail or the global thumbnail from the ACP is used. Not set when none of these exists. |
 | `$se_template`, `$se_template_layout`, `$se_template_stylesheet` | Active theme, chosen page layout, chosen stylesheet variant (color-skin picker). |
 | `$body_template` | Alias for `$se_template_layout`, as used by `index.tpl` to include the layout template. |
 | `$hidden_csrf_token` | Ready-made `<input type="hidden" name="csrf_token" ...>` HTML - embed directly in every `<form method="POST">`. |
@@ -72,7 +73,7 @@ Assigned by `app/handlers/posts-list.php` and `app/handlers/posts-display.php` r
 |---|---|
 | `$post_id`, `$post_type` | `post_type`: `m` message, `i` image, `g` gallery, `v` video, `l` link, `d` download. |
 | `$post_title`, `$post_teaser`, `$post_text`, `$post_author`, `$post_releasedate_str` | Basic data. |
-| `$post_tmb_src` | First image. |
+| `$post_tmb_src` | First image or empty. There is no default image - a placeholder is up to the theme. |
 | `$gallery_thumbs` | `post_type` `g` only: array of `tmb_src` / `img_src`. |
 | `$video_id` | `post_type` `v` only: YouTube video ID. |
 | `$post_external_link`, `$post_external_redirect`, `$post_link_text` | `post_type` `l` only. |
@@ -126,7 +127,7 @@ The most extensive template in the shop area - the full list:
 | `$product_text_label`, `$label_product_features`, `$product_features` (array `snippet_title` / `snippet_content`) | Description and features tab. |
 | `$text_additional1` … `$text_additional5`, `$text_additional1_label` … `$text_additional5_label` | Up to 5 freely named additional text tabs; empty label ⇒ hide that tab. |
 | `$text_scope_of_delivery` | Scope-of-delivery tab. |
-| `$show_variants`, `$show_related`, `$show_accessories` | Each an array with the same shape: `title` / `teaser` / `image` / `product_href` / `class` (`class == 'active'` marks the currently displayed product among the variants). |
+| `$show_variants`, `$show_related`, `$show_accessories` | Each an array with the same shape: `title` / `teaser` / `image` (empty without an image) / `product_href` / `class` (`class == 'active'` marks the currently displayed product among the variants). |
 | `$product_snippet_text` / `_title`, `$product_snippet_price`, `$label_prices_snippet` | Optional snippet blocks (freely linkable text/price building block from the ACP). |
 | `$attachment_filename`, `$download_title` / `_text` / `_credit` / `_version` / `_license`, `$se_snippet_downloading_modal` | Only set when an attachment is configured. |
 | `$show_voting`, `$votes_status_up` / `$votes_status_dn`, `$votes_up` / `$votes_dn` | As with posts/events. |
@@ -142,7 +143,7 @@ The shape is largely analogous to blog/shop.
 **`events-list.tpl`**
 
 `$events` (array analogous to `$posts`, with `event_title`, `event_teaser` / `event_text`,
-`event_img_src`, `event_href`, `event_releasedate`, `event_start_day` / `_month` / `_month_text` / `_year`,
+`event_img_src` (image or empty), `event_href`, `event_releasedate`, `event_start_day` / `_month` / `_month_text` / `_year`,
 `event_end_day` / `_month` / `_year`, `event_categories`, `content_tags`, `show_voting`, `votes_*`,
 `draft_message`), `$events_cnt`, `$show_events_list`, `$show_pagination`, `$pagination`,
 `$pag_prev_href` / `$pag_next_href`, `$categories`, `$form_action`, `$btn_read_more`.
@@ -151,7 +152,7 @@ The shape is largely analogous to blog/shop.
 
 | Variable | Meaning |
 |---|---|
-| `$event_id`, `$event_title`, `$event_teaser`, `$event_text`, `$event_img_src` | Basic data. |
+| `$event_id`, `$event_title`, `$event_teaser`, `$event_text`, `$event_img_src` | Basic data. `$event_img_src` is empty when no image is set. |
 | `$event_start_day` / `_month` / `_month_text` / `_year`, `$event_end_day` / `_month` / `_year` | |
 | `$event_price_note` | Free-text price note. |
 | `$show_guestlist` | Guest list enabled (ACP: `event_guestlist == 2` registered users, `== 3` everyone). |
