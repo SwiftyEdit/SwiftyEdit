@@ -57,6 +57,14 @@ if($get_events[0]['cnt_events'] < 1) {
     $show_events_list = false;
 }
 
+// se_get_event_entries() always puts the counters into $get_events[0], even
+// when this page has no entries (e.g. /p/99/) - drop that counter-only row,
+// otherwise it is rendered as an empty event with a broken link (same as in
+// se_get_content_by_tag())
+if(empty($get_events[0]['id'])) {
+    $get_events = [];
+}
+
 $nextPage = $events_start + $events_limit;
 $prevPage = $events_start - $events_limit;
 $cnt_pages = ceil($cnt_filter_events / $events_limit);

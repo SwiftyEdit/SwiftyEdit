@@ -171,6 +171,14 @@ if($get_posts[0]['cnt_posts'] < 1) {
     $show_posts_list = false;
 }
 
+// se_get_post_entries() always puts the counters into $get_posts[0], even
+// when this page has no entries (e.g. /p/99/) - drop that counter-only row,
+// otherwise it is rendered as an empty post with a broken link (same as in
+// se_get_content_by_tag())
+if(empty($get_posts[0]['post_id'])) {
+    $get_posts = [];
+}
+
 
 $nextPage = $posts_start+$posts_limit;
 $prevPage = $posts_start-$posts_limit;
