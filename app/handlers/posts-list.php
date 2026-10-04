@@ -91,6 +91,11 @@ foreach($all_categories as $cats) {
         $posts_filter['categories'] = $cats['cat_hash'];
         $display_mode = 'list_posts_category';
 
+        // only /<category>/ and /<category>/p/<n>/ are valid category urls
+        if(($array_mod_slug[1] ?? '') == '' || $array_mod_slug[1] == 'p') {
+            $status_404 = false;
+        }
+
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
                 $posts_start = $array_mod_slug[2];
@@ -121,6 +126,20 @@ if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_GET['page']
         header("Connection: close");
         exit;
     }
+}
+
+// the blog page itself - also covers real sub pages (e.g. blog/archive/),
+// routing.php keeps $mod_slug for them although $swifty_slug is the full query
+if($mod_slug == '' || $swifty_slug == $query) {
+    $status_404 = false;
+}
+
+// anything else below the blog page (unknown category, typo, old url)
+// must not render the post list with status 200 (soft 404)
+if($status_404 === true) {
+    $error_code = 404;
+    include __DIR__.'/../error.php';
+    exit;
 }
 
 
