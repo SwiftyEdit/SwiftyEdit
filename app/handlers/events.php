@@ -71,7 +71,7 @@ foreach($all_categories as $cats) {
 
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
-                $posts_start = $array_mod_slug[2];
+                $events_start = $array_mod_slug[2];
             } else {
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: /$swifty_slug");
