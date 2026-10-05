@@ -29,17 +29,16 @@ if(isset($_POST['load_update_data'])) {
 
     $get_filename = basename($_POST['file']);
 
-    if($_POST['load_update_data'] == 'alpha') {
-        $remote_file = 'alpha/'.$get_filename;
+    // each channel is served from its own directory on swiftyedit.net
+    $update_channels = ['alpha', 'beta', 'stable'];
+    $update_channel = $_POST['load_update_data'];
+
+    if(!in_array($update_channel, $update_channels, true)) {
+        echo '<div class="alert alert-warning">Error: unknown update channel</div>';
+        exit;
     }
 
-    if($_POST['load_update_data'] == 'beta') {
-        $remote_file = 'beta/'.$get_filename;
-    }
-
-    if($_POST['load_update_data'] == 'stable') {
-        $remote_file = 'beta/'.$get_filename;
-    }
+    $remote_file = $update_channel.'/'.$get_filename;
 
     $source_file = 'https://swiftyedit.net/releases/v2/files/'.$remote_file;
 
