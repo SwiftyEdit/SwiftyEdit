@@ -289,4 +289,4 @@ macOS metadata (`__MACOSX/`, `.DS_Store`, `._*`) is ignored during installation.
 You can host your plugin on any server, including GitHub. The only requirement
 is that the `info.json` and all ZIP files are publicly accessible via HTTPS.
 If you want your plugin to be listed in the official plugin directory on
-SwiftyEdit.com, you can submit it there.
+SwiftyEdit.dev, you can submit it there.

@@ -3,7 +3,7 @@
  * SwiftyEdit - Free, Open Source, Content Management System
  * GNU General Public License (license.txt)
  *
- * https://www.SwiftyEdit.com
+ * https://swiftyedit.dev
  * support@SwiftyEdit.com
  *
  */
