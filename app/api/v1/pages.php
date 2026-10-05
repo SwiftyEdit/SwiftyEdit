@@ -57,8 +57,10 @@ if ($api_page_id !== '') {
 
 // --- list ---
 
-$api_page = max(1, (int) ($_GET['page'] ?? 1));
-$api_per_page = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
+$api_pagination = se_api_pagination();
+$api_page = $api_pagination['page'];
+$api_per_page = $api_pagination['per_page'];
+$api_offset = $api_pagination['offset'];
 
 $api_where .= " AND page_status = 'public'";
 
@@ -90,8 +92,6 @@ if (isset($_GET['type']) && $_GET['type'] !== '') {
 }
 
 $api_total = (int) $db_content->query("SELECT COUNT(*) FROM se_pages WHERE $api_where", $api_map)->fetchColumn();
-
-$api_offset = ($api_page - 1) * $api_per_page;
 
 // sibling order of the page tree
 $pages = $db_content->query(

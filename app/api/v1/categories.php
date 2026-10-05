@@ -48,8 +48,10 @@ if ($api_category_id !== '') {
 
 // --- list ---
 
-$api_page = max(1, (int) ($_GET['page'] ?? 1));
-$api_per_page = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
+$api_pagination = se_api_pagination();
+$api_page = $api_pagination['page'];
+$api_per_page = $api_pagination['per_page'];
+$api_offset = $api_pagination['offset'];
 
 if (isset($_GET['lang']) && $_GET['lang'] !== '') {
     if (!preg_match('/^[a-zA-Z-]{2,20}$/', $_GET['lang'])) {
@@ -61,7 +63,7 @@ if (isset($_GET['lang']) && $_GET['lang'] !== '') {
 $api_total = count($categories);
 
 se_api_respond([
-    'data' => array_map($api_format, array_slice($categories, ($api_page - 1) * $api_per_page, $api_per_page)),
+    'data' => array_map($api_format, array_slice($categories, $api_offset, $api_per_page)),
     'meta' => [
         'page' => $api_page,
         'per_page' => $api_per_page,

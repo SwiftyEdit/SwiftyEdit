@@ -273,6 +273,26 @@ function se_api_categories(mixed $hashes): array {
 }
 
 /**
+ * Pagination from the ?page= and ?per_page= parameters
+ * page is capped, so the offset always stays a small integer - without the
+ * cap a huge page number overflows into a float, which breaks the LIMIT
+ * clause and array_slice(). Pages beyond the last one return an empty list.
+ *
+ * @return array ['page' => int, 'per_page' => int, 'offset' => int]
+ */
+function se_api_pagination(): array {
+
+    $page = min(1000000, max(1, (int) ($_GET['page'] ?? 1)));
+    $per_page = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
+
+    return [
+        'page' => $page,
+        'per_page' => $per_page,
+        'offset' => ($page - 1) * $per_page
+    ];
+}
+
+/**
  * All cat_hash values of a category slug - a slug can exist once per
  * language, so it can stand for several categories
  *

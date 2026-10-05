@@ -79,8 +79,10 @@ if ($api_product_id !== '') {
 
 // --- list ---
 
-$api_page = max(1, (int) ($_GET['page'] ?? 1));
-$api_per_page = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
+$api_pagination = se_api_pagination();
+$api_page = $api_pagination['page'];
+$api_per_page = $api_pagination['per_page'];
+$api_offset = $api_pagination['offset'];
 
 $api_where = [
     'type' => 'p',
@@ -101,7 +103,7 @@ $products = $db_posts->select('se_products', '*', [
     'AND' => $api_where,
     // same default order as the shop listing (se_get_products())
     'ORDER' => ['fixed' => 'ASC', 'priority' => 'DESC', 'id' => 'DESC'],
-    'LIMIT' => [($api_page - 1) * $api_per_page, $api_per_page]
+    'LIMIT' => [$api_offset, $api_per_page]
 ]);
 
 se_api_respond([
