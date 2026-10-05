@@ -91,6 +91,11 @@ foreach($all_categories as $cats) {
         $posts_filter['categories'] = $cats['cat_hash'];
         $display_mode = 'list_posts_category';
 
+        // only /<category>/ and /<category>/p/<n>/ are valid category urls
+        if(($array_mod_slug[1] ?? '') == '' || $array_mod_slug[1] == 'p') {
+            $status_404 = false;
+        }
+
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
                 $posts_start = $array_mod_slug[2];
@@ -123,6 +128,20 @@ if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_GET['page']
     }
 }
 
+// the blog page itself - also covers real sub pages (e.g. blog/archive/),
+// routing.php keeps $mod_slug for them although $swifty_slug is the full query
+if($mod_slug == '' || $swifty_slug == $query) {
+    $status_404 = false;
+}
+
+// anything else below the blog page (unknown category, typo, old url)
+// must not render the post list with status 200 (soft 404)
+if($status_404 === true) {
+    $error_code = 404;
+    include __DIR__.'/../error.php';
+    exit;
+}
+
 
 // get the posting-page by 'type_of_use' and $languagePack
 $target_page = $db_content->select("se_pages", "page_permalink", [
@@ -150,6 +169,14 @@ $show_posts_list = true;
 if($get_posts[0]['cnt_posts'] < 1) {
     // we have no products to show
     $show_posts_list = false;
+}
+
+// se_get_post_entries() always puts the counters into $get_posts[0], even
+// when this page has no entries (e.g. /p/99/) - drop that counter-only row,
+// otherwise it is rendered as an empty post with a broken link (same as in
+// se_get_content_by_tag())
+if(empty($get_posts[0]['post_id'])) {
+    $get_posts = [];
 }
 
 
@@ -243,14 +270,7 @@ foreach($get_posts as $k => $post) {
 	/* post images */
 	$first_post_image = '';
 	$post_images = explode("<->", $get_posts[$k]['post_images']);
-    if(isset($post_images[1])) {
-        $get_posts[$k]['post_tmb_src'] = $post_images[1];
-    } else if(in_array($se_settings['posts_default_banner'], ["without_image", "null", null, ""], true) ||
-        empty($se_settings['posts_default_banner'])) {
-        $get_posts[$k]['post_tmb_src'] = '';
-    } else {
-        $get_posts[$k]['post_tmb_src'] = "/$img_path/" . $se_settings['posts_default_banner'];
-    }
+    $get_posts[$k]['post_tmb_src'] = $post_images[1] ?? '';
 	
 
 	if($get_posts[$k]['post_type'] == 'g') {

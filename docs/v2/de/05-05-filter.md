@@ -1,6 +1,6 @@
 ---
 title: Shop - Filter
-description: Shop Filter
+description: Filtergruppen und Werte anlegen, mit denen Besucher Produkte eingrenzen
 btn: Filter
 group: backend
 priority: 400

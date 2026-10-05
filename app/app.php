@@ -33,10 +33,16 @@ require_once __DIR__.'/routing.php';
 // Initialize Smarty
 require_once __DIR__.'/smarty.php';
 
-// Handle XHR/API requests early
-if ($requestPathParts[0] === 'xhr' OR $requestPathParts[0] === 'api') {
+// Handle XHR requests early (browser sessions, HTMX)
+if ($requestPathParts[0] === 'xhr') {
     require_once __DIR__.'/handlers/xhr-routes.php';
     // Exit happens in xhr-routes.php
+}
+
+// Handle public API requests early (external clients, API keys)
+if ($requestPathParts[0] === 'api') {
+    require_once __DIR__.'/handlers/api-routes.php';
+    // Exit happens in api-routes.php
 }
 
 // Determine page ID and type
@@ -82,6 +88,13 @@ if($page_contents['page_redirect'] != '') {
     $redirect_code = (int) $page_contents['page_redirect_code'];
     header("location: $redirect",TRUE,$redirect_code);
     exit;
+}
+
+// bootstrap.php loaded $lang for the default language, but se_get_content()
+// switches $languagePack to the page language - reload the translations
+if($languagePack != $lang_sign && is_dir(SE_ROOT.'languages/'.basename($languagePack))) {
+    $languagePack = basename($languagePack);
+    require SE_ROOT.'languages/index.php';
 }
 
 // Load plugin/module content

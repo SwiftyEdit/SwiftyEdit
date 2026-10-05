@@ -8,8 +8,11 @@
  * @var array $lang
  * @var object $db_content
  * @var string $languagePack
+ * @var array $lang_codes
  * @var array $se_labels
  */
+
+use Medoo\Medoo;
 
 $writer_uri = '/admin-xhr/uploads/edit/';
 $delete_uri = '/admin-xhr/uploads/delete/';
@@ -138,34 +141,48 @@ if($_REQUEST['action'] == 'list') {
         $uploads_text_filter = '/';
     }
 
-    $langs = json_decode($_SESSION['global_filter_languages']);
-    if(!is_array($langs)) {
-        $langs[] = $languagePack;
+    // whitelist sort keys, they are used inside a raw SQL expression below
+    if(!in_array($order_key, ['media_lastedit', 'media_file', 'media_filesize'])) {
+        $order_key = $order_by;
+    }
+    if(!in_array($order_direction, ['ASC', 'DESC'])) {
+        $order_direction = 'DESC';
     }
 
+    // se_media stores one row per file and language.
+    // The list shows one entry per file, regardless of the selected language.
     $media_where = [
         "AND" => [
             "media_id[>]" => 0,
-            "media_file[~]" => ["AND" => ["$file_query%","%$uploads_text_filter%"]],
-            "media_lang" => $langs
+            "media_file[~]" => ["AND" => ["$file_query%","%$uploads_text_filter%"]]
         ]];
 
-    $media_order = [
-        "ORDER" => [
-            "$order_key" => "$order_direction"
+    $media_data_cnt = count($db_content->select("se_media", "media_file",
+        $media_where + ["GROUP" => "media_file"]
+    ));
+
+    $page_files = $db_content->select("se_media", [
+            "media_file",
+            "sort_value" => Medoo::raw("MAX(<$order_key>)")
+        ],
+        $media_where + [
+            "GROUP" => "media_file",
+            "ORDER" => ["sort_value" => $order_direction],
+            "LIMIT" => [$limit_start, $nbr_show_items]
         ]
-    ];
-
-    $media_limit = [
-        "LIMIT" => [$limit_start, $nbr_show_items]
-    ];
-
-    $media_data_cnt = $db_content->count("se_media", $media_where);
-
-
-    $media_data = $db_content->select("se_media","*",
-        $media_where+$media_order+$media_limit
     );
+    $page_files = array_column($page_files, 'media_file');
+
+    // fetch all language rows of the files on this page and group them by file
+    $media_rows_by_file = [];
+    if(count($page_files) > 0) {
+        $media_rows = $db_content->select("se_media", "*", [
+            "media_file" => $page_files
+        ]);
+        foreach($media_rows as $row) {
+            $media_rows_by_file[$row['media_file']][$row['media_lang']] = $row;
+        }
+    }
 
     $nbr_pages = ceil($media_data_cnt/$nbr_show_items);
 
@@ -173,7 +190,22 @@ if($_REQUEST['action'] == 'list') {
 
     echo '<div class="row">';
 
-    foreach($media_data as $media) {
+    // flags are base64 encoded images, build them only once per language
+    $lang_flags = [];
+    foreach($lang_codes as $lang_code) {
+        $lang_flags[$lang_code] = return_language_flag_src($lang_code);
+    }
+
+    foreach($page_files as $file) {
+
+        $file_rows = $media_rows_by_file[$file] ?? [];
+        if(count($file_rows) < 1) {
+            continue;
+        }
+
+        // prefer the row of the current backend language, fall back to any existing row
+        $media = $file_rows[$languagePack] ?? reset($file_rows);
+        $form_id = 'media-form-'.$media['media_id'];
 
         $list_tpl = $tpl_list_files;
         $preview_src = str_replace('../', '/', $media['media_file']);
@@ -181,10 +213,18 @@ if($_REQUEST['action'] == 'list') {
         $preview_lastedit = se_format_datetime($media['media_lastedit']);
         $preview_filesize = readable_filesize($media['media_filesize']);
         $media_file_hits = (int) $media['media_file_hits'];
-        $media_lang_thumb = '<img src="'.return_language_flag_src($media['media_lang']).'" width="15" title="'.$media['media_lang'].'" alt="'.$media['media_lang'].'">';
+
+        // one flag per available language, languages without data are greyed out
+        $media_lang_thumb = '';
+        foreach($lang_codes as $lang_code) {
+            $flag_attr = isset($file_rows[$lang_code]) ? '' : ' style="filter:grayscale(1);opacity:.5"';
+            $media_lang_thumb .= '<button type="submit" form="'.$form_id.'" name="set_lang" value="'.$lang_code.'" class="btn btn-link p-0 border-0 align-baseline"'.$flag_attr.' title="'.$lang_code.'">';
+            $media_lang_thumb .= '<img src="'.$lang_flags[$lang_code].'" width="15" alt="'.$lang_code.'">';
+            $media_lang_thumb .= '</button> ';
+        }
 
         $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-confirm="'.$lang['msg_confirm_delete_media'].'" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
-        $edit_btn = '<button class="btn btn-default btn-sm text-success w-100" name="file" value="'.$media['media_file'].'" >'.$icon['edit'].' '.$lang['edit'].'</button>';
+        $edit_btn = '<button type="submit" class="btn btn-default btn-sm text-success w-100">'.$icon['edit'].' '.$lang['edit'].'</button>';
 
 
         $labels = '';
@@ -212,6 +252,8 @@ if($_REQUEST['action'] == 'list') {
         $list_tpl = str_replace("{media_file_hits}","$media_file_hits",$list_tpl);
         $list_tpl = str_replace("{labels}","$labels",$list_tpl);
         $list_tpl = str_replace("{lang_thumb}","$media_lang_thumb",$list_tpl);
+        $list_tpl = str_replace("{form_id}","$form_id",$list_tpl);
+        $list_tpl = str_replace("{media_file}",htmlspecialchars($media['media_file'], ENT_QUOTES, 'UTF-8'),$list_tpl);
         $list_tpl = str_replace("{edit_button}","$edit_btn",$list_tpl);
         $list_tpl = str_replace("{delete_button}","$delete_btn",$list_tpl);
         $list_tpl = str_replace("{csrf_token}",$_SESSION['token'],$list_tpl);

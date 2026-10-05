@@ -1,6 +1,6 @@
 ---
-title: SwiftyEdit - Docs
-description: Documentation of the backend
+title: SwiftyEdit Documentation
+description: Everything about setting up, using and developing with SwiftyEdit
 btn: Overview
 group: backend
 priority: 0

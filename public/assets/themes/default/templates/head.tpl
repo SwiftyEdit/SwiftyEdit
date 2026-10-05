@@ -34,27 +34,29 @@
 <meta property="og:title" content="{$page_title|htmlentities}">
 <meta property="og:site_name" content="{$prefs_pagetitle}">
 
+{if $page_thumbnail != ""}
 <meta property="og:image" content="{$page_thumbnail}">
 {foreach $page_thumbnails as $thumbs}
 <meta property="og:image" content="{$thumbs}">
 {/foreach}
+{/if}
 
 <!-- CSS -->
-<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/core.css" />
+<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/core.css?v={$se_assets_version}" />
 {if $se_template_stylesheet != ''}
-	<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/skins/{$se_template_stylesheet}" />
+	<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/skins/{$se_template_stylesheet}?v={$se_assets_version}" />
 {/if}
 {foreach $se_theme_components as $component_id => $component}
 	{if $component.enabled && $component.has_css}
-		<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.css" />
+		<link rel="stylesheet" media="screen" href="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.css?v={$se_assets_version}" />
 	{/if}
 {/foreach}
 
 <!-- JavaScript -->
-<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/core.js"></script>
+<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/core.js?v={$se_assets_version}"></script>
 {foreach $se_theme_components as $component_id => $component}
 	{if $component.enabled && $component.has_js}
-		<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.js"></script>
+		<script type="text/javascript" src="{$se_inc_dir}/themes/{$se_template}/dist/{$component_id}.js?v={$se_assets_version}"></script>
 	{/if}
 {/foreach}
 

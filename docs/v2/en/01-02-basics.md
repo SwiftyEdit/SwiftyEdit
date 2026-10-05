@@ -1,6 +1,6 @@
 ---
 title: Basics
-description: SwiftyEdit basics
+description: The dashboard and the basics of working in the backend
 btn: Basics
 group: administrators
 priority: 100

@@ -4,6 +4,25 @@
  * @var string $languagePack en | de | es ...
  */
 
+/**
+ * guarded and declared before its first use, because the frontend includes
+ * this file a second time when the requested page uses a different language
+ * (see app/app.php) - conditionally declared functions are not hoisted
+ *
+ * @param $file
+ * @return mixed
+ */
+if(!function_exists('l10n_to_array')) {
+    function l10n_to_array($file) {
+        $data = array();
+        if(is_file($file)) {
+            $json = file_get_contents($file);
+            $data = json_decode($json, true);
+        }
+        return $data;
+    }
+}
+
 if(SE_SECTION == 'frontend') {
 
     $lang_file_frontend = SE_ROOT.'languages/en/frontend.json';
@@ -68,17 +87,4 @@ if(SE_SECTION == 'frontend') {
 
 if(is_file($extend_lf)) {
 	include $extend_lf;
-}
-
-/**
- * @param $file
- * @return mixed
- */
-function l10n_to_array($file) {
-    $data = array();
-    if(is_file($file)) {
-        $json = file_get_contents($file);
-        $data = json_decode($json, true);
-    }
-    return $data;
 }

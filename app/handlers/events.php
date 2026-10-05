@@ -3,6 +3,7 @@
 
 $time_string_now = time();
 $display_mode = 'list_events';
+$status_404 = true;
 
 /* defaults */
 $events_start = 0;
@@ -63,9 +64,14 @@ foreach($all_categories as $cats) {
         $events_filter['categories'] = $cats['cat_hash'];
         $display_mode = 'list_posts_category';
 
+        // only /<category>/ and /<category>/p/<n>/ are valid category urls
+        if(($array_mod_slug[1] ?? '') == '' || $array_mod_slug[1] == 'p') {
+            $status_404 = false;
+        }
+
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
-                $posts_start = $array_mod_slug[2];
+                $events_start = $array_mod_slug[2];
             } else {
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: /$swifty_slug");
@@ -77,6 +83,8 @@ foreach($all_categories as $cats) {
 
 /* pagination f.e. /p/2/ or /p/3/ .... */
 if($array_mod_slug[0] == 'p') {
+
+    $status_404 = false;
 
     if(is_numeric($array_mod_slug[1])) {
         $events_start = $array_mod_slug[1];
@@ -104,6 +112,31 @@ if($page_contents['page_type_of_use'] == 'display_event' AND $get_event_id == ''
     header("Connection: close");
 }
 
+
+// the events page itself - also covers real sub pages (e.g. events/archive/),
+// routing.php keeps $mod_slug for them although $swifty_slug is the full query
+if($mod_slug == '' || $swifty_slug == $query || $display_mode == 'show_event') {
+    $status_404 = false;
+}
+
+// anything else below the events page (unknown category, typo, old url)
+// must not render the event list with status 200 (soft 404)
+if($status_404 === true) {
+    $error_code = 404;
+    include __DIR__.'/../error.php';
+    exit;
+}
+
+// unknown events, drafts and events with a future release date get a 404 -
+// administrators can still preview drafts (same as products, see products.php)
+if($display_mode == 'show_event') {
+    $requested_event = se_get_event_data($get_event_id);
+    if(!is_array($requested_event) || (!se_frontend_visitor_can_see_drafts() && !se_event_is_publicly_visible($requested_event))) {
+        $error_code = 404;
+        include __DIR__.'/../error.php';
+        exit;
+    }
+}
 
 switch ($display_mode) {
     case "list_events_category":

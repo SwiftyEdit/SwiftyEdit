@@ -1,7 +1,7 @@
 ---
-title: Settings
-description: Settings
-btn: Settings
+title: Einstellungen
+description: Alle globalen Einstellungen von SwiftyEdit an einem Ort
+btn: Einstellungen
 group: backend
 priority: 900
 ---
@@ -18,6 +18,7 @@ Die Einstellungen sind in folgende Unterkategorien unterteilt
 * Shop
 * Events
 * Labels
+* API-Keys
 
 ## Allgemein
 
@@ -127,6 +128,36 @@ aktiviert werden sollen.
 ## Labels {#labels}
 Sämtliche Einträge und Daten im Backend können mit Labels versehen werden.
 Wenn Du viele Daten und Einträge verwaltest, helfen diese Labels den Überblick zu behalten.
+
+## API-Keys {#api-keys}
+API-Keys geben anderen Anwendungen Zugriff auf die öffentliche API - zum Beispiel einer zweiten
+Website, die Deine Produkte anzeigt. Wie die API benutzt wird, erfahren Entwickler im Kapitel
+[API](09-04-api.md).
+
+Zum Anlegen eines Keys vergibst Du einen Namen (z.B. den Namen der Anwendung, die ihn nutzt) und
+wählst die Berechtigungen aus:
+
+| Berechtigung | Bedeutung |
+|--------------|-----------|
+| Produkte lesen | Der Key kann öffentliche Produkte abrufen. |
+| Preise lesen, auch wenn sie nur angemeldeten Kunden angezeigt werden | Nur relevant, wenn der Shop Preise laut Einstellung nur angemeldeten Kunden zeigt. Ohne diese Berechtigung liefert die API in dem Fall keine Preise. |
+| Blog-Beiträge lesen | Der Key kann öffentliche Blog-Beiträge abrufen. |
+| Veranstaltungen lesen | Der Key kann öffentliche Veranstaltungen abrufen. |
+| Seiten lesen | Der Key kann öffentliche Seiten abrufen. Passwortgeschützte Seiten und Seiten für Benutzergruppen bleiben verborgen. |
+| Kategorien lesen | Der Key kann die Kategorien von Produkten, Beiträgen und Veranstaltungen abrufen. |
+
+{alert:warning}
+__Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn
+sicher auf - SwiftyEdit speichert nur einen Fingerabdruck (Hash) des Keys und kann ihn später
+nicht mehr anzeigen. Ist ein Key verloren gegangen, legst Du einfach einen neuen an.
+{/alert}
+
+In der Liste siehst Du den Anfang jedes Keys, damit Du sie auseinanderhalten kannst, außerdem
+wann der Key zuletzt benutzt wurde und wie viele Anfragen damit gestellt wurden.
+
+* __Sperren__ blockiert einen Key sofort - Anwendungen, die ihn nutzen, verlieren den Zugriff.
+  Das Sperren lässt sich nicht rückgängig machen.
+* __Löschen__ lassen sich nur gesperrte Keys.
 
 ## Database {#database}
 Dieser Tab erscheint nur, wenn die Seite mit SQLite betrieben wird (bei MySQL-Installationen

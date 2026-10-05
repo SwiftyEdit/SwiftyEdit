@@ -49,10 +49,17 @@ if($page_contents['page_type_of_use'] == 'display_post' AND $get_post_id == '') 
 if(isset($_GET['goto'])) {
 	
 	$get_link_by_id = (int) $_GET['goto'];
-	$target_post = $db_posts->get("se_posts", ["post_link","post_link_hits"], [
+	$target_post = $db_posts->get("se_posts", ["post_link","post_link_hits","post_status","post_releasedate"], [
 			"post_id" => $get_link_by_id
 	]);
-	
+
+	// don't reveal the link of unknown, draft or unreleased posts
+	if(!is_array($target_post) || $target_post['post_link'] == '' || (!se_frontend_visitor_can_see_drafts() && !se_post_is_publicly_visible($target_post))) {
+		$error_code = 404;
+		include __DIR__.'/../error.php';
+		exit;
+	}
+
 	$target_url = $target_post['post_link'];
 	$upd_counter = ((int) $target_post['post_link_hits'])+1;
 	
@@ -127,6 +134,17 @@ if(isset($_POST['post_attachment'])) {
 	}
 }
 
+
+// unknown posts, drafts and posts with a future release date get a 404 -
+// administrators can still preview drafts (same as products, see products.php)
+if($display_mode == 'show_post') {
+    $requested_post = se_get_post_data($get_post_id);
+    if(!is_array($requested_post) || (!se_frontend_visitor_can_see_drafts() && !se_post_is_publicly_visible($requested_post))) {
+        $error_code = 404;
+        include __DIR__.'/../error.php';
+        exit;
+    }
+}
 
 switch ($display_mode) {
     case "list_posts_category":

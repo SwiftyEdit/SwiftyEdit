@@ -1,6 +1,6 @@
 ---
 title: Developer
-description: Developer notes and instructions
+description: Build your own themes and plugins, configuration and contributing to the project
 btn: Developer
 group: developer
 priority: 200
@@ -69,6 +69,12 @@ ACP.
 Hooks let you step in at precisely defined moments - reshaping content before it's rendered, or
 reacting to events like a page being updated - all without changing core code. The
 [Hooks](09-03-hooks.md) chapter covers how it all works.
+
+## API
+
+The public REST API lets other applications read your content - for example a second website
+that displays your products. How to use API keys, which endpoints exist and how the responses
+are structured is covered in the [API](09-04-api.md) chapter.
 
 ## Contributing
 

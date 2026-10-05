@@ -51,10 +51,11 @@ sitemap*.xml
 *.sqlite3
 
 # other
+# Ship the English README from the project root
++ /README.md
 *.zip
 README.md
 README.*.md
-LICENSE
 CLAUDE.md
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md

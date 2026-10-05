@@ -1,6 +1,6 @@
 ---
 title: Shop - Features
-description: Features
+description: Create features that appear as a table on products
 btn: Features
 group: backend
 priority: 400

@@ -4,9 +4,9 @@
  * Tracks which /install/migrations/ files have already run, so the runner
  * (se_run_pending_migrations() in install/php/functions.php) never re-applies
  * a migration. Created automatically like any other table by the additive
- * schema-sync (update_database() / install/inc.update.php) - on a fresh
- * install it's simply created empty, since createDB.php builds tables in
- * their current shape directly and never needs a migration to run.
+ * schema-sync (update_database() / install/inc.update.php). On a fresh
+ * install, createDB.php creates it and marks every shipped migration as
+ * applied, since it builds all tables in their current shape directly.
  */
 
 $database = "content";

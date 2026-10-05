@@ -1,6 +1,6 @@
 ---
 title: Shop - Filter
-description: Shop Filter
+description: Create filter groups and values that let visitors narrow down products
 btn: Filter
 group: backend
 priority: 400

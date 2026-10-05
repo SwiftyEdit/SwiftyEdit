@@ -20,23 +20,6 @@ $input_event_time_offset = [
     "type" => "text"
 ];
 
-$arr_Images = se_get_all_images_rec();
-
-foreach ($arr_Images as $k => $v) {
-    $select_images[basename($v)] = $v;
-}
-$select_images = [];
-$select_nothing = ['option_nothing_selected' => "null"];
-$select_images = $select_nothing+$select_images;
-
-$input_select_default_banner = [
-    "input_name" => "prefs_events_default_banner",
-    "input_value" => $se_settings['events_default_banner'],
-    "label" => $lang['label_settings_default_image'],
-    "options" => $select_images,
-    "type" => "select"
-];
-
 $input_select_guestlist = [
     "input_name" => "prefs_posts_default_guestlist",
     "input_value" => $se_settings['posts_default_guestlist'],
@@ -57,10 +40,6 @@ echo '<h5 class="heading-line">'.$lang['label_entries'].'</h5>';
 
 echo se_print_form_input($input_entries_per_page);
 echo se_print_form_input($input_event_time_offset);
-
-echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
-
-echo se_print_form_input($input_select_default_banner);
 
 echo '<h5 class="heading-line">'.$lang['label_guestlist'].'</h5>';
 

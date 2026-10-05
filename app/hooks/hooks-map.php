@@ -130,10 +130,9 @@ return [
             'context' => ['user_id', 'data', 'changes', 'updated_by'],
         ],
 
-        'user.deleted' => [
-            'type' => 'action',
-            'context' => ['user_id', 'deleted_by'],
-        ],
+        // 'user.deleted' is not available yet - the ACP has no function to
+        // delete users. Add it here (and to docs/v2/{de,en}/09-03-hooks.md)
+        // together with that function.
     ],
 
 

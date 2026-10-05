@@ -110,6 +110,7 @@ echo $db_type. ' Database<hr>';
 $sql_user_table = se_generate_sql_query("se_user.php",$db_type);
 $sql_groups_table = se_generate_sql_query("se_groups.php",$db_type);
 $sql_tokens_table = se_generate_sql_query("se_tokens.php",$db_type);
+$sql_api_keys_table = se_generate_sql_query("se_api_keys.php",$db_type);
 
 $sql_feeds_table = se_generate_sql_query("se_feeds.php",$db_type);
 $sql_pages_table = se_generate_sql_query("se_pages.php",$db_type);
@@ -134,6 +135,9 @@ $sql_log_table = se_generate_sql_query("se_log.php",$db_type);
 $sql_mailbox_table = se_generate_sql_query("se_mailbox.php",$db_type);
 $sql_orders_table = se_generate_sql_query("se_orders.php",$db_type);
 $sql_delivery_areas_table = se_generate_sql_query("se_delivery_areas.php",$db_type);
+$sql_wishlists_table = se_generate_sql_query("se_wishlists.php",$db_type);
+$sql_wishlist_items_table = se_generate_sql_query("se_wishlist_items.php",$db_type);
+$sql_migrations_table = se_generate_sql_query("se_migrations.php",$db_type);
 
 
 if($db_type == 'mysql') {
@@ -153,8 +157,10 @@ if($db_type == 'mysql') {
 $dbh_user->query($sql_user_table);
 $dbh_user->query($sql_tokens_table);
 $dbh_user->query($sql_groups_table);
+$dbh_user->query($sql_api_keys_table);
 
 $dbh_user->insert("se_user", [
+	"user_uuid" => se_generate_uuid(),
 	"user_class" => "administrator",
 	"user_nick" => "$username",
 	"user_verified" => "verified",
@@ -208,6 +214,23 @@ $dbh_content->query($sql_orders_table);
 $dbh_content->query($sql_carts_table);
 $dbh_content->query($sql_filter_table);
 $dbh_content->query($sql_delivery_areas_table);
+$dbh_content->query($sql_wishlists_table);
+$dbh_content->query($sql_wishlist_items_table);
+$dbh_content->query($sql_migrations_table);
+
+/* tables above are already built in their current shape, so every
+   migration that ships with this release counts as applied - otherwise
+   the first update would run all of them against a fresh database
+   (see se_run_pending_migrations() in functions.php) */
+$shipped_migrations = glob(__DIR__."/../migrations/*.php");
+if(is_array($shipped_migrations)) {
+	foreach($shipped_migrations as $migration_file) {
+		$dbh_content->insert("se_migrations", [
+			"migration" => basename($migration_file, '.php'),
+			"applied_at" => time()
+		]);
+	}
+}
 
 /* insert two example pages */
 
@@ -333,10 +356,8 @@ $initSettings = [
     "prefs_user_unlock_by_admin" => "no",
     "prefs_required_fields_registration" => "",
 
-    // posts / events images
-    "prefs_posts_default_banner" => "null",
+    // events
     "prefs_events_entries_per_page" => 10,
-    "prefs_events_default_banner" => "null",
 
     // shop
     "prefs_product_sorting" => 1,
@@ -348,7 +369,6 @@ $initSettings = [
     "prefs_business_taxnumber" => "",
     "prefs_delivery_addons" => "",
     "prefs_payment_addons" => "",
-    "prefs_shop_default_banner" => "",
     "prefs_shipping_costs_flat" => "0,00",
     "prefs_shipping_costs_cat1" => "0,00",
     "prefs_shipping_costs_cat2" => "0,00",

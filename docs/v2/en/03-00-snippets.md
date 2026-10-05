@@ -1,6 +1,6 @@
 ---
 title: Snippets
-description: Manage and use Snippets
+description: Manage and use snippets
 btn: Snippets
 group: backend
 priority: 200
@@ -84,6 +84,21 @@ After that, `{hotline}` can be used in any snippet.
 - Don't use any of the names listed above. SwiftyEdit sets them while building the page and
   would overwrite your value.
 - A placeholder that was never set is left unchanged in the text.
+
+## Snippets in the API {#api}
+
+By default, the [public API](09-04-api.md) returns texts and page contents as they are stored –
+shortcodes stay in the text as `[snippet=name]` etc.
+
+With the parameter `?render=1`, snippets and shortcodes are resolved:
+
+- Snippets are loaded in the __language of the record__ (e.g. the product or page), not the
+  language of the request. If the snippet doesn't exist in that language, the same fallback as
+  in the frontend applies.
+- The [placeholders](#placeholders) get the same values as on the detail page, e.g. the
+  product's `{sku}` and `{page_title}`.
+- Nothing is replaced inside `<pre>` and `<code>` blocks.
+- `[script]`, `[plugin]` and `[include]` are __not__ executed and stay unchanged in the text.
 
 ## Input fields
 

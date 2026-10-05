@@ -87,6 +87,22 @@ Danach kann `{hotline}` in jedem Snippet verwendet werden.
   gesetzt und würden Deinen Wert überschreiben.
 - Ein Platzhalter, der nie gesetzt wurde, bleibt im Text unverändert stehen.
 
+## Snippets in der API {#api}
+
+Die [öffentliche API](09-04-api.md) liefert Texte und Seiteninhalte standardmäßig so, wie sie
+gespeichert sind – Shortcodes bleiben also als `[snippet=name]` usw. im Text stehen.
+
+Mit dem Parameter `?render=1` werden Snippets und Shortcodes aufgelöst:
+
+- Snippets werden in der __Sprache des Datensatzes__ (z.B. des Produkts oder der Seite)
+  geladen, nicht in der Sprache der Anfrage. Fehlt das Snippet in dieser Sprache, gilt dieselbe
+  Ausweichregel wie im Frontend.
+- Die [Platzhalter](#platzhalter) erhalten dieselben Werte wie auf der Detailseite, also z.B.
+  `{sku}` und `{page_title}` des Produkts.
+- Innerhalb von `<pre>`- und `<code>`-Blöcken wird nichts ersetzt.
+- `[script]`, `[plugin]` und `[include]` werden __nicht__ ausgeführt und bleiben unverändert im
+  Text stehen.
+
 ## Eingabefelder
 
 | Feld             | Beschreibung                                                                                                                                                                                                     |

@@ -50,9 +50,11 @@
                 {$value.event_teaser}
             </div>
             <div class="col-md-3">
+                {if $value.event_img_src != ""}
                 <div class="teaser-image">
                     <img src="{$value.event_img_src}" class="img-fluid">
                 </div>
+                {/if}
             </div>
         </div>
         <div class="row mt-1 mb-3">

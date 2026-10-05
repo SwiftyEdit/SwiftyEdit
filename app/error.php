@@ -68,6 +68,17 @@ if($page_contents['page_permalink'] != '') {
     $smarty->assign('content_tags', array());
 }
 
+// error pages must never be indexed - keep the error page's own robots
+// value only if it already contains noindex (e.g. "noindex, nofollow"),
+// otherwise the robots value of the page matched by routing would leak
+$page_meta_robots = $page_contents['page_meta_robots'] ?? '';
+
+if(stripos($page_meta_robots, 'noindex') === false) {
+    $page_meta_robots = 'noindex';
+}
+
+$smarty->assign('page_meta_robots', $page_meta_robots);
+
 $smarty->display('index.tpl',$cache_id);
 include_once __DIR__.'/tracker.php';
 exit;

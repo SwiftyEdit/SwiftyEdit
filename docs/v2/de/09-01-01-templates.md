@@ -1,6 +1,6 @@
 ---
 title: Themes - Templates
-description: The template system
+description: Die Template-Dateien eines Themes und die Vererbung vom Default-Theme
 btn: Templates
 group: developer
 priority: 200

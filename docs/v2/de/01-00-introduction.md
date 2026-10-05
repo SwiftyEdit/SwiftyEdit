@@ -1,6 +1,6 @@
 ---
 title: SwiftyEdit Dokumentation
-description: Dokumentation des Backends
+description: Alles zu Einrichtung, Bedienung und Entwicklung mit SwiftyEdit
 btn: Übersicht
 group: backend
 priority: 0

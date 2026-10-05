@@ -496,6 +496,52 @@ function se_get_event_data($id) {
     return $data;
 }
 
+/**
+ * Whether a blog post is visible to a non-admin frontend visitor:
+ * drafts ("post_status" == 2) and posts with a release date in the future
+ * are not - same rules as se_product_is_publicly_visible() for products.
+ * The blog listing already filters these out (se_get_post_entries()), this
+ * is for the detail page, which is reachable by URL.
+ *
+ * @param array $data row from se_posts
+ * @return bool
+ */
+function se_post_is_publicly_visible(array $data): bool {
+
+    if (($data['post_status'] ?? null) == '2') {
+        return false;
+    }
+
+    $releasedate = $data['post_releasedate'] ?? null;
+    if ($releasedate !== null && $releasedate !== '' && (int) $releasedate > time()) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Whether an event is visible to a non-admin frontend visitor - same rules
+ * as se_post_is_publicly_visible(). Past events stay visible by URL, only
+ * the listing hides them.
+ *
+ * @param array $data row from se_events
+ * @return bool
+ */
+function se_event_is_publicly_visible(array $data): bool {
+
+    if (($data['status'] ?? null) == '2') {
+        return false;
+    }
+
+    $releasedate = $data['releasedate'] ?? null;
+    if ($releasedate !== null && $releasedate !== '' && (int) $releasedate > time()) {
+        return false;
+    }
+
+    return true;
+}
+
 
 /**
  * print currency

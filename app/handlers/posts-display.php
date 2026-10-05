@@ -58,10 +58,8 @@ $entrydate_year = date('Y',$post_data['post_date']);
 if($post_images[1] != "") {
     $first_post_image = $post_images[1];
 	$post_image_data = se_get_images_data($first_post_image,'data=array');
-} else if($se_settings['posts_default_banner'] == "without_image") {
-	$first_post_image = '';
 } else {
-	$first_post_image = "/$img_path/" . $se_settings['posts_default_banner'];
+	$first_post_image = '';
 }
 
 
@@ -164,13 +162,15 @@ if($post_data['post_meta_description'] == '') {
 	$post_data['post_meta_description'] = substr(strip_tags($post_teaser),0,160);
 }
 
-$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_post_image);
-
-
 $smarty->assign('page_title', html_entity_decode($post_data['post_meta_title']));
 $smarty->assign('page_meta_description', html_entity_decode($post_data['post_meta_description']));
 $smarty->assign('page_meta_keywords', html_entity_decode($post_data['post_tags']));
-$smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
+
+// without an image, keep the page/global thumbnail set in template-setup.php
+if($first_post_image != '') {
+	$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_post_image);
+	$smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
+}
 
 // canonical link: stored on the post itself (auto-built from its detail
 // page + slug at save time, see acp/core/blog/data-writer.php), same

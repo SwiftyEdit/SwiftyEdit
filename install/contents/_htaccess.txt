@@ -1,6 +1,11 @@
 # --- SwiftyEdit core (do not edit) ---
 RewriteEngine On
 
+# pass the Authorization header on to PHP - with PHP-FPM/CGI Apache drops
+# it otherwise (needed for API keys, see app/handlers/api-routes.php)
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 RewriteRule ^images/(.*)$ assets/images/$1 [L]
 RewriteRule ^images_tmb/(.*)$ assets/images_tmb/$1 [L]
 RewriteRule ^galleries/(.*)$ assets/galleries/$1 [L]

@@ -57,6 +57,14 @@ if($get_events[0]['cnt_events'] < 1) {
     $show_events_list = false;
 }
 
+// se_get_event_entries() always puts the counters into $get_events[0], even
+// when this page has no entries (e.g. /p/99/) - drop that counter-only row,
+// otherwise it is rendered as an empty event with a broken link (same as in
+// se_get_content_by_tag())
+if(empty($get_events[0]['id'])) {
+    $get_events = [];
+}
+
 $nextPage = $events_start + $events_limit;
 $prevPage = $events_start - $events_limit;
 $cnt_pages = ceil($cnt_filter_events / $events_limit);
@@ -142,14 +150,7 @@ foreach ($get_events as $k => $post) {
     /* post images */
     $first_post_image = '';
     $post_images = explode("<->", $get_events[$k]['images']);
-    if(isset($post_images[1])) {
-        $get_events[$k]['event_img_src'] = $post_images[1];
-    } else if(in_array($se_settings['posts_default_banner'], ["without_image", "null", null, ""], true) ||
-        empty($se_settings['posts_default_banner'])) {
-        $get_events[$k]['event_img_src'] = '';
-    } else {
-        $get_events[$k]['event_img_src'] = "/$img_path/" . $se_settings['posts_default_banner'];
-    }
+    $get_events[$k]['event_img_src'] = $post_images[1] ?? '';
 
     $post_filename = basename($get_events[$k]['slug']);
     $get_events[$k]['event_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$post_filename-" . $get_events[$k]['id'] . ".html";

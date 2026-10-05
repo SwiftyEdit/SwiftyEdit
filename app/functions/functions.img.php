@@ -148,3 +148,21 @@ function se_img_natural_dimensions($src, $widths, $ratio)
 
     return [$size[0], $size[1]];
 }
+
+/**
+ * Absolute URL for an og:image/thumbnail - crawlers (Facebook, LinkedIn, ...)
+ * ignore relative paths like "/images/foo.jpg"
+ *
+ * @param string $src relative path or already absolute URL
+ * @return string
+ */
+function se_absolute_thumbnail_url(string $src): string
+{
+    global $se_base_url;
+
+    if (preg_match('#^https?://#i', $src)) {
+        return $src;
+    }
+
+    return rtrim($se_base_url, '/') . '/' . ltrim($src, '/');
+}

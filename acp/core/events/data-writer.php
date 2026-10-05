@@ -170,6 +170,18 @@ if(isset($_POST['save_post'])) {
     $meta_title = se_return_clean_value($meta_title);
     $meta_description = se_return_clean_value($meta_description);
 
+    // uuid is not part of the form, so new events never got one. Keep the
+    // existing one on update (or generate one if it is missing), generate a
+    // new one for new events. Set after the $_POST loop above, so a posted
+    // "uuid" can't override it.
+    $uuid = '';
+    if($_POST['save_post'] == 'update') {
+        $uuid = (string) $db_posts->get("se_events", "uuid", ["id" => (int) $id]);
+    }
+    if($uuid === '') {
+        $uuid = se_generate_uuid();
+    }
+
     // get all $cols
     require SE_ROOT.'install/contents/se_events.php';
     // build sql string -> f.e. "releasedate" => $releasedate,

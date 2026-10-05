@@ -135,6 +135,19 @@ if($se_template_stylesheet != '') {
     $smarty->assign('se_template_stylesheet', $se_template_stylesheet);
 }
 
+// cache busting for theme assets: newest mtime of the built files in dist/,
+// so every theme build reaches clients immediately (used as ?v= in head.tpl)
+$se_assets_version = 0;
+$theme_dist_files = array_merge(
+    glob($themes_path.'/'.$se_template.'/dist/*.css') ?: [],
+    glob($themes_path.'/'.$se_template.'/dist/*.js') ?: [],
+    glob($themes_path.'/'.$se_template.'/dist/skins/*.css') ?: []
+);
+foreach($theme_dist_files as $dist_file) {
+    $se_assets_version = max($se_assets_version, (int) filemtime($dist_file));
+}
+$smarty->assign('se_assets_version', $se_assets_version);
+
 if(is_file($themes_path."/$se_template/php/index.php")) {
     include $themes_path.'/'.$se_template.'/php/index.php';
 }

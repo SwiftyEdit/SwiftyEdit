@@ -1,7 +1,7 @@
 ---
-title: Developer
-description: Developer notes and instructions
-btn: Developer
+title: Entwickler
+description: Eigene Themes und Plugins entwickeln, Konfiguration und Mitarbeit am Projekt
+btn: Entwickler
 group: developer
 priority: 200
 ---
@@ -72,6 +72,12 @@ Hooks lassen Dich an genau festgelegten Stellen ins Geschehen eingreifen - Inhal
 Ausgabe verändern oder auf Ereignisse wie eine aktualisierte Seite reagieren, ganz ohne
 Kernfunktionen anzurühren. Wie das im Detail funktioniert, erfährst Du im Kapitel
 [Hooks](09-03-hooks.md).
+
+## API
+
+Über die öffentliche REST-API können andere Anwendungen Deine Inhalte lesen - etwa eine zweite
+Website, die Deine Produkte anzeigt. Wie Du API-Keys nutzt, welche Endpunkte es gibt und wie
+die Antworten aufgebaut sind, beschreibt das Kapitel [API](09-04-api.md).
 
 ## Mitarbeit
 

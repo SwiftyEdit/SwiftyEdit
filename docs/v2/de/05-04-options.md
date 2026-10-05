@@ -1,6 +1,6 @@
 ---
 title: Shop - Optionen
-description: Shop Optionen
+description: Auswahlmöglichkeiten wie Größe oder Farbe, die Kunden bei der Bestellung wählen
 btn: Optionen
 group: backend
 priority: 400

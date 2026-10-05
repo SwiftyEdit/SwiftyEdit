@@ -81,8 +81,9 @@ if (isset($_POST['save_category'])) {
         "cat_template_values" => $cat_template_values
     ];
 
-    // create a new category
+    // create a new category - the uuid is only set here, updates keep it
     if($_POST['save_category'] == 'new') {
+        $insert_data['uuid'] = se_generate_uuid();
         $data = $db_content->insert("se_categories", $insert_data);
         $new_id = $db_content->id();
         header( 'HX-REDIRECT: /admin/categories/edit/'.$new_id.'/');

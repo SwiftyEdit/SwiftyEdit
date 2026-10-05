@@ -1,6 +1,6 @@
 ---
 title: Hooks
-description: Hooks
+description: Mit Backend-, Frontend- und globalen Hooks in Abläufe eingreifen
 btn: Hooks
 group: developer
 priority: 200
@@ -46,7 +46,6 @@ sie führen Code aus, verändern aber keinen Wert.
 | `product.deleted`    | `product_id`, `user_id`                              | Ein Produkt im ACP gelöscht wurde.               |
 | `user.created`       | `user_id`, `data`, `created_by`                      | Ein Benutzerkonto angelegt wurde.                |
 | `user.updated`       | `user_id`, `data`, `changes`, `updated_by`           | Ein Benutzerkonto gespeichert wurde.             |
-| `user.deleted`       | `user_id`, `deleted_by`                              | Ein Benutzerkonto gelöscht wurde.                |
 
 ### Frontend-Hooks
 
