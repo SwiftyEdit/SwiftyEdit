@@ -52,8 +52,10 @@ if ($api_post_id !== '') {
 
 // --- list ---
 
-$api_page = max(1, (int) ($_GET['page'] ?? 1));
-$api_per_page = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
+$api_pagination = se_api_pagination();
+$api_page = $api_pagination['page'];
+$api_per_page = $api_pagination['per_page'];
+$api_offset = $api_pagination['offset'];
 
 if (isset($_GET['lang']) && $_GET['lang'] !== '') {
     if (!preg_match('/^[a-zA-Z-]{2,20}$/', $_GET['lang'])) {
@@ -99,8 +101,6 @@ if ($db_type === 'sqlite') {
 } else {
     $api_sortdate = "FROM_UNIXTIME(post_releasedate, '%Y-%m-%d')";
 }
-$api_offset = ($api_page - 1) * $api_per_page;
-
 $posts = $db_posts->query(
     "SELECT * FROM se_posts WHERE $api_where
      ORDER BY post_fixed ASC, $api_sortdate DESC, post_priority DESC, post_id DESC

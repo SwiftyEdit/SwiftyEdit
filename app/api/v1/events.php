@@ -55,8 +55,10 @@ if ($api_event_id !== '') {
 
 // --- list ---
 
-$api_page = max(1, (int) ($_GET['page'] ?? 1));
-$api_per_page = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
+$api_pagination = se_api_pagination();
+$api_page = $api_pagination['page'];
+$api_per_page = $api_pagination['per_page'];
+$api_offset = $api_pagination['offset'];
 
 $api_period = $_GET['period'] ?? 'upcoming';
 if (!in_array($api_period, ['upcoming', 'past', 'all'], true)) {
@@ -103,8 +105,6 @@ if ($db_type === 'sqlite') {
     $api_sortdate = "FROM_UNIXTIME(event_startdate, '%Y-%m-%d')";
 }
 $api_direction = $api_period === 'past' ? 'DESC' : 'ASC';
-$api_offset = ($api_page - 1) * $api_per_page;
-
 $events = $db_posts->query(
     "SELECT * FROM se_events WHERE $api_where
      ORDER BY fixed ASC, $api_sortdate $api_direction, priority DESC, id $api_direction
