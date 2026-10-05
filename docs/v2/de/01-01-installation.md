@@ -54,7 +54,7 @@ Installation via Composer:
 
 ### Manuelle Installation
 
-Lade die aktuelle Version von der Webseite: https://swiftyedit.org/de/download/
+Lade die aktuelle Version von der Webseite: https://swiftyedit.dev/de/download/
 
 1. Alle Dateien auf den Server kopieren.
 2. Die Domain muss auf das Verzeichnis /public/ zeigen.

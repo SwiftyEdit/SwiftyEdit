@@ -50,7 +50,7 @@ Installation via Composer:
 
 `composer create-project swiftyedit/swiftyedit`
 
-Or download the files from the website: https://swiftyedit.org/de/download/
+Or download the files from the website: https://swiftyedit.dev/en/download/
 
 ### The installation
 

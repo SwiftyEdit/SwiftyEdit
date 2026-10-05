@@ -27,8 +27,8 @@ The following modules are integrated in the system:
 
 ### User manual and Developer Documentation
 
-* https://swiftyedit.org/documentation/
-* https://swiftyedit.org/de/dokumentation/
+* https://swiftyedit.dev/en/documentation/
+* https://swiftyedit.dev/de/dokumentation/
 
 #### Technical requirements
 
@@ -38,7 +38,7 @@ The following modules are integrated in the system:
 
 #### Download
 
-Get the latest Version from https://swiftyedit.org/download/
+Get the latest Version from https://swiftyedit.dev/en/download/
 
 #### Or install using Composer
 ```

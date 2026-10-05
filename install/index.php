@@ -107,7 +107,7 @@ if($modus == "update") {
 			?>
 		</div>
 		<div id="inst-footer">
-			<a href="https://www.SwiftyEdit.com">
+			<a href="https://swiftyedit.dev">
 			<p class="h4">SwiftyEdit<br><small>Content Management System</small></p>
 			</a>
 		</div>

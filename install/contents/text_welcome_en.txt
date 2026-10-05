@@ -3,4 +3,4 @@
 
 <p>You can edit this page in the <a href="/acp/">ACP</a>. You can also add other pages here.</p>
 
-<p>Find more information on addons, plugins and themes at <a href="https://swiftyedit.com">SwiftyEdit.com</a></p>
+<p>Find more information on addons, plugins and themes at <a href="https://swiftyedit.dev/">SwiftyEdit.dev</a></p>
