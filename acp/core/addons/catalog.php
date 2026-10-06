@@ -41,7 +41,10 @@ echo '</div>';
 // its own .scroll-box (same pattern as addons/list.php and pages-list.php)
 // instead of overflowing the container and sliding over the footer.
 echo '<div class="scroll-box">';
-echo '<div id="catalogGrid" hx-get="/admin-xhr/addons/read/?action=list_catalog" hx-trigger="load, refresh_catalog from:body"></div>';
+echo '<div id="catalogGrid" hx-get="/admin-xhr/addons/read/?action=list_catalog" hx-trigger="load, refresh_catalog from:body">';
+// placeholder shown until the htmx "load" request replaces the grid content
+echo '<div class="d-flex align-items-center text-muted"><div class="spinner-border spinner-border-sm me-2" role="status"></div>'.$lang['loading'].'</div>';
+echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
