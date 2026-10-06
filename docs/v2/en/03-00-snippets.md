@@ -61,8 +61,7 @@ Anything else in curly braces is left unchanged.
 
 {alert:info}
 __Note:__ Product-related values (`{sku}`, the product's `{page_title}`) are available in the
-product's snippet and in the product texts. If the Smarty cache is enabled, date and time are
-cached for the cache's lifetime as well.
+product's snippet and in the product texts.
 {/alert}
 
 ### Custom placeholders (for developers)

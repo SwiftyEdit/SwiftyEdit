@@ -63,8 +63,7 @@ Andere Angaben in geschweiften Klammern bleiben unverändert.
 
 {alert:info}
 __Hinweis:__ Die produktbezogenen Werte (`{sku}`, `{page_title}` des Produkts) stehen im Snippet
-des Produkts und in den Produkttexten zur Verfügung. Ist der Smarty-Cache aktiv, werden Datum und
-Uhrzeit für die Dauer des Caches mit zwischengespeichert.
+des Produkts und in den Produkttexten zur Verfügung.
 {/alert}
 
 ### Eigene Platzhalter (für Entwickler)

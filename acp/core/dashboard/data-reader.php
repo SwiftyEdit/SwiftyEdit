@@ -304,7 +304,7 @@ if ($_REQUEST['action'] === 'list_cache') {
         [
             'target' => 'smarty',
             'label' => $lang['cache_label_smarty'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/cache/') + se_dir_size(SE_CONTENT.'/cache/templates_c/')),
+            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/templates_c/')),
             'clear_only' => true
         ],
         [
@@ -396,8 +396,6 @@ if($_REQUEST['action'] === 'list_alerts') {
         SE_PUBLIC.'/',
         SE_PUBLIC.'/assets/avatars/',
         SE_ROOT.'/data/cache/',
-        SE_ROOT.'/data/cache/cache/',
-        SE_ROOT.'/data/cache/templates_c/',
         SE_PUBLIC.'/assets/files/',
         SE_PUBLIC.'/assets/images/',
         SE_ROOT.'/data/database/content.sqlite3',
@@ -418,6 +416,13 @@ if($_REQUEST['action'] === 'list_alerts') {
         if(!is_writable($f)) {
             $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($f).'</code>';
         }
+    }
+
+    // Smarty creates its compile dir on the first frontend request,
+    // so a missing directory is fine - only flag an existing, non-writable one
+    $smarty_compile_dir = SE_ROOT.'/data/cache/templates_c/';
+    if(is_dir($smarty_compile_dir) && !is_writable($smarty_compile_dir)) {
+        $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($smarty_compile_dir).'</code>';
     }
 
     foreach($se_page_types as $pt) {

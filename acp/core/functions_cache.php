@@ -9,24 +9,14 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
 use Smarty\Smarty;
 
 /**
- * delete smarty cache files
- * $cache_id	(string)	md5(page_permalink) -> delete pages cache
- * 				(string) 'all' -> delete complete cache
+ * delete all compiled smarty templates (SE_CONTENT/cache/templates_c)
  */
 
-function se_delete_smarty_cache($cache_id): void {
+function se_delete_smarty_cache(): void {
 
 	$smarty = new Smarty;
-	$smarty->setCacheDir(SE_CONTENT.'/cache/cache/');
 	$smarty->setCompileDir(SE_CONTENT.'/cache/templates_c/');
-	
-	if($cache_id == 'all') {
-		$smarty->clearAllCache();
-		$smarty->clearCompiledTemplate();
-	} else {
-		$smarty->clearCache(null,$cache_id);
-		$smarty->clearCompiledTemplate(null,$cache_id);		
-	}
+	$smarty->clearCompiledTemplate();
 
 }
 

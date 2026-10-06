@@ -247,27 +247,12 @@ $input_usertemplates = [
     "type" => "radios"
 ];
 
-$input_smarty_cache = [
-    "input_name" => "prefs_smarty_cache",
-    "input_value" => $se_settings['smarty_cache'],
-    "label" => 'Smarty Cache',
-    "type" => "checkbox",
-    "status" => $se_settings['smarty_cache'] == "1" ? 'checked' :''
-];
-
 $input_smarty_compile_check = [
     "input_name" => "prefs_smarty_compile_check",
     "input_value" => $se_settings['smarty_compile_check'],
     "label" => 'Smarty Compile Check',
     "type" => "checkbox",
     "status" => $se_settings['smarty_compile_check'] == "1" ? 'checked' :''
-];
-
-$input_smarty_cache_lifetime = [
-    "input_name" => "prefs_smarty_cache_lifetime",
-    "input_value" => $se_settings['smarty_cache_lifetime'],
-    "label" => 'Smarty Cache lifetime',
-    "type" => "text"
 ];
 
 $get_all_languages = get_all_languages();
@@ -431,9 +416,7 @@ echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-targ
 echo se_print_form_input($input_maintenance);
 echo se_print_form_input($input_usertemplates);
 
-echo se_print_form_input($input_smarty_cache);
 echo se_print_form_input($input_smarty_compile_check);
-echo se_print_form_input($input_smarty_cache_lifetime);
 
 
 echo '<hr>';

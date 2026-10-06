@@ -224,9 +224,6 @@ just see it), search the responsible handler for `smarty->assign` calls. Some st
 | `orders.tpl` / `orders-list.tpl`                   | `app/handlers/orders.php`               |
 | everything else (page content, layout variables)  | `app/template-setup.php`                 |
 
-Variables assigned with the third `$smarty->assign()` argument set to `true` (nocache) are safe
-to use even when Smarty caching is enabled for that page.
-
 For a curated reference of the variables each of these templates actually receives - grouped by
 area, with the meaning of each value - see [Template Variables](09-01-02-template-variables.md).
 It's not a substitute for the debug console above (it only covers the templates that get

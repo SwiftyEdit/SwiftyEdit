@@ -30,7 +30,7 @@ Die Seite Allgemein ist in drei Tabs unterteilt:
   Upload-Dateigröße). Sämtliche Metadaten können später von einzelnen Seiten oder Produkten usw.
   überschrieben werden.
 * <kbd>System</kbd> Domain, SSL-Domain, Basis-Pfad und Login-Slug sowie Datums-/Zeitformat und
-  Zeitzone, Themes & Templates, der Wartungs-Code, die Smarty-Cache-Einstellungen, die
+  Zeitzone, Themes & Templates, der Wartungs-Code, der Smarty Compile Check, die
   Standardsprache und die Möglichkeit, einzelne Sprachen auszublenden.
 * <kbd>E-Mail</kbd> Die Mailer-Konfiguration (Absendername und -adresse, Mail-Typ / SMTP,
   Benachrichtigungsadresse) sowie eine Test-Mail-Funktion.

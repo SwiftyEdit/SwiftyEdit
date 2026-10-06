@@ -13,7 +13,6 @@ composer.phar
 /lib/vendor
 /vendor/*
 /data/cache/*
-/data/cache/cache/*
 /data/cache/snippets/*
 /data/cache/templates_c/*
 /data/config.php

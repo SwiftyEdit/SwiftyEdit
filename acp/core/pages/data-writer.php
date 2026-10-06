@@ -183,9 +183,6 @@ if(isset($_POST['save_page'])) {
         se_do_backend_hook_selected('page.updated', $selectedHooks, $context);
     }
 
-    // delete the smarty cache for this page
-    se_delete_smarty_cache(md5($_POST['page_permalink']));
-
     if(is_numeric($new_page_id)) {
         header( "HX-Redirect: /admin/pages/edit/$new_page_id/");
     }

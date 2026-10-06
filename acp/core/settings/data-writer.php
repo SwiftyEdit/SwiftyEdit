@@ -257,11 +257,6 @@ if (isset($_POST['update_themes'])) {
         $data['prefs_smarty_compile_check'] = 1;
     }
 
-    $data['prefs_smarty_cache'] = 0;
-    if(isset($_POST['prefs_smarty_cache'])) {
-        $data['prefs_smarty_cache'] = 1;
-    }
-
     se_write_option($data,'se');
     show_toast($lang['msg_success_db_changed'],'success');
 }

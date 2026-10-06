@@ -231,9 +231,6 @@ Ein paar Startpunkte:
 | `orders.tpl` / `orders-list.tpl`                          | `app/handlers/orders.php`                   |
 | alles Weitere (Seiteninhalt, Layout-Variablen)            | `app/template-setup.php`                     |
 
-Variablen, die mit dem dritten `$smarty->assign()`-Argument `true` (nocache) zugewiesen werden,
-lassen sich auch dann sicher verwenden, wenn für diese Seite Smarty-Caching aktiv ist.
-
 Eine kuratierte Referenz, welche Variablen die einzelnen Templates tatsächlich bekommen -
 gruppiert nach Bereich, mit der Bedeutung jedes Werts - gibt es unter
 [Template-Variablen](09-01-02-template-variables.md). Das ersetzt die Debug-Konsole oben nicht
