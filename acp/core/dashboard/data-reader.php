@@ -396,8 +396,6 @@ if($_REQUEST['action'] === 'list_alerts') {
         SE_PUBLIC.'/',
         SE_PUBLIC.'/assets/avatars/',
         SE_ROOT.'/data/cache/',
-        SE_ROOT.'/data/cache/cache/',
-        SE_ROOT.'/data/cache/templates_c/',
         SE_PUBLIC.'/assets/files/',
         SE_PUBLIC.'/assets/images/',
         SE_ROOT.'/data/database/content.sqlite3',
@@ -417,6 +415,19 @@ if($_REQUEST['action'] === 'list_alerts') {
 
         if(!is_writable($f)) {
             $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($f).'</code>';
+        }
+    }
+
+    // Smarty creates these on demand (cache/ only when smarty_cache is enabled),
+    // so a missing directory is fine - only flag existing, non-writable ones
+    $smarty_dirs = array(
+        SE_ROOT.'/data/cache/cache/',
+        SE_ROOT.'/data/cache/templates_c/'
+    );
+
+    foreach($smarty_dirs as $d) {
+        if(is_dir($d) && !is_writable($d)) {
+            $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($d).'</code>';
         }
     }
 
