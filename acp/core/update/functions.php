@@ -11,57 +11,53 @@ function compare_versions() {
     $version_file = file_get_contents(SE_ROOT.'version.json');
     $se_version = json_decode($version_file, true);
 
-    echo '<ul class="list-group list-group-flush mb-1">';
-    echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-    echo 'Version: '.$remote_versions_array['version']['stable']['title'] .'<br>';
-    echo 'Build: '.$remote_versions_array['version']['stable']['build'] .'<br>';
-    echo 'Date: ' .$remote_versions_array['version']['stable']['date'];
-    $update_stable = '';
-    if($se_version['build'] < $remote_versions_array['version']['stable']['build']) {
-        $filename_stable = basename($remote_versions_array['version']['stable']['file']);
-        $hx_vals_stable = $hx_vals + ["file" => "$filename_stable"];
-        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_stable).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="stable">'.$lang['btn_choose_this_update'].'</button>';
-        $update_stable = $lang['update_msg_stable'];
-    } else {
-        echo '<button class="btn btn-default" disabled>'.$lang['btn_choose_this_update'].'</button>';
-    }
-    echo '</li>';
-    echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-    echo 'Version: '.$remote_versions_array['version']['beta']['title'] .'<br>';
-    echo 'Build: '.$remote_versions_array['version']['beta']['build'] .'<br>';
-    echo 'Date: '.$remote_versions_array['version']['beta']['date'];
-    $update_beta = '';
-    if($se_version['build'] < $remote_versions_array['version']['beta']['build']) {
-        $filename_beta = basename($remote_versions_array['version']['beta']['file']);
-        $hx_vals_beta = $hx_vals + ["file" => "$filename_beta"];
-        echo '<button class="btn btn-default btn-sm" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_beta).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="beta">'.$lang['btn_choose_this_update'].'</button>';
-        $update_beta = $lang['update_msg_beta'];
-    } else {
-        echo '<button class="btn btn-default" disabled>'.$lang['btn_choose_this_update'].'</button>';
-    }
-    echo '</li>';
-    echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-    echo 'Version: '.$remote_versions_array['version']['alpha']['title'] .'<br>';
-    echo 'Build: '.$remote_versions_array['version']['alpha']['build'] .'<br>';
-    echo 'Date: ' .$remote_versions_array['version']['alpha']['date'];
-    $update_alpha = '';
-    echo '<div class="w-50">';
-    if($se_version['build'] < $remote_versions_array['version']['alpha']['build']) {
-        $filename_alpha = basename($remote_versions_array['version']['alpha']['file']);
-        $hx_vals_alpha = $hx_vals + ["file" => "$filename_alpha"];
-        echo '<button class="btn btn-default btn-sm w-100" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_alpha).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].'</button>';
-        $update_alpha = $lang['update_msg_alpha'];
-    } else {
-        echo '<button class="btn btn-default btn-sm w-100" disabled>'.$lang['btn_choose_this_update'].'</button>';
-    }
-    if($se_environment == 'd') {
-        $filename_alpha = basename($remote_versions_array['version']['alpha']['file']);
-        $hx_vals_alpha = $hx_vals + ["file" => "$filename_alpha"];
-        echo '<button class="btn btn-default btn-sm w-100 mt-1" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_alpha).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="alpha">'.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
-    }
-    echo '</div>';
+    // channel => badge color, warning text color
+    $channels = [
+        'stable' => ['badge' => 'bg-success', 'text' => ''],
+        'beta' => ['badge' => 'bg-warning text-dark', 'text' => 'text-warning'],
+        'alpha' => ['badge' => 'bg-danger', 'text' => 'text-danger']
+    ];
 
-    echo '</li>';
+    $update_stable = '';
+
+    echo '<ul class="list-group list-group-flush mb-1">';
+    foreach($channels as $channel => $colors) {
+
+        $remote = $remote_versions_array['version'][$channel];
+        $filename = basename($remote['file']);
+        $hx_vals_channel = $hx_vals + ["file" => "$filename"];
+        $select_button = '<button class="btn btn-default btn-sm text-nowrap" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_channel).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="'.$channel.'">';
+        $update_available = ($se_version['build'] < $remote['build']);
+
+        echo '<li class="list-group-item d-flex justify-content-between align-items-center gap-3">';
+
+        echo '<div>';
+        echo '<span class="badge '.$colors['badge'].' me-2">'.ucfirst($channel).'</span>';
+        echo '<strong>'.htmlspecialchars($remote['title']).'</strong>';
+        echo '<div class="small text-muted mt-1">Build '.htmlspecialchars($remote['build']).' · '.htmlspecialchars($remote['date']).'</div>';
+        // beta/alpha: show the "not for production" warning right at the entry
+        if($update_available && $channel != 'stable') {
+            echo '<div class="small '.$colors['text'].' mt-1">'.$icon['info_circle'].' '.$lang['update_msg_not_for_production'].'</div>';
+        }
+        echo '</div>';
+
+        echo '<div class="flex-shrink-0 d-flex flex-column align-items-end gap-1">';
+        if($update_available) {
+            echo $select_button.$lang['btn_choose_this_update'].'</button>';
+            if($channel == 'stable') {
+                $update_stable = $lang['update_msg_stable'];
+            }
+        } else if($se_version['build'] == $remote['build']) {
+            echo '<span class="badge bg-secondary">'.$icon['check_circle'].' '.$lang['update_label_installed'].'</span>';
+        }
+        // in development mode, alpha can always be reloaded
+        if($channel == 'alpha' && $se_environment == 'd') {
+            echo $select_button.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
+        }
+        echo '</div>';
+
+        echo '</li>';
+    }
     echo '</ul>';
 
     if($update_stable == '') {
@@ -71,17 +67,6 @@ function compare_versions() {
     } else {
         echo '<div class="alert alert-success">';
         echo $icon['info_circle'].' '.$lang['update_msg_update_available'];
-        echo '</div>';
-    }
-
-    if($update_beta != '') {
-        echo '<div class="alert alert-info">';
-        echo $icon['info_circle'].' '.$update_beta;
-        echo '</div>';
-    }
-    if($update_alpha != '') {
-        echo '<div class="alert alert-danger">';
-        echo $icon['info_circle'].' '.$update_alpha;
         echo '</div>';
     }
 
