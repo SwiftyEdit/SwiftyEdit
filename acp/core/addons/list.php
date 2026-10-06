@@ -19,6 +19,9 @@ echo '</div>';
 echo '<div class="app-container">';
 echo '<div class="max-height-container">';
 
+// placeholder shown until the htmx "load" request replaces the list content
+$loading_placeholder = '<div class="d-flex align-items-center text-muted"><div class="spinner-border spinner-border-sm me-2" role="status"></div>'.$lang['loading'].'</div>';
+
 echo '<div class="row">';
 echo '<div class="col-md-6">';
 // list plugins
@@ -26,7 +29,7 @@ echo '<div class="card">';
 echo '<div class="card-header">Plugins</div>';
 echo '<div class="card-body">';
 echo '<div class="scroll-box">';
-echo '<div id="listPlugins" hx-get="/admin-xhr/addons/read/?action=list_plugins" hx-trigger="load, update_plugins_list from:body"></div></div>';
+echo '<div id="listPlugins" hx-get="/admin-xhr/addons/read/?action=list_plugins" hx-trigger="load, update_plugins_list from:body">'.$loading_placeholder.'</div></div>';
 echo '</div>';
 echo '</div>';
 
@@ -39,7 +42,7 @@ echo '<div class="card-body">';
 echo '<div class="scroll-box">';
 // receives the toast of a refused theme deletion (see delete_theme in data-writer.php)
 echo '<div id="theme-delete-response"></div>';
-echo '<div id="listThemes" hx-get="/admin-xhr/addons/read/?action=list_themes" hx-trigger="load, update_themes_list from:body"></div></div>';
+echo '<div id="listThemes" hx-get="/admin-xhr/addons/read/?action=list_themes" hx-trigger="load, update_themes_list from:body">'.$loading_placeholder.'</div></div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
