@@ -886,10 +886,11 @@ function mods_check_in() {
             // once $pages and $m are merged into $items.
             'page_posts_categories' => '',
             'page_type_of_use' => '',
+            'page_posts_types' => '',
         ];
     }
 
-	$pages = $db_content->select("se_pages", ["page_modul","page_permalink","page_posts_categories","page_type_of_use"]);
+	$pages = $db_content->select("se_pages", ["page_modul","page_permalink","page_posts_categories","page_type_of_use","page_posts_types"]);
 	$items = array_merge($pages, $m);
 
 	$cnt_items = count($items);
@@ -897,13 +898,17 @@ function mods_check_in() {
 	
 		if($items[$i]['page_modul'] != "" OR
             $items[$i]['page_posts_categories'] != "" OR
+            $items[$i]['page_posts_types'] != "" OR
             $items[$i]['page_type_of_use'] == "display_post" OR
             $items[$i]['page_type_of_use'] == "display_product" OR
             $items[$i]['page_type_of_use'] == "display_event" OR
             $items[$i]['page_type_of_use'] == "wishlist" OR
             $items[$i]['page_type_of_use'] == "tagged") {
 
-			if($items[$i]['page_posts_categories'] != '') {
+			// a posts/products/events page without any selected category
+			// still needs to be registered - otherwise its sub-URLs
+			// (e.g. /page/product-slug/) never get a $mod_slug and end in a 404
+			if($items[$i]['page_posts_categories'] != '' OR $items[$i]['page_posts_types'] != '') {
 				$items[$i]['page_modul'] = 'se_post';
 			}
 
