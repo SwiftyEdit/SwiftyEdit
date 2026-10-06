@@ -44,7 +44,7 @@ if(isset($_POST['save_default_layout'])) {
 
     se_write_option($data,'se');
     record_log($_SESSION['user_nick'],"edit system design <b>$prefs_template</b>","6");
-    se_delete_smarty_cache('all');
+    se_delete_smarty_cache();
     show_toast($lang['msg_success_db_changed'],'success');
     header( "HX-Trigger: update_themes_list");
 }
@@ -268,7 +268,7 @@ if(isset($_POST['update_addon_from_url'])) {
     // Update plugin or theme
     if(($_POST['addon_type'] ?? 'plugin') === 'theme') {
         $result = se_install_theme($plugin_id, $download_url);
-        se_delete_smarty_cache('all');
+        se_delete_smarty_cache();
     } else {
         $result = se_install_plugin($plugin_id, $download_url);
     }
@@ -310,6 +310,6 @@ if(isset($_POST['delete_theme'])) {
     }
 
     se_delete_addon($theme,'theme');
-    se_delete_smarty_cache('all');
+    se_delete_smarty_cache();
     header( "HX-Trigger: update_themes_list");
 }

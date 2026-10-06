@@ -15,7 +15,7 @@ if (isset($_POST['cache_target'])) {
     switch ($target) {
 
         case 'smarty':
-            se_delete_smarty_cache('all');
+            se_delete_smarty_cache();
             break;
 
         case 'twig':
@@ -55,7 +55,7 @@ if (isset($_POST['cache_target'])) {
             break;
 
         case 'all':
-            se_delete_smarty_cache('all');
+            se_delete_smarty_cache();
             se_delete_twig_cache();
             se_build_navigation_cache();
             cache_url_paths();

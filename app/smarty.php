@@ -6,7 +6,6 @@ use Smarty\Smarty;
 $smarty = new Smarty;
 $smarty->setErrorReporting(0);
 $smarty->setCompileDir('../data/cache/templates_c/');
-$smarty->setCacheDir('../data/cache/cache/');
 
 $smarty->registerPlugin('modifier', 'htmlentities', 'htmlentities');
 $smarty->registerPlugin('modifier', 'strtolower', 'strtolower');
@@ -15,15 +14,6 @@ $smarty->registerPlugin('function', 'img', 'se_smarty_function_img');
 $smarty->registerPlugin('block', 'plugin', 'se_smarty_block_plugin');
 
 $cache_id = md5($swifty_slug.$mod_slug);
-
-if($se_settings['smarty_cache'] == 1) {
-    $smarty->setCaching(Smarty::CACHING_LIFETIME_CURRENT);
-    if(is_numeric($se_settings['smarty_cache_lifetime'])) {
-        $smarty->setCacheLifetime($se_settings['smarty_cache_lifetime']);
-    }
-} else {
-    $smarty->setCaching(Smarty::CACHING_OFF);
-}
 
 if($se_settings['smarty_compile_check'] == 1) {
     $smarty->compile_check = true;

@@ -29,7 +29,7 @@ The General page is divided into three tabs:
   logo/thumbnail/favicon, maximum image and thumbnail sizes, maximum upload file size).
   All metadata can be overwritten later by individual pages or products etc.
 * <kbd>System</kbd> Domain, SSL domain, base path and the login slug, as well as date/time
-  format and timezone, themes & templates, the maintenance code, the Smarty cache settings,
+  format and timezone, themes & templates, the maintenance code, the Smarty compile check,
   the default language and the option to hide individual languages.
 * <kbd>E-Mail</kbd> The mailer configuration (sender name and address, mail type / SMTP,
   notification address) and a test-mail function.
