@@ -37,7 +37,7 @@ Anders als in SwiftyEdit Version 1 müssen alle Plugins einer bestimmten Ordners
 - XHR-Anfragen werden über die Datei `global/xhr.php` verarbeitet, die unter
   `/xhr/plugins/{plugin}/` erreichbar ist.
 
-### Aktivierte Plugins
+### Aktivierte Plugins {#aktivierte-plugins}
 
 Plugins gelten als aktiv, wenn sie in eine Seite eingebunden oder im Backend
 manuell aktiviert wurden.

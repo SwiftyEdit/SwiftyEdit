@@ -22,8 +22,8 @@
   "require": {
     "ext-pdo": "*",
     "catfan/medoo": "^2.1.12",
-    "erusev/parsedown": "1.7.4",
-    "erusev/parsedown-extra": "^0.8.1",
+    "erusev/parsedown": "^1.8",
+    "erusev/parsedown-extra": "^0.9",
     "ezyang/htmlpurifier": "^4.18.0",
     "guzzlehttp/guzzle": "^7.15.3",
     "league/iso3166": "^4.4.0",
