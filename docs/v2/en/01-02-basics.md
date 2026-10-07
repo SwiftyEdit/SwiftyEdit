@@ -6,7 +6,7 @@ group: administrators
 priority: 100
 ---
 
-# Dashboard
+# Dashboard {#dashboard}
 
 Here you can find all the information about your website at a glance.
 
