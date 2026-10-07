@@ -27,10 +27,10 @@
     "ezyang/htmlpurifier": "^4.18.0",
     "guzzlehttp/guzzle": "^7.15.3",
     "league/iso3166": "^4.4.0",
-    "mustangostang/spyc": "^0.6.3",
     "paypal/paypal-server-sdk": "^2.3",
     "phpmailer/phpmailer": "^6.10.0",
     "smarty/smarty": "^5.8.5",
+    "symfony/yaml": "^7.4",
     "twig/twig": "^3.30.0"
   },
   "scripts": {

@@ -1615,7 +1615,16 @@ function se_parse_docs_file($file): array {
         // colorize the breadcrumb arrow used between <kbd> tags (e.g. <kbd>Backend</kbd> ▶ <kbd>Snippets</kbd>)
         $content = str_replace('▶', '<span class="doc-arrow">▶</span>', $content);
 
-        $parsed_header = Spyc::YAMLLoadString($src_content[1]);
+        // a broken front matter must not break the help page
+        try {
+            $parsed_header = \Symfony\Component\Yaml\Yaml::parse($src_content[1] ?? '');
+        } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+            $parsed_header = [];
+        }
+        if (!is_array($parsed_header)) {
+            $parsed_header = [];
+        }
+        $parsed_header['title'] ??= '';
         $parsed_content = $Parsedown->text("$content");
 
         $parsed_content = preg_replace_callback(
