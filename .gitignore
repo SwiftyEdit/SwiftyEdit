@@ -16,6 +16,7 @@ composer.phar
 /data/cache/snippets/*
 /data/cache/templates_c/*
 /data/config.php
+/data/site_secret.php
 /data/includes/*
 /dist/
 

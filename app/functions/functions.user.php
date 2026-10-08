@@ -194,6 +194,11 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
 
         if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
+            // fresh CSRF token for the backend - a token known before the login
+            // must not stay valid. Only here: the ACP login redirects anyway,
+            // while the frontend login updates the page without a reload and
+            // other forms on it still carry the current token.
+            se_generate_token();
             header("location:/admin/");
         }
 
@@ -316,10 +321,11 @@ function se_start_user_session($ud) {
 
     /* CSRF Protection */
     if(empty($_SESSION['token'])) {
-        $token = md5(uniqid(rand(), TRUE));
-        $_SESSION['token'] = $token;
-        $_SESSION['token_time'] = time();
+        se_generate_token();
     }
+
+    // start of the ACP idle timer (see se_acp_session_expired())
+    $_SESSION['acp_last_activity'] = time();
 
     $arr_drm = explode("|", $ud['user_drm']);
     $_SESSION['permissions'] = explode('|', $ud['user_drm']);
@@ -699,4 +705,59 @@ function se_rate_limit_add(string $bucket, int $window, bool $per_ip = true): vo
     $attempts = se_rate_limit_attempts($file, $window);
     $attempts[] = time();
     @file_put_contents($file, json_encode($attempts), LOCK_EX);
+}
+
+/**
+ * Server-side idle timeout for the ACP - the countdown in acp/index.php is
+ * only JavaScript, the session itself stayed valid as long as PHP's garbage
+ * collector didn't happen to remove it.
+ *
+ * Uses the same lifetime as the countdown: the larger of the
+ * acp_session_lifetime setting and session.gc_maxlifetime (seconds).
+ * Every ACP request (page or XHR) counts as activity.
+ *
+ * @return bool true if the session has expired and was ended
+ */
+function se_acp_session_expired(): bool {
+
+    global $se_settings;
+
+    $lifetime = max((int) ($se_settings['acp_session_lifetime'] ?? 0), (int) ini_get('session.gc_maxlifetime'));
+    $last_activity = (int) ($_SESSION['acp_last_activity'] ?? time());
+
+    if ($lifetime > 0 && time() - $last_activity > $lifetime) {
+        $_SESSION = [];
+        session_destroy();
+        return true;
+    }
+
+    $_SESSION['acp_last_activity'] = time();
+    return false;
+}
+
+/**
+ * Random secret of this installation, e.g. as key for hash_hmac() so stored
+ * hashes of personal data (IP addresses) can't be reversed by just trying
+ * all values. Created on first use in SE_CONTENT (outside of the web root).
+ *
+ * @return string
+ */
+function se_get_site_secret(): string {
+
+    static $secret = null;
+    if ($secret !== null) {
+        return $secret;
+    }
+
+    $file = SE_CONTENT . '/site_secret.php';
+    if (is_file($file)) {
+        $secret = (string) include $file;
+    }
+
+    if ($secret === null || strlen($secret) < 32) {
+        $secret = bin2hex(random_bytes(32));
+        @file_put_contents($file, "<?php\n// generated - keep secret, don't share\nreturn '" . $secret . "';\n", LOCK_EX);
+    }
+
+    return $secret;
 }

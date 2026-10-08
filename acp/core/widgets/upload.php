@@ -154,6 +154,13 @@ if($upload_type == 'images') {
             exit;
         } else {
 
+            // raster images must be real, not oversized images - also when they
+            // are stored unchanged, which used to skip every content check
+            if($suffix != 'svg' && !se_upload_image_is_valid($tmp_name)) {
+                http_response_code(422);
+                exit;
+            }
+
             if($_POST['unchanged'] == 'yes' OR $suffix == 'svg') {
                 @move_uploaded_file($tmp_name, $target);
             } else {
@@ -250,7 +257,31 @@ if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
 }
 
 
+/**
+ * Check an uploaded raster image before it is stored or processed:
+ * it must be a readable image, and it must not exceed $max_pixels. GD
+ * decodes the full bitmap into memory (about 4-5 bytes per pixel), so a
+ * small file with huge dimensions ("decompression bomb") would otherwise
+ * exhaust memory/CPU in resize_image().
+ *
+ * @param string $path uploaded file
+ * @param int $max_pixels width * height, default 50 megapixels
+ * @return bool
+ */
+function se_upload_image_is_valid(string $path, int $max_pixels = 50000000): bool {
+    $details = @getimagesize($path);
+    if ($details === false || $details[0] < 1 || $details[1] < 1) {
+        return false;
+    }
+    return ($details[0] * $details[1]) <= $max_pixels;
+}
+
 function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality){
+
+    // never decode an invalid or oversized image (see se_upload_image_is_valid())
+    if (!se_upload_image_is_valid($img)) {
+        return false;
+    }
 
     $arr_image_details	= GetImageSize("$img");
     $original_width		= $arr_image_details[0];
@@ -502,11 +533,8 @@ function se_handle_branding_upload(string $target, string $branding_path, array 
 
     // validate the upload is actually a readable image *before* touching anything
     // already on disk, so a bad upload never wipes out a working file
-    if ($suffix !== 'svg') {
-        $details = @getimagesize($tmp_name);
-        if ($details === false) {
-            return ['error' => 'invalid_image'];
-        }
+    if ($suffix !== 'svg' && !se_upload_image_is_valid($tmp_name)) {
+        return ['error' => 'invalid_image'];
     }
 
     if (!is_dir($branding_path)) {

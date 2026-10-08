@@ -70,10 +70,20 @@ if(isset($_GET['address-sa'])) {
 // change password
 if(isset($_POST['change_password'])) {
 
-    $user_psw_hash = $get_my_userdata['user_psw_hash'];
+    $user_psw_hash = (string) ($get_my_userdata['user_psw_hash'] ?? '');
     $new_user_psw_hash = '';
 
-    if (isset($_POST['s_psw']) && trim($_POST['s_psw']) !== '') {
+    // the current password is required - a hijacked session alone must not
+    // be enough to take over the account. Throttled like the login.
+    $current_psw = is_string($_POST['s_psw_current'] ?? null) ? $_POST['s_psw_current'] : '';
+    if(!is_numeric($_SESSION['user_id'] ?? null) || se_rate_limit_exceeded('psw-change', 10, 900) || !password_verify($current_psw, $user_psw_hash)) {
+        se_rate_limit_add('psw-change', 900);
+        $smarty->assign("alert_text",$lang['msg_psw_current_wrong']);
+        $smarty->display('alert/alert-danger.tpl');
+        exit;
+    }
+
+    if (is_string($_POST['s_psw'] ?? null) && trim($_POST['s_psw']) !== '') {
 
         $password = $_POST['s_psw'];
         $passwordRepeat = $_POST['s_psw_repeat'];

@@ -81,6 +81,13 @@ foreach ($se_get_preferences as $k => $v) {
 
 }
 
+// server-side idle timeout - let HTMX send the whole page to the login
+if (se_acp_session_expired()) {
+    http_response_code(401);
+    header('HX-Redirect: /admin/');
+    exit;
+}
+
 /* build absolute URL */
 if ($se_settings['cms_ssl_domain'] != '') {
     $se_base_url = $se_settings['cms_ssl_domain'] . $se_settings['cms_base'];

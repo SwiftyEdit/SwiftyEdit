@@ -188,6 +188,12 @@ foreach ($se_get_preferences as $k => $v) {
     }
 }
 
+// server-side idle timeout - back to the login
+if (se_acp_session_expired()) {
+    header("location:/admin/");
+    exit;
+}
+
 if ($se_settings['timezone'] != '') {
     date_default_timezone_set($se_settings['timezone']);
 }

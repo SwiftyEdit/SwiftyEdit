@@ -21,6 +21,8 @@
   "label_login": "Login",
   "label_psw": "Password",
   "label_psw_repeat": "Confirm Password",
+  "label_psw_current": "Current password",
+  "msg_psw_current_wrong": "The current password is not correct.",
   "label_psw_protected_page": "Password protected Page",
   "label_username": "Username",
   "label_remember_me": "Stay logged in",
