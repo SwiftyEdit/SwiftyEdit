@@ -14,6 +14,40 @@ include_once 'functions_shop.php';
 
 
 /**
+ * Permission a module's XHR readers/writers (/admin-xhr/<module>/read|write/)
+ * require - the same right the module's UI router (acp/core/<module>/router.php)
+ * checks. Without this, a gated module was only hidden in the UI, while its
+ * XHR endpoints stayed reachable for every administrator.
+ *
+ * Modules not listed here are open to every administrator, same as their UI.
+ * addons/ is deliberately not listed: its list is open to every admin, plugins
+ * use addons/ for their own backend actions, and the sensitive actions
+ * (install, update, delete) check drm_acp_sensitive_files themselves.
+ *
+ * @param string $query e.g. "users/write/"
+ * @return string|null required permission, null if none
+ */
+function se_acp_xhr_permission(string $query): ?string {
+
+    $module_permissions = [
+        'users/' => 'drm_acp_user',
+        'settings/' => 'drm_acp_system',
+        'blog/' => 'drm_can_publish',
+        'shop/' => 'drm_can_publish',
+        'events/' => 'drm_can_publish',
+        'update/' => 'drm_acp_sensitive_files'
+    ];
+
+    foreach ($module_permissions as $prefix => $permission) {
+        if (str_starts_with($query, $prefix)) {
+            return $permission;
+        }
+    }
+
+    return null;
+}
+
+/**
  * Sends a plain text response and terminates script execution.
  *
  * @param string $data
