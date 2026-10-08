@@ -39,7 +39,7 @@ $twig = new \Twig\Environment($loader, [
 
 require SE_ROOT.'/app/database.php';
 
-if(!empty($_POST) && $_POST['csrf_token'] !== $_SESSION['token']) {
+if(!empty($_POST) && (!is_string($_POST['csrf_token'] ?? null) || !hash_equals((string) ($_SESSION['token'] ?? ''), $_POST['csrf_token']))) {
     die('Error: CSRF Token is invalid');
 }
 

@@ -7,6 +7,15 @@
 
 require_once 'header.php';
 
+// writers change data - POST only, and always with a valid CSRF token
+// (header.php only checks it for a non-empty $_POST)
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    se_plain_response('Method Not Allowed', 405);
+}
+if (!is_string($_POST['csrf_token'] ?? null) || !hash_equals((string) ($_SESSION['token'] ?? ''), $_POST['csrf_token'])) {
+    se_plain_response('Error: CSRF Token is invalid', 403);
+}
+
 // module permission - same check as the module's UI router
 $required_permission = se_acp_xhr_permission($_REQUEST['query']);
 if ($required_permission !== null && !se_hasPermission($required_permission)) {

@@ -1,6 +1,11 @@
 # --- SwiftyEdit core (do not edit) ---
 RewriteEngine On
 
+# never execute scripts from upload folders - they only hold images and files
+# (the upload whitelist already blocks these extensions, this is a second line
+# of defense). Matches direct /assets/... URLs and the short aliases below.
+RewriteRule ^(assets/)?(images|images_tmb|galleries|files|avatars|branding|uploads)/.*\.(php[0-9]?|phtml|phar|pht|phps|cgi|pl|py|sh)$ - [F,NC,L]
+
 # pass the Authorization header on to PHP - with PHP-FPM/CGI Apache drops
 # it otherwise (needed for API keys, see app/handlers/api-routes.php)
 RewriteCond %{HTTP:Authorization} .
@@ -10,6 +15,7 @@ RewriteRule ^images/(.*)$ assets/images/$1 [L]
 RewriteRule ^images_tmb/(.*)$ assets/images_tmb/$1 [L]
 RewriteRule ^galleries/(.*)$ assets/galleries/$1 [L]
 RewriteRule ^files/(.*)$ assets/files/$1 [L]
+RewriteRule ^avatars/(.*)$ assets/avatars/$1 [L]
 RewriteRule ^themes/(.*)$ assets/themes/$1 [L]
 
 RewriteRule ^rss/(.*)$ rss.php?type=$1 [L,QSA]

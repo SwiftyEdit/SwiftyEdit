@@ -393,9 +393,23 @@ function se_build_thread_array(&$array, $data) {
 
 function se_write_comment($data) {
 	
-	global $db_content;
-	global $prefs_comments_mode;
-	
+	global $db_content, $se_settings;
+
+	// comments_mode: 1 = must be approved by an admin, 2 = appear immediately,
+	// 3 = comment function deactivated. Read from $se_settings - the former
+	// $prefs_comments_mode global was never set, so mode 1 never took effect.
+	$comments_mode = (int) ($se_settings['comments_mode'] ?? 1);
+
+	// the form is hidden when comments are deactivated, but the endpoint
+	// must refuse direct POSTs as well
+	if($comments_mode === 3) {
+		return 0;
+	}
+
+	if(!is_string($data['input_mail'] ?? null) || !filter_var(trim($data['input_mail']), FILTER_VALIDATE_EMAIL)) {
+		return 0;
+	}
+
 	if($data['input_name'] != '' && $data['input_mail'] != '' && $data['input_comment'] != '') {
 	
 		// only the text fields - the ids below are read from $data and cast to int
@@ -410,7 +424,7 @@ function se_write_comment($data) {
 		$type = 'p';
 		$comment_status = 2;
 		
-		if($prefs_comments_mode == 1) {
+		if($comments_mode === 1) {
 			$comment_status = 1;
 		}
 		

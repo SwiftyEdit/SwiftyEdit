@@ -54,7 +54,7 @@ if(is_file('../config_database.php')) {
 require '../app/functions/functions.php';
 
 
-if($_POST['csrf_token'] !== $_SESSION['token']) {
+if(!is_string($_POST['csrf_token'] ?? null) || !hash_equals((string) ($_SESSION['token'] ?? ''), $_POST['csrf_token'])) {
     die('Error: CSRF Token is invalid');
 }
 
