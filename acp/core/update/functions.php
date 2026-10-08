@@ -275,7 +275,7 @@ function copy_recursive($source, $target) {
     if(is_dir($source)) {
         if(!is_dir("$target")) {
             $_SESSION['protocol'] .= "missing: ".htmlspecialchars($target, ENT_QUOTES)." <|>";
-            mkdir_recursive($target,0777);
+            mkdir_recursive($target,0755);
         }
 
         $dir = dir($source);
@@ -295,8 +295,11 @@ function copy_recursive($source, $target) {
 
         $dir->close();
     } else {
-        chmod("$target", 0777);
-        unlink("$target");
+        // replace the file - copy() creates it with the default (umask) permissions,
+        // it used to be chmod'ed to 0777 (world-writable) first
+        if(is_file($target)) {
+            unlink($target);
+        }
         if(copy($source, $target)) {
             $_SESSION['protocol'] .= '<b>copied:</b> '.htmlspecialchars($target, ENT_QUOTES).'<|>';
         } else {
@@ -333,7 +336,7 @@ function rmdir_recursive($dir) {
  * create directory (recursive)
  */
 
-function mkdir_recursive($dir, $chmod=0777){
+function mkdir_recursive($dir, $chmod=0755){
     $dirs = explode('/', $dir);
     $directory='';
     foreach ($dirs as $part) {

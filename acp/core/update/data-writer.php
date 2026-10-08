@@ -48,7 +48,7 @@ if(isset($_POST['load_update_data'])) {
     }
     $extract_dir = __DIR__.'/download/extract';
     if(!is_dir("$extract_dir")) {
-        mkdir("$extract_dir", 0777, true);
+        mkdir("$extract_dir", 0755, true);
     }
 
     if(is_dir("$extract_dir")) {
