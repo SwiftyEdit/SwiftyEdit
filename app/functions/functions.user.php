@@ -96,38 +96,30 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
     global $db_user, $se_settings, $se_failed_logins_limit;
 
     if (filter_var($user, FILTER_VALIDATE_EMAIL)) {
-        $user_data = $db_user->get("se_user", ["user_nick","user_psw_hash"], [
+        $user_data = $db_user->get("se_user", ["user_nick","user_psw_hash","user_locked_until"], [
             "AND" => [
                 "user_mail" => "$user",
-                "user_verified" => "verified",
-                'OR' => [
-                    'user_unlock_code' => null,
-                    'AND #Empty' => [
-                        'user_unlock_code' => ''
-                    ]
-                ]
+                "user_verified" => "verified"
             ]
         ]);
-        $user_nick = $user_data['user_nick'];
-        $hash = $user_data['user_psw_hash'];
+        $user_nick = $user_data['user_nick'] ?? '';
     } else {
-        $user_data = $db_user->get("se_user", ["user_psw_hash"], [
+        $user_data = $db_user->get("se_user", ["user_psw_hash","user_locked_until"], [
             "AND" => [
                 "user_nick" => "$user",
-                "user_verified" => "verified",
-                'OR' => [
-                    'user_unlock_code' => null,
-                    'AND #Empty' => [
-                        'user_unlock_code' => ''
-                    ]
-                ]
+                "user_verified" => "verified"
             ]
         ]);
         $user_nick = $user;
-        $hash = $user_data['user_psw_hash'];
     }
+    $hash = (string) ($user_data['user_psw_hash'] ?? '');
 
-    if(password_verify($psw, $hash)) {
+    // temporarily locked after too many failed attempts (see se_handle_failed_logins()) -
+    // the lock expires by itself, so nobody can lock an account permanently
+    $is_locked = (int) ($user_data['user_locked_until'] ?? 0) > time();
+
+    $result = null;
+    if(!$is_locked && password_verify($psw, $hash)) {
         /* valid psw */
 
         $result = $db_user->get("se_user", "*", [
@@ -178,9 +170,11 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
         }
 
-        // reset failed logins
+        // reset failed logins and a lock that has already expired
         $db_user->update("se_user",[
-            "user_failed_logins" => 0
+            "user_failed_logins" => 0,
+            "user_unlock_code" => '',
+            "user_locked_until" => 0
         ],[
             "user_nick" => $user_nick
         ]);
@@ -197,7 +191,9 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     } else {
 
-        if(is_numeric($se_failed_logins_limit)) {
+        // attempts during a lock are not counted - the password isn't checked
+        // then, and counting them would only extend the lock further
+        if(is_numeric($se_failed_logins_limit) && !$is_locked && $user_nick !== '') {
             se_handle_failed_logins($user_nick);
         }
         session_destroy();
@@ -208,23 +204,35 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
 function se_handle_failed_logins($user) {
 
-    global $db_user,$se_failed_logins_limit,$lang,$se_base_url;
+    global $db_user,$se_failed_logins_limit,$lang,$se_base_url,$se_settings;
 
     $failed_user_data = $db_user->get("se_user", "*", ["user_nick" => $user]);
-    $failed_logins = $failed_user_data['user_failed_logins']+1;
+    if(!is_array($failed_user_data)) {
+        return;
+    }
+    $failed_logins = (int) $failed_user_data['user_failed_logins'] + 1;
+    $limit = (int) $se_failed_logins_limit;
+
+    $update_data = ["user_failed_logins" => $failed_logins];
+
+    // time-based lock instead of a permanent one, so knowing a username isn't
+    // enough to lock its owner out for good: 1 minute when the limit is
+    // reached, doubled with every further failed attempt, at most 60 minutes
+    if($failed_logins >= $limit) {
+        $lock_minutes = min(60, 2 ** min(6, $failed_logins - $limit));
+        $update_data["user_locked_until"] = time() + $lock_minutes * 60;
+    }
 
     // update failed_logins on every attempt, not just below the limit
-    $db_user->update("se_user",[
-        "user_failed_logins" => $failed_logins
-    ],[
+    $db_user->update("se_user", $update_data, [
         "user_nick" => $user
     ]);
 
-    if($failed_logins >= $se_failed_logins_limit) {
-        // generate and save unlock code; only rows without an unlock code yet are
-        // eligible, so an already-locked account isn't re-locked (and re-mailed)
-        // on every further failed attempt. NULL and '' both count as "not set",
-        // matching the login gate's own check.
+    if($failed_logins >= $limit) {
+        // generate and save unlock code - the mailed link lifts the lock right
+        // away. Only rows without an unlock code yet are eligible, so the owner
+        // gets one mail per series of locks, not one per failed attempt.
+        // NULL and '' both count as "not set".
         $unlock_code = bin2hex(random_bytes(16));
         $update = $db_user->update("se_user",[
             "user_unlock_code" => $unlock_code
@@ -240,8 +248,16 @@ function se_handle_failed_logins($user) {
 
         // only mail the account owner when this attempt actually triggered the lock
         if($update->rowCount() > 0) {
+            // the ACP login (acp/login.php) neither sets $se_base_url nor loads
+            // the frontend language file - build both the same way as the frontend
+            if(empty($se_base_url)) {
+                $se_base_url = ($se_settings['cms_ssl_domain'] ?? '') != '' ? $se_settings['cms_ssl_domain'] : ($se_settings['cms_domain'] ?? '');
+                $se_base_url .= $se_settings['cms_base'] ?? '';
+            }
+            $locked_text = $lang['account_temporarily_locked'] ?? '<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br />{RESET_LINK}</p>';
+
             $unlock_link = $se_base_url."unlock/?code=$unlock_code";
-            $email_msg = str_replace("{USERNAME}","$user",$lang['account_temporarily_locked']);
+            $email_msg = str_replace("{USERNAME}","$user",$locked_text);
             $email_msg = str_replace("{RESET_LINK}","$unlock_link",$email_msg);
 
             $mail_data['tpl'] = 'mail.tpl';
