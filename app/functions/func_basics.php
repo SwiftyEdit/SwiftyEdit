@@ -117,13 +117,17 @@ function se_get_images_data($image,$parameters=NULL) {
 	global $se_template;
 	global $languagePack;
 	
+	$output = [];
 	if($parameters !== NULL) {
-		$parameter = parse_str(html_entity_decode($parameters),$output);
+		parse_str(html_entity_decode($parameters),$output);
 	}
-	foreach($output as $key => $val) {
-		$$key = $val;
-	}
-	
+
+	// only the supported parameters - never assign the query to arbitrary
+	// variables, it would overwrite the globals above ($db_content, $se_template)
+	$data = is_string($output['data'] ?? null) ? $output['data'] : '';
+	$aclass = is_string($output['aclass'] ?? null) ? $output['aclass'] : '';
+	$iclass = is_string($output['iclass'] ?? null) ? $output['iclass'] : '';
+
 	$imageData = $db_content->get("se_media", "*", [
 			"AND" => [
 			"media_file[~]" => "%$image",
@@ -161,13 +165,10 @@ function se_get_files_data($file,$parameters=NULL) {
 
 	global $db_content, $se_template, $languagePack, $swifty_slug;
 
-	if($parameters !== NULL) {
-		$parameter = parse_str(html_entity_decode($parameters),$output);
-	}
-	foreach($output as $key => $val) {
-		$$key = $val;
-	}
-	
+	// $parameters is accepted for the [file=name]...[/file] syntax, but there
+	// are no supported parameters - it used to be assigned to arbitrary
+	// variables, which overwrote the globals above
+
 	$fileData = $db_content->get("se_media", "*", [
 			"AND" => [
 			    "media_file[~]" => "%$file",
@@ -321,24 +322,11 @@ function text_parser($text) {
 	// which doesn't exist since v2, and allowed reading any file via "../".
 	// The tag is only stripped so old content doesn't show it as raw text.
 	$text = preg_replace('/\[include\](.*?)\[\/include\]/s', '', $text);
- 
-	$text = preg_replace_callback(
-	    '/\[script\](.*?)\[\/script\]/s',
-	    function ($m) {
-		   return buffer_script($m[1]);
-	    },
-	    $text
-	);
-	
-	$text = preg_replace_callback(
-	    '/\[plugin=(.*?)\](.*?)\[\/plugin\]/si',
-	    function ($m) {
-		    se_store_admin_helper('p',$m[1]);
-				return buffer_script($m[1],$m[2]);
-	    },
-	    $text
-	);
-	
+
+	// [script] and [plugin=] run last (see below) - their output can contain
+	// third-party input (e.g. form submissions), which must not be parsed
+	// for [image=], [file=] or [mod=] again
+
 	$text = preg_replace_callback(
 	    '/\[image=(.*?)\](.*?)\[\/image\]/si',
 	    function ($m) {
@@ -361,6 +349,23 @@ function text_parser($text) {
 	    '/\[mod=(.*?)\](.*?)\[\/mod\]/si',
 	    function ($m) {
 		   return se_global_mod_snippets($m[1],$m[2]);
+	    },
+	    $text
+	);
+
+	$text = preg_replace_callback(
+	    '/\[script\](.*?)\[\/script\]/s',
+	    function ($m) {
+		   return buffer_script($m[1]);
+	    },
+	    $text
+	);
+
+	$text = preg_replace_callback(
+	    '/\[plugin=(.*?)\](.*?)\[\/plugin\]/si',
+	    function ($m) {
+		    se_store_admin_helper('p',$m[1]);
+				return buffer_script($m[1],$m[2]);
 	    },
 	    $text
 	);

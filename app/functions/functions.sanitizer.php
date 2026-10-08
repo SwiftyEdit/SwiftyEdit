@@ -197,6 +197,33 @@ function sanitizeUserInputs($str,$type='str',$flags=NULL): mixed {
 }
 
 /**
+ * Read a fixed list of fields from user input (default $_POST), each run
+ * through sanitizeUserInputs(). Replaces the old "foreach($_POST as $key => $val)
+ * { $$key = ... }" pattern, which let a request set any variable in the
+ * calling scope (e.g. $db_user, $_SESSION). Missing fields and non-string
+ * values (arrays like "field[]=x") become an empty string.
+ *
+ * Usage: extract(se_sanitize_fields(['user_firstname', 'user_lastname']));
+ * or use the returned array directly.
+ *
+ * @param array $fields allowed field names
+ * @param array|null $source input array, defaults to $_POST
+ * @return array field => sanitized string
+ */
+function se_sanitize_fields(array $fields, ?array $source = null): array {
+
+	$source = $source ?? $_POST;
+	$data = [];
+
+	foreach ($fields as $field) {
+		$value = $source[$field] ?? '';
+		$data[$field] = is_string($value) ? sanitizeUserInputs($value) : '';
+	}
+
+	return $data;
+}
+
+/**
  * remove tags [include] [script] [plugin] and [snippet]
  */
 

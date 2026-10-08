@@ -398,10 +398,15 @@ function se_write_comment($data) {
 	
 	if($data['input_name'] != '' && $data['input_mail'] != '' && $data['input_comment'] != '') {
 	
-		foreach($data as $key => $val) {
-			$$key = sanitizeUserInputs($val);
-		}
-		
+		// only the text fields - the ids below are read from $data and cast to int
+		[
+			'input_name' => $input_name,
+			'input_mail' => $input_mail,
+			'input_comment' => $input_comment
+		] = se_sanitize_fields(['input_name', 'input_mail', 'input_comment'], $data);
+
+		$relation_id = null;
+		$parent_id = null;
 		$type = 'p';
 		$comment_status = 2;
 		

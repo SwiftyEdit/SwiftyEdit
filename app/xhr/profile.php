@@ -168,23 +168,21 @@ if(isset($_POST['change_mail'])) {
 // update address
 if(isset($_POST['update_address'])) {
 
-    foreach ($_POST as $key => $val) {
-        $$key = sanitizeUserInputs($val);
-    }
-
-    $update_address_data = $db_user->update("se_user", [
-        "user_firstname" => "$user_firstname",
-        "user_lastname" => "$user_lastname",
-        "user_street" => "$user_street",
-        "user_street_nbr" => "$user_street_nbr",
-        "user_zip" => "$user_zip",
-        "user_city" => "$user_city",
-        "user_public_profile" => "$user_public_profile"
-    ], [
-        "user_id" => (int) $_SESSION['user_id']
+    $address_data = se_sanitize_fields([
+        'user_firstname', 'user_lastname', 'user_street', 'user_street_nbr',
+        'user_zip', 'user_city', 'user_public_profile'
     ]);
 
-    if($update_address_data->rowCount() == 1){
+    // registered users only - guests keep their address in the session (see below)
+    $success = false;
+    if(is_numeric($_SESSION['user_id'] ?? null)) {
+        $update_address_data = $db_user->update("se_user", $address_data, [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+        $success = $update_address_data->rowCount() == 1;
+    }
+
+    if($success){
         $smarty->assign("alert_text",$lang['msg_update_profile']);
         $smarty->display('alert/alert-success.tpl');
     } else {
@@ -195,8 +193,7 @@ if(isset($_POST['update_address'])) {
 
 // confirm guest e-mail address (guest checkout only, first step before the address forms)
 if(isset($_POST['update_address_mail'])) {
-    $ba_mail = sanitizeUserInputs($_POST['ba_mail'] ?? '');
-    $ba_mail_repeat = sanitizeUserInputs($_POST['ba_mail_repeat'] ?? '');
+    ['ba_mail' => $ba_mail, 'ba_mail_repeat' => $ba_mail_repeat] = se_sanitize_fields(['ba_mail', 'ba_mail_repeat']);
 
     if (is_numeric($_SESSION['user_id']) || $se_settings['posts_guest_order_enable'] != 1) {
         $success = false;
@@ -225,23 +222,11 @@ if(isset($_POST['update_address_mail'])) {
 
 // update billing address
 if(isset($_POST['update_address_ba'])) {
-    foreach($_POST as $key => $val) {
-        $$key = sanitizeUserInputs($val);
-    }
-
-    $ba_data = [
-        "ba_company" => "$ba_company",
-        "ba_firstname" => "$ba_firstname",
-        "ba_lastname" => "$ba_lastname",
-        "ba_street" => "$ba_street",
-        "ba_street_nbr" => "$ba_street_nbr",
-        "ba_zip" => "$ba_zip",
-        "ba_city" => "$ba_city",
-        "ba_country" => "$ba_country",
-        "ba_tax_number" => "$ba_tax_number",
-        "ba_tax_id_number" => "$ba_tax_id_number",
-        "ba_sales_tax_id_number" => "$ba_sales_tax_id_number"
-    ];
+    $ba_data = se_sanitize_fields([
+        'ba_company', 'ba_firstname', 'ba_lastname', 'ba_street', 'ba_street_nbr',
+        'ba_zip', 'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number',
+        'ba_sales_tax_id_number'
+    ]);
 
     if (is_numeric($_SESSION['user_id'])) {
         // registered user: persist to se_user as before
@@ -268,20 +253,10 @@ if(isset($_POST['update_address_ba'])) {
 
 // update shipping address
 if(isset($_POST['update_address_sa'])) {
-    foreach($_POST as $key => $val) {
-        $$key = sanitizeUserInputs($val);
-    }
-
-    $sa_data = [
-        "sa_company" => "$sa_company",
-        "sa_firstname" => "$sa_firstname",
-        "sa_lastname" => "$sa_lastname",
-        "sa_street" => "$sa_street",
-        "sa_street_nbr" => "$sa_street_nbr",
-        "sa_zip" => "$sa_zip",
-        "sa_city" => "$sa_city",
-        "sa_country" => "$sa_country"
-    ];
+    $sa_data = se_sanitize_fields([
+        'sa_company', 'sa_firstname', 'sa_lastname', 'sa_street', 'sa_street_nbr',
+        'sa_zip', 'sa_city', 'sa_country'
+    ]);
 
     if (is_numeric($_SESSION['user_id'])) {
         // registered user: persist to se_user as before
