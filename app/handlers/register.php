@@ -247,8 +247,7 @@ if($_POST['send_registerform']) {
         $smarty->assign("send_username",$username,true);
         $smarty->assign("send_mail",$mail,true);
         $smarty->assign("send_mailrepeat",$mailrepeat,true);
-        $smarty->assign("send_psw",$_POST['psw'],true);
-        $smarty->assign("send_psw_repeat",$_POST['psw_repeat'],true);
+        // passwords are never sent back into the form
         $smarty->assign("send_firstname",$firstname,true);
         $smarty->assign("send_name",$name,true);
         $smarty->assign("send_zip",$zip,true);

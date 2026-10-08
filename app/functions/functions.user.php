@@ -118,8 +118,17 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
     // the lock expires by itself, so nobody can lock an account permanently
     $is_locked = (int) ($user_data['user_locked_until'] ?? 0) > time();
 
+    // too many failed logins from this client (all accounts together, see
+    // se_rate_limit_exceeded()) - refuse without accepting the password
+    $is_throttled = se_rate_limit_exceeded('login', 10, 900);
+
+    // always run password_verify() - against a dummy hash for unknown accounts -
+    // so the response time doesn't reveal whether an account exists
+    $dummy_hash = '$2y$12$Oc7bwErf6Vq0v3/TyBOlo.3PQ4UkkG1EwYKFGaNcLwL/ug6GGRDTS';
+    $psw_valid = password_verify($psw, $hash !== '' ? $hash : $dummy_hash) && $hash !== '';
+
     $result = null;
-    if(!$is_locked && password_verify($psw, $hash)) {
+    if(!$is_locked && !$is_throttled && $psw_valid) {
         /* valid psw */
 
         $result = $db_user->get("se_user", "*", [
@@ -193,7 +202,12 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
         // attempts during a lock are not counted - the password isn't checked
         // then, and counting them would only extend the lock further
-        if(is_numeric($se_failed_logins_limit) && !$is_locked && $user_nick !== '') {
+        // like the account lock, attempts while throttled are not counted again
+        if(!$is_throttled) {
+            se_rate_limit_add('login', 900);
+        }
+
+        if(is_numeric($se_failed_logins_limit) && !$is_locked && !$is_throttled && $user_nick !== '') {
             se_handle_failed_logins($user_nick);
         }
         session_destroy();
@@ -377,9 +391,16 @@ function get_userdata_by_token($token) {
 
     global $db_user;
 
+    if (!is_string($token) || $token === '') {
+        return null;
+    }
+
+    // only a hash of the reset token is stored (see app/xhr/password-reset.php),
+    // and it is only valid until user_reset_psw_expires
     $user_data = $db_user->get("se_user", "*", [
         "AND" => [
-            "user_reset_psw" => "$token"
+            "user_reset_psw" => hash('sha256', $token),
+            "user_reset_psw_expires[>]" => time()
         ]
     ]);
 
@@ -622,4 +643,60 @@ function get_all_usernames() {
     global $db_user;
     $user_nicks = $db_user->select("se_user", ["user_nick"]);
     return $user_nicks;
+}
+
+/**
+ * Simple per-client rate limit (login, password reset), stored as small JSON
+ * files under SE_CONTENT/cache/ratelimit/ - no database table needed.
+ *
+ * The client is identified by REMOTE_ADDR only: Client-IP / X-Forwarded-For
+ * are set by the client itself and would make the limit trivial to bypass.
+ *
+ * Usage: check with se_rate_limit_exceeded() first, then record the attempt
+ * with se_rate_limit_add() (e.g. only failed logins, or every reset request).
+ *
+ * @param string $bucket name of the limit, e.g. "login" or "reset-mail:<mail>"
+ * @param bool $per_ip whether the bucket is counted per client IP
+ * @return string cache file of this bucket
+ */
+function se_rate_limit_file(string $bucket, bool $per_ip = true): string {
+    $key = $bucket . ($per_ip ? '|' . ($_SERVER['REMOTE_ADDR'] ?? 'cli') : '');
+    return SE_CONTENT . '/cache/ratelimit/' . hash('sha256', $key) . '.json';
+}
+
+/**
+ * Timestamps of the attempts within the window
+ */
+function se_rate_limit_attempts(string $file, int $window): array {
+    if (!is_file($file)) {
+        return [];
+    }
+    $attempts = json_decode((string) @file_get_contents($file), true);
+    if (!is_array($attempts)) {
+        return [];
+    }
+    $since = time() - $window;
+    return array_values(array_filter($attempts, static fn($t) => is_int($t) && $t > $since));
+}
+
+/**
+ * @param int $max allowed attempts within $window seconds
+ * @return bool true if the limit is reached - the action must not run
+ */
+function se_rate_limit_exceeded(string $bucket, int $max, int $window, bool $per_ip = true): bool {
+    return count(se_rate_limit_attempts(se_rate_limit_file($bucket, $per_ip), $window)) >= $max;
+}
+
+/**
+ * Record one attempt
+ */
+function se_rate_limit_add(string $bucket, int $window, bool $per_ip = true): void {
+    $file = se_rate_limit_file($bucket, $per_ip);
+    $dir = dirname($file);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+    }
+    $attempts = se_rate_limit_attempts($file, $window);
+    $attempts[] = time();
+    @file_put_contents($file, json_encode($attempts), LOCK_EX);
 }

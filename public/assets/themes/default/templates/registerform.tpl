@@ -93,7 +93,7 @@
 
 	<div class="mb-3">
 		<label for="inputPass1">{$lang_label_psw}</label>
-		<input type="password" class="form-control" name="psw" value="{$send_psw}" id="inputPass1" required>
+		<input type="password" class="form-control" name="psw" id="inputPass1" required>
 	</div>	
 
 	<div class="mb-3">
@@ -101,10 +101,9 @@
 		<input type="password"
                class="form-control"
                name="psw_repeat"
-               value="{$send_psw_repeat}"
                id="inputPass2"
-               hx-get="/xhr/se/checks/?check=psw_repeat"
-               hx-include="[name=psw]"
+               hx-post="/xhr/se/checks/?check=psw_repeat"
+               hx-include="[name=psw],[name=csrf_token]"
                hx-trigger="keyup changed delay:500ms"
                hx-target="#response-psw-repeat"
                required>

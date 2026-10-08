@@ -42,6 +42,7 @@ $cols = array(
     "user_city" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "user_activationkey" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_reset_psw" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "user_reset_psw_expires" => 'INTEGER NOT NULL DEFAULT 0',
     "user_public_profile" => "VARCHAR(500) NOT NULL DEFAULT ''",
     "user_social_media" => "LONGTEXT NOT NULL DEFAULT ''",
     /* billing address data */
