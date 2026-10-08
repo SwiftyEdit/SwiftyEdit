@@ -287,6 +287,84 @@ function se_is_safe_remote_url(string $url): bool {
     return true;
 }
 
+/**
+ * Fetch a remote addon URL (info.json, update_url, ZIP) with redirects
+ * followed manually, so every hop is checked with se_is_safe_remote_url().
+ * Letting file_get_contents() follow redirects itself would only validate
+ * the first URL - a redirect to http:// or into the internal network would
+ * pass unchecked. Redirects can't simply be disabled either: GitHub release
+ * downloads (used by the addon catalog) always answer with a redirect.
+ *
+ * @return string|false response body of the final 2xx response, false otherwise
+ */
+function se_fetch_remote_url(string $url, int $max_redirects = 5): string|false {
+
+    for ($i = 0; $i <= $max_redirects; $i++) {
+
+        if (!se_is_safe_remote_url($url)) {
+            return false;
+        }
+
+        $context = stream_context_create([
+            'http' => [
+                'follow_location' => 0,
+                'ignore_errors' => true // also return the body of 3xx/4xx, we check the status ourselves
+            ]
+        ]);
+
+        $body = @file_get_contents($url, false, $context);
+
+        // PHP 8.4+ provides http_get_last_response_headers(), older versions
+        // fill $http_response_header in the calling scope
+        if (function_exists('http_get_last_response_headers')) {
+            $headers = http_get_last_response_headers() ?? [];
+        } else {
+            $headers = $http_response_header ?? [];
+        }
+
+        if ($body === false || empty($headers) || !preg_match('#^HTTP/\S+\s+(\d{3})#', $headers[0], $m)) {
+            return false;
+        }
+
+        $status = (int) $m[1];
+
+        if ($status >= 200 && $status < 300) {
+            return $body;
+        }
+
+        if (!in_array($status, [301, 302, 303, 307, 308], true)) {
+            return false;
+        }
+
+        // find the Location header of this redirect
+        $location = '';
+        foreach ($headers as $header) {
+            if (stripos($header, 'Location:') === 0) {
+                $location = trim(substr($header, 9));
+                break;
+            }
+        }
+
+        if ($location === '') {
+            return false;
+        }
+
+        // resolve protocol-relative and absolute-path redirects against the current URL
+        if (str_starts_with($location, '//')) {
+            $location = 'https:' . $location;
+        } else if (str_starts_with($location, '/')) {
+            $parts = parse_url($url);
+            $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+            $location = 'https://' . $parts['host'] . $port . $location;
+        }
+
+        $url = $location;
+    }
+
+    // too many redirects
+    return false;
+}
+
 function se_load_addon_info(string $url): array {
 
     if (!se_is_safe_remote_url($url)) {
@@ -294,7 +372,7 @@ function se_load_addon_info(string $url): array {
     }
 
     // Load info.json
-    $json = @file_get_contents($url);
+    $json = se_fetch_remote_url($url);
 
     if($json === false) {
         return ['success' => false, 'message' => 'Could not load URL.'];
@@ -358,7 +436,7 @@ function se_check_addon_update(array $addon_info): array {
     }
 
     // Load remote info.json
-    $json = @file_get_contents($addon_info['addon']['update_url']);
+    $json = se_fetch_remote_url($addon_info['addon']['update_url']);
 
     if($json === false) {
         return ['status' => 'unknown'];
@@ -436,6 +514,20 @@ function se_is_macos_zip_artifact(string $filename): bool {
  */
 function se_install_addon_zip(string $addon_id, string $download_url, string $target_root, string $label): array {
 
+    global $se_upload_addons;
+
+    // central gate for all callers (install, catalog, update) - writing
+    // addon code to disk is only allowed when enabled in config.php
+    if (!$se_upload_addons) {
+        return ['success' => false, 'message' => 'Addon upload is disabled.'];
+    }
+
+    // the id becomes the target directory - it can come from a remote
+    // info.json (see se_load_addon_info()), so it must be a plain folder name
+    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $addon_id)) {
+        return ['success' => false, 'message' => 'Invalid addon ID.'];
+    }
+
     // download_url can originate from a remote update_url's own response (see
     // se_check_addon_update()), not only the https-checked install form - see
     // se_is_safe_remote_url()
@@ -445,7 +537,7 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
 
     // Download ZIP to temporary file
     $tmp_zip = tempnam(sys_get_temp_dir(), 'se_addon_');
-    $zip_content = @file_get_contents($download_url);
+    $zip_content = se_fetch_remote_url($download_url);
 
     if($zip_content === false) {
         unlink($tmp_zip);
@@ -462,13 +554,31 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
     }
 
     // Validate file types – only allowed extensions
-    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'sqlite3', 'woff', 'woff2', 'ttf', 'otf'];
+    // (no sqlite3: the data/ folder of an addon is never extracted, see below,
+    // and a database file anywhere else has no business in an addon ZIP)
+    $allowed_extensions = ['php', 'tpl', 'json', 'js', 'css', 'html', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt', 'md', 'woff', 'woff2', 'ttf', 'otf'];
 
     for($i = 0; $i < $zip->numFiles; $i++) {
         $filename = $zip->getNameIndex($i);
         if(se_is_macos_zip_artifact($filename)) {
             continue;
         }
+
+        // Zip-Slip: reject the whole ZIP if any entry could escape the addon
+        // directory - absolute paths, backslashes (Windows separators), drive
+        // letters, null bytes or a ".." segment anywhere in the path
+        if(
+            str_starts_with($filename, '/')
+            || str_contains($filename, '\\')
+            || str_contains($filename, ':')
+            || str_contains($filename, "\0")
+            || in_array('..', explode('/', $filename), true)
+        ) {
+            $zip->close();
+            unlink($tmp_zip);
+            return ['success' => false, 'message' => 'ZIP contains an invalid path: '.htmlspecialchars($filename, ENT_QUOTES)];
+        }
+
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         if($ext !== '' && !in_array($ext, $allowed_extensions)) {
             $zip->close();
@@ -501,7 +611,11 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
             continue;
         }
 
-        // Write file to target path
+        // Write file to target path - second line of defense after the path
+        // check above: the resolved target must stay inside the addon directory
+        if(se_resolve_within($addon_path, $relative_path) === false) {
+            continue;
+        }
         $target = $addon_path . DIRECTORY_SEPARATOR . $relative_path;
 
         // Create subdirectory if necessary
