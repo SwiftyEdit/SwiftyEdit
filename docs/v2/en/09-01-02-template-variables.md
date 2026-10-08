@@ -28,7 +28,7 @@ Assigned by `app/template-setup.php` and `app/smarty.php`, available on **every*
 
 | Variable | Meaning |
 |---|---|
-| `$page_content` | The fully rendered content of the current page (editor content, already parsed through shortcodes/`[include]`/the editor plugin). On blog list pages, the handler overwrites this value with the rendered `posts-list.tpl`. |
+| `$page_content` | The fully rendered content of the current page (editor content, already parsed through shortcodes/the editor plugin). On blog list pages, the handler overwrites this value with the rendered `posts-list.tpl`. |
 | `$products_content` | Set **only** on shop list pages: the rendered `products-list.tpl`. Here `$page_content` stays the page's own editor text unchanged - so an intro text above the product grid can be maintained separately. `content.tpl` outputs both, one after the other. |
 | `$msg_content` | A one-off status message (e.g. after logout), usually empty. `nocache`. |
 | `$content_tags` | Tags of the current content (page/post/product/event) as an array of `tag_href` / `tag_title`. Also re-assigned by every post/product/event handler for that specific entry. |

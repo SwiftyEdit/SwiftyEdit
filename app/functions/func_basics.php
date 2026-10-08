@@ -39,16 +39,27 @@ function buffer_script(string $script, ?string $parameters=NULL) {
     $parameter = '';
     $buffer = '';
 
+    // the name comes from content ([plugin=name], [script]) - a plain folder
+    // name only, so it can't point outside of plugins/
+    $plugin_file = SE_ROOT.'plugins/'.basename($script).'/index.php';
+
 	if($parameters !== NULL) {
 		$parameter = parse_str(html_entity_decode($parameters),$output);
         foreach($output as $plugin_key => $plugin_value) {
+            // the query is exposed to the plugin as local variables - only plain
+            // names, and never one of this function's own variables (e.g. a
+            // "plugin_file=..." parameter must not change which file is included)
+            if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $plugin_key)
+                || in_array($plugin_key, ['plugin_file', 'script', 'parameters', 'parameter', 'buffer', 'content', 'output', 'plugin_key', 'plugin_value', 'this', 'GLOBALS'], true)) {
+                continue;
+            }
             ${$plugin_key} = $plugin_value;
         }
 	}
 
 	ob_start();
-	if(is_file(SE_ROOT."plugins/$script/index.php")) {
-		include SE_ROOT."plugins/$script/index.php";
+	if(is_file($plugin_file)) {
+		include $plugin_file;
 	}
 
 	$content = ob_get_clean();
@@ -200,8 +211,11 @@ function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
 		$parameter = parse_str(html_entity_decode($params),$output);
 	}
 	
-    if(is_file(SE_ROOT.'/plugins/'.$mod.'/global/snippets.php')) {
-        include SE_ROOT.'/plugins/'.$mod.'/global/snippets.php';
+    // $mod comes from content ([mod=name]) - a plain folder name only
+    $snippets_file = SE_ROOT.'/plugins/'.basename($mod).'/global/snippets.php';
+
+    if(is_file($snippets_file)) {
+        include $snippets_file;
     }
 	
 	return $mod_str;
@@ -303,13 +317,10 @@ function text_parser($text) {
         }
     }
 	
-	$text = preg_replace_callback(
-	    '/\[include\](.*?)\[\/include\]/s',
-	    function ($m) {
-		   return file_get_contents("./content/plugins/$m[1]");
-	    },
-	    $text
-	);
+	// [include] is no longer supported - it read files from content/plugins/,
+	// which doesn't exist since v2, and allowed reading any file via "../".
+	// The tag is only stripped so old content doesn't show it as raw text.
+	$text = preg_replace('/\[include\](.*?)\[\/include\]/s', '', $text);
  
 	$text = preg_replace_callback(
 	    '/\[script\](.*?)\[\/script\]/s',

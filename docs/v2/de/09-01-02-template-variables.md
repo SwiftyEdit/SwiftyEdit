@@ -28,7 +28,7 @@ verfügbar (auch innerhalb Blog/Shop/Events-Templates).
 
 | Variable | Bedeutung |
 |---|---|
-| `$page_content` | Der fertig gerenderte Inhalt der aktuellen Seite (Editor-Content, bereits durch Shortcodes/`[include]`/Editor-Plugin geparst). Bei Blog-Listen wird dieser Wert vom Handler mit dem gerenderten `posts-list.tpl` überschrieben. |
+| `$page_content` | Der fertig gerenderte Inhalt der aktuellen Seite (Editor-Content, bereits durch Shortcodes/Editor-Plugin geparst). Bei Blog-Listen wird dieser Wert vom Handler mit dem gerenderten `posts-list.tpl` überschrieben. |
 | `$products_content` | **Nur** auf Shop-Listenseiten gesetzt: das gerenderte `products-list.tpl`. Hier bleibt `$page_content` unverändert der eigene Editor-Text der Seite - so lässt sich über der Produktliste ein eigener Einleitungstext pflegen. `content.tpl` gibt beide nacheinander aus. |
 | `$msg_content` | Einmalige Statusmeldung (z. B. nach Logout), meist leer. `nocache`. |
 | `$content_tags` | Tags des aktuellen Inhalts (Seite/Post/Produkt/Event) als Array `tag_href` / `tag_title`. Wird zusätzlich von jedem Post/Produkt/Event-Handler für den jeweiligen Eintrag neu gesetzt. |
