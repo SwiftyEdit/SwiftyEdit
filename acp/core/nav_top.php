@@ -69,7 +69,7 @@ echo '</button>';
 $selected_lang_flag = '<img src="'.$active_lang[$_SESSION['lang']]['flag'].'" style="vertical-align: baseline; width:18px; height:auto;">';
 
 echo '<div class="dropstart me-1">';
-echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$selected_lang_flag.'</a>';
+echo '<a class="btn btn-default" href="#" role="button" id="langMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$selected_lang_flag.'</a>';
 echo '<ul class="dropdown-menu">';
 foreach($active_lang as $k => $v) {
     $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
@@ -91,7 +91,9 @@ if(is_file(SE_PUBLIC.$my_avatar_path)) {
 }
 
 echo '<div class="dropstart me-1">';
-echo '<a class="btn btn-default" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$user_avatar.'<span class="d-none d-md-inline">'.$_SESSION['user_nick'].'</span></a>';
+// the caret shows that the avatar opens a menu (profile, settings, logout) -
+// Bootstrap's own .dropdown-toggle caret would point left here (dropstart)
+echo '<a class="btn btn-default" href="#" role="button" id="userMenuLink" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">'.$user_avatar.'<span class="d-none d-md-inline">'.$_SESSION['user_nick'].'</span><span class="ms-1 small opacity-75">'.$icon['caret_down'].'</span></a>';
 echo '<ul class="dropdown-menu">';
 echo '<li><a class="dropdown-item" href="/profile/">'.$icon['user'].' '.$lang['button_profile'].'</a></li>';
 echo '<li><a class="dropdown-item" href="/admin/users/settings/">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</a></li>';
