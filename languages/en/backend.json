@@ -702,5 +702,13 @@
   "account.2fa.confirm_intro_app": "To change anything, confirm with your password and a code from your app or a recovery code.",
   "account.2fa.btn_reconfigure": "Set up again / change method",
   "account.2fa.confirm_reconfigure": "Remove the current two-factor setup and set it up again?",
-  "account.2fa.msg_reconfigure": "The previous setup has been removed - choose a method to set it up again."
+  "account.2fa.msg_reconfigure": "The previous setup has been removed - choose a method to set it up again.",
+  "login.2fa.trust_device": "Trust this device for 30 days (no code needed here)",
+  "account.2fa.devices_title": "Trusted devices",
+  "account.2fa.devices_none": "No trusted devices.",
+  "account.2fa.device_info": "trusted since {CREATED} · last used {USED} · until {EXPIRES}",
+  "account.2fa.device_current": "this device",
+  "account.2fa.btn_revoke": "Remove",
+  "account.2fa.btn_revoke_all": "Remove all",
+  "account.2fa.msg_revoked": "The device has to confirm the login with a code again."
 }

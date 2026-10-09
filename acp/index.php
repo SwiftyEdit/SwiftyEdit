@@ -799,11 +799,9 @@ foreach ($se_editor_addons as $editor_addon) {
         $maxlifetime = $gc_maxlifetime;
     }
 
-    if (isset($_COOKIE['identifier'])) {
-        echo "var auto_logout = false;";
-    } else {
-        echo "var auto_logout = true;";
-    }
+    // the session lifetime is enforced on the server (se_acp_session_expired()),
+    // so the countdown always runs - a "remember me" cookie no longer turns it off
+    echo "var auto_logout = true;";
     echo "var maxlifetime = '{$maxlifetime}';";
     ?>
     var countdown = {

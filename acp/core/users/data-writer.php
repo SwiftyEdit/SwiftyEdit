@@ -97,6 +97,11 @@ if(isset($_POST['save_user'])) {
             "user_id" => $edit_user_id
         ]);
 
+        // a new password ends the trust of all devices (2FA "trust this device")
+        if($set_psw === 'true') {
+            se_2fa_revoke_devices($edit_user_id);
+        }
+
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
             record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>","5");

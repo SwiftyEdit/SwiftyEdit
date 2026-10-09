@@ -108,6 +108,34 @@ function se_acp_twofa_card(array $user, array $alerts = [], array $recovery_code
             $html .= '<button class="btn btn-default text-danger" name="twofa_disable" value="1" '.$hx.' hx-confirm="'.htmlspecialchars($lang['account_2fa_confirm_disable'], ENT_QUOTES).'">'.$lang['account_2fa_btn_disable'].'</button>';
         }
         $html .= '</div>';
+
+        // trusted devices - removing one needs no confirmation, it only asks for a code again
+        $devices = se_2fa_trusted_devices((int) $user['user_id']);
+        $html .= '<hr><h6>'.$lang['account_2fa_devices_title'].'</h6>';
+        if ($devices === []) {
+            $html .= '<p class="text-muted mb-0">'.$lang['account_2fa_devices_none'].'</p>';
+        } else {
+            $html .= '<ul class="list-group mb-2">';
+            foreach ($devices as $device) {
+                $info = str_replace(
+                    ['{CREATED}', '{USED}', '{EXPIRES}'],
+                    [se_format_datetime($device['created']), se_format_datetime($device['last_used']), se_format_datetime($device['expires'])],
+                    $lang['account_2fa_device_info']
+                );
+                $html .= '<li class="list-group-item d-flex align-items-center gap-2">';
+                $html .= '<div><strong>'.htmlspecialchars($device['description'], ENT_QUOTES).'</strong>';
+                if ($device['current']) {
+                    $html .= ' <span class="badge text-bg-info">'.$lang['account_2fa_device_current'].'</span>';
+                }
+                $html .= '<br><small class="text-muted">'.htmlspecialchars($info, ENT_QUOTES).'</small></div>';
+                $html .= '<button class="btn btn-sm btn-default ms-auto" name="twofa_revoke" value="'.(int) $device['device_id'].'" '.$hx.'>'.$lang['account_2fa_btn_revoke'].'</button>';
+                $html .= '</li>';
+            }
+            $html .= '</ul>';
+            if (count($devices) > 1) {
+                $html .= '<button class="btn btn-sm btn-default" name="twofa_revoke_all" value="1" '.$hx.'>'.$lang['account_2fa_btn_revoke_all'].'</button>';
+            }
+        }
     }
 
     $html .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

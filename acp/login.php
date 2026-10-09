@@ -159,6 +159,9 @@ if(isset($_SESSION['2fa_pending'])) {
                 unset($_SESSION['2fa_pending']['totp_secret']);
 
             } elseif(!$twofa_setup && se_2fa_check_input($twofa_user, $twofa_input)) {
+                if(!empty($_POST['2fa_trust'])) {
+                    se_2fa_trust_device($twofa_user);
+                }
                 se_2fa_complete_login(se_2fa_pending_user());
                 exit;
 
@@ -172,6 +175,9 @@ if(isset($_SESSION['2fa_pending'])) {
 
         // recovery codes shown and saved - setup done
         if(isset($_POST['2fa_recovery_saved']) && !empty($_SESSION['2fa_pending']['recovery_codes'])) {
+            if(!empty($_POST['2fa_trust'])) {
+                se_2fa_trust_device($twofa_user);
+            }
             se_2fa_complete_login(se_2fa_pending_user());
             exit;
         }
@@ -245,6 +251,10 @@ if(isset($_SESSION['2fa_pending'])) {
         echo htmlspecialchars(implode("\n", $_SESSION['2fa_pending']['recovery_codes']), ENT_QUOTES);
     ?></pre>
     <form action="<?php echo $form_path; ?>" method="post">
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="2fa_trust" value="1" id="twofaTrust">
+            <label class="form-check-label" for="twofaTrust"><?php echo $lang['login_2fa_trust_device']; ?></label>
+        </div>
         <input type="submit" class="btn btn-primary w-100" name="2fa_recovery_saved" value="<?php echo htmlspecialchars($lang['login_2fa_btn_recovery_saved'], ENT_QUOTES); ?>">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
     </form>
@@ -305,6 +315,12 @@ if(isset($_SESSION['2fa_pending'])) {
         <?php if($twofa_view === 'verify') { ?>
             <div class="form-text mb-2"><?php echo $twofa_app ? $lang['login_2fa_help_recovery_app'] : $lang['login_2fa_help_recovery']; ?></div>
         <?php } ?>
+        <?php if($twofa_view === 'verify') { ?>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="2fa_trust" value="1" id="twofaTrust">
+            <label class="form-check-label" for="twofaTrust"><?php echo $lang['login_2fa_trust_device']; ?></label>
+        </div>
+        <?php } ?>
         <input type="submit" class="btn btn-primary w-100" name="2fa_verify" value="<?php echo htmlspecialchars($lang['login_2fa_btn_verify'], ENT_QUOTES); ?>">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
     </form>
@@ -339,15 +355,10 @@ if(isset($_SESSION['2fa_pending'])) {
                 <input type="password" class="form-control" name="login_psw">
             </div>
         </div>
-        <div class="row mb-2">
-            <div class="offset-sm-3 col-sm-9">
-                <div class="form-check-inline">
-                    <label class="form-check-label">
-                        <input type="checkbox" name="remember_me"> <?php echo $lang['label_remember_me']; ?>
-                    </label>
-                </div>
-            </div>
-        </div>
+        <?php
+        // no "remember me" here anymore: the backend session lifetime is enforced
+        // on the server - with 2FA, "trust this device" skips the second factor
+        ?>
         <div class="row">
             <div class="offset-sm-3 col-sm-9">
                 <input type="submit" class="btn btn-primary w-100" name="check" value="Login">

@@ -50,7 +50,7 @@ if(isset($_POST['hide_2fa_notice'])) {
 /**
  * two-factor authentication - every action answers with the whole card
  */
-$twofa_actions = ['twofa_choose', 'twofa_back', 'twofa_setup_send', 'twofa_setup_verify', 'twofa_send', 'twofa_new_recovery', 'twofa_reconfigure', 'twofa_disable'];
+$twofa_actions = ['twofa_choose', 'twofa_back', 'twofa_setup_send', 'twofa_setup_verify', 'twofa_send', 'twofa_new_recovery', 'twofa_reconfigure', 'twofa_disable', 'twofa_revoke', 'twofa_revoke_all'];
 if(array_intersect($twofa_actions, array_keys($_POST)) === []) {
     exit;
 }
@@ -70,6 +70,16 @@ if(isset($_POST['twofa_choose']) && $my_user['user_2fa_method'] === '' && in_arr
 }
 if(isset($_POST['twofa_back'])) {
     unset($_SESSION['2fa_setup']);
+}
+
+// remove trusted devices of the own account - only ever asks for a code again
+if(isset($_POST['twofa_revoke']) && is_numeric($_POST['twofa_revoke'])) {
+    se_2fa_revoke_devices($my_user_id, (int) $_POST['twofa_revoke']);
+    $alerts[] = ['success', $lang['account_2fa_msg_revoked']];
+}
+if(isset($_POST['twofa_revoke_all'])) {
+    se_2fa_revoke_devices($my_user_id);
+    $alerts[] = ['success', $lang['account_2fa_msg_revoked']];
 }
 
 // send a code - for the setup, or to confirm a change

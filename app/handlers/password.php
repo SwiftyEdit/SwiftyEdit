@@ -63,6 +63,8 @@ if($token !== '') {
 			], [
 				"user_id" => (int) $userdata_array['user_id']
 			]);
+			// a new password ends the trust of all devices (2FA "trust this device")
+			se_2fa_revoke_devices((int) $userdata_array['user_id']);
 
 			// inform the owner - without the password itself
 			$email_content = se_get_snippet("mail_psw_updated","$languagePack",'content');

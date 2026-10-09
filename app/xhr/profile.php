@@ -100,6 +100,8 @@ if(isset($_POST['change_password'])) {
         ]);
 
         if($update_psw->rowCount() == 1){
+            // a new password ends the trust of all devices (2FA "trust this device")
+            se_2fa_revoke_devices((int) $_SESSION['user_id']);
             $smarty->assign("alert_text",$lang['msg_update_profile']);
             $smarty->display('alert/alert-success.tpl');
             header("HX-Trigger: changed_password");

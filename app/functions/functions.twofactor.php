@@ -529,6 +529,9 @@ function se_2fa_reset(int $user_id, string $log_trigger): void {
         "user_id" => $user_id
     ]);
 
+    // devices trusted for the old setup no longer count
+    se_2fa_revoke_devices($user_id);
+
     record_log($log_trigger, '2FA reset for user #'.$user_id, 5);
 }
 
@@ -559,6 +562,147 @@ function se_2fa_renew_recovery_codes(array $user): array {
 function se_2fa_recovery_left(array $user): int {
     $hashes = json_decode((string) $user['user_2fa_recovery'], true);
     return is_array($hashes) ? count($hashes) : 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * "Trust this device for 30 days" - after the second factor, a cookie with a
+ * random token lets this browser skip the second factor (never the password).
+ * Only a hash of the token is stored (se_trusted_devices).
+ * ------------------------------------------------------------------------- */
+
+const SE_2FA_DEVICE_COOKIE = 'se_2fa_device';
+const SE_2FA_DEVICE_LIFETIME = 30 * 86400;
+
+/**
+ * Remember the current browser as trusted device of this user
+ */
+function se_2fa_trust_device(array $user): void {
+
+    global $db_user;
+
+    $token = bin2hex(random_bytes(32));
+    $expires = time() + SE_2FA_DEVICE_LIFETIME;
+
+    // tidy up expired entries of this user
+    $db_user->delete("se_trusted_devices", [
+        "user_id" => (int) $user['user_id'],
+        "expires[<]" => time()
+    ]);
+
+    $db_user->insert("se_trusted_devices", [
+        "user_id" => (int) $user['user_id'],
+        "token_hash" => hash('sha256', $token),
+        "description" => se_2fa_device_description($_SERVER['HTTP_USER_AGENT'] ?? ''),
+        "created" => time(),
+        "expires" => $expires,
+        "last_used" => time()
+    ]);
+
+    // /admin covers the backend login, also with a login_slug (/admin/<slug>)
+    setcookie(SE_2FA_DEVICE_COOKIE, $token, [
+        'expires' => $expires,
+        'path' => '/admin',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+
+    record_log($user['user_nick'], '2FA: device trusted ('.se_2fa_device_description($_SERVER['HTTP_USER_AGENT'] ?? '').')', 5);
+}
+
+/**
+ * Whether the current browser is a trusted device of this user
+ */
+function se_2fa_is_trusted_device(array $user): bool {
+
+    global $db_user;
+
+    $token = $_COOKIE[SE_2FA_DEVICE_COOKIE] ?? '';
+    if (!is_string($token) || !preg_match('/^[0-9a-f]{64}$/', $token)) {
+        return false;
+    }
+
+    $device = $db_user->get("se_trusted_devices", ["device_id"], [
+        "AND" => [
+            "user_id" => (int) $user['user_id'],
+            "token_hash" => hash('sha256', $token),
+            "expires[>]" => time()
+        ]
+    ]);
+    if (!is_array($device)) {
+        return false;
+    }
+
+    $db_user->update("se_trusted_devices", ["last_used" => time()], ["device_id" => $device['device_id']]);
+    return true;
+}
+
+/**
+ * Trusted devices of a user, newest first. 'current' marks the browser of
+ * this request.
+ */
+function se_2fa_trusted_devices(int $user_id): array {
+
+    global $db_user;
+
+    $devices = $db_user->select("se_trusted_devices", ["device_id", "token_hash", "description", "created", "expires", "last_used"], [
+        "AND" => [
+            "user_id" => $user_id,
+            "expires[>]" => time()
+        ],
+        "ORDER" => ["created" => "DESC"]
+    ]) ?: [];
+
+    $cookie = $_COOKIE[SE_2FA_DEVICE_COOKIE] ?? '';
+    $current_hash = is_string($cookie) && $cookie !== '' ? hash('sha256', $cookie) : '';
+
+    foreach ($devices as $key => $device) {
+        $devices[$key]['current'] = $current_hash !== '' && hash_equals($device['token_hash'], $current_hash);
+        unset($devices[$key]['token_hash']);
+    }
+
+    return $devices;
+}
+
+/**
+ * Revoke one trusted device (device_id) or all of a user (null)
+ */
+function se_2fa_revoke_devices(int $user_id, ?int $device_id = null): void {
+
+    global $db_user;
+
+    $where = ["user_id" => $user_id];
+    if ($device_id !== null) {
+        $where = ["AND" => ["user_id" => $user_id, "device_id" => $device_id]];
+    }
+    $db_user->delete("se_trusted_devices", $where);
+}
+
+/**
+ * Short description of a browser from its user agent, e.g. "Firefox · macOS" -
+ * only to recognize the entry in the list, no IP address is stored
+ */
+function se_2fa_device_description(string $user_agent): string {
+
+    $browsers = ['Edg/' => 'Edge', 'OPR/' => 'Opera', 'Firefox/' => 'Firefox', 'Chrome/' => 'Chrome', 'Safari/' => 'Safari'];
+    $systems = ['iPhone' => 'iPhone', 'iPad' => 'iPad', 'Android' => 'Android', 'Windows' => 'Windows', 'Mac OS X' => 'macOS', 'Linux' => 'Linux'];
+
+    $browser = 'Browser';
+    foreach ($browsers as $needle => $name) {
+        if (str_contains($user_agent, $needle)) {
+            $browser = $name;
+            break;
+        }
+    }
+    $system = '';
+    foreach ($systems as $needle => $name) {
+        if (str_contains($user_agent, $needle)) {
+            $system = $name;
+            break;
+        }
+    }
+
+    return $system === '' ? $browser : $browser.' · '.$system;
 }
 
 /**

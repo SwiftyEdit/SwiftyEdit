@@ -144,7 +144,7 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
         // backend login with two-factor authentication: only a pending login for
         // now, the session is started after the second factor (see acp/login.php)
-        if($acp == TRUE && se_2fa_required_for($result)) {
+        if($acp == TRUE && se_2fa_required_for($result) && !se_2fa_is_trusted_device($result)) {
             se_2fa_start_pending($result, (bool) $remember);
             return '2fa';
         }
