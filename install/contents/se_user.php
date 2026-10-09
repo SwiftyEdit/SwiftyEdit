@@ -45,6 +45,8 @@ $cols = array(
     "user_reset_psw_expires" => 'INTEGER NOT NULL DEFAULT 0',
     /* two-factor authentication (backend) */
     "user_2fa_method" => "VARCHAR(10) NOT NULL DEFAULT ''",
+    "user_2fa_secret" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "user_2fa_last_step" => 'INTEGER NOT NULL DEFAULT 0',
     "user_2fa_mail_code" => "VARCHAR(64) NOT NULL DEFAULT ''",
     "user_2fa_mail_expires" => 'INTEGER NOT NULL DEFAULT 0',
     "user_2fa_mail_sent" => 'INTEGER NOT NULL DEFAULT 0',

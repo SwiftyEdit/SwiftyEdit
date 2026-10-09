@@ -686,5 +686,21 @@
   "users.2fa.not_own": "You can not reset your own two-factor authentication here - use your settings instead.",
   "dashboard.2fa.off": "Two-factor authentication is not enabled. To require it for every backend user, add $se_2fa_required = true; to data/config.php.",
   "dashboard.2fa.bypass": "The emergency switch $se_2fa_bypass is set in data/config.php - two-factor authentication is skipped for {USER}. Remove it as soon as possible.",
-  "dashboard.2fa.hide": "Hide"
+  "dashboard.2fa.hide": "Hide",
+  "login.2fa.choose_method": "Two-factor authentication is required for the backend. How do you want to get your codes?",
+  "login.2fa.method_mail": "Code by e-mail",
+  "login.2fa.method_mail_help": "A new code is sent to {MAIL} for each login.",
+  "login.2fa.method_app": "Authenticator app",
+  "login.2fa.method_app_help": "Codes from an app on your phone (e.g. Aegis, 2FAS, Google or Microsoft Authenticator) - works without e-mail.",
+  "login.2fa.app_setup_intro": "Scan the QR code with your authenticator app, or enter the key manually. Then enter the 6-digit code shown in the app.",
+  "login.2fa.app_key": "Key",
+  "login.2fa.intro_verify_app": "Enter the 6-digit code from your authenticator app.",
+  "login.2fa.help_recovery_app": "No access to the app? Enter one of your recovery codes instead.",
+  "login.2fa.btn_back": "Back",
+  "account.2fa.choose_method": "Choose a method:",
+  "account.2fa.status_app": "Method: authenticator app · set up on {DATE} · recovery codes left: {COUNT}",
+  "account.2fa.confirm_intro_app": "To change anything, confirm with your password and a code from your app or a recovery code.",
+  "account.2fa.btn_reconfigure": "Set up again / change method",
+  "account.2fa.confirm_reconfigure": "Remove the current two-factor setup and set it up again?",
+  "account.2fa.msg_reconfigure": "The previous setup has been removed - choose a method to set it up again."
 }

@@ -12,7 +12,8 @@
  * no rights. The session is started by se_2fa_complete_login() after the
  * second factor (or the setup) succeeded.
  *
- * Methods: code by e-mail. Recovery codes work instead of any method.
+ * Methods: code by e-mail, or an authenticator app (TOTP, RFC 6238).
+ * Recovery codes work instead of any method.
  */
 
 /** seconds a pending login stays valid */
@@ -290,15 +291,202 @@ function se_2fa_check_input(array $user, string $input): bool {
     if ($user['user_2fa_method'] === 'mail' && se_2fa_check_mail_code($user, $input)) {
         return true;
     }
+    if ($user['user_2fa_method'] === 'totp' && se_2fa_check_totp($user, $input)) {
+        return true;
+    }
     return se_2fa_use_recovery_code($user, $input);
+}
+
+/* ---------------------------------------------------------------------------
+ * Authenticator app (TOTP, RFC 6238): 30-second steps, 6 digits, HMAC-SHA1 -
+ * the defaults every authenticator app supports.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * The app method needs to store the key encrypted - sodium (bundled with PHP)
+ * or OpenSSL with AES-256-GCM
+ */
+function se_2fa_app_available(): bool {
+    return function_exists('sodium_crypto_secretbox')
+        || (function_exists('openssl_encrypt') && in_array('aes-256-gcm', openssl_get_cipher_methods(), true));
+}
+
+/**
+ * New random key for an authenticator app, Base32 encoded (160 bit)
+ */
+function se_2fa_new_totp_secret(): string {
+    return se_2fa_base32_encode(random_bytes(20));
+}
+
+function se_2fa_base32_encode(string $data): string {
+
+    $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    $bits = '';
+    foreach (str_split($data) as $char) {
+        $bits .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+    }
+    $out = '';
+    foreach (str_split($bits, 5) as $chunk) {
+        $out .= $alphabet[bindec(str_pad($chunk, 5, '0', STR_PAD_RIGHT))];
+    }
+    return $out;
+}
+
+function se_2fa_base32_decode(string $base32): string {
+
+    $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    $base32 = strtoupper(preg_replace('/[^A-Za-z2-7]/', '', $base32));
+    $bits = '';
+    foreach (str_split($base32) as $char) {
+        $bits .= str_pad(decbin(strpos($alphabet, $char)), 5, '0', STR_PAD_LEFT);
+    }
+    $out = '';
+    foreach (str_split($bits, 8) as $byte) {
+        if (strlen($byte) === 8) {
+            $out .= chr(bindec($byte));
+        }
+    }
+    return $out;
+}
+
+/**
+ * The 6-digit code of a time step (RFC 4226 / 6238)
+ */
+function se_2fa_totp_code(string $key, int $step): string {
+
+    $hash = hash_hmac('sha1', pack('J', $step), $key, true);
+    $offset = ord($hash[19]) & 0x0f;
+    $number = ((ord($hash[$offset]) & 0x7f) << 24)
+        | (ord($hash[$offset + 1]) << 16)
+        | (ord($hash[$offset + 2]) << 8)
+        | ord($hash[$offset + 3]);
+
+    return str_pad((string) ($number % 1000000), 6, '0', STR_PAD_LEFT);
+}
+
+/**
+ * Check a code against a Base32 key - one step before/after is accepted
+ * (clock drift). Steps up to $last_step were already used and are refused,
+ * so an intercepted code can't be used a second time.
+ *
+ * @return int|false the matching step, false if the code is wrong
+ */
+function se_2fa_totp_match(string $secret_b32, string $code, int $last_step = 0): int|false {
+
+    $code = preg_replace('/\D/', '', $code);
+    if (strlen($code) !== 6) {
+        return false;
+    }
+    $key = se_2fa_base32_decode($secret_b32);
+    $now = intdiv(time(), 30);
+
+    for ($step = $now - 1; $step <= $now + 1; $step++) {
+        if ($step > $last_step && hash_equals(se_2fa_totp_code($key, $step), $code)) {
+            return $step;
+        }
+    }
+    return false;
+}
+
+/**
+ * Check an app code of a user with the app method set up
+ */
+function se_2fa_check_totp(array $user, string $code): bool {
+
+    global $db_user;
+
+    $secret = se_2fa_decrypt((string) $user['user_2fa_secret']);
+    if ($secret === null) {
+        return false;
+    }
+    $step = se_2fa_totp_match($secret, $code, (int) $user['user_2fa_last_step']);
+    if ($step === false) {
+        return false;
+    }
+
+    $db_user->update("se_user", [
+        "user_2fa_last_step" => $step
+    ], [
+        "user_id" => (int) $user['user_id']
+    ]);
+
+    return true;
+}
+
+/**
+ * otpauth:// address for the QR code of the app setup
+ */
+function se_2fa_otpauth_uri(string $secret_b32, string $account): string {
+
+    global $se_settings;
+
+    $issuer = trim((string) ($se_settings['pagetitle'] ?? ''));
+    if ($issuer === '') {
+        $issuer = $_SERVER['HTTP_HOST'] ?? 'SwiftyEdit';
+    }
+    $issuer = str_replace(':', '', $issuer);
+
+    return 'otpauth://totp/'.rawurlencode($issuer.':'.$account)
+        .'?secret='.$secret_b32
+        .'&issuer='.rawurlencode($issuer)
+        .'&algorithm=SHA1&digits=6&period=30';
+}
+
+/**
+ * Key for encrypting the app keys, derived from the site secret - a copy
+ * of the database alone is not enough to read them
+ */
+function se_2fa_encryption_key(): string {
+    return hash('sha256', 'se-2fa-secret|'.se_get_site_secret(), true);
+}
+
+function se_2fa_encrypt(string $plain): string {
+
+    $key = se_2fa_encryption_key();
+
+    if (function_exists('sodium_crypto_secretbox')) {
+        $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        return 's1:'.base64_encode($nonce.sodium_crypto_secretbox($plain, $nonce, $key));
+    }
+
+    $iv = random_bytes(12);
+    $cipher = openssl_encrypt($plain, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+    return 'o1:'.base64_encode($iv.$tag.$cipher);
+}
+
+/**
+ * @return string|null null if the value can't be decrypted (e.g. the site
+ *                     secret has changed)
+ */
+function se_2fa_decrypt(string $stored): ?string {
+
+    $key = se_2fa_encryption_key();
+    $data = base64_decode(substr($stored, 3), true);
+    if ($data === false) {
+        return null;
+    }
+
+    if (str_starts_with($stored, 's1:') && function_exists('sodium_crypto_secretbox_open')) {
+        $nonce = substr($data, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $plain = sodium_crypto_secretbox_open(substr($data, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES), $nonce, $key);
+        return $plain === false ? null : $plain;
+    }
+    if (str_starts_with($stored, 'o1:')) {
+        $plain = openssl_decrypt(substr($data, 28), 'aes-256-gcm', $key, OPENSSL_RAW_DATA, substr($data, 0, 12), substr($data, 12, 16));
+        return $plain === false ? null : $plain;
+    }
+    return null;
 }
 
 /**
  * Finish the setup: store the method and the hashes of new recovery codes
  *
+ * @param string $method 'mail' or 'totp'
+ * @param string $totp_secret Base32 key of the app (method totp only)
+ * @param int $totp_step step of the code used to confirm the app setup
  * @return array the plain recovery codes, to show them once
  */
-function se_2fa_save_setup(array $user, string $method): array {
+function se_2fa_save_setup(array $user, string $method, string $totp_secret = '', int $totp_step = 0): array {
 
     global $db_user;
 
@@ -307,6 +495,8 @@ function se_2fa_save_setup(array $user, string $method): array {
 
     $db_user->update("se_user", [
         "user_2fa_method" => $method,
+        "user_2fa_secret" => $method === 'totp' ? se_2fa_encrypt($totp_secret) : '',
+        "user_2fa_last_step" => $method === 'totp' ? $totp_step : 0,
         "user_2fa_recovery" => json_encode($hashes),
         "user_2fa_since" => time()
     ], [
@@ -329,6 +519,8 @@ function se_2fa_reset(int $user_id, string $log_trigger): void {
 
     $db_user->update("se_user", [
         "user_2fa_method" => "",
+        "user_2fa_secret" => "",
+        "user_2fa_last_step" => 0,
         "user_2fa_mail_code" => "",
         "user_2fa_mail_expires" => 0,
         "user_2fa_recovery" => "",

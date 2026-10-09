@@ -32,6 +32,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 backend: './src/js/backend.js',
+                // QR code for the 2FA setup, also used on the login page (see src/js/twofa.js)
+                twofa: './src/js/twofa.js',
             },
             output: {
                 entryFileNames: '[name].js',

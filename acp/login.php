@@ -112,6 +112,22 @@ if(isset($_SESSION['2fa_pending'])) {
 
         $twofa_setup = $twofa_user['user_2fa_method'] === '';
 
+        // setup: choose the method (only mail if the app method can't store its key)
+        if($twofa_setup && !se_2fa_app_available()) {
+            $_SESSION['2fa_pending']['setup_method'] = 'mail';
+        }
+        if($twofa_setup && isset($_POST['2fa_choose']) && in_array($_POST['2fa_choose'], ['mail', 'totp'], true)) {
+            $_SESSION['2fa_pending']['setup_method'] = $_POST['2fa_choose'];
+            if($_POST['2fa_choose'] === 'totp' && empty($_SESSION['2fa_pending']['totp_secret'])) {
+                // the key only goes to the database once the first code from the app matches
+                $_SESSION['2fa_pending']['totp_secret'] = se_2fa_new_totp_secret();
+            }
+        }
+        if($twofa_setup && isset($_POST['2fa_back']) && se_2fa_app_available()) {
+            unset($_SESSION['2fa_pending']['setup_method'], $_SESSION['2fa_pending']['totp_secret']);
+        }
+        $twofa_setup_method = $_SESSION['2fa_pending']['setup_method'] ?? '';
+
         // send a (new) code
         if(isset($_POST['2fa_send'])) {
             $send_result = se_2fa_send_mail_code($twofa_user);
@@ -133,9 +149,14 @@ if(isset($_SESSION['2fa_pending'])) {
                 se_2fa_cancel_pending();
                 $twofa_alerts[] = ['danger', $lang['login_2fa_msg_too_many']];
 
-            } elseif($twofa_setup && se_2fa_check_mail_code($twofa_user, $twofa_input)) {
+            } elseif($twofa_setup && $twofa_setup_method === 'mail' && se_2fa_check_mail_code($twofa_user, $twofa_input)) {
                 // setup confirmed - show the recovery codes once, then log in
                 $_SESSION['2fa_pending']['recovery_codes'] = se_2fa_save_setup($twofa_user, 'mail');
+
+            } elseif($twofa_setup && $twofa_setup_method === 'totp'
+                && ($twofa_step = se_2fa_totp_match($_SESSION['2fa_pending']['totp_secret'] ?? '', $twofa_input)) !== false) {
+                $_SESSION['2fa_pending']['recovery_codes'] = se_2fa_save_setup($twofa_user, 'totp', $_SESSION['2fa_pending']['totp_secret'], $twofa_step);
+                unset($_SESSION['2fa_pending']['totp_secret']);
 
             } elseif(!$twofa_setup && se_2fa_check_input($twofa_user, $twofa_input)) {
                 se_2fa_complete_login(se_2fa_pending_user());
@@ -161,7 +182,11 @@ if(isset($_SESSION['2fa_pending'])) {
         if(!empty($_SESSION['2fa_pending']['recovery_codes'])) {
             $twofa_view = 'recovery';
         } elseif($twofa_user['user_2fa_method'] === '') {
-            $twofa_view = 'setup';
+            $twofa_view = match ($_SESSION['2fa_pending']['setup_method'] ?? '') {
+                'mail' => 'setup',
+                'totp' => 'setup_app',
+                default => 'choose'
+            };
         } else {
             $twofa_view = 'verify';
         }
@@ -226,24 +251,59 @@ if(isset($_SESSION['2fa_pending'])) {
 
     <?php } elseif($twofa_view !== '') {
         $twofa_mail = htmlspecialchars(se_2fa_mask_mail($twofa_user['user_mail']), ENT_QUOTES);
-        // during the setup, the code field only appears once a code has been sent
+        $twofa_app = $twofa_view === 'setup_app' || ($twofa_view === 'verify' && $twofa_user['user_2fa_method'] === 'totp');
+        // mail setup: the code field only appears once a code has been sent
         $twofa_code_sent = (int) $twofa_user['user_2fa_mail_expires'] > time();
+        $twofa_show_code = $twofa_view === 'verify' || $twofa_view === 'setup_app' || ($twofa_view === 'setup' && $twofa_code_sent);
     ?>
 
     <h5><?php echo $lang['login_2fa_title']; ?></h5>
+
+    <?php if($twofa_view === 'choose') { ?>
+
+    <p><?php echo $lang['login_2fa_choose_method']; ?></p>
+    <form action="<?php echo $form_path; ?>" method="post">
+        <button type="submit" class="btn btn-default w-100 text-start mb-2" name="2fa_choose" value="mail">
+            <strong><?php echo $lang['login_2fa_method_mail']; ?></strong><br>
+            <small class="text-muted"><?php echo str_replace('{MAIL}', $twofa_mail, htmlspecialchars($lang['login_2fa_method_mail_help'], ENT_QUOTES)); ?></small>
+        </button>
+        <button type="submit" class="btn btn-default w-100 text-start mb-3" name="2fa_choose" value="totp">
+            <strong><?php echo $lang['login_2fa_method_app']; ?></strong><br>
+            <small class="text-muted"><?php echo $lang['login_2fa_method_app_help']; ?></small>
+        </button>
+        <input type="submit" class="btn btn-default w-100" name="2fa_cancel" value="<?php echo htmlspecialchars($lang['login_2fa_btn_cancel'], ENT_QUOTES); ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
+    </form>
+
+    <?php } else { ?>
+
     <p>
         <?php
-        $twofa_intro = $twofa_view === 'setup' ? $lang['login_2fa_intro_setup'] : $lang['login_2fa_intro_verify'];
+        $twofa_intro = match (true) {
+            $twofa_view === 'setup' => $lang['login_2fa_intro_setup'],
+            $twofa_view === 'setup_app' => $lang['login_2fa_app_setup_intro'],
+            $twofa_app => $lang['login_2fa_intro_verify_app'],
+            default => $lang['login_2fa_intro_verify']
+        };
         echo str_replace('{MAIL}', '<strong>'.$twofa_mail.'</strong>', htmlspecialchars($twofa_intro, ENT_QUOTES));
         ?>
     </p>
 
-    <?php if($twofa_view === 'verify' || $twofa_code_sent) { ?>
+    <?php if($twofa_view === 'setup_app') {
+        $twofa_secret = $_SESSION['2fa_pending']['totp_secret'];
+        $twofa_uri = se_2fa_otpauth_uri($twofa_secret, $twofa_user['user_nick']);
+    ?>
+    <div class="bg-white p-2 rounded mx-auto mb-2" style="max-width:220px" data-otpauth="<?php echo htmlspecialchars($twofa_uri, ENT_QUOTES); ?>"></div>
+    <p class="text-center small"><?php echo $lang['login_2fa_app_key']; ?>: <code class="user-select-all"><?php echo trim(chunk_split($twofa_secret, 4, ' ')); ?></code></p>
+    <script type="module" src="/themes/administration/dist/twofa.js"></script>
+    <?php } ?>
+
+    <?php if($twofa_show_code) { ?>
     <form action="<?php echo $form_path; ?>" method="post" class="mb-3">
         <label class="form-label" for="twofaCode"><?php echo $lang['login_2fa_label_code']; ?></label>
         <input type="text" class="form-control mb-2" name="2fa_code" id="twofaCode" inputmode="numeric" autocomplete="one-time-code" autofocus="autofocus" required>
         <?php if($twofa_view === 'verify') { ?>
-            <div class="form-text mb-2"><?php echo $lang['login_2fa_help_recovery']; ?></div>
+            <div class="form-text mb-2"><?php echo $twofa_app ? $lang['login_2fa_help_recovery_app'] : $lang['login_2fa_help_recovery']; ?></div>
         <?php } ?>
         <input type="submit" class="btn btn-primary w-100" name="2fa_verify" value="<?php echo htmlspecialchars($lang['login_2fa_btn_verify'], ENT_QUOTES); ?>">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
@@ -251,11 +311,18 @@ if(isset($_SESSION['2fa_pending'])) {
     <?php } ?>
 
     <form action="<?php echo $form_path; ?>" method="post" class="d-flex gap-2">
-        <?php $twofa_send_label = ($twofa_view === 'verify' || $twofa_code_sent) ? $lang['login_2fa_btn_resend'] : $lang['login_2fa_btn_send']; ?>
-        <input type="submit" class="btn btn-<?php echo ($twofa_view === 'setup' && !$twofa_code_sent) ? 'primary' : 'default'; ?> flex-fill" name="2fa_send" value="<?php echo htmlspecialchars($twofa_send_label, ENT_QUOTES); ?>">
-        <input type="submit" class="btn btn-default" name="2fa_cancel" value="<?php echo htmlspecialchars($lang['login_2fa_btn_cancel'], ENT_QUOTES); ?>" formnovalidate>
+        <?php if(!$twofa_app) {
+            $twofa_send_label = ($twofa_view === 'verify' || $twofa_code_sent) ? $lang['login_2fa_btn_resend'] : $lang['login_2fa_btn_send']; ?>
+            <input type="submit" class="btn btn-<?php echo ($twofa_view === 'setup' && !$twofa_code_sent) ? 'primary' : 'default'; ?> flex-fill" name="2fa_send" value="<?php echo htmlspecialchars($twofa_send_label, ENT_QUOTES); ?>">
+        <?php } ?>
+        <?php if(in_array($twofa_view, ['setup', 'setup_app'], true) && se_2fa_app_available()) { ?>
+            <input type="submit" class="btn btn-default" name="2fa_back" value="<?php echo htmlspecialchars($lang['login_2fa_btn_back'], ENT_QUOTES); ?>">
+        <?php } ?>
+        <input type="submit" class="btn btn-default<?php echo $twofa_app ? ' flex-fill' : ''; ?>" name="2fa_cancel" value="<?php echo htmlspecialchars($lang['login_2fa_btn_cancel'], ENT_QUOTES); ?>">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
     </form>
+
+    <?php } ?>
 
     <?php } else { ?>
 

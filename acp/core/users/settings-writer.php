@@ -50,7 +50,7 @@ if(isset($_POST['hide_2fa_notice'])) {
 /**
  * two-factor authentication - every action answers with the whole card
  */
-$twofa_actions = ['twofa_setup_send', 'twofa_setup_verify', 'twofa_send', 'twofa_new_recovery', 'twofa_disable'];
+$twofa_actions = ['twofa_choose', 'twofa_back', 'twofa_setup_send', 'twofa_setup_verify', 'twofa_send', 'twofa_new_recovery', 'twofa_reconfigure', 'twofa_disable'];
 if(array_intersect($twofa_actions, array_keys($_POST)) === []) {
     exit;
 }
@@ -59,6 +59,18 @@ $my_user = $db_user->get("se_user", "*", ["user_id" => $my_user_id]);
 $alerts = [];
 $recovery_codes = [];
 $code_input = is_string($_POST['twofa_code'] ?? null) ? $_POST['twofa_code'] : '';
+
+// setup: choose the method / go back to the choice
+if(isset($_POST['twofa_choose']) && $my_user['user_2fa_method'] === '' && in_array($_POST['twofa_choose'], ['mail', 'totp'], true)) {
+    $_SESSION['2fa_setup'] = ['method' => $_POST['twofa_choose']];
+    if($_POST['twofa_choose'] === 'totp') {
+        // the key only goes to the database once the first code from the app matches
+        $_SESSION['2fa_setup']['secret'] = se_2fa_new_totp_secret();
+    }
+}
+if(isset($_POST['twofa_back'])) {
+    unset($_SESSION['2fa_setup']);
+}
 
 // send a code - for the setup, or to confirm a change
 if(isset($_POST['twofa_setup_send']) || isset($_POST['twofa_send'])) {
@@ -72,21 +84,31 @@ if(isset($_POST['twofa_setup_send']) || isset($_POST['twofa_send'])) {
     }
 }
 
-// finish the setup with the code from the mail
+// finish the setup with the code from the mail or the app
 if(isset($_POST['twofa_setup_verify']) && $my_user['user_2fa_method'] === '') {
+
+    $setup_method = $_SESSION['2fa_setup']['method'] ?? (se_2fa_app_available() ? '' : 'mail');
+    $totp_step = false;
+
     if(se_2fa_throttled()) {
         $alerts[] = ['danger', $lang['login_2fa_msg_too_many']];
-    } elseif(se_2fa_check_mail_code($my_user, $code_input)) {
+    } elseif($setup_method === 'mail' && se_2fa_check_mail_code($my_user, $code_input)) {
         $recovery_codes = se_2fa_save_setup($my_user, 'mail');
-        $alerts[] = ['success', $lang['account_2fa_msg_set_up']];
+    } elseif($setup_method === 'totp' && ($totp_step = se_2fa_totp_match($_SESSION['2fa_setup']['secret'] ?? '', $code_input)) !== false) {
+        $recovery_codes = se_2fa_save_setup($my_user, 'totp', $_SESSION['2fa_setup']['secret'], $totp_step);
     } else {
         se_rate_limit_add('2fa', 900);
         $alerts[] = ['danger', $lang['login_2fa_msg_wrong_code']];
     }
+
+    if($recovery_codes !== []) {
+        unset($_SESSION['2fa_setup']);
+        $alerts[] = ['success', $lang['account_2fa_msg_set_up']];
+    }
 }
 
 // changes of an existing setup - password and a code (or recovery code) required
-if((isset($_POST['twofa_new_recovery']) || isset($_POST['twofa_disable'])) && $my_user['user_2fa_method'] !== '') {
+if((isset($_POST['twofa_new_recovery']) || isset($_POST['twofa_reconfigure']) || isset($_POST['twofa_disable'])) && $my_user['user_2fa_method'] !== '') {
 
     $password = is_string($_POST['twofa_psw'] ?? null) ? $_POST['twofa_psw'] : '';
 
@@ -102,6 +124,13 @@ if((isset($_POST['twofa_new_recovery']) || isset($_POST['twofa_disable'])) && $m
     } elseif(isset($_POST['twofa_new_recovery'])) {
         $recovery_codes = se_2fa_renew_recovery_codes($my_user);
         $alerts[] = ['success', $lang['account_2fa_msg_new_recovery']];
+
+    } elseif(isset($_POST['twofa_reconfigure'])) {
+        // also while 2FA is required: the current session stays valid, and if
+        // the new setup isn't finished, the next login starts it again
+        se_2fa_reset($my_user_id, $my_user['user_nick']);
+        unset($_SESSION['2fa_setup']);
+        $alerts[] = ['info', $lang['account_2fa_msg_reconfigure']];
 
     } elseif(($se_2fa_required ?? false) !== true) {
         // disabling is only possible while 2FA is not required for the site
