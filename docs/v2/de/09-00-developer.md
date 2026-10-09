@@ -51,6 +51,10 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   die Liste in `data/config.php`, wenn Du Einträge hinzufügen oder entfernen willst - es ist
   ein simpler Substring-Abgleich, keine vollständige Bot-Erkennung, also eher "gut genug für
   Zähler" als eine Sicherheitsmaßnahme.
+* __Zwei-Faktor-Anmeldung__ (`$se_2fa_required`, `$se_2fa_bypass` in `config.php`) - mit
+  `$se_2fa_required = true;` in `data/config.php` brauchen alle Backend-Zugänge einen zweiten
+  Faktor, `$se_2fa_bypass` ist der Notschalter. Details unter
+  [Benutzerverwaltung](07-00-user.md#two-factor-authentication).
 
 ## Themes
 

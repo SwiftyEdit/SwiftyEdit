@@ -127,7 +127,9 @@ if((isset($_POST['twofa_new_recovery']) || isset($_POST['twofa_reconfigure']) ||
     } elseif(!password_verify($password, (string) $my_user['user_psw_hash'])) {
         se_rate_limit_add('2fa', 900);
         $alerts[] = ['danger', $lang['account_2fa_msg_wrong_password']];
-    } elseif(!se_2fa_check_input($my_user, $code_input)) {
+    // while the emergency switch is active for this user (no access to any
+    // code), the password alone is enough to set 2FA up again
+    } elseif(!se_2fa_bypass_active((string) $my_user['user_nick']) && !se_2fa_check_input($my_user, $code_input)) {
         se_rate_limit_add('2fa', 900);
         $alerts[] = ['danger', $lang['login_2fa_msg_wrong_code']];
 

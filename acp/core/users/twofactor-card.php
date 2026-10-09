@@ -28,7 +28,8 @@ function se_acp_twofa_card(array $user, array $alerts = [], array $recovery_code
 
     // a form, so HTMX sends its fields and the clicked button; Enter must not submit it natively
     $html = '<form class="card mt-3" id="twofaCard" onsubmit="return false;">';
-    $html .= '<div class="card-header">'.$icon['shield_lock'].' '.$lang['account_2fa_title'].'</div>';
+    $html .= '<div class="card-header d-flex align-items-center">'.$icon['shield_lock'].'&nbsp;'.$lang['account_2fa_title'];
+    $html .= '<span class="ms-auto">'.se_print_docs_link('07-00-user.md', null, 'two-factor-authentication').'</span></div>';
     $html .= '<div class="card-body">';
 
     foreach ($alerts as [$type, $text]) {
