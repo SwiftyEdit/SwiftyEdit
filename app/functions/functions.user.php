@@ -144,6 +144,17 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
         se_start_user_session($result);
 
+        // Administrator rights only via the backend login (/admin/). A login
+        // through the frontend gives administrators a plain user session, so
+        // protections of the backend login (login_slug, future 2FA or IP
+        // restrictions) can't be bypassed, and a script running in a frontend
+        // page can't use the session for the backend. Moderation rights don't
+        // grant backend access and are kept.
+        if($acp != TRUE && $_SESSION['user_class'] == 'administrator') {
+            $_SESSION['user_class'] = ''; // same as regular users in se_user
+            $_SESSION['permissions'] = array_values(array_intersect($_SESSION['permissions'], ['drm_moderator']));
+        }
+
         /* set cookie to remember user */
         if($remember == TRUE) {
             $identifier = randpsw($length=24);
