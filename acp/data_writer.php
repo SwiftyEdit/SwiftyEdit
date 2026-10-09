@@ -34,6 +34,7 @@ $writer = match (true) {
     str_starts_with($_REQUEST['query'], 'shop/') => 'core/shop/data-writer.php',
     str_starts_with($_REQUEST['query'], 'blog/') => 'core/blog/data-writer.php',
     str_starts_with($_REQUEST['query'], 'events/') => 'core/events/data-writer.php',
+    str_starts_with($_REQUEST['query'], 'users/settings/') => 'core/users/settings-writer.php',
     str_starts_with($_REQUEST['query'], 'users/') => 'core/users/data-writer.php',
     str_starts_with($_REQUEST['query'], 'inbox/') => 'core/inbox/data-writer.php',
     str_starts_with($_REQUEST['query'], 'widgets/') => 'core/widgets/data-writer.php',

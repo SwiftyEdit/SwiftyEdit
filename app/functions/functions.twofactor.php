@@ -319,6 +319,57 @@ function se_2fa_save_setup(array $user, string $method): array {
 }
 
 /**
+ * Remove the 2FA setup of a user (disable it for the own account, or reset
+ * it for another user in the user management). If 2FA is required, the
+ * setup starts again at the next login.
+ */
+function se_2fa_reset(int $user_id, string $log_trigger): void {
+
+    global $db_user;
+
+    $db_user->update("se_user", [
+        "user_2fa_method" => "",
+        "user_2fa_mail_code" => "",
+        "user_2fa_mail_expires" => 0,
+        "user_2fa_recovery" => "",
+        "user_2fa_since" => 0
+    ], [
+        "user_id" => $user_id
+    ]);
+
+    record_log($log_trigger, '2FA reset for user #'.$user_id, 5);
+}
+
+/**
+ * Store new recovery codes for an existing setup - the old ones stop working
+ *
+ * @return array the plain codes, to show them once
+ */
+function se_2fa_renew_recovery_codes(array $user): array {
+
+    global $db_user;
+
+    $codes = se_2fa_generate_recovery_codes();
+    $db_user->update("se_user", [
+        "user_2fa_recovery" => json_encode(array_map(static fn($code) => password_hash($code, PASSWORD_DEFAULT), $codes))
+    ], [
+        "user_id" => (int) $user['user_id']
+    ]);
+
+    record_log($user['user_nick'], '2FA: new recovery codes', 5);
+
+    return $codes;
+}
+
+/**
+ * Number of unused recovery codes
+ */
+function se_2fa_recovery_left(array $user): int {
+    $hashes = json_decode((string) $user['user_2fa_recovery'], true);
+    return is_array($hashes) ? count($hashes) : 0;
+}
+
+/**
  * Second factor passed - start the session like a normal backend login
  */
 function se_2fa_complete_login(array $user): void {

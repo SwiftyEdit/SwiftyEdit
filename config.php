@@ -72,7 +72,8 @@ $se_upload_addons = false;
  * $se_2fa_required = true;
  *
  * Emergency (e.g. the only admin lost access to the second factor): skip 2FA
- * for one user until the given date - remove it again after logging in:
+ * for one user until the given date (site timezone from the settings) -
+ * remove it again after logging in:
  * $se_2fa_bypass = ['user' => 'username', 'until' => '2026-12-31 12:00'];
  */
 $se_2fa_required = false;

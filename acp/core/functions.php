@@ -29,6 +29,12 @@ include_once 'functions_shop.php';
  */
 function se_acp_xhr_permission(string $query): ?string {
 
+    // personal settings of the logged-in user (core/users/settings-writer.php),
+    // open to every backend user - checked before the users/ module below
+    if (str_starts_with($query, 'users/settings/')) {
+        return null;
+    }
+
     $module_permissions = [
         'users/' => 'drm_acp_user',
         'settings/' => 'drm_acp_system',

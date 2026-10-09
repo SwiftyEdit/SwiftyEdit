@@ -38,6 +38,12 @@ foreach ($se_get_settings as $k => $v) {
     }
 }
 
+// same timezone as the rest of the backend - e.g. the "until" date of
+// $se_2fa_bypass is meant in the site's local time
+if(($se_settings['timezone'] ?? '') != '') {
+    date_default_timezone_set($se_settings['timezone']);
+}
+
 if($se_settings['login_slug'] != '') {
     // check the url
     $form_path = '/admin/'.$se_settings['login_slug'];
