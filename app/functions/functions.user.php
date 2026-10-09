@@ -142,77 +142,14 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     if(is_array($result)) {
 
-        se_start_user_session($result);
-
-        // Administrator rights only via the backend login (/admin/). A login
-        // through the frontend gives administrators a plain user session, so
-        // protections of the backend login (login_slug, future 2FA or IP
-        // restrictions) can't be bypassed, and a script running in a frontend
-        // page can't use the session for the backend. Moderation rights don't
-        // grant backend access and are kept.
-        if($acp != TRUE && $_SESSION['user_class'] == 'administrator') {
-            $_SESSION['user_class'] = ''; // same as regular users in se_user
-            $_SESSION['permissions'] = array_values(array_intersect($_SESSION['permissions'], ['drm_moderator']));
+        // backend login with two-factor authentication: only a pending login for
+        // now, the session is started after the second factor (see acp/login.php)
+        if($acp == TRUE && se_2fa_required_for($result)) {
+            se_2fa_start_pending($result, (bool) $remember);
+            return '2fa';
         }
 
-        /* set cookie to remember user */
-        if($remember == TRUE) {
-            $identifier = randpsw($length=24);
-            $securitytoken = randpsw($length=24);
-            $securitytoken_hashed = sha1($securitytoken);
-            $time = time();
-
-            $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
-
-            $db_user->insert("se_tokens", [
-                "user_id" => $result['user_id'],
-                "identifier" => "$identifier",
-                "securitytoken" => "$securitytoken_hashed",
-                "time" => "$time"
-            ]);
-
-            setcookie("identifier", $identifier, [
-                'expires' => time() + (3600 * 24 * 365),
-                'path' => '/',
-                'domain' => '',
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
-            setcookie("securitytoken", $securitytoken, [
-                'expires' => time() + (3600 * 24 * 365),
-                'path' => '/',
-                'domain' => '',
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
-
-        }
-
-        // reset failed logins and a lock that has already expired
-        $db_user->update("se_user",[
-            "user_failed_logins" => 0,
-            "user_unlock_code" => '',
-            "user_locked_until" => 0
-        ],[
-            "user_nick" => $user_nick
-        ]);
-
-        if($_SESSION['user_class'] == 'administrator') {
-            record_log("$user_nick","admin logged in",1);
-        }
-
-
-        if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
-            // fresh CSRF token for the backend - a token known before the login
-            // must not stay valid. Only here: the ACP login redirects anyway,
-            // while the frontend login updates the page without a reload and
-            // other forms on it still carry the current token.
-            se_generate_token();
-            header("location:/admin/");
-        }
-
+        se_finish_login($result, $acp, $remember);
 
     } else {
 
@@ -231,6 +168,91 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
     }
 }
 
+
+
+/**
+ * Start the session after a successful login (password, and for the backend
+ * the second factor if required - see se_2fa_complete_login())
+ *
+ * @param array $result row of se_user
+ * @param mixed $acp true for the backend login
+ * @param mixed $remember
+ */
+function se_finish_login(array $result, $acp, $remember): void {
+
+    global $db_user, $se_settings;
+
+    se_start_user_session($result);
+
+    // Administrator rights only via the backend login (/admin/). A login
+    // through the frontend gives administrators a plain user session, so
+    // protections of the backend login (login_slug, 2FA, IP
+    // restrictions) can't be bypassed, and a script running in a frontend
+    // page can't use the session for the backend. Moderation rights don't
+    // grant backend access and are kept.
+    if($acp != TRUE && $_SESSION['user_class'] == 'administrator') {
+        $_SESSION['user_class'] = ''; // same as regular users in se_user
+        $_SESSION['permissions'] = array_values(array_intersect($_SESSION['permissions'], ['drm_moderator']));
+    }
+
+    /* set cookie to remember user */
+    if($remember == TRUE) {
+        $identifier = randpsw($length=24);
+        $securitytoken = randpsw($length=24);
+        $securitytoken_hashed = sha1($securitytoken);
+        $time = time();
+
+        $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
+
+        $db_user->insert("se_tokens", [
+            "user_id" => $result['user_id'],
+            "identifier" => "$identifier",
+            "securitytoken" => "$securitytoken_hashed",
+            "time" => "$time"
+        ]);
+
+        setcookie("identifier", $identifier, [
+            'expires' => time() + (3600 * 24 * 365),
+            'path' => '/',
+            'domain' => '',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+        setcookie("securitytoken", $securitytoken, [
+            'expires' => time() + (3600 * 24 * 365),
+            'path' => '/',
+            'domain' => '',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+
+    }
+
+    // reset failed logins and a lock that has already expired
+    $db_user->update("se_user",[
+        "user_failed_logins" => 0,
+        "user_unlock_code" => '',
+        "user_locked_until" => 0
+    ],[
+        "user_nick" => $result['user_nick']
+    ]);
+
+    if($_SESSION['user_class'] == 'administrator') {
+        record_log($result['user_nick'],"admin logged in",1);
+    }
+
+
+    if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
+        // fresh CSRF token for the backend - a token known before the login
+        // must not stay valid. Only here: the ACP login redirects anyway,
+        // while the frontend login updates the page without a reload and
+        // other forms on it still carry the current token.
+        se_generate_token();
+        header("location:/admin/");
+    }
+}
 
 function se_handle_failed_logins($user) {
 

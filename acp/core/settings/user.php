@@ -142,7 +142,8 @@ $excludedFields = [
     'user_nick','user_psw','user_mail','user_social_media',
     'user_id', 'user_class', 'user_psw_hash', 'user_failed_logins','user_unlock_code','user_locked_until',
     'user_groups','user_avatar','user_registerdate','user_verified','user_verified_by_admin','user_drm',
-    'user_acp_settings','user_activationkey','user_reset_psw','user_reset_psw_expires'];
+    'user_acp_settings','user_activationkey','user_reset_psw','user_reset_psw_expires',
+    'user_2fa_method','user_2fa_mail_code','user_2fa_mail_expires','user_2fa_mail_sent','user_2fa_recovery','user_2fa_since'];
 $availableFields = array_diff($cols, $excludedFields);
 
 foreach($availableFields as $key) {
