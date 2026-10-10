@@ -607,3 +607,33 @@ $form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token']
 $form_tpl .= '</form>';
 
 echo $form_tpl;
+
+// two-factor authentication - only shown for existing backend users or
+// accounts that have it set up; resetting the own account is done in the
+// personal settings instead (see settings-writer.php)
+if(is_array($get_user ?? null) && ($get_user['user_class'] === 'administrator' || $get_user['user_2fa_method'] !== '')) {
+
+    echo '<div class="card mt-3">';
+    echo '<div class="card-header">'.$icon['shield_lock'].' '.$lang['account_2fa_title'].'</div>';
+    echo '<div class="card-body">';
+    echo '<div id="twofaResetResponse"></div>';
+
+    if($get_user['user_2fa_method'] === '') {
+        echo '<p class="mb-0">'.$lang['account_2fa_not_set_up'].'</p>';
+    } else {
+        echo '<p>'.$icon['check_circle'].' '.$lang['users_2fa_set_up'].' ('.se_format_datetime($get_user['user_2fa_since']).')</p>';
+
+        if((int) $get_user['user_id'] !== (int) $_SESSION['user_id']) {
+            echo '<p class="text-muted">'.$lang['users_2fa_reset_intro'].'</p>';
+            echo '<form hx-post="'.$writer_uri.'" hx-target="#twofaResetResponse" hx-confirm="'.htmlspecialchars($lang['users_2fa_confirm_reset'], ENT_QUOTES).'">';
+            echo '<button class="btn btn-default text-danger" name="reset_2fa" value="'.(int) $get_user['user_id'].'">'.$lang['users_2fa_reset'].'</button>';
+            echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+            echo '</form>';
+        } else {
+            echo '<p class="text-muted mb-0">'.$lang['users_2fa_not_own'].'</p>';
+        }
+    }
+
+    echo '</div>';
+    echo '</div>';
+}

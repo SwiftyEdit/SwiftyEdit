@@ -33,7 +33,8 @@ $smarty->assign('container_id', $container_id, true);
 $variant = ($_GET['variant'] ?? '') === 'modal' ? 'modal' : 'dropdown';
 $smarty->assign('variant', $variant, true);
 
-$s = sanitizeUserInputs($_GET['s'] ?? '');
+// arrays (?s[]=x) would make sanitizeUserInputs() throw a TypeError
+$s = sanitizeUserInputs(is_string($_GET['s'] ?? null) ? $_GET['s'] : '');
 
 // Nothing typed (e.g. the field was just cleared) - render the closed,
 // empty container. Bootstrap's own ".dropdown-menu { display: none; }"

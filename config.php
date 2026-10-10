@@ -67,6 +67,18 @@ $se_branding_path = "assets/branding";
  */
 $se_upload_addons = false;
 
+/* Two-factor authentication for the backend - disabled by default.
+ * To require it for every backend user, add the following to SE_CONTENT/config.php:
+ * $se_2fa_required = true;
+ *
+ * Emergency (e.g. the only admin lost access to the second factor): skip 2FA
+ * for one user until the given date (site timezone from the settings) -
+ * remove it again after logging in:
+ * $se_2fa_bypass = ['user' => 'username', 'until' => '2026-12-31 12:00'];
+ */
+$se_2fa_required = false;
+$se_2fa_bypass = null;
+
 
 $se_include_path = dirname($_SERVER['SCRIPT_NAME']);
 

@@ -20,13 +20,19 @@ function compare_versions() {
 
     $update_stable = '';
 
+    // swiftyedit.net not reachable or versions.json invalid (see get_remote_versions())
+    if (!is_array($remote_versions_array['version'] ?? null)) {
+        echo '<div class="alert alert-warning">'.$lang['update_msg_server_unreachable'].'</div>';
+        return;
+    }
+
     echo '<ul class="list-group list-group-flush mb-1">';
     foreach($channels as $channel => $colors) {
 
         $remote = $remote_versions_array['version'][$channel];
         $filename = basename($remote['file']);
         $hx_vals_channel = $hx_vals + ["file" => "$filename"];
-        $select_button = '<button class="btn btn-default btn-sm text-nowrap" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_channel).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="'.$channel.'">';
+        $select_button = '<button class="btn btn-default btn-sm text-nowrap" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_channel).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="innerHTML" name="load_update_data" value="'.$channel.'">';
         $update_available = ($se_version['build'] < $remote['build']);
 
         echo '<li class="list-group-item d-flex justify-content-between align-items-center gap-3">';
@@ -73,12 +79,68 @@ function compare_versions() {
 }
 
 /**
+ * Notices from swiftyedit.net ("notices" in versions.json), e.g. to announce
+ * changes before an update. Shown on the update page, newest first as in the
+ * file. Everything is printed as plain text - no HTML from the remote file
+ * reaches the backend, links are only shown for https:// URLs.
+ *
+ * Format of one notice (title and text required, build and link optional;
+ * build = the build from which the notice applies):
+ * {"build": "26-0230", "title": "...", "text": "...", "link": "https://..."}
+ *
+ * @param array|null $remote_versions decoded versions.json
+ * @return string HTML for the notices area of the update page, empty without notices
+ */
+function se_render_update_notices(?array $remote_versions): string {
+
+    global $lang, $icon;
+
+    $notices = $remote_versions['notices'] ?? [];
+    if (!is_array($notices) || $notices === []) {
+        return '';
+    }
+
+    $html = '<div class="card mb-2">';
+    $html .= '<div class="card-header">'.$icon['info_circle'].' '.$lang['update_notices_title'].'</div>';
+    $html .= '<div class="card-body p-0">';
+    $html .= '<div class="scroll-container p-3">'; // grows up to its max-height, then scrolls
+
+    foreach ($notices as $notice) {
+        if (!is_array($notice) || !is_string($notice['title'] ?? null) || !is_string($notice['text'] ?? null)) {
+            continue;
+        }
+
+        $heading = htmlspecialchars($notice['title'], ENT_QUOTES);
+        if (is_string($notice['build'] ?? null) && $notice['build'] !== '') {
+            $heading = 'From build '.htmlspecialchars($notice['build'], ENT_QUOTES).' · '.$heading;
+        }
+
+        $html .= '<div class="mb-3">';
+        $html .= '<h6 class="mb-1">'.$heading.'</h6>';
+        $html .= '<p class="mb-1">'.nl2br(htmlspecialchars($notice['text'], ENT_QUOTES)).'</p>';
+
+        $link = $notice['link'] ?? '';
+        if (is_string($link) && str_starts_with($link, 'https://') && filter_var($link, FILTER_VALIDATE_URL)) {
+            $html .= '<a href="'.htmlspecialchars($link, ENT_QUOTES).'" target="_blank" rel="noopener noreferrer">'.$lang['update_notices_read_more'].'</a>';
+        }
+        $html .= '</div>';
+    }
+
+    $html .= '</div>';
+    $html .= '</div>';
+    $html .= '</div>';
+
+    return $html;
+}
+
+/**
  * @return array
  */
 function get_remote_versions(): array {
-    $remote_versions_file = file_get_contents("https://swiftyedit.net/releases/v2/versions.json");
-    $remote_versions_array = json_decode($remote_versions_file,true);
-    return $remote_versions_array;
+    $remote_versions_file = @file_get_contents("https://swiftyedit.net/releases/v2/versions.json");
+    $remote_versions_array = json_decode((string) $remote_versions_file,true);
+    // server not reachable or invalid file - empty instead of a TypeError
+    return is_array($remote_versions_array) ? $remote_versions_array : [];
 }
 
 
@@ -275,7 +337,7 @@ function copy_recursive($source, $target) {
     if(is_dir($source)) {
         if(!is_dir("$target")) {
             $_SESSION['protocol'] .= "missing: ".htmlspecialchars($target, ENT_QUOTES)." <|>";
-            mkdir_recursive($target,0777);
+            mkdir_recursive($target,0755);
         }
 
         $dir = dir($source);
@@ -295,8 +357,11 @@ function copy_recursive($source, $target) {
 
         $dir->close();
     } else {
-        chmod("$target", 0777);
-        unlink("$target");
+        // replace the file - copy() creates it with the default (umask) permissions,
+        // it used to be chmod'ed to 0777 (world-writable) first
+        if(is_file($target)) {
+            unlink($target);
+        }
         if(copy($source, $target)) {
             $_SESSION['protocol'] .= '<b>copied:</b> '.htmlspecialchars($target, ENT_QUOTES).'<|>';
         } else {
@@ -333,7 +398,7 @@ function rmdir_recursive($dir) {
  * create directory (recursive)
  */
 
-function mkdir_recursive($dir, $chmod=0777){
+function mkdir_recursive($dir, $chmod=0755){
     $dirs = explode('/', $dir);
     $directory='';
     foreach ($dirs as $part) {

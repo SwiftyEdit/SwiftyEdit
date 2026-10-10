@@ -178,7 +178,9 @@ if(is_file($themes_path.'/'.$se_template.'/php/options.php')) {
 }
 
 if(is_array($page_json_ld)) {
-    $json_ld = json_encode($page_json_ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    // printed raw into <script type="application/ld+json"> - JSON_HEX_TAG/AMP
+    // escape < > & so a value containing "</script>" can't break out of the block
+    $json_ld = json_encode($page_json_ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
     $smarty->assign('json_ld', $json_ld,true);
 }
 

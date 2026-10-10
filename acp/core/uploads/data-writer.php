@@ -103,15 +103,25 @@ if(isset($_POST['rmkey'])) {
 
 // change directory
 if(isset($_POST['selected_folder']) OR isset($_POST['repeat_selected_folder'])) {
-    $_SESSION['disk'] = se_filter_filepath($_POST['selected_folder']);
+    // only folders of the media library (assets/images, assets/files)
+    $selected_folder = se_media_folder(se_filter_filepath($_POST['selected_folder'] ?? ''));
+    if($selected_folder !== false) {
+        $_SESSION['disk'] = $selected_folder;
+    }
     header( "HX-Trigger: update_uploads_list");
 }
 
 // create new folder
 if((isset($_POST['new_folder'])) && ($_POST['new_folder'] != '')) {
     $folder_name = clean_filename($_POST['new_folder']);
-    $create_path = $_SESSION['disk'] . '/' . $folder_name;
-    mkdir($create_path, 0777, true);
+    // check the session folder again, it may predate this check
+    $parent_folder = se_media_folder($_SESSION['disk'] ?? '');
+    if($folder_name !== '' && $parent_folder !== false) {
+        $create_path = SE_PUBLIC . '/' . $parent_folder . '/' . $folder_name;
+        if(!is_dir($create_path)) {
+            mkdir($create_path, 0755, true);
+        }
+    }
     header( "HX-Trigger: update_directories, update_uploads_list");
 }
 

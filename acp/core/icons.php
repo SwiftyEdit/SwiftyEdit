@@ -126,6 +126,7 @@ $icon = [
     "search" => '<i class="bi bi-search"></i>',
     "server" => '<i class="bi bi-server"></i>',
     "share" => '<i class="bi bi-share"></i>',
+    "shield_lock" => '<i class="bi bi-shield-lock"></i>',
     "shop" => '<i class="bi bi-shop"></i>',
     "shopping_basket" => '<i class="bi bi-basket"></i>',
     "sign_out_alt" => '<i class="bi bi-box-arrow-left"></i>',

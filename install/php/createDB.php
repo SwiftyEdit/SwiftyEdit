@@ -110,6 +110,7 @@ echo $db_type. ' Database<hr>';
 $sql_user_table = se_generate_sql_query("se_user.php",$db_type);
 $sql_groups_table = se_generate_sql_query("se_groups.php",$db_type);
 $sql_tokens_table = se_generate_sql_query("se_tokens.php",$db_type);
+$sql_trusted_devices_table = se_generate_sql_query("se_trusted_devices.php",$db_type);
 $sql_api_keys_table = se_generate_sql_query("se_api_keys.php",$db_type);
 
 $sql_feeds_table = se_generate_sql_query("se_feeds.php",$db_type);
@@ -156,6 +157,7 @@ if($db_type == 'mysql') {
 
 $dbh_user->query($sql_user_table);
 $dbh_user->query($sql_tokens_table);
+$dbh_user->query($sql_trusted_devices_table);
 $dbh_user->query($sql_groups_table);
 $dbh_user->query($sql_api_keys_table);
 

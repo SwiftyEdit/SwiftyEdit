@@ -7,6 +7,12 @@
 
 require_once 'header.php';
 
+// module permission - same check as the module's UI router
+$required_permission = se_acp_xhr_permission($_REQUEST['query']);
+if ($required_permission !== null && !se_hasPermission($required_permission)) {
+    se_plain_response($lang['rm_no_access'], 403);
+}
+
 $reader = match (true) {
     str_starts_with($_REQUEST['query'], 'pages/') => 'core/pages/data-reader.php',
     str_starts_with($_REQUEST['query'], 'snippets/') => 'core/snippets/data-reader.php',

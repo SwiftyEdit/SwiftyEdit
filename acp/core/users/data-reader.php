@@ -147,7 +147,11 @@ if($_REQUEST['action'] == "list_users") {
         echo '<tr>';
         echo '<td>'.$user['user_id'].'</td>';
         echo '<td><span class="position-relative d-inline-block">'.$user_avatar.$admin_img.'</span></td>';
-        echo '<td><span class="'.$label.' fs-6">'.$icon['circle_fill'].'</span> '.$user['user_nick'].'</td>';
+        $twofa_badge = '';
+        if(($user['user_2fa_method'] ?? '') !== '') {
+            $twofa_badge = ' <span class="text-success" title="'.htmlspecialchars($lang['users_2fa_set_up'], ENT_QUOTES).'">'.$icon['shield_lock'].'</span>';
+        }
+        echo '<td><span class="'.$label.' fs-6">'.$icon['circle_fill'].'</span> '.$user['user_nick'].$twofa_badge.'</td>';
         echo '<td>'.se_format_datetime($user['user_registerdate']).'</td>';
         echo '<td>'.$names.'</td>';
         echo '<td>'.$user['user_mail'].'</td>';

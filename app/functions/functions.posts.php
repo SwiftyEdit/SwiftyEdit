@@ -783,15 +783,13 @@ function se_get_event_confirmation_data($id) {
  */
  
 function se_generate_anonymous_voter() {
-	
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-		    $ip = $_SERVER['HTTP_CLIENT_IP'];
-		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		} else {
-		    $ip = $_SERVER['REMOTE_ADDR'];
-		}
-	
-	
-	return md5($ip);
+
+	// REMOTE_ADDR only - Client-IP / X-Forwarded-For are set by the client
+	// itself, a new value per request meant a new vote per request
+	$ip = $_SERVER['REMOTE_ADDR'] ?? '';
+
+	// keyed hash instead of md5($ip): an md5 of an IPv4 address can be reversed
+	// in seconds by trying all addresses, this one only with the site secret.
+	// Shortened to 32 characters, the length of the former md5 values.
+	return substr(hash_hmac('sha256', $ip, se_get_site_secret()), 0, 32);
 }

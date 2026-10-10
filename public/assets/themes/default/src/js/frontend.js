@@ -2,9 +2,6 @@
 
 import '../scss/core.scss';
 
-import $ from 'jquery';
-window.jQuery = $; window.$ = $;
-
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './lib/theme_switch.js';
 

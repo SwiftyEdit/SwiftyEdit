@@ -49,6 +49,10 @@ A few more small things worth knowing:
   sites. Override the list in `data/config.php` if you need to add or remove entries - it's a
   simple substring match, not a full bot-detection library, so treat it as "good enough for
   counters", not as a security control.
+* __Two-factor authentication__ (`$se_2fa_required`, `$se_2fa_bypass` in `config.php`) - with
+  `$se_2fa_required = true;` in `data/config.php`, every backend user needs a second factor;
+  `$se_2fa_bypass` is the emergency switch. Details in
+  [User management](07-00-user.md#two-factor-authentication).
 
 ## Themes
 

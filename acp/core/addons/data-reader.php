@@ -374,7 +374,13 @@ if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
 
     $update_info = se_check_addon_update($plugin_info ?? []);
 
-    if($update_info['status'] == 'update_available') {
+    if($update_info['status'] == 'update_available' && !$se_upload_addons) {
+        // updates are installed via se_install_addon_zip(), which is disabled
+        // together with the addon upload - only report that an update exists
+        echo '<span class="badge text-bg-info" title="'.htmlspecialchars($lang['msg_info_upload_addons_deactivated'], ENT_QUOTES).'">';
+        echo $icon['info_circle'].' '.$lang['update_msg_update_available'];
+        echo '</span>';
+    } else if($update_info['status'] == 'update_available') {
 
         $vals = [
             'csrf_token' => $_SESSION['token'],

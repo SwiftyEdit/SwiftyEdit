@@ -97,6 +97,11 @@ if(isset($_POST['save_user'])) {
             "user_id" => $edit_user_id
         ]);
 
+        // a new password ends the trust of all devices (2FA "trust this device")
+        if($set_psw === 'true') {
+            se_2fa_revoke_devices($edit_user_id);
+        }
+
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
             record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>","5");
@@ -241,18 +246,19 @@ if(isset($_POST['set_user_type'])) {
 }
 
 
-if(isset($_POST['save_my_settings'])) {
+// reset the two-factor authentication of another user (e.g. lost access to
+// e-mails and recovery codes) - the own account is managed in the personal
+// settings (settings-writer.php)
+if(isset($_POST['reset_2fa']) && is_numeric($_POST['reset_2fa'])) {
 
-    $save_presets = [];
-    $save_presets['status'] = sanitizeUserInputs($_POST['preset_status']);
-    $save_presets['product_type'] = sanitizeUserInputs($_POST['preset_product_type']);
+    $reset_user_id = (int) $_POST['reset_2fa'];
 
-    $presets_json = json_encode($save_presets);
-
-    $db_user->update("se_user",[
-        "user_acp_settings" => $presets_json
-    ],[
-        "user_id" => $_SESSION['user_id']
-    ]);
-    echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
+    if($reset_user_id === (int) $_SESSION['user_id']) {
+        echo '<div class="alert alert-warning">'.$lang['users_2fa_not_own'].'</div>';
+    } else {
+        se_2fa_reset($reset_user_id, $_SESSION['user_nick']);
+        echo '<div class="alert alert-success">'.$lang['users_2fa_msg_reset'].'</div>';
+    }
 }
+
+// save_my_settings moved to settings-writer.php (personal settings, open to every backend user)

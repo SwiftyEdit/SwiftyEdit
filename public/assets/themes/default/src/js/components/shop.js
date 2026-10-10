@@ -3,7 +3,7 @@
 /**
  * Shop component entry. Loaded only when the "shop" theme component is
  * enabled for a page (see php/page-values.php + templates/head.tpl).
- * Relies on jQuery/htmx already being loaded by core.js - the core
+ * Relies on htmx already being loaded by core.js - the core
  * <script> tag must come before this one in head.tpl.
  */
 

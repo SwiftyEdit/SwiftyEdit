@@ -96,38 +96,39 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
     global $db_user, $se_settings, $se_failed_logins_limit;
 
     if (filter_var($user, FILTER_VALIDATE_EMAIL)) {
-        $user_data = $db_user->get("se_user", ["user_nick","user_psw_hash"], [
+        $user_data = $db_user->get("se_user", ["user_nick","user_psw_hash","user_locked_until"], [
             "AND" => [
                 "user_mail" => "$user",
-                "user_verified" => "verified",
-                'OR' => [
-                    'user_unlock_code' => null,
-                    'AND #Empty' => [
-                        'user_unlock_code' => ''
-                    ]
-                ]
+                "user_verified" => "verified"
             ]
         ]);
-        $user_nick = $user_data['user_nick'];
-        $hash = $user_data['user_psw_hash'];
+        $user_nick = $user_data['user_nick'] ?? '';
     } else {
-        $user_data = $db_user->get("se_user", ["user_psw_hash"], [
+        $user_data = $db_user->get("se_user", ["user_psw_hash","user_locked_until"], [
             "AND" => [
                 "user_nick" => "$user",
-                "user_verified" => "verified",
-                'OR' => [
-                    'user_unlock_code' => null,
-                    'AND #Empty' => [
-                        'user_unlock_code' => ''
-                    ]
-                ]
+                "user_verified" => "verified"
             ]
         ]);
         $user_nick = $user;
-        $hash = $user_data['user_psw_hash'];
     }
+    $hash = (string) ($user_data['user_psw_hash'] ?? '');
 
-    if(password_verify($psw, $hash)) {
+    // temporarily locked after too many failed attempts (see se_handle_failed_logins()) -
+    // the lock expires by itself, so nobody can lock an account permanently
+    $is_locked = (int) ($user_data['user_locked_until'] ?? 0) > time();
+
+    // too many failed logins from this client (all accounts together, see
+    // se_rate_limit_exceeded()) - refuse without accepting the password
+    $is_throttled = se_rate_limit_exceeded('login', 10, 900);
+
+    // always run password_verify() - against a dummy hash for unknown accounts -
+    // so the response time doesn't reveal whether an account exists
+    $dummy_hash = '$2y$12$Oc7bwErf6Vq0v3/TyBOlo.3PQ4UkkG1EwYKFGaNcLwL/ug6GGRDTS';
+    $psw_valid = password_verify($psw, $hash !== '' ? $hash : $dummy_hash) && $hash !== '';
+
+    $result = null;
+    if(!$is_locked && !$is_throttled && $psw_valid) {
         /* valid psw */
 
         $result = $db_user->get("se_user", "*", [
@@ -141,63 +142,25 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     if(is_array($result)) {
 
-        se_start_user_session($result);
-
-        /* set cookie to remember user */
-        if($remember == TRUE) {
-            $identifier = randpsw($length=24);
-            $securitytoken = randpsw($length=24);
-            $securitytoken_hashed = sha1($securitytoken);
-            $time = time();
-
-            $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
-
-            $db_user->insert("se_tokens", [
-                "user_id" => $result['user_id'],
-                "identifier" => "$identifier",
-                "securitytoken" => "$securitytoken_hashed",
-                "time" => "$time"
-            ]);
-
-            setcookie("identifier", $identifier, [
-                'expires' => time() + (3600 * 24 * 365),
-                'path' => '/',
-                'domain' => '',
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
-            setcookie("securitytoken", $securitytoken, [
-                'expires' => time() + (3600 * 24 * 365),
-                'path' => '/',
-                'domain' => '',
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
-
+        // backend login with two-factor authentication: only a pending login for
+        // now, the session is started after the second factor (see acp/login.php)
+        if($acp == TRUE && se_2fa_required_for($result) && !se_2fa_is_trusted_device($result)) {
+            se_2fa_start_pending($result, (bool) $remember);
+            return '2fa';
         }
 
-        // reset failed logins
-        $db_user->update("se_user",[
-            "user_failed_logins" => 0
-        ],[
-            "user_nick" => $user_nick
-        ]);
-
-        if($_SESSION['user_class'] == 'administrator') {
-            record_log("$user_nick","admin logged in",1);
-        }
-
-
-        if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
-            header("location:/admin/");
-        }
-
+        se_finish_login($result, $acp, $remember);
 
     } else {
 
-        if(is_numeric($se_failed_logins_limit)) {
+        // attempts during a lock are not counted - the password isn't checked
+        // then, and counting them would only extend the lock further
+        // like the account lock, attempts while throttled are not counted again
+        if(!$is_throttled) {
+            se_rate_limit_add('login', 900);
+        }
+
+        if(is_numeric($se_failed_logins_limit) && !$is_locked && !$is_throttled && $user_nick !== '') {
             se_handle_failed_logins($user_nick);
         }
         session_destroy();
@@ -206,25 +169,122 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 }
 
 
+
+/**
+ * Start the session after a successful login (password, and for the backend
+ * the second factor if required - see se_2fa_complete_login())
+ *
+ * @param array $result row of se_user
+ * @param mixed $acp true for the backend login
+ * @param mixed $remember
+ */
+function se_finish_login(array $result, $acp, $remember): void {
+
+    global $db_user, $se_settings;
+
+    se_start_user_session($result);
+
+    // Administrator rights only via the backend login (/admin/). A login
+    // through the frontend gives administrators a plain user session, so
+    // protections of the backend login (login_slug, 2FA, IP
+    // restrictions) can't be bypassed, and a script running in a frontend
+    // page can't use the session for the backend. Moderation rights don't
+    // grant backend access and are kept.
+    if($acp != TRUE && $_SESSION['user_class'] == 'administrator') {
+        $_SESSION['user_class'] = ''; // same as regular users in se_user
+        $_SESSION['permissions'] = array_values(array_intersect($_SESSION['permissions'], ['drm_moderator']));
+    }
+
+    /* set cookie to remember user */
+    if($remember == TRUE) {
+        $identifier = randpsw($length=24);
+        $securitytoken = randpsw($length=24);
+        $securitytoken_hashed = sha1($securitytoken);
+        $time = time();
+
+        $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
+
+        $db_user->insert("se_tokens", [
+            "user_id" => $result['user_id'],
+            "identifier" => "$identifier",
+            "securitytoken" => "$securitytoken_hashed",
+            "time" => "$time"
+        ]);
+
+        setcookie("identifier", $identifier, [
+            'expires' => time() + (3600 * 24 * 365),
+            'path' => '/',
+            'domain' => '',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+        setcookie("securitytoken", $securitytoken, [
+            'expires' => time() + (3600 * 24 * 365),
+            'path' => '/',
+            'domain' => '',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+
+    }
+
+    // reset failed logins and a lock that has already expired
+    $db_user->update("se_user",[
+        "user_failed_logins" => 0,
+        "user_unlock_code" => '',
+        "user_locked_until" => 0
+    ],[
+        "user_nick" => $result['user_nick']
+    ]);
+
+    if($_SESSION['user_class'] == 'administrator') {
+        record_log($result['user_nick'],"admin logged in",1);
+    }
+
+
+    if(($acp == TRUE) AND ($_SESSION['user_class'] == "administrator")) {
+        // fresh CSRF token for the backend - a token known before the login
+        // must not stay valid. Only here: the ACP login redirects anyway,
+        // while the frontend login updates the page without a reload and
+        // other forms on it still carry the current token.
+        se_generate_token();
+        header("location:/admin/");
+    }
+}
+
 function se_handle_failed_logins($user) {
 
-    global $db_user,$se_failed_logins_limit,$lang,$se_base_url;
+    global $db_user,$se_failed_logins_limit,$lang,$se_base_url,$se_settings;
 
     $failed_user_data = $db_user->get("se_user", "*", ["user_nick" => $user]);
-    $failed_logins = $failed_user_data['user_failed_logins']+1;
+    if(!is_array($failed_user_data)) {
+        return;
+    }
+    $failed_logins = (int) $failed_user_data['user_failed_logins'] + 1;
+    $limit = (int) $se_failed_logins_limit;
+
+    $update_data = ["user_failed_logins" => $failed_logins];
+
+    // time-based lock instead of a permanent one, so knowing a username isn't
+    // enough to lock its owner out for good: 1 minute when the limit is
+    // reached, doubled with every further failed attempt, at most 60 minutes
+    if($failed_logins >= $limit) {
+        $lock_minutes = min(60, 2 ** min(6, $failed_logins - $limit));
+        $update_data["user_locked_until"] = time() + $lock_minutes * 60;
+    }
 
     // update failed_logins on every attempt, not just below the limit
-    $db_user->update("se_user",[
-        "user_failed_logins" => $failed_logins
-    ],[
+    $db_user->update("se_user", $update_data, [
         "user_nick" => $user
     ]);
 
-    if($failed_logins >= $se_failed_logins_limit) {
-        // generate and save unlock code; only rows without an unlock code yet are
-        // eligible, so an already-locked account isn't re-locked (and re-mailed)
-        // on every further failed attempt. NULL and '' both count as "not set",
-        // matching the login gate's own check.
+    if($failed_logins >= $limit) {
+        // generate and save unlock code - the mailed link lifts the lock right
+        // away. Only rows without an unlock code yet are eligible, so the owner
+        // gets one mail per series of locks, not one per failed attempt.
+        // NULL and '' both count as "not set".
         $unlock_code = bin2hex(random_bytes(16));
         $update = $db_user->update("se_user",[
             "user_unlock_code" => $unlock_code
@@ -240,8 +300,16 @@ function se_handle_failed_logins($user) {
 
         // only mail the account owner when this attempt actually triggered the lock
         if($update->rowCount() > 0) {
+            // the ACP login (acp/login.php) neither sets $se_base_url nor loads
+            // the frontend language file - build both the same way as the frontend
+            if(empty($se_base_url)) {
+                $se_base_url = ($se_settings['cms_ssl_domain'] ?? '') != '' ? $se_settings['cms_ssl_domain'] : ($se_settings['cms_domain'] ?? '');
+                $se_base_url .= $se_settings['cms_base'] ?? '';
+            }
+            $locked_text = $lang['account_temporarily_locked'] ?? '<p>Hello {USERNAME},<br>we have detected suspicious activity and have temporarily deactivated the account. By clicking on the following link, you can easily reactivate the account.<br />{RESET_LINK}</p>';
+
             $unlock_link = $se_base_url."unlock/?code=$unlock_code";
-            $email_msg = str_replace("{USERNAME}","$user",$lang['account_temporarily_locked']);
+            $email_msg = str_replace("{USERNAME}","$user",$locked_text);
             $email_msg = str_replace("{RESET_LINK}","$unlock_link",$email_msg);
 
             $mail_data['tpl'] = 'mail.tpl';
@@ -286,10 +354,11 @@ function se_start_user_session($ud) {
 
     /* CSRF Protection */
     if(empty($_SESSION['token'])) {
-        $token = md5(uniqid(rand(), TRUE));
-        $_SESSION['token'] = $token;
-        $_SESSION['token_time'] = time();
+        se_generate_token();
     }
+
+    // start of the ACP idle timer (see se_acp_session_expired())
+    $_SESSION['acp_last_activity'] = time();
 
     $arr_drm = explode("|", $ud['user_drm']);
     $_SESSION['permissions'] = explode('|', $ud['user_drm']);
@@ -361,9 +430,16 @@ function get_userdata_by_token($token) {
 
     global $db_user;
 
+    if (!is_string($token) || $token === '') {
+        return null;
+    }
+
+    // only a hash of the reset token is stored (see app/xhr/password-reset.php),
+    // and it is only valid until user_reset_psw_expires
     $user_data = $db_user->get("se_user", "*", [
         "AND" => [
-            "user_reset_psw" => "$token"
+            "user_reset_psw" => hash('sha256', $token),
+            "user_reset_psw_expires[>]" => time()
         ]
     ]);
 
@@ -606,4 +682,115 @@ function get_all_usernames() {
     global $db_user;
     $user_nicks = $db_user->select("se_user", ["user_nick"]);
     return $user_nicks;
+}
+
+/**
+ * Simple per-client rate limit (login, password reset), stored as small JSON
+ * files under SE_CONTENT/cache/ratelimit/ - no database table needed.
+ *
+ * The client is identified by REMOTE_ADDR only: Client-IP / X-Forwarded-For
+ * are set by the client itself and would make the limit trivial to bypass.
+ *
+ * Usage: check with se_rate_limit_exceeded() first, then record the attempt
+ * with se_rate_limit_add() (e.g. only failed logins, or every reset request).
+ *
+ * @param string $bucket name of the limit, e.g. "login" or "reset-mail:<mail>"
+ * @param bool $per_ip whether the bucket is counted per client IP
+ * @return string cache file of this bucket
+ */
+function se_rate_limit_file(string $bucket, bool $per_ip = true): string {
+    $key = $bucket . ($per_ip ? '|' . ($_SERVER['REMOTE_ADDR'] ?? 'cli') : '');
+    return SE_CONTENT . '/cache/ratelimit/' . hash('sha256', $key) . '.json';
+}
+
+/**
+ * Timestamps of the attempts within the window
+ */
+function se_rate_limit_attempts(string $file, int $window): array {
+    if (!is_file($file)) {
+        return [];
+    }
+    $attempts = json_decode((string) @file_get_contents($file), true);
+    if (!is_array($attempts)) {
+        return [];
+    }
+    $since = time() - $window;
+    return array_values(array_filter($attempts, static fn($t) => is_int($t) && $t > $since));
+}
+
+/**
+ * @param int $max allowed attempts within $window seconds
+ * @return bool true if the limit is reached - the action must not run
+ */
+function se_rate_limit_exceeded(string $bucket, int $max, int $window, bool $per_ip = true): bool {
+    return count(se_rate_limit_attempts(se_rate_limit_file($bucket, $per_ip), $window)) >= $max;
+}
+
+/**
+ * Record one attempt
+ */
+function se_rate_limit_add(string $bucket, int $window, bool $per_ip = true): void {
+    $file = se_rate_limit_file($bucket, $per_ip);
+    $dir = dirname($file);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+    }
+    $attempts = se_rate_limit_attempts($file, $window);
+    $attempts[] = time();
+    @file_put_contents($file, json_encode($attempts), LOCK_EX);
+}
+
+/**
+ * Server-side idle timeout for the ACP - the countdown in acp/index.php is
+ * only JavaScript, the session itself stayed valid as long as PHP's garbage
+ * collector didn't happen to remove it.
+ *
+ * Uses the same lifetime as the countdown: the larger of the
+ * acp_session_lifetime setting and session.gc_maxlifetime (seconds).
+ * Every ACP request (page or XHR) counts as activity.
+ *
+ * @return bool true if the session has expired and was ended
+ */
+function se_acp_session_expired(): bool {
+
+    global $se_settings;
+
+    $lifetime = max((int) ($se_settings['acp_session_lifetime'] ?? 0), (int) ini_get('session.gc_maxlifetime'));
+    $last_activity = (int) ($_SESSION['acp_last_activity'] ?? time());
+
+    if ($lifetime > 0 && time() - $last_activity > $lifetime) {
+        $_SESSION = [];
+        session_destroy();
+        return true;
+    }
+
+    $_SESSION['acp_last_activity'] = time();
+    return false;
+}
+
+/**
+ * Random secret of this installation, e.g. as key for hash_hmac() so stored
+ * hashes of personal data (IP addresses) can't be reversed by just trying
+ * all values. Created on first use in SE_CONTENT (outside of the web root).
+ *
+ * @return string
+ */
+function se_get_site_secret(): string {
+
+    static $secret = null;
+    if ($secret !== null) {
+        return $secret;
+    }
+
+    $file = SE_CONTENT . '/site_secret.php';
+    if (is_file($file)) {
+        $secret = (string) include $file;
+    }
+
+    if ($secret === null || strlen($secret) < 32) {
+        $secret = bin2hex(random_bytes(32));
+        @file_put_contents($file, "<?php\n// generated - keep secret, don't share\nreturn '" . $secret . "';\n", LOCK_EX);
+    }
+
+    return $secret;
 }

@@ -39,7 +39,7 @@ $twig = new \Twig\Environment($loader, [
 
 require SE_ROOT.'/app/database.php';
 
-if(!empty($_POST) && $_POST['csrf_token'] !== $_SESSION['token']) {
+if(!empty($_POST) && (!is_string($_POST['csrf_token'] ?? null) || !hash_equals((string) ($_SESSION['token'] ?? ''), $_POST['csrf_token']))) {
     die('Error: CSRF Token is invalid');
 }
 
@@ -79,6 +79,13 @@ foreach ($se_get_preferences as $k => $v) {
         $se_settings[$short_key] = $value; // new
     }
 
+}
+
+// server-side idle timeout - let HTMX send the whole page to the login
+if (se_acp_session_expired()) {
+    http_response_code(401);
+    header('HX-Redirect: /admin/');
+    exit;
 }
 
 /* build absolute URL */

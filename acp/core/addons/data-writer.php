@@ -250,6 +250,12 @@ if(isset($_POST['update_addon_from_url'])) {
         return;
     }
 
+    // same switch as install and catalog - an update writes addon code too
+    if(!$se_upload_addons) {
+        echo $lang['msg_info_upload_addons_deactivated'];
+        return;
+    }
+
     // strict whitelist - the id becomes the target directory of the ZIP
     $plugin_id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['plugin_id'] ?? '');
     $download_url = trim($_POST['download_url']);

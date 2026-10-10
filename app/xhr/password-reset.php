@@ -15,43 +15,41 @@
 // Do not add $_SESSION usage below without removing this first.
 session_write_close();
 
-$mail = strip_tags($_POST['mail']);
-$send_data = 'false';
-$msg_mail_format = '';
-
-//check existing E-Mail Address
-$all_usermail_array = array();
+$mail = trim(strip_tags(is_string($_POST['mail'] ?? null) ? $_POST['mail'] : ''));
 
 if(!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-    $msg_mail_format = $lang['msg_invalid_mail_format'];
-} else {
-    $all_usermail_array = get_all_usermail();
-
-    foreach($all_usermail_array as $entry) {
-        if($mail == $entry['user_mail']) {
-            $send_data = "true";
-            break;
-        }
-    }
+    $smarty->assign("alert_text", $lang['msg_invalid_mail_format']);
+    $smarty->display('alert/alert-danger.tpl');
+    exit;
 }
 
+// throttle: per client and per address, so neither a single client nor
+// many clients together can flood an inbox with reset mails
+if(se_rate_limit_exceeded('reset', 5, 900) || se_rate_limit_exceeded('reset-mail:'.strtolower($mail), 3, 3600, false)) {
+    $smarty->assign("alert_text", $lang['msg_forgotten_psw_throttled']);
+    $smarty->display('alert/alert-danger.tpl');
+    exit;
+}
+se_rate_limit_add('reset', 900);
+se_rate_limit_add('reset-mail:'.strtolower($mail), 3600, false);
 
-// send E-Mail
-if($send_data == "true") {
+$userdata_array = get_userdata_by_mail($mail);
 
-    $userdata_array = get_userdata_by_mail($mail);
+// send E-Mail - only for existing, verified accounts, but the answer below is
+// the same either way, so this form can't be used to test which addresses exist
+if(is_array($userdata_array)) {
+
     $user_nick = $userdata_array['user_nick'];
-    $user_registerdate = $userdata_array['user_registerdate'];
 
-    /* unique token user_registerdate + user_mail */
-    $reset_token = bin2hex(random_bytes(16));
+    // the link carries the token, the database only a hash of it - valid for one hour
+    $reset_token = bin2hex(random_bytes(32));
     $reset_link = $se_base_url."password/?token=$reset_token";
 
-    /* input token */
     $db_user->update("se_user", [
-        "user_reset_psw" => "$reset_token"
+        "user_reset_psw" => hash('sha256', $reset_token),
+        "user_reset_psw_expires" => time() + 3600
     ], [
-        "user_mail" => $mail
+        "user_id" => (int) $userdata_array['user_id']
     ]);
 
     /* generate the message */
@@ -71,16 +69,9 @@ if($send_data == "true") {
 
     $build_html_mail = se_build_html_file($mail_data);
 
-    /* send register mail to the new user */
-
     $recipient = array('name' => $user_nick, 'mail' => $mail);
-    $send_reset_mail = se_send_mail($recipient,$mail_data['subject'],$build_html_mail);
-
-    $psw_message = $lang['msg_forgotten_psw_step1'];
-
-} // eol send E-Mail
-
-if($psw_message != "") {
-    $smarty->assign("alert_text","$psw_message");
-    $smarty->display('alert/alert-success.tpl');
+    se_send_mail($recipient,$mail_data['subject'],$build_html_mail);
 }
+
+$smarty->assign("alert_text", $lang['msg_forgotten_psw_step1']);
+$smarty->display('alert/alert-success.tpl');

@@ -36,7 +36,7 @@ echo '<div class="card">';
 
 echo '<div id="response"></div>';
 
-echo '<form hx-post="/admin-xhr/users/write/" hx-target="#response">';
+echo '<form hx-post="/admin-xhr/users/settings/write/" hx-target="#response">';
 
 echo '<div class="card">';
 echo '<div class="card-header">'.$lang['label_settings'].'</div>';
@@ -57,3 +57,10 @@ echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 echo '</form>';
 
 echo '</div>';
+
+// two-factor authentication of the own account
+require_once __DIR__.'/twofactor-card.php';
+$my_user = $db_user->get("se_user", "*", ["user_id" => (int) $_SESSION['user_id']]);
+echo se_acp_twofa_card($my_user);
+// renders the QR code of the authenticator app setup, also after HTMX swaps
+echo '<script type="module" src="/themes/administration/dist/twofa.js"></script>';

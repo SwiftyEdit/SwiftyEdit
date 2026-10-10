@@ -10,7 +10,8 @@
 
 $start_search = "true";
 
-$s = sanitizeUserInputs($_REQUEST['s']);
+// arrays (?s[]=x) would make sanitizeUserInputs() throw a TypeError
+$s = sanitizeUserInputs(is_string($_REQUEST['s'] ?? null) ? $_REQUEST['s'] : '');
 
 if($s != '' && strlen($s) < 3) {
     $start_search = "false";

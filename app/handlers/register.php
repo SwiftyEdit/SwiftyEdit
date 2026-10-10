@@ -73,9 +73,20 @@ if($_POST['send_registerform']) {
     $send_data = 'true';
     $register_message = '';
 
-    // Process all incoming data -> strip_tags and limit to 200 characters
-    foreach($_POST as $key => $val) {
-        $$key = strip_tags(substr($val, 0, 200));
+    // Process the form fields -> strip_tags and limit to 200 characters.
+    // Only this fixed list - looping over all of $_POST let a visitor set any
+    // variable here, e.g. $se_base_url, which ends up in the activation mail.
+    $register_fields = [
+        'username', 'mail', 'mailrepeat', 'psw', 'psw_repeat', 'accept_terms',
+        'firstname', 'name', 'user_company', 'street', 'nr', 'zip', 'city', 'about_you',
+        'ba_company', 'ba_firstname', 'ba_lastname', 'ba_street', 'ba_street_nbr', 'ba_zip',
+        'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number', 'ba_sales_tax_id_number',
+        'sa_company', 'sa_firstname', 'sa_lastname', 'sa_street', 'sa_street_nbr', 'sa_zip',
+        'sa_city', 'sa_country'
+    ];
+    foreach($register_fields as $field) {
+        $value = $_POST[$field] ?? '';
+        $$field = is_string($value) ? strip_tags(substr($value, 0, 200)) : '';
     }
 
     // check required fields from settings
@@ -236,8 +247,7 @@ if($_POST['send_registerform']) {
         $smarty->assign("send_username",$username,true);
         $smarty->assign("send_mail",$mail,true);
         $smarty->assign("send_mailrepeat",$mailrepeat,true);
-        $smarty->assign("send_psw",$_POST['psw'],true);
-        $smarty->assign("send_psw_repeat",$_POST['psw_repeat'],true);
+        // passwords are never sent back into the form
         $smarty->assign("send_firstname",$firstname,true);
         $smarty->assign("send_name",$name,true);
         $smarty->assign("send_zip",$zip,true);

@@ -8,6 +8,10 @@
             </a>
         </div>
         <div class="card-body collapse" id="collapsePassword">
+            <div class="mb-3">
+                <label for="psw_current">{$lang_label_psw_current}</label>
+                <input type="password" class="form-control" id="psw_current" value="" name="s_psw_current" autocomplete="current-password">
+            </div>
             <div class="row mb-1">
                 <div class="col-6">
                     <label for="psw">{$lang_label_psw}</label>

@@ -38,6 +38,11 @@ if(isset($_POST['load_update_data'])) {
         exit;
     }
 
+    // send the trigger before any output: without output buffering (e.g. on
+    // production servers) a header() call after the first echo is dropped,
+    // and the list of downloaded files would not refresh
+    header("HX-Trigger: update_downloads_list");
+
     $remote_file = $update_channel.'/'.$get_filename;
 
     $source_file = 'https://swiftyedit.net/releases/v2/files/'.$remote_file;
@@ -48,7 +53,7 @@ if(isset($_POST['load_update_data'])) {
     }
     $extract_dir = __DIR__.'/download/extract';
     if(!is_dir("$extract_dir")) {
-        mkdir("$extract_dir", 0777, true);
+        mkdir("$extract_dir", 0755, true);
     }
 
     if(is_dir("$extract_dir")) {
@@ -67,7 +72,6 @@ if(isset($_POST['load_update_data'])) {
     } else {
         echo '<div class="alert alert-warning">Error: cannot open zip file</div>';
     }
-    header( "HX-Trigger: update_downloads_list");
     exit;
 }
 

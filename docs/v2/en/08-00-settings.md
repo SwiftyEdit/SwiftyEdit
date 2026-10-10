@@ -116,7 +116,7 @@ Your business address and tax number are stored here for use on orders and invoi
 Here you will find the default settings for the event module. For example, you can specify whether the guest lists
 should be activated.
 
-## Labels
+## Labels {#labels}
 Most entries and data in the Backend can be provided with labels.
 If you manage a lot of data and entries, these labels help you to keep an overview.
 

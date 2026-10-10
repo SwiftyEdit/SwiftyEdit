@@ -14,6 +14,46 @@ include_once 'functions_shop.php';
 
 
 /**
+ * Permission a module's XHR readers/writers (/admin-xhr/<module>/read|write/)
+ * require - the same right the module's UI router (acp/core/<module>/router.php)
+ * checks. Without this, a gated module was only hidden in the UI, while its
+ * XHR endpoints stayed reachable for every administrator.
+ *
+ * Modules not listed here are open to every administrator, same as their UI.
+ * addons/ is deliberately not listed: its list is open to every admin, plugins
+ * use addons/ for their own backend actions, and the sensitive actions
+ * (install, update, delete) check drm_acp_sensitive_files themselves.
+ *
+ * @param string $query e.g. "users/write/"
+ * @return string|null required permission, null if none
+ */
+function se_acp_xhr_permission(string $query): ?string {
+
+    // personal settings of the logged-in user (core/users/settings-writer.php),
+    // open to every backend user - checked before the users/ module below
+    if (str_starts_with($query, 'users/settings/')) {
+        return null;
+    }
+
+    $module_permissions = [
+        'users/' => 'drm_acp_user',
+        'settings/' => 'drm_acp_system',
+        'blog/' => 'drm_can_publish',
+        'shop/' => 'drm_can_publish',
+        'events/' => 'drm_can_publish',
+        'update/' => 'drm_acp_sensitive_files'
+    ];
+
+    foreach ($module_permissions as $prefix => $permission) {
+        if (str_starts_with($query, $prefix)) {
+            return $permission;
+        }
+    }
+
+    return null;
+}
+
+/**
  * Sends a plain text response and terminates script execution.
  *
  * @param string $data
@@ -1615,7 +1655,16 @@ function se_parse_docs_file($file): array {
         // colorize the breadcrumb arrow used between <kbd> tags (e.g. <kbd>Backend</kbd> ▶ <kbd>Snippets</kbd>)
         $content = str_replace('▶', '<span class="doc-arrow">▶</span>', $content);
 
-        $parsed_header = Spyc::YAMLLoadString($src_content[1]);
+        // a broken front matter must not break the help page
+        try {
+            $parsed_header = \Symfony\Component\Yaml\Yaml::parse($src_content[1] ?? '');
+        } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+            $parsed_header = [];
+        }
+        if (!is_array($parsed_header)) {
+            $parsed_header = [];
+        }
+        $parsed_header['title'] ??= '';
         $parsed_content = $Parsedown->text("$content");
 
         $parsed_content = preg_replace_callback(

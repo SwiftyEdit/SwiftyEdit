@@ -125,8 +125,9 @@ Example: `app.php` fires `page.display.after` after rendering.
 
 - **Smarty 5:** the `trim` modifier is missing from `DefaultExtension` and must be
   registered manually as a custom modifier.
-- **ParsedownExtra:** only works reliably with Parsedown `1.7.x`. It breaks on
-  `1.8.x` — use the `ParsedownExtraPlugin` fork if `1.8.x` compatibility is needed.
+- **ParsedownExtra:** keep the versions paired — Extra `0.9.x` requires Parsedown `1.8.x`
+  (final, not the old `1.8.0-beta-*`). Mixing Extra `0.8.x` with `1.8.x` breaks the
+  `{#anchor}` heading IDs used in the docs.
 
 ## Documentation duty
 

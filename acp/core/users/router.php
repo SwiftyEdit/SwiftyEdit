@@ -11,7 +11,10 @@ $subinc = match (true) {
     default => 'users-list'
 };
 
-if (!se_hasPermission('drm_acp_user')) {
+// users/settings/ holds the personal settings of the logged-in user (presets,
+// two-factor authentication) - open to every backend user. Everything else
+// in this module manages other accounts and needs drm_acp_user.
+if ($subinc !== 'users-settings' && !se_hasPermission('drm_acp_user')) {
     echo '<div class="alert alert-info">';
     echo $lang['rm_no_access'];
     echo '</div>';

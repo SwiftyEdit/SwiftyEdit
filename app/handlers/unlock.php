@@ -11,10 +11,11 @@ if(isset($_GET['code']) && $_GET['code'] != "") {
 
     $unlock_code = htmlspecialchars($_GET['code']);
 
-    // reset unlock code and reset failed logins
+    // reset unlock code, failed logins and the temporary lock
     $unlock_data = $db_user->update("se_user", [
         "user_failed_logins" => 0,
-        "user_unlock_code" => ''
+        "user_unlock_code" => '',
+        "user_locked_until" => 0
     ], [
         "user_unlock_code" => $unlock_code
     ]);

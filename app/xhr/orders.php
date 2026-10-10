@@ -16,6 +16,15 @@
 // Do not add $_SESSION writes below without removing this first.
 session_write_close();
 
+// orders are only listed for logged-in users - guest orders are stored with
+// user_id = NULL, so without this gate an anonymous visitor (also NULL) would
+// pass the owner check below and could read any guest order incl. addresses
+if(!is_numeric($_SESSION['user_id'] ?? null)) {
+    http_response_code(403);
+    exit;
+}
+$session_user_id = (int) $_SESSION['user_id'];
+
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
 }
@@ -41,7 +50,10 @@ if(isset($_GET['id'])) {
     $get_order_id = (int) $_GET['id'];
     $get_order = se_get_order_details($get_order_id);
 
-    if($get_order['user_id'] !== $_SESSION['user_id']) {
+    // compare as int - the DB driver and the session may hand over the id as
+    // int or string; a missing order or a guest order (NULL) never matches
+    if(!is_array($get_order) || !is_numeric($get_order['user_id'] ?? null) || (int) $get_order['user_id'] !== $session_user_id) {
+        http_response_code(404);
         exit;
     }
 
@@ -135,7 +147,7 @@ if(isset($_GET['id'])) {
 
 // list orders
 
-$user_id = (int) $_SESSION['user_id'];
+$user_id = $session_user_id;
 $order_filter = array();
 $order_filter['status_payment'] = [];
 $order_filter['status_shipping'] = [];
