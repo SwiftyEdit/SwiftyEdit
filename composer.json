@@ -22,6 +22,7 @@
   "require": {
     "ext-pdo": "*",
     "catfan/medoo": "^2.1.12",
+    "enshrined/svg-sanitize": "^1.0",
     "erusev/parsedown": "^1.8",
     "erusev/parsedown-extra": "^0.9",
     "ezyang/htmlpurifier": "^4.18.0",

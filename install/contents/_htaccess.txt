@@ -6,6 +6,16 @@ RewriteEngine On
 # of defense). Matches direct /assets/... URLs and the short aliases below.
 RewriteRule ^(assets/)?(images|images_tmb|galleries|files|avatars|branding|uploads)/.*\.(php[0-9]?|phtml|phar|pht|phps|cgi|pl|py|sh)$ - [F,NC,L]
 
+# SVG is XML and may contain scripts - when an SVG is opened directly it must
+# not run anything (uploaded SVGs are sanitized as well, this is a second line
+# of defense). Has no effect on SVGs embedded via <img> or CSS.
+<IfModule mod_headers.c>
+    <FilesMatch "(?i)\.svgz?$">
+        Header set Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox"
+        Header set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+</IfModule>
+
 # pass the Authorization header on to PHP - with PHP-FPM/CGI Apache drops
 # it otherwise (needed for API keys, see app/handlers/api-routes.php)
 RewriteCond %{HTTP:Authorization} .

@@ -146,6 +146,9 @@ if($upload_type == 'images') {
         // regardless of the $se_upload_img_types whitelist check further down
         $suffix = preg_replace('/[^A-Za-z0-9]/', '', substr(strrchr($org_name,'.'),1));
         $prefix = basename($org_name,".$suffix");
+        // lowercase only after basename(), which matches the suffix case-sensitively -
+        // the whitelist is lowercase, so "foto.JPG" was rejected before
+        $suffix = strtolower($suffix);
         $img_name = generate_filename($prefix,$suffix);
         $target = "$destination/$img_name";
 
@@ -157,6 +160,12 @@ if($upload_type == 'images') {
             // raster images must be real, not oversized images - also when they
             // are stored unchanged, which used to skip every content check
             if($suffix != 'svg' && !se_upload_image_is_valid($tmp_name)) {
+                http_response_code(422);
+                exit;
+            }
+
+            // SVG is XML and may carry scripts - clean it before it is stored
+            if($suffix == 'svg' && !se_sanitize_svg($tmp_name)) {
                 http_response_code(422);
                 exit;
             }
@@ -192,6 +201,7 @@ if($upload_type == 'files') {
         // the images branch above for why this must happen before $target is built
         $suffix = preg_replace('/[^A-Za-z0-9]/', '', substr(strrchr($org_name,'.'),1));
         $prefix = basename($org_name,".$suffix");
+        $suffix = strtolower($suffix); // after basename(), see the images branch
         $files_name = generate_filename($prefix,$suffix);
         $target = "$destination/$files_name";
 
@@ -199,6 +209,11 @@ if($upload_type == 'files') {
         if(!in_array($suffix, $se_upload_types)) {
             exit;
         } else {
+            // svg comes in via $se_upload_img_types - clean it like in the images branch
+            if($suffix == 'svg' && !se_sanitize_svg($tmp_name)) {
+                http_response_code(422);
+                exit;
+            }
             @move_uploaded_file($tmp_name, $target);
             $filetype = mime_content_type(realpath($target));
             $filesize = filesize(realpath($target));
@@ -234,7 +249,7 @@ if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
 
         // strip anything but letters/digits from the client-supplied extension - see
         // the images branch above for why this must happen before $org_name is built
-        $suffix = preg_replace('/[^A-Za-z0-9]/', '', substr(strrchr($_FILES["file"]["name"],"."),1));
+        $suffix = preg_replace('/[^A-Za-z0-9]/', '', strtolower(substr(strrchr($_FILES["file"]["name"],"."),1)));
         $org_name = $timestring .'.'. $suffix;
         $img_name = $timestring.$random_int."_img.jpg";
         $tmb_name = $timestring.$random_int."_tmb.jpg";
@@ -274,6 +289,40 @@ function se_upload_image_is_valid(string $path, int $max_pixels = 50000000): boo
         return false;
     }
     return ($details[0] * $details[1]) <= $max_pixels;
+}
+
+/**
+ * Clean an uploaded SVG in place. SVG is XML and can contain scripts, event
+ * handlers, javascript: links or foreignObject HTML - opened directly from
+ * our domain that would be stored XSS. enshrined/svg-sanitize keeps only
+ * whitelisted elements/attributes, strips DOCTYPE/entities and (with
+ * removeRemoteReferences) any reference to external resources.
+ *
+ * @param string $path uploaded file, overwritten with the cleaned markup
+ * @return bool false if the file is no parseable SVG - reject the upload then
+ */
+function se_sanitize_svg(string $path): bool {
+    $dirty = @file_get_contents($path);
+    if ($dirty === false || trim($dirty) === '') {
+        return false;
+    }
+
+    $sanitizer = new \enshrined\svgSanitize\Sanitizer();
+    $sanitizer->removeRemoteReferences(true);
+    try {
+        $clean = $sanitizer->sanitize($dirty);
+    } catch (\Throwable $e) {
+        // thrown e.g. for well-formed XML without exactly one <svg> element
+        return false;
+    }
+
+    // false = not parseable as XML; no <svg> left = it was something else
+    // (e.g. HTML renamed to .svg) and the sanitizer removed the root element
+    if ($clean === false || stripos($clean, '<svg') === false) {
+        return false;
+    }
+
+    return file_put_contents($path, $clean) !== false;
 }
 
 function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality){
@@ -534,6 +583,11 @@ function se_handle_branding_upload(string $target, string $branding_path, array 
     // validate the upload is actually a readable image *before* touching anything
     // already on disk, so a bad upload never wipes out a working file
     if ($suffix !== 'svg' && !se_upload_image_is_valid($tmp_name)) {
+        return ['error' => 'invalid_image'];
+    }
+
+    // SVG is XML and may carry scripts - clean it before it is stored
+    if ($suffix === 'svg' && !se_sanitize_svg($tmp_name)) {
         return ['error' => 'invalid_image'];
     }
 
