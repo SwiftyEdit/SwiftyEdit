@@ -32,7 +32,7 @@ function compare_versions() {
         $remote = $remote_versions_array['version'][$channel];
         $filename = basename($remote['file']);
         $hx_vals_channel = $hx_vals + ["file" => "$filename"];
-        $select_button = '<button class="btn btn-default btn-sm text-nowrap" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_channel).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="outerHTML" name="load_update_data" value="'.$channel.'">';
+        $select_button = '<button class="btn btn-default btn-sm text-nowrap" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_channel).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="innerHTML" name="load_update_data" value="'.$channel.'">';
         $update_available = ($se_version['build'] < $remote['build']);
 
         echo '<li class="list-group-item d-flex justify-content-between align-items-center gap-3">';

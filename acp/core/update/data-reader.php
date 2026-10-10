@@ -22,16 +22,17 @@ if($_GET['action'] == 'check_download') {
         "csrf_token"=> $_SESSION['token']
     ];
 
-    echo '<div class="card">';
-    echo '<div class="card-header">Loaded files for installation</div>';
-    echo '<div class="card-body">';
+    // only the list itself - the surrounding card is part of index.php
+    $downloads = [];
     if(is_dir($extract_dir)) {
-        $get_downloads = scandir($extract_dir);
-
-        foreach($get_downloads as $download) {
-            if($download == '.' OR $download == '..') {continue;}
+        foreach(scandir($extract_dir) as $download) {
             if(str_starts_with($download, '.')) {continue;}
+            $downloads[] = $download;
+        }
+    }
 
+    if($downloads !== []) {
+        foreach($downloads as $download) {
             echo '<div class="row">';
             echo '<div class="col-md-4">'.$download.'</div>';
             echo '<div class="col-md-8 text-end">';
@@ -42,9 +43,8 @@ if($_GET['action'] == 'check_download') {
         }
 
     } else {
-        echo '<p>There are no files available for an installation. Select a source above, if available.</p>';
+        echo '<p class="mb-0">There are no files available for an installation. Select a source above, if available.</p>';
     }
 
-    echo '</div>';
     exit;
 }
