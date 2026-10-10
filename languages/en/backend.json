@@ -710,5 +710,8 @@
   "account.2fa.device_current": "this device",
   "account.2fa.btn_revoke": "Remove",
   "account.2fa.btn_revoke_all": "Remove all",
-  "account.2fa.msg_revoked": "The device has to confirm the login with a code again."
+  "account.2fa.msg_revoked": "The device has to confirm the login with a code again.",
+  "update.notices.title": "Notices from swiftyedit.net",
+  "update.notices.read_more": "Read more",
+  "update.msg.server_unreachable": "The update server swiftyedit.net could not be reached. Please try again later."
 }

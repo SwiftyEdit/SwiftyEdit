@@ -71,6 +71,8 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
+// notices from swiftyedit.net - filled by the read_versions request above (hx-swap-oob)
+echo '<div id="updateNotices"></div>';
 
 echo '<div id="" class="" hx-get="/admin-xhr/update/read/?action=check_download" hx-trigger="load, update_downloads_list from:body">';
 echo '<div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span>';

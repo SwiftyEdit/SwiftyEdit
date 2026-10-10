@@ -6,6 +6,10 @@ if($_GET['action'] == 'read_versions') {
 
     $remote_versions_array = get_remote_versions();
     compare_versions();
+
+    // notices from the same versions.json, swapped into their own area below
+    // the version cards (see index.php) - no second request to swiftyedit.net
+    echo '<div id="updateNotices" hx-swap-oob="true">'.se_render_update_notices($remote_versions_array).'</div>';
     exit;
 }
 
