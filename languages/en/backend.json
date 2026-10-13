@@ -699,6 +699,8 @@
   "login.2fa.help_recovery_app": "No access to the app? Enter one of your recovery codes instead.",
   "login.2fa.btn_back": "Back",
   "login.2fa.msg_mail_confirmed": "Your e-mail address is confirmed.",
+  "login.2fa.intro_verify_blocked": "Your password was reset by e-mail. Since the reset link and the code would arrive in the same mailbox, please enter one of your recovery codes this time. Without recovery codes, another administrator can reset your two-factor authentication, or use the emergency switch $se_2fa_bypass in data/config.php.",
+  "login.2fa.recovery_mail_hint": "Important with codes by e-mail: after a password reset by e-mail, the next login needs one of these recovery codes.",
   "login.2fa.msg_locked": "Too many wrong codes for this account. The login is locked for a while - please try again later.",
   "account.2fa.choose_method": "Choose a method:",
   "account.2fa.status_app": "Method: authenticator app · set up on {DATE} · recovery codes left: {COUNT}",

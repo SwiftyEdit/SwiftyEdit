@@ -55,6 +55,7 @@ $cols = array(
     "user_2fa_since" => 'INTEGER NOT NULL DEFAULT 0',
     "user_2fa_failed" => 'INTEGER NOT NULL DEFAULT 0',
     "user_2fa_locked_until" => 'INTEGER NOT NULL DEFAULT 0',
+    "user_2fa_mail_blocked" => 'INTEGER NOT NULL DEFAULT 0',
     "user_public_profile" => "VARCHAR(500) NOT NULL DEFAULT ''",
     "user_social_media" => "LONGTEXT NOT NULL DEFAULT ''",
     /* billing address data */

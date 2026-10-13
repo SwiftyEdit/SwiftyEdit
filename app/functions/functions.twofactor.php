@@ -221,7 +221,8 @@ function se_2fa_count_account_failure(array $user): bool {
 }
 
 /**
- * Second factor passed - the wrong codes before no longer count
+ * Second factor passed - the wrong codes before no longer count, and after
+ * a password reset the mail method works again (see se_2fa_mail_blocked())
  */
 function se_2fa_clear_account_failures(int $user_id): void {
 
@@ -229,7 +230,8 @@ function se_2fa_clear_account_failures(int $user_id): void {
 
     $db_user->update("se_user", [
         "user_2fa_failed" => 0,
-        "user_2fa_locked_until" => 0
+        "user_2fa_locked_until" => 0,
+        "user_2fa_mail_blocked" => 0
     ], [
         "user_id" => $user_id
     ]);
@@ -380,11 +382,22 @@ function se_2fa_use_recovery_code(array $user, string $input): bool {
 }
 
 /**
+ * After a password reset by e-mail, the mail method doesn't count as second
+ * factor - reset link and code would arrive in the same mailbox. The next
+ * login needs a recovery code (or another admin resets 2FA, or the emergency
+ * switch). Set in app/handlers/password.php, cleared by a passed login or
+ * a reset of 2FA.
+ */
+function se_2fa_mail_blocked(array $user): bool {
+    return ($user['user_2fa_method'] ?? '') === 'mail' && (int) ($user['user_2fa_mail_blocked'] ?? 0) === 1;
+}
+
+/**
  * Check the input of the login step: a code of the user's method or a recovery code
  */
 function se_2fa_check_input(array $user, string $input): bool {
 
-    if ($user['user_2fa_method'] === 'mail' && se_2fa_check_mail_code($user, $input)) {
+    if ($user['user_2fa_method'] === 'mail' && !se_2fa_mail_blocked($user) && se_2fa_check_mail_code($user, $input)) {
         return true;
     }
     if ($user['user_2fa_method'] === 'totp' && se_2fa_check_totp($user, $input)) {
@@ -625,7 +638,8 @@ function se_2fa_reset(int $user_id, string $log_trigger): void {
         "user_2fa_recovery" => "",
         "user_2fa_since" => 0,
         "user_2fa_failed" => 0,
-        "user_2fa_locked_until" => 0
+        "user_2fa_locked_until" => 0,
+        "user_2fa_mail_blocked" => 0
     ], [
         "user_id" => $user_id
     ]);

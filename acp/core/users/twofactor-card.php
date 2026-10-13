@@ -41,6 +41,9 @@ function se_acp_twofa_card(array $user, array $alerts = [], array $recovery_code
     if ($recovery_codes !== []) {
         // shown once, right after the setup or a renewal
         $html .= '<p>'.$lang['account_2fa_recovery_intro'].'</p>';
+        if ($method === 'mail') {
+            $html .= '<p><strong>'.$lang['login_2fa_recovery_mail_hint'].'</strong></p>';
+        }
         $html .= '<pre class="border rounded p-3 fs-5">'.htmlspecialchars(implode("\n", $recovery_codes), ENT_QUOTES).'</pre>';
 
     } elseif ($method === '' && $setup_method === '') {
