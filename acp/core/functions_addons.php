@@ -308,6 +308,7 @@ function se_fetch_remote_url(string $url, int $max_redirects = 5): string|false 
         $context = stream_context_create([
             'http' => [
                 'follow_location' => 0,
+                'timeout' => 5, // don't let a slow remote host hang the request for default_socket_timeout
                 'ignore_errors' => true // also return the body of 3xx/4xx, we check the status ourselves
             ]
         ]);
@@ -1148,11 +1149,14 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 		}
 	}
 
+	// don't let a slow catalog service hang the page for default_socket_timeout
+	$context = stream_context_create(['http' => ['timeout' => 5]]);
+
 	$entries = [];
 	$message = '';
 	foreach($endpoints as $type => $endpoint) {
 
-		$json = @file_get_contents($endpoint);
+		$json = @file_get_contents($endpoint, false, $context);
 
 		if($json === false || !is_array($rows = json_decode($json, true))) {
 			$message = $json === false ? 'Could not reach the addon catalog.' : 'Unexpected catalog response.';

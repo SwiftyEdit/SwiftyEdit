@@ -112,7 +112,18 @@ if($_REQUEST['action'] == 'list_plugins') {
             }
         }
 
-        echo '<div class="card mb-1 border-bottom">';
+        // category for the filter buttons in list.php - unlike the catalog
+        // (registry tags), installed plugins are classified the same way the
+        // core treats them: editors by their info.json type, payment addons
+        // by the "-pay" suffix the shop relies on (see se_get_payment_addons())
+        $addon_category = 'plugin';
+        if(($v['addon']['type'] ?? '') === 'editor') {
+            $addon_category = 'editor';
+        } else if(str_ends_with($k, '-pay')) {
+            $addon_category = 'payment';
+        }
+
+        echo '<div class="card mb-1 border-bottom" data-addon-category="'.$addon_category.'">';
         echo '<div class="card-header d-flex justify-content-between align-items-center">';
         echo '<div>'.$addon_name.' <span class="badge badge-se">'.$addon_version.'</span></div>';
         echo $update_btn;
@@ -348,6 +359,11 @@ if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
     if(!se_hasPermission('drm_acp_sensitive_files')) {
         exit;
     }
+
+    // release the session lock - the list fires one check per addon, and the
+    // outbound request below would otherwise serialize them and block every
+    // other admin request; $_SESSION stays readable after this
+    session_write_close();
 
     if(isset($_REQUEST['check_theme'])) {
         $addon_type = 'theme';
