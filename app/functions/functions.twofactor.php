@@ -305,14 +305,17 @@ function se_2fa_check_mail_code(array $user, string $code): bool {
         return false;
     }
 
-    $db_user->update("se_user", [
+    // only the request that actually clears the code may use it - two
+    // parallel requests with the same code must not both pass
+    $result = $db_user->update("se_user", [
         "user_2fa_mail_code" => "",
         "user_2fa_mail_expires" => 0
     ], [
-        "user_id" => (int) $user['user_id']
+        "user_id" => (int) $user['user_id'],
+        "user_2fa_mail_code" => $user['user_2fa_mail_code']
     ]);
 
-    return true;
+    return $result?->rowCount() === 1;
 }
 
 /**
@@ -357,11 +360,17 @@ function se_2fa_use_recovery_code(array $user, string $input): bool {
     foreach ($hashes as $key => $hash) {
         if (password_verify($input, $hash)) {
             unset($hashes[$key]);
-            $db_user->update("se_user", [
+            // only if the stored codes are still the ones just read - otherwise a
+            // parallel request already used a code and this one must not pass
+            $result = $db_user->update("se_user", [
                 "user_2fa_recovery" => json_encode(array_values($hashes))
             ], [
-                "user_id" => (int) $user['user_id']
+                "user_id" => (int) $user['user_id'],
+                "user_2fa_recovery" => (string) $user['user_2fa_recovery']
             ]);
+            if ($result?->rowCount() !== 1) {
+                return false;
+            }
             record_log($user['user_nick'], '2FA: recovery code used, '.count($hashes).' left', 5);
             return true;
         }
@@ -491,13 +500,16 @@ function se_2fa_check_totp(array $user, string $code): bool {
         return false;
     }
 
-    $db_user->update("se_user", [
+    // replay protection in one statement: only the request that moves the
+    // last step forward passes - two parallel requests with the same code don't
+    $result = $db_user->update("se_user", [
         "user_2fa_last_step" => $step
     ], [
-        "user_id" => (int) $user['user_id']
+        "user_id" => (int) $user['user_id'],
+        "user_2fa_last_step[<]" => $step
     ]);
 
-    return true;
+    return $result?->rowCount() === 1;
 }
 
 /**

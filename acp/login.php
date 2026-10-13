@@ -74,7 +74,11 @@ if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
         $remember = true;
     }
 
-    $login = se_user_login($_POST['login_name'],$_POST['login_psw'],$acp=TRUE,$remember);
+    // missing or non-string values (e.g. login_name[]=) count as a failed login
+    $login_name = is_string($_POST['login_name'] ?? null) ? $_POST['login_name'] : '';
+    $login_psw = is_string($_POST['login_psw'] ?? null) ? $_POST['login_psw'] : '';
+
+    $login = se_user_login($login_name,$login_psw,$acp=TRUE,$remember);
 }
 
 /**

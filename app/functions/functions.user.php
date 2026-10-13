@@ -81,6 +81,26 @@ function se_add_user_to_group(int $user, int $group): void {
 }
 
 /**
+ * Hash for the timing-neutral password check of unknown accounts - with the
+ * same cost as password_hash(..., PASSWORD_DEFAULT) on this PHP version
+ * (bcrypt cost 10 before PHP 8.4, 12 since), so an unknown account takes
+ * as long to check as an existing one
+ */
+function se_dummy_password_hash(): string {
+
+    $dummy_hashes = [
+        '$2y$12$QN9z7nH16Yv0.AfPZp6tkuWk8E.36zJgobg2DKSBeiX9mEReJ2kJK',
+        '$2y$10$LQMk5u8DpGXuxsXWGPUJs.KEgSEgRmoN6Bdsv02I97o1O3JDUqLXG'
+    ];
+    foreach ($dummy_hashes as $dummy_hash) {
+        if (!password_needs_rehash($dummy_hash, PASSWORD_DEFAULT)) {
+            return $dummy_hash;
+        }
+    }
+    return $dummy_hashes[0];
+}
+
+/**
  * @param string $user username or e-mail
  * @param string $psw
  * @param $acp
@@ -124,8 +144,7 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     // always run password_verify() - against a dummy hash for unknown accounts -
     // so the response time doesn't reveal whether an account exists
-    $dummy_hash = '$2y$12$Oc7bwErf6Vq0v3/TyBOlo.3PQ4UkkG1EwYKFGaNcLwL/ug6GGRDTS';
-    $psw_valid = password_verify($psw, $hash !== '' ? $hash : $dummy_hash) && $hash !== '';
+    $psw_valid = password_verify($psw, $hash !== '' ? $hash : se_dummy_password_hash()) && $hash !== '';
 
     $result = null;
     if(!$is_locked && !$is_throttled && $psw_valid) {
@@ -141,6 +160,16 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
     }
 
     if(is_array($result)) {
+
+        // older hashes (e.g. a lower cost from an older PHP version) are renewed,
+        // so all accounts take the same time to check as the dummy hash above
+        if(password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+            $db_user->update("se_user", [
+                "user_psw_hash" => password_hash($psw, PASSWORD_DEFAULT)
+            ], [
+                "user_id" => (int) $result['user_id']
+            ]);
+        }
 
         // backend login with two-factor authentication: only a pending login for
         // now, the session is started after the second factor (see acp/login.php)
@@ -262,10 +291,17 @@ function se_handle_failed_logins($user) {
     if(!is_array($failed_user_data)) {
         return;
     }
-    $failed_logins = (int) $failed_user_data['user_failed_logins'] + 1;
+    // the counter decays: one failed attempt is forgiven per 10 minutes since
+    // the last one - otherwise a single attempt per hour (right after each
+    // lock ended) would keep an account locked for good
+    $elapsed = max(0, time() - (int) ($failed_user_data['user_failed_login_time'] ?? 0));
+    $failed_logins = max(0, (int) $failed_user_data['user_failed_logins'] - intdiv($elapsed, 600)) + 1;
     $limit = (int) $se_failed_logins_limit;
 
-    $update_data = ["user_failed_logins" => $failed_logins];
+    $update_data = [
+        "user_failed_logins" => $failed_logins,
+        "user_failed_login_time" => time()
+    ];
 
     // time-based lock instead of a permanent one, so knowing a username isn't
     // enough to lock its owner out for good: 1 minute when the limit is

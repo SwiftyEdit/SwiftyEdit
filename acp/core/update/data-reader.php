@@ -33,6 +33,8 @@ if($_GET['action'] == 'check_download') {
 
     if($downloads !== []) {
         foreach($downloads as $download) {
+            // folder names come from the file system - escape them for text and attributes
+            $download = htmlspecialchars($download, ENT_QUOTES);
             echo '<div class="row">';
             echo '<div class="col-md-4">'.$download.'</div>';
             echo '<div class="col-md-8 text-end">';

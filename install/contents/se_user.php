@@ -19,6 +19,7 @@ $cols = array(
     "user_psw" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_psw_hash" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_failed_logins"  => 'INTEGER NOT NULL DEFAULT 0',
+    "user_failed_login_time" => 'INTEGER NOT NULL DEFAULT 0',
     "user_unlock_code" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_locked_until" => 'INTEGER NOT NULL DEFAULT 0',
     "user_groups" => "VARCHAR(255) NOT NULL DEFAULT ''",
