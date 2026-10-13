@@ -100,6 +100,7 @@ if(isset($_POST['install_update'])) {
 
     $source_directory = basename($_POST['install_update']);
     $_SESSION['protocol'] = '';
+    $_SESSION['update_notices'] = [];
     move_new_files($source_directory);
     update_database();
 
@@ -136,6 +137,12 @@ if(isset($_POST['install_update'])) {
     }
     echo '</ul>';
     echo '</div>';
+
+    // things the person running the update has to look at (e.g. .htaccess, see update_htaccess_file())
+    foreach($_SESSION['update_notices'] as $update_notice) {
+        echo '<div class="alert alert-warning">'.htmlspecialchars($update_notice, ENT_QUOTES).'</div>';
+    }
+    unset($_SESSION['update_notices']);
 
     if ($migration_result['error'] !== null) {
         echo '<div class="alert alert-danger">A migration failed - the update is not complete. Fix the underlying issue and reload this page to retry; already-applied migrations will not run again.</div>';

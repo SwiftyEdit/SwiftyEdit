@@ -455,13 +455,33 @@ function update_database() {
     }
 }
 
+/**
+ * Update public/.htaccess from install/contents/_htaccess.txt
+ *
+ * Only the core block is replaced - the section before it (own rules that
+ * have to run before the front controller) and the one after it are kept.
+ * Whenever the file changes, the previous version is saved to
+ * SE_CONTENT/backups/ first. $se_update_htaccess = false in data/config.php
+ * leaves the file alone entirely (e.g. when it is managed elsewhere).
+ *
+ * Notes for the person running the update are collected in
+ * $_SESSION['update_notices'] (shown below the protocol).
+ */
 function update_htaccess_file(): void
 {
+    global $se_update_htaccess;
+
     $htaccessFile = SE_ROOT . '/public/.htaccess';
     $templateFile = SE_ROOT . '/install/contents/_htaccess.txt';
 
+    if (($se_update_htaccess ?? true) === false) {
+        $_SESSION['protocol'] .= '<b>.htaccess:</b> not updated ($se_update_htaccess = false)<|>';
+        $_SESSION['update_notices'][] = 'public/.htaccess was not updated because $se_update_htaccess is set to false. Compare it with install/contents/_htaccess.txt and apply changes of the core block yourself.';
+        return;
+    }
+
     // Load current and template
-    $current  = file_exists($htaccessFile) ? file_get_contents($htaccessFile) : '';
+    $current  = file_exists($htaccessFile) ? (string) file_get_contents($htaccessFile) : '';
     $template = file_exists($templateFile) ? file_get_contents($templateFile) : '';
 
     if ($template === false || $template === '') {
@@ -469,32 +489,97 @@ function update_htaccess_file(): void
     }
 
     // Markers
-    $startMarker   = "# --- SwiftyEdit core (do not edit) ---";
-    $endCoreMarker = "# --- END SwiftyEdit core ---";
+    $beforeMarker    = "# --- User rules before SwiftyEdit (safe to edit) ---";
+    $beforeEndMarker = "# --- END user rules before SwiftyEdit ---";
+    $startMarker     = "# --- SwiftyEdit core (do not edit) ---";
+    $endCoreMarker   = "# --- END SwiftyEdit core ---";
 
     // --- Extract "core-only" section from template (start..END core, without user marker) ---
     $tStart = strpos($template, $startMarker);
     $tEnd   = strpos($template, $endCoreMarker);
     if ($tStart === false || $tEnd === false) {
-        // Fallback: template is unexpected → use full template for fresh writes
-        file_put_contents($htaccessFile, $template);
+        $_SESSION['protocol'] .= '<b class="text-danger">.htaccess:</b> not updated - core markers missing in the template<|>';
         return;
     }
     $coreFromTemplate = substr($template, $tStart, $tEnd - $tStart + strlen($endCoreMarker));
 
-    // --- Update path ---
-    if (str_contains($current, $startMarker) && str_contains($current, $endCoreMarker)) {
+    $hasCore = str_contains($current, $startMarker) && str_contains($current, $endCoreMarker);
+    $notice = '';
+
+    if ($hasCore) {
         // Replace only the existing core block
         $cStart = strpos($current, $startMarker);
         $cEnd   = strpos($current, $endCoreMarker) + strlen($endCoreMarker);
+        $coreFromCurrent = substr($current, $cStart, $cEnd - $cStart);
 
         $newContent = substr_replace($current, $coreFromTemplate, $cStart, $cEnd - $cStart);
-    } else {
-        // Fresh or unmarked file → write full template as-is (includes user marker once)
+
+        // files from before the "before" section existed get it in front of the core block
+        if (!str_contains($newContent, $beforeMarker)) {
+            $bStart = strpos($template, $beforeMarker);
+            $bEnd = strpos($template, $beforeEndMarker);
+            if ($bStart !== false && $bEnd !== false) {
+                $beforeSection = substr($template, $bStart, $bEnd - $bStart + strlen($beforeEndMarker))."\n\n";
+                $newContent = substr_replace($newContent, $beforeSection, $cStart, 0);
+            }
+        }
+
+        // a core block that differs from the new one may hold own rules -
+        // they are lost in the new file, but not in the backup
+        if (se_normalize_htaccess($coreFromCurrent) !== se_normalize_htaccess($coreFromTemplate)) {
+            $notice = 'The SwiftyEdit core block of public/.htaccess has been replaced with the new version. If you had added own rules inside that block, they are no longer active - copy them from the backup {BACKUP} into the section "User rules before SwiftyEdit" at the top of the file.';
+        }
+    } elseif (trim($current) === '') {
+        // no file yet - the template as it is
         $newContent = $template;
+    } else {
+        // file without SwiftyEdit markers (e.g. written by hand) - SwiftyEdit
+        // needs its rules, so the template replaces it, the old file stays in the backup
+        $newContent = $template;
+        $notice = 'public/.htaccess had no SwiftyEdit markers and has been replaced with the template. Your previous file is saved as {BACKUP} - move own rules from it into the section "User rules before SwiftyEdit" at the top of the new file.';
+    }
+
+    if ($newContent === $current) {
+        $_SESSION['protocol'] .= '<b>.htaccess:</b> unchanged<|>';
+        return;
+    }
+
+    // keep the previous version - outside the web root
+    $backupName = '';
+    if (trim($current) !== '') {
+        $backupDir = SE_CONTENT . '/backups';
+        if (!is_dir($backupDir)) {
+            @mkdir($backupDir, 0755, true);
+        }
+        $backupName = 'htaccess-' . date('Y-m-d-His') . '.txt';
+        if (@file_put_contents($backupDir . '/' . $backupName, $current) === false) {
+            $backupName = '';
+        }
+    }
+
+    if ($current !== '' && $backupName === '') {
+        // without a backup, own rules could get lost - leave the file alone
+        $_SESSION['protocol'] .= '<b class="text-danger">.htaccess:</b> not updated - backup could not be written<|>';
+        $_SESSION['update_notices'][] = 'public/.htaccess was not updated because no backup could be written to data/backups/. Check the permissions, or compare the file with install/contents/_htaccess.txt and apply the changes yourself.';
+        return;
     }
 
     file_put_contents($htaccessFile, $newContent);
+
+    $backupPath = 'data/backups/' . $backupName;
+    $_SESSION['protocol'] .= '<b class="text-success">.htaccess:</b> updated'.($backupName !== '' ? ', previous version saved as '.htmlspecialchars($backupPath, ENT_QUOTES) : '').'<|>';
+    if ($notice !== '') {
+        $_SESSION['update_notices'][] = str_replace('{BACKUP}', $backupPath, $notice);
+    }
+}
+
+/**
+ * .htaccess content for comparing - line endings and trailing spaces don't count
+ */
+function se_normalize_htaccess(string $content): string
+{
+    $lines = preg_split('/\r\n|\r|\n/', $content);
+    return trim(implode("\n", array_map('rtrim', $lines)));
 }
 
 // se_helper_fill_uuids() moved to install/php/functions.php (2026_08_17_000002_uuid_backfill

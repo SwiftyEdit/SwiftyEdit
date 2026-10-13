@@ -79,6 +79,14 @@ $se_upload_addons = false;
 $se_2fa_required = false;
 $se_2fa_bypass = null;
 
+/* Updates replace the SwiftyEdit core block of public/.htaccess (own rules
+ * before and after it are kept, the previous file is saved to SE_CONTENT/backups/).
+ * If the file is managed elsewhere, add the following to SE_CONTENT/config.php
+ * so updates leave it alone:
+ * $se_update_htaccess = false;
+ */
+$se_update_htaccess = true;
+
 
 $se_include_path = dirname($_SERVER['SCRIPT_NAME']);
 

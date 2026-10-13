@@ -1,4 +1,12 @@
+# --- User rules before SwiftyEdit (safe to edit) ---
+# Rules here are applied before the SwiftyEdit core rules - the place for own
+# redirects, rewrites or exceptions (e.g. a folder with own scripts). The core
+# block below catches every remaining URL, so rewrite rules placed after it
+# never apply to SwiftyEdit routes. Updates keep this section as it is.
+# --- END user rules before SwiftyEdit ---
+
 # --- SwiftyEdit core (do not edit) ---
+# replaced with every update - put own rules into the section above
 RewriteEngine On
 
 # never execute scripts from upload folders - they only hold images and files
@@ -38,3 +46,5 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?query=$1 [L,QSA]
 # --- END SwiftyEdit core ---
 # --- User custom rules (safe to edit) ---
+# Rules here come after the core rules - fine for headers, caching or access
+# settings, but rewrites for SwiftyEdit URLs belong into the section at the top.

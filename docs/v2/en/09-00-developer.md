@@ -53,6 +53,10 @@ A few more small things worth knowing:
   `$se_2fa_required = true;` in `data/config.php`, every backend user needs a second factor;
   `$se_2fa_bypass` is the emergency switch. Details in
   [User management](07-00-user.md#two-factor-authentication).
+* __.htaccess on updates__ (`$se_update_htaccess` in `config.php`) - updates replace the core
+  block of `public/.htaccess`, own rules before and after it are kept. With
+  `$se_update_htaccess = false;` in `data/config.php` the file is left untouched. Details in
+  [Installation](01-01-installation.md#updates-htaccess).
 
 ## Themes
 
