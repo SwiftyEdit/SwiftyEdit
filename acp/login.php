@@ -69,16 +69,11 @@ if(!empty($_POST)) {
 
 if(isset($_POST['check']) && ($_POST['check'] == "Login")) {
 
-    $remember = false;
-    if(isset($_POST['remember_me'])) {
-        $remember = true;
-    }
-
     // missing or non-string values (e.g. login_name[]=) count as a failed login
     $login_name = is_string($_POST['login_name'] ?? null) ? $_POST['login_name'] : '';
     $login_psw = is_string($_POST['login_psw'] ?? null) ? $_POST['login_psw'] : '';
 
-    $login = se_user_login($login_name,$login_psw,$acp=TRUE,$remember);
+    $login = se_user_login($login_name,$login_psw,$acp=TRUE);
 }
 
 /**

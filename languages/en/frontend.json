@@ -25,7 +25,6 @@
   "msg_psw_current_wrong": "The current password is not correct.",
   "label_psw_protected_page": "Password protected Page",
   "label_username": "Username",
-  "label_remember_me": "Stay logged in",
   "label_address": "Address",
   "label_delivery_address": "Delivery address",
   "label_billing_address": "Billing address",

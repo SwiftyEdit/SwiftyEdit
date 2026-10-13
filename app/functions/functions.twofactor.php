@@ -73,7 +73,7 @@ function se_2fa_bypass_active(string $user_nick): bool {
 /**
  * Password was correct, the second factor is still missing
  */
-function se_2fa_start_pending(array $user, bool $remember): void {
+function se_2fa_start_pending(array $user): void {
 
     // new session id - the pending login must not reuse an id known before
     session_regenerate_id(true);
@@ -81,7 +81,6 @@ function se_2fa_start_pending(array $user, bool $remember): void {
     $_SESSION['2fa_pending'] = [
         'user_id' => (int) $user['user_id'],
         'since' => time(),
-        'remember' => $remember,
         'attempts' => 0
     ];
 }
@@ -825,12 +824,10 @@ function se_2fa_device_description(string $user_agent): string {
  */
 function se_2fa_complete_login(array $user): void {
 
-    $pending = se_2fa_get_pending();
-    $remember = (bool) ($pending['remember'] ?? false);
     se_2fa_cancel_pending();
     se_2fa_clear_account_failures((int) $user['user_id']);
 
-    se_finish_login($user, true, $remember);
+    se_finish_login($user, true);
 }
 
 /**

@@ -104,10 +104,9 @@ function se_dummy_password_hash(): string {
  * @param string $user username or e-mail
  * @param string $psw
  * @param $acp
- * @param $remember
  * @return string|void
  */
-function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
+function se_user_login(string $user, string $psw, $acp=NULL) {
 
     if($user == '') {
         return 'failed';
@@ -174,11 +173,11 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
         // backend login with two-factor authentication: only a pending login for
         // now, the session is started after the second factor (see acp/login.php)
         if($acp == TRUE && se_2fa_required_for($result) && !se_2fa_is_trusted_device($result)) {
-            se_2fa_start_pending($result, (bool) $remember);
+            se_2fa_start_pending($result);
             return '2fa';
         }
 
-        se_finish_login($result, $acp, $remember);
+        se_finish_login($result, $acp);
 
     } else {
 
@@ -205,11 +204,10 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
  *
  * @param array $result row of se_user
  * @param mixed $acp true for the backend login
- * @param mixed $remember
  */
-function se_finish_login(array $result, $acp, $remember): void {
+function se_finish_login(array $result, $acp): void {
 
-    global $db_user, $se_settings;
+    global $db_user;
 
     se_start_user_session($result);
 
@@ -222,41 +220,6 @@ function se_finish_login(array $result, $acp, $remember): void {
     if($acp != TRUE && $_SESSION['user_class'] == 'administrator') {
         $_SESSION['user_class'] = ''; // same as regular users in se_user
         $_SESSION['permissions'] = array_values(array_intersect($_SESSION['permissions'], ['drm_moderator']));
-    }
-
-    /* set cookie to remember user */
-    if($remember == TRUE) {
-        $identifier = randpsw($length=24);
-        $securitytoken = randpsw($length=24);
-        $securitytoken_hashed = sha1($securitytoken);
-        $time = time();
-
-        $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
-
-        $db_user->insert("se_tokens", [
-            "user_id" => $result['user_id'],
-            "identifier" => "$identifier",
-            "securitytoken" => "$securitytoken_hashed",
-            "time" => "$time"
-        ]);
-
-        setcookie("identifier", $identifier, [
-            'expires' => time() + (3600 * 24 * 365),
-            'path' => '/',
-            'domain' => '',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-        setcookie("securitytoken", $securitytoken, [
-            'expires' => time() + (3600 * 24 * 365),
-            'path' => '/',
-            'domain' => '',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-
     }
 
     // reset failed logins and a lock that has already expired
@@ -406,16 +369,9 @@ function se_start_user_session($ud) {
  */
 function se_end_user_session() {
 
-    global $db_user;
-
-    if(is_numeric($_SESSION['user_id'])) {
-        // delete data from se_tokens
-        $db_user->delete("se_tokens",[
-            "AND" => [
-                "user_id" => $_SESSION['user_id']
-            ]
-        ]);
-
+    if(is_numeric($_SESSION['user_id'] ?? null)) {
+        // "identifier"/"securitytoken" are left over from the removed
+        // "stay logged in" option - cleared here so old cookies disappear
         unset($_COOKIE['identifier']);
         unset($_COOKIE['securitytoken']);
         unset($_COOKIE['permit_cookies']);
