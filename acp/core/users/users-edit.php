@@ -618,6 +618,10 @@ if(is_array($get_user ?? null) && ($get_user['user_class'] === 'administrator' |
     echo '<div class="card-body">';
     echo '<div id="twofaResetResponse"></div>';
 
+    if(se_2fa_account_locked($get_user)) {
+        echo '<div class="alert alert-warning">'.str_replace('{DATE}', se_format_datetime($get_user['user_2fa_locked_until']), $lang['users_2fa_locked']).'</div>';
+    }
+
     if($get_user['user_2fa_method'] === '') {
         echo '<p class="mb-0">'.$lang['account_2fa_not_set_up'].'</p>';
     } else {

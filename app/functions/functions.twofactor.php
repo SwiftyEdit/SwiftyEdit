@@ -26,6 +26,12 @@ const SE_2FA_MAIL_RESEND_DELAY = 60;
 const SE_2FA_MAX_ATTEMPTS = 5;
 /** number of recovery codes */
 const SE_2FA_RECOVERY_COUNT = 10;
+/** wrong codes per account (over all pending logins and IPs), then the account is locked */
+const SE_2FA_ACCOUNT_MAX_FAILED = 10;
+/** seconds of the first account lock - doubled with every further wrong code */
+const SE_2FA_ACCOUNT_LOCK_BASE = 300;
+/** longest account lock in seconds */
+const SE_2FA_ACCOUNT_LOCK_MAX = 86400;
 
 /**
  * Whether this user has to pass 2FA when logging in to the backend
@@ -96,7 +102,22 @@ function se_2fa_get_pending(): ?array {
     return $pending;
 }
 
+/**
+ * End the pending login - a mail code sent for it stops working as well
+ */
 function se_2fa_cancel_pending(): void {
+
+    global $db_user;
+
+    $user_id = (int) ($_SESSION['2fa_pending']['user_id'] ?? 0);
+    if ($user_id > 0) {
+        $db_user->update("se_user", [
+            "user_2fa_mail_code" => "",
+            "user_2fa_mail_expires" => 0
+        ], [
+            "user_id" => $user_id
+        ]);
+    }
     unset($_SESSION['2fa_pending']);
 }
 
@@ -122,23 +143,30 @@ function se_2fa_pending_user(): ?array {
 }
 
 /**
- * Count a wrong code. After SE_2FA_MAX_ATTEMPTS the pending login ends.
+ * Count a wrong code - for the client, the pending login and the account.
+ * After SE_2FA_MAX_ATTEMPTS the pending login ends; the account counter
+ * survives new password logins and changing IPs (see se_2fa_count_account_failure()).
  *
- * @return bool true if the pending login is still active
+ * @return string 'active' (pending login goes on), 'ended' (too many attempts
+ *                for this login) or 'locked' (too many for the account)
  */
-function se_2fa_count_failed_attempt(): bool {
+function se_2fa_count_failed_attempt(array $user): string {
 
     se_rate_limit_add('2fa', 900);
 
+    if (se_2fa_count_account_failure($user)) {
+        se_2fa_cancel_pending();
+        return 'locked';
+    }
     if (!isset($_SESSION['2fa_pending'])) {
-        return false;
+        return 'ended';
     }
     $_SESSION['2fa_pending']['attempts']++;
     if ($_SESSION['2fa_pending']['attempts'] >= SE_2FA_MAX_ATTEMPTS) {
         se_2fa_cancel_pending();
-        return false;
+        return 'ended';
     }
-    return true;
+    return 'active';
 }
 
 /**
@@ -146,6 +174,65 @@ function se_2fa_count_failed_attempt(): bool {
  */
 function se_2fa_throttled(): bool {
     return se_rate_limit_exceeded('2fa', 20, 900);
+}
+
+/**
+ * Whether the second factor of this account is locked after too many wrong codes
+ */
+function se_2fa_account_locked(array $user): bool {
+    return (int) ($user['user_2fa_locked_until'] ?? 0) > time();
+}
+
+/**
+ * Count a wrong code for the account. From SE_2FA_ACCOUNT_MAX_FAILED on,
+ * every wrong code locks the account - starting with SE_2FA_ACCOUNT_LOCK_BASE
+ * seconds, doubled each time, at most SE_2FA_ACCOUNT_LOCK_MAX. While locked,
+ * no code is checked at all, so the counter only grows after a lock ended.
+ * Only a passed second factor (or a reset of 2FA) sets it back to 0.
+ *
+ * @return bool true if the account is locked now
+ */
+function se_2fa_count_account_failure(array $user): bool {
+
+    global $db_user;
+
+    $user_id = (int) $user['user_id'];
+
+    // increase in the database - parallel requests must not overwrite each other
+    $db_user->update("se_user", ["user_2fa_failed[+]" => 1], ["user_id" => $user_id]);
+    $failed = (int) $db_user->get("se_user", "user_2fa_failed", ["user_id" => $user_id]);
+
+    if ($failed < SE_2FA_ACCOUNT_MAX_FAILED) {
+        return false;
+    }
+
+    $exponent = min($failed - SE_2FA_ACCOUNT_MAX_FAILED, 10);
+    $lock_seconds = min(SE_2FA_ACCOUNT_LOCK_BASE * (2 ** $exponent), SE_2FA_ACCOUNT_LOCK_MAX);
+
+    $db_user->update("se_user", [
+        "user_2fa_locked_until" => time() + $lock_seconds
+    ], [
+        "user_id" => $user_id
+    ]);
+
+    record_log($user['user_nick'], '2FA locked for '.ceil($lock_seconds / 60).' minutes after '.$failed.' wrong codes', 5);
+
+    return true;
+}
+
+/**
+ * Second factor passed - the wrong codes before no longer count
+ */
+function se_2fa_clear_account_failures(int $user_id): void {
+
+    global $db_user;
+
+    $db_user->update("se_user", [
+        "user_2fa_failed" => 0,
+        "user_2fa_locked_until" => 0
+    ], [
+        "user_id" => $user_id
+    ]);
 }
 
 /**
@@ -524,7 +611,9 @@ function se_2fa_reset(int $user_id, string $log_trigger): void {
         "user_2fa_mail_code" => "",
         "user_2fa_mail_expires" => 0,
         "user_2fa_recovery" => "",
-        "user_2fa_since" => 0
+        "user_2fa_since" => 0,
+        "user_2fa_failed" => 0,
+        "user_2fa_locked_until" => 0
     ], [
         "user_id" => $user_id
     ]);
@@ -713,6 +802,7 @@ function se_2fa_complete_login(array $user): void {
     $pending = se_2fa_get_pending();
     $remember = (bool) ($pending['remember'] ?? false);
     se_2fa_cancel_pending();
+    se_2fa_clear_account_failures((int) $user['user_id']);
 
     se_finish_login($user, true, $remember);
 }

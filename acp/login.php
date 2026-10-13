@@ -91,7 +91,7 @@ $twofa_user = null;
 // (also for the setup: it always starts by confirming the stored e-mail address)
 if($login === '2fa') {
     $twofa_user = se_2fa_pending_user();
-    if($twofa_user !== null && in_array($twofa_user['user_2fa_method'], ['mail', ''], true)) {
+    if($twofa_user !== null && !se_2fa_account_locked($twofa_user) && in_array($twofa_user['user_2fa_method'], ['mail', ''], true)) {
         if(se_2fa_send_mail_code($twofa_user) === 'failed') {
             $twofa_alerts[] = ['danger', $twofa_user['user_2fa_method'] === '' ? $lang['login_2fa_msg_send_failed_setup'] : $lang['login_2fa_msg_send_failed']];
         }
@@ -108,6 +108,11 @@ if(isset($_SESSION['2fa_pending'])) {
 
     } elseif(isset($_POST['2fa_cancel'])) {
         se_2fa_cancel_pending();
+
+    } elseif(se_2fa_account_locked($twofa_user)) {
+        // too many wrong codes for this account - no code is checked or sent until the lock ends
+        se_2fa_cancel_pending();
+        $twofa_alerts[] = ['danger', $lang['login_2fa_msg_locked']];
 
     } else {
 
@@ -178,10 +183,12 @@ if(isset($_SESSION['2fa_pending'])) {
                 se_2fa_complete_login(se_2fa_pending_user());
                 exit;
 
-            } elseif(se_2fa_count_failed_attempt()) {
-                $twofa_alerts[] = ['danger', $lang['login_2fa_msg_wrong_code']];
             } else {
-                $twofa_alerts[] = ['danger', $lang['login_2fa_msg_too_many']];
+                $twofa_alerts[] = ['danger', match (se_2fa_count_failed_attempt($twofa_user)) {
+                    'active' => $lang['login_2fa_msg_wrong_code'],
+                    'locked' => $lang['login_2fa_msg_locked'],
+                    default => $lang['login_2fa_msg_too_many']
+                }];
             }
             $twofa_user = se_2fa_pending_user();
         }
