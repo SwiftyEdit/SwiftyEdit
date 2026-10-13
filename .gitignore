@@ -20,6 +20,9 @@ composer.phar
 /data/includes/*
 /dist/
 
+# Local notes, may contain confidential details (e.g. unreleased security fixes) #
+/TODO.md
+
 # Database files and generated content #
 *.sqlite
 *.sqlite3

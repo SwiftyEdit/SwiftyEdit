@@ -697,6 +697,7 @@
   "login.2fa.intro_verify_app": "Enter the 6-digit code from your authenticator app.",
   "login.2fa.help_recovery_app": "No access to the app? Enter one of your recovery codes instead.",
   "login.2fa.btn_back": "Back",
+  "login.2fa.msg_mail_confirmed": "Your e-mail address is confirmed.",
   "account.2fa.choose_method": "Choose a method:",
   "account.2fa.status_app": "Method: authenticator app · set up on {DATE} · recovery codes left: {COUNT}",
   "account.2fa.confirm_intro_app": "To change anything, confirm with your password and a code from your app or a recovery code.",

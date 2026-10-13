@@ -10,6 +10,10 @@
 
 $get_my_userdata = get_my_userdata();
 
+// backend accounts can't change their e-mail address here - the frontend login
+// has no second factor, and the address receives the 2FA codes
+$mail_change_blocked = is_array($get_my_userdata) && ($get_my_userdata['user_class'] ?? '') === 'administrator';
+
 // Assign all language variables to template
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
@@ -43,6 +47,7 @@ if(isset($_GET['password'])) {
 // display mail change form
 if(isset($_GET['mail'])) {
     $smarty->assign("get_user_mail", $get_my_userdata['user_mail']);
+    $smarty->assign("mail_change_blocked", $mail_change_blocked);
     $smarty->display('profile/change-mail.tpl');
 }
 
@@ -114,7 +119,10 @@ if(isset($_POST['change_password'])) {
 }
 
 // change mail
-if(isset($_POST['change_mail'])) {
+if(isset($_POST['change_mail']) && $mail_change_blocked) {
+    $smarty->assign("alert_text",$lang['msg_update_profile_mail_admin']);
+    $smarty->display('alert/alert-danger.tpl');
+} elseif(isset($_POST['change_mail'])) {
     $new_user_mail = '';
 
     // check if new mail is set and matching repeat mail

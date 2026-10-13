@@ -39,9 +39,17 @@ if(isset($_GET['user']) && isset($_GET['al'])) {
 // copy address from user_mail_temp to user_mail
 if(isset($_GET['change_mail']) && ($_GET['change_mail'] !== '')) {
 
-    $user_data = $db_user->get("se_user", ["user_id","user_nick","user_mail_temp"],[
+    $user_data = $db_user->get("se_user", ["user_id","user_nick","user_class","user_mail_temp"],[
         "user_activationkey" => $_GET['change_mail']
     ]);
+
+    // backend accounts change their address only in the backend (see app/xhr/profile.php) -
+    // also covers links requested before that rule existed
+    if(is_array($user_data) && $user_data['user_class'] === 'administrator') {
+        record_log($user_data['user_nick'], "mail change via frontend link refused - backend account", "5");
+        $smarty->assign('page_content', $lang['msg_update_profile_mail_admin'], true);
+        $user_data = null;
+    }
 
     if(is_array($user_data)) {
 
