@@ -273,6 +273,55 @@ function se_helper_fill_uuids($db, string $table, string $id_col, string $uuid_c
 }
 
 /**
+ * Write install/contents/_htaccess_uploads.txt as .htaccess into every upload
+ * folder (no script execution, CSP for SVGs) - a second line of defense next
+ * to public/.htaccess that also arrives with manual updates, where
+ * public/.htaccess isn't touched. Runs on install and on both update paths.
+ *
+ * A file is only (re)written if it's missing or still starts with the
+ * SwiftyEdit marker line - own files without it are left alone.
+ *
+ * @return string[] protocol lines (folder: written/updated/kept/failed)
+ */
+function se_write_upload_htaccess_files(): array {
+
+    $template_file = SE_ROOT . '/install/contents/_htaccess_uploads.txt';
+    $template = is_file($template_file) ? (string) file_get_contents($template_file) : '';
+    $marker = '# --- SwiftyEdit upload folder (do not edit) ---';
+
+    if ($template === '') {
+        return ['upload folder .htaccess: template missing'];
+    }
+
+    $folders = ['images', 'images_tmb', 'galleries', 'files', 'avatars', 'branding', 'uploads'];
+    $protocol = [];
+
+    foreach ($folders as $folder) {
+        $dir = SE_PUBLIC . '/assets/' . $folder;
+        if (!is_dir($dir)) {
+            continue;
+        }
+        $file = $dir . '/.htaccess';
+        $current = is_file($file) ? (string) file_get_contents($file) : null;
+
+        if ($current === $template) {
+            continue;
+        }
+        if ($current !== null && !str_starts_with($current, $marker)) {
+            $protocol[] = 'assets/' . $folder . '/.htaccess: kept (own file)';
+            continue;
+        }
+        if (@file_put_contents($file, $template) === false) {
+            $protocol[] = 'assets/' . $folder . '/.htaccess: could not be written';
+            continue;
+        }
+        $protocol[] = 'assets/' . $folder . '/.htaccess: ' . ($current === null ? 'written' : 'updated');
+    }
+
+    return $protocol;
+}
+
+/**
  * Run any migrations from /install/migrations/ that haven't been applied yet.
  *
  * Called right after the additive schema-sync (update_database() /

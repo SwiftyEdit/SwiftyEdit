@@ -155,6 +155,12 @@ if(is_array($wins)) {
 
 }
 
+/* .htaccess in the upload folders - also reaches manual updates, where
+   public/.htaccess isn't updated (see se_write_upload_htaccess_files()) */
+foreach (se_write_upload_htaccess_files() as $upload_htaccess_line) {
+	echo "<span class='text-success'>".htmlspecialchars($upload_htaccess_line, ENT_QUOTES)."</span><br />";
+}
+
 /* data migrations run last, after the schema above is in its new shape
    (see install/migrations/, se_run_pending_migrations() in php/functions.php) */
 $migration_result = se_run_pending_migrations();

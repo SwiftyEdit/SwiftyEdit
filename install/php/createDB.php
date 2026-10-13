@@ -234,6 +234,9 @@ if(is_array($shipped_migrations)) {
 	}
 }
 
+/* .htaccess in the upload folders (created by the checkup before) */
+se_write_upload_htaccess_files();
+
 /* insert two example pages */
 
 $dbh_content->insert("se_pages", [

@@ -119,3 +119,9 @@ die Update-Seite zeigt einen Hinweis, wenn der Core-Block ersetzt wurde. Wird di
 anderer Stelle verwaltet (z. B. vom Hoster oder einem Deployment), trage
 `$se_update_htaccess = false;` in `data/config.php` ein - Updates lassen sie dann in Ruhe, und Du
 übernimmst Änderungen am Core-Block selbst (Vorlage: `install/contents/_htaccess.txt`).
+
+Zusätzlich schreiben der Installer und jedes Update (auch ein manuelles über `/install/`) eine
+kleine `.htaccess` in jeden Upload-Ordner (`public/assets/images`, `files`, `galleries`, ...):
+Sie sperrt dort Skripte und schützt direkt aufgerufene SVG-Dateien, auch wenn
+`public/.htaccess` veraltet ist. Brauchst Du in einer dieser Dateien eigene Regeln, entferne
+ihre erste Zeile - SwiftyEdit ersetzt sie dann nicht mehr.

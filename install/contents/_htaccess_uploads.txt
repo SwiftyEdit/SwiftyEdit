@@ -1,0 +1,21 @@
+# --- SwiftyEdit upload folder (do not edit) ---
+# Written by the installer and by updates (see se_write_upload_htaccess_files()
+# in install/php/functions.php) - a second line of defense next to the rules in
+# public/.htaccess, so it also applies if that file is outdated, e.g. after a
+# manual update. To keep own rules here, remove the first line - the file is
+# then no longer replaced.
+
+# never execute scripts from upload folders - they only hold images and files
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule \.(php[0-9]?|phtml|phar|pht|phps|cgi|pl|py|sh)$ - [F,NC]
+</IfModule>
+
+# SVG is XML and may contain scripts - when an SVG is opened directly it must
+# not run anything
+<IfModule mod_headers.c>
+    <FilesMatch "(?i)\.svgz?$">
+        Header set Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox"
+        Header set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+</IfModule>

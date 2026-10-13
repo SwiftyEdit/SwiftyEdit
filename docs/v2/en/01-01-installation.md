@@ -112,3 +112,9 @@ and the update page shows a note if the core block was replaced. If the file is 
 elsewhere (e.g. by your hosting or a deployment), add `$se_update_htaccess = false;` to
 `data/config.php` - updates then leave it alone, and you have to apply changes of the core block
 yourself (template: `install/contents/_htaccess.txt`).
+
+In addition, the installer and every update (also a manual one via `/install/`) write a small
+`.htaccess` into each upload folder (`public/assets/images`, `files`, `galleries`, ...): it
+blocks scripts there and protects directly opened SVG files, even if `public/.htaccess` is
+outdated. If you need own rules in one of these files, remove its first line - SwiftyEdit then
+no longer replaces it.

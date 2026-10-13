@@ -112,6 +112,11 @@ if(isset($_POST['install_update'])) {
     se_delete_twig_cache();
     $_SESSION['protocol'] .= '<b class="text-success">Twig cache:</b> cleared<|>';
 
+    // .htaccess in the upload folders (see install/php/functions.php)
+    foreach (se_write_upload_htaccess_files() as $upload_htaccess_line) {
+        $_SESSION['protocol'] .= htmlspecialchars($upload_htaccess_line, ENT_QUOTES).'<|>';
+    }
+
     // data migrations run last, after files + schema are in their new shape
     // (see install/migrations/, se_run_pending_migrations() in
     // install/php/functions.php)
