@@ -21,10 +21,16 @@ if(isset($_GET['file'])) {
         $file = '01-00-introduction.md';
     }
 
+    $modal_title = $lang['btn_docs'];
+    $docs_context = se_docs_resolve_context($file);
+    if($docs_context !== null) {
+        $modal_title .= ' · '.htmlspecialchars($docs_context['name']);
+    }
+
     echo '<div class="modal-dialog modal-xl modal-dialog-centered">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title">'.$lang['btn_docs'].'</h5>
+      <h5 class="modal-title">'.$modal_title.'</h5>
     </div>
     <div class="modal-body" style="height: 70vh">
     <div class="h-100" id="showModalContent" hx-get="/admin-xhr/docs/read/?show_file='.$file.'" hx-trigger="load">
@@ -58,19 +64,10 @@ if(isset($_GET['show_file'])) {
         $doc_filepath = $docs_root.'/'.$languagePackFallback.'/'.basename($show_file);
     }
 
-    // plugins readme
-    if(str_contains($show_file, '/plugins/')) {
-        $plugin_dir = basename(dirname($show_file));
-        $doc_filepath = SE_ROOT.'plugins/'.$plugin_dir.'/'.basename($show_file);
-    }
-    // theme readme
-    if(str_contains($show_file, '/themes/')) {
-        $theme_dir = basename(dirname($show_file));
-        if(str_ends_with($show_file, 'readme.md')) {
-            $doc_filepath = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/'.basename($show_file);
-        } else {
-            $doc_filepath = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/docs/'.$languagePack.'/'.basename($show_file);
-        }
+    // theme or plugin docs (readme.md or docs/{lang}/*.md)
+    $docs_context = se_docs_resolve_context($show_file);
+    if($docs_context !== null) {
+        $doc_filepath = $docs_context['file'];
     }
 
     echo '<div class="row h-100">';
@@ -78,9 +75,14 @@ if(isset($_GET['show_file'])) {
 
     echo '<div class="h-100 overflow-auto">';
 
-    echo show_sysdocs_index();
-    echo show_plugins_index();
-    echo show_themedocs_index();
+    if($docs_context !== null) {
+        // opened from a theme/plugin: show only its own docs
+        echo show_context_docs_index($docs_context);
+    } else {
+        echo show_sysdocs_index();
+        echo show_context_overview_index('plugin');
+        echo show_context_overview_index('theme');
+    }
 
     echo '</div>';
 
@@ -90,7 +92,16 @@ if(isset($_GET['show_file'])) {
     echo '<div class="h-100 overflow-auto" id="docsScrollContainer">';
     if(str_ends_with($show_file, '.md')) {
         $show_file = se_parse_docs_file($doc_filepath);
-        echo $show_file['content'];
+        $docs_content = $show_file['content'];
+        if($docs_context !== null) {
+            // relative markdown links ([text](other.md)) point to the same theme/plugin
+            $docs_content = preg_replace(
+                '#href="([A-Za-z0-9_-][A-Za-z0-9_.-]*\.md(?:\#[^"]*)?)"#',
+                'href="'.$docs_context['base'].'$1"',
+                $docs_content
+            );
+        }
+        echo $docs_content;
     }
     echo '</div>';
     echo '</div>';

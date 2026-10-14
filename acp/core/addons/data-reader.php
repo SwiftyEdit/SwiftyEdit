@@ -36,11 +36,11 @@ if ($plugin !== '' && se_is_plugin_activated($plugin)) {
 // list all plugins
 if($_REQUEST['action'] == 'list_plugins') {
 
+    // se_docs_context_files() for the help buttons
+    require_once __DIR__.'/../docs/functions.php';
+
     $get_all_addons = se_get_all_addons();
     $se_addons = se_get_addons($t='plugin');
-
-    // for showing help text
-    $modal_template_file = file_get_contents("../acp/templates/bs-modal.tpl");
 
     foreach($get_all_addons as $k => $v) {
 
@@ -59,22 +59,11 @@ if($_REQUEST['action'] == 'list_plugins') {
 
         $addon_lang = se_return_addon_translations($k);
 
+        // open the first doc (docs/{lang}/*.md by priority, else readme.md) in the help window
         $btn_help_text = '';
-        $modal = '';
-        $help_file_md = SE_ROOT.'/plugins/'.$k.'/readme.md';
-        if(is_file($help_file_md)) {
-            $addon_id = 'addonID'.$k;
-            $btn_help_text = '<button type="button" class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#'.$addon_id.'">'.$icon['question'].'</button>';
-
-            $modal_body_text = file_get_contents($help_file_md);
-            $Parsedown = new Parsedown();
-            $modal_body = $Parsedown->text($modal_body_text);
-
-            $modal = $modal_template_file;
-            $modal = str_replace('{modalID}', $addon_id, $modal);
-            $modal = str_replace('{modalTitle}', $addon_name, $modal);
-            $modal = str_replace('{modalBody}', $modal_body, $modal);
-            echo $modal;
+        $help_files = se_docs_context_files('plugin', $k);
+        if(!empty($help_files)) {
+            $btn_help_text = se_print_plugin_docs_link($k, basename($help_files[0]['path']), $icon['question'], null, 'btn btn-sm btn-default');
         }
 
         $vals = ['csrf_token' => $_SESSION['token']];
@@ -428,6 +417,9 @@ if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
 // list all themes
 if($_REQUEST['action'] == 'list_themes') {
 
+    // se_docs_context_files() for the help buttons
+    require_once __DIR__.'/../docs/functions.php';
+
     $all_themes = get_all_templates();
     $all_theme_info = se_get_all_themes();
 
@@ -522,6 +514,12 @@ if($_REQUEST['action'] == 'list_themes') {
         }
         echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
         echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
+
+        // open the first doc (docs/{lang}/*.md by priority, else readme.md) in the help window
+        $help_files = se_docs_context_files('theme', $template);
+        if(!empty($help_files)) {
+            echo se_print_theme_docs_link($template, basename($help_files[0]['path']), $icon['question'].' '.$lang['btn_help'], null, 'btn btn-default btn-sm mt-1 w-100');
+        }
 
         // the default theme and the active theme can't be deleted,
         // pages still using the theme are checked in data-writer.php

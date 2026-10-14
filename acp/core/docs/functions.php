@@ -77,74 +77,261 @@ function get_doc_level_universal($filename) {
 
 
 
-function show_themedocs_index() {
+/**
+ * Resolve a theme or plugin docs path to its context and the file on disk.
+ *
+ * Accepted forms (leading slash optional, absolute filesystem paths work too):
+ *   /themes/{theme}/readme.md          -> {theme}/readme.md
+ *   /themes/{theme}/{file}.md          -> {theme}/docs/{lang}/{file}.md
+ *   /plugins/{plugin}/readme.md        -> {plugin}/readme.md
+ *   /plugins/{plugin}/{file}.md        -> {plugin}/docs/{lang}/{file}.md
+ *   .../{theme|plugin}/docs/{lang}/{file}.md is treated like /{type}/{name}/{file}.md
+ *
+ * Returns null for anything else (= core docs).
+ *
+ * @param string $path already filtered with se_filter_filepath()
+ * @return array|null ['type' => 'theme'|'plugin', 'name', 'root', 'base', 'file']
+ */
+function se_docs_resolve_context(string $path): ?array {
 
-    global $Parsedown, $doc_filepath;
-    $languagePack = $_SESSION['lang'];
-    $list = '';
-    $themes = get_all_templates();
+    if(!preg_match('#(?:^|/)(themes|plugins)/([A-Za-z0-9_-][A-Za-z0-9_.-]*)/(?:docs/[A-Za-z_-]+/)?([A-Za-z0-9_-][A-Za-z0-9_.-]*\.md)$#', $path, $m)) {
+        return null;
+    }
 
-    $list = '<div class="card">';
-    $list .= '<div class="card-header"><h6>Themes</h6></div>';
-    $list .= '<div class="list-group list-group-flush">';
-    foreach($themes as $theme) {
+    $type = ($m[1] == 'themes') ? 'theme' : 'plugin';
+    $name = $m[2];
+    $file = $m[3];
+    $root = ($type == 'theme') ? SE_THEMES.'/'.$name : SE_PLUGINS.'/'.$name;
 
-        $theme_dir = basename($theme);
-        $theme_path = SE_PUBLIC.'/assets/themes/'.$theme_dir.'/';
-        $theme_readme_file = $theme_path.'readme.md';
-        if(is_file($theme_readme_file)) {
+    if(!is_dir($root)) {
+        return null;
+    }
 
-            $active = '';
-            if($doc_filepath == $theme_readme_file) {
-                $active = 'active';
+    if($file == 'readme.md') {
+        $filepath = $root.'/readme.md';
+    } else {
+        $docs_dir = se_docs_context_lang_dir($root);
+        $filepath = $root.'/docs/'.$docs_dir.'/'.$file;
+        if($docs_dir !== '' && !is_file($filepath)) {
+            // the file may exist in another language only
+            foreach(se_docs_context_lang_order($root) as $l) {
+                if(is_file($root.'/docs/'.$l.'/'.$file)) {
+                    $filepath = $root.'/docs/'.$l.'/'.$file;
+                    break;
+                }
             }
-
-            $hx_get = '/admin-xhr/docs/read/?file='.$theme_readme_file;
-            $hx_target = '#helpModal';
-
-            $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
-            $list .= $theme_dir;
-            $list .= '</button>';
-
         }
+    }
+
+    return [
+        'type' => $type,
+        'name' => $name,
+        'root' => $root,
+        'base' => '/'.$m[1].'/'.$name.'/',
+        'file' => $filepath
+    ];
+}
+
+/**
+ * Allowed theme/plugin folder and docs file names (matches se_docs_resolve_context()):
+ * letters, digits, "_", "-" and ".", not starting with a dot.
+ *
+ * @param string $name
+ * @return bool
+ */
+function se_docs_valid_name(string $name): bool {
+    return preg_match('/^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/', $name) === 1;
+}
+
+/**
+ * Language folders of a theme/plugin docs directory in the order they
+ * should be tried: backend language, fallback language, then any other.
+ *
+ * @param string $root theme or plugin directory
+ * @return array
+ */
+function se_docs_context_lang_order(string $root): array {
+    global $languagePack, $languagePackFallback;
+
+    $available = [];
+    foreach(glob($root.'/docs/*', GLOB_ONLYDIR) ?: [] as $dir) {
+        $available[] = basename($dir);
+    }
+    sort($available);
+
+    $order = [];
+    foreach([$languagePack, $languagePackFallback, 'en'] as $l) {
+        if($l != '' && in_array($l, $available) && !in_array($l, $order)) {
+            $order[] = $l;
+        }
+    }
+    foreach($available as $l) {
+        if(!in_array($l, $order)) {
+            $order[] = $l;
+        }
+    }
+    return $order;
+}
+
+/**
+ * The docs language folder used for a theme/plugin ('' if it has no docs).
+ *
+ * @param string $root theme or plugin directory
+ * @return string
+ */
+function se_docs_context_lang_dir(string $root): string {
+    foreach(se_docs_context_lang_order($root) as $l) {
+        if(glob($root.'/docs/'.$l.'/*.md')) {
+            return $l;
+        }
+    }
+    return '';
+}
+
+/**
+ * Read only the front matter of a docs file (no markdown parsing).
+ *
+ * @param string $file
+ * @return array
+ */
+function se_docs_read_header(string $file): array {
+    $src = (string) @file_get_contents($file);
+    if(!str_starts_with($src, '---')) {
+        return [];
+    }
+    $parts = explode('---', $src, 3);
+    try {
+        $header = \Symfony\Component\Yaml\Yaml::parse($parts[1] ?? '');
+    } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+        return [];
+    }
+    return is_array($header) ? $header : [];
+}
+
+/**
+ * All docs files of a theme/plugin, sorted by front matter priority.
+ * docs/{lang}/*.md come first, readme.md (if present) is appended last.
+ *
+ * @param string $type 'theme' or 'plugin'
+ * @param string $name theme or plugin folder name
+ * @return array list of ['path', 'fullpath', 'btn', 'title', 'priority']
+ */
+function se_docs_context_files(string $type, string $name): array {
+
+    // same name rules as se_docs_resolve_context(), anything else could not be opened anyway
+    if(!se_docs_valid_name($name)) {
+        return [];
+    }
+
+    $root =($type == 'theme') ? SE_THEMES.'/'.$name : SE_PLUGINS.'/'.$name;
+    $base = '/'.($type == 'theme' ? 'themes' : 'plugins').'/'.$name.'/';
+
+    $items = [];
+    $docs_dir = se_docs_context_lang_dir($root);
+    if($docs_dir !== '') {
+        foreach(glob($root.'/docs/'.$docs_dir.'/*.md') as $doc) {
+            $filename = basename($doc);
+            if(str_starts_with($filename, 'tip-')) continue;
+            if(!se_docs_valid_name($filename)) continue;
+
+            $header = se_docs_read_header($doc);
+            $items[] = [
+                'path' => $base.$filename,
+                'fullpath' => $doc,
+                'btn' => $header['btn'] ?? ($header['title'] ?? $filename),
+                'title' => $header['title'] ?? '',
+                'priority' => (int) ($header['priority'] ?? 1000)
+            ];
+        }
+    }
+
+    usort($items, function($a, $b) {
+        return [$a['priority'], $a['path']] <=> [$b['priority'], $b['path']];
+    });
+
+    if(is_file($root.'/readme.md')) {
+        $items[] = [
+            'path' => $base.'readme.md',
+            'fullpath' => $root.'/readme.md',
+            'btn' => 'readme.md',
+            'title' => '',
+            'priority' => PHP_INT_MAX
+        ];
+    }
+
+    return $items;
+}
+
+/**
+ * Navigation shown in the help modal while a theme or plugin doc is open:
+ * only the docs of that theme/plugin plus a link back to the core docs.
+ *
+ * @param array $context result of se_docs_resolve_context()
+ * @return string
+ */
+function show_context_docs_index(array $context): string {
+    global $doc_filepath, $icon;
+
+    $label = ($context['type'] == 'theme') ? 'Theme' : 'Plugin';
+
+    $list = '<div class="card mb-3">';
+    $list .= '<div class="card-header"><h6>'.$label.': '.htmlspecialchars($context['name']).'</h6></div>';
+    $list .= '<div class="list-group list-group-flush">';
+
+    foreach(se_docs_context_files($context['type'], $context['name']) as $item) {
+        $active = ($doc_filepath == $item['fullpath']) ? 'active' : '';
+        $hx_get = htmlspecialchars('/admin-xhr/docs/read/?file='.$item['path'], ENT_QUOTES);
+
+        $list .= '<button class="list-group-item list-group-item-action '.$active.'"
+                  hx-get="'.$hx_get.'" hx-target="#helpModal"
+                  title="'.htmlspecialchars($item['title']).'">';
+        $list .= htmlspecialchars($item['btn']);
+        $list .= '</button>';
     }
 
     $list .= '</div>';
     $list .= '</div>';
 
+    $list .= '<button class="btn btn-default w-100" hx-get="/admin-xhr/docs/read/?file=start" hx-target="#helpModal">';
+    $list .= $icon['arrow_left'].' SwiftyEdit';
+    $list .= '</button>';
+
     return $list;
 }
 
+/**
+ * Overview list of themes or plugins that ship documentation.
+ * Each entry opens the first doc of that theme/plugin (by priority).
+ *
+ * @param string $type 'theme' or 'plugin'
+ * @return string
+ */
+function show_context_overview_index(string $type): string {
 
-function show_plugins_index() {
-    global $Parsedown, $doc_filepath;
-    $languagePack = $_SESSION['lang'];
-    $plugins = se_get_all_addons();
+    if($type == 'theme') {
+        $names = get_all_templates();
+        $heading = 'Themes';
+    } else {
+        $names = array_keys(se_get_all_addons());
+        $heading = 'Plugins';
+    }
 
-    $list = '<div class="card">';
-    $list .= '<div class="card-header"><h6>Plugins</h6></div>';
+    $list = '<div class="card mb-3">';
+    $list .= '<div class="card-header"><h6>'.$heading.'</h6></div>';
     $list .= '<div class="list-group list-group-flush">';
-    foreach($plugins as $k => $v) {
 
-        $plugin_dir = basename($k);
-        $plugin_path = SE_ROOT.'plugins/'.$plugin_dir.'/';
+    foreach($names as $name) {
+        $name = basename($name);
+        $files = se_docs_context_files($type, $name);
+        if(empty($files)) {
+            continue;
+        }
 
-        $plugin_readme_file = $plugin_path.'readme.md';
-        if(is_file($plugin_readme_file)) {
+        $hx_get = htmlspecialchars('/admin-xhr/docs/read/?file='.$files[0]['path'], ENT_QUOTES);
 
-            $active = '';
-            if($doc_filepath == $plugin_readme_file) {
-                $active = 'active';
-            }
-
-            $hx_get = '/admin-xhr/docs/read/?file='.$plugin_readme_file;
-            $hx_target = '#helpModal';
-
-            $list .= '<button class="list-group-item list-group-item-action '.$active.'" hx-get="'.$hx_get.'" hx-target="'.$hx_target.'">';
-            $list .= $plugin_dir;
-            $list .= '</button>';
-
-       }
+        $list .= '<button class="list-group-item list-group-item-action" hx-get="'.$hx_get.'" hx-target="#helpModal">';
+        $list .= htmlspecialchars($name);
+        $list .= '</button>';
     }
 
     $list .= '</div>';
