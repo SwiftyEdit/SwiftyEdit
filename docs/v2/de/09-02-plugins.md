@@ -162,7 +162,9 @@ Das Frontmatter steuert die Navigation: `btn` ist die Beschriftung, `priority` d
 Reihenfolge (kleinere Werte zuerst). Die `readme.md` steht immer am Ende. Fehlt eine Datei in
 der Backend-Sprache, wird die Fallback-Sprache verwendet, danach jede andere vorhandene Sprache.
 
-Aus dem Backend Deines Plugins öffnest Du das Hilfe-Fenster mit
+Das ACP zeigt auf jeder Plugin-Seite (und in der Plugin-Liste) neben dem Plugin-Namen einen
+Hilfe-Button, der das erste Dokument öffnet. Ein eigener Hilfe-Tab in `navigation` ist
+deshalb optional. Ein bestimmtes Dokument verlinkst Du aus dem Backend Deines Plugins mit
 
 ```php
 echo se_print_plugin_docs_link('my-plugin', 'settings.md');           // Icon-Button

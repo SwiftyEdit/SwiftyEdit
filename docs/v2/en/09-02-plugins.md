@@ -158,7 +158,9 @@ The front matter controls the navigation: `btn` is the button label, `priority` 
 (lower first). `readme.md` is always listed last. If a file is missing in the backend
 language, the fallback language is used, then any other available language.
 
-Open the help window from your plugin's backend with
+The ACP adds a help button next to the plugin name on every plugin page (and on the
+plugin list) that opens the first doc. So a separate help tab in `navigation` is optional.
+To link a specific doc from your plugin's backend, use
 
 ```php
 echo se_print_plugin_docs_link('my-plugin', 'settings.md');           // icon button
