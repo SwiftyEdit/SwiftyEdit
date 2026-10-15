@@ -98,6 +98,19 @@ if(isset($user_logout) && ($user_logout != '')) {
     $smarty->assign('msg_content', $output);
 }
 
+// logout link opened per GET (see routing.php) - confirm with a POST button
+if(!empty($user_logout_confirm)) {
+    $logout_form = htmlspecialchars($lang['msg_logout_confirm'], ENT_QUOTES);
+    $logout_form .= '<form method="post" action="'.SE_INCLUDE_PATH.'/logout" class="mt-2">';
+    $logout_form .= $hidden_csrf_token;
+    $logout_form .= '<button type="submit" class="btn btn-primary btn-sm">'.htmlspecialchars($lang['button_logout'], ENT_QUOTES).'</button>';
+    $logout_form .= '</form>';
+    $smarty->assign("msg_status","alert alert-info",true);
+    $smarty->assign('msg_text', $logout_form, true);
+    $output = $smarty->fetch("status_message.tpl");
+    $smarty->assign('msg_content', $output);
+}
+
 // Shopping Cart Setup
 if($se_settings['posts_products_cart'] == 2 OR $se_settings['posts_products_cart'] == 3) {
     $smarty->assign('show_shopping_cart',true);

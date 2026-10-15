@@ -145,6 +145,7 @@
   "msg_update_profile_mail_success": "The changed email address has been saved. You can now use it to log in.",
   "msg_update_profile_mail_error": "The changed email address could not be saved.",
   "msg_forgotten_psw_2fa_recovery": "This account has access to the backend and receives its login codes by e-mail. Because the password was reset by e-mail, the next backend login needs one of your recovery codes instead of an e-mail code.",
+  "msg_logout_confirm": "Do you want to log out?",
   "msg_update_profile_mail_admin": "This account has access to the backend. Its email address can only be changed in the backend.",
   "msg_update_profile_mail_tpl": "Hello {USERNAME},<br>You want to change your email? Please click on the following link to confirm your email address {EMAIL}.<br>{RESET_LINK}",
   "msg_update_profile": "The user data have been updated",

@@ -47,9 +47,15 @@ if(is_file(SE_CONTENT.'/includes/query.controller.php')) {
     include SE_CONTENT.'/includes/query.controller.php';
 }
 
-// Handle logout
+// Handle logout - only per POST (CSRF-checked in bootstrap.php), so a link or
+// an embedded image (<img src="/logout">) on another page can't log anybody out.
+// A plain GET (old links, own themes) asks for confirmation instead.
 if($query == 'logout' OR (isset($_GET['goto']) && ($_GET['goto'] == 'logout'))) {
-    $user_logout = se_end_user_session();
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $user_logout = se_end_user_session();
+    } elseif(($_SESSION['user_nick'] ?? '') !== '') {
+        $user_logout_confirm = true;
+    }
     $query = '/';
 }
 

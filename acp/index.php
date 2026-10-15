@@ -820,7 +820,18 @@ foreach ($se_editor_addons as $editor_addon) {
                     $('#expireDiv').addClass('expire-danger');
                 }
                 if (maxlifetime < 0) {
-                    window.location.href = "/index.php?goto=logout";
+                    // logout only per POST with the CSRF token (see app/routing.php)
+                    clearInterval(countdown.intervalId);
+                    var logoutForm = document.createElement('form');
+                    logoutForm.method = 'post';
+                    logoutForm.action = '/logout';
+                    var logoutToken = document.createElement('input');
+                    logoutToken.type = 'hidden';
+                    logoutToken.name = 'csrf_token';
+                    logoutToken.value = <?php echo json_encode((string) $_SESSION['token']); ?>;
+                    logoutForm.appendChild(logoutToken);
+                    document.body.appendChild(logoutForm);
+                    logoutForm.submit();
                 }
                 --maxlifetime;
             }, 1000);
