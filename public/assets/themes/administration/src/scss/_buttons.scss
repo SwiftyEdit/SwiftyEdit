@@ -17,27 +17,40 @@
 	}
 }
 
+// Custom button variants. Bootstrap 5.3's .btn reads all of its colors
+// (normal, hover, active, disabled) from --bs-btn-* variables, so a variant
+// only has to set those. The --bs-btn-default-* values are defined per
+// color mode in backend.scss, so light and dark mode work automatically.
 .btn-default {
-	@extend .btn-primary;
-	background: var(--bs-btn-default-bg);
-	color: var(--bs-btn-default-color);
-	border-color: var(--bs-btn-default-border-color);
+	--bs-btn-color: var(--bs-btn-default-color);
+	--bs-btn-bg: var(--bs-btn-default-bg);
+	--bs-btn-border-color: var(--bs-btn-default-border-color);
+	--bs-btn-hover-color: var(--bs-btn-default-color-active);
+	--bs-btn-hover-bg: var(--bs-btn-default-bg-hover);
+	--bs-btn-hover-border-color: var(--bs-btn-default-bg-hover);
+	--bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+	--bs-btn-active-color: var(--bs-btn-default-color-active);
+	--bs-btn-active-bg: var(--bs-btn-default-bg-active);
+	--bs-btn-active-border-color: var(--bs-btn-default-bg-active);
+	--bs-btn-disabled-color: var(--bs-btn-default-color);
+	--bs-btn-disabled-bg: var(--bs-btn-default-bg);
+	--bs-btn-disabled-border-color: var(--bs-btn-default-border-color);
+}
 
-	&:hover {
-		color: var(--bs-btn-default-color-active) !important;
-		background: var(--bs-btn-default-bg-hover);
-		border-color: var(--bs-btn-default-bg);
-	}
-
-	&.active {
-		color: var(--bs-btn-default-color-active);
-		background: var(--bs-btn-default-bg-active);
-		border-color: var(--bs-btn-default-bg);
-	}
-	&.disabled {
-		background-color: $btn_se_background_disabled;
-		border-color: var(--bs-btn-default-bg);
-	}
+.btn-outline-default {
+	--bs-btn-color: var(--bs-btn-default-color);
+	--bs-btn-bg: transparent;
+	--bs-btn-border-color: var(--bs-btn-outline-default-border-color);
+	--bs-btn-hover-color: var(--bs-btn-default-color-active);
+	--bs-btn-hover-bg: var(--bs-btn-default-bg-hover);
+	--bs-btn-hover-border-color: var(--bs-btn-hover-outline-default-border-color);
+	--bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+	--bs-btn-active-color: var(--bs-btn-default-color-active);
+	--bs-btn-active-bg: var(--bs-btn-default-bg-active);
+	--bs-btn-active-border-color: var(--bs-btn-default-bg-active);
+	--bs-btn-disabled-color: var(--bs-btn-default-color);
+	--bs-btn-disabled-bg: transparent;
+	--bs-btn-disabled-border-color: var(--bs-btn-default-border-color);
 }
 
 

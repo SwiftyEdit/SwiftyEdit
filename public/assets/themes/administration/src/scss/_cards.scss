@@ -9,7 +9,7 @@
 	// here instead both land on roughly the same ~13% relative difference from
 	// the card body, so the header reads equally "a little darker" in both themes.
 	.card-header {
-		background: darken($widget_background,12);
+		background: darken($widget_background,12%);
 	}
 	.card-header-tabs {
 		// Never let a tab wrap onto a second line: on narrow viewports (or long
@@ -41,6 +41,9 @@
 	
 	.card-body {
 		background: $widget_background;
+	}
+	.card-footer {
+		background: darken($widget_background,5%);
 	}
 }
 
@@ -95,6 +98,10 @@
 		}
 		.card-body {
 			background: $widget_background_dark;
+		}
+
+		.card-footer {
+			background: lighten($widget_background_dark,5%);
 		}
 
 		// Nested cards: the frame itself gets a darker tone to set it apart. .card-body

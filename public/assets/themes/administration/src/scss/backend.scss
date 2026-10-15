@@ -47,6 +47,9 @@ $color-mode-type: data;
   --#{$prefix}btn-default-color: #{$btn_se_color};
   --#{$prefix}btn-default-color-active: #{$btn_se_color_active};
 
+  --#{$prefix}btn-outline-default-border-color: #{$btn_outline_se_border_color};
+  --#{$prefix}btn-hover-outline-default-border-color: #{$btn_hover_outline_se_border_color};
+
   --status-public-color: #{$status-public-color};
   --status-ghost-color: #{$status-ghost-color};
   --status-draft-color: #{$status-draft-color};
@@ -61,6 +64,8 @@ $color-mode-type: data;
 
   --body-gradient: linear-gradient(135deg, #{$body-gradient-top} 35%, #{$body-gradient-bottom} 100%);
   --body-bg: $body-bg;
+  --footer-bg: #{$footer-bg};
+  --se-spot: #{$spot};
 
   --#{$prefix}border-color: #{$border-color};
   --#{$prefix}border-color-translucent: #{$border-color-translucent};
@@ -106,6 +111,9 @@ $color-mode-type: data;
     --#{$prefix}btn-default-color: #{$btn_se_color_dark};
     --#{$prefix}btn-default-color-active: #{$btn_se_color_active_dark};
 
+    --#{$prefix}btn-outline-default-border-color: #{$btn_outline_se_border_color_dark};
+    --#{$prefix}btn-hover-outline-default-border-color: #{$btn_hover_outline_se_border_color_dark};
+
     --status-public-color: #{$status-public-color-dark};
     --status-ghost-color: #{$status-ghost-color-dark};
     --status-draft-color: #{$status-draft-color-dark};
@@ -120,6 +128,8 @@ $color-mode-type: data;
 
     --body-gradient: linear-gradient(135deg, #{$body-dark-gradient-top} 35%, #{$body-dark-gradient-bottom} 100%);
     --body-bg: $body-bg-dark;
+    --footer-bg: #{$footer-bg-dark};
+    --se-spot: #{$spot-dark};
 
     --#{$prefix}border-color: #{$border-color-dark};
     --#{$prefix}border-color-translucent: #{$border-color-translucent-dark};
@@ -154,12 +164,35 @@ $color-mode-type: data;
   color: #ccc;
 }
 
+// Subtle tinted gradient plus film grain behind the ACP content.
+// The grain lives in a fixed pseudo-element below all content, so cards
+// and text stay untouched.
+$grain-noise: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
+body {
+  background:
+          radial-gradient(ellipse 70% 55% at 35% 0%, color-mix(in srgb, var(--bs-primary) 25%, transparent), transparent 70%),
+          radial-gradient(ellipse 60% 50% at 100% 100%, color-mix(in srgb, var(--se-spot) 35%, transparent), transparent 70%),
+          var(--bs-body-bg);
+  background-attachment: fixed;
+
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url($grain-noise);
+    opacity: .30;
+    mix-blend-mode: soft-light;
+  }
+}
+
 /* layout */
 html, body {
   text-align: left;
   font-weight: 400;
   min-height: 100%;
-  background-image: var(--body-bg);
+  //background-image: var(--body-bg);
 }
 
 div#page-content {
@@ -181,13 +214,6 @@ a#dashboard {
   width: 210px;
 }
 
-/*
-@include color-mode(dark) {
-  .page-header {
-    background: $page_header_bg_dark;
-  }
-}
- */
 
 .page-header {
   background: var(--body-gradient);
@@ -278,11 +304,11 @@ a#dashboard {
 
 
 .subHeader {
-  margin: -10px -15px 10px -15px;
+  margin: -15px -15px 10px -15px;
   padding: 0 20px;
   height: 45px;
   background: var(--subheader-bg);
-  border-bottom: 1px solid var(--bs-widget-bg-400);
+  border-bottom: 1px solid var(--bs-widget-bg-600);
 
   i:first-child {
     margin-right: 5px;
@@ -322,7 +348,7 @@ div#footer {
   margin-top: 1rem;
   padding: 1rem;
   text-align: center;
-  background: var(--bs-footer-bg);
+  background: var(--footer-bg);
   border-radius: 5px;
   hr {
     border-color: $spot;
