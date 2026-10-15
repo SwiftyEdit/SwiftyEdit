@@ -7,6 +7,14 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// no frontend login while the login form is switched off in the settings -
+// hiding the form alone wouldn't stop requests to this endpoint
+// (the backend has its own login, acp/login.php)
+if(($se_settings['showloginform'] ?? '') !== 'yes') {
+    http_response_code(403);
+    exit;
+}
+
 // missing or non-string values (e.g. login_name[]=) count as a failed login
 $login_name = is_string($_POST['login_name'] ?? null) ? $_POST['login_name'] : '';
 $login_psw = is_string($_POST['login_psw'] ?? null) ? $_POST['login_psw'] : '';

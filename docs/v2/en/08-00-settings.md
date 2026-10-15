@@ -46,12 +46,16 @@ Here you can specify how many versions of a page should be saved.
 These settings control everything around user accounts and interaction:
 
 * Whether visitors may register themselves, whether the login form is shown,
-  and whether new users have to be unlocked by an administrator.
+  and whether new users have to be unlocked by an administrator. Without the login form, the
+  frontend login is switched off completely (the backend login at `/admin/` is not affected,
+  and "forgot password" keeps working).
 * The session lifetime of the backend and a blacklist of user names that may not be registered.
 * Which fields are required on registration.
 * Comments: the mode, the authorization, the auto-close time, the maximum number of entries
   and the maximum nesting level.
-* Votings and reactions (off, for registered users only, or globally).
+* Votings and reactions (off, for registered users only, or globally). To prevent double votes,
+  anonymous votes and guest list confirmations are stored with a hash of the visitor's IP
+  address; after 90 days the hash is removed - the vote keeps counting.
 
 ## Posts
 These settings affect the posts (blog).

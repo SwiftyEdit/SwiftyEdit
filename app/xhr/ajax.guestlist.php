@@ -23,11 +23,13 @@ if(isset($_GET['evc'])) {
 
 $time = time();
 
-if(!empty($_POST['val'])) {
+$guestlist_input = is_string($_POST['val'] ?? null) ? $_POST['val'] : '';
+
+if($guestlist_input !== '') {
 
 	/* check who wants to sign */
 
-	if($_SESSION['user_id'] != '') {
+	if(is_numeric($_SESSION['user_id'] ?? null)) {
 		$sender_id = $_SESSION['user_id'];
 		$sender_name = $_SESSION['user_nick'];
 	} else {
@@ -36,14 +38,33 @@ if(!empty($_POST['val'])) {
 		$sender_name = se_generate_anonymous_voter();
 	}
 
-	$event_data = explode('-',$_POST['val']);
+	$event_data = explode('-',$guestlist_input);
 
 	/* post id */
-	$event_relation_id = (int) $event_data[1];
+	$event_relation_id = (int) ($event_data[1] ?? 0);
 	$sender_type = 'evc';
-	$type = array("evc");
-	$check_sender = se_check_user_legitimacy($event_relation_id,$sender_name,$type);
-	if($check_sender == false) {
+
+	// the guestlist must be switched on for this event (2 = registered users
+	// only, 3 = everybody) - the button alone doesn't enforce that.
+	// The limit is deliberately only shown, not enforced (see docs 06-00-events).
+	$guestlist_mode = $db_posts->get("se_events", "event_guestlist", ["id" => $event_relation_id]);
+	if(!se_voting_allowed((int) ($guestlist_mode ?? 1))) {
+		http_response_code(403);
+		exit();
+	}
+
+	// remove IP hashes of anonymous confirmations past the retention period
+	se_cleanup_anonymous_participation();
+
+	// signed already? Checked without comment_relation_type - confirmations
+	// never stored one (NULL or '' depending on the database), so
+	// se_check_user_legitimacy() wouldn't find them on every database
+	$already_signed = $db_content->count("se_comments", [
+		"comment_type" => $sender_type,
+		"comment_relation_id" => $event_relation_id,
+		"comment_author" => $sender_name
+	]);
+	if($already_signed > 0) {
 		exit();
 	}
 

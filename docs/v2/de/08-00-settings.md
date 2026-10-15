@@ -48,13 +48,17 @@ Hier legst Du fest, wie viele Versionen einer Seite gespeichert bleiben sollen.
 Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion:
 
 * Ob sich Besucher selbst registrieren dürfen, ob das Login-Formular angezeigt wird
-  und ob neue Benutzer von einem Administrator freigeschaltet werden müssen.
+  und ob neue Benutzer von einem Administrator freigeschaltet werden müssen. Ohne Login-Formular
+  ist die Anmeldung im Frontend ganz abgeschaltet (die Backend-Anmeldung unter `/admin/` ist
+  nicht betroffen, "Passwort vergessen" funktioniert weiterhin).
 * Die Session-Lebensdauer des Backends und eine Blacklist von Benutzernamen, die nicht
   registriert werden dürfen.
 * Welche Felder bei der Registrierung Pflichtfelder sind.
 * Kommentare: der Modus, die Autorisierung, die Auto-Close-Zeit, die maximale Anzahl an
   Einträgen und die maximale Verschachtelungstiefe.
-* Votings und Reaktionen (aus, nur für registrierte Benutzer oder global).
+* Votings und Reaktionen (aus, nur für registrierte Benutzer oder global). Gegen doppelte
+  Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse
+  gespeichert; nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
 
 ## Posts
 Diese Einstellungen betreffen die Posts (Blog).
