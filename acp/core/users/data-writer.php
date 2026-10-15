@@ -13,60 +13,50 @@ if(isset($_POST['pagination'])) {
 // save or update user
 if(isset($_POST['save_user'])) {
 
-    $columns = array();
     $set_psw = 'false';
 
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $$key = trim($val);
-        }
+    // only these form fields are stored - read one by one instead of turning
+    // every POST field into a variable, which could overwrite any variable
+    // in this scope (e.g. $edit_user_id, $db_user)
+    $user_fields = [
+        'user_nick', 'user_mail', 'user_verified', 'user_class',
+        'user_firstname', 'user_lastname', 'user_company',
+        'user_street', 'user_street_nbr', 'user_zip', 'user_city',
+        'ba_firstname', 'ba_lastname', 'ba_company',
+        'ba_street', 'ba_street_nbr', 'ba_zip', 'ba_city', 'ba_country',
+        'sa_firstname', 'sa_lastname', 'sa_company',
+        'sa_street', 'sa_street_nbr', 'sa_zip', 'sa_city', 'sa_country'
+    ];
+    $columns = [];
+    foreach($user_fields as $field) {
+        $columns[$field] = is_string($_POST[$field] ?? null) ? trim($_POST[$field]) : '';
     }
+    $columns['user_verified_by_admin'] = '';
+    $user_nick = $columns['user_nick'];
+
+    // rights - each checkbox sends its own name as value, unchecked ones stay empty
+    $drm_fields = [
+        'drm_acp_pages', 'drm_acp_files', 'drm_acp_user', 'drm_acp_system',
+        'drm_acp_editpages', 'drm_acp_editownpages', 'drm_moderator',
+        'drm_can_publish', 'drm_acp_sensitive_files'
+    ];
+    $drm_values = [];
+    foreach($drm_fields as $field) {
+        $drm_values[] = is_string($_POST[$field] ?? null) ? trim($_POST[$field]) : '';
+    }
+    $columns['user_drm'] = implode('|', $drm_values);
 
     if(is_numeric($_POST['save_user'])) {
         $edit_user_id = (int) $_POST['save_user'];
     }
 
-    $drm_string = "$drm_acp_pages|$drm_acp_files|$drm_acp_user|$drm_acp_system|$drm_acp_editpages|$drm_acp_editownpages|$drm_moderator|$drm_can_publish|$drm_acp_sensitive_files";
 
-    $user_psw_new	= $_POST['user_psw_new'];
-    $user_psw_reconfirmation = $_POST['user_psw_reconfirmation'];
+    $user_psw_new = is_string($_POST['user_psw_new'] ?? null) ? $_POST['user_psw_new'] : '';
+    $user_psw_reconfirmation = is_string($_POST['user_psw_reconfirmation'] ?? null) ? $_POST['user_psw_reconfirmation'] : '';
 
-    $columns = [
-        "user_nick" => $user_nick,
-        "user_mail" => $user_mail,
-        "user_verified" => $user_verified,
-        "user_verified_by_admin" => '',
-        "user_drm" => $drm_string,
-        "user_class" => $user_class,
-        "user_firstname" => $user_firstname,
-        "user_lastname" => $user_lastname,
-        "user_company" => $user_company,
-        "user_street" => $user_street,
-        "user_street_nbr" => $user_street_nbr,
-        "user_zip" => $user_zip,
-        "user_city" => $user_city,
-        "ba_firstname" => $ba_firstname,
-        "ba_lastname" => $ba_lastname,
-        "ba_company" => $ba_company,
-        "ba_street" => $ba_street,
-        "ba_street_nbr" => $ba_street_nbr,
-        "ba_zip" => $ba_zip,
-        "ba_city" => $ba_city,
-        "ba_country" => $ba_country,
-        "sa_firstname" => $sa_firstname,
-        "sa_lastname" => $sa_lastname,
-        "sa_company" => $sa_company,
-        "sa_street" => $sa_street,
-        "sa_street_nbr" => $sa_street_nbr,
-        "sa_zip" => $sa_zip,
-        "sa_city" => $sa_city,
-        "sa_country" => $sa_country
-    ];
-
-
-    if($_POST['user_psw_new'] != "") {
-        if($_POST['user_psw_new'] == $_POST['user_psw_reconfirmation']) {
-            $user_psw = password_hash($_POST['user_psw_new'], PASSWORD_DEFAULT);
+    if($user_psw_new != "") {
+        if($user_psw_new === $user_psw_reconfirmation) {
+            $user_psw = password_hash($user_psw_new, PASSWORD_DEFAULT);
             $columns["user_psw_hash"] = $user_psw;
             $set_psw = 'true';
         }
@@ -146,11 +136,7 @@ if(isset($_POST['save_user'])) {
 // save or update a group
 if(isset($_POST['save_user_group'])) {
 
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $$key = htmlentities($val);
-        }
-    }
+    $group_description = htmlentities(is_string($_POST['group_description'] ?? null) ? $_POST['group_description'] : '');
 
     $group_user_str = '';
     $group_name = sanitizeUserInputs($_POST['group_name']);
