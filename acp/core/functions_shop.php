@@ -165,8 +165,8 @@ function se_prepareProductData($data, $id = null) {
         $product_price_net = se_sanitize_price($data['product_price_net']);
         $product_price_manufacturer = se_sanitize_price($data['product_price_manufacturer']);
 
-        // labels
-        $product_labels = '';
+        // labels - empty if none is checked (unchecked checkboxes aren't sent)
+        $labels = '';
         if(isset($data['labels'])) {
             $labels = implode(",", (array) $data['labels']);
         }
@@ -314,10 +314,23 @@ function se_prepareProductData($data, $id = null) {
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
+    // columns that were never set above - not part of the form, e.g. the
+    // counters hits/file_attachment_hits or notes - keep their stored value
+    // on an update instead of being emptied with every save
+    $assigned_vars = get_defined_vars();
+    $stored_product = [];
+    if ($id !== null && is_numeric($id)) {
+        $stored_product = $db_posts->get("se_products", "*", ["id" => (int) $id]) ?: [];
+    }
+
     // build SQL string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
     foreach($cols as $k => $v) {
         if($k == 'id') {continue;}
-        $value = $$k;
+        if (!array_key_exists($k, $assigned_vars) && array_key_exists($k, $stored_product)) {
+            $value = $stored_product[$k];
+        } else {
+            $value = $$k;
+        }
         $inputs[$k] = "$value";
     }
 
