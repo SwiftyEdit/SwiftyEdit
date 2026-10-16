@@ -92,6 +92,12 @@ if(isset($_POST['save_user'])) {
             se_2fa_revoke_devices($edit_user_id);
         }
 
+        // changes to the account end its sessions (se_validate_user_session()) -
+        // except the current one, if an administrator edits their own account
+        if($edit_user_id === (int) $_SESSION['user_id']) {
+            se_refresh_session_fingerprint();
+        }
+
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
             record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>","5");

@@ -55,6 +55,15 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   `$se_2fa_required = true;` in `data/config.php` brauchen alle Backend-Zugänge einen zweiten
   Faktor, `$se_2fa_bypass` ist der Notschalter. Details unter
   [Benutzerverwaltung](07-00-user.md#two-factor-authentication).
+* __Sitzungsdauer__ (`$se_session_max_lifetime` in `config.php`) - jede Anmeldung endet nach
+  dieser Anzahl Sekunden, unabhängig von Aktivität (Standard 12 Stunden, `0` = keine Grenze).
+  Unabhängig davon beenden ein neues Passwort, entzogene Rechte oder ein deaktiviertes Konto alle
+  anderen Sitzungen dieses Kontos; ändert jemand sein eigenes Passwort, bleibt die aktuelle
+  Sitzung bestehen. Im Backend und in den sensiblen Frontend-Bereichen (Profil, Warenkorb,
+  Checkout, Bestellungen, Wunschliste, Kommentare, Votings) greift das sofort, auf allen übrigen
+  Frontend-Seiten nach spätestens 5 Minuten. Die Liste steht in `app/app.php`
+  (`$se_sensitive_page_types`) und `app/xhr/route.php` (`$sensitive_routes`); eigene
+  Plugin-Endpunkte mit persönlichen Daten können `se_validate_user_session()` selbst aufrufen.
 * __.htaccess bei Updates__ (`$se_update_htaccess` in `config.php`) - Updates ersetzen den
   Core-Block von `public/.htaccess`, eigene Regeln davor und danach bleiben erhalten. Mit
   `$se_update_htaccess = false;` in `data/config.php` bleibt die Datei unangetastet. Details unter

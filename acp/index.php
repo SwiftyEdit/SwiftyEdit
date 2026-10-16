@@ -80,6 +80,13 @@ define("FILES_FOLDER", "$files_path");
 
 
 require '../acp/core/functions.php';
+
+// absolute lifetime / account changed since the login - back to the login
+if (!se_validate_user_session()) {
+    header("location:/admin/");
+    exit;
+}
+
 require '../acp/core/access.php';
 
 if (!isset($_SESSION['editor_class'])) {

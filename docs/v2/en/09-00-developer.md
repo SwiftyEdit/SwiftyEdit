@@ -53,6 +53,15 @@ A few more small things worth knowing:
   `$se_2fa_required = true;` in `data/config.php`, every backend user needs a second factor;
   `$se_2fa_bypass` is the emergency switch. Details in
   [User management](07-00-user.md#two-factor-authentication).
+* __Session lifetime__ (`$se_session_max_lifetime` in `config.php`) - every login ends after
+  this many seconds, regardless of activity (default 12 hours, `0` = no limit). Independently,
+  a new password, withdrawn rights or a deactivated account end all other sessions of that
+  account; when users change their own password, the current session stays. In the backend and
+  in the sensitive frontend areas (profile, cart, checkout, orders, wishlist, comments, votings)
+  this takes effect right away, on all other frontend pages within 5 minutes at the latest. The
+  list is in `app/app.php` (`$se_sensitive_page_types`) and `app/xhr/route.php`
+  (`$sensitive_routes`); own plugin endpoints with personal data can call
+  `se_validate_user_session()` themselves.
 * __.htaccess on updates__ (`$se_update_htaccess` in `config.php`) - updates replace the core
   block of `public/.htaccess`, own rules before and after it are kept. With
   `$se_update_htaccess = false;` in `data/config.php` the file is left untouched. Details in

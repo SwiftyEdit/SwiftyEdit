@@ -79,6 +79,14 @@ $se_upload_addons = false;
 $se_2fa_required = false;
 $se_2fa_bypass = null;
 
+/* Every login ends after this many seconds, however active the session is
+ * (default 12 hours, 0 = no limit). A new password, withdrawn rights or a
+ * deactivated account also end all other sessions of that account.
+ * To change it, add the following to SE_CONTENT/config.php:
+ * $se_session_max_lifetime = 28800;
+ */
+$se_session_max_lifetime = 43200;
+
 /* Updates replace the SwiftyEdit core block of public/.htaccess (own rules
  * before and after it are kept, the previous file is saved to SE_CONTENT/backups/).
  * If the file is managed elsewhere, add the following to SE_CONTENT/config.php

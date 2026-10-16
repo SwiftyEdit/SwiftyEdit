@@ -163,8 +163,9 @@ function se_user_login(string $user, string $psw, $acp=NULL) {
         // older hashes (e.g. a lower cost from an older PHP version) are renewed,
         // so all accounts take the same time to check as the dummy hash above
         if(password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+            $result['user_psw_hash'] = password_hash($psw, PASSWORD_DEFAULT);
             $db_user->update("se_user", [
-                "user_psw_hash" => password_hash($psw, PASSWORD_DEFAULT)
+                "user_psw_hash" => $result['user_psw_hash']
             ], [
                 "user_id" => (int) $result['user_id']
             ]);
@@ -358,6 +359,10 @@ function se_start_user_session($ud) {
 
     // start of the ACP idle timer (see se_acp_session_expired())
     $_SESSION['acp_last_activity'] = time();
+
+    // absolute lifetime and account state of this session (see se_validate_user_session())
+    $_SESSION['login_time'] = time();
+    $_SESSION['session_fingerprint'] = se_session_fingerprint($ud);
 
     $arr_drm = explode("|", $ud['user_drm']);
     $_SESSION['permissions'] = explode('|', $ud['user_drm']);
@@ -758,6 +763,119 @@ function se_acp_session_expired(): bool {
 
     $_SESSION['acp_last_activity'] = time();
     return false;
+}
+
+/**
+ * Fingerprint of the account data a login depends on - password, class,
+ * rights and activation. Stored in the session at login; if it differs
+ * later, something changed the account (new password, rights withdrawn,
+ * account deactivated) and the session ends (see se_validate_user_session()).
+ */
+function se_session_fingerprint(array $user): string {
+
+    return hash_hmac('sha256', implode('|', [
+        (string) ($user['user_psw_hash'] ?? ''),
+        (string) ($user['user_class'] ?? ''),
+        (string) ($user['user_drm'] ?? ''),
+        (string) ($user['user_verified'] ?? '')
+    ]), se_get_site_secret());
+}
+
+/**
+ * The current session keeps working after a change the user made to their own
+ * account (e.g. a new password) - other sessions of the account still end.
+ */
+function se_refresh_session_fingerprint(): void {
+
+    global $db_user;
+
+    if (!is_numeric($_SESSION['user_id'] ?? null)) {
+        return;
+    }
+    $user = $db_user->get("se_user", ["user_psw_hash", "user_class", "user_drm", "user_verified"], [
+        "user_id" => (int) $_SESSION['user_id']
+    ]);
+    if (is_array($user)) {
+        $_SESSION['session_fingerprint'] = se_session_fingerprint($user);
+    }
+}
+
+/** seconds between two account checks of a frontend session (see se_validate_user_session()) */
+const SE_SESSION_CHECK_INTERVAL = 300;
+
+/**
+ * Check a logged-in session (frontend, backend, XHR):
+ * - absolute lifetime: $se_session_max_lifetime seconds after the login
+ *   (default 12 hours, 0 = off), independent of activity - on every request
+ * - account unchanged since the login (se_session_fingerprint()) - a new
+ *   password, withdrawn rights or a deactivated/deleted account end all
+ *   other sessions of that account. Needs a database query, so with
+ *   $force = false (general frontend requests) it only runs every
+ *   SE_SESSION_CHECK_INTERVAL seconds; the backend and sensitive frontend
+ *   areas (profile, cart, checkout, orders, ... - see app/app.php and
+ *   app/xhr/route.php) check on every request.
+ *
+ * An invalid session is emptied and gets a new id, so the request goes on
+ * as an anonymous visitor (the backend then shows its login). Must run
+ * before session_write_close().
+ *
+ * @return bool false if a session has just been ended
+ */
+function se_validate_user_session(bool $force = true): bool {
+
+    global $db_user, $se_session_max_lifetime;
+
+    // checked against the database during this request already
+    static $checked_this_request = false;
+
+    if (!is_numeric($_SESSION['user_id'] ?? null)) {
+        return true;
+    }
+    if ($checked_this_request) {
+        return true;
+    }
+
+    // sessions from before this check start their lifetime now
+    if (!isset($_SESSION['login_time'])) {
+        $_SESSION['login_time'] = time();
+    }
+
+    $max_lifetime = (int) ($se_session_max_lifetime ?? 43200);
+    $valid = $max_lifetime <= 0 || time() - (int) $_SESSION['login_time'] <= $max_lifetime;
+
+    // account check due?
+    if ($valid && !$force && time() - (int) ($_SESSION['session_checked'] ?? 0) < SE_SESSION_CHECK_INTERVAL) {
+        return true;
+    }
+
+    if ($valid) {
+        $checked_this_request = true;
+        $_SESSION['session_checked'] = time();
+        $user = $db_user->get("se_user", ["user_psw_hash", "user_class", "user_drm", "user_verified"], [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+        if (!is_array($user)) {
+            $valid = false;
+        } elseif (!isset($_SESSION['session_fingerprint'])) {
+            // session from before this check - take the current state as reference
+            $_SESSION['session_fingerprint'] = se_session_fingerprint($user);
+        } else {
+            $valid = hash_equals((string) $_SESSION['session_fingerprint'], se_session_fingerprint($user));
+        }
+    }
+
+    if (!$valid) {
+        // the CSRF token stays: forms of this page may already carry it
+        // (the check can run after the page setup, see app/app.php)
+        $csrf_token = $_SESSION['token'] ?? null;
+        $_SESSION = [];
+        if ($csrf_token !== null) {
+            $_SESSION['token'] = $csrf_token;
+        }
+        session_regenerate_id(true);
+        return false;
+    }
+    return true;
 }
 
 /**

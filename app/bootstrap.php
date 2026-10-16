@@ -71,6 +71,12 @@ if(!is_file(SE_ROOT.'/config_database.php') && !is_file("$se_db_content")) {
 
 require SE_ROOT.'/app/database.php';
 
+// absolute lifetime, and end sessions of changed accounts (new password,
+// withdrawn rights) - before the CSRF token, an ended session gets a new one.
+// The account check needs a database query: here only every few minutes,
+// sensitive areas check on every request (app/app.php, app/xhr/route.php)
+se_validate_user_session(false);
+
 if(empty($_SESSION['token'])) {
     se_generate_token();
 }

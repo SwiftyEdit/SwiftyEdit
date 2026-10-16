@@ -102,6 +102,13 @@ if(!empty($page_contents['page_modul'])) {
     include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/frontend/index.php';
 }
 
+// pages with personal data or orders: check the session against the account
+// on every request, not only every few minutes (see se_validate_user_session())
+$se_sensitive_page_types = ['account', 'profile', 'checkout', 'orders', 'order_withdrawal', 'wishlist'];
+if (in_array($page_contents['page_type_of_use'] ?? '', $se_sensitive_page_types, true)) {
+    se_validate_user_session();
+}
+
 // Include template setup and smarty configuration
 require_once __DIR__.'/template-setup.php';
 
