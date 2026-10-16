@@ -123,6 +123,10 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
 // save or update products
 if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
+    // "context" = "cache" makes se_prepareProductData() take the values
+    // unescaped (meant for rows from the database) - never from a form
+    unset($_POST['context']);
+
     if(is_numeric($_POST['save_product']))	{
         $id = (int) $_POST['save_product'];
         $prepared_data = se_prepareProductData($_POST,$id);

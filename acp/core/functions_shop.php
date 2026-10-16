@@ -60,10 +60,18 @@ function se_prepareProductData($data, $id = null) {
     $releasedate = time();
     $lastedit = time();
 
+    // all columns of se_products ($cols) - only these keys of $data become
+    // variables (read again by name below), so a key can't overwrite any
+    // other variable in this function (e.g. the globals $db_posts, $se_base_url)
+    require SE_ROOT.'install/contents/se_products.php';
+
     if (!empty($data['context']) && $data['context'] === 'cache') {
-        // generate cache files, copy data from database
+        // generate cache files, copy data from database (a row of se_products,
+        // see se_rebuild_all_product_cache() - its "id" sets $id here)
         foreach ($data as $key => $val) {
-            $$key = $val;
+            if (array_key_exists($key, $cols)) {
+                $$key = $val;
+            }
         }
     } else {
         // data from backend
@@ -71,8 +79,9 @@ function se_prepareProductData($data, $id = null) {
             $data['title'] = trim($data['title']);
         }
 
+        // "id" never comes from the form - it is the parameter $id
         foreach ($data as $key => $val) {
-            if (is_string($val)) {
+            if (is_string($val) && $key !== 'id' && array_key_exists($key, $cols)) {
                 $$key = @htmlspecialchars($val, ENT_QUOTES);
             }
         }
@@ -305,9 +314,7 @@ function se_prepareProductData($data, $id = null) {
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
-    // get all columns from the installer template
-    require SE_ROOT.'install/contents/se_products.php';
-    // build SQL string -> f.e. "releasedate" => $releasedate,
+    // build SQL string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
     foreach($cols as $k => $v) {
         if($k == 'id') {continue;}
         $value = $$k;
