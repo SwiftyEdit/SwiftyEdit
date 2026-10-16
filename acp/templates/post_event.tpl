@@ -193,7 +193,7 @@
 				</div>
 				<div class="mb-2 pb-1 border-bottom">
 					<label>{label_releasedate}</label>
-					<input class='dp form-control' name="post_releasedate" type="datetime-local" value="{post_releasedate}">
+					<input class='dp form-control' name="releasedate" type="datetime-local" value="{releasedate}">
 				</div>
 				<div class="mb-2 pb-1 border-bottom">
 					<label>{label_priority}</label>

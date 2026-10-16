@@ -301,6 +301,7 @@ $form_tpl = str_replace('{event_street}', $post_data['event_street'], $form_tpl)
 $form_tpl = str_replace('{event_street_nbr}', $post_data['event_street_nbr'], $form_tpl);
 $form_tpl = str_replace('{event_zip}', $post_data['event_zip'], $form_tpl);
 $form_tpl = str_replace('{event_city}', $post_data['event_city'], $form_tpl);
+$form_tpl = str_replace('{releasedate}', $releasedate, $form_tpl);
 $form_tpl = str_replace('{event_guestlist_limit}', $post_data['event_guestlist_limit'], $form_tpl);
 $form_tpl = str_replace('{checked_gl_public_nbr_1}', ($post_data['event_guestlist_public_nbr'] == 1 ? 'checked' : ''), $form_tpl);
 $form_tpl = str_replace('{checked_gl_public_nbr_2}', ($post_data['event_guestlist_public_nbr'] == 2 ? 'checked' : ''), $form_tpl);
