@@ -642,13 +642,28 @@
                 </div>
 
                 <div class="mb-2 pb-3 border-bottom">
-                    <label>{label_language}</label>
-                    {checkboxes_lang}
+                    <div class="input-group">
+                        <label class="input-group-text" for="product_status">{label_status}</label>
+                        {select_status}
+                    </div>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <div class="input-group">
+                        <label class="input-group-text" for="product_lang">{label_language}</label>
+                        {checkboxes_lang}
+                    </div>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{label_priority}</label>
+                    <input type="number" name="priority" value="{input_priority}" class="form-control">
+                    {checkbox_fixed}
                 </div>
 
                 <div class="mb-3 pb-3 border-bottom">
                     <label>{label_categories}</label>
-                    <div class="scroll-container" style="max-height: 150px;">
+                    <div class="scroll-container scroll-container-resizable">
                         {checkbox_categories}
                     </div>
                 </div>
@@ -658,32 +673,40 @@
                     <input type="text" class="form-control tags" name="content_tags" value="{content_tags}">
                 </div>
 
-                <div class="mb-2 pb-3 border-bottom">
-                    <label>{label_releasedate}</label>
-                    <input class='dp form-control' name="releasedate" type="datetime-local" value="{releasedate}" max="{releasedate_max}">
-                    <div class="form-text">{label_releasedate_no_future}</div>
-                </div>
-                <div class="mb-2 pb-3 border-bottom">
-                    <label>{label_priority}</label>
-                    <input type="number" name="priority" value="{input_priority}" class="form-control">
-                    {checkbox_fixed}
-                </div>
-                <div class="mb-3 pb-3 border-bottom">
-                    <label>{label_status}</label>
-                    {select_status}
-                </div>
-                <div class="mb-3 pb-3 border-bottom">
-                    <label>{label_comments}</label>
-                    {select_comments}
-                </div>
-                <div class="mb-3 pb-3 border-bottom">
-                    <label>{label_votings}</label>
-                    {select_votings}
-                </div>
                 <div class="mb-3 pb-3 border-bottom">
                     <label>{labels}</label>
                     <div>{product_labels}</div>
                 </div>
+
+                <!-- rarely changed settings: collapsed, current value in the summary row -->
+                <details class="sidebar-setting">
+                    <summary>
+                        <span>{label_releasedate}</span>
+                        <span class="sidebar-setting-value">{summary_releasedate}</span>
+                    </summary>
+                    <div class="sidebar-setting-body">
+                        <input class='dp form-control' name="releasedate" type="datetime-local" value="{releasedate}" max="{releasedate_max}">
+                        <div class="form-text">{label_releasedate_no_future}</div>
+                    </div>
+                </details>
+                <details class="sidebar-setting">
+                    <summary>
+                        <span>{label_comments}</span>
+                        <span class="sidebar-setting-value">{summary_comments}</span>
+                    </summary>
+                    <div class="sidebar-setting-body">
+                        {select_comments}
+                    </div>
+                </details>
+                <details class="sidebar-setting">
+                    <summary>
+                        <span>{label_votings}</span>
+                        <span class="sidebar-setting-value">{summary_votings}</span>
+                    </summary>
+                    <div class="sidebar-setting-body">
+                        {select_votings}
+                    </div>
+                </details>
 
                 <input name="type" type="hidden" value="{type}">
                 <input name="parent_id" type="hidden" value="{parent_id}">

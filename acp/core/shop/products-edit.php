@@ -169,7 +169,7 @@ if($product_lang == '' && $default_lang_code != '') {
     $product_lang = $default_lang_code;
 }
 
-$select_lang  = '<select name="product_lang" class="custom-select form-control">';
+$select_lang  = '<select id="product_lang" name="product_lang" class="custom-select form-control">';
 foreach($lang_codes as $lang_code) {
     $select_lang .= "<option value='$lang_code'".($product_lang == "$lang_code" ? 'selected="selected"' :'').">$lang_code</option>";
 }
@@ -215,6 +215,7 @@ if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
 }
 // future dates are not allowed, see se_prepareProductData()
 $releasedate_max = date('Y-m-d\TH:i', time());
+$summary_releasedate = se_format_datetime(strtotime($releasedate));
 
 
 /* priority */
@@ -294,7 +295,7 @@ if($product_data['status'] == "2") {
     $sel_status_ghost = "selected";
 }
 
-$select_status = "<select name='status' class='form-control custom-select'>";
+$select_status = "<select id='product_status' name='status' class='form-control custom-select'>";
 if (se_hasPermission('drm_can_publish')) {
     $select_status .= '<option value="2" '.$sel_status_draft.'>'.$lang['status_draft'].'</option>';
     $select_status .= '<option value="1" '.$sel_status_published.'>'.$lang['status_public'].'</option>';
@@ -330,7 +331,7 @@ if($product_data['votings'] == 1 OR $product_data['votings'] == '') {
     $sel_votings_1 = 'selected';
     $sel_votings_2 = '';
     $sel_votings_3 = '';
-} else if($product_data['post_votings'] == 2) {
+} else if($product_data['votings'] == 2) {
     $sel_votings_1 = '';
     $sel_votings_2 = 'selected';
     $sel_votings_3 = '';
@@ -345,6 +346,16 @@ $select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_
 $select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_status_registered'].'</option>';
 $select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_status_global'].'</option>';
 $select_votings .= '</select>';
+
+/* current values for the collapsed sidebar rows */
+$summary_comments = ($sel_comments_yes == 'selected') ? $lang['yes'] : $lang['no'];
+if($sel_votings_2 == 'selected') {
+    $summary_votings = $lang['label_votings_status_registered'];
+} else if($sel_votings_3 == 'selected') {
+    $summary_votings = $lang['label_votings_status_global'];
+} else {
+    $summary_votings = $lang['label_votings_status_off'];
+}
 
 
 /* author */
@@ -1097,6 +1108,9 @@ $form_tpl = str_replace('{checkboxes_lang}', $select_lang, $form_tpl);
 $form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
 $form_tpl = str_replace('{releasedate}', $releasedate, $form_tpl);
 $form_tpl = str_replace('{releasedate_max}', $releasedate_max, $form_tpl);
+$form_tpl = str_replace('{summary_releasedate}', $summary_releasedate, $form_tpl);
+$form_tpl = str_replace('{summary_comments}', $summary_comments, $form_tpl);
+$form_tpl = str_replace('{summary_votings}', $summary_votings, $form_tpl);
 $form_tpl = str_replace('{widget_images}', $choose_images, $form_tpl);
 
 $form_tpl = str_replace('{input_priority}', $product_data['priority'], $form_tpl);

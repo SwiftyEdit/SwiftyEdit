@@ -207,3 +207,46 @@ div.image-checkbox {
 	}
 
 }
+// Sidebar setting that is rarely changed: one collapsed row with the
+// label and the current value below it, the form control is revealed
+// on click
+.sidebar-setting {
+	margin-bottom: .5rem;
+	padding-bottom: .5rem;
+	border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+
+	summary {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		column-gap: .5rem;
+		align-items: center;
+		list-style: none;
+		cursor: pointer;
+
+		&::-webkit-details-marker {
+			display: none;
+		}
+
+		&::after {
+			grid-column: 2;
+			grid-row: 1 / span 2;
+			font-family: "bootstrap-icons";
+			content: map-get($bootstrap-icons-map, "chevron-down");
+			font-size: .75rem;
+		}
+	}
+
+	&[open] summary::after {
+		content: map-get($bootstrap-icons-map, "chevron-up");
+	}
+
+	.sidebar-setting-value {
+		grid-column: 1;
+		color: var(--bs-secondary-color);
+		font-size: .875rem;
+	}
+
+	.sidebar-setting-body {
+		padding-top: .5rem;
+	}
+}

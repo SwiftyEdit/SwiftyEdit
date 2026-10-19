@@ -461,6 +461,14 @@ hr.shadow-line:after {
   &-h500 {
     height: 500px;
   }
+  // Can be dragged taller like a textarea. Uses a fixed start height
+  // instead of max-height, because max-height would cap the resizing.
+  &-resizable {
+    height: 150px;
+    min-height: 80px;
+    max-height: none;
+    resize: vertical;
+  }
   // Fixed (not max-) height variant: keeps the box's height constant while
   // its hx-get content swaps from the loading indicator to the loaded
   // table, instead of the surrounding layout jumping as the box grows.
