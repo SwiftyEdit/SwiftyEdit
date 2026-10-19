@@ -213,6 +213,8 @@ if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
 } else {
     $releasedate = date('Y-m-d H:i', time());
 }
+// future dates are not allowed, see se_prepareProductData()
+$releasedate_max = date('Y-m-d\TH:i', time());
 
 
 /* priority */
@@ -1094,6 +1096,7 @@ $form_tpl = str_replace('{canonical_url_tooltip}', se_print_docs_link("05-00-sho
 $form_tpl = str_replace('{checkboxes_lang}', $select_lang, $form_tpl);
 $form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
 $form_tpl = str_replace('{releasedate}', $releasedate, $form_tpl);
+$form_tpl = str_replace('{releasedate_max}', $releasedate_max, $form_tpl);
 $form_tpl = str_replace('{widget_images}', $choose_images, $form_tpl);
 
 $form_tpl = str_replace('{input_priority}', $product_data['priority'], $form_tpl);

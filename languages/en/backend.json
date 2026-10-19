@@ -185,6 +185,7 @@
   "label.categories": "Categories",
   "label.language": "Language",
   "label.releasedate": "Release date",
+  "label.releasedate_no_future": "Dates in the future are not possible - use the status to hide a product.",
   "label.image": "Image",
   "label.images_selected": "Selected images",
   "label.alt": "Alt",

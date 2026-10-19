@@ -660,7 +660,8 @@
 
                 <div class="mb-2 pb-3 border-bottom">
                     <label>{label_releasedate}</label>
-                    <input class='dp form-control' name="releasedate" type="datetime-local" value="{releasedate}">
+                    <input class='dp form-control' name="releasedate" type="datetime-local" value="{releasedate}" max="{releasedate_max}">
+                    <div class="form-text">{label_releasedate_no_future}</div>
                 </div>
                 <div class="mb-2 pb-3 border-bottom">
                     <label>{label_priority}</label>

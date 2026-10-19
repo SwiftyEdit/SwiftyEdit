@@ -236,7 +236,9 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
-    if($releasedate == '') {
+    // no scheduled releases for products - a future date would hide the
+    // product in the frontend, which is too easy to get wrong in a shop
+    if($releasedate == '' || $releasedate > time()) {
         $releasedate = time();
     }
 
