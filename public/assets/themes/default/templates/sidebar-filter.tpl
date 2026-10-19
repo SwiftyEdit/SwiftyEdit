@@ -29,11 +29,11 @@
                     {foreach $filter_group.items as $item}
                         {if $item.slug != ''}
                             <a href="{$item.filter_url}"
-                               class="filter-option d-block py-1 text-decoration-none {if $item.checked}active fw-bold{/if}">
+                               class="filter-option d-block py-1 text-decoration-none {if $item.checked}active fw-bold{elseif $item.count == 0}opacity-50{/if}">
                                 <i class="bi bi-circle{if $item.checked}-fill{/if} me-2"></i>
                                 {$item.title}
                                 <span class="text-muted small ms-1">
-                                    (<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
+                                    ({$item.count})
                                 </span>
                             </a>
                         {/if}
@@ -47,11 +47,11 @@
                     {foreach $filter_group.items as $item}
                         {if $item.slug != ''}
                             <a href="{$item.filter_url}"
-                               class="filter-option d-block py-1 text-decoration-none {if $item.checked}active fw-bold{/if}">
+                               class="filter-option d-block py-1 text-decoration-none {if $item.checked}active fw-bold{elseif $item.count == 0}opacity-50{/if}">
                                 <i class="bi bi-{if $item.checked}check-{/if}square me-2"></i>
                                 {$item.title}
                                 <span class="text-muted small ms-1">
-                                    (<span hx-get="/xhr/se/counter/?filter={$item.id}&categories={$cat_hashes}" hx-trigger="load">0</span>)
+                                    ({$item.count})
                                 </span>
                             </a>
                         {/if}

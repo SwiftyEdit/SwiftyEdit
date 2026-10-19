@@ -46,6 +46,7 @@ This file **must not be committed to Git** – it should be listed in your `.git
   "frontendUrl": "http://localhost/",
   "blogUrl": "http://localhost/blog/",
   "eventsUrl": "http://localhost/events/",
+  "shopUrl": "http://localhost/shop/",
   "admin": {
     "username": "admin@example.com",
     "password": "your_admin_password"
@@ -60,6 +61,8 @@ This file **must not be committed to Git** – it should be listed in your `.git
 This file is used to log in during tests.
 
 `blogUrl` and `eventsUrl` are optional: they point to a blog page and an events page of your installation and are used by `tests/e2e/frontend/blog-events.spec.js`. If a key is missing, the related tests are skipped.
+
+`shopUrl` is optional as well: it points to a product list page with at least two sidebar filter groups and is used by `tests/e2e/frontend/shop-filter-counts.spec.js`.
 
 ## 📁 Folder structure
 
