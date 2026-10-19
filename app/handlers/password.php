@@ -59,6 +59,7 @@ if($token !== '') {
 				"user_reset_psw_expires" => 0,
 				"user_failed_logins" => 0,
 				"user_unlock_code" => "",
+				"user_unlock_expires" => 0,
 				"user_locked_until" => 0
 			], [
 				"user_id" => (int) $userdata_array['user_id']

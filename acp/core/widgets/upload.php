@@ -20,38 +20,13 @@ if ($se_environment === 'd') {
     ini_set('display_errors', '1');
 }
 
-if(is_file('../config_database.php')) {
-    include '../config_database.php';
-    $db_type = 'mysql';
+// same database setup as acp/header.php - the session checks below need $db_user
+const SE_SECTION = "backend";
+require SE_ROOT.'/app/database.php';
 
-    $database = new Medoo([
-        'type' => 'mysql',
-        'database' => "$database_name",
-        'host' => "$database_host",
-        'username' => "$database_user",
-        'password' => "$database_psw",
-        'charset' => 'utf8',
-        'port' => $database_port,
-        'prefix' => DB_PREFIX
-    ]);
-
-    $db_content = $database;
-    $db_user = $database;
-    $db_statistics = $database;
-
-} else {
-    $db_type = 'sqlite';
-
-    define("CONTENT_DB", "$se_db_content");
-
-    $db_content = new Medoo([
-        'type' => 'sqlite',
-        'database' => CONTENT_DB
-    ]);
-}
-
-
-require '../app/functions/functions.php';
+// absolute lifetime, account fingerprint and ACP idle timeout - this endpoint
+// is reached via admin_xhr.php without acp/header.php
+se_acp_guard();
 
 
 if(!is_string($_POST['csrf_token'] ?? null) || !hash_equals((string) ($_SESSION['token'] ?? ''), $_POST['csrf_token'])) {
@@ -65,6 +40,11 @@ $time = time();
  * acp/core/settings/branding-widget.php for the field markup this responds to. */
 $branding_target = $_POST['branding_target'] ?? '';
 if (in_array($branding_target, ['logo', 'thumbnail', 'favicon'], true)) {
+    // part of the settings module - same permission as settings/ in se_acp_xhr_permission()
+    if (!se_hasPermission('drm_acp_system')) {
+        http_response_code(403);
+        exit;
+    }
     require_once '../acp/core/settings/branding-widget.php';
 
     $result = se_handle_branding_upload(

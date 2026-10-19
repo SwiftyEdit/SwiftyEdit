@@ -62,20 +62,62 @@ function se_add_user_to_group(int $user, int $group): void {
     global $db_user;
 
     // get data from group
-    $group_data = $db_user->select("se_groups","*",[
+    $group_user = $db_user->get("se_groups", "group_user", [
         "group_id" => $group
     ]);
-
-
-    $users = explode(" ", $group_data['group_user']);
-    if(in_array($user, $users)) {
+    if($group_user === null) {
         return;
-    } else {
-        $users[] = $user;
-        $db_user->update("se_groups",[
+    }
+
+    $users = array_filter(explode(" ", (string) $group_user), 'strlen');
+    if(in_array((string) $user, $users, true)) {
+        return;
+    }
+
+    $users[] = (string) $user;
+    sort($users);
+    $db_user->update("se_groups",[
+        "group_user" => implode(" ", $users)
+    ],[
+        "group_id" => $group
+    ]);
+}
+
+/**
+ * make the user a member of exactly the given groups - adds the missing
+ * memberships and removes the ones that are not listed
+ *
+ * @param integer $user
+ * @param array $group_ids
+ * @return void
+ */
+function se_set_user_groups(int $user, array $group_ids): void {
+
+    global $db_user;
+
+    $group_ids = array_map('intval', $group_ids);
+    $groups = $db_user->select("se_groups", ["group_id", "group_user"]);
+
+    foreach($groups as $group) {
+        $users = array_filter(explode(" ", (string) $group['group_user']), 'strlen');
+        $is_member = in_array((string) $user, $users, true);
+        $should_be_member = in_array((int) $group['group_id'], $group_ids, true);
+
+        if($is_member === $should_be_member) {
+            continue;
+        }
+
+        if($should_be_member) {
+            $users[] = (string) $user;
+        } else {
+            $users = array_diff($users, [(string) $user]);
+        }
+        sort($users);
+
+        $db_user->update("se_groups", [
             "group_user" => implode(" ", $users)
-        ],[
-            "group_id" => $group
+        ], [
+            "group_id" => $group['group_id']
         ]);
     }
 }
@@ -227,6 +269,7 @@ function se_finish_login(array $result, $acp): void {
     $db_user->update("se_user",[
         "user_failed_logins" => 0,
         "user_unlock_code" => '',
+        "user_unlock_expires" => 0,
         "user_locked_until" => 0
     ],[
         "user_nick" => $result['user_nick']
@@ -281,20 +324,24 @@ function se_handle_failed_logins($user) {
     ]);
 
     if($failed_logins >= $limit) {
-        // generate and save unlock code - the mailed link lifts the lock right
-        // away. Only rows without an unlock code yet are eligible, so the owner
-        // gets one mail per series of locks, not one per failed attempt.
-        // NULL and '' both count as "not set".
+        // generate and save unlock code - the mailed link lifts the lock (after
+        // a confirmation per POST, see app/handlers/unlock.php). The database
+        // only gets a hash of it, valid for one hour. Only rows without a
+        // valid unlock code are eligible, so the owner gets at most one mail
+        // per hour, not one per failed attempt. NULL and '' both count as
+        // "not set"; codes from before the expiry existed have expires = 0.
         $unlock_code = bin2hex(random_bytes(16));
         $update = $db_user->update("se_user",[
-            "user_unlock_code" => $unlock_code
+            "user_unlock_code" => hash('sha256', $unlock_code),
+            "user_unlock_expires" => time() + 3600
         ],[
             "user_nick" => $user,
             "OR" => [
                 "user_unlock_code" => null,
                 "AND #Empty" => [
                     "user_unlock_code" => ""
-                ]
+                ],
+                "user_unlock_expires[<]" => time()
             ]
         ]);
 
@@ -560,6 +607,11 @@ function se_username_exists($username): bool
         }
     }
 
+    // placeholder nicks of deleted accounts (deleted-<id>)
+    if(str_starts_with($needle, 'deleted-')) {
+        return true;
+    }
+
     // check database for existing username
     $sql = 'SELECT COUNT(*) FROM se_user WHERE LOWER(user_nick) = LOWER(?)';
     $stmt = $db_user->pdo->prepare($sql);
@@ -571,7 +623,8 @@ function se_username_exists($username): bool
         return true;
     }
 
-    return false;
+    // nicks of recently deleted accounts stay reserved
+    return se_deleted_nick_reserved($username);
 }
 
 function show_identicon(string $email, int $size = 80): string {
@@ -735,6 +788,25 @@ function se_rate_limit_add(string $bucket, int $window, bool $per_ip = true): vo
     $attempts = se_rate_limit_attempts($file, $window);
     $attempts[] = time();
     @file_put_contents($file, json_encode($attempts), LOCK_EX);
+
+    // buckets like "reset-mail:<mail>" create one file per input - remove
+    // stale ones now and then so the directory doesn't grow without limit
+    if (random_int(1, 100) === 1) {
+        se_rate_limit_purge($dir);
+    }
+}
+
+/**
+ * Delete rate limit files that weren't touched for a day - longer than any
+ * window in use (core: at most one hour), so no running limit is lost.
+ */
+function se_rate_limit_purge(string $dir): void {
+    $stale_before = time() - 86400;
+    foreach (glob($dir . '/*.json') ?: [] as $file) {
+        if (@filemtime($file) < $stale_before) {
+            @unlink($file);
+        }
+    }
 }
 
 /**
@@ -752,7 +824,18 @@ function se_acp_session_expired(): bool {
 
     global $se_settings;
 
-    $lifetime = max((int) ($se_settings['acp_session_lifetime'] ?? 0), (int) ini_get('session.gc_maxlifetime'));
+    $lifetime_setting = $se_settings['acp_session_lifetime'] ?? null;
+    if ($lifetime_setting === null) {
+        // bare ACP endpoints (e.g. the upload widget) don't build $se_settings
+        foreach (se_get_preferences() as $pref) {
+            if (($pref['option_key'] ?? '') === 'prefs_acp_session_lifetime') {
+                $lifetime_setting = $pref['option_value'];
+                break;
+            }
+        }
+    }
+
+    $lifetime = max((int) $lifetime_setting, (int) ini_get('session.gc_maxlifetime'));
     $last_activity = (int) ($_SESSION['acp_last_activity'] ?? time());
 
     if ($lifetime > 0 && time() - $last_activity > $lifetime) {
@@ -763,6 +846,24 @@ function se_acp_session_expired(): bool {
 
     $_SESSION['acp_last_activity'] = time();
     return false;
+}
+
+/**
+ * Session checks for every ACP request (pages, XHR, uploads): absolute
+ * lifetime and account fingerprint (se_validate_user_session()) plus the ACP
+ * idle timeout (se_acp_session_expired()). Ends the request with 401 and an
+ * HX-Redirect to the login if the session is no longer valid.
+ *
+ * Plugins with their own admin endpoints should call it as well, after the
+ * database connection and the se_* functions are loaded.
+ */
+function se_acp_guard(): void {
+
+    if (!se_validate_user_session() || se_acp_session_expired()) {
+        http_response_code(401);
+        header('HX-Redirect: /admin/');
+        die('Session ended');
+    }
 }
 
 /**
@@ -895,11 +996,22 @@ function se_get_site_secret(): string {
     $file = SE_CONTENT . '/site_secret.php';
     if (is_file($file)) {
         $secret = (string) include $file;
+        // older installations wrote the file with the umask (usually 0644)
+        if ((@fileperms($file) & 0077) !== 0) {
+            @chmod($file, 0600);
+        }
     }
 
     if ($secret === null || strlen($secret) < 32) {
         $secret = bin2hex(random_bytes(32));
-        @file_put_contents($file, "<?php\n// generated - keep secret, don't share\nreturn '" . $secret . "';\n", LOCK_EX);
+        if (@file_put_contents($file, "<?php\n// generated - keep secret, don't share\nreturn '" . $secret . "';\n", LOCK_EX) !== false) {
+            @chmod($file, 0600);
+        } else {
+            // every request would get a new secret - mail codes, encrypted
+            // TOTP secrets and IP hashes stop working (also shown in the
+            // dashboard checks, acp/core/dashboard/data-reader.php)
+            error_log('SwiftyEdit: could not write ' . $file . ' - SE_CONTENT is not writable');
+        }
     }
 
     return $secret;

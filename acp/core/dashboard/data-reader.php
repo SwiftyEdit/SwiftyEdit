@@ -425,6 +425,13 @@ if($_REQUEST['action'] === 'list_alerts') {
         $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($smarty_compile_dir).'</code>';
     }
 
+    // se_get_site_secret() creates the file on first use - if it still doesn't
+    // exist, every request gets a new secret (2FA, mail codes, IP hashes break)
+    se_get_site_secret();
+    if(!is_file(SE_CONTENT.'/site_secret.php')) {
+        $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... site_secret.php</code>';
+    }
+
     foreach($se_page_types as $pt) {
 
         if($pt == 'normal') {

@@ -19,6 +19,12 @@ if(is_int($get_user_id)) {
         "user_id" => "$get_user_id"
     ]);
 
+    // deleted accounts are tombstones - saving the form would revive them
+    if(($get_user['user_class'] ?? '') === 'deleted') {
+        echo '<div class="alert alert-info">'.$lang['users_delete_is_deleted'].'</div>';
+        return;
+    }
+
     foreach($get_user as $k => $v) {
         if($v == '') {
             continue;
@@ -213,13 +219,6 @@ $input_sa_city = [
     "type" => "text"
 ];
 
-$input_country = [
-    "input_name" => "user_country",
-    "input_value" => $user_country,
-    "label" => $lang['label_country'],
-    "type" => "text"
-];
-
 $input_ba_country = [
     "input_name" => "ba_country",
     "input_value" => $ba_country,
@@ -380,6 +379,86 @@ $input_rm_user_can_moderate = [
     "type" => "checkbox"
 ];
 
+// account tab - actions that take effect immediately (2FA reset, delete).
+// they sit inside the user form, so each button only sends its own fields
+// (hx-params) - the other tabs are neither saved nor sent with them
+$account_tpl = '';
+if(is_array($get_user ?? null)) {
+
+    $account_tpl .= '<p class="text-muted">'.$lang['users_account_no_save'].'</p>';
+
+    // two-factor authentication - only shown for backend users or accounts
+    // that have it set up; resetting the own account is done in the
+    // personal settings instead (see settings-writer.php)
+    if($get_user['user_class'] === 'administrator' || $get_user['user_2fa_method'] !== '') {
+
+        $account_tpl .= '<div class="card mb-3">';
+        $account_tpl .= '<div class="card-header">'.$icon['shield_lock'].' '.$lang['account_2fa_title'].'</div>';
+        $account_tpl .= '<div class="card-body">';
+        $account_tpl .= '<div id="twofaResetResponse"></div>';
+
+        if(se_2fa_account_locked($get_user)) {
+            $account_tpl .= '<div class="alert alert-warning">'.str_replace('{DATE}', se_format_datetime($get_user['user_2fa_locked_until']), $lang['users_2fa_locked']).'</div>';
+        }
+
+        if($get_user['user_2fa_method'] === '') {
+            $account_tpl .= '<p class="mb-0">'.$lang['account_2fa_not_set_up'].'</p>';
+        } else {
+            $account_tpl .= '<p>'.$icon['check_circle'].' '.$lang['users_2fa_set_up'].' ('.se_format_datetime($get_user['user_2fa_since']).')</p>';
+
+            if((int) $get_user['user_id'] !== (int) $_SESSION['user_id']) {
+                $account_tpl .= '<p class="text-muted">'.$lang['users_2fa_reset_intro'].'</p>';
+                $account_tpl .= '<button type="button" class="btn btn-default text-danger" name="reset_2fa" value="'.(int) $get_user['user_id'].'" hx-post="'.$writer_uri.'" hx-params="reset_2fa,csrf_token" hx-target="#twofaResetResponse" hx-confirm="'.htmlspecialchars($lang['users_2fa_confirm_reset'], ENT_QUOTES).'">'.$lang['users_2fa_reset'].'</button>';
+            } else {
+                $account_tpl .= '<p class="text-muted mb-0">'.$lang['users_2fa_not_own'].'</p>';
+            }
+        }
+
+        $account_tpl .= '</div>';
+        $account_tpl .= '</div>';
+    }
+
+    // delete the account - see app/functions/functions.user_delete.php
+    $delete_blocker = se_user_delete_blocker((int) $get_user['user_id'], 'acp');
+    $delete_summary = se_user_delete_summary((int) $get_user['user_id']);
+
+    $account_tpl .= '<div class="card">';
+    $account_tpl .= '<div class="card-header">'.$icon['trash'].' '.$lang['users_delete_title'].'</div>';
+    $account_tpl .= '<div class="card-body">';
+    $account_tpl .= '<div id="deleteUserResponse"></div>';
+    $account_tpl .= '<p class="text-muted">'.$lang['users_delete_intro'].'</p>';
+
+    $account_tpl .= '<ul class="list-unstyled">';
+    $account_tpl .= '<li>'.$lang['users_delete_orders'].': <strong>'.$delete_summary['orders'].'</strong>';
+    if($delete_summary['orders_open'] > 0) {
+        $account_tpl .= ' ('.$delete_summary['orders_open'].' '.$lang['users_delete_orders_open'].')';
+    }
+    $account_tpl .= '</li>';
+    $account_tpl .= '<li>'.$lang['users_delete_comments'].': <strong>'.$delete_summary['comments'].'</strong></li>';
+    $account_tpl .= '<li>'.$lang['users_delete_event_confirmations'].': <strong>'.$delete_summary['event_confirmations'].'</strong></li>';
+    $account_tpl .= '<li>'.$lang['users_delete_wishlists'].': <strong>'.$delete_summary['wishlists'].'</strong></li>';
+    $account_tpl .= '<li>'.$lang['users_delete_api_keys'].': <strong>'.$delete_summary['api_keys'].'</strong></li>';
+    $account_tpl .= '</ul>';
+
+    if($delete_blocker !== '') {
+        $account_tpl .= '<div class="alert alert-secondary mb-0">'.$lang[$delete_blocker].'</div>';
+    } else {
+        if($delete_summary['orders_open'] > 0) {
+            $account_tpl .= '<div class="alert alert-warning">'.$lang['users_delete_open_orders_warning'].'</div>';
+        }
+        if($delete_summary['comments'] > 0) {
+            $account_tpl .= '<div class="form-check mb-2">';
+            $account_tpl .= '<input type="checkbox" name="delete_user_comments" value="1" class="form-check-input" id="deleteUserComments">';
+            $account_tpl .= '<label class="form-check-label" for="deleteUserComments">'.$lang['users_delete_delete_comments'].'</label>';
+            $account_tpl .= '</div>';
+        }
+        $account_tpl .= '<button type="button" class="btn btn-default text-danger" name="delete_user" value="'.(int) $get_user['user_id'].'" hx-post="'.$writer_uri.'" hx-params="delete_user,delete_user_comments,csrf_token" hx-target="#deleteUserResponse" hx-confirm="'.htmlspecialchars($lang['users_delete_confirm'], ENT_QUOTES).'">'.$lang['users_delete_btn'].'</button>';
+    }
+
+    $account_tpl .= '</div>';
+    $account_tpl .= '</div>';
+}
+
 $form_tpl .= '<form hx-encoding="multipart/form-data">';
 
 $form_tpl .= '<div class="row">';
@@ -391,6 +470,9 @@ $form_tpl .= '<ul class="nav nav-tabs card-header-tabs">';
 $form_tpl .= '<li class="nav-item"><a href="#" class="nav-link active" id="info" data-bs-toggle="tab" data-bs-target="#info-tab">'.$lang['nav_btn_info'].'</a></li>';
 $form_tpl .= '<li class="nav-item"><a href="#" class="nav-link" id="contact" data-bs-toggle="tab" data-bs-target="#contact-tab">'.$lang['nav_btn_contact'].'</a></li>';
 $form_tpl .= '<li class="nav-item"><a href="#" class="nav-link" id="psw" data-bs-toggle="tab" data-bs-target="#psw-tab">'.$lang['nav_btn_psw'].'</a></li>';
+if($account_tpl !== '') {
+    $form_tpl .= '<li class="nav-item"><a href="#" class="nav-link" id="account" data-bs-toggle="tab" data-bs-target="#account-tab">'.$lang['nav_btn_user_account'].'</a></li>';
+}
 $form_tpl .= '</ul>';
 $form_tpl .= '</div>';
 $form_tpl .= '<div class="card-body">';
@@ -479,7 +561,6 @@ $form_tpl .= se_print_form_input($input_street);
 $form_tpl .= se_print_form_input($input_street_nbr);
 $form_tpl .= se_print_form_input($input_zip);
 $form_tpl .= se_print_form_input($input_city);
-$form_tpl .= se_print_form_input($input_country);
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 
@@ -564,6 +645,12 @@ $form_tpl .= '</div>';
 
 $form_tpl .= '</div>'; // tab-pane
 
+if($account_tpl !== '') {
+    $form_tpl .= '<div class="tab-pane fade" id="account-tab">';
+    $form_tpl .= $account_tpl;
+    $form_tpl .= '</div>'; // tab-pane
+}
+
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
 $form_tpl .= '</div>';
@@ -607,37 +694,3 @@ $form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token']
 $form_tpl .= '</form>';
 
 echo $form_tpl;
-
-// two-factor authentication - only shown for existing backend users or
-// accounts that have it set up; resetting the own account is done in the
-// personal settings instead (see settings-writer.php)
-if(is_array($get_user ?? null) && ($get_user['user_class'] === 'administrator' || $get_user['user_2fa_method'] !== '')) {
-
-    echo '<div class="card mt-3">';
-    echo '<div class="card-header">'.$icon['shield_lock'].' '.$lang['account_2fa_title'].'</div>';
-    echo '<div class="card-body">';
-    echo '<div id="twofaResetResponse"></div>';
-
-    if(se_2fa_account_locked($get_user)) {
-        echo '<div class="alert alert-warning">'.str_replace('{DATE}', se_format_datetime($get_user['user_2fa_locked_until']), $lang['users_2fa_locked']).'</div>';
-    }
-
-    if($get_user['user_2fa_method'] === '') {
-        echo '<p class="mb-0">'.$lang['account_2fa_not_set_up'].'</p>';
-    } else {
-        echo '<p>'.$icon['check_circle'].' '.$lang['users_2fa_set_up'].' ('.se_format_datetime($get_user['user_2fa_since']).')</p>';
-
-        if((int) $get_user['user_id'] !== (int) $_SESSION['user_id']) {
-            echo '<p class="text-muted">'.$lang['users_2fa_reset_intro'].'</p>';
-            echo '<form hx-post="'.$writer_uri.'" hx-target="#twofaResetResponse" hx-confirm="'.htmlspecialchars($lang['users_2fa_confirm_reset'], ENT_QUOTES).'">';
-            echo '<button class="btn btn-default text-danger" name="reset_2fa" value="'.(int) $get_user['user_id'].'">'.$lang['users_2fa_reset'].'</button>';
-            echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-            echo '</form>';
-        } else {
-            echo '<p class="text-muted mb-0">'.$lang['users_2fa_not_own'].'</p>';
-        }
-    }
-
-    echo '</div>';
-    echo '</div>';
-}

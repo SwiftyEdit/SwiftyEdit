@@ -21,6 +21,7 @@ $cols = array(
     "user_failed_logins"  => 'INTEGER NOT NULL DEFAULT 0',
     "user_failed_login_time" => 'INTEGER NOT NULL DEFAULT 0',
     "user_unlock_code" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "user_unlock_expires" => 'INTEGER NOT NULL DEFAULT 0',
     "user_locked_until" => 'INTEGER NOT NULL DEFAULT 0',
     "user_groups" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_avatar" => "VARCHAR(50) NOT NULL DEFAULT ''",
@@ -32,6 +33,9 @@ $cols = array(
     "user_registerdate" => "VARCHAR(25) NOT NULL DEFAULT ''",
     "user_verified" => "VARCHAR(25) NOT NULL DEFAULT ''",
     "user_verified_by_admin" => "VARCHAR(25) NOT NULL DEFAULT ''",
+    /* deleted accounts - see app/functions/functions.user_delete.php */
+    "user_deleted_at" => 'INTEGER NOT NULL DEFAULT 0',
+    "user_deleted_nick" => "VARCHAR(64) NOT NULL DEFAULT ''",
     "user_drm" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_acp_settings" => "LONGTEXT NOT NULL DEFAULT ''",
     "user_firstname" => "VARCHAR(50) NOT NULL DEFAULT ''",

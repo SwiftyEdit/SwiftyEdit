@@ -15,47 +15,20 @@ $get_my_userdata = get_my_userdata();
 
 // Delete the account
 if(isset($_POST['delete_my_account'])) {
+    // see app/functions/functions.user_delete.php
     $delete_id = (int) $_SESSION['user_id'];
+    $delete_blocker = se_user_delete_blocker($delete_id, 'self');
 
-    $get_columns = $db_user->get('se_user', '*', [
-        'user_id' => $delete_id,
-        'LIMIT' => 1
-    ]);
-
-
-    if (!empty($get_columns)) {
-        // get the columns
-        $columns = array_keys($get_columns);
-
-        $updateData = [];
-        foreach ($columns as $column) {
-            // skip user_nick and user_id
-            if($column == 'user_nick' || $column == 'user_id') {
-                continue;
-            }
-
-            if ($column === 'user_class') {
-                $updateData[$column] = 'deleted';
-            } else {
-                $updateData[$column] = '';
-            }
-        }
-
-        $count = $db_user->update('se_user', $updateData, [
-            'user_id' => $delete_id
-        ]);
-
-        if($count->rowCount() == 1) {
-            $smarty->assign("msg_status","alert alert-success",true);
-            $smarty->assign("register_message",$lang['msg_delete_account_success'],true);
-            session_destroy();
-            unset($_SESSION['user_nick']);
-        } else {
-            $smarty->assign("msg_status","alert alert-danger",true);
-            $smarty->assign("register_message",$lang['msg_delete_account_error'],true);
-        }
-    } else {
+    if($delete_blocker !== '') {
         $smarty->assign("msg_status","alert alert-warning",true);
+        $smarty->assign("register_message",$lang[$delete_blocker] ?? $lang['msg_delete_account_error'],true);
+    } else if(se_delete_user($delete_id)) {
+        $smarty->assign("msg_status","alert alert-success",true);
+        $smarty->assign("register_message",$lang['msg_delete_account_success'],true);
+        session_destroy();
+        unset($_SESSION['user_nick']);
+    } else {
+        $smarty->assign("msg_status","alert alert-danger",true);
         $smarty->assign("register_message",$lang['msg_delete_account_error'],true);
     }
 

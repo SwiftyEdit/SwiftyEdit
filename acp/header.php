@@ -48,13 +48,9 @@ require_once 'core/functions.php';
 require_once '../app/functions/functions.php';
 include_once '../acp/core/templates.php';
 
-// absolute lifetime / account changed since the login - the page has to go
-// back to the login (HX-Redirect for htmx requests)
-if (!se_validate_user_session()) {
-    http_response_code(401);
-    header('HX-Redirect: /admin/');
-    die('Session ended');
-}
+// absolute lifetime / account changed since the login / ACP idle timeout -
+// the page has to go back to the login (HX-Redirect for htmx requests)
+se_acp_guard();
 
 // Scan plugins/ once and reuse the result below (hooks registration) and in
 // se_bootstrap_editor_plugins() - both used to call se_get_all_addons() on
@@ -87,13 +83,6 @@ foreach ($se_get_preferences as $k => $v) {
         $se_settings[$short_key] = $value; // new
     }
 
-}
-
-// server-side idle timeout - let HTMX send the whole page to the login
-if (se_acp_session_expired()) {
-    http_response_code(401);
-    header('HX-Redirect: /admin/');
-    exit;
 }
 
 /* build absolute URL */
