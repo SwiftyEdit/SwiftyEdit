@@ -678,33 +678,16 @@ function se_send_order_status($recipient,$order,$reason): int|string {
     $build_html_mail = str_replace("{price_total}",$price_total,$build_html_mail);
 
     $order_products = json_decode($this_order['order_products'],true);
-    $cnt_order_products = count($order_products);
-
-    $products_str = '<table role="presentation" border="0" cellpadding="0" cellspacing="0">';
-    $products_str .= '<tr>';
-    $products_str .= '<td>#</td>';
-    $products_str .= '<td>'.$lang['label_product_info'].'</td>';
-    $products_str .= '<td>'.$lang['label_product_amount'].'</td>';
-    $products_str .= '<td>'.$lang['label_price'].' ('.$lang['label_net'].')</td>';
-    $products_str .= '<td>'.$lang['label_tax'].'</td>';
-    $products_str .= '</tr>';
-    for($i=0;$i<$cnt_order_products;$i++) {
-        $products_str .= '<tr>';
-        $products_str .= '<td>'.$order_products[$i]['product_number'].'</td>';
-        $products_str .= '<td>'.$order_products[$i]['title'];
-        $products_str .= '<p>'.$order_products[$i]['options'].'</p>';
-        if($order_products[$i]['options_comment'] != '') {
-            $products_str .= '<p>' . $order_products[$i]['options_comment_label'] . ': ' . $order_products[$i]['options_comment'] . '</p>';
-        }
-        $products_str .= '</td>';
-        $products_str .= '<td>'.$order_products[$i]['amount'].'</td>';
-        $products_str .= '<td>'.se_post_print_currency($order_products[$i]['price_net_raw']).' '.$this_order['order_currency'].'</td>';
-        $products_str .= '<td>'.$order_products[$i]['tax'].' %</td>';
-        $products_str .= '</tr>';
-
-        $all_items_subtotal_net = $all_items_subtotal_net+$order_products[$i]['price_net_raw'];
+    if(!is_array($order_products)) {
+        $order_products = [];
     }
-    $products_str .= '</table>';
+
+    $all_items_subtotal_net = 0;
+    foreach($order_products as $order_product) {
+        $all_items_subtotal_net = $all_items_subtotal_net+$order_product['price_net_raw'];
+    }
+
+    $products_str = se_build_mail_products($order_products, 'order-products', $this_order['order_currency']);
 
     $included_taxes = $this_order['order_price_total']-($all_items_subtotal_net+$this_order['order_shipping_costs']);
 
@@ -768,8 +751,91 @@ function se_build_html_file($data) {
 	$tpl_file = str_replace('{mail_title}', $data['title'], $tpl_file);
     $tpl_file = str_replace('{mail_preheader}', $data['preheader'], $tpl_file);
 	$tpl_file = str_replace('{mail_footer}', $footer, $tpl_file);
-	
-	return $tpl_file;	
+
+	return $tpl_file;
+}
+
+
+/**
+ * build the product table for order mails from two placeholder templates
+ * f.e. 'order-products' uses templates-mail/order-products.tpl (table wrapper with {order_products_rows})
+ * and templates-mail/order-products-row.tpl (one product, used for each item)
+ * if the active theme does not ship these files, the files from the default theme are used
+ * {lang_*} placeholders are not replaced here, the calling code does that for the whole mail
+ *
+ * @param array $items order products resp. cart items
+ * @param string $tpl base name of the templates without .tpl
+ * @param string $currency
+ * @return string html formatted string
+ */
+
+function se_build_mail_products($items, $tpl, $currency = '') {
+
+    $tpl = basename($tpl);
+    $tpl_wrapper = se_get_mail_template_file($tpl.'.tpl');
+    $tpl_row = se_get_mail_template_file($tpl.'-row.tpl');
+
+    $rows = '';
+    foreach((array) $items as $item) {
+
+        $amount = (int) ($item['amount'] ?? 0);
+
+        // single prices are stored as formatted strings, older orders may not have them
+        $price_net_single = $item['price_net_single_format'] ?? '';
+        $price_gross_single = $item['price_gross_single_format'] ?? '';
+        if($price_net_single == '' && $amount > 0) {
+            $price_net_single = se_post_print_currency($item['price_net_raw'] / $amount);
+        }
+        if($price_gross_single == '' && $amount > 0) {
+            $price_gross_single = se_post_print_currency($item['price_gross_raw'] / $amount);
+        }
+
+        $options_comment = '';
+        if(($item['options_comment'] ?? '') != '') {
+            $options_comment = '<p>'.$item['options_comment_label'].': '.$item['options_comment'].'</p>';
+        }
+
+        // strtr replaces in one pass, so values containing {placeholders} are not replaced again
+        $rows .= strtr($tpl_row, [
+            '{product_number}' => $item['product_number'] ?? '',
+            '{title}' => $item['title'] ?? '',
+            '{options}' => $item['options'] ?? '',
+            '{options_comment}' => $options_comment,
+            '{slug}' => $item['slug'] ?? '',
+            '{amount}' => $amount,
+            '{tax}' => $item['tax'] ?? '',
+            '{price_net_single}' => $price_net_single,
+            '{price_gross_single}' => $price_gross_single,
+            '{price_net}' => se_post_print_currency($item['price_net_raw'] ?? 0),
+            '{price_gross}' => se_post_print_currency($item['price_gross_raw'] ?? 0),
+            '{currency}' => $currency
+        ]);
+    }
+
+    return str_replace('{order_products_rows}', $rows, $tpl_wrapper);
+}
+
+/**
+ * get the content of a mail template from the active theme
+ * fall back to the default theme if the file does not exist
+ *
+ * @param string $file file name in templates-mail/
+ * @return string
+ */
+
+function se_get_mail_template_file($file) {
+
+    global $se_settings;
+
+    $file = basename($file);
+    $tpl_path = SE_ROOT.'/public/assets/themes/'.basename($se_settings['template']).'/templates-mail/'.$file;
+    if(!is_file($tpl_path)) {
+        $tpl_path = SE_ROOT.'/public/assets/themes/default/templates-mail/'.$file;
+    }
+    if(!is_file($tpl_path)) {
+        return '';
+    }
+    return file_get_contents($tpl_path);
 }
 
 
