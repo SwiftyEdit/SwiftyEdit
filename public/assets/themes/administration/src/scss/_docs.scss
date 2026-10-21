@@ -8,6 +8,31 @@
     border-radius: 0;
   }
 
+  // inline code: neutral text color with a subtle background instead of the bright $code-color
+  :not(pre) > code {
+    padding: .1em .35em;
+    font-size: .85em;
+    color: var(--bs-body-color);
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color-translucent);
+    border-radius: var(--bs-border-radius-sm);
+    overflow-wrap: break-word;
+  }
+
+  // shortcodes like [snippet]name[/snippet], tagged in se_parse_docs_file()
+  :not(pre) > code.code-shortcode {
+    color: var(--bs-primary-text-emphasis);
+    background-color: var(--bs-primary-bg-subtle);
+    border-color: var(--bs-primary-border-subtle);
+  }
+
+  // template file names like profile/avatar.tpl, tagged in se_parse_docs_file()
+  :not(pre) > code.code-template {
+    color: var(--bs-success-text-emphasis);
+    background-color: var(--bs-success-bg-subtle);
+    border-color: var(--bs-success-border-subtle);
+  }
+
   kbd {
     padding: .25rem .5rem;
     color: var(--bs-primary);

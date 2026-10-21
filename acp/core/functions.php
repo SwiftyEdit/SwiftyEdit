@@ -1678,6 +1678,20 @@ function se_parse_docs_file($file): array {
             $parsed_content
         );
 
+        // mark inline shortcodes like [snippet]name[/snippet] or [plugin=...] for separate styling
+        $parsed_content = preg_replace(
+            '#(?<!<pre>)<code>(\[/?(?:snippet|plugin|include|script)\b[^<]*)</code>#i',
+            '<code class="code-shortcode">$1</code>',
+            $parsed_content
+        );
+
+        // mark template file names (single token ending in .tpl) for separate styling
+        $parsed_content = preg_replace(
+            '#(?<!<pre>)<code>([^<\s]+\.tpl)</code>#i',
+            '<code class="code-template">$1</code>',
+            $parsed_content
+        );
+
         $filemtime = filemtime($file);
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
