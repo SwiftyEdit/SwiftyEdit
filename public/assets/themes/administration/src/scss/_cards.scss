@@ -104,29 +104,43 @@
 			background: lighten($widget_background_dark,5%);
 		}
 
-		// Nested cards: the frame itself gets a darker tone to set it apart. .card-body
-		// keeps the same base $widget_background_dark as every other level (so content
-		// like form fields always sits on a known background) but gets a subtle lighter
-		// gradient on top of that base, running the full height from top to bottom, as a
-		// visual nesting cue.
-		.card {
-			background: darken($widget_background_dark,5);
-
-			.card-body {
-				background: linear-gradient(to bottom, $nested_card_gradient_dark, $widget_background_dark);
-			}
-
-			// The active card-header-tab must match the gradient's top (lightest) color,
-			// not the flat $widget_background_dark used at the top level — otherwise the
-			// tab and the card-body edge right below it would show a visible color seam.
-			.card-header-tabs li {
-				.active,
-				.active:hover {
-					background: $nested_card_gradient_dark;
-					border-color: $nested_card_gradient_dark;
-				}
-			}
-		}
-
 	}
+}
+
+// Nested cards: set apart by one flat tonal step plus a hairline border instead
+// of gradients. The themed widget-bg scale darkens in both themes, so the inner
+// card sits a step darker than its parent and its header one step further.
+.card .card {
+	--se-nested-card-bg: var(--bs-widget-bg-600);
+	--se-nested-card-header-bg: var(--bs-widget-bg-700);
+	background: var(--se-nested-card-bg);
+	border: 1px solid var(--bs-border-color-translucent);
+	border-radius: calc(var(--bs-card-border-radius) * .6);
+	box-shadow: none;
+
+	.card-header {
+		background: var(--se-nested-card-header-bg);
+		border-bottom: 1px solid var(--bs-border-color-translucent);
+	}
+	.card-body,
+	.card-footer {
+		background: transparent;
+	}
+
+	// Active tab blends into the inner card surface below it
+	.card-header-tabs li {
+		.active,
+		.active:hover {
+			background: var(--se-nested-card-bg);
+			border-color: var(--bs-border-color-translucent);
+			border-bottom-color: var(--se-nested-card-bg);
+		}
+	}
+}
+
+// The dark widget-bg scale is mixed with $primary, which shows up as a blue
+// cast next to the neutral gray of the parent card. Use neutral steps instead.
+[data-bs-theme="dark"] .card .card {
+	--se-nested-card-bg: #{darken($widget_background_dark, 2%)};
+	--se-nested-card-header-bg: #{darken($widget_background_dark, 4%)};
 }
