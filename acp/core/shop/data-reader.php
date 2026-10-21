@@ -489,10 +489,18 @@ if($_REQUEST['action'] == 'list_price_groups') {
         echo '<table class="table table-sm">';
         echo '<tr>';
         echo '<td>'.$lang['label_title'].'</td>';
-        echo '<td>'.$lang['label_price'].'</td>';
-        echo '<td>'.$lang['label_scaling_prices'].'</td>';
+        echo '<td>'.$lang['label_product_price'].' '.$lang['label_product_net'].'</td>';
+        echo '<td>'.$lang['label_product_price'].' '.$lang['label_product_gross'].'</td>';
+        echo '<td>'.$lang['label_product_scaling_prices'].'</td>';
         echo '<td></td>';
-        echo '<td>';
+        echo '</tr>';
+
+        $tax_options = [
+            1 => $se_settings['posts_products_default_tax'],
+            2 => $se_settings['posts_products_tax_alt1'],
+            3 => $se_settings['posts_products_tax_alt2'],
+        ];
+
         foreach ($get_all_price_groups as $group) {
 
             $status_volume_discounts = $icon['check'];
@@ -500,14 +508,18 @@ if($_REQUEST['action'] == 'list_price_groups') {
                 $status_volume_discounts = $icon['x'];
             }
 
+            $tax = $tax_options[$group['tax']] ?? $tax_options[1];
+            $group_prices = se_posts_calc_price($group['price_net'], $tax);
+
             echo '<tr>';
             echo '<td>'.$group['title'].'</td>';
-            echo '<td>'.$group['price_net'].'</td>';
+            echo '<td>'.$group_prices['net_single'].'</td>';
+            echo '<td>'.$group_prices['gross_single'].'</td>';
             echo '<td>'.$status_volume_discounts.'</td>';
             echo '<td class="text-end">';
             echo '<form>';
             echo '<button type="button" hx-post="/admin-xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
-            echo '<button type="button" hx-post="/admin-xhr/shop/write/" class="btn btn-default btn-sm text-danger" name="delete" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
+            echo '<button type="button" hx-post="/admin-xhr/shop/write/" hx-target="#priceGroupResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" class="btn btn-default btn-sm text-danger" name="delete_price_group" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
             echo $hidden_csrf_token;
             echo '</form>';
             echo '</td>';

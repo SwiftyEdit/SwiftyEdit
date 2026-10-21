@@ -35,31 +35,34 @@ function swap_gross_to_net(price_gross) {
 }
 
 
-var inputs_price_net = $('.prod_price_net');
-var inputs_price_gross = $('.prod_price_gross');
-
-$('.prod_price_net').on('keyup', function() {
-    var price_net = $(this).closest('.row').find(inputs_price_net).val();
+// delegated handlers, so forms loaded later via htmx (e.g. price groups) work too
+$(document).on('keyup', '.prod_price_net', function() {
+    var price_net = $(this).val();
     var current_gross = swap_net_to_gross(price_net);
-    var price_gross_input = $(this).closest('.row').find(inputs_price_gross)
-    $(price_gross_input).val(current_gross);
+    $(this).closest('.row').find('.prod_price_gross').val(current_gross);
 });
 
-$('.prod_price_gross').on('keyup', function() {
-    var price_gross = $(this).closest('.row').find(inputs_price_gross).val();
+$(document).on('keyup', '.prod_price_gross', function() {
+    var price_gross = $(this).val();
     var current_net = swap_gross_to_net(price_gross);
-    var price_net_input = $(this).closest('.row').find(inputs_price_net)
-    $(price_net_input).val(current_net);
+    $(this).closest('.row').find('.prod_price_net').val(current_net);
 });
 
+// fill the gross fields from the stored net prices
+function init_gross_prices(container) {
+    $(container).find('.prod_price_net').each(function() {
+        var price_net = $(this).val();
+        if(price_net) {
+            var current_gross = swap_net_to_gross(price_net);
+            $(this).closest('.row').find('.prod_price_gross').val(current_gross);
+        }
+    });
+}
 
-$('.prod_price_net').each(function(i, obj) {
-    var price_net = $(this).closest('.row').find(inputs_price_net).val();
-    if(price_net) {
-        var current_gross = swap_net_to_gross(price_net);
-        var price_gross_input = $(this).closest('.row').find(inputs_price_gross)
-        $(price_gross_input).val(current_gross);
-    }
+init_gross_prices(document);
+
+document.addEventListener('htmx:load', function(evt) {
+    init_gross_prices(evt.target);
 });
 
 });

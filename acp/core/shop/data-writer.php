@@ -252,6 +252,37 @@ if(isset($_POST['save_price'])) {
     }
 }
 
+// delete price group
+// refuse if the group is still assigned to products (they reference it by hash)
+if(isset($_POST['delete_price_group']) && is_numeric($_POST['delete_price_group'])) {
+    $delete_id = (int) $_POST['delete_price_group'];
+    $price_group = $db_posts->get("se_prices", ["hash"], [
+        "id" => $delete_id
+    ]);
+
+    if(empty($price_group)) {
+        show_toast($lang['msg_error_db_changed'],'danger');
+        exit;
+    }
+
+    $cnt_products = $db_posts->count("se_products", [
+        "product_price_group" => $price_group['hash']
+    ]);
+
+    if($cnt_products > 0) {
+        show_toast($lang['msg_error_price_group_in_use'].' ('.$cnt_products.')','danger');
+        exit;
+    }
+
+    $db_posts->delete("se_prices", [
+        "id" => $delete_id
+    ]);
+    show_toast($lang['msg_info_data_deleted'],'success');
+    record_log($_SESSION['user_nick'],"deleted price group id: $delete_id","10");
+    header( "HX-Trigger: update_price_groups, show_price_groups_form");
+    exit;
+}
+
 // change priority
 if(isset($_POST['priority'])) {
     $change_id = (int) $_POST['prio_id'];
