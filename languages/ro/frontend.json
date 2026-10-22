@@ -33,7 +33,7 @@
   "label_guest_checkout_hint": "You can complete this order as a guest. If you would like to save your details for next time, you can also create an account instead.",
   "label_company": "Companie",
   "label_tax_number": "Număr impozit",
-  "label_tax_id_number": "Număr de identificare fiscală",
+  "label_tax_id_number": "VAT ID number",
   "label_lastname": "Nume",
   "label_firstname": "Prenume",
   "label_mail": "E-mail",
