@@ -9,7 +9,7 @@
 error_reporting(E_ALL);
 session_start();
 
-if(!isset($_SESSION['user_class']) && $_SESSION['user_class'] != 'administrator'){
+if(($_SESSION['user_class'] ?? '') !== 'administrator'){
     die();
 }
 
