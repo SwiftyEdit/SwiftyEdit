@@ -80,7 +80,7 @@ if($_POST['send_registerform']) {
         'username', 'mail', 'mailrepeat', 'psw', 'psw_repeat', 'accept_terms',
         'firstname', 'name', 'user_company', 'street', 'nr', 'zip', 'city', 'about_you',
         'ba_company', 'ba_firstname', 'ba_lastname', 'ba_street', 'ba_street_nbr', 'ba_zip',
-        'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number', 'ba_sales_tax_id_number',
+        'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number',
         'sa_company', 'sa_firstname', 'sa_lastname', 'sa_street', 'sa_street_nbr', 'sa_zip',
         'sa_city', 'sa_country'
     ];
@@ -191,7 +191,6 @@ if($_POST['send_registerform']) {
             "ba_country" => "$ba_country",
             "ba_tax_number" => "$ba_tax_number",
             "ba_tax_id_number" => "$ba_tax_id_number",
-            "ba_sales_tax_id_number" => "$ba_sales_tax_id_number",
             "sa_company" => "$sa_company",
             "sa_firstname" => "$sa_firstname",
             "sa_lastname" => "$sa_lastname",

@@ -2,9 +2,8 @@
 
 /**
  * german tax informations:
- * ba_tax_id_number - Steueridentifikationsnummer
- * ba_tax_number - Steuernummer
- * ba_sales_tax_id_number - Umsatzsteuernummer-Identifikationsnummer (USt-IdNr)
+ * ba_tax_id_number - VAT ID number (USt-IdNr), used by forms and the ACP
+ * ba_tax_number - tax number (Steuernummer)
  *
  */
 
@@ -68,7 +67,6 @@ $cols = array(
     "ba_company" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_tax_id_number" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_tax_number" => "VARCHAR(50) NOT NULL DEFAULT ''",
-    "ba_sales_tax_id_number" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_country" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_country_code" => "VARCHAR(2) NOT NULL DEFAULT ''",
     "ba_state" => "VARCHAR(50) NOT NULL DEFAULT ''",

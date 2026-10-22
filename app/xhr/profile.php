@@ -246,8 +246,7 @@ if(isset($_POST['update_address_mail'])) {
 if(isset($_POST['update_address_ba'])) {
     $ba_data = se_sanitize_fields([
         'ba_company', 'ba_firstname', 'ba_lastname', 'ba_street', 'ba_street_nbr',
-        'ba_zip', 'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number',
-        'ba_sales_tax_id_number'
+        'ba_zip', 'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number'
     ]);
 
     if (is_numeric($_SESSION['user_id'])) {
