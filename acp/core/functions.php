@@ -362,13 +362,14 @@ function se_scandir_rec($dir) {
    
    $result = array(); 
 
-   $cdir = scandir($dir); 
-   foreach ($cdir as $key => $value) { 
-      if(in_array($value,array('..', '.','.DS_Store','index.html'))) {
+   $cdir = scandir($dir);
+   foreach ($cdir as $key => $value) {
+      // skip dotfiles (., .., .DS_Store, .htaccess, ...) and placeholder files
+      if(str_starts_with($value, '.') || $value === 'index.html') {
 	      continue;
 	    }
       if(is_dir($dir . '/' . $value)) {
-	      $result[] = se_scandir_rec($dir . '/' . $value); 
+	      $result[] = se_scandir_rec($dir . '/' . $value);
       } else { 
         $result[] = $dir.'/'.$value; 
       } 
@@ -386,9 +387,10 @@ function se_get_dirs_rec($dir) {
    
    $result = array(); 
 
-   $cdir = scandir($dir); 
-   foreach ($cdir as $key => $value) { 
-      if(in_array($value,array('..', '.','.DS_Store','index.html'))) {
+   $cdir = scandir($dir);
+   foreach ($cdir as $key => $value) {
+      // skip dotfiles/hidden folders and placeholder files
+      if(str_starts_with($value, '.') || $value === 'index.html') {
 	      continue;
 	    }
       if(is_dir($dir . '/' . $value)) {

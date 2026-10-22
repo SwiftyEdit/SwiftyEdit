@@ -9,7 +9,8 @@ function se_scandir_recursive($dir): array {
     $result = [];
     $root = scandir($dir);
     foreach($root as $value) {
-        if($value === '.' || $value === '..'|| $value === '.DS_Store') {continue;}
+        // skip dotfiles (., .., .DS_Store, .htaccess, ...)
+        if(str_starts_with($value, '.')) {continue;}
         $result[]="$dir/$value";
         if(is_dir("$dir/$value")) {
             foreach(se_scandir_recursive("$dir/$value") as $value) {
