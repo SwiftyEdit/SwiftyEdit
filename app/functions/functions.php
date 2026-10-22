@@ -58,7 +58,7 @@ function se_getPreferencesCachePath() {
 
     $dir = SE_CONTENT . '/cache/preferences';
     if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+        mkdir($dir, SE_DIR_PERMISSIONS, true);
     }
 
     return $dir . '/options.json';
@@ -189,7 +189,7 @@ function se_getCategoriesCachePath() {
 
 	$dir = SE_CONTENT . '/cache/categories';
 	if (!is_dir($dir)) {
-		mkdir($dir, 0777, true);
+		mkdir($dir, SE_DIR_PERMISSIONS, true);
 	}
 
 	return $dir . '/categories.json';

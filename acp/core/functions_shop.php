@@ -366,7 +366,7 @@ function se_updateSlugMap($lang) {
     global $db_posts;
 
     if (!is_dir(SE_CONTENT . '/cache/products')) {
-        mkdir(SE_CONTENT . '/cache/products', 0777, true);
+        mkdir(SE_CONTENT . '/cache/products', SE_DIR_PERMISSIONS, true);
     }
 
     $products = $db_posts->select("se_products", ["id","slug"], ["product_lang" => $lang]);

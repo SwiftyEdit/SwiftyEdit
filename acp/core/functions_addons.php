@@ -1310,7 +1310,7 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 	}
 
 	if(!is_dir($cache_dir)) {
-		mkdir($cache_dir, 0777, true);
+		mkdir($cache_dir, SE_DIR_PERMISSIONS, true);
 	}
 	file_put_contents($cache_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 

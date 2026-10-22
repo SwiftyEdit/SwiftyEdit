@@ -20,7 +20,7 @@ function se_getTagsCachePath() {
 
     $dir = SE_CONTENT . '/cache/tags';
     if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+        mkdir($dir, SE_DIR_PERMISSIONS, true);
     }
 
     return $dir . '/tags.json';

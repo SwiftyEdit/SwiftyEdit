@@ -1543,7 +1543,7 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 	}
 	
 	if(!is_dir($tmb_destination)) {
-		mkdir($tmb_destination,0777,true);
+		mkdir($tmb_destination, SE_DIR_PERMISSIONS, true);
 	}
 	
 

@@ -218,7 +218,7 @@ function se_getNavigationCachePath($lang) {
 
     $dir = SE_CONTENT . '/cache/navigation';
     if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+        mkdir($dir, SE_DIR_PERMISSIONS, true);
     }
 
     return $dir . '/nav_' . $lang . '.json';

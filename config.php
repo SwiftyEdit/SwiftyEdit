@@ -171,3 +171,12 @@ if(is_file(SE_CONTENT . '/config.php')) {
 if(is_file(SE_CONTENT . '/config_smtp.php')) {
 	include SE_CONTENT . '/config_smtp.php';
 }
+
+/* Permissions for folders SwiftyEdit creates (cache, uploads, thumbnails).
+ * If the web server and your FTP user are different accounts and you need
+ * write access to these folders via FTP, add to SE_CONTENT/config.php:
+ * define('SE_DIR_PERMISSIONS', 0775);
+ */
+if(!defined('SE_DIR_PERMISSIONS')) {
+	define('SE_DIR_PERMISSIONS', 0755);
+}

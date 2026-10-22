@@ -68,6 +68,9 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   Core-Block von `public/.htaccess`, eigene Regeln davor und danach bleiben erhalten. Mit
   `$se_update_htaccess = false;` in `data/config.php` bleibt die Datei unangetastet. Details unter
   [Installation](01-01-installation.md#updates-htaccess).
+* __Ordnerrechte__ (`SE_DIR_PERMISSIONS`) - Ordner, die SwiftyEdit anlegt (Cache, Uploads,
+  Vorschaubilder), bekommen `0755`. Brauchst Du per FTP mit einem anderen Benutzer Schreibrechte,
+  trage `define('SE_DIR_PERMISSIONS', 0775);` in `data/config.php` ein.
 * __Einbettungen__ (`$se_embed_hosts` in `config.php`) - HTML aus dem Editor wird beim Speichern
   mit `se_purify_html()` bereinigt (derzeit Teaser und Text der Kategorien). Iframes bleiben nur
   erhalten, wenn ihre Quelle eine `https`-Adresse aus dieser Liste ist. Ein Eintrag ist ein Host

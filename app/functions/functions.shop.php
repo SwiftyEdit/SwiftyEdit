@@ -803,7 +803,7 @@ function se_getProductCachePath($id, $lang) {
     $dir = $baseDir . '/' . str_pad($range, 3, '0', STR_PAD_LEFT);
 
     if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+        mkdir($dir, SE_DIR_PERMISSIONS, true);
     }
 
     return $dir . '/' . $id . '-' . $lang . '.json';

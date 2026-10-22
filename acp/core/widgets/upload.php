@@ -221,7 +221,7 @@ if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
     $max_width_tmb = (int) $_REQUEST['w_tmb']; // max thumbnail width
     $max_height_tmb = (int) $_REQUEST['h_tmb']; // max thumbnail height
     if(!is_dir($uploads_dir)) {
-        mkdir($uploads_dir, 0777, true);
+        mkdir($uploads_dir, SE_DIR_PERMISSIONS, true);
     }
 
     if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
@@ -575,7 +575,7 @@ function se_handle_branding_upload(string $target, string $branding_path, array 
     }
 
     if (!is_dir($branding_path)) {
-        mkdir($branding_path, 0777, true);
+        mkdir($branding_path, SE_DIR_PERMISSIONS, true);
     }
 
     $filename = "$target.$suffix";

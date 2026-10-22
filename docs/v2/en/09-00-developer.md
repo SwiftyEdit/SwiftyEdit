@@ -66,6 +66,9 @@ A few more small things worth knowing:
   block of `public/.htaccess`, own rules before and after it are kept. With
   `$se_update_htaccess = false;` in `data/config.php` the file is left untouched. Details in
   [Installation](01-01-installation.md#updates-htaccess).
+* __Folder permissions__ (`SE_DIR_PERMISSIONS`) - folders SwiftyEdit creates (cache, uploads,
+  thumbnails) get `0755`. If you need write access via FTP with a different user, add
+  `define('SE_DIR_PERMISSIONS', 0775);` to `data/config.php`.
 * __Embeds__ (`$se_embed_hosts` in `config.php`) - HTML from the editor is cleaned with
   `se_purify_html()` when it is saved (currently the teaser and text of categories). Iframes
   are only kept if their source is a `https` address from this list. An entry is a host

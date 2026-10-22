@@ -45,7 +45,7 @@ function se_delete_twig_cache(): void {
 			$file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
 		}
 	} else {
-		mkdir($cache_dir, 0777, true);
+		mkdir($cache_dir, SE_DIR_PERMISSIONS, true);
 	}
 
 }
@@ -97,7 +97,7 @@ function se_rebuild_all_snippets_cache(): int {
 
     $cache_dir = SE_CONTENT . '/cache/snippets';
     if (!is_dir($cache_dir)) {
-        mkdir($cache_dir, 0777, true);
+        mkdir($cache_dir, SE_DIR_PERMISSIONS, true);
     }
 
     $snippets = $db_content->select("se_snippets", "*");
