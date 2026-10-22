@@ -53,6 +53,13 @@ A few more small things worth knowing:
   `$se_2fa_required = true;` in `data/config.php`, every backend user needs a second factor;
   `$se_2fa_bypass` is the emergency switch. Details in
   [User management](07-00-user.md#two-factor-authentication).
+* __Account lock after failed logins__ (`$se_failed_logins_limit` in `config.php`) - after
+  5 wrong passwords in a row (default) the account is locked for 1 minute, every further failed
+  attempt doubles the lock (at most 60 minutes). The owner gets a mail with an unlock link (at
+  most one per hour). One failed attempt is forgotten per 10 minutes without one. Applies to
+  frontend and backend, in addition to the limit per IP address (10 failed attempts in 15
+  minutes). Set another value in `data/config.php`, e.g. `$se_failed_logins_limit = 10;`, or
+  switch it off with `$se_failed_logins_limit = null;`.
 * __Session lifetime__ (`$se_session_max_lifetime` in `config.php`) - every login ends after
   this many seconds, regardless of activity (default 12 hours, `0` = no limit). Independently,
   a new password, withdrawn rights or a deactivated account end all other sessions of that

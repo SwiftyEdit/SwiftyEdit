@@ -26,8 +26,14 @@ $se_upload_frontend_types = array('jpg','jpeg','png');
 /* page types */
 $se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders', 'order_withdrawal', 'wishlist', 'tagged');
 
-// limit login fails - integer || null
-$se_failed_logins_limit = null;
+/* Lock an account after this many failed logins in a row (integer, or null
+ * to switch it off). The lock lasts 1 minute and doubles with every further
+ * failed attempt, up to 60 minutes; the owner gets a mail with an unlock link.
+ * One failed attempt is forgotten per 10 minutes. To change it, add to
+ * SE_CONTENT/config.php e.g.:
+ * $se_failed_logins_limit = 10;   or   $se_failed_logins_limit = null;
+ */
+$se_failed_logins_limit = 5;
 
 /* define Folder structure */
 const SE_ROOT = __DIR__ . DIRECTORY_SEPARATOR;
