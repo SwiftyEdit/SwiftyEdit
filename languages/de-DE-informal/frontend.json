@@ -33,7 +33,7 @@
   "label_guest_checkout_hint": "Du kannst diese Bestellung als Gast abschließen. Wenn du deine Daten für das nächste Mal speichern möchtest, kannst du stattdessen auch einen Account anlegen.",
   "label_company": "Firma",
   "label_tax_number": "Steuernummer",
-  "label_tax_id_number": "VAT ID number",
+  "label_tax_id_number": "USt-IdNr.",
   "label_lastname": "Nachname",
   "label_firstname": "Vorname",
   "label_mail": "E-Mail",
