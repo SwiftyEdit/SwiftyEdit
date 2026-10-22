@@ -7,7 +7,8 @@
  *	{title: 'My page', value: '/my_page/'}, ...
  */
 error_reporting(E_ALL);
-session_start();
+require_once __DIR__.'/../../../../../app/session.php';
+se_session_start();
 
 if(($_SESSION['user_class'] ?? '') !== 'administrator'){
     die();

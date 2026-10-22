@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__.'/../app/session.php';
+se_session_start();
 //error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
 const SE_SECTION = "backend";
 require '../vendor/autoload.php';

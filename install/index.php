@@ -4,7 +4,8 @@
  * SwiftyEdit
  * Installer/Updater
  */
-session_start();
+require_once __DIR__.'/../app/session.php';
+se_session_start();
 error_reporting(0);
 require '../vendor/autoload.php';
 require '../config.php';

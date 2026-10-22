@@ -8,7 +8,8 @@ ini_set("url_rewriter.tags", '');
 if (preg_match('#^/?api(/|$)#', (string) ($_GET['query'] ?? ''))) {
     $_SESSION = [];
 } else {
-    session_start();
+    require_once __DIR__.'/session.php';
+    se_session_start();
 }
 error_reporting(0); // safe default until $se_environment is known
 $se_start_time = microtime(true);

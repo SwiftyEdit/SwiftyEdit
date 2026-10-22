@@ -36,7 +36,8 @@
  *
  */
 
-session_start();
+require_once __DIR__.'/../app/session.php';
+se_session_start();
 const SE_SECTION = "backend";
 
 require '../vendor/autoload.php';
