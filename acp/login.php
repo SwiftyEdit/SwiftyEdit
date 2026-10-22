@@ -26,6 +26,7 @@ if ($se_environment === 'd') {
 
 require SE_ROOT.'/app/database.php';
 require '../languages/index.php';
+require_once SE_ROOT.'/app/functions/functions.helpers.php';
 $login = '';
 
 $se_get_settings = se_get_preferences();
@@ -228,7 +229,7 @@ if(isset($_SESSION['2fa_pending'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login <?php echo $_SERVER['SERVER_NAME']; ?></title>
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="<?php echo se_acp_asset_url('backend.css'); ?>" type="text/css" media="screen, projection">
     <style>
         .form-center {
             max-width: 475px;
@@ -332,7 +333,7 @@ if(isset($_SESSION['2fa_pending'])) {
     ?>
     <div class="bg-white p-2 rounded mx-auto mb-2" style="max-width:220px" data-otpauth="<?php echo htmlspecialchars($twofa_uri, ENT_QUOTES); ?>"></div>
     <p class="text-center small"><?php echo $lang['login_2fa_app_key']; ?>: <code class="user-select-all"><?php echo trim(chunk_split($twofa_secret, 4, ' ')); ?></code></p>
-    <script type="module" src="/themes/administration/dist/twofa.js"></script>
+    <script type="module" src="<?php echo se_acp_asset_url('twofa.js'); ?>"></script>
     <?php } ?>
 
     <?php if($twofa_show_code) { ?>

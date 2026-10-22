@@ -63,4 +63,4 @@ require_once __DIR__.'/twofactor-card.php';
 $my_user = $db_user->get("se_user", "*", ["user_id" => (int) $_SESSION['user_id']]);
 echo se_acp_twofa_card($my_user);
 // renders the QR code of the authenticator app setup, also after HTMX swaps
-echo '<script type="module" src="/themes/administration/dist/twofa.js"></script>';
+echo '<script type="module" src="'.se_acp_asset_url('twofa.js').'"></script>';

@@ -383,7 +383,7 @@ if (strlen($se_settings['pagename']) > 30) {
     <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
 
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2026-09-16c" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="<?php echo se_acp_asset_url('backend.css'); ?>" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo htmlentities($languagePack); ?>";
@@ -400,7 +400,7 @@ if (strlen($se_settings['pagename']) > 30) {
         }
     </script>
 
-    <script src="/themes/administration/dist/backend.js?v=2026-09-11a"></script>
+    <script src="<?php echo se_acp_asset_url('backend.js'); ?>"></script>
     <?php
     /* load the <head> assets of every installed editor plugin */
     foreach ($se_editor_addons as $editor_addon) {
