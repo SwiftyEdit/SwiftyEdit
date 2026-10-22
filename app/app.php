@@ -128,7 +128,11 @@ if(isset($_POST['download'])) {
     $p = 'download';
 }
 
+// a page locked by its password only shows the password form (template-setup.php)
 foreach($valid_page_types as $handler) {
+    if($page_psw_locked) {
+        break;
+    }
     if($p == $handler) {
         $handler_file = __DIR__.'/handlers/'.$handler.'.php';
         if(is_file($handler_file)) {
@@ -150,7 +154,7 @@ if(isset($product_data) AND $product_data['comments'] == 1) {
     $product_comments = 1;
 }
 
-if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_settings['comments_mode'] != 3) {
+if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_settings['comments_mode'] != 3 && !$page_psw_locked) {
     $smarty->assign('show_page_comments', 'true', true);
 
     if($post_comments == 1) {

@@ -396,7 +396,11 @@ if(isset($_GET['reset_page_psw'])) {
     unset($_SESSION['page_psw']);
 }
 
-if(isset($page_psw) && $page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) {
+// locked: app.php then runs no page type handler (product/post/event lists ...),
+// which would replace the password form with the protected content
+$page_psw_locked = false;
+if(isset($page_psw) && $page_psw !== '' && ($_SESSION['page_psw'] ?? '') !== $page_psw) {
+    $page_psw_locked = true;
     $formaction = SE_INCLUDE_PATH . '/'.$swifty_slug;
     $page_title = 'Password Protected Page';
     $page_meta_robots = 'noindex';
