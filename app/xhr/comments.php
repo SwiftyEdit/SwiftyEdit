@@ -32,7 +32,15 @@ if(isset($_POST['send_user_comment'])) {
     exit;
 }
 
-if($_REQUEST['form'] == 'comments') {
+// form and list only for an entry with comments switched on, which the
+// visitor can see (no draft, page password entered) - se_write_comment()
+// checks the same when saving
+$comment_target = se_comment_target($_GET);
+if($comment_target === null || !se_comments_allowed($comment_target['type'], $comment_target['relation_id'])) {
+    exit;
+}
+
+if(($_REQUEST['form'] ?? '') == 'comments') {
 
     if(isset($_GET['page_id'])) {
         $page_id = (int) $_GET['page_id'];
@@ -92,20 +100,7 @@ if($_REQUEST['form'] == 'comments') {
 
 $show_thread = false;
 
-if(isset($_GET['post_id'])) {
-    $filter['relation_id'] = (int) $_GET['post_id'];
-    $filter['type'] = 'b';
-}
-
-if(isset($_GET['product_id'])) {
-    $filter['relation_id'] = (int) $_GET['product_id'];
-    $filter['type'] = 'c';
-}
-
-if(isset($_GET['page_id'])) {
-    $filter['relation_id'] = (int) $_GET['page_id'];
-    $filter['type'] = 'p';
-}
+$filter = $comment_target;
 
 if(is_array($filter)) {
 

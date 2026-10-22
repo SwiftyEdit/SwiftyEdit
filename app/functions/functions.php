@@ -388,6 +388,79 @@ function se_build_thread_array(&$array, $data) {
 
 
 /**
+ * What a comment request is about - from 'product_id', 'post_id' or
+ * 'page_id' (checked in this order, like the comment block in app/app.php).
+ *
+ * @param array $data request data ($_GET or $_POST)
+ * @return array|null ['type' => 'c'|'b'|'p', 'relation_id' => int] or null
+ */
+function se_comment_target(array $data): ?array {
+
+	$types = ['product_id' => 'c', 'post_id' => 'b', 'page_id' => 'p'];
+	foreach($types as $key => $type) {
+		if(isset($data[$key]) && is_numeric($data[$key]) && (int) $data[$key] > 0) {
+			return ['type' => $type, 'relation_id' => (int) $data[$key]];
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Whether the comments of a page, post or product may be read and written:
+ * comments are switched on globally and for the entry, the entry is visible
+ * to the visitor (no draft) and - for pages - not locked by a page password
+ * the visitor hasn't entered (see template-setup.php).
+ *
+ * @param string $type 'p' page, 'b' post, 'c' product
+ * @param int $relation_id id of the page, post or product
+ * @return bool
+ */
+function se_comments_allowed(string $type, int $relation_id): bool {
+
+	global $db_content, $db_posts, $se_settings;
+
+	if((int) ($se_settings['comments_mode'] ?? 1) === 3 || $relation_id <= 0) {
+		return false;
+	}
+
+	$can_see_drafts = se_frontend_visitor_can_see_drafts();
+
+	if($type === 'p') {
+		$page = $db_content->get("se_pages", ["page_comments", "page_status", "page_psw"], [
+			"page_id" => $relation_id
+		]);
+		if(!is_array($page) || (int) $page['page_comments'] !== 1) {
+			return false;
+		}
+		if($page['page_status'] === 'draft' && !$can_see_drafts) {
+			return false;
+		}
+		$page_psw = (string) ($page['page_psw'] ?? '');
+		if($page_psw !== '' && ($_SESSION['page_psw'] ?? '') !== $page_psw) {
+			return false;
+		}
+		return true;
+	}
+
+	if($type === 'b') {
+		$post = se_get_post_data($relation_id);
+		return is_array($post) && (int) $post['post_comments'] === 1
+			&& ($can_see_drafts || se_post_is_publicly_visible($post));
+	}
+
+	if($type === 'c') {
+		$product = $db_posts->get("se_products", "*", [
+			"id" => $relation_id
+		]);
+		return is_array($product) && (int) $product['comments'] === 1
+			&& ($can_see_drafts || se_product_is_publicly_visible($product));
+	}
+
+	return false;
+}
+
+/**
  * store a comment
  * @var array $data 'input_name' 'input_mail' 'input_comment'
  * @return mixed id of the inserted comment
@@ -431,21 +504,14 @@ function se_write_comment($data) {
 		}
 		
 		$comment_time = time();
-		
-		if(is_numeric($data['page_id'])) {
-			$type = 'p';
-			$relation_id = (int) $data['page_id'];
-		}
-		
-		if(is_numeric($data['post_id'])) {
-			$type = 'b';
-			$relation_id = (int) $data['post_id'];
-		}
 
-		if(is_numeric($data['product_id'])) {
-			$type = 'c';
-			$relation_id = (int) $data['product_id'];
+		// only for an existing entry with comments switched on (and an unlocked page)
+		$target = se_comment_target($data);
+		if($target === null || !se_comments_allowed($target['type'], $target['relation_id'])) {
+			return 0;
 		}
+		$type = $target['type'];
+		$relation_id = $target['relation_id'];
 
 		if(strlen($input_name) > 30) {
 			$input_name = substr($input_name, 0,30);
@@ -459,10 +525,15 @@ function se_write_comment($data) {
 			$input_comment = substr($input_comment, 0,500);
 		}
 		
-		if(is_numeric($data['parent_id'])) {
+		// an answer must belong to the same page, post or product as its comment
+		if(is_numeric($data['parent_id'] ?? null) && (int) $data['parent_id'] > 0) {
+			$parent = se_get_comment((int) $data['parent_id']);
+			if(!is_array($parent) || $parent['comment_type'] !== $type || (int) $parent['comment_relation_id'] !== $relation_id) {
+				return 0;
+			}
 			$parent_id = (int) $data['parent_id'];
 		}
-		
+
 		if(is_numeric($_SESSION['user_id'])) {
 			$comment_author_id = $_SESSION['user_id'];
 		} else {
