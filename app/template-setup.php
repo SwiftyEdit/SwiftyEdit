@@ -368,6 +368,19 @@ if(isset($_POST['page_psw']) && $_POST['page_psw'] != '') {
     // Existing installs keep working on the md5 path until the password is re-saved.
     if(strlen($page_psw) === 32 && ctype_xdigit($page_psw)) {
         $page_psw_valid = hash_equals($page_psw, md5($_POST['page_psw']));
+
+        // replace the md5 hash with password_hash() now that we know the password -
+        // only if the stored value is still this md5 hash (a parallel save wins)
+        if($page_psw_valid && is_numeric($page_contents['page_id'] ?? null)) {
+            $new_page_psw = password_hash($_POST['page_psw'], PASSWORD_DEFAULT);
+            $rehash = $db_content->update("se_pages", ["page_psw" => $new_page_psw], [
+                "page_id" => (int) $page_contents['page_id'],
+                "page_psw" => $page_psw
+            ]);
+            if($rehash->rowCount() === 1) {
+                $page_psw = $new_page_psw;
+            }
+        }
     } else {
         $page_psw_valid = password_verify($_POST['page_psw'], $page_psw);
     }
