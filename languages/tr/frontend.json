@@ -33,7 +33,7 @@
   "label_guest_checkout_hint": "You can complete this order as a guest. If you would like to save your details for next time, you can also create an account instead.",
   "label_company": "Şirket",
   "label_tax_number": "Vergi No",
-  "label_tax_id_number": "Vergi kimlik numarası",
+  "label_tax_id_number": "VAT ID number",
   "label_lastname": "Soyisim",
   "label_firstname": "İsminiz",
   "label_mail": "E-Mail",
