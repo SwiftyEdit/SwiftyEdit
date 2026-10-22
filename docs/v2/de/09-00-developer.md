@@ -68,6 +68,10 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   Core-Block von `public/.htaccess`, eigene Regeln davor und danach bleiben erhalten. Mit
   `$se_update_htaccess = false;` in `data/config.php` bleibt die Datei unangetastet. Details unter
   [Installation](01-01-installation.md#updates-htaccess).
+* __Updates im Backend__ (`$se_backend_updates` in `config.php`) - mit
+  `$se_backend_updates = false;` in `data/config.php` lädt und installiert das Backend keine
+  Updates mehr (z. B. wenn Du per Hand deployst). Neue Versionen werden weiter angezeigt, das
+  Datenbank-Update über `/install/` funktioniert weiter.
 * __Ordnerrechte__ (`SE_DIR_PERMISSIONS`) - Ordner, die SwiftyEdit anlegt (Cache, Uploads,
   Vorschaubilder), bekommen `0755`. Brauchst Du per FTP mit einem anderen Benutzer Schreibrechte,
   trage `define('SE_DIR_PERMISSIONS', 0775);` in `data/config.php` ein.

@@ -95,6 +95,14 @@ $se_session_max_lifetime = 43200;
  */
 $se_update_htaccess = true;
 
+/* The update in the backend downloads and installs new versions from
+ * swiftyedit.net. If you update by hand (e.g. via FTP/deployment) and want
+ * to switch it off, add the following to SE_CONTENT/config.php:
+ * $se_backend_updates = false;
+ * New versions are still shown, the database update via /install/ still works.
+ */
+$se_backend_updates = true;
+
 /* Sources whose iframes (videos, maps ...) are kept when HTML from the editor
  * is cleaned (se_purify_html()). Only https, the host must match exactly.
  * An entry with a path ("host/path") only allows addresses starting with it.

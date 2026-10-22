@@ -617,6 +617,7 @@
   "update.msg.modus_activated": "<b>The update mode is active</b> The frontend cannot be called up at the moment.",
   "update.msg.post_install": "Please go to the page {url} to check if the database has been updated correctly",
   "update.msg.filter_updated": "The filters have been updated",
+  "update.msg.disabled": "Updates in the backend are switched off ($se_backend_updates = false in data/config.php). New versions are still shown, but can't be downloaded or installed here.",
   "update.btn.select_this_update": "Select this update",
   "update.label.installed": "Installed",
   "api_keys.nav": "API keys",

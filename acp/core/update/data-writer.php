@@ -19,6 +19,12 @@ if(!se_hasPermission('drm_acp_sensitive_files')) {
     exit;
 }
 
+// switched off in SE_CONTENT/config.php - no downloads, no installation
+if(($se_backend_updates ?? true) === false && (isset($_POST['load_update_data']) || isset($_POST['install_update']))) {
+    echo '<div class="alert alert-info">'.$lang['update_msg_disabled'].'</div>';
+    exit;
+}
+
 // helpers
 if(isset($_POST['helper_update_table'])) {
     include __DIR__.'/helpers_update_data.php';
