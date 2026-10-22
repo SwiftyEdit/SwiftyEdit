@@ -66,6 +66,19 @@ A few more small things worth knowing:
   block of `public/.htaccess`, own rules before and after it are kept. With
   `$se_update_htaccess = false;` in `data/config.php` the file is left untouched. Details in
   [Installation](01-01-installation.md#updates-htaccess).
+* __Embeds__ (`$se_embed_hosts` in `config.php`) - HTML from the editor is cleaned with
+  `se_purify_html()` when it is saved (currently the teaser and text of categories). Iframes
+  are only kept if their source is a `https` address from this list. An entry is a host
+  (`www.youtube.com`) or a host with a path (`www.google.com/maps/embed`) - then only
+  addresses starting with it are allowed. Default: YouTube (`www.youtube.com`,
+  `www.youtube-nocookie.com`), Vimeo (`player.vimeo.com`), Google Maps
+  (`www.google.com/maps/embed`) and OpenStreetMap (`www.openstreetmap.org/export/embed.html`).
+  Add more in `data/config.php`, e.g. for Facebook and Instagram:
+  `$se_embed_hosts[] = 'www.facebook.com/plugins/';` and
+  `$se_embed_hosts[] = 'www.instagram.com';`. Only the iframe variant of an embed code
+  works - codes with `<script>` (e.g. the standard Instagram code with `embed.js`) are always
+  removed. Note that embeds load content from the provider on every page view, which may
+  require consent under privacy laws.
 
 ## Themes
 

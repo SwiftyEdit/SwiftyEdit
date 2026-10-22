@@ -95,6 +95,20 @@ $se_session_max_lifetime = 43200;
  */
 $se_update_htaccess = true;
 
+/* Sources whose iframes (videos, maps ...) are kept when HTML from the editor
+ * is cleaned (se_purify_html()). Only https, the host must match exactly.
+ * An entry with a path ("host/path") only allows addresses starting with it.
+ * To allow more, add the following to SE_CONTENT/config.php:
+ * $se_embed_hosts[] = 'www.facebook.com/plugins/';
+ */
+$se_embed_hosts = [
+	'www.youtube.com',
+	'www.youtube-nocookie.com',
+	'player.vimeo.com',
+	'www.google.com/maps/embed',
+	'www.openstreetmap.org/export/embed.html'
+];
+
 
 $se_include_path = dirname($_SERVER['SCRIPT_NAME']);
 
