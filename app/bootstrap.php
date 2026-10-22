@@ -13,7 +13,9 @@ if (preg_match('#^/?api(/|$)#', (string) ($_GET['query'] ?? ''))) {
 }
 require_once __DIR__.'/headers.php';
 se_send_security_headers();
-error_reporting(0); // safe default until $se_environment is known
+// production: don't show errors, but log serious ones (fatal, parse, exceptions)
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+ini_set('display_errors', '0');
 $se_start_time = microtime(true);
 
 require '../vendor/autoload.php';

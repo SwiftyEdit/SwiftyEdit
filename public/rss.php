@@ -1,5 +1,7 @@
 <?php
-error_reporting(0);
+// production: don't show errors, but log serious ones (fatal, parse, exceptions)
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+ini_set('display_errors', '0');
 const SE_SECTION = "frontend";
 require '../vendor/autoload.php';
 require '../config.php';

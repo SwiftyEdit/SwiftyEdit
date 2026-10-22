@@ -3,7 +3,9 @@ require_once __DIR__.'/../app/session.php';
 require_once __DIR__.'/../app/headers.php';
 se_session_start();
 se_send_security_headers(true);
-error_reporting(0);
+// production: don't show errors, but log serious ones (fatal, parse, exceptions)
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+ini_set('display_errors', '0');
 
 // Fallback if $_GET[‘query’] does not work properly
 $query = $_GET['query'] ?? null;

@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__.'/../../../app/session.php';
 se_session_start();
-error_reporting(0);
+// production: don't show errors, but log serious ones (fatal, parse, exceptions)
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+ini_set('display_errors', '0');
 require '../vendor/autoload.php';
 use Medoo\Medoo;
 
