@@ -33,7 +33,7 @@
   "label_guest_checkout_hint": "You can complete this order as a guest. If you would like to save your details for next time, you can also create an account instead.",
   "label_company": "Firma",
   "label_tax_number": "Numer podatkowy",
-  "label_tax_id_number": "NIP",
+  "label_tax_id_number": "VAT ID number",
   "label_lastname": "Nazwisko",
   "label_firstname": "Imię",
   "label_mail": "E-mail",
