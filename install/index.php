@@ -5,7 +5,9 @@
  * Installer/Updater
  */
 require_once __DIR__.'/../app/session.php';
+require_once __DIR__.'/../app/headers.php';
 se_session_start();
+se_send_security_headers(true);
 error_reporting(0);
 require '../vendor/autoload.php';
 require '../config.php';
