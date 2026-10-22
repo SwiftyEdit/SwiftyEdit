@@ -33,7 +33,7 @@
   "label_guest_checkout_hint": "You can complete this order as a guest. If you would like to save your details for next time, you can also create an account instead.",
   "label_company": "Εταιρεία",
   "label_tax_number": "Αριθμός φόρου",
-  "label_tax_id_number": "Αριθμός φορολογικού μητρώου",
+  "label_tax_id_number": "VAT ID number",
   "label_lastname": "Επώνυμο",
   "label_firstname": "Όνομα",
   "label_mail": "E-mail",

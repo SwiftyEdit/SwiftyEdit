@@ -33,7 +33,7 @@
   "label_guest_checkout_hint": "You can complete this order as a guest. If you would like to save your details for next time, you can also create an account instead.",
   "label_company": "Società",
   "label_tax_number": "Numero d'imposta",
-  "label_tax_id_number": "Numero di partita IVA",
+  "label_tax_id_number": "VAT ID number",
   "label_lastname": "Cognome",
   "label_firstname": "Nome",
   "label_mail": "E-Mail",
