@@ -575,19 +575,54 @@ function se_generate_token() {
  */
 function se_validate_token($token): void {
 
-    // cast first: htmlspecialchars() throws a TypeError under PHP 8 if $token is
-    // null, which happens whenever the csrf_token field is missing from $_POST.
-    $token = htmlspecialchars((string) $token);
+    // non-strings (missing field, arrays like "csrf_token[]=x") never match
+    $token = is_string($token) ? $token : '';
+    $session_token = (string) ($_SESSION['token'] ?? '');
 
-    if(empty($token)) {
-        header('Location: /');
-        exit;
-    }
-    if(!hash_equals((string) ($_SESSION['token'] ?? ''), $token)) {
-        header('Location: /');
-        exit;
+    if($token !== '' && $session_token !== '' && hash_equals($session_token, $token)) {
+        return;
     }
 
+    se_csrf_failed();
+}
+
+/**
+ * Stop a request with a missing or invalid CSRF token: HTTP 403, a short
+ * message and a log entry. The most common cause is harmless - the session
+ * expired while the form was open - so the message asks to reload the page.
+ * Runs before the language files are loaded in the frontend, so the text is
+ * English. Log entries are limited to 20 per hour (bots posting forms).
+ */
+function se_csrf_failed(): never {
+
+    global $db_content;
+
+    if(isset($db_content) && function_exists('se_rate_limit_exceeded') && !se_rate_limit_exceeded('csrf_log', 20, 3600, false)) {
+        se_rate_limit_add('csrf_log', 3600, false);
+        $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+        $nick = (string) ($_SESSION['user_nick'] ?? '');
+        record_log($nick !== '' ? $nick : 'system', 'CSRF token missing or invalid: '.htmlspecialchars(substr($path, 0, 200), ENT_QUOTES), '5');
+    }
+
+    $message = 'The form has expired or was sent from another page. Please reload the page and try again.';
+
+    http_response_code(403);
+    header('Cache-Control: no-store');
+
+    if(isset($_SERVER['HTTP_HX_REQUEST'])) {
+        header('Content-Type: text/plain; charset=utf-8');
+        echo $message;
+        exit;
+    }
+
+    header('Content-Type: text/html; charset=utf-8');
+    echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<meta name="robots" content="noindex"><title>403 Forbidden</title></head>';
+    echo '<body style="font-family:system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem">';
+    echo '<h1>403 Forbidden</h1><p>'.$message.'</p><p><a href="/">Home</a></p>';
+    echo '</body></html>';
+    exit;
 }
 
 /**
