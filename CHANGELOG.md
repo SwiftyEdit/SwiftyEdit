@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## 2.2.0 - 2026-10-22 (Build 26-0225)
+## 2.2.0 - 2026-10-26 (Build 26-0227)
 
 ### Added
 

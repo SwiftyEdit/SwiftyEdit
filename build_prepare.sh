@@ -3,6 +3,18 @@
 [ -f dev.env ] && source dev.env
 
 BUILD=$("${PHP_BIN:-php}" -r "echo json_decode(file_get_contents('version.json'))->build;")
+VERSION=$("${PHP_BIN:-php}" -r "echo json_decode(file_get_contents('version.json'))->version;")
+
+# The topmost CHANGELOG heading must name the version and build from
+# version.json, since CHANGELOG.md ships with the release. The date is not
+# checked - it may be the release date instead of the build date.
+CHANGELOG_HEAD=$(grep -m1 '^## ' CHANGELOG.md)
+if [[ "$CHANGELOG_HEAD" != "## $VERSION "* && "$CHANGELOG_HEAD" != "## [$VERSION] "* ]] \
+    || [[ "$CHANGELOG_HEAD" != *"(Build $BUILD)"* ]]; then
+    echo "Error: CHANGELOG.md does not match version.json ($VERSION, Build $BUILD)."
+    echo "Topmost heading: $CHANGELOG_HEAD"
+    exit 1
+fi
 
 mkdir -p dist
 mkdir -p dist/$BUILD
