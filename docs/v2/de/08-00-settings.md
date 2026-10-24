@@ -189,6 +189,14 @@ Zwei Dinge solltest Du vor dem Aktivieren wissen:
   Backup die `-wal`/`-shm`-Dateien mit einschließt, oder führe vor dem Kopieren einen
   Checkpoint aus (`PRAGMA wal_checkpoint(TRUNCATE)`).
 
+**Compact database** zeigt für jede der drei Datenbankdateien die Größe und den freien
+Platz darin. Gelöschte Daten hinterlassen freien Platz in der Datei, den SQLite für neue
+Daten wiederverwendet - kleiner wird die Datei dadurch aber nicht. Der Button komprimiert
+die Dateien (`VACUUM`) und gibt diesen Platz an die Festplatte zurück. Dabei wird jede
+Datei neu geschrieben: Solange das läuft, kann nichts gespeichert werden, und es wird
+vorübergehend so viel freier Speicherplatz benötigt, wie die größte Datei groß ist.
+Sinnvoll ist das vor allem, nachdem viele Daten gelöscht wurden.
+
 ---
 
 ## Update {#update}

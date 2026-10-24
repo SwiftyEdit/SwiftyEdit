@@ -387,14 +387,6 @@ if ($_REQUEST['action'] == 'page_siblings') {
 if(isset($_REQUEST['snapshots']) && is_numeric($_REQUEST['snapshots'])) {
     $snapshot_id = (int) $_REQUEST['snapshots'];
 
-    $max = (int) $se_settings['nbr_page_versions'] ?: 25;
-    $cnt_all_snapshots = $db_content->count("se_pages_cache",[
-        "page_id_original" => $snapshot_id,
-        "page_cache_type" => "history"
-    ]);
-
-    $delete_nbr = $cnt_all_snapshots-$max;
-
     $get_snapshots = $db_content->select("se_pages_cache",["page_id", "page_linkname", "page_title", "page_lastedit", "page_lastedit_from"],[
         "AND" => [
             "page_id_original" => $snapshot_id,
@@ -409,7 +401,7 @@ if(isset($_REQUEST['snapshots']) && is_numeric($_REQUEST['snapshots'])) {
     echo '<div class="accordion accordion-flush" id="accordionVersions">';
     echo '<div class="accordion-item">';
     echo '<div class="accordion-header" id="headingOne">';
-    echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVersions" aria-expanded="false" aria-controls="collapseOne">Versions ('.$cnt_all_snapshots.')</button>';
+    echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVersions" aria-expanded="false" aria-controls="collapseOne">Versions ('.count($get_snapshots).')</button>';
     echo '</div>';
     echo '<div id="collapseVersions" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionVersions">';
     echo '<div class="accordion-body">';

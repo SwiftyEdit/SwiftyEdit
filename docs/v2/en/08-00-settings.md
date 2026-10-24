@@ -177,6 +177,13 @@ Two things to know before enabling it:
   haven't been checkpointed yet. Make sure your backup includes the `-wal`/`-shm` files, or
   runs a checkpoint (`PRAGMA wal_checkpoint(TRUNCATE)`) before copying.
 
+**Compact database** shows the size and the free space inside each of the three database
+files. Deleted data leaves free space in the file that SQLite reuses for new data - but the
+file doesn't get smaller by that. The button compacts the files (`VACUUM`) and gives this
+space back to the disk. Each file is rewritten: nothing can be saved while it runs, and it
+temporarily needs as much free disk space as the largest file. This is mainly useful after
+a lot of data has been deleted.
+
 ---
 
 ## Update {#update}

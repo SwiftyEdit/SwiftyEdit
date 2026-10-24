@@ -227,6 +227,49 @@ if (isset($_POST['update_database']) && $db_type === 'sqlite') {
     }
 }
 
+// compact the SQLite database files (VACUUM)
+if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
+
+    $db_files = [
+        CONTENT_DB => $db_content,
+        USER_DB => $db_user,
+        POSTS_DB => $db_posts
+    ];
+
+    $size_before = 0;
+    $size_after = 0;
+    $sqlite_error = '';
+
+    foreach ($db_files as $db_path => $db_conn) {
+        $size_before += filesize($db_path);
+        try {
+            // run through Medoo (not $db_conn->pdo), so the last statement Medoo
+            // still holds is released first - SQLite refuses VACUUM while a
+            // statement on the connection is unfinished
+            $db_conn->query('VACUUM');
+
+            // in WAL mode the rewritten pages land in the -wal file first,
+            // a checkpoint moves them into the database file
+            $db_conn->query('PRAGMA wal_checkpoint(TRUNCATE)');
+        } catch (\PDOException $e) {
+            $sqlite_error = $e->getMessage();
+        }
+        clearstatcache(true, $db_path);
+        $size_after += filesize($db_path);
+    }
+
+    if ($sqlite_error === '') {
+        $msg = str_replace(
+            ['{before}', '{after}'],
+            [readable_filesize($size_before), readable_filesize($size_after)],
+            $lang['msg_success_vacuum']
+        );
+        show_toast($msg, 'success');
+    } else {
+        show_toast($lang['msg_error_vacuum'].' '.$sqlite_error, 'danger');
+    }
+}
+
 // write domain and server settings
 if (isset($_POST['update_general_system'])) {
     foreach($_POST as $key => $val) {
