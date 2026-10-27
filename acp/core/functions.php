@@ -362,13 +362,14 @@ function se_scandir_rec($dir) {
    
    $result = array(); 
 
-   $cdir = scandir($dir); 
-   foreach ($cdir as $key => $value) { 
-      if(in_array($value,array('..', '.','.DS_Store','index.html'))) {
+   $cdir = scandir($dir);
+   foreach ($cdir as $key => $value) {
+      // skip dotfiles (., .., .DS_Store, .htaccess, ...) and placeholder files
+      if(str_starts_with($value, '.') || $value === 'index.html') {
 	      continue;
 	    }
       if(is_dir($dir . '/' . $value)) {
-	      $result[] = se_scandir_rec($dir . '/' . $value); 
+	      $result[] = se_scandir_rec($dir . '/' . $value);
       } else { 
         $result[] = $dir.'/'.$value; 
       } 
@@ -386,9 +387,10 @@ function se_get_dirs_rec($dir) {
    
    $result = array(); 
 
-   $cdir = scandir($dir); 
-   foreach ($cdir as $key => $value) { 
-      if(in_array($value,array('..', '.','.DS_Store','index.html'))) {
+   $cdir = scandir($dir);
+   foreach ($cdir as $key => $value) {
+      // skip dotfiles/hidden folders and placeholder files
+      if(str_starts_with($value, '.') || $value === 'index.html') {
 	      continue;
 	    }
       if(is_dir($dir . '/' . $value)) {
@@ -1543,7 +1545,7 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 	}
 	
 	if(!is_dir($tmb_destination)) {
-		mkdir($tmb_destination,0777,true);
+		mkdir($tmb_destination, SE_DIR_PERMISSIONS, true);
 	}
 	
 
@@ -1622,7 +1624,12 @@ function se_parse_docs_file($file): array {
             '/\{link=(.*?)\}/sim',
             function ($m) use ($dir) {
                 global $languagePack;
-                $link = '<a class="" hx-get="/admin-xhr/docs/read/?file='.$m[1].'" hx-target="#helpModal">'.$m[1].'</a>';
+                $target = $m[1];
+                // a bare filename inside theme/plugin docs links to the same theme/plugin
+                if(!str_contains($target, '/') && preg_match('#/(themes|plugins)/([^/]+)/docs/[^/]+$#', $dir, $ctx)) {
+                    $target = '/'.$ctx[1].'/'.$ctx[2].'/'.$target;
+                }
+                $link = '<a class="" hx-get="/admin-xhr/docs/read/?file='.$target.'" hx-target="#helpModal">'.$m[1].'</a>';
                 return $link;
             },
             $content
@@ -1673,6 +1680,20 @@ function se_parse_docs_file($file): array {
             $parsed_content
         );
 
+        // mark inline shortcodes like [snippet]name[/snippet] or [plugin=...] for separate styling
+        $parsed_content = preg_replace(
+            '#(?<!<pre>)<code>(\[/?(?:snippet|plugin|include|script)\b[^<]*)</code>#i',
+            '<code class="code-shortcode">$1</code>',
+            $parsed_content
+        );
+
+        // mark template file names (single token ending in .tpl) for separate styling
+        $parsed_content = preg_replace(
+            '#(?<!<pre>)<code>([^<\s]+\.tpl)</code>#i',
+            '<code class="code-template">$1</code>',
+            $parsed_content
+        );
+
         $filemtime = filemtime($file);
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
@@ -1692,9 +1713,10 @@ function se_parse_docs_file($file): array {
  * @param string $file
  * @param string|null $text
  * @param string|null $anchor
+ * @param string $class CSS classes of the button
  * @return string
  */
-function se_print_docs_link(string $file, ?string $text = null, ?string $anchor = null): string {
+function se_print_docs_link(string $file, ?string $text = null, ?string $anchor = null, string $class = 'btn btn-link'): string {
     global $icon, $lang;
     $title = $lang['label_show_help'];
 
@@ -1703,7 +1725,8 @@ function se_print_docs_link(string $file, ?string $text = null, ?string $anchor 
     }
 
     $vals = ['file' => $file . ($anchor ? '#' . $anchor : '')];
-    $hx_vals = json_encode($vals);
+    // hex-encode quotes, the JSON is placed in a single-quoted attribute
+    $hx_vals = json_encode($vals, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP);
 
     return '<button data-bs-toggle="modal"
                 data-bs-target="#helpModal"
@@ -1711,7 +1734,36 @@ function se_print_docs_link(string $file, ?string $text = null, ?string $anchor 
                 hx-vals=\'' . $hx_vals . '\'
                 hx-target="#helpModal"
                 hx-trigger="click"
-                class="btn btn-link" title="' . $title . '">' . $text . '</button>';
+                class="' . $class . '" title="' . $title . '">' . $text . '</button>';
+}
+
+/**
+ * Help link to a doc of a theme (themes/{theme}/docs/{lang}/{file}).
+ * Inside a theme, pass basename(dirname(__DIR__)) from php/*.php as $theme.
+ *
+ * @param string $theme theme folder name
+ * @param string $file e.g. 'index.md' or 'readme.md'
+ * @param string|null $text
+ * @param string|null $anchor
+ * @param string $class CSS classes of the button
+ * @return string
+ */
+function se_print_theme_docs_link(string $theme, string $file = 'index.md', ?string $text = null, ?string $anchor = null, string $class = 'btn btn-link'): string {
+    return se_print_docs_link('/themes/' . basename($theme) . '/' . basename($file), $text, $anchor, $class);
+}
+
+/**
+ * Help link to a doc of a plugin (plugins/{plugin}/docs/{lang}/{file}).
+ *
+ * @param string $plugin plugin folder name
+ * @param string $file e.g. 'index.md' or 'readme.md'
+ * @param string|null $text
+ * @param string|null $anchor
+ * @param string $class CSS classes of the button
+ * @return string
+ */
+function se_print_plugin_docs_link(string $plugin, string $file = 'index.md', ?string $text = null, ?string $anchor = null, string $class = 'btn btn-link'): string {
+    return se_print_docs_link('/plugins/' . basename($plugin) . '/' . basename($file), $text, $anchor, $class);
 }
 
 /**

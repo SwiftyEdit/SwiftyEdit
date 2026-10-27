@@ -46,12 +46,16 @@ Here you can specify how many versions of a page should be saved.
 These settings control everything around user accounts and interaction:
 
 * Whether visitors may register themselves, whether the login form is shown,
-  and whether new users have to be unlocked by an administrator.
+  and whether new users have to be unlocked by an administrator. Without the login form, the
+  frontend login is switched off completely (the backend login at `/admin/` is not affected,
+  and "forgot password" keeps working).
 * The session lifetime of the backend and a blacklist of user names that may not be registered.
 * Which fields are required on registration.
 * Comments: the mode, the authorization, the auto-close time, the maximum number of entries
   and the maximum nesting level.
-* Votings and reactions (off, for registered users only, or globally).
+* Votings and reactions (off, for registered users only, or globally). To prevent double votes,
+  anonymous votes and guest list confirmations are stored with a hash of the visitor's IP
+  address; after 90 days the hash is removed - the vote keeps counting.
 
 ## Posts
 These settings affect the posts (blog).
@@ -172,6 +176,13 @@ Two things to know before enabling it:
   file. A backup process that only copies the `.sqlite3` file can miss recent changes that
   haven't been checkpointed yet. Make sure your backup includes the `-wal`/`-shm` files, or
   runs a checkpoint (`PRAGMA wal_checkpoint(TRUNCATE)`) before copying.
+
+**Compact database** shows the size and the free space inside each of the three database
+files. Deleted data leaves free space in the file that SQLite reuses for new data - but the
+file doesn't get smaller by that. The button compacts the files (`VACUUM`) and gives this
+space back to the disk. Each file is rewritten: nothing can be saved while it runs, and it
+temporarily needs as much free disk space as the largest file. This is mainly useful after
+a lot of data has been deleted.
 
 ---
 

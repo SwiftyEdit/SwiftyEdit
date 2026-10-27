@@ -139,6 +139,7 @@ echo '</ul>';
 echo '<div class="sidebar-footer">';
 echo '<ul class="nav">';
 echo '<li class="sidebar-nav-item opacity-50"><a href="/">'.$icon['home'].' '.$lang['nav_btn_homepage'].'</a></li>';
-echo '<li class="sidebar-nav-item opacity-50"><a href="/?goto=logout">'.$icon['power'].' '.$lang['nav_btn_logout'].'</a></li>';
+// logout only per POST with the CSRF token (see app/routing.php) - styled like the links around it
+echo '<li class="sidebar-nav-item opacity-50"><form method="post" action="/logout" class="m-0"><input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'"><button type="submit" class="btn btn-link p-0 text-reset text-decoration-none">'.$icon['power'].' '.$lang['nav_btn_logout'].'</button></form></li>';
 echo '</ul>';
 echo '</div>';

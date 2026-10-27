@@ -15,13 +15,13 @@ echo '<a href="/admin/shop/new/" class="btn btn-default text-success ms-auto">'.
 echo '</div>';
 
 echo '<div class="row">';
-echo '<div class="col-md-9">';
+echo '<div class="col-xl-9">';
 
 echo '<div id="getProducts" class="" hx-get="'.$reader_uri.'?action=list_products" hx-trigger="load, update_products_list from:body, updated_global_filter from:body">';
 echo '</div>';
 
 echo '</div>';
-echo '<div class="col-md-3">';
+echo '<div class="col-xl-3">';
 
 // sidebar
 

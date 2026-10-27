@@ -13,60 +13,51 @@ if(isset($_POST['pagination'])) {
 // save or update user
 if(isset($_POST['save_user'])) {
 
-    $columns = array();
     $set_psw = 'false';
 
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $$key = trim($val);
-        }
+    // only these form fields are stored - read one by one instead of turning
+    // every POST field into a variable, which could overwrite any variable
+    // in this scope (e.g. $edit_user_id, $db_user)
+    $user_fields = [
+        'user_nick', 'user_mail', 'user_verified', 'user_class',
+        'user_firstname', 'user_lastname', 'user_company',
+        'user_street', 'user_street_nbr', 'user_zip', 'user_city',
+        'ba_firstname', 'ba_lastname', 'ba_company',
+        'ba_street', 'ba_street_nbr', 'ba_zip', 'ba_city', 'ba_country',
+        'ba_tax_id_number', 'ba_tax_number',
+        'sa_firstname', 'sa_lastname', 'sa_company',
+        'sa_street', 'sa_street_nbr', 'sa_zip', 'sa_city', 'sa_country'
+    ];
+    $columns = [];
+    foreach($user_fields as $field) {
+        $columns[$field] = is_string($_POST[$field] ?? null) ? trim($_POST[$field]) : '';
     }
+    $columns['user_verified_by_admin'] = '';
+    $user_nick = $columns['user_nick'];
+
+    // rights - each checkbox sends its own name as value, unchecked ones stay empty
+    $drm_fields = [
+        'drm_acp_pages', 'drm_acp_files', 'drm_acp_user', 'drm_acp_system',
+        'drm_acp_editpages', 'drm_acp_editownpages', 'drm_moderator',
+        'drm_can_publish', 'drm_acp_sensitive_files'
+    ];
+    $drm_values = [];
+    foreach($drm_fields as $field) {
+        $drm_values[] = is_string($_POST[$field] ?? null) ? trim($_POST[$field]) : '';
+    }
+    $columns['user_drm'] = implode('|', $drm_values);
 
     if(is_numeric($_POST['save_user'])) {
         $edit_user_id = (int) $_POST['save_user'];
     }
 
-    $drm_string = "$drm_acp_pages|$drm_acp_files|$drm_acp_user|$drm_acp_system|$drm_acp_editpages|$drm_acp_editownpages|$drm_moderator|$drm_can_publish|$drm_acp_sensitive_files";
 
-    $user_psw_new	= $_POST['user_psw_new'];
-    $user_psw_reconfirmation = $_POST['user_psw_reconfirmation'];
+    $user_psw_new = is_string($_POST['user_psw_new'] ?? null) ? $_POST['user_psw_new'] : '';
+    $user_psw_reconfirmation = is_string($_POST['user_psw_reconfirmation'] ?? null) ? $_POST['user_psw_reconfirmation'] : '';
 
-    $columns = [
-        "user_nick" => $user_nick,
-        "user_mail" => $user_mail,
-        "user_verified" => $user_verified,
-        "user_verified_by_admin" => '',
-        "user_drm" => $drm_string,
-        "user_class" => $user_class,
-        "user_firstname" => $user_firstname,
-        "user_lastname" => $user_lastname,
-        "user_company" => $user_company,
-        "user_street" => $user_street,
-        "user_street_nbr" => $user_street_nbr,
-        "user_zip" => $user_zip,
-        "user_city" => $user_city,
-        "ba_firstname" => $ba_firstname,
-        "ba_lastname" => $ba_lastname,
-        "ba_company" => $ba_company,
-        "ba_street" => $ba_street,
-        "ba_street_nbr" => $ba_street_nbr,
-        "ba_zip" => $ba_zip,
-        "ba_city" => $ba_city,
-        "ba_country" => $ba_country,
-        "sa_firstname" => $sa_firstname,
-        "sa_lastname" => $sa_lastname,
-        "sa_company" => $sa_company,
-        "sa_street" => $sa_street,
-        "sa_street_nbr" => $sa_street_nbr,
-        "sa_zip" => $sa_zip,
-        "sa_city" => $sa_city,
-        "sa_country" => $sa_country
-    ];
-
-
-    if($_POST['user_psw_new'] != "") {
-        if($_POST['user_psw_new'] == $_POST['user_psw_reconfirmation']) {
-            $user_psw = password_hash($_POST['user_psw_new'], PASSWORD_DEFAULT);
+    if($user_psw_new != "") {
+        if($user_psw_new === $user_psw_reconfirmation) {
+            $user_psw = password_hash($user_psw_new, PASSWORD_DEFAULT);
             $columns["user_psw_hash"] = $user_psw;
             $set_psw = 'true';
         }
@@ -83,12 +74,8 @@ if(isset($_POST['save_user'])) {
         $columns["user_verified_by_admin"] = 'yes';
     }
 
-    if(isset($_POST['user_groups'])) {
-        // ad this user to user group(s)
-        foreach($_POST['user_groups'] as $group) {
-            se_add_user_to_group($edit_user_id,$group);
-        }
-    }
+    // unchecked groups are not sent - an empty list removes all memberships
+    $user_group_ids = is_array($_POST['user_groups'] ?? null) ? $_POST['user_groups'] : [];
 
     if(is_numeric($_POST['save_user'])) {
 
@@ -97,9 +84,17 @@ if(isset($_POST['save_user'])) {
             "user_id" => $edit_user_id
         ]);
 
+        se_set_user_groups($edit_user_id, $user_group_ids);
+
         // a new password ends the trust of all devices (2FA "trust this device")
         if($set_psw === 'true') {
             se_2fa_revoke_devices($edit_user_id);
+        }
+
+        // changes to the account end its sessions (se_validate_user_session()) -
+        // except the current one, if an administrator edits their own account
+        if($edit_user_id === (int) $_SESSION['user_id']) {
+            se_refresh_session_fingerprint();
         }
 
         if($cnt_changes->rowCount() > 0) {
@@ -130,6 +125,8 @@ if(isset($_POST['save_user'])) {
         $cnt_changes = $db_user->insert("se_user",$columns);
         $edituser = $db_user->id();
         if($edituser > 0) {
+            se_set_user_groups((int) $edituser, $user_group_ids);
+
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
             record_log($_SESSION['user_nick'],"new user <i>$user_nick</i>","5");
 
@@ -146,11 +143,7 @@ if(isset($_POST['save_user'])) {
 // save or update a group
 if(isset($_POST['save_user_group'])) {
 
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $$key = htmlentities($val);
-        }
-    }
+    $group_description = htmlentities(is_string($_POST['group_description'] ?? null) ? $_POST['group_description'] : '');
 
     $group_user_str = '';
     $group_name = sanitizeUserInputs($_POST['group_name']);
@@ -258,6 +251,21 @@ if(isset($_POST['reset_2fa']) && is_numeric($_POST['reset_2fa'])) {
     } else {
         se_2fa_reset($reset_user_id, $_SESSION['user_nick']);
         echo '<div class="alert alert-success">'.$lang['users_2fa_msg_reset'].'</div>';
+    }
+}
+
+// delete a user - see app/functions/functions.user_delete.php
+if(isset($_POST['delete_user']) && is_numeric($_POST['delete_user'])) {
+
+    $delete_user_id = (int) $_POST['delete_user'];
+    $delete_blocker = se_user_delete_blocker($delete_user_id, 'acp');
+
+    if($delete_blocker !== '') {
+        echo '<div class="alert alert-warning">'.$lang[$delete_blocker].'</div>';
+    } else if(se_delete_user($delete_user_id, isset($_POST['delete_user_comments']), $_SESSION['user_nick'])) {
+        header("HX-Redirect: /admin/users/");
+    } else {
+        echo '<div class="alert alert-danger">'.$lang['msg_delete_account_error'].'</div>';
     }
 }
 

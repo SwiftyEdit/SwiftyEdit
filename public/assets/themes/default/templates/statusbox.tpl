@@ -14,7 +14,11 @@
                 <a href="{$wishlist_uri}" class="list-group-item link-wishlist">{$lang_button_wishlist}</a>
             {/if}
 
-            <a href="{$link_logout}" class="list-group-item link-logout">{$lang_button_logout}</a>
+            {* logout only per POST with the CSRF token (see app/routing.php) *}
+            <form method="post" action="{$link_logout}" class="m-0">
+                {$hidden_csrf_token}
+                <button type="submit" class="list-group-item list-group-item-action link-logout">{$lang_button_logout}</button>
+            </form>
 
         </div>
     </div>

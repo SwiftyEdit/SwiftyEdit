@@ -1,6 +1,9 @@
 <?php
-session_start();
-error_reporting(0);
+require_once __DIR__.'/../../../app/session.php';
+se_session_start();
+// production: don't show errors, but log serious ones (fatal, parse, exceptions)
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+ini_set('display_errors', '0');
 require '../vendor/autoload.php';
 use Medoo\Medoo;
 
@@ -20,38 +23,13 @@ if ($se_environment === 'd') {
     ini_set('display_errors', '1');
 }
 
-if(is_file('../config_database.php')) {
-    include '../config_database.php';
-    $db_type = 'mysql';
+// same database setup as acp/header.php - the session checks below need $db_user
+const SE_SECTION = "backend";
+require SE_ROOT.'/app/database.php';
 
-    $database = new Medoo([
-        'type' => 'mysql',
-        'database' => "$database_name",
-        'host' => "$database_host",
-        'username' => "$database_user",
-        'password' => "$database_psw",
-        'charset' => 'utf8',
-        'port' => $database_port,
-        'prefix' => DB_PREFIX
-    ]);
-
-    $db_content = $database;
-    $db_user = $database;
-    $db_statistics = $database;
-
-} else {
-    $db_type = 'sqlite';
-
-    define("CONTENT_DB", "$se_db_content");
-
-    $db_content = new Medoo([
-        'type' => 'sqlite',
-        'database' => CONTENT_DB
-    ]);
-}
-
-
-require '../app/functions/functions.php';
+// absolute lifetime, account fingerprint and ACP idle timeout - this endpoint
+// is reached via admin_xhr.php without acp/header.php
+se_acp_guard();
 
 
 if(!is_string($_POST['csrf_token'] ?? null) || !hash_equals((string) ($_SESSION['token'] ?? ''), $_POST['csrf_token'])) {
@@ -65,6 +43,11 @@ $time = time();
  * acp/core/settings/branding-widget.php for the field markup this responds to. */
 $branding_target = $_POST['branding_target'] ?? '';
 if (in_array($branding_target, ['logo', 'thumbnail', 'favicon'], true)) {
+    // part of the settings module - same permission as settings/ in se_acp_xhr_permission()
+    if (!se_hasPermission('drm_acp_system')) {
+        http_response_code(403);
+        exit;
+    }
     require_once '../acp/core/settings/branding-widget.php';
 
     $result = se_handle_branding_upload(
@@ -238,7 +221,7 @@ if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
     $max_width_tmb = (int) $_REQUEST['w_tmb']; // max thumbnail width
     $max_height_tmb = (int) $_REQUEST['h_tmb']; // max thumbnail height
     if(!is_dir($uploads_dir)) {
-        mkdir($uploads_dir, 0777, true);
+        mkdir($uploads_dir, SE_DIR_PERMISSIONS, true);
     }
 
     if(array_key_exists('file',$_FILES) && $_FILES['file']['error'] == 0 ){
@@ -592,7 +575,7 @@ function se_handle_branding_upload(string $target, string $branding_path, array 
     }
 
     if (!is_dir($branding_path)) {
-        mkdir($branding_path, 0777, true);
+        mkdir($branding_path, SE_DIR_PERMISSIONS, true);
     }
 
     $filename = "$target.$suffix";

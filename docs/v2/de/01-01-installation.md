@@ -101,3 +101,27 @@ zeigt sich ein inkompatibler Hook, eine geänderte Funktionssignatur oder eine D
 auf Core-Seite erst, wenn die betroffene Seite tatsächlich aufgerufen wird. Für die meisten
 Entwickler ist das selbstverständlich, trotzdem der klare Hinweis: Erstelle vor einem Update
 selbst ein Backup (Dateien und Datenbank) - SwiftyEdit legt keins für Dich an.
+### Eigene Regeln in der .htaccess {#updates-htaccess}
+
+Ein Update ersetzt den Block zwischen `# --- SwiftyEdit core (do not edit) ---` und
+`# --- END SwiftyEdit core ---` in `public/.htaccess` durch die ausgelieferte Version. Alles
+außerhalb davon bleibt erhalten:
+
+* __User rules before SwiftyEdit__ (am Anfang der Datei) - der Platz für eigene Weiterleitungen,
+  Rewrites oder Ausnahmen, z. B. einen Ordner mit eigenen Skripten. Nur Regeln hier greifen vor
+  den Routen von SwiftyEdit: Der Core-Block endet mit dem Front-Controller, der alle übrigen
+  URLs abfängt - Rewrite-Regeln weiter unten greifen für SwiftyEdit-URLs daher nie.
+* __User custom rules__ (am Ende der Datei) - passend für Header, Caching oder
+  Zugriffseinstellungen.
+
+Ändert ein Update die Datei, wird die vorherige Version zuerst in `data/backups/` gesichert, und
+die Update-Seite zeigt einen Hinweis, wenn der Core-Block ersetzt wurde. Wird die Datei an
+anderer Stelle verwaltet (z. B. vom Hoster oder einem Deployment), trage
+`$se_update_htaccess = false;` in `data/config.php` ein - Updates lassen sie dann in Ruhe, und Du
+übernimmst Änderungen am Core-Block selbst (Vorlage: `install/contents/_htaccess.txt`).
+
+Zusätzlich schreiben der Installer und jedes Update (auch ein manuelles über `/install/`) eine
+kleine `.htaccess` in jeden Upload-Ordner (`public/assets/images`, `files`, `galleries`, ...):
+Sie sperrt dort Skripte und schützt direkt aufgerufene SVG-Dateien, auch wenn
+`public/.htaccess` veraltet ist. Brauchst Du in einer dieser Dateien eigene Regeln, entferne
+ihre erste Zeile - SwiftyEdit ersetzt sie dann nicht mehr.

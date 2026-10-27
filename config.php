@@ -26,8 +26,14 @@ $se_upload_frontend_types = array('jpg','jpeg','png');
 /* page types */
 $se_page_types = array('normal', 'register', 'profile', 'search', 'password', '404', 'display_post', 'display_product', 'display_event', 'imprint', 'privacy_policy', 'legal', 'checkout', 'orders', 'order_withdrawal', 'wishlist', 'tagged');
 
-// limit login fails - integer || null
-$se_failed_logins_limit = null;
+/* Lock an account after this many failed logins in a row (integer, or null
+ * to switch it off). The lock lasts 1 minute and doubles with every further
+ * failed attempt, up to 60 minutes; the owner gets a mail with an unlock link.
+ * One failed attempt is forgotten per 10 minutes. To change it, add to
+ * SE_CONTENT/config.php e.g.:
+ * $se_failed_logins_limit = 10;   or   $se_failed_logins_limit = null;
+ */
+$se_failed_logins_limit = 5;
 
 /* define Folder structure */
 const SE_ROOT = __DIR__ . DIRECTORY_SEPARATOR;
@@ -78,6 +84,44 @@ $se_upload_addons = false;
  */
 $se_2fa_required = false;
 $se_2fa_bypass = null;
+
+/* Every login ends after this many seconds, however active the session is
+ * (default 12 hours, 0 = no limit). A new password, withdrawn rights or a
+ * deactivated account also end all other sessions of that account.
+ * To change it, add the following to SE_CONTENT/config.php:
+ * $se_session_max_lifetime = 28800;
+ */
+$se_session_max_lifetime = 43200;
+
+/* Updates replace the SwiftyEdit core block of public/.htaccess (own rules
+ * before and after it are kept, the previous file is saved to SE_CONTENT/backups/).
+ * If the file is managed elsewhere, add the following to SE_CONTENT/config.php
+ * so updates leave it alone:
+ * $se_update_htaccess = false;
+ */
+$se_update_htaccess = true;
+
+/* The update in the backend downloads and installs new versions from
+ * swiftyedit.net. If you update by hand (e.g. via FTP/deployment) and want
+ * to switch it off, add the following to SE_CONTENT/config.php:
+ * $se_backend_updates = false;
+ * New versions are still shown, the database update via /install/ still works.
+ */
+$se_backend_updates = true;
+
+/* Sources whose iframes (videos, maps ...) are kept when HTML from the editor
+ * is cleaned (se_purify_html()). Only https, the host must match exactly.
+ * An entry with a path ("host/path") only allows addresses starting with it.
+ * To allow more, add the following to SE_CONTENT/config.php:
+ * $se_embed_hosts[] = 'www.facebook.com/plugins/';
+ */
+$se_embed_hosts = [
+	'www.youtube.com',
+	'www.youtube-nocookie.com',
+	'player.vimeo.com',
+	'www.google.com/maps/embed',
+	'www.openstreetmap.org/export/embed.html'
+];
 
 
 $se_include_path = dirname($_SERVER['SCRIPT_NAME']);
@@ -140,4 +184,13 @@ if(is_file(SE_CONTENT . '/config.php')) {
 
 if(is_file(SE_CONTENT . '/config_smtp.php')) {
 	include SE_CONTENT . '/config_smtp.php';
+}
+
+/* Permissions for folders SwiftyEdit creates (cache, uploads, thumbnails).
+ * If the web server and your FTP user are different accounts and you need
+ * write access to these folders via FTP, add to SE_CONTENT/config.php:
+ * define('SE_DIR_PERMISSIONS', 0775);
+ */
+if(!defined('SE_DIR_PERMISSIONS')) {
+	define('SE_DIR_PERMISSIONS', 0755);
 }

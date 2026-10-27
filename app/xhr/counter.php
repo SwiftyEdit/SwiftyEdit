@@ -13,23 +13,32 @@
 session_write_close();
 
 // count product filters
+// Deprecated: the default theme reads the counts from $item.count
+// (see se_get_product_filter_counts()), which also respects the active
+// filters. Kept for custom themes that still lazy-load the counters from
+// here - to be removed in a later version.
 if(isset($_GET['filter']) && is_numeric($_GET['filter'])) {
 
     $get_filter = (int) $_GET['filter'];
-    $get_categories = $_GET['categories'];
-    $cat_array = explode(',', $get_categories);
-    // count products with this filter
-    // filters are stored in JSON, so we search like :"id"
-    $cnt_products = $db_posts->count("se_products", [
-        "AND" => [
-            "filter[~]" => ':"' . $get_filter . '"',
-            "status" => "1",
-            "type" => ["p","v"],
-            "categories[~]" => $cat_array
-        ]
+
+    // same rules as the product list, without the active filters
+    $str_status = '1';
+    if(isset($_SESSION['user_class']) && $_SESSION['user_class'] == 'administrator') {
+        $str_status = '1-2';
+    }
+
+    $where = se_build_products_where([
+        'status' => $str_status,
+        'categories' => (string) ($_GET['categories'] ?? ''),
+        'custom_filter_groups' => [[$get_filter]]
     ]);
 
-    echo $cnt_products;
+    // variants count towards their parent product, each product only once
+    $sql = "SELECT count(DISTINCT CASE WHEN type LIKE '%v%' THEN parent_id ELSE id END) AS cnt
+            FROM se_products {$where['sql']}";
+    $cnt_products = $db_posts->query($sql, $where['map'])->fetchColumn();
+
+    echo (int) $cnt_products;
     exit;
 }
 

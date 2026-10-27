@@ -9,7 +9,8 @@ function se_scandir_recursive($dir): array {
     $result = [];
     $root = scandir($dir);
     foreach($root as $value) {
-        if($value === '.' || $value === '..'|| $value === '.DS_Store') {continue;}
+        // skip dotfiles (., .., .DS_Store, .htaccess, ...)
+        if(str_starts_with($value, '.')) {continue;}
         $result[]="$dir/$value";
         if(is_dir("$dir/$value")) {
             foreach(se_scandir_recursive("$dir/$value") as $value) {
@@ -22,6 +23,18 @@ function se_scandir_recursive($dir): array {
     }
 
     return $result;
+}
+
+/**
+ * URL of a built ACP asset (public/assets/themes/administration/dist/)
+ * with the file's mtime as ?v= - every build reaches the browser immediately
+ * @param string $file file name relative to dist/, e.g. 'backend.css'
+ * @return string
+ */
+function se_acp_asset_url(string $file): string {
+    $path = SE_PUBLIC . '/assets/themes/administration/dist/' . $file;
+    $version = is_file($path) ? filemtime($path) : 0;
+    return '/themes/administration/dist/' . $file . '?v=' . $version;
 }
 
 function se_covert_big_int(int $number): string {

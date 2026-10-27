@@ -95,3 +95,26 @@ all, an incompatible hook, a changed function signature, or a database change on
 would only surface once you actually load the affected page. This is common sense for most
 developers, but worth stating plainly: take your own backup (files and database) before
 updating, since SwiftyEdit itself won't create one for you.
+### Own rules in .htaccess {#updates-htaccess}
+
+An update replaces the block between `# --- SwiftyEdit core (do not edit) ---` and
+`# --- END SwiftyEdit core ---` in `public/.htaccess` with the shipped version. Everything
+outside of it is kept:
+
+* __User rules before SwiftyEdit__ (at the top of the file) - the place for own redirects,
+  rewrites or exceptions, e.g. a folder with own scripts. Only rules here are applied before
+  the SwiftyEdit routes: the core block ends with the front controller, which catches every
+  remaining URL, so rewrite rules further down never apply to SwiftyEdit URLs.
+* __User custom rules__ (at the end of the file) - fine for headers, caching or access settings.
+
+Whenever an update changes the file, the previous version is saved to `data/backups/` first,
+and the update page shows a note if the core block was replaced. If the file is managed
+elsewhere (e.g. by your hosting or a deployment), add `$se_update_htaccess = false;` to
+`data/config.php` - updates then leave it alone, and you have to apply changes of the core block
+yourself (template: `install/contents/_htaccess.txt`).
+
+In addition, the installer and every update (also a manual one via `/install/`) write a small
+`.htaccess` into each upload folder (`public/assets/images`, `files`, `galleries`, ...): it
+blocks scripts there and protects directly opened SVG files, even if `public/.htaccess` is
+outdated. If you need own rules in one of these files, remove its first line - SwiftyEdit then
+no longer replaces it.

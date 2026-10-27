@@ -120,7 +120,6 @@ if(isset($_SESSION['user_nick']) AND $_SESSION['user_nick'] != "") {
         $smarty->assign("label_psw",$lang['label_psw']);
         $smarty->assign("button_login",$lang['button_login']);
         $smarty->assign('status_msg', $status_msg);
-        $smarty->assign('label_remember_me', $lang['label_remember_me']);
 
         $smarty->display('loginbox.tpl');
     }

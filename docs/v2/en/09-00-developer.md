@@ -53,6 +53,46 @@ A few more small things worth knowing:
   `$se_2fa_required = true;` in `data/config.php`, every backend user needs a second factor;
   `$se_2fa_bypass` is the emergency switch. Details in
   [User management](07-00-user.md#two-factor-authentication).
+* __Account lock after failed logins__ (`$se_failed_logins_limit` in `config.php`) - after
+  5 wrong passwords in a row (default) the account is locked for 1 minute, every further failed
+  attempt doubles the lock (at most 60 minutes). The owner gets a mail with an unlock link (at
+  most one per hour). One failed attempt is forgotten per 10 minutes without one. Applies to
+  frontend and backend, in addition to the limit per IP address (10 failed attempts in 15
+  minutes). Set another value in `data/config.php`, e.g. `$se_failed_logins_limit = 10;`, or
+  switch it off with `$se_failed_logins_limit = null;`.
+* __Session lifetime__ (`$se_session_max_lifetime` in `config.php`) - every login ends after
+  this many seconds, regardless of activity (default 12 hours, `0` = no limit). Independently,
+  a new password, withdrawn rights or a deactivated account end all other sessions of that
+  account; when users change their own password, the current session stays. In the backend and
+  in the sensitive frontend areas (profile, cart, checkout, orders, wishlist, comments, votings)
+  this takes effect right away, on all other frontend pages within 5 minutes at the latest. The
+  list is in `app/app.php` (`$se_sensitive_page_types`) and `app/xhr/route.php`
+  (`$sensitive_routes`); own plugin endpoints with personal data can call
+  `se_validate_user_session()` themselves.
+* __.htaccess on updates__ (`$se_update_htaccess` in `config.php`) - updates replace the core
+  block of `public/.htaccess`, own rules before and after it are kept. With
+  `$se_update_htaccess = false;` in `data/config.php` the file is left untouched. Details in
+  [Installation](01-01-installation.md#updates-htaccess).
+* __Updates in the backend__ (`$se_backend_updates` in `config.php`) - with
+  `$se_backend_updates = false;` in `data/config.php` the backend no longer downloads or
+  installs updates (e.g. if you deploy by hand). New versions are still shown, the database
+  update via `/install/` still works.
+* __Folder permissions__ (`SE_DIR_PERMISSIONS`) - folders SwiftyEdit creates (cache, uploads,
+  thumbnails) get `0755`. If you need write access via FTP with a different user, add
+  `define('SE_DIR_PERMISSIONS', 0775);` to `data/config.php`.
+* __Embeds__ (`$se_embed_hosts` in `config.php`) - HTML from the editor is cleaned with
+  `se_purify_html()` when it is saved (currently the teaser and text of categories). Iframes
+  are only kept if their source is a `https` address from this list. An entry is a host
+  (`www.youtube.com`) or a host with a path (`www.google.com/maps/embed`) - then only
+  addresses starting with it are allowed. Default: YouTube (`www.youtube.com`,
+  `www.youtube-nocookie.com`), Vimeo (`player.vimeo.com`), Google Maps
+  (`www.google.com/maps/embed`) and OpenStreetMap (`www.openstreetmap.org/export/embed.html`).
+  Add more in `data/config.php`, e.g. for Facebook and Instagram:
+  `$se_embed_hosts[] = 'www.facebook.com/plugins/';` and
+  `$se_embed_hosts[] = 'www.instagram.com';`. Only the iframe variant of an embed code
+  works - codes with `<script>` (e.g. the standard Instagram code with `embed.js`) are always
+  removed. Note that embeds load content from the provider on every page view, which may
+  require consent under privacy laws.
 
 ## Themes
 

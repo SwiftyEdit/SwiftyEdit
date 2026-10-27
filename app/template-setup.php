@@ -98,6 +98,19 @@ if(isset($user_logout) && ($user_logout != '')) {
     $smarty->assign('msg_content', $output);
 }
 
+// logout link opened per GET (see routing.php) - confirm with a POST button
+if(!empty($user_logout_confirm)) {
+    $logout_form = htmlspecialchars($lang['msg_logout_confirm'], ENT_QUOTES);
+    $logout_form .= '<form method="post" action="'.SE_INCLUDE_PATH.'/logout" class="mt-2">';
+    $logout_form .= $hidden_csrf_token;
+    $logout_form .= '<button type="submit" class="btn btn-primary btn-sm">'.htmlspecialchars($lang['button_logout'], ENT_QUOTES).'</button>';
+    $logout_form .= '</form>';
+    $smarty->assign("msg_status","alert alert-info",true);
+    $smarty->assign('msg_text', $logout_form, true);
+    $output = $smarty->fetch("status_message.tpl");
+    $smarty->assign('msg_content', $output);
+}
+
 // Shopping Cart Setup
 if($se_settings['posts_products_cart'] == 2 OR $se_settings['posts_products_cart'] == 3) {
     $smarty->assign('show_shopping_cart',true);
@@ -355,6 +368,19 @@ if(isset($_POST['page_psw']) && $_POST['page_psw'] != '') {
     // Existing installs keep working on the md5 path until the password is re-saved.
     if(strlen($page_psw) === 32 && ctype_xdigit($page_psw)) {
         $page_psw_valid = hash_equals($page_psw, md5($_POST['page_psw']));
+
+        // replace the md5 hash with password_hash() now that we know the password -
+        // only if the stored value is still this md5 hash (a parallel save wins)
+        if($page_psw_valid && is_numeric($page_contents['page_id'] ?? null)) {
+            $new_page_psw = password_hash($_POST['page_psw'], PASSWORD_DEFAULT);
+            $rehash = $db_content->update("se_pages", ["page_psw" => $new_page_psw], [
+                "page_id" => (int) $page_contents['page_id'],
+                "page_psw" => $page_psw
+            ]);
+            if($rehash->rowCount() === 1) {
+                $page_psw = $new_page_psw;
+            }
+        }
     } else {
         $page_psw_valid = password_verify($_POST['page_psw'], $page_psw);
     }
@@ -370,7 +396,11 @@ if(isset($_GET['reset_page_psw'])) {
     unset($_SESSION['page_psw']);
 }
 
-if(isset($page_psw) && $page_psw !== '' && $_SESSION['page_psw'] !== $page_psw) {
+// locked: app.php then runs no page type handler (product/post/event lists ...),
+// which would replace the password form with the protected content
+$page_psw_locked = false;
+if(isset($page_psw) && $page_psw !== '' && ($_SESSION['page_psw'] ?? '') !== $page_psw) {
+    $page_psw_locked = true;
     $formaction = SE_INCLUDE_PATH . '/'.$swifty_slug;
     $page_title = 'Password Protected Page';
     $page_meta_robots = 'noindex';

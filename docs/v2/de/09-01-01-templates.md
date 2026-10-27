@@ -187,6 +187,19 @@ sondern nur die unten aufgeführten wörtlichen Platzhalter.
     * `order-withdrawal-request.tpl`
     * `send-order-request.tpl`
     * `send-order-status.tpl`
+* Produkttabellen - der Platzhalter `{order_products}` in den Bestell-Templates wird jeweils aus
+  zwei Dateien gebaut: einem Wrapper mit dem Tabellenkopf und `{order_products_rows}` sowie
+  einem Zeilen-Template, das für jedes Produkt wiederholt wird. Liefert Dein Theme diese Dateien
+  nicht mit, werden die aus dem `default`-Theme verwendet.
+    * `order-products.tpl` / `order-products-row.tpl` - für `send-order-status.tpl`
+    * `order-request-products.tpl` / `order-request-products-row.tpl` - für
+      `send-order-request.tpl`
+
+  Platzhalter in den Zeilen-Templates: `{product_number}`, `{title}`, `{options}`,
+  `{options_comment}` (bereits als `<p>Label: Text</p>` formatiert, leer wenn keiner vorhanden),
+  `{slug}`, `{amount}`, `{tax}`, `{price_net_single}`, `{price_gross_single}` (Einzelpreis),
+  `{price_net}`, `{price_gross}` (Preis × Menge) und `{currency}`. `{lang_*}`-Platzhalter
+  funktionieren in beiden Dateien.
 
 Wenn Du aus PHP heraus eine neue Transaktions-Mail hinzufügst, übergibst Du Deinen eigenen
 Body-Template-Dateinamen und die Platzhalterwerte über das `$data`-Array an

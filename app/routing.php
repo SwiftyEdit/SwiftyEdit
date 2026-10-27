@@ -47,9 +47,18 @@ if(is_file(SE_CONTENT.'/includes/query.controller.php')) {
     include SE_CONTENT.'/includes/query.controller.php';
 }
 
-// Handle logout
+// Handle logout - only per POST with a valid CSRF token, so a link or
+// an embedded image (<img src="/logout">) on another page can't log anybody out.
+// A plain GET (old links, own themes) asks for confirmation instead.
 if($query == 'logout' OR (isset($_GET['goto']) && ($_GET['goto'] == 'logout'))) {
-    $user_logout = se_end_user_session();
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // bootstrap.php only checks the token for a non-empty $_POST - an empty
+        // POST (or a text/plain / JSON body) would otherwise log out without one
+        se_validate_token($_POST['csrf_token'] ?? '');
+        $user_logout = se_end_user_session();
+    } elseif(($_SESSION['user_nick'] ?? '') !== '') {
+        $user_logout_confirm = true;
+    }
     $query = '/';
 }
 

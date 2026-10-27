@@ -55,6 +55,46 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   `$se_2fa_required = true;` in `data/config.php` brauchen alle Backend-Zugänge einen zweiten
   Faktor, `$se_2fa_bypass` ist der Notschalter. Details unter
   [Benutzerverwaltung](07-00-user.md#two-factor-authentication).
+* __Kontosperre nach Fehlversuchen__ (`$se_failed_logins_limit` in `config.php`) - nach
+  5 falschen Passwörtern in Folge (Standard) wird das Konto 1 Minute gesperrt, jeder weitere
+  Fehlversuch verdoppelt die Sperre (höchstens 60 Minuten). Der Kontoinhaber bekommt eine Mail
+  mit einem Link zum Entsperren (höchstens eine pro Stunde). Pro 10 Minuten ohne Fehlversuch
+  wird einer vergessen. Gilt für Frontend und Backend, zusätzlich zur Bremse pro IP-Adresse
+  (10 Fehlversuche in 15 Minuten). Anderer Wert in `data/config.php`, z. B.
+  `$se_failed_logins_limit = 10;`, abschalten mit `$se_failed_logins_limit = null;`.
+* __Sitzungsdauer__ (`$se_session_max_lifetime` in `config.php`) - jede Anmeldung endet nach
+  dieser Anzahl Sekunden, unabhängig von Aktivität (Standard 12 Stunden, `0` = keine Grenze).
+  Unabhängig davon beenden ein neues Passwort, entzogene Rechte oder ein deaktiviertes Konto alle
+  anderen Sitzungen dieses Kontos; ändert jemand sein eigenes Passwort, bleibt die aktuelle
+  Sitzung bestehen. Im Backend und in den sensiblen Frontend-Bereichen (Profil, Warenkorb,
+  Checkout, Bestellungen, Wunschliste, Kommentare, Votings) greift das sofort, auf allen übrigen
+  Frontend-Seiten nach spätestens 5 Minuten. Die Liste steht in `app/app.php`
+  (`$se_sensitive_page_types`) und `app/xhr/route.php` (`$sensitive_routes`); eigene
+  Plugin-Endpunkte mit persönlichen Daten können `se_validate_user_session()` selbst aufrufen.
+* __.htaccess bei Updates__ (`$se_update_htaccess` in `config.php`) - Updates ersetzen den
+  Core-Block von `public/.htaccess`, eigene Regeln davor und danach bleiben erhalten. Mit
+  `$se_update_htaccess = false;` in `data/config.php` bleibt die Datei unangetastet. Details unter
+  [Installation](01-01-installation.md#updates-htaccess).
+* __Updates im Backend__ (`$se_backend_updates` in `config.php`) - mit
+  `$se_backend_updates = false;` in `data/config.php` lädt und installiert das Backend keine
+  Updates mehr (z. B. wenn Du per Hand deployst). Neue Versionen werden weiter angezeigt, das
+  Datenbank-Update über `/install/` funktioniert weiter.
+* __Ordnerrechte__ (`SE_DIR_PERMISSIONS`) - Ordner, die SwiftyEdit anlegt (Cache, Uploads,
+  Vorschaubilder), bekommen `0755`. Brauchst Du per FTP mit einem anderen Benutzer Schreibrechte,
+  trage `define('SE_DIR_PERMISSIONS', 0775);` in `data/config.php` ein.
+* __Einbettungen__ (`$se_embed_hosts` in `config.php`) - HTML aus dem Editor wird beim Speichern
+  mit `se_purify_html()` bereinigt (derzeit Teaser und Text der Kategorien). Iframes bleiben nur
+  erhalten, wenn ihre Quelle eine `https`-Adresse aus dieser Liste ist. Ein Eintrag ist ein Host
+  (`www.youtube.com`) oder ein Host mit Pfad (`www.google.com/maps/embed`) - dann sind nur
+  Adressen erlaubt, die damit beginnen. Standard: YouTube (`www.youtube.com`,
+  `www.youtube-nocookie.com`), Vimeo (`player.vimeo.com`), Google Maps
+  (`www.google.com/maps/embed`) und OpenStreetMap (`www.openstreetmap.org/export/embed.html`).
+  Weitere ergänzt Du in `data/config.php`, z. B. für Facebook und Instagram:
+  `$se_embed_hosts[] = 'www.facebook.com/plugins/';` und
+  `$se_embed_hosts[] = 'www.instagram.com';`. Es funktioniert nur die Iframe-Variante eines
+  Einbettungscodes - Codes mit `<script>` (z. B. der Standard-Code von Instagram mit `embed.js`)
+  werden immer entfernt. Beachte, dass Einbettungen bei jedem Seitenaufruf Inhalte vom Anbieter
+  laden; je nach Datenschutzrecht braucht es dafür eine Einwilligung.
 
 ## Themes
 

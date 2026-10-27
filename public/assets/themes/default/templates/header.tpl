@@ -91,14 +91,16 @@
 
         </div>
 
-        <div class="row justify-content-center align-items-end text-center">
+        <div class="row justify-content-center align-items-center text-center">
 
             {if {$page_logo} != ''}
-                <div class="col-md-2 col-6 text-sm-start">
+                {* col-auto: the logo column shrinks to the logo's actual width, so the
+                   title sits right next to it regardless of the logo's aspect ratio. *}
+                <div class="col-auto">
                     <a href="/" title="{$prefs_pagetitle}"><img src="{$page_logo}" alt="Logo" title="{$prefs_pagetitle}"
-                                                                class="img-fluid"></a>
+                                                                class="header-logo"></a>
                 </div>
-                <div class="col-md-10 col-sm-12 text-sm-start d-none d-md-block">
+                <div class="col text-start d-none d-md-block">
                     <p class="h1 mb-0">{$prefs_pagetitle} <small>{$prefs_pagesubtitle}</small></p>
                 </div>
             {else}

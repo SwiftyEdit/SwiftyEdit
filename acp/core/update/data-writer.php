@@ -19,6 +19,12 @@ if(!se_hasPermission('drm_acp_sensitive_files')) {
     exit;
 }
 
+// switched off in SE_CONTENT/config.php - no downloads, no installation
+if(($se_backend_updates ?? true) === false && (isset($_POST['load_update_data']) || isset($_POST['install_update']))) {
+    echo '<div class="alert alert-info">'.$lang['update_msg_disabled'].'</div>';
+    exit;
+}
+
 // helpers
 if(isset($_POST['helper_update_table'])) {
     include __DIR__.'/helpers_update_data.php';
@@ -100,6 +106,7 @@ if(isset($_POST['install_update'])) {
 
     $source_directory = basename($_POST['install_update']);
     $_SESSION['protocol'] = '';
+    $_SESSION['update_notices'] = [];
     move_new_files($source_directory);
     update_database();
 
@@ -110,6 +117,11 @@ if(isset($_POST['install_update'])) {
     // served after the update even though the new .tpl sources are in place.
     se_delete_twig_cache();
     $_SESSION['protocol'] .= '<b class="text-success">Twig cache:</b> cleared<|>';
+
+    // .htaccess in the upload folders (see install/php/functions.php)
+    foreach (se_write_upload_htaccess_files() as $upload_htaccess_line) {
+        $_SESSION['protocol'] .= htmlspecialchars($upload_htaccess_line, ENT_QUOTES).'<|>';
+    }
 
     // data migrations run last, after files + schema are in their new shape
     // (see install/migrations/, se_run_pending_migrations() in
@@ -136,6 +148,12 @@ if(isset($_POST['install_update'])) {
     }
     echo '</ul>';
     echo '</div>';
+
+    // things the person running the update has to look at (e.g. .htaccess, see update_htaccess_file())
+    foreach($_SESSION['update_notices'] as $update_notice) {
+        echo '<div class="alert alert-warning">'.htmlspecialchars($update_notice, ENT_QUOTES).'</div>';
+    }
+    unset($_SESSION['update_notices']);
 
     if ($migration_result['error'] !== null) {
         echo '<div class="alert alert-danger">A migration failed - the update is not complete. Fix the underlying issue and reload this page to retry; already-applied migrations will not run again.</div>';

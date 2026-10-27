@@ -207,12 +207,11 @@ if($_REQUEST['action'] == 'list_products') {
     echo '<div class="card p-3">';
     echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
 
+    echo '<div class="table-responsive">';
     echo '<table class="table table-striped">';
 
     echo '<thead><tr>';
-    echo '<th scope="col" style="width: 35px;">#</th>';
-    echo '<th scope="col" style="width: 35px;">'.$icon['star'].'</th>';
-    echo '<th scope="col" style="width: 120px;">'.$lang['label_priority'].'</th>';
+    echo '<th scope="col" style="width: 100px;">'.$lang['label_priority'].'</th>';
     echo '<th scope="col" style="width: 30px;">'.$lang['label_image'].'</th>';
     echo '<th scope="col" class="w-auto">'.$lang['label_description'].'</th>';
     echo '<th scope="col" style="width: 150px;">'.$lang['label_price'].'</th>';
@@ -428,24 +427,22 @@ if($_REQUEST['action'] == 'list_products') {
         $show_items_price .= '</div>';
 
         echo '<tr class="'.$add_row_class.'">';
-        echo '<td><label class="col-form-label">#'.$product['id'].'</label></td>';
-        echo '<td>'.$icon_fixed_form.'</td>';
-        echo '<td>'.$prio_form.'</td>';
+        echo '<td><div class="d-flex flex-column gap-1">'.$icon_fixed_form.$prio_form.'</div></td>';
         echo '<td>'.$show_thumb.'</td>';
         echo '<td>';
-        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' '.$add_label.'</h6>';
+        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' <span class="text-muted small fw-normal">#'.$product['id'].'</span> '.$add_label.'</h6>';
         echo $trimmed_teaser.'<br>'.$show_items_dates;
         echo '<p class="mb-0"><small>'.$show_slug.'</small></p>';
         echo $label;
         echo $categories;
         echo '</td>';
         echo '<td style="width:150px;">'.$show_items_price.'</td>';
-        echo '<td style="width:100px;" class="text-nowrap text-end">'.$btn_edit_tpl.' '.$btn_duplicate_tpl.'</td>';
+        echo '<td><div class="d-flex flex-column gap-1">'.$btn_edit_tpl.$btn_duplicate_tpl.'</div></td>';
         echo '</tr>';
 
         if($edit_variant_collapse != '') {
             echo '<tr class="'.$add_row_class.'">';
-            echo '<td colspan="7">';
+            echo '<td colspan="5">';
             echo $edit_variant_collapse;
             echo '</td>';
             echo '</tr>';
@@ -453,6 +450,7 @@ if($_REQUEST['action'] == 'list_products') {
     }
 
     echo '</table>';
+    echo '</div>'; // table-responsive
     echo '</div>';
 
 }
@@ -491,10 +489,18 @@ if($_REQUEST['action'] == 'list_price_groups') {
         echo '<table class="table table-sm">';
         echo '<tr>';
         echo '<td>'.$lang['label_title'].'</td>';
-        echo '<td>'.$lang['label_price'].'</td>';
-        echo '<td>'.$lang['label_scaling_prices'].'</td>';
+        echo '<td>'.$lang['label_product_price'].' '.$lang['label_product_net'].'</td>';
+        echo '<td>'.$lang['label_product_price'].' '.$lang['label_product_gross'].'</td>';
+        echo '<td>'.$lang['label_product_scaling_prices'].'</td>';
         echo '<td></td>';
-        echo '<td>';
+        echo '</tr>';
+
+        $tax_options = [
+            1 => $se_settings['posts_products_default_tax'],
+            2 => $se_settings['posts_products_tax_alt1'],
+            3 => $se_settings['posts_products_tax_alt2'],
+        ];
+
         foreach ($get_all_price_groups as $group) {
 
             $status_volume_discounts = $icon['check'];
@@ -502,14 +508,18 @@ if($_REQUEST['action'] == 'list_price_groups') {
                 $status_volume_discounts = $icon['x'];
             }
 
+            $tax = $tax_options[$group['tax']] ?? $tax_options[1];
+            $group_prices = se_posts_calc_price($group['price_net'], $tax);
+
             echo '<tr>';
             echo '<td>'.$group['title'].'</td>';
-            echo '<td>'.$group['price_net'].'</td>';
+            echo '<td>'.$group_prices['net_single'].'</td>';
+            echo '<td>'.$group_prices['gross_single'].'</td>';
             echo '<td>'.$status_volume_discounts.'</td>';
             echo '<td class="text-end">';
             echo '<form>';
             echo '<button type="button" hx-post="/admin-xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
-            echo '<button type="button" hx-post="/admin-xhr/shop/write/" class="btn btn-default btn-sm text-danger" name="delete" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
+            echo '<button type="button" hx-post="/admin-xhr/shop/write/" hx-target="#priceGroupResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" class="btn btn-default btn-sm text-danger" name="delete_price_group" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
             echo $hidden_csrf_token;
             echo '</form>';
             echo '</td>';

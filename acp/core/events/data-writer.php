@@ -69,8 +69,13 @@ if(isset($_POST['delete_event'])) {
 
 if(isset($_POST['save_post'])) {
 
+    // all columns of se_events ($cols) - only these POST fields become
+    // variables (read again by name below), so a POST field can't overwrite
+    // any other variable in this scope (e.g. $db_posts, $lang)
+    require SE_ROOT.'install/contents/se_events.php';
+
     foreach($_POST as $key => $val) {
-        if(is_string($val)) {
+        if(is_string($val) && array_key_exists($key, $cols)) {
             $$key = @htmlspecialchars($val, ENT_QUOTES);
         }
     }
@@ -182,9 +187,7 @@ if(isset($_POST['save_post'])) {
         $uuid = se_generate_uuid();
     }
 
-    // get all $cols
-    require SE_ROOT.'install/contents/se_events.php';
-    // build sql string -> f.e. "releasedate" => $releasedate,
+    // build sql string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
     foreach($cols as $k => $v) {
         if ($k === 'id') continue;
         if (!isset($$k)) continue;

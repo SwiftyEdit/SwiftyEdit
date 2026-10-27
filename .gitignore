@@ -18,7 +18,11 @@ composer.phar
 /data/config.php
 /data/site_secret.php
 /data/includes/*
+/data/backups/
 /dist/
+
+# Local notes, may contain confidential details (e.g. unreleased security fixes) #
+/TODO.md
 
 # Database files and generated content #
 *.sqlite

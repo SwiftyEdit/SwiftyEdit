@@ -45,7 +45,7 @@ function checkexistingdir($path) {
 	global $goto_install,$lang;
 	
 	if(!is_dir("$path")){
-        mkdir("$path",0777,true);
+        mkdir("$path", SE_DIR_PERMISSIONS, true);
 		echo '<div class="row">';
 		echo '<div class="col-md-4"><span title="'.$path.'">'.basename($path).'</span></div>';
 		echo '<div class="col-md-8">';

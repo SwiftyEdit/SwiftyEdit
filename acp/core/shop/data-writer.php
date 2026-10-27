@@ -94,6 +94,15 @@ if(isset($_POST['sorting_products_dir'])) {
 // if there are variants, delete them, too
 if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
     $delete_id = (int) $_POST['delete_product'];
+
+    // remember id and language of the product and its variants for the cache cleanup
+    $deleted_products = $db_posts->select("se_products", ["id", "product_lang"], [
+        "OR" => [
+            "id" => $delete_id,
+            "parent_id" => $delete_id
+        ]
+    ]);
+
     $cnt_changes = $db_posts->delete("se_products", [
         "OR" => [
             "id" => $delete_id,
@@ -107,6 +116,9 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
             "content_type" => "product",
             "content_id" => $delete_id
         ]);
+
+        se_deleteProductCache($deleted_products);
+        se_generate_xml_sitemap('products');
 
         se_do_backend_hook('product.deleted', [
             'product_id' => $delete_id,
@@ -122,6 +134,10 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
 
 // save or update products
 if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
+
+    // "context" = "cache" makes se_prepareProductData() take the values
+    // unescaped (meant for rows from the database) - never from a form
+    unset($_POST['context']);
 
     if(is_numeric($_POST['save_product']))	{
         $id = (int) $_POST['save_product'];
@@ -246,6 +262,37 @@ if(isset($_POST['save_price'])) {
         header( "HX-Trigger: update_price_groups");
         exit;
     }
+}
+
+// delete price group
+// refuse if the group is still assigned to products (they reference it by hash)
+if(isset($_POST['delete_price_group']) && is_numeric($_POST['delete_price_group'])) {
+    $delete_id = (int) $_POST['delete_price_group'];
+    $price_group = $db_posts->get("se_prices", ["hash"], [
+        "id" => $delete_id
+    ]);
+
+    if(empty($price_group)) {
+        show_toast($lang['msg_error_db_changed'],'danger');
+        exit;
+    }
+
+    $cnt_products = $db_posts->count("se_products", [
+        "product_price_group" => $price_group['hash']
+    ]);
+
+    if($cnt_products > 0) {
+        show_toast($lang['msg_error_price_group_in_use'].' ('.$cnt_products.')','danger');
+        exit;
+    }
+
+    $db_posts->delete("se_prices", [
+        "id" => $delete_id
+    ]);
+    show_toast($lang['msg_info_data_deleted'],'success');
+    record_log($_SESSION['user_nick'],"deleted price group id: $delete_id","10");
+    header( "HX-Trigger: update_price_groups, show_price_groups_form");
+    exit;
 }
 
 // change priority

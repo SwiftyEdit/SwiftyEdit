@@ -8,6 +8,9 @@
         </div>
         <div class="card-body collapse" id="collapseMail">
 
+            {if $mail_change_blocked}
+            <div class="alert alert-info mb-0">{$lang_msg_update_profile_mail_admin}</div>
+            {else}
             <div class="row mb-1">
 
                 <div class="col-6">
@@ -30,6 +33,7 @@
                 {$lang_button_update}
             </button>
             {$hidden_csrf_token}
+            {/if}
         </div>
     </div>
 </form>

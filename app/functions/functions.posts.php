@@ -721,6 +721,66 @@ function se_get_votes($type,$id,$section) {
     return $count;
 }
 
+/**
+ * Voting mode of a blog post (b), event (e) or product (s):
+ * 1 = no votings, 2 = registered users only, 3 = everybody.
+ * Pages and unknown sections have no votings (1).
+ */
+function se_get_voting_mode(string $section, int $id): int {
+
+    global $db_posts;
+
+    $mode = match ($section) {
+        'b' => $db_posts->get("se_posts", "post_votings", ["post_id" => $id]),
+        'e' => $db_posts->get("se_events", "votings", ["id" => $id]),
+        's' => $db_posts->get("se_products", "votings", ["id" => $id]),
+        default => 1
+    };
+
+    return (int) ($mode ?? 1);
+}
+
+/**
+ * Anonymous votes and guestlist confirmations are stored with a keyed hash
+ * of the IP address (se_generate_anonymous_voter()) - only to stop the same
+ * visitor from voting twice. After SE_ANONYMOUS_PARTICIPATION_DAYS the hash
+ * is emptied; the vote or confirmation itself stays and keeps counting, the
+ * visitor could take part again afterwards. Runs whenever somebody votes or
+ * confirms (there is no cron), the UPDATE only touches rows past the limit.
+ */
+const SE_ANONYMOUS_PARTICIPATION_DAYS = 90;
+
+function se_cleanup_anonymous_participation(): void {
+
+    global $db_content;
+
+    $db_content->update("se_comments", [
+        "comment_author" => ""
+    ], [
+        "comment_type" => ["upv", "dnv", "evc"],
+        // comment_time is a VARCHAR - 10-digit timestamps compare correctly as text
+        "comment_time[<]" => (string) (time() - SE_ANONYMOUS_PARTICIPATION_DAYS * 86400),
+        "comment_author[!]" => "",
+        // anonymous entries: no user id - NULL, '' or 0 depending on the database
+        "OR" => [
+            "comment_author_id" => null,
+            "comment_author_id #empty" => "",
+            "comment_author_id #zero" => 0
+        ]
+    ]);
+}
+
+/**
+ * Whether the current visitor may vote with this voting mode (see
+ * se_get_voting_mode()) - the event guestlist uses the same values
+ */
+function se_voting_allowed(int $mode): bool {
+    if ($mode === 3) {
+        return true;
+    }
+    return $mode === 2 && is_numeric($_SESSION['user_id'] ?? null);
+}
+
 
 /**
  * check if user can vote on posts

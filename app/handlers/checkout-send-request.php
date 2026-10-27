@@ -15,26 +15,7 @@
 $send_request = false;
 
 /* build table from cart items */
-$products_str  = '<table role="presentation" border="0" cellpadding="5" cellspacing="0">';
-$products_str .= '<tr>';
-$products_str .= '<td valign="top">'.$lang['label_product_info'].'</td>';
-$products_str .= '<td valign="top">'.$lang['label_product_amount'].'</td>';
-$products_str .= '<td valign="top">'.$lang['label_price'].'</td>';
-$products_str .= '</tr>';
-for($i=0;$i<$cnt_cart_items;$i++) {
-
-    $product_info  = '#'.$cart_item[$i]['product_number'].'<br>';
-    $product_info .= '<strong>'.$cart_item[$i]['title'].'</strong><br>';
-    $product_info .= $cart_item[$i]['options'].'<br>';
-    $product_info .= $cart_item[$i]['slug'].'<br>';
-
-    $products_str .= '<tr>';
-    $products_str .= '<td valign="top">'.$product_info.'</td>';
-    $products_str .= '<td valign="top">'.$cart_item[$i]['amount'].'</td>';
-    $products_str .= '<td valign="top">'.$cart_item[$i]['price_net_single_format'].' ('.$lang['label_net'].')</td>';
-    $products_str .= '</tr>';
-}
-$products_str .= '</table>';
+$products_str = se_build_mail_products(array_slice((array) $cart_item, 0, $cnt_cart_items), 'order-request-products', $se_settings['posts_products_default_currency']);
 
 
 $mail_data['body_tpl'] = 'send-order-request.tpl';

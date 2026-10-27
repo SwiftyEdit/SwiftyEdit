@@ -30,6 +30,10 @@ const INSTALLER = TRUE;
 require '../install/php/functions.php';
 require __DIR__.'/functions.php';
 
+if(($se_backend_updates ?? true) === false) {
+    echo '<div class="alert alert-info mb-4">'.$lang['update_msg_disabled'].'</div>';
+}
+
 if(!extension_loaded('zip')) {
     echo '<div class="alert alert-danger mb-4">The required extension <strong>ZIP</strong> is not installed</div>';
 }

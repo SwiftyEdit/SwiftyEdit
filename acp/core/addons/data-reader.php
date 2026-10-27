@@ -36,17 +36,18 @@ if ($plugin !== '' && se_is_plugin_activated($plugin)) {
 // list all plugins
 if($_REQUEST['action'] == 'list_plugins') {
 
+    // se_docs_context_files() for the help buttons
+    require_once __DIR__.'/../docs/functions.php';
+
     $get_all_addons = se_get_all_addons();
     $se_addons = se_get_addons($t='plugin');
-
-    // for showing help text
-    $modal_template_file = file_get_contents("../acp/templates/bs-modal.tpl");
 
     foreach($get_all_addons as $k => $v) {
 
         $get_image = base64_encode(file_get_contents(SE_PUBLIC.'/assets/themes/administration/images/poster-addons.png'));
 
-        $update_btn = '<div hx-get="/admin-xhr/addons/read/?check_plugin='.$k.'" hx-trigger="load"></div>';
+        // d-flex, so the loaded badge lines up with the activation badge next to it
+        $update_btn = '<div class="d-flex" hx-get="/admin-xhr/addons/read/?check_plugin='.$k.'" hx-trigger="load"></div>';
 
         $addon_name = $v['addon']['name'];
         $addon_version = $v['addon']['version'];
@@ -59,27 +60,16 @@ if($_REQUEST['action'] == 'list_plugins') {
 
         $addon_lang = se_return_addon_translations($k);
 
+        // open the first doc (docs/{lang}/*.md by priority, else readme.md) in the help window
         $btn_help_text = '';
-        $modal = '';
-        $help_file_md = SE_ROOT.'/plugins/'.$k.'/readme.md';
-        if(is_file($help_file_md)) {
-            $addon_id = 'addonID'.$k;
-            $btn_help_text = '<button type="button" class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#'.$addon_id.'">'.$icon['question'].'</button>';
-
-            $modal_body_text = file_get_contents($help_file_md);
-            $Parsedown = new Parsedown();
-            $modal_body = $Parsedown->text($modal_body_text);
-
-            $modal = $modal_template_file;
-            $modal = str_replace('{modalID}', $addon_id, $modal);
-            $modal = str_replace('{modalTitle}', $addon_name, $modal);
-            $modal = str_replace('{modalBody}', $modal_body, $modal);
-            echo $modal;
+        $help_files = se_docs_context_files('plugin', $k);
+        if(!empty($help_files)) {
+            $btn_help_text = se_print_plugin_docs_link($k, basename($help_files[0]['path']), $icon['question'], null, 'btn btn-sm btn-outline-default me-1');
         }
 
         $vals = ['csrf_token' => $_SESSION['token']];
 
-        $delete_btn = '<button name="delete_plugin" value="'.$k.'" class="btn btn-sm btn-default text-danger" 
+        $delete_btn = '<button name="delete_plugin" value="'.$k.'" class="btn btn-sm btn-outline-default text-danger" 
                             hx-post="/admin-xhr/addons/write/"
                             hx-trigger="click"
                             hx-confirm="'.$lang['msg_confirm_delete'].'"
@@ -91,7 +81,7 @@ if($_REQUEST['action'] == 'list_plugins') {
         // see se_plugin_needs_activation()
         $activate_btn = '';
         if(se_plugin_needs_activation($k, $v ?? [])) {
-            $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-default text-success"
+            $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-outline-default text-success ms-1"
                                 hx-post="/admin-xhr/addons/write/"
                                 hx-trigger="click"
                                 hx-vals=\''.json_encode($vals).'\'
@@ -101,9 +91,11 @@ if($_REQUEST['action'] == 'list_plugins') {
 
         // an already activated plugin can always be deactivated, even if it
         // no longer needs activation (e.g. after an update)
+        $is_activated = false;
         foreach($se_addons as $a) {
             if($k == $a['addon_dir']) {
-                $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-default text-danger"
+                $is_activated = true;
+                $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-outline-default text-danger ms-1"
                                 hx-post="/admin-xhr/addons/write/"
                                 hx-trigger="click"
                                 hx-vals=\''.json_encode($vals).'\'
@@ -112,25 +104,47 @@ if($_REQUEST['action'] == 'list_plugins') {
             }
         }
 
-        echo '<div class="card mb-1 border-bottom">';
+        // category for the filter buttons in list.php - unlike the catalog
+        // (registry tags), installed plugins are classified the same way the
+        // core treats them: editors by their info.json type, payment addons
+        // by the "-pay" suffix the shop relies on (see se_get_payment_addons())
+        $addon_category = 'plugin';
+        if(($v['addon']['type'] ?? '') === 'editor') {
+            $addon_category = 'editor';
+        } else if(str_ends_with($k, '-pay')) {
+            $addon_category = 'payment';
+        }
+
+        // activation state next to the update status - plugins that don't
+        // need activation (and aren't activated) get no badge at all
+        $activation_badge = '';
+        if($is_activated) {
+            $activation_badge = '<span class="badge text-bg-success">'.ucfirst($lang['status_active']).'</span>';
+        } else if($activate_btn != '') {
+            $activation_badge = '<span class="badge badge-se">'.ucfirst($lang['status_inactive']).'</span>';
+        }
+
+        echo '<div class="card mb-3 border-bottom" data-addon-category="'.$addon_category.'">';
         echo '<div class="card-header d-flex justify-content-between align-items-center">';
-        echo '<div>'.$addon_name.' <span class="badge badge-se">'.$addon_version.'</span></div>';
+        echo '<div><span class="">'.$addon_name.'</span> <span class="badge badge-se">'.$addon_version.'</span></div>';
+        echo '<div class="d-flex align-items-center gap-1">';
+        echo $activation_badge;
         echo $update_btn;
-        echo '</div>';
-        echo '<div class="card-body">';
-        echo '<div class="row">';
-        echo '<div class="col-md-2">';
-        echo '<img src="data:image/png;base64,'.$get_image.'" class="img-fluid rounded-circle">';
-        echo '</div>';
-        echo '<div class="col-md-10">';
-        echo '<div id="update-response-'.$k.'"></div>';
-        echo '<div class="card-text">'.$addon_description.'</div>';
         echo '</div>';
         echo '</div>';
 
-        echo '<div class="btn-toolbar mt-1">';
-        echo '<div class="btn-group">';
+        echo '<div class="card-body">';
+        echo '<div class="d-flex gap-3">';
+        // fixed icon size, so the description doesn't lose width to a growing image
+        echo '<img src="data:image/png;base64,'.$get_image.'" class="rounded-circle flex-shrink-0" width="48" height="48" alt="">';
+        echo '<div class="flex-grow-1" style="min-width: 0">';
+        echo '<div id="update-response-'.$k.'"></div>';
+        echo '<div class="card-text">'.$addon_description.'</div>';
+
+        // plugin navigation as plain links below the description, so it
+        // wraps freely and isn't mistaken for the actions in the footer
         if(array_key_exists('navigation',$v)) {
+            echo '<div class="d-flex flex-wrap column-gap-3 row-gap-1 mt-2 small">';
             foreach ($v['navigation'] as $nav) {
 
                 $nav_text = $nav['text'];
@@ -138,20 +152,24 @@ if($_REQUEST['action'] == 'list_plugins') {
                     $nav_text = $addon_lang[$nav['text']];
                 }
 
-                echo '<a href="/admin/addons/plugin/' . $k . '/' . $nav['file'] . '/" class="btn btn-sm btn-default">' . $nav_text . '</a>';
+                echo '<a href="/admin/addons/plugin/' . $k . '/' . $nav['file'] . '/">' . $nav_text . '</a>';
             }
+            echo '</div>';
         }
+
         echo '</div>';
-        echo '<div class="btn-group ms-auto">';
+        echo '</div>';
+        echo '</div>';
+
+        // actions always at the same position, independent of text and navigation length
+        // transparent footer - with the header color it blended into the
+        // header of the next card, making it hard to tell the plugins apart
+        echo '<div class="card-footer d-flex justify-content-end">';
         echo $btn_help_text;
         echo $delete_btn;
         echo $activate_btn;
         echo '</div>';
-        echo '</div>';
 
-
-
-        echo '</div>';
         echo '</div>';
     }
 
@@ -349,6 +367,11 @@ if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
         exit;
     }
 
+    // release the session lock - the list fires one check per addon, and the
+    // outbound request below would otherwise serialize them and block every
+    // other admin request; $_SESSION stays readable after this
+    session_write_close();
+
     if(isset($_REQUEST['check_theme'])) {
         $addon_type = 'theme';
         $addon_root = SE_THEMES;
@@ -411,6 +434,9 @@ if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
 
 // list all themes
 if($_REQUEST['action'] == 'list_themes') {
+
+    // se_docs_context_files() for the help buttons
+    require_once __DIR__.'/../docs/functions.php';
 
     $all_themes = get_all_templates();
     $all_theme_info = se_get_all_themes();
@@ -506,6 +532,12 @@ if($_REQUEST['action'] == 'list_themes') {
         }
         echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
         echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
+
+        // open the first doc (docs/{lang}/*.md by priority, else readme.md) in the help window
+        $help_files = se_docs_context_files('theme', $template);
+        if(!empty($help_files)) {
+            echo se_print_theme_docs_link($template, basename($help_files[0]['path']), $icon['question'].' '.$lang['btn_help'], null, 'btn btn-default btn-sm mt-1 w-100');
+        }
 
         // the default theme and the active theme can't be deleted,
         // pages still using the theme are checked in data-writer.php

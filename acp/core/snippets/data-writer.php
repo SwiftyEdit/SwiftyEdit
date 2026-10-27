@@ -145,7 +145,7 @@ if(isset($_POST['save_snippet'])) {
 
     // check for cache directory
     if(!is_dir(SE_CONTENT . '/cache/snippets')) {
-        mkdir(SE_CONTENT . '/cache/snippets', 0777, true);
+        mkdir(SE_CONTENT . '/cache/snippets', SE_DIR_PERMISSIONS, true);
     }
 
     // cache snippet as JSON in /cache/snippets/$snippet_name+$lang

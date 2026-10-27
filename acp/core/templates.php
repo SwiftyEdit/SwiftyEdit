@@ -92,6 +92,12 @@ function tpl_form_input_text(array $data) {
     $tpl = str_replace('{input_value}', $data['input_value'], $tpl);
     $tpl = str_replace('{type}', $data['type'], $tpl);
 
+    // keep password managers from filling in the login of the current
+    // administrator (e.g. new password of another user, SMTP password)
+    if($data['type'] === 'password') {
+        $tpl = str_replace('type="password"', 'type="password" autocomplete="new-password"', $tpl);
+    }
+
     if($data['input_classes'] == '') {
         $tpl = str_replace('{input_classes}', 'form-control', $tpl);
     } else {

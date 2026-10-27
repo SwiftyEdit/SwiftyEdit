@@ -48,13 +48,17 @@ Hier legst Du fest, wie viele Versionen einer Seite gespeichert bleiben sollen.
 Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion:
 
 * Ob sich Besucher selbst registrieren dürfen, ob das Login-Formular angezeigt wird
-  und ob neue Benutzer von einem Administrator freigeschaltet werden müssen.
+  und ob neue Benutzer von einem Administrator freigeschaltet werden müssen. Ohne Login-Formular
+  ist die Anmeldung im Frontend ganz abgeschaltet (die Backend-Anmeldung unter `/admin/` ist
+  nicht betroffen, "Passwort vergessen" funktioniert weiterhin).
 * Die Session-Lebensdauer des Backends und eine Blacklist von Benutzernamen, die nicht
   registriert werden dürfen.
 * Welche Felder bei der Registrierung Pflichtfelder sind.
 * Kommentare: der Modus, die Autorisierung, die Auto-Close-Zeit, die maximale Anzahl an
   Einträgen und die maximale Verschachtelungstiefe.
-* Votings und Reaktionen (aus, nur für registrierte Benutzer oder global).
+* Votings und Reaktionen (aus, nur für registrierte Benutzer oder global). Gegen doppelte
+  Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse
+  gespeichert; nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
 
 ## Posts
 Diese Einstellungen betreffen die Posts (Blog).
@@ -184,6 +188,14 @@ Zwei Dinge solltest Du vor dem Aktivieren wissen:
   noch nicht in die Hauptdatei übernommene Änderungen verpassen. Stelle sicher, dass Dein
   Backup die `-wal`/`-shm`-Dateien mit einschließt, oder führe vor dem Kopieren einen
   Checkpoint aus (`PRAGMA wal_checkpoint(TRUNCATE)`).
+
+**Compact database** zeigt für jede der drei Datenbankdateien die Größe und den freien
+Platz darin. Gelöschte Daten hinterlassen freien Platz in der Datei, den SQLite für neue
+Daten wiederverwendet - kleiner wird die Datei dadurch aber nicht. Der Button komprimiert
+die Dateien (`VACUUM`) und gibt diesen Platz an die Festplatte zurück. Dabei wird jede
+Datei neu geschrieben: Solange das läuft, kann nichts gespeichert werden, und es wird
+vorübergehend so viel freier Speicherplatz benötigt, wie die größte Datei groß ist.
+Sinnvoll ist das vor allem, nachdem viele Daten gelöscht wurden.
 
 ---
 

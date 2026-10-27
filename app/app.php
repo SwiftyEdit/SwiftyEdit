@@ -102,6 +102,13 @@ if(!empty($page_contents['page_modul'])) {
     include SE_ROOT.'/plugins/'.basename($page_contents['page_modul']).'/frontend/index.php';
 }
 
+// pages with personal data or orders: check the session against the account
+// on every request, not only every few minutes (see se_validate_user_session())
+$se_sensitive_page_types = ['account', 'profile', 'checkout', 'orders', 'order_withdrawal', 'wishlist'];
+if (in_array($page_contents['page_type_of_use'] ?? '', $se_sensitive_page_types, true)) {
+    se_validate_user_session();
+}
+
 // Include template setup and smarty configuration
 require_once __DIR__.'/template-setup.php';
 
@@ -121,7 +128,11 @@ if(isset($_POST['download'])) {
     $p = 'download';
 }
 
+// a page locked by its password only shows the password form (template-setup.php)
 foreach($valid_page_types as $handler) {
+    if($page_psw_locked) {
+        break;
+    }
     if($p == $handler) {
         $handler_file = __DIR__.'/handlers/'.$handler.'.php';
         if(is_file($handler_file)) {
@@ -143,7 +154,7 @@ if(isset($product_data) AND $product_data['comments'] == 1) {
     $product_comments = 1;
 }
 
-if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_settings['comments_mode'] != 3) {
+if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comments == 1) && $se_settings['comments_mode'] != 3 && !$page_psw_locked) {
     $smarty->assign('show_page_comments', 'true', true);
 
     if($post_comments == 1) {

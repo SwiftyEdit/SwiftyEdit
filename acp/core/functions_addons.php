@@ -259,32 +259,125 @@ function se_unpublish_editor_assets(string $plugin_dir): void {
  * targets (127.0.0.1, 169.254.169.254 cloud metadata, RFC1918 ranges, etc.).
  */
 function se_is_safe_remote_url(string $url): bool {
+    return se_resolve_safe_remote_url($url) !== null;
+}
+
+/**
+ * Resolve the host of a remote addon URL once and check every address it
+ * resolves to (see se_remote_ip_allowed()).
+ *
+ * @return array|null ['host' => ..., 'ip' => address to connect to] or null if not allowed
+ */
+function se_resolve_safe_remote_url(string $url): ?array {
 
     $parts = parse_url($url);
     if ($parts === false || ($parts['scheme'] ?? '') !== 'https' || empty($parts['host'])) {
-        return false;
+        return null;
     }
 
-    $host = $parts['host'];
+    $host = trim($parts['host'], '[]');
 
     if (filter_var($host, FILTER_VALIDATE_IP)) {
         $ips = [$host];
     } else {
         $records = @dns_get_record($host, DNS_A + DNS_AAAA);
-        $ips = array_filter(array_map(static fn($r) => $r['ip'] ?? $r['ipv6'] ?? null, $records ?: []));
+        $ips = array_values(array_filter(array_map(static fn($r) => $r['ip'] ?? $r['ipv6'] ?? null, $records ?: [])));
     }
 
     if (empty($ips)) {
-        return false;
+        return null;
     }
 
     foreach ($ips as $ip) {
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+        if (!se_remote_ip_allowed($ip)) {
+            return null;
+        }
+    }
+
+    // IPv4 first - not every server can reach IPv6 addresses
+    usort($ips, static fn($a, $b) => (int) str_contains($a, ':') <=> (int) str_contains($b, ':'));
+
+    return ['host' => $host, 'ip' => $ips[0]];
+}
+
+/**
+ * Whether an outbound addon request may connect to this address. Besides
+ * PHP's private/reserved ranges, special-purpose ranges PHP lets through are
+ * blocked too (shared address space of carrier NAT, multicast, documentation
+ * and benchmark networks, Teredo, ...). For NAT64 and 6to4 addresses the
+ * embedded IPv4 address decides - on IPv6-only servers with DNS64, regular
+ * hosts like github.com resolve to 64:ff9b::/96.
+ */
+function se_remote_ip_allowed(string $ip): bool {
+
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+        return false;
+    }
+
+    $binary = inet_pton($ip);
+    if ($binary === false) {
+        return false;
+    }
+
+    if (strlen($binary) === 16) {
+        if (se_ip_in_cidr($ip, '64:ff9b::/96')) {
+            return se_remote_ip_allowed((string) inet_ntop(substr($binary, 12, 4)));
+        }
+        if (se_ip_in_cidr($ip, '2002::/16')) {
+            return se_remote_ip_allowed((string) inet_ntop(substr($binary, 2, 4)));
+        }
+    }
+
+    $blocked_ranges = [
+        '100.64.0.0/10',   // shared address space (carrier-grade NAT)
+        '192.0.0.0/24',    // IETF protocol assignments
+        '192.0.2.0/24',    // documentation
+        '198.18.0.0/15',   // benchmarking
+        '198.51.100.0/24', // documentation
+        '203.0.113.0/24',  // documentation
+        '224.0.0.0/4',     // multicast
+        '64:ff9b:1::/48',  // local-use NAT64
+        '100::/64',        // discard
+        '2001::/23',       // IETF protocol assignments (Teredo, benchmarking, ...)
+        '2001:db8::/32',   // documentation
+        'fec0::/10',       // site-local (deprecated)
+        'ff00::/8'         // multicast
+    ];
+    foreach ($blocked_ranges as $range) {
+        if (se_ip_in_cidr($ip, $range)) {
             return false;
         }
     }
 
     return true;
+}
+
+/**
+ * Whether an IPv4 or IPv6 address lies in a CIDR range (e.g. "100.64.0.0/10")
+ */
+function se_ip_in_cidr(string $ip, string $cidr): bool {
+
+    [$subnet, $bits] = explode('/', $cidr);
+    $ip_binary = @inet_pton($ip);
+    $subnet_binary = @inet_pton($subnet);
+
+    if ($ip_binary === false || $subnet_binary === false || strlen($ip_binary) !== strlen($subnet_binary)) {
+        return false;
+    }
+
+    $bits = (int) $bits;
+    $full_bytes = intdiv($bits, 8);
+    if (substr($ip_binary, 0, $full_bytes) !== substr($subnet_binary, 0, $full_bytes)) {
+        return false;
+    }
+
+    $rest_bits = $bits % 8;
+    if ($rest_bits === 0) {
+        return true;
+    }
+    $mask = chr((0xFF << (8 - $rest_bits)) & 0xFF);
+
+    return ($ip_binary[$full_bytes] & $mask) === ($subnet_binary[$full_bytes] & $mask);
 }
 
 /**
@@ -295,24 +388,50 @@ function se_is_safe_remote_url(string $url): bool {
  * pass unchecked. Redirects can't simply be disabled either: GitHub release
  * downloads (used by the addon catalog) always answer with a redirect.
  *
+ * The connection goes to exactly the address that was checked: the host is
+ * resolved once, the request is sent to that IP with the original Host
+ * header and TLS name - a second DNS lookup by file_get_contents() could
+ * otherwise return a different, internal address (DNS rebinding).
+ *
+ * @param int $max_bytes larger responses are rejected (default 50 MB)
  * @return string|false response body of the final 2xx response, false otherwise
  */
-function se_fetch_remote_url(string $url, int $max_redirects = 5): string|false {
+function se_fetch_remote_url(string $url, int $max_redirects = 5, int $max_bytes = 52428800): string|false {
 
     for ($i = 0; $i <= $max_redirects; $i++) {
 
-        if (!se_is_safe_remote_url($url)) {
+        $target = se_resolve_safe_remote_url($url);
+        if ($target === null) {
             return false;
         }
+
+        $parts = parse_url($url);
+        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+        $ip_host = str_contains($target['ip'], ':') ? '[' . $target['ip'] . ']' : $target['ip'];
+        $pinned_url = 'https://' . $ip_host . $port . ($parts['path'] ?? '/') . (isset($parts['query']) ? '?' . $parts['query'] : '');
 
         $context = stream_context_create([
             'http' => [
                 'follow_location' => 0,
-                'ignore_errors' => true // also return the body of 3xx/4xx, we check the status ourselves
+                'timeout' => 5, // don't let a slow remote host hang the request for default_socket_timeout
+                'ignore_errors' => true, // also return the body of 3xx/4xx, we check the status ourselves
+                'header' => 'Host: ' . $parts['host'] . $port
+            ],
+            'ssl' => [
+                // certificate check and SNI against the real host name, not the IP
+                'peer_name' => $target['host'],
+                'SNI_enabled' => true,
+                'verify_peer' => true,
+                'verify_peer_name' => true
             ]
         ]);
 
-        $body = @file_get_contents($url, false, $context);
+        // read one byte more than allowed to notice a response that is too large
+        $body = @file_get_contents($pinned_url, false, $context, 0, $max_bytes + 1);
+
+        if ($body !== false && strlen($body) > $max_bytes) {
+            return false;
+        }
 
         // PHP 8.4+ provides http_get_last_response_headers(), older versions
         // fill $http_response_header in the calling scope
@@ -372,7 +491,7 @@ function se_load_addon_info(string $url): array {
     }
 
     // Load info.json
-    $json = se_fetch_remote_url($url);
+    $json = se_fetch_remote_url($url, 5, 1048576); // an info.json is never anywhere near 1 MB
 
     if($json === false) {
         return ['success' => false, 'message' => 'Could not load URL.'];
@@ -436,7 +555,7 @@ function se_check_addon_update(array $addon_info): array {
     }
 
     // Load remote info.json
-    $json = se_fetch_remote_url($addon_info['addon']['update_url']);
+    $json = se_fetch_remote_url($addon_info['addon']['update_url'], 5, 1048576);
 
     if($json === false) {
         return ['status' => 'unknown'];
@@ -1148,11 +1267,14 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 		}
 	}
 
+	// don't let a slow catalog service hang the page for default_socket_timeout
+	$context = stream_context_create(['http' => ['timeout' => 5]]);
+
 	$entries = [];
 	$message = '';
 	foreach($endpoints as $type => $endpoint) {
 
-		$json = @file_get_contents($endpoint);
+		$json = @file_get_contents($endpoint, false, $context);
 
 		if($json === false || !is_array($rows = json_decode($json, true))) {
 			$message = $json === false ? 'Could not reach the addon catalog.' : 'Unexpected catalog response.';
@@ -1188,7 +1310,7 @@ function se_get_catalog_entries(bool $force_refresh = false): array {
 	}
 
 	if(!is_dir($cache_dir)) {
-		mkdir($cache_dir, 0777, true);
+		mkdir($cache_dir, SE_DIR_PERMISSIONS, true);
 	}
 	file_put_contents($cache_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 

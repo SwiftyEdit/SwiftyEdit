@@ -51,8 +51,9 @@ sitemap*.xml
 *.sqlite3
 
 # other
-# Ship the English README from the project root
+# Ship the English README and the security policy from the project root
 + /README.md
++ /SECURITY.md
 *.zip
 README.md
 README.*.md

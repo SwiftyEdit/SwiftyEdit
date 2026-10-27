@@ -2,9 +2,8 @@
 
 /**
  * german tax informations:
- * ba_tax_id_number - Steueridentifikationsnummer
- * ba_tax_number - Steuernummer
- * ba_sales_tax_id_number - Umsatzsteuernummer-Identifikationsnummer (USt-IdNr)
+ * ba_tax_id_number - VAT ID number (USt-IdNr), used by forms and the ACP
+ * ba_tax_number - tax number (Steuernummer)
  *
  */
 
@@ -19,7 +18,9 @@ $cols = array(
     "user_psw" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_psw_hash" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_failed_logins"  => 'INTEGER NOT NULL DEFAULT 0',
+    "user_failed_login_time" => 'INTEGER NOT NULL DEFAULT 0',
     "user_unlock_code" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "user_unlock_expires" => 'INTEGER NOT NULL DEFAULT 0',
     "user_locked_until" => 'INTEGER NOT NULL DEFAULT 0',
     "user_groups" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_avatar" => "VARCHAR(50) NOT NULL DEFAULT ''",
@@ -31,6 +32,9 @@ $cols = array(
     "user_registerdate" => "VARCHAR(25) NOT NULL DEFAULT ''",
     "user_verified" => "VARCHAR(25) NOT NULL DEFAULT ''",
     "user_verified_by_admin" => "VARCHAR(25) NOT NULL DEFAULT ''",
+    /* deleted accounts - see app/functions/functions.user_delete.php */
+    "user_deleted_at" => 'INTEGER NOT NULL DEFAULT 0',
+    "user_deleted_nick" => "VARCHAR(64) NOT NULL DEFAULT ''",
     "user_drm" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "user_acp_settings" => "LONGTEXT NOT NULL DEFAULT ''",
     "user_firstname" => "VARCHAR(50) NOT NULL DEFAULT ''",
@@ -52,6 +56,9 @@ $cols = array(
     "user_2fa_mail_sent" => 'INTEGER NOT NULL DEFAULT 0',
     "user_2fa_recovery" => "VARCHAR(1000) NOT NULL DEFAULT ''",
     "user_2fa_since" => 'INTEGER NOT NULL DEFAULT 0',
+    "user_2fa_failed" => 'INTEGER NOT NULL DEFAULT 0',
+    "user_2fa_locked_until" => 'INTEGER NOT NULL DEFAULT 0',
+    "user_2fa_mail_blocked" => 'INTEGER NOT NULL DEFAULT 0',
     "user_public_profile" => "VARCHAR(500) NOT NULL DEFAULT ''",
     "user_social_media" => "LONGTEXT NOT NULL DEFAULT ''",
     /* billing address data */
@@ -60,7 +67,6 @@ $cols = array(
     "ba_company" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_tax_id_number" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_tax_number" => "VARCHAR(50) NOT NULL DEFAULT ''",
-    "ba_sales_tax_id_number" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_country" => "VARCHAR(50) NOT NULL DEFAULT ''",
     "ba_country_code" => "VARCHAR(2) NOT NULL DEFAULT ''",
     "ba_state" => "VARCHAR(50) NOT NULL DEFAULT ''",

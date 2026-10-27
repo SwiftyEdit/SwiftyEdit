@@ -24,6 +24,7 @@ Differently from SwiftyEdit version 1, all plugins must adhere to a specific fol
     - hooks-backend [d] (optional)
     - hooks-frontend [d] (optional)
     - lang [d] (optional)
+    - docs [d] (optional, see below)
     - data [d] (optional, never overwritten on update)
     - aftersale.php
     - info.json
@@ -145,6 +146,32 @@ $plugin_form_tpl .= '</div>';
 With `se_set_snippet_var('name', $value)` a plugin can provide its own placeholders such as
 `{name}`, which can then be used in any snippet.
 See [Snippets → Placeholders](03-00-snippets.md#placeholders) for details.
+
+### Documentation in the help window {#documentation-in-the-help-window}
+
+Plugins (and themes) can ship their own documentation, which is shown in the ACP help window:
+
+- `readme.md` in the plugin folder
+- any number of Markdown files in `docs/{lang}/` (e.g. `docs/en/index.md`, `docs/de/index.md`)
+
+The front matter controls the navigation: `btn` is the button label, `priority` the order
+(lower first). `readme.md` is always listed last. If a file is missing in the backend
+language, the fallback language is used, then any other available language.
+
+The ACP adds a help button next to the plugin name on every plugin page (and on the
+plugin list) that opens the first doc. So a separate help tab in `navigation` is optional.
+To link a specific doc from your plugin's backend, use
+
+```php
+echo se_print_plugin_docs_link('my-plugin', 'settings.md');           // icon button
+echo se_print_plugin_docs_link('my-plugin', 'settings.md', null, 'api'); // with #anchor
+```
+
+For themes use `se_print_theme_docs_link('my-theme', 'file.md')` - inside a theme's
+`php/*.php`, `basename(dirname(__DIR__))` returns the theme folder name.
+While a plugin or theme doc is open, the help window only lists the docs of that
+plugin/theme. Inside these docs, `{link=other.md}` and `[text](other.md)` point to
+files of the same plugin/theme.
 
 ## The info.json file {#the-infojson-file}
 

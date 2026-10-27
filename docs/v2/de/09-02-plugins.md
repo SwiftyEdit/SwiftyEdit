@@ -24,6 +24,7 @@ Anders als in SwiftyEdit Version 1 müssen alle Plugins einer bestimmten Ordners
   - hooks-backend [d] (optional)
   - hooks-frontend [d] (optional)
   - lang [d] (optional)
+  - docs [d] (optional, siehe unten)
   - data [d] (optional, wird bei Updates nie überschrieben)
   - aftersale.php
   - info.json
@@ -148,6 +149,33 @@ $plugin_form_tpl .= '</div>';
 Mit `se_set_snippet_var('name', $value)` kann ein Plugin eigene Platzhalter wie `{name}`
 bereitstellen, die dann in allen Snippets verwendet werden können.
 Details siehe [Snippets → Platzhalter](03-00-snippets.md#platzhalter).
+
+### Dokumentation im Hilfe-Fenster {#dokumentation-im-hilfe-fenster}
+
+Plugins (und Themes) können eigene Dokumentation mitbringen, die im Hilfe-Fenster des ACP
+angezeigt wird:
+
+- `readme.md` im Plugin-Ordner
+- beliebig viele Markdown-Dateien in `docs/{lang}/` (z. B. `docs/de/index.md`, `docs/en/index.md`)
+
+Das Frontmatter steuert die Navigation: `btn` ist die Beschriftung, `priority` die
+Reihenfolge (kleinere Werte zuerst). Die `readme.md` steht immer am Ende. Fehlt eine Datei in
+der Backend-Sprache, wird die Fallback-Sprache verwendet, danach jede andere vorhandene Sprache.
+
+Das ACP zeigt auf jeder Plugin-Seite (und in der Plugin-Liste) neben dem Plugin-Namen einen
+Hilfe-Button, der das erste Dokument öffnet. Ein eigener Hilfe-Tab in `navigation` ist
+deshalb optional. Ein bestimmtes Dokument verlinkst Du aus dem Backend Deines Plugins mit
+
+```php
+echo se_print_plugin_docs_link('my-plugin', 'settings.md');           // Icon-Button
+echo se_print_plugin_docs_link('my-plugin', 'settings.md', null, 'api'); // mit #Anker
+```
+
+Für Themes gibt es `se_print_theme_docs_link('my-theme', 'datei.md')` - in `php/*.php`
+eines Themes liefert `basename(dirname(__DIR__))` den Namen des Theme-Ordners.
+Solange eine Plugin- oder Theme-Doku geöffnet ist, zeigt das Hilfe-Fenster nur die Dateien
+dieses Plugins/Themes. Innerhalb dieser Dateien verweisen `{link=andere.md}` und
+`[Text](andere.md)` auf Dateien desselben Plugins/Themes.
 
 ## Die info.json Datei {#die-infojson-datei}
 

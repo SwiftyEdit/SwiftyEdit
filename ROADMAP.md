@@ -6,8 +6,7 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 ### Version 1.x (2023,2024)
 - [x] Complete the transformation from flatCore CMS to SwiftyEdit CMS.
 
-## Upcoming
-### Version 2.0 (Autumn 2026)
+### Version 2.0 (October 2026)
 
 - [x] Complete the Documentation
 - [x] Add a cancellation button, form, or page
@@ -26,7 +25,22 @@ This roadmap outlines upcoming major versions. Contributions welcome!
 - [x] Integrate third-party System for translations 
 - [x] Exclude certain usernames [#237](https://github.com/SwiftyEdit/SwiftyEdit/issues/237)
 
-### Version 2.1
+### Version 2.1 (October 2026)
+- [x] Two-factor authentication for the backend (e-mail code or authenticator app)
+- [x] Update notices from swiftyedit.net on the update page
+
+### Version 2.2 (October 2026)
+- [x] Delete user accounts in the backend and in the frontend profile
+- [x] Security hardening (login lock, session cookies, security headers)
+
+See [CHANGELOG.md](CHANGELOG.md) for all changes.
+
+## Upcoming
+### Version 2.3
+- [ ] Remove the unused Guzzle package from the core
+- [ ] Move the PayPal plugin from the core to the plugin catalog (it ships its own PayPal SDK then; cash and invoice payment stay bundled)
+
+### Later
 - [ ] Add write access (create/update) for pages, posts and products to the REST API
 - [ ] Database overhaul (merging the SQLite files, add MariaDB support)
 

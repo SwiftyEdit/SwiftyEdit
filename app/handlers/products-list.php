@@ -144,9 +144,6 @@ if(is_array($active_filter_tags) && count($active_filter_tags) > 0) {
     $smarty->assign('page_meta_robots', "noindex, follow");
 }
 
-// Assign to Smarty
-$smarty->assign('product_filter', $product_filter);
-
 
 // Session: Save current URL for user comfort
 $current_query_string = $_SERVER['QUERY_STRING'] ?? '';
@@ -373,6 +370,11 @@ $sql_start = ($products_start * $products_limit) - $products_limit;
 if ($sql_start < 0) {
     $sql_start = 0;
 }
+
+// Count products per filter item - done here because $products_filter
+// is only complete after the category check above
+$product_filter = se_get_product_filter_counts($product_filter, $products_filter);
+$smarty->assign('product_filter', $product_filter);
 
 // Get products
 $get_products = se_get_products($sql_start, $products_limit, $products_filter);

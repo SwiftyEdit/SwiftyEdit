@@ -152,12 +152,13 @@ function se_save_preview_page($data) {
 /**
  * Take a snapshot of a page
  * get all data from se_pages by id
+ * older snapshots beyond the "number of page versions" setting are removed
  * @param $id
  * @return void
  */
 function se_snapshot_page($id) {
 
-    global $db_content, $custom_fields;
+    global $db_content, $custom_fields, $se_settings;
     $id = (int) $id;
 
     $get_data = $db_content->get("se_pages", "*", [
@@ -182,6 +183,34 @@ function se_snapshot_page($id) {
     unset($columns_cache['page_id']);
 
     $db_content->insert("se_pages_cache", $columns_cache);
+
+    $max_versions = (int) ($se_settings['nbr_page_versions'] ?? 0) ?: 25;
+    se_prune_page_snapshots($id, $max_versions);
+}
+
+/**
+ * Delete the oldest snapshots of a page, keep the newest $max_versions
+ * @param int $id page_id of the original page
+ * @param int $max_versions
+ * @return void
+ */
+function se_prune_page_snapshots($id, $max_versions) {
+
+    global $db_content;
+
+    $snapshot_ids = $db_content->select("se_pages_cache", "page_id", [
+        "page_id_original" => (int) $id,
+        "page_cache_type" => "history",
+        "ORDER" => ["page_id" => "DESC"]
+    ]);
+
+    $delete_ids = array_slice($snapshot_ids, max(1, (int) $max_versions));
+
+    if (!empty($delete_ids)) {
+        $db_content->delete("se_pages_cache", [
+            "page_id" => $delete_ids
+        ]);
+    }
 }
 
 /**
@@ -218,7 +247,7 @@ function se_getNavigationCachePath($lang) {
 
     $dir = SE_CONTENT . '/cache/navigation';
     if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+        mkdir($dir, SE_DIR_PERMISSIONS, true);
     }
 
     return $dir . '/nav_' . $lang . '.json';

@@ -288,7 +288,7 @@ $form_tpl .= '</div>';
 
 
 if($cat_hash != '') {
-    $form_tpl .= '<input type="hidden" name="cat_hash" value="'.$cat_hash.'">';
+    $form_tpl .= '<input type="hidden" name="cat_hash" value="'.htmlspecialchars($cat_hash, ENT_QUOTES).'">';
 }
 
 $form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';

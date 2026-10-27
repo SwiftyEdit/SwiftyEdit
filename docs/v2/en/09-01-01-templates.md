@@ -183,6 +183,19 @@ placeholders listed below.
     * `order-withdrawal-request.tpl`
     * `send-order-request.tpl`
     * `send-order-status.tpl`
+* Product tables - the `{order_products}` placeholder in the order body templates is built from
+  two files each: a wrapper with the table head and `{order_products_rows}`, and a row template
+  that is repeated for every product. If your theme doesn't ship these files, the ones from the
+  `default` theme are used.
+    * `order-products.tpl` / `order-products-row.tpl` - used by `send-order-status.tpl`
+    * `order-request-products.tpl` / `order-request-products-row.tpl` - used by
+      `send-order-request.tpl`
+
+  Placeholders in the row templates: `{product_number}`, `{title}`, `{options}`,
+  `{options_comment}` (already wrapped as `<p>Label: Text</p>`, empty if there is none),
+  `{slug}`, `{amount}`, `{tax}`, `{price_net_single}`, `{price_gross_single}` (price per unit),
+  `{price_net}`, `{price_gross}` (price × amount) and `{currency}`. `{lang_*}` placeholders work
+  in both files.
 
 If you add a new transactional e-mail from PHP, you supply your own body template file name and
 placeholder values via the `$data` array passed to `se_build_html_file()` - see its docblock in

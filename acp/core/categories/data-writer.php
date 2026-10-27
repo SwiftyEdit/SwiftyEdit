@@ -48,20 +48,28 @@ if (isset($_POST['save_category'])) {
         $cat_template_values = json_encode($theme_values,JSON_UNESCAPED_UNICODE);
     }
 
+    // image paths end up in attributes and url() - only allow path characters
     $cat_thumbnail = '';
-    if(is_array($_POST['picker_0'])) {
-        if(count($_POST['picker_0']) > 1) {
-            $cat_thumbnail = implode("<->", array_unique($_POST['picker_0']));
-        } else {
-            $st = $_POST['picker_0'];
-            $cat_thumbnail = $st[0].'<->';
+    if(is_array($_POST['picker_0'] ?? null)) {
+        $thumbnails = array_map('se_filter_filepath', $_POST['picker_0']);
+        $thumbnails = array_unique(array_filter($thumbnails));
+        if(count($thumbnails) > 1) {
+            $cat_thumbnail = implode("<->", $thumbnails);
+        } elseif(count($thumbnails) == 1) {
+            $cat_thumbnail = reset($thumbnails).'<->';
         }
     }
 
-    if($_POST['cat_hash'] != '') {
-        $cat_hash = $_POST['cat_hash'];
-    } else {
-        $cat_hash = md5(time());
+    // products and filters reference categories by hash - an update keeps the
+    // stored hash, only a new category gets one (never taken from the form)
+    $cat_hash = '';
+    if(is_numeric($_POST['save_category'])) {
+        $cat_hash = (string) $db_content->get("se_categories", "cat_hash", [
+            "cat_id" => (int) $_POST['save_category']
+        ]);
+    }
+    if($cat_hash == '') {
+        $cat_hash = md5(uniqid('', true));
     }
 
 
@@ -74,8 +82,8 @@ if (isset($_POST['save_category'])) {
         "cat_title" => $cat_title,
         "cat_description" => $cat_description,
         "cat_keywords" => $cat_keywords,
-        "cat_teaser" => $_POST['cat_teaser'],
-        "cat_text" => $_POST['cat_text'],
+        "cat_teaser" => se_purify_html($_POST['cat_teaser'] ?? ''),
+        "cat_text" => se_purify_html($_POST['cat_text'] ?? ''),
         "cat_thumbnail" => $cat_thumbnail,
         "cat_template" => $cat_template,
         "cat_template_values" => $cat_template_values

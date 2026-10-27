@@ -224,6 +224,80 @@ function se_sanitize_fields(array $fields, ?array $source = null): array {
 }
 
 /**
+ * Clean HTML from a WYSIWYG field with HTMLPurifier - removes scripts,
+ * event handlers, javascript: links and other active content, keeps the
+ * usual formatting (links, images, tables, inline styles, ids, classes).
+ * Iframes are kept if their source is a https url on one of the hosts in
+ * $se_embed_hosts (config.php). Non-string values become an empty string.
+ *
+ * @param mixed $html untrusted HTML
+ * @return string
+ */
+function se_purify_html($html): string {
+
+	global $se_embed_hosts;
+	static $purifier = null;
+
+	if(!is_string($html) || trim($html) === '') {
+		return '';
+	}
+
+	if($purifier === null) {
+		$config = HTMLPurifier_Config::createDefault();
+		$config->set('Attr.EnableID', true);
+		$config->set('Attr.AllowedFrameTargets', ['_blank']);
+		$config->set('Attr.AllowedRel', ['nofollow', 'noopener', 'noreferrer']);
+
+		// embeds - "host" or "host/path". The host must match exactly, so
+		// "www.youtube.com.example.org" fails; a path is a prefix. Addresses
+		// with ".." are rejected, the browser would leave the path with them.
+		$embed_sources = [];
+		foreach((array) ($se_embed_hosts ?? []) as $entry) {
+			if(!is_string($entry) || trim($entry) === '') {
+				continue;
+			}
+			$entry = preg_replace('#^https?://#i', '', trim($entry));
+			$parts = explode('/', $entry, 2);
+			if(isset($parts[1]) && $parts[1] !== '') {
+				$embed_sources[] = preg_quote($parts[0].'/'.$parts[1], '%');
+			} else {
+				$embed_sources[] = preg_quote($parts[0], '%').'(/|\?|$)';
+			}
+		}
+		if(count($embed_sources) > 0) {
+			$config->set('HTML.SafeIframe', true);
+			$config->set('URI.SafeIframeRegexp', '%^(?!.*(\.\.|\%2e))https://('.implode('|', $embed_sources).')%i');
+		}
+
+		// the default cache folder inside vendor/ is often not writable
+		$cache_dir = SE_CONTENT.'/cache/htmlpurifier';
+		if(!is_dir($cache_dir)) {
+			mkdir($cache_dir, 0755, true);
+		}
+		if(is_writable($cache_dir)) {
+			$config->set('Cache.SerializerPath', $cache_dir);
+		} else {
+			$config->set('Cache.DefinitionImpl', null);
+		}
+
+		// attributes of current embed codes HTMLPurifier doesn't know yet -
+		// raise the revision when changing them, the definition is cached.
+		// Must come last, getting the definition finalizes the config.
+		$config->set('HTML.DefinitionID', 'se-embeds');
+		$config->set('HTML.DefinitionRev', 1);
+		if($def = $config->maybeGetRawHTMLDefinition()) {
+			$def->addAttribute('iframe', 'allowfullscreen', 'Bool');
+			$def->addAttribute('iframe', 'allow', 'Text');
+			$def->addAttribute('iframe', 'referrerpolicy', 'Enum#no-referrer,no-referrer-when-downgrade,origin,origin-when-cross-origin,same-origin,strict-origin,strict-origin-when-cross-origin,unsafe-url');
+		}
+
+		$purifier = new HTMLPurifier($config);
+	}
+
+	return $purifier->purify($html);
+}
+
+/**
  * remove tags [include] [script] [plugin] and [snippet]
  */
 
@@ -501,19 +575,54 @@ function se_generate_token() {
  */
 function se_validate_token($token): void {
 
-    // cast first: htmlspecialchars() throws a TypeError under PHP 8 if $token is
-    // null, which happens whenever the csrf_token field is missing from $_POST.
-    $token = htmlspecialchars((string) $token);
+    // non-strings (missing field, arrays like "csrf_token[]=x") never match
+    $token = is_string($token) ? $token : '';
+    $session_token = (string) ($_SESSION['token'] ?? '');
 
-    if(empty($token)) {
-        header('Location: /');
-        exit;
-    }
-    if(!hash_equals((string) ($_SESSION['token'] ?? ''), $token)) {
-        header('Location: /');
-        exit;
+    if($token !== '' && $session_token !== '' && hash_equals($session_token, $token)) {
+        return;
     }
 
+    se_csrf_failed();
+}
+
+/**
+ * Stop a request with a missing or invalid CSRF token: HTTP 403, a short
+ * message and a log entry. The most common cause is harmless - the session
+ * expired while the form was open - so the message asks to reload the page.
+ * Runs before the language files are loaded in the frontend, so the text is
+ * English. Log entries are limited to 20 per hour (bots posting forms).
+ */
+function se_csrf_failed(): never {
+
+    global $db_content;
+
+    if(isset($db_content) && function_exists('se_rate_limit_exceeded') && !se_rate_limit_exceeded('csrf_log', 20, 3600, false)) {
+        se_rate_limit_add('csrf_log', 3600, false);
+        $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+        $nick = (string) ($_SESSION['user_nick'] ?? '');
+        record_log($nick !== '' ? $nick : 'system', 'CSRF token missing or invalid: '.htmlspecialchars(substr($path, 0, 200), ENT_QUOTES), '5');
+    }
+
+    $message = 'The form has expired or was sent from another page. Please reload the page and try again.';
+
+    http_response_code(403);
+    header('Cache-Control: no-store');
+
+    if(isset($_SERVER['HTTP_HX_REQUEST'])) {
+        header('Content-Type: text/plain; charset=utf-8');
+        echo $message;
+        exit;
+    }
+
+    header('Content-Type: text/html; charset=utf-8');
+    echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<meta name="robots" content="noindex"><title>403 Forbidden</title></head>';
+    echo '<body style="font-family:system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem">';
+    echo '<h1>403 Forbidden</h1><p>'.$message.'</p><p><a href="/">Home</a></p>';
+    echo '</body></html>';
+    exit;
 }
 
 /**

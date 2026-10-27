@@ -36,7 +36,8 @@
  *
  */
 
-session_start();
+require_once __DIR__.'/../app/session.php';
+se_session_start();
 const SE_SECTION = "backend";
 
 require '../vendor/autoload.php';
@@ -80,6 +81,13 @@ define("FILES_FOLDER", "$files_path");
 
 
 require '../acp/core/functions.php';
+
+// absolute lifetime / account changed since the login - back to the login
+if (!se_validate_user_session()) {
+    header("location:/admin/");
+    exit;
+}
+
 require '../acp/core/access.php';
 
 if (!isset($_SESSION['editor_class'])) {
@@ -375,7 +383,7 @@ if (strlen($se_settings['pagename']) > 30) {
     <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
 
-    <link rel="stylesheet" href="/themes/administration/dist/backend.css?v=2026-09-16c" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="<?php echo se_acp_asset_url('backend.css'); ?>" type="text/css" media="screen, projection">
 
     <script type="text/javascript">
         const languagePack = "<?php echo htmlentities($languagePack); ?>";
@@ -392,7 +400,7 @@ if (strlen($se_settings['pagename']) > 30) {
         }
     </script>
 
-    <script src="/themes/administration/dist/backend.js?v=2026-09-11a"></script>
+    <script src="<?php echo se_acp_asset_url('backend.js'); ?>"></script>
     <?php
     /* load the <head> assets of every installed editor plugin */
     foreach ($se_editor_addons as $editor_addon) {
@@ -820,7 +828,18 @@ foreach ($se_editor_addons as $editor_addon) {
                     $('#expireDiv').addClass('expire-danger');
                 }
                 if (maxlifetime < 0) {
-                    window.location.href = "/index.php?goto=logout";
+                    // logout only per POST with the CSRF token (see app/routing.php)
+                    clearInterval(countdown.intervalId);
+                    var logoutForm = document.createElement('form');
+                    logoutForm.method = 'post';
+                    logoutForm.action = '/logout';
+                    var logoutToken = document.createElement('input');
+                    logoutToken.type = 'hidden';
+                    logoutToken.name = 'csrf_token';
+                    logoutToken.value = <?php echo json_encode((string) $_SESSION['token']); ?>;
+                    logoutForm.appendChild(logoutToken);
+                    document.body.appendChild(logoutForm);
+                    logoutForm.submit();
                 }
                 --maxlifetime;
             }, 1000);

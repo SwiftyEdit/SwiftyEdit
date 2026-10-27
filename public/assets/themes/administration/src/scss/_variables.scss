@@ -27,7 +27,7 @@ $teal: #25d99a !default;
 $cyan: #03d1fa !default;
 
 $primary: #6B69F0;
-$secondary: #A6A5F6;
+$secondary: #a4a2c1;
 $success: #9cb642;
 $info:  #64C9E0;
 $warning: #FF9407;
@@ -110,7 +110,7 @@ $link-color:                   darken($primary, 5%) !default;
 $link-hover-color:             lighten($link-color, 10%) !default;
 $code-color: rgb(193, 64, 216);
 
-
+$footer-bg: rgba(255,255,255,.25);
 
 $sidebar-background: #191A1A;
 $sidebar_link_background: $primary;
@@ -120,7 +120,7 @@ $sidebar_active_bg: darken($sidebar_background,5%);
 $sidebar_help_background: #111;
 $sidebar_help_color: #ccc;
 
-$subHeader_bg: darken($widget_background,5%);
+$subHeader_bg: rgba(255,255,255,.35);
 
 $section_color_contents: $secondary;
 $section_color_dashboard: #aaaaaa;
@@ -158,10 +158,13 @@ $table-bg: transparent;
 $btn_se_background: #eee;
 $btn_se_background_active: $primary;
 $btn_se_background_disabled: desaturate($primary,5%);
-$btn_se_background_hover: darken($primary,5%);
+$btn_se_background_hover: #bbb;
 $btn_se_color: #333;
 $btn_se_color_active: #eee;
 $btn_se_border_color: darken($btn_se_background,10%);
+
+$btn_outline_se_border_color: #999999;
+$btn_hover_outline_se_border_color: #777777;
 
 /* pages - status colors */
 $color_public: #2ca62c;

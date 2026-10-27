@@ -22,7 +22,7 @@
  */
 function se_get_products($start, $limit, $filter)
 {
-    global $db_posts, $time_string_start, $time_string_end, $time_string_now, $se_labels;
+    global $db_posts;
 
     if (SE_SECTION == 'frontend') {
         global $se_settings;
@@ -63,6 +63,63 @@ function se_get_products($start, $limit, $filter)
                 break;
         }
     }
+
+    $where = se_build_products_where($filter);
+    $sql_filter = $where['sql'];
+    $map = $where['map'];
+
+    // Subquery: Find parent product IDs
+    // For variants: take parent_id, for products: take id
+    $subquery = "
+        SELECT DISTINCT
+            CASE
+                WHEN type LIKE '%v%' THEN parent_id
+                ELSE id
+            END as product_id
+        FROM se_products
+        $sql_filter
+    ";
+
+    // Main query: Only return parent products
+    $sql = "SELECT * FROM se_products
+            WHERE id IN ($subquery)
+            AND type LIKE '%p%'
+            $order $limit_str";
+
+    $entries = $db_posts->query($sql, $map)->fetchAll(PDO::FETCH_ASSOC);
+
+    // Count query for statistics
+    $sql_cnt = "SELECT
+        count(*) AS 'P',
+        (SELECT count(*) FROM se_products WHERE type LIKE '%p%') AS 'A',
+        (SELECT count(DISTINCT CASE WHEN type LIKE '%v%' THEN parent_id ELSE id END)
+         FROM se_products $sql_filter) AS 'F' ";
+
+    $stat = $db_posts->query($sql_cnt, $map)->fetch(PDO::FETCH_ASSOC);
+
+    // Add statistics to results
+    if (count($entries) > 0) {
+        $entries[0]['cnt_products_match'] = $stat['F'];
+        $entries[0]['cnt_products_all'] = $stat['A'];
+    }
+
+    return $entries;
+}
+
+/**
+ * Build the WHERE clause for product queries
+ *
+ * Shared by se_get_products() and se_get_product_filter_counts(), so the
+ * product list and the sidebar filter counters always use the same rules.
+ * The clause matches single rows (products and variants), callers map
+ * variants to their parent product themselves.
+ *
+ * @param array $filter Filter configuration, see se_get_products()
+ * @return array ['sql' => string (starts with WHERE), 'map' => array (bound parameters)]
+ */
+function se_build_products_where($filter)
+{
+    global $time_string_start, $time_string_end, $time_string_now, $se_labels;
 
     // Initialize filter defaults
     if (!isset($filter['labels'])) {
@@ -249,8 +306,11 @@ function se_get_products($start, $limit, $filter)
     }
 
     // Frontend: only show released products
+    // $time_string_now is only set by the products handler - callers like
+    // the tag pages or the counter endpoint would otherwise compare against
+    // '' (always true on SQLite, always false on MySQL)
     if (SE_SECTION == 'frontend') {
-        $ph_now = $bind($time_string_now);
+        $ph_now = $bind(!empty($time_string_now) ? $time_string_now : time());
         $sql_filter .= "AND releasedate <= $ph_now ";
     }
 
@@ -262,42 +322,71 @@ function se_get_products($start, $limit, $filter)
         $sql_filter .= "AND releasedate >= $ph_start AND releasedate <= $ph_end AND releasedate < $ph_now2 ";
     }
 
-    // Subquery: Find parent product IDs
-    // For variants: take parent_id, for products: take id
-    $subquery = "
-        SELECT DISTINCT 
-            CASE 
-                WHEN type LIKE '%v%' THEN parent_id 
-                ELSE id 
-            END as product_id
-        FROM se_products 
-        $sql_filter
-    ";
+    return ['sql' => $sql_filter, 'map' => $map];
+}
 
-    // Main query: Only return parent products
-    $sql = "SELECT * FROM se_products 
-            WHERE id IN ($subquery) 
-            AND type LIKE '%p%'
-            $order $limit_str";
+/**
+ * Count matching products for every item of the sidebar filter groups
+ *
+ * Facet logic: the count for an item of group G is the number of products
+ * that match all active filters of the other groups plus this item. The
+ * selection of G itself is ignored - items within a group are combined
+ * with OR, so the other items of G must not drop to 0 once one is selected.
+ * Variants count towards their parent product, each product only once.
+ *
+ * Range groups (input_type 3) show no counters but still restrict the
+ * counts of the other groups.
+ *
+ * @param array $product_filter Filter groups, see se_get_product_filter()
+ * @param array $products_filter Filter configuration as passed to se_get_products()
+ * @return array $product_filter with a 'count' value on every item of groups with input_type 1 and 2
+ */
+function se_get_product_filter_counts($product_filter, $products_filter)
+{
+    global $db_posts;
 
-    $entries = $db_posts->query($sql, $map)->fetchAll(PDO::FETCH_ASSOC);
+    $active_groups = $products_filter['custom_filter_groups'] ?? [];
 
-    // Count query for statistics
-    $sql_cnt = "SELECT
-        count(*) AS 'P',
-        (SELECT count(*) FROM se_products WHERE type LIKE '%p%') AS 'A',
-        (SELECT count(DISTINCT CASE WHEN type LIKE '%v%' THEN parent_id ELSE id END)
-         FROM se_products $sql_filter) AS 'F' ";
+    // Groups without an active selection of their own all share the same
+    // WHERE clause, so each distinct clause is only queried once
+    $rows_cache = [];
 
-    $stat = $db_posts->query($sql_cnt, $map)->fetch(PDO::FETCH_ASSOC);
+    foreach ($product_filter as $group_key => $filter_group) {
+        if ($filter_group['input_type'] != 1 && $filter_group['input_type'] != 2) {
+            continue;
+        }
 
-    // Add statistics to results
-    if (count($entries) > 0) {
-        $entries[0]['cnt_products_match'] = $stat['F'];
-        $entries[0]['cnt_products_all'] = $stat['A'];
+        $group_filter = $products_filter;
+        $group_filter['custom_filter_groups'] = $active_groups;
+        unset($group_filter['custom_filter_groups'][$filter_group['id']]);
+
+        $cache_key = md5(serialize($group_filter['custom_filter_groups']));
+        if (!isset($rows_cache[$cache_key])) {
+            $where = se_build_products_where($group_filter);
+            $sql = "SELECT
+                        CASE WHEN type LIKE '%v%' THEN parent_id ELSE id END AS product_id,
+                        filter
+                    FROM se_products {$where['sql']}";
+            $rows_cache[$cache_key] = $db_posts->query($sql, $where['map'])->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Collect product ids per filter item - filters are stored
+        // in JSON, e.g. {"0":"5","1":"12"}, so we search for :"id"
+        $product_ids_by_item = [];
+        foreach ($rows_cache[$cache_key] as $row) {
+            foreach ($filter_group['items'] as $item) {
+                if (str_contains((string)$row['filter'], ':"' . (int)$item['id'] . '"')) {
+                    $product_ids_by_item[$item['id']][$row['product_id']] = true;
+                }
+            }
+        }
+
+        foreach ($filter_group['items'] as $item_key => $item) {
+            $product_filter[$group_key]['items'][$item_key]['count'] = count($product_ids_by_item[$item['id']] ?? []);
+        }
     }
 
-    return $entries;
+    return $product_filter;
 }
 
 
@@ -714,7 +803,7 @@ function se_getProductCachePath($id, $lang) {
     $dir = $baseDir . '/' . str_pad($range, 3, '0', STR_PAD_LEFT);
 
     if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+        mkdir($dir, SE_DIR_PERMISSIONS, true);
     }
 
     return $dir . '/' . $id . '-' . $lang . '.json';

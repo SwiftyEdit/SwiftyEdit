@@ -97,7 +97,8 @@ echo '<a class="btn btn-default" href="#" role="button" id="userMenuLink" data-b
 echo '<ul class="dropdown-menu">';
 echo '<li><a class="dropdown-item" href="/profile/">'.$icon['user'].' '.$lang['button_profile'].'</a></li>';
 echo '<li><a class="dropdown-item" href="/admin/users/settings/">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</a></li>';
-echo '<li><a class="dropdown-item" href="/index.php?goto=logout">'.$icon['power'].' '.$lang['button_logout'].'</a></li>';
+// logout only per POST with the CSRF token (see app/routing.php)
+echo '<li><form method="post" action="/logout" class="m-0"><input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'"><button type="submit" class="dropdown-item">'.$icon['power'].' '.$lang['button_logout'].'</button></form></li>';
 echo '</ul>';
 echo '</div>';
 

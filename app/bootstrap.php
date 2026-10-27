@@ -8,9 +8,14 @@ ini_set("url_rewriter.tags", '');
 if (preg_match('#^/?api(/|$)#', (string) ($_GET['query'] ?? ''))) {
     $_SESSION = [];
 } else {
-    session_start();
+    require_once __DIR__.'/session.php';
+    se_session_start();
 }
-error_reporting(0); // safe default until $se_environment is known
+require_once __DIR__.'/headers.php';
+se_send_security_headers();
+// production: don't show errors, but log serious ones (fatal, parse, exceptions)
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+ini_set('display_errors', '0');
 $se_start_time = microtime(true);
 
 require '../vendor/autoload.php';
@@ -70,6 +75,12 @@ if(!is_file(SE_ROOT.'/config_database.php') && !is_file("$se_db_content")) {
  */
 
 require SE_ROOT.'/app/database.php';
+
+// absolute lifetime, and end sessions of changed accounts (new password,
+// withdrawn rights) - before the CSRF token, an ended session gets a new one.
+// The account check needs a database query: here only every few minutes,
+// sensitive areas check on every request (app/app.php, app/xhr/route.php)
+se_validate_user_session(false);
 
 if(empty($_SESSION['token'])) {
     se_generate_token();

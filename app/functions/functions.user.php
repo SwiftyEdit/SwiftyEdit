@@ -62,32 +62,93 @@ function se_add_user_to_group(int $user, int $group): void {
     global $db_user;
 
     // get data from group
-    $group_data = $db_user->select("se_groups","*",[
+    $group_user = $db_user->get("se_groups", "group_user", [
         "group_id" => $group
     ]);
-
-
-    $users = explode(" ", $group_data['group_user']);
-    if(in_array($user, $users)) {
+    if($group_user === null) {
         return;
-    } else {
-        $users[] = $user;
-        $db_user->update("se_groups",[
+    }
+
+    $users = array_filter(explode(" ", (string) $group_user), 'strlen');
+    if(in_array((string) $user, $users, true)) {
+        return;
+    }
+
+    $users[] = (string) $user;
+    sort($users);
+    $db_user->update("se_groups",[
+        "group_user" => implode(" ", $users)
+    ],[
+        "group_id" => $group
+    ]);
+}
+
+/**
+ * make the user a member of exactly the given groups - adds the missing
+ * memberships and removes the ones that are not listed
+ *
+ * @param integer $user
+ * @param array $group_ids
+ * @return void
+ */
+function se_set_user_groups(int $user, array $group_ids): void {
+
+    global $db_user;
+
+    $group_ids = array_map('intval', $group_ids);
+    $groups = $db_user->select("se_groups", ["group_id", "group_user"]);
+
+    foreach($groups as $group) {
+        $users = array_filter(explode(" ", (string) $group['group_user']), 'strlen');
+        $is_member = in_array((string) $user, $users, true);
+        $should_be_member = in_array((int) $group['group_id'], $group_ids, true);
+
+        if($is_member === $should_be_member) {
+            continue;
+        }
+
+        if($should_be_member) {
+            $users[] = (string) $user;
+        } else {
+            $users = array_diff($users, [(string) $user]);
+        }
+        sort($users);
+
+        $db_user->update("se_groups", [
             "group_user" => implode(" ", $users)
-        ],[
-            "group_id" => $group
+        ], [
+            "group_id" => $group['group_id']
         ]);
     }
+}
+
+/**
+ * Hash for the timing-neutral password check of unknown accounts - with the
+ * same cost as password_hash(..., PASSWORD_DEFAULT) on this PHP version
+ * (bcrypt cost 10 before PHP 8.4, 12 since), so an unknown account takes
+ * as long to check as an existing one
+ */
+function se_dummy_password_hash(): string {
+
+    $dummy_hashes = [
+        '$2y$12$QN9z7nH16Yv0.AfPZp6tkuWk8E.36zJgobg2DKSBeiX9mEReJ2kJK',
+        '$2y$10$LQMk5u8DpGXuxsXWGPUJs.KEgSEgRmoN6Bdsv02I97o1O3JDUqLXG'
+    ];
+    foreach ($dummy_hashes as $dummy_hash) {
+        if (!password_needs_rehash($dummy_hash, PASSWORD_DEFAULT)) {
+            return $dummy_hash;
+        }
+    }
+    return $dummy_hashes[0];
 }
 
 /**
  * @param string $user username or e-mail
  * @param string $psw
  * @param $acp
- * @param $remember
  * @return string|void
  */
-function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
+function se_user_login(string $user, string $psw, $acp=NULL) {
 
     if($user == '') {
         return 'failed';
@@ -124,8 +185,7 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     // always run password_verify() - against a dummy hash for unknown accounts -
     // so the response time doesn't reveal whether an account exists
-    $dummy_hash = '$2y$12$Oc7bwErf6Vq0v3/TyBOlo.3PQ4UkkG1EwYKFGaNcLwL/ug6GGRDTS';
-    $psw_valid = password_verify($psw, $hash !== '' ? $hash : $dummy_hash) && $hash !== '';
+    $psw_valid = password_verify($psw, $hash !== '' ? $hash : se_dummy_password_hash()) && $hash !== '';
 
     $result = null;
     if(!$is_locked && !$is_throttled && $psw_valid) {
@@ -142,14 +202,25 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
 
     if(is_array($result)) {
 
+        // older hashes (e.g. a lower cost from an older PHP version) are renewed,
+        // so all accounts take the same time to check as the dummy hash above
+        if(password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+            $result['user_psw_hash'] = password_hash($psw, PASSWORD_DEFAULT);
+            $db_user->update("se_user", [
+                "user_psw_hash" => $result['user_psw_hash']
+            ], [
+                "user_id" => (int) $result['user_id']
+            ]);
+        }
+
         // backend login with two-factor authentication: only a pending login for
         // now, the session is started after the second factor (see acp/login.php)
         if($acp == TRUE && se_2fa_required_for($result) && !se_2fa_is_trusted_device($result)) {
-            se_2fa_start_pending($result, (bool) $remember);
+            se_2fa_start_pending($result);
             return '2fa';
         }
 
-        se_finish_login($result, $acp, $remember);
+        se_finish_login($result, $acp);
 
     } else {
 
@@ -176,11 +247,10 @@ function se_user_login(string $user, string $psw, $acp=NULL, $remember=NULL) {
  *
  * @param array $result row of se_user
  * @param mixed $acp true for the backend login
- * @param mixed $remember
  */
-function se_finish_login(array $result, $acp, $remember): void {
+function se_finish_login(array $result, $acp): void {
 
-    global $db_user, $se_settings;
+    global $db_user;
 
     se_start_user_session($result);
 
@@ -195,45 +265,11 @@ function se_finish_login(array $result, $acp, $remember): void {
         $_SESSION['permissions'] = array_values(array_intersect($_SESSION['permissions'], ['drm_moderator']));
     }
 
-    /* set cookie to remember user */
-    if($remember == TRUE) {
-        $identifier = randpsw($length=24);
-        $securitytoken = randpsw($length=24);
-        $securitytoken_hashed = sha1($securitytoken);
-        $time = time();
-
-        $se_base_url = $se_settings['prefs_cms_ssl_domain'] ?? $se_settings['prefs_cms_domain'];
-
-        $db_user->insert("se_tokens", [
-            "user_id" => $result['user_id'],
-            "identifier" => "$identifier",
-            "securitytoken" => "$securitytoken_hashed",
-            "time" => "$time"
-        ]);
-
-        setcookie("identifier", $identifier, [
-            'expires' => time() + (3600 * 24 * 365),
-            'path' => '/',
-            'domain' => '',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-        setcookie("securitytoken", $securitytoken, [
-            'expires' => time() + (3600 * 24 * 365),
-            'path' => '/',
-            'domain' => '',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-
-    }
-
     // reset failed logins and a lock that has already expired
     $db_user->update("se_user",[
         "user_failed_logins" => 0,
         "user_unlock_code" => '',
+        "user_unlock_expires" => 0,
         "user_locked_until" => 0
     ],[
         "user_nick" => $result['user_nick']
@@ -262,10 +298,17 @@ function se_handle_failed_logins($user) {
     if(!is_array($failed_user_data)) {
         return;
     }
-    $failed_logins = (int) $failed_user_data['user_failed_logins'] + 1;
+    // the counter decays: one failed attempt is forgiven per 10 minutes since
+    // the last one - otherwise a single attempt per hour (right after each
+    // lock ended) would keep an account locked for good
+    $elapsed = max(0, time() - (int) ($failed_user_data['user_failed_login_time'] ?? 0));
+    $failed_logins = max(0, (int) $failed_user_data['user_failed_logins'] - intdiv($elapsed, 600)) + 1;
     $limit = (int) $se_failed_logins_limit;
 
-    $update_data = ["user_failed_logins" => $failed_logins];
+    $update_data = [
+        "user_failed_logins" => $failed_logins,
+        "user_failed_login_time" => time()
+    ];
 
     // time-based lock instead of a permanent one, so knowing a username isn't
     // enough to lock its owner out for good: 1 minute when the limit is
@@ -281,20 +324,24 @@ function se_handle_failed_logins($user) {
     ]);
 
     if($failed_logins >= $limit) {
-        // generate and save unlock code - the mailed link lifts the lock right
-        // away. Only rows without an unlock code yet are eligible, so the owner
-        // gets one mail per series of locks, not one per failed attempt.
-        // NULL and '' both count as "not set".
+        // generate and save unlock code - the mailed link lifts the lock (after
+        // a confirmation per POST, see app/handlers/unlock.php). The database
+        // only gets a hash of it, valid for one hour. Only rows without a
+        // valid unlock code are eligible, so the owner gets at most one mail
+        // per hour, not one per failed attempt. NULL and '' both count as
+        // "not set"; codes from before the expiry existed have expires = 0.
         $unlock_code = bin2hex(random_bytes(16));
         $update = $db_user->update("se_user",[
-            "user_unlock_code" => $unlock_code
+            "user_unlock_code" => hash('sha256', $unlock_code),
+            "user_unlock_expires" => time() + 3600
         ],[
             "user_nick" => $user,
             "OR" => [
                 "user_unlock_code" => null,
                 "AND #Empty" => [
                     "user_unlock_code" => ""
-                ]
+                ],
+                "user_unlock_expires[<]" => time()
             ]
         ]);
 
@@ -360,6 +407,10 @@ function se_start_user_session($ud) {
     // start of the ACP idle timer (see se_acp_session_expired())
     $_SESSION['acp_last_activity'] = time();
 
+    // absolute lifetime and account state of this session (see se_validate_user_session())
+    $_SESSION['login_time'] = time();
+    $_SESSION['session_fingerprint'] = se_session_fingerprint($ud);
+
     $arr_drm = explode("|", $ud['user_drm']);
     $_SESSION['permissions'] = explode('|', $ud['user_drm']);
 
@@ -370,16 +421,9 @@ function se_start_user_session($ud) {
  */
 function se_end_user_session() {
 
-    global $db_user;
-
-    if(is_numeric($_SESSION['user_id'])) {
-        // delete data from se_tokens
-        $db_user->delete("se_tokens",[
-            "AND" => [
-                "user_id" => $_SESSION['user_id']
-            ]
-        ]);
-
+    if(is_numeric($_SESSION['user_id'] ?? null)) {
+        // "identifier"/"securitytoken" are left over from the removed
+        // "stay logged in" option - cleared here so old cookies disappear
         unset($_COOKIE['identifier']);
         unset($_COOKIE['securitytoken']);
         unset($_COOKIE['permit_cookies']);
@@ -563,6 +607,11 @@ function se_username_exists($username): bool
         }
     }
 
+    // placeholder nicks of deleted accounts (deleted-<id>)
+    if(str_starts_with($needle, 'deleted-')) {
+        return true;
+    }
+
     // check database for existing username
     $sql = 'SELECT COUNT(*) FROM se_user WHERE LOWER(user_nick) = LOWER(?)';
     $stmt = $db_user->pdo->prepare($sql);
@@ -574,7 +623,8 @@ function se_username_exists($username): bool
         return true;
     }
 
-    return false;
+    // nicks of recently deleted accounts stay reserved
+    return se_deleted_nick_reserved($username);
 }
 
 function show_identicon(string $email, int $size = 80): string {
@@ -738,6 +788,25 @@ function se_rate_limit_add(string $bucket, int $window, bool $per_ip = true): vo
     $attempts = se_rate_limit_attempts($file, $window);
     $attempts[] = time();
     @file_put_contents($file, json_encode($attempts), LOCK_EX);
+
+    // buckets like "reset-mail:<mail>" create one file per input - remove
+    // stale ones now and then so the directory doesn't grow without limit
+    if (random_int(1, 100) === 1) {
+        se_rate_limit_purge($dir);
+    }
+}
+
+/**
+ * Delete rate limit files that weren't touched for a day - longer than any
+ * window in use (core: at most one hour), so no running limit is lost.
+ */
+function se_rate_limit_purge(string $dir): void {
+    $stale_before = time() - 86400;
+    foreach (glob($dir . '/*.json') ?: [] as $file) {
+        if (@filemtime($file) < $stale_before) {
+            @unlink($file);
+        }
+    }
 }
 
 /**
@@ -755,7 +824,18 @@ function se_acp_session_expired(): bool {
 
     global $se_settings;
 
-    $lifetime = max((int) ($se_settings['acp_session_lifetime'] ?? 0), (int) ini_get('session.gc_maxlifetime'));
+    $lifetime_setting = $se_settings['acp_session_lifetime'] ?? null;
+    if ($lifetime_setting === null) {
+        // bare ACP endpoints (e.g. the upload widget) don't build $se_settings
+        foreach (se_get_preferences() as $pref) {
+            if (($pref['option_key'] ?? '') === 'prefs_acp_session_lifetime') {
+                $lifetime_setting = $pref['option_value'];
+                break;
+            }
+        }
+    }
+
+    $lifetime = max((int) $lifetime_setting, (int) ini_get('session.gc_maxlifetime'));
     $last_activity = (int) ($_SESSION['acp_last_activity'] ?? time());
 
     if ($lifetime > 0 && time() - $last_activity > $lifetime) {
@@ -766,6 +846,137 @@ function se_acp_session_expired(): bool {
 
     $_SESSION['acp_last_activity'] = time();
     return false;
+}
+
+/**
+ * Session checks for every ACP request (pages, XHR, uploads): absolute
+ * lifetime and account fingerprint (se_validate_user_session()) plus the ACP
+ * idle timeout (se_acp_session_expired()). Ends the request with 401 and an
+ * HX-Redirect to the login if the session is no longer valid.
+ *
+ * Plugins with their own admin endpoints should call it as well, after the
+ * database connection and the se_* functions are loaded.
+ */
+function se_acp_guard(): void {
+
+    if (!se_validate_user_session() || se_acp_session_expired()) {
+        http_response_code(401);
+        header('HX-Redirect: /admin/');
+        die('Session ended');
+    }
+}
+
+/**
+ * Fingerprint of the account data a login depends on - password, class,
+ * rights and activation. Stored in the session at login; if it differs
+ * later, something changed the account (new password, rights withdrawn,
+ * account deactivated) and the session ends (see se_validate_user_session()).
+ */
+function se_session_fingerprint(array $user): string {
+
+    return hash_hmac('sha256', implode('|', [
+        (string) ($user['user_psw_hash'] ?? ''),
+        (string) ($user['user_class'] ?? ''),
+        (string) ($user['user_drm'] ?? ''),
+        (string) ($user['user_verified'] ?? '')
+    ]), se_get_site_secret());
+}
+
+/**
+ * The current session keeps working after a change the user made to their own
+ * account (e.g. a new password) - other sessions of the account still end.
+ */
+function se_refresh_session_fingerprint(): void {
+
+    global $db_user;
+
+    if (!is_numeric($_SESSION['user_id'] ?? null)) {
+        return;
+    }
+    $user = $db_user->get("se_user", ["user_psw_hash", "user_class", "user_drm", "user_verified"], [
+        "user_id" => (int) $_SESSION['user_id']
+    ]);
+    if (is_array($user)) {
+        $_SESSION['session_fingerprint'] = se_session_fingerprint($user);
+    }
+}
+
+/** seconds between two account checks of a frontend session (see se_validate_user_session()) */
+const SE_SESSION_CHECK_INTERVAL = 300;
+
+/**
+ * Check a logged-in session (frontend, backend, XHR):
+ * - absolute lifetime: $se_session_max_lifetime seconds after the login
+ *   (default 12 hours, 0 = off), independent of activity - on every request
+ * - account unchanged since the login (se_session_fingerprint()) - a new
+ *   password, withdrawn rights or a deactivated/deleted account end all
+ *   other sessions of that account. Needs a database query, so with
+ *   $force = false (general frontend requests) it only runs every
+ *   SE_SESSION_CHECK_INTERVAL seconds; the backend and sensitive frontend
+ *   areas (profile, cart, checkout, orders, ... - see app/app.php and
+ *   app/xhr/route.php) check on every request.
+ *
+ * An invalid session is emptied and gets a new id, so the request goes on
+ * as an anonymous visitor (the backend then shows its login). Must run
+ * before session_write_close().
+ *
+ * @return bool false if a session has just been ended
+ */
+function se_validate_user_session(bool $force = true): bool {
+
+    global $db_user, $se_session_max_lifetime;
+
+    // checked against the database during this request already
+    static $checked_this_request = false;
+
+    if (!is_numeric($_SESSION['user_id'] ?? null)) {
+        return true;
+    }
+    if ($checked_this_request) {
+        return true;
+    }
+
+    // sessions from before this check start their lifetime now
+    if (!isset($_SESSION['login_time'])) {
+        $_SESSION['login_time'] = time();
+    }
+
+    $max_lifetime = (int) ($se_session_max_lifetime ?? 43200);
+    $valid = $max_lifetime <= 0 || time() - (int) $_SESSION['login_time'] <= $max_lifetime;
+
+    // account check due?
+    if ($valid && !$force && time() - (int) ($_SESSION['session_checked'] ?? 0) < SE_SESSION_CHECK_INTERVAL) {
+        return true;
+    }
+
+    if ($valid) {
+        $checked_this_request = true;
+        $_SESSION['session_checked'] = time();
+        $user = $db_user->get("se_user", ["user_psw_hash", "user_class", "user_drm", "user_verified"], [
+            "user_id" => (int) $_SESSION['user_id']
+        ]);
+        if (!is_array($user)) {
+            $valid = false;
+        } elseif (!isset($_SESSION['session_fingerprint'])) {
+            // session from before this check - take the current state as reference
+            $_SESSION['session_fingerprint'] = se_session_fingerprint($user);
+        } else {
+            $valid = hash_equals((string) $_SESSION['session_fingerprint'], se_session_fingerprint($user));
+        }
+    }
+
+    if (!$valid) {
+        // the CSRF token stays: forms of this page may already carry it
+        // (the check can run after the page setup, see app/app.php)
+        $csrf_token = $_SESSION['token'] ?? null;
+        $_SESSION = [];
+        if ($csrf_token !== null) {
+            $_SESSION['token'] = $csrf_token;
+        }
+        session_regenerate_id(true);
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -785,11 +996,22 @@ function se_get_site_secret(): string {
     $file = SE_CONTENT . '/site_secret.php';
     if (is_file($file)) {
         $secret = (string) include $file;
+        // older installations wrote the file with the umask (usually 0644)
+        if ((@fileperms($file) & 0077) !== 0) {
+            @chmod($file, 0600);
+        }
     }
 
     if ($secret === null || strlen($secret) < 32) {
         $secret = bin2hex(random_bytes(32));
-        @file_put_contents($file, "<?php\n// generated - keep secret, don't share\nreturn '" . $secret . "';\n", LOCK_EX);
+        if (@file_put_contents($file, "<?php\n// generated - keep secret, don't share\nreturn '" . $secret . "';\n", LOCK_EX) !== false) {
+            @chmod($file, 0600);
+        } else {
+            // every request would get a new secret - mail codes, encrypted
+            // TOTP secrets and IP hashes stop working (also shown in the
+            // dashboard checks, acp/core/dashboard/data-reader.php)
+            error_log('SwiftyEdit: could not write ' . $file . ' - SE_CONTENT is not writable');
+        }
     }
 
     return $secret;

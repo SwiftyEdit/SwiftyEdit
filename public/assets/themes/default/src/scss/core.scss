@@ -160,6 +160,17 @@ $enable-dark-mode: true;
     }
   }
 
+  // The page logo is uploaded in the backend in any size/aspect ratio.
+  // Its column is col-auto (sized by the logo), so both dimensions are
+  // capped here - a percentage max-width would be relative to itself.
+  .header-logo {
+    display: block;
+    max-height: 5rem;
+    max-width: 16rem;
+    width: auto;
+    height: auto;
+  }
+
   .header-utility-bar {
     flex-direction: row-reverse;
     justify-content: flex-start;

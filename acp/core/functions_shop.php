@@ -60,10 +60,18 @@ function se_prepareProductData($data, $id = null) {
     $releasedate = time();
     $lastedit = time();
 
+    // all columns of se_products ($cols) - only these keys of $data become
+    // variables (read again by name below), so a key can't overwrite any
+    // other variable in this function (e.g. the globals $db_posts, $se_base_url)
+    require SE_ROOT.'install/contents/se_products.php';
+
     if (!empty($data['context']) && $data['context'] === 'cache') {
-        // generate cache files, copy data from database
+        // generate cache files, copy data from database (a row of se_products,
+        // see se_rebuild_all_product_cache() - its "id" sets $id here)
         foreach ($data as $key => $val) {
-            $$key = $val;
+            if (array_key_exists($key, $cols)) {
+                $$key = $val;
+            }
         }
     } else {
         // data from backend
@@ -71,8 +79,9 @@ function se_prepareProductData($data, $id = null) {
             $data['title'] = trim($data['title']);
         }
 
+        // "id" never comes from the form - it is the parameter $id
         foreach ($data as $key => $val) {
-            if (is_string($val)) {
+            if (is_string($val) && $key !== 'id' && array_key_exists($key, $cols)) {
                 $$key = @htmlspecialchars($val, ENT_QUOTES);
             }
         }
@@ -156,8 +165,8 @@ function se_prepareProductData($data, $id = null) {
         $product_price_net = se_sanitize_price($data['product_price_net']);
         $product_price_manufacturer = se_sanitize_price($data['product_price_manufacturer']);
 
-        // labels
-        $product_labels = '';
+        // labels - empty if none is checked (unchecked checkboxes aren't sent)
+        $labels = '';
         if(isset($data['labels'])) {
             $labels = implode(",", (array) $data['labels']);
         }
@@ -227,7 +236,9 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
-    if($releasedate == '') {
+    // no scheduled releases for products - a future date would hide the
+    // product in the frontend, which is too easy to get wrong in a shop
+    if($releasedate == '' || $releasedate > time()) {
         $releasedate = time();
     }
 
@@ -305,12 +316,23 @@ function se_prepareProductData($data, $id = null) {
         $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
     }
 
-    // get all columns from the installer template
-    require SE_ROOT.'install/contents/se_products.php';
-    // build SQL string -> f.e. "releasedate" => $releasedate,
+    // columns that were never set above - not part of the form, e.g. the
+    // counters hits/file_attachment_hits or notes - keep their stored value
+    // on an update instead of being emptied with every save
+    $assigned_vars = get_defined_vars();
+    $stored_product = [];
+    if ($id !== null && is_numeric($id)) {
+        $stored_product = $db_posts->get("se_products", "*", ["id" => (int) $id]) ?: [];
+    }
+
+    // build SQL string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
     foreach($cols as $k => $v) {
         if($k == 'id') {continue;}
-        $value = $$k;
+        if (!array_key_exists($k, $assigned_vars) && array_key_exists($k, $stored_product)) {
+            $value = $stored_product[$k];
+        } else {
+            $value = $$k;
+        }
         $inputs[$k] = "$value";
     }
 
@@ -340,11 +362,34 @@ function se_updateProductCache($id, $data, $updateSlugMap = true) {
     }
 }
 
+/**
+ * remove the cache files of deleted products and rebuild the affected slug maps
+ *
+ * @param array $products list of ['id' => ..., 'product_lang' => ...]
+ */
+function se_deleteProductCache(array $products): void {
+    $langs = [];
+    foreach ($products as $product) {
+        if ($product['product_lang'] == '') {
+            continue;
+        }
+        $file = se_getProductCachePath($product['id'], $product['product_lang']);
+        if (is_file($file)) {
+            unlink($file);
+        }
+        $langs[$product['product_lang']] = true;
+    }
+
+    foreach (array_keys($langs) as $lang) {
+        se_updateSlugMap($lang);
+    }
+}
+
 function se_updateSlugMap($lang) {
     global $db_posts;
 
     if (!is_dir(SE_CONTENT . '/cache/products')) {
-        mkdir(SE_CONTENT . '/cache/products', 0777, true);
+        mkdir(SE_CONTENT . '/cache/products', SE_DIR_PERMISSIONS, true);
     }
 
     $products = $db_posts->select("se_products", ["id","slug"], ["product_lang" => $lang]);

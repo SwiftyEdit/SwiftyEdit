@@ -59,12 +59,29 @@ if($token !== '') {
 				"user_reset_psw_expires" => 0,
 				"user_failed_logins" => 0,
 				"user_unlock_code" => "",
+				"user_unlock_expires" => 0,
 				"user_locked_until" => 0
 			], [
 				"user_id" => (int) $userdata_array['user_id']
 			]);
 			// a new password ends the trust of all devices (2FA "trust this device")
 			se_2fa_revoke_devices((int) $userdata_array['user_id']);
+
+			// backend users with codes by e-mail: reset link and code would come from
+			// the same mailbox - the next backend login needs a recovery code instead
+			// (see se_2fa_mail_blocked()). Only set when the reset was actually done,
+			// requesting a reset mail alone changes nothing.
+			$reset_needs_recovery = ($se_2fa_required ?? false) === true
+				&& $userdata_array['user_class'] === 'administrator'
+				&& $userdata_array['user_2fa_method'] === 'mail';
+			if($reset_needs_recovery) {
+				$db_user->update("se_user", [
+					"user_2fa_mail_blocked" => 1
+				], [
+					"user_id" => (int) $userdata_array['user_id']
+				]);
+				record_log($userdata_array['user_nick'], '2FA: password reset by e-mail, next backend login needs a recovery code', 5);
+			}
 
 			// inform the owner - without the password itself
 			$email_content = se_get_snippet("mail_psw_updated","$languagePack",'content');
@@ -88,6 +105,10 @@ if($token !== '') {
 
 			$smarty->assign("alert_text", $lang['msg_forgotten_psw_changed']);
 			$alert_reset = $smarty->fetch('alert/alert-success.tpl');
+			if($reset_needs_recovery) {
+				$smarty->assign("alert_text", $lang['msg_forgotten_psw_2fa_recovery']);
+				$alert_reset .= $smarty->fetch('alert/alert-warning.tpl');
+			}
 			$reset_done = true;
 		}
 

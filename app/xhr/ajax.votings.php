@@ -16,7 +16,9 @@ session_write_close();
 
 $time = time();
 
-if($_POST['vote']) {
+$vote_input = is_string($_POST['vote'] ?? null) ? $_POST['vote'] : '';
+
+if($vote_input !== '') {
 	
 	/* check who is voting */
 
@@ -29,23 +31,33 @@ if($_POST['vote']) {
 		$voter_name = se_generate_anonymous_voter();		
 	}
 
-	$voting_data = explode('-',$_POST['vote']);
-	
+	$voting_data = explode('-',$vote_input);
+
 	/* post id */
-	$vote_relation_id = (int) $voting_data[2];
+	$vote_relation_id = (int) ($voting_data[2] ?? 0);
 	$type = array("upv","dnv");
 
     // section blog (b), events (e), shop/product (s) or page (p)
     $section = '';
-    if($voting_data[1] == 'post') {
+    if(($voting_data[1] ?? "") == 'post') {
         $section = 'b';
-    } else if($voting_data[1] == 'event') {
+    } else if(($voting_data[1] ?? "") == 'event') {
         $section = 'e';
-    } else if($voting_data[1] == 'product') {
+    } else if(($voting_data[1] ?? "") == 'product') {
         $section = 's';
-    } else if($voting_data[1] == 'page') {
+    } else if(($voting_data[1] ?? "") == 'page') {
         $section = 'p';
     }
+
+    // only where votings are switched on for this entry (and for registered
+    // users only if the entry says so) - the buttons alone don't enforce that
+    if(!se_voting_allowed(se_get_voting_mode($section, $vote_relation_id))) {
+        http_response_code(403);
+        exit();
+    }
+
+    // remove IP hashes of anonymous votes past the retention period
+    se_cleanup_anonymous_participation();
 
     $check_voter = se_check_user_legitimacy($vote_relation_id,$voter_name,$type,$section);
 	

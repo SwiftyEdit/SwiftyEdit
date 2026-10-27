@@ -7,6 +7,8 @@ echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['shop'].' '.$lang['nav_btn_price_groups'];
 echo '</div>';
 
+echo '<div id="priceGroupResponse"></div>';
+
 echo '<div class="row">';
 echo '<div class="col-md-6">';
 

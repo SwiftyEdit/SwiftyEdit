@@ -104,6 +104,7 @@ if(isset($_POST['delete_post'])) {
             "content_type" => "post",
             "content_id" => $del_id
         ]);
+        se_generate_xml_sitemap('posts');
         show_toast($lang['msg_success_entry_delete'],'success');
         record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
         header( "HX-Trigger: update_posts_list");
@@ -113,9 +114,14 @@ if(isset($_POST['delete_post'])) {
 // save or update post
 
 if(isset($_POST['save_post'])) {
-    
+
+    // all columns of se_posts ($cols) - only these POST fields become
+    // variables (read again by name below), so a POST field can't overwrite
+    // any other variable in this scope (e.g. $db_posts, $target_page)
+    require SE_ROOT.'install/contents/se_posts.php';
+
     foreach($_POST as $key => $val) {
-        if(is_string($val)) {
+        if(is_string($val) && array_key_exists($key, $cols)) {
             $$key = @htmlspecialchars($val, ENT_QUOTES);
         }
     }
@@ -261,8 +267,7 @@ if(isset($_POST['save_post'])) {
         $post_uuid = se_generate_uuid();
     }
 
-    // get all $cols
-    require SE_ROOT.'install/contents/se_posts.php';
+    // build the columns from all $cols (loaded above)
     foreach($cols as $k => $v) {
         if($k == 'post_id') {continue;}
         $value = $$k;

@@ -10,6 +10,10 @@
 
 $get_my_userdata = get_my_userdata();
 
+// backend accounts can't change their e-mail address here - the frontend login
+// has no second factor, and the address receives the 2FA codes
+$mail_change_blocked = is_array($get_my_userdata) && ($get_my_userdata['user_class'] ?? '') === 'administrator';
+
 // Assign all language variables to template
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
@@ -43,6 +47,7 @@ if(isset($_GET['password'])) {
 // display mail change form
 if(isset($_GET['mail'])) {
     $smarty->assign("get_user_mail", $get_my_userdata['user_mail']);
+    $smarty->assign("mail_change_blocked", $mail_change_blocked);
     $smarty->display('profile/change-mail.tpl');
 }
 
@@ -102,6 +107,8 @@ if(isset($_POST['change_password'])) {
         if($update_psw->rowCount() == 1){
             // a new password ends the trust of all devices (2FA "trust this device")
             se_2fa_revoke_devices((int) $_SESSION['user_id']);
+            // ... and all other sessions of the account - this one goes on
+            se_refresh_session_fingerprint();
             $smarty->assign("alert_text",$lang['msg_update_profile']);
             $smarty->display('alert/alert-success.tpl');
             header("HX-Trigger: changed_password");
@@ -114,7 +121,10 @@ if(isset($_POST['change_password'])) {
 }
 
 // change mail
-if(isset($_POST['change_mail'])) {
+if(isset($_POST['change_mail']) && $mail_change_blocked) {
+    $smarty->assign("alert_text",$lang['msg_update_profile_mail_admin']);
+    $smarty->display('alert/alert-danger.tpl');
+} elseif(isset($_POST['change_mail'])) {
     $new_user_mail = '';
 
     // check if new mail is set and matching repeat mail
@@ -236,8 +246,7 @@ if(isset($_POST['update_address_mail'])) {
 if(isset($_POST['update_address_ba'])) {
     $ba_data = se_sanitize_fields([
         'ba_company', 'ba_firstname', 'ba_lastname', 'ba_street', 'ba_street_nbr',
-        'ba_zip', 'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number',
-        'ba_sales_tax_id_number'
+        'ba_zip', 'ba_city', 'ba_country', 'ba_tax_number', 'ba_tax_id_number'
     ]);
 
     if (is_numeric($_SESSION['user_id'])) {
