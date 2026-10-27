@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## 2.2.0 - 2026-10-26 (Build 26-0227)
+## 2.2.0 - 2026-10-27 (Build 26-0228)
 
 ### Added
 
@@ -44,6 +44,10 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   `data/config.php`.
 - **Plugins:** backend endpoints of plugins can call `se_acp_guard()` for the
   same session checks as the core.
+- **Compact database** (Settings › Database, SQLite only): shows the size
+  and the free space inside each database file and compacts them
+  (`VACUUM`). The site is locked for writing while it runs, and it needs as
+  much free disk space as the largest file.
 - `SECURITY.md` is part of the release.
 
 ### Changed
@@ -95,6 +99,9 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   bottom of the sidebar, with their current value shown. The product list in
   the backend works better on small screens.
 - **Backend design:** flatter nested cards with fine borders.
+- **Backend:** the URLs of the backend's CSS and JavaScript files carry a
+  version, so browsers load the new files after an update instead of using
+  cached ones.
 - **Default theme:** the logo in the header keeps its size (at most 5rem
   high, 16rem wide) and the title takes the remaining width.
 - **Themes - templates changed:** custom themes with an own copy should update
@@ -112,6 +119,17 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ### Fixed
 
+- **Page versions:** the "number of page versions" setting (default 25) is
+  applied again - older versions of a page are removed when it is saved.
+  Since 2.0 every version was kept, so the content database could grow to
+  hundreds of MB. The update removes the surplus versions once; to make the
+  database file smaller afterwards, use "Compact database" (Settings ›
+  Database) - otherwise SQLite reuses the freed space for new data.
+- **Deleting products and posts:** the XML sitemap is now updated when a
+  product or a post is deleted in the backend. Deleting a product also
+  removes the cache files of the product and its variants and updates the
+  slug map - with the product cache switched on, a deleted product was
+  still shown under its URL.
 - Password protected pages with a list of products, posts or events showed
   the list (and comments) without the password - only the title changed.
   They now show the password form until the right password is entered.
@@ -133,6 +151,9 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 - Logout: a POST without form fields logged out without a CSRF token.
 - The rate limit files in `data/cache/ratelimit/` were never removed; files
   older than one day are now cleaned up.
+- File lists skip all hidden files and folders (names starting with a dot,
+  e.g. the new `.htaccess` files in the upload folders), not only
+  `.DS_Store`.
 
 ### Manual updates
 
