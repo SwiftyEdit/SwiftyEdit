@@ -362,6 +362,29 @@ function se_updateProductCache($id, $data, $updateSlugMap = true) {
     }
 }
 
+/**
+ * remove the cache files of deleted products and rebuild the affected slug maps
+ *
+ * @param array $products list of ['id' => ..., 'product_lang' => ...]
+ */
+function se_deleteProductCache(array $products): void {
+    $langs = [];
+    foreach ($products as $product) {
+        if ($product['product_lang'] == '') {
+            continue;
+        }
+        $file = se_getProductCachePath($product['id'], $product['product_lang']);
+        if (is_file($file)) {
+            unlink($file);
+        }
+        $langs[$product['product_lang']] = true;
+    }
+
+    foreach (array_keys($langs) as $lang) {
+        se_updateSlugMap($lang);
+    }
+}
+
 function se_updateSlugMap($lang) {
     global $db_posts;
 

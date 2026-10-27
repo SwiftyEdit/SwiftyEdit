@@ -94,6 +94,15 @@ if(isset($_POST['sorting_products_dir'])) {
 // if there are variants, delete them, too
 if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
     $delete_id = (int) $_POST['delete_product'];
+
+    // remember id and language of the product and its variants for the cache cleanup
+    $deleted_products = $db_posts->select("se_products", ["id", "product_lang"], [
+        "OR" => [
+            "id" => $delete_id,
+            "parent_id" => $delete_id
+        ]
+    ]);
+
     $cnt_changes = $db_posts->delete("se_products", [
         "OR" => [
             "id" => $delete_id,
@@ -107,6 +116,9 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
             "content_type" => "product",
             "content_id" => $delete_id
         ]);
+
+        se_deleteProductCache($deleted_products);
+        se_generate_xml_sitemap('products');
 
         se_do_backend_hook('product.deleted', [
             'product_id' => $delete_id,

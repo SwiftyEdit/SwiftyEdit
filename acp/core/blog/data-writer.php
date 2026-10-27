@@ -104,6 +104,7 @@ if(isset($_POST['delete_post'])) {
             "content_type" => "post",
             "content_id" => $del_id
         ]);
+        se_generate_xml_sitemap('posts');
         show_toast($lang['msg_success_entry_delete'],'success');
         record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
         header( "HX-Trigger: update_posts_list");
