@@ -84,69 +84,33 @@ if(isset($_POST['edit_message'])) {
 
 
 // print the form
-$mail_form_tpl = file_get_contents('../acp/templates/mail-form.tpl');
-$section_url = '/admin/inbox/mail/edit/';
+$mail = [
+    'id' => '',
+    'subject' => '',
+    'content' => '',
+    'recipients' => ''
+];
 
-$btn_save = '<button class="btn btn-default w-100" name="save_mail" value="save">'.$lang['save'].'</button>';
-$btn_close = '<button class="btn btn-default w-100" name="form_close">'.$lang['close'].'</button>';
-$btn_send = '';
-
-$mail_subject = '';
-$mail_content = '';
-$mail_id = '';
-$checked_all = '';
-$checked_marketing = '';
-
-if(is_array($edit_message_data)) {
+if(is_array($edit_message_data ?? null)) {
     // we are in edit mode
-    $mail_subject = htmlspecialchars($edit_message_data['subject'],ENT_QUOTES, 'UTF-8');
-    $mail_content = htmlspecialchars($edit_message_data['content'],ENT_QUOTES, 'UTF-8');
-    $mail_id = (int) $edit_message_data['id'];
-    $btn_save = '<button class="btn btn-default w-100" name="save_mail" value="update">'.$lang['update'].'</button>';
-    $btn_send = '<button class="btn btn-primary" name="send_mail" value="'.$mail_id.'">'.$icon['paper_plane'].' '.$lang['btn_send_mail'].'</button>';
-    if($edit_message_data['recipients'] == 'all') {
-        $checked_all = 'checked';
-    } else if($edit_message_data['recipients'] == 'marketing') {
-        $checked_marketing = 'checked';
-    }
-    $mail_form_tpl = str_replace('{mail_form_status}',$lang['label_form_status_edit'],$mail_form_tpl);
+    $mail = [
+        'id' => (int) $edit_message_data['id'],
+        'subject' => $edit_message_data['subject'],
+        'content' => $edit_message_data['content'],
+        'recipients' => (string) $edit_message_data['recipients']
+    ];
 }
 
-$user_groups = se_get_usergroups();
-if(is_array($user_groups) && count($user_groups) > 0) {
-    foreach($user_groups as $group) {
-
-        $sel = '';
-        if($edit_message_data['recipients'] == $group['group_id']) {
-            $sel = 'checked';
-        }
-
-        $list_usergroup .= '<div class="form-check">';
-        $list_usergroup .= '<input class="form-check-input" type="radio" name="mail_recipients" value="'.$group['group_id'].'" id="'.md5($group['group_name']).'" '.$sel.'>';
-        $list_usergroup .= '<label class="form-check-label" for="'.md5($group['group_name']).'">'.$group['group_name'].'</label>';
-        $list_usergroup .= '</div>';
-    }
+// group names are stored html-encoded (sanitizeUserInputs), Twig escapes on output
+$user_groups = [];
+foreach(se_get_usergroups() ?: [] as $group) {
+    $user_groups[] = [
+        'id' => (string) $group['group_id'],
+        'name' => html_entity_decode((string) $group['group_name'], ENT_QUOTES, 'UTF-8')
+    ];
 }
 
-$mail_form_tpl = str_replace('{mail_form_status}',$lang['label_form_status_new'],$mail_form_tpl);
-
-$mail_form_tpl = str_replace('{mail_subject}',$mail_subject,$mail_form_tpl);
-$mail_form_tpl = str_replace('{mail_content}',$mail_content,$mail_form_tpl);
-$mail_form_tpl = str_replace('{mail_id}',$mail_id,$mail_form_tpl);
-$mail_form_tpl = str_replace('{hidden_csrf}',$hidden_csrf_token,$mail_form_tpl);
-
-$mail_form_tpl = str_replace('{btn_save_draft}',$btn_save,$mail_form_tpl);
-$mail_form_tpl = str_replace('{btn_send}',$btn_send,$mail_form_tpl);
-$mail_form_tpl = str_replace('{btn_close}',$btn_close,$mail_form_tpl);
-$mail_form_tpl = str_replace('{formaction}',$section_url,$mail_form_tpl);
-$mail_form_tpl = str_replace('{checked_all}',$checked_all,$mail_form_tpl);
-$mail_form_tpl = str_replace('{checked_marketing}',$checked_marketing,$mail_form_tpl);
-$mail_form_tpl = str_replace('{list_usergroups}',$list_usergroup,$mail_form_tpl);
-
-$mail_form_tpl = str_replace('{lang_subject}',$lang['label_mail_subject'],$mail_form_tpl);
-$mail_form_tpl = str_replace('{lang_text}',$lang['label_mail_text'],$mail_form_tpl);
-$mail_form_tpl = str_replace('{lang_recipients}',$lang['label_mail_recipients'],$mail_form_tpl);
-$mail_form_tpl = str_replace('{label_all_users}',$lang['label_mail_recipients_all'],$mail_form_tpl);
-$mail_form_tpl = str_replace('{label_marketing_users}',$lang['label_mail_recipients_marketing'],$mail_form_tpl);
-
-echo $mail_form_tpl;
+echo $twig->render('inbox/mail-form.twig', [
+    'mail' => $mail,
+    'user_groups' => $user_groups
+]);
