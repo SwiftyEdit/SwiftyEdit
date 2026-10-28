@@ -21,7 +21,6 @@ $se_labels = se_get_labels();
 $global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
 $global_filter_status = json_decode($_SESSION['global_filter_status'],true);
 $global_filter_label = json_decode($_SESSION['global_filter_label'],true);
-$item_template = file_get_contents('../acp/templates/list-pages-item.tpl');
 
 $sort_single_pages = 'page_lastedit';
 $sort_single_pages_direction = 'DESC';
@@ -439,183 +438,95 @@ if(isset($_GET['page_info'])) {
 
 /**
  * @param $data array page contents
- * @param $type string sorted|single
  * @return string
  */
 
 function se_list_pages($data) {
 
-    global $item_template, $global_filter_status, $lang, $icon, $hidden_csrf_token, $se_labels, $writer_uri, $duplicate_uri;
+    global $twig, $global_filter_status, $lang, $se_labels;
 
-    $item_template_vars = array(
-        '{status-label}','{item-linkname}','{item-title}','{item-tmb-src}','{label_edit}',
-        '{item-mod}','{item-class}','{item-indent}','{edit-btn}','{duplicate-btn}','{info-btn}',
-        '{comment-btn}','{item-permalink}','{item-lastedit}','{item-template}',
-        '{item-redirect}','{frontend-link}','{item-description}','{item-lang}', '{page_labels}','{item-pi}','{hidden_csrf_tokken}'
-    );
-
-    $listing = '';
-    $cnt_pages = 0;
-
-    if(is_array($data)) {
-        $cnt_pages = count($data);
+    if(!is_array($data)) {
+        return '';
     }
 
-    for($i=0;$i<$cnt_pages;$i++) {
+    $status_labels = [
+        'public' => $lang['status_puplic'],
+        'ghost' => $lang['status_ghost'],
+        'private' => $lang['status_private'],
+        'draft' => $lang['status_draft']
+    ];
 
-        unset($show_redirect,$page_modul);
-        $indent = 0;
+    // text fields are stored html-encoded (se_sanitize_page_inputs),
+    // decode them here because Twig escapes on output
+    $decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
-        $page_id = $data[$i]['page_id'];
-        $page_sort = $data[$i]['page_sort'];
+    $pages = [];
+    foreach($data as $page) {
 
-        $page_linkname = $data[$i]['page_linkname'];
-        $page_title = $data[$i]['page_title'];
-        $page_description = $data[$i]['page_meta_description'];
-        $page_status = $data[$i]['page_status'];
-        $page_lastedit = $data[$i]['page_lastedit'];
-        $page_lastedit_from = $data[$i]['page_lastedit_from'];
-        $page_template = $data[$i]['page_template'];
-        $page_authorized_users = $data[$i]['page_authorized_users'];
-        $page_language = $data[$i]['page_language'];
-        $page_permalink = $data[$i]['page_permalink'];
-        $page_redirect = $data[$i]['page_redirect'];
-        $page_modul = $data[$i]['page_modul'];
-        $pi = $data[$i]['page_hits'];
-        $page_labels = [];
-        if($data[$i]['page_labels'] != '') {
-            $page_labels = explode(',',$data[$i]['page_labels']);
-        }
-
-        $page_thumbs = array();
-        if($data[$i]['page_thumbnail'] != '') {
-            $page_thumbs = explode('<->',html_entity_decode($data[$i]['page_thumbnail']));
+        // redirects are only listed if the global status filter includes them
+        if($page['page_redirect'] != '' && is_array($global_filter_status) && !in_array("5", $global_filter_status)) {
+            continue;
         }
 
         $page_thumb_src = '/assets/themes/administration/images/swiftyedit-page-icon.png';
-        if(isset($page_thumbs) AND $page_thumbs[0] != '') {
-            $page_thumb_src = str_replace('../content/images/','/images/',$page_thumbs[0]);
+        if($page['page_thumbnail'] != '') {
+            $page_thumbs = explode('<->', html_entity_decode($page['page_thumbnail']));
+            if($page_thumbs[0] != '') {
+                $page_thumb_src = str_replace('../content/images/', '/images/', $page_thumbs[0]);
+            }
         }
 
-        $page_lang_thumb = '<img src="'.return_language_flag_src($page_language).'" width="15" title="'.$page_language.'" alt="'.$page_language.'">';
-
-        if($page_template == "use_standard") {
-            $show_template_name =  $lang['label_default_template'];
-        } else {
-            $show_template_name = "$page_template";
+        $description = $decode($page['page_meta_description']);
+        $description_truncated = false;
+        if(mb_strlen($description) > 100) {
+            $description = mb_substr($description, 0, 100);
+            $description_truncated = true;
         }
 
-        if($data[$i]['page_psw'] != '') {
-            $page_title = $icon['lock'].' '.$page_title;
-        }
-
-        if(strlen($page_description) > 100) {
-            $page_description = substr($page_description, 0, 100) .' <small>(&hellip;)</small>';
-        }
-
-        if($page_description == '') {
-            $page_description = '<span class="text-danger">'.$icon['exclamation_triangle'].' '.$lang['msg_error_no_description'].'</span>';
-        }
-
-        if($page_title == '') {
-            $page_title = '<span class="text-danger">'.$icon['exclamation_triangle'].' '.$lang['msg_error_no_title'].'</span>';
-        }
-
-        if($page_sort == 'portal') {
-            $page_linkname = $icon['home'].' ' . $page_linkname;
-        }
-
-        // tree_depth is set by the type==1 (sorted) tree flatten above;
-        // single/unsorted pages have no tree position, so no indent
-        $indent = ($data[$i]['tree_depth'] ?? 0)*10 . 'px';
-
-        if($page_status == "public") {
-            $item_class = 'page-list-item-public';
-            $status_label = $lang['status_puplic'];
-        } elseif($page_status == "ghost") {
-            $item_class = 'page-list-item-ghost';
-            $status_label = $lang['status_ghost'];
-        } elseif($page_status == "private") {
-            $item_class = 'page-list-item-private';
-            $status_label = $lang['status_private'];
-        } elseif($page_status == "draft") {
-            $item_class = 'page-list-item-draft';
-            $status_label = $lang['status_draft'];
-        }
-
-        if($page_redirect != '') {
-            $page_redirect = $icon['long_arrow_alt_right'].' '.$page_redirect;
-            $item_class .= ' page-list-item-redirect';
-        }
-
-        $last_edit = se_format_datetime($page_lastedit) . " ($page_lastedit_from)";
-
-        /* check for display edit button */
-
-        $btn_edit_tpl  = '<form action="'.$writer_uri.'" method="post" class="d-inline flex-fill me-1">';
-        $btn_edit_tpl .= '<button class="btn btn-sm btn-default text-success w-100" name="page_id" value="'.$page_id.'">'.$icon['edit'].'</button>';
-        $btn_edit_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_edit_tpl .=  '</form>';
-
-        $btn_duplicate_tpl  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline flex-fill me-1">';
-        $btn_duplicate_tpl .= '<button class="btn btn-sm btn-default w-100" name="duplicate_id" value="'.$page_id.'">'.$icon['copy'].'</button>';
-        $btn_duplicate_tpl .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_duplicate_tpl .=  '</form>';
-
-
-        if (se_hasPermission('drm_acp_editpages')) {
-
-            $edit_button = $btn_edit_tpl;
-            $duplicate_button = $btn_duplicate_tpl;
-
-        } else {
-            $edit_button = '';
-            $duplicate_button = '';
-        }
-
-        $info_button = '<a class="btn btn-sm btn-default flex-fill" hx-get="/admin-xhr/pages/read/" hx-vals=\'{"page_info":"'.$page_id.'"}\' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">'.$icon['info_circle'].'</a>';
-        $arr_checked_admins = explode(",",$page_authorized_users);
-        if(in_array($_SESSION['user_nick'], $arr_checked_admins)) {
-            $edit_button = $btn_edit_tpl;
-            $duplicate_button = $btn_duplicate_tpl;
-        }
-
-        $label = '';
-        if(is_array($page_labels)) {
-            foreach($page_labels as $page_label) {
-
+        $labels = [];
+        if($page['page_labels'] != '') {
+            foreach(explode(',', $page['page_labels']) as $page_label) {
                 foreach($se_labels as $l) {
                     if($page_label == $l['label_id']) {
-                        $label_color = $l['label_color'];
-                        $label_title = $l['label_title']. ' '.$l['label_description'];
-                        $label .= '<span class="label-dot" style="background-color:'.$label_color.';" data-bs-toggle="tooltip" data-bs-title="'.$label_title.'"></span>';
+                        $labels[] = [
+                            'color' => $l['label_color'],
+                            'title' => $decode($l['label_title'].' '.$l['label_description'])
+                        ];
                     }
                 }
             }
         }
 
-        $frontend_link = "/$page_permalink";
+        // edit + duplicate: editors with the right or explicitly authorized users
+        $authorized_users = explode(",", (string) $page['page_authorized_users']);
+        $can_edit = se_hasPermission('drm_acp_editpages') || in_array($_SESSION['user_nick'], $authorized_users);
 
-        if($page_redirect != '') {
-            if((is_array($global_filter_status)) && !in_array("5",$global_filter_status)) {
-                continue;
-            }
-        }
-
-        $page_comments_link = '';
-
-
-        $replace = array(
-            $status_label,$page_linkname,$page_title,$page_thumb_src,$lang['edit'],
-            $page_modul,$item_class,$indent,$edit_button,$duplicate_button,$info_button,
-            $page_comments_link,$page_permalink,$last_edit,$show_template_name,
-            $page_redirect,$frontend_link,$page_description,$page_lang_thumb,$label,$pi,$hidden_csrf_token
-        );
-
-
-        $this_template = str_replace($item_template_vars, $replace, $item_template);
-        $listing .= $this_template;
+        $pages[] = [
+            'id' => (int) $page['page_id'],
+            'status' => $page['page_status'],
+            'status_label' => $status_labels[$page['page_status']] ?? '',
+            // tree_depth is set by the type==1 (sorted) tree flatten above;
+            // single/unsorted pages have no tree position, so no indent
+            'indent' => (int) ($page['tree_depth'] ?? 0) * 10,
+            'thumb_src' => $page_thumb_src,
+            'is_portal' => $page['page_sort'] == 'portal',
+            'linkname' => $decode($page['page_linkname']),
+            'title' => $decode($page['page_title']),
+            'has_password' => $page['page_psw'] != '',
+            'description' => $description,
+            'description_truncated' => $description_truncated,
+            'permalink' => $decode($page['page_permalink']),
+            'redirect' => $decode($page['page_redirect']),
+            'lang' => $page['page_language'],
+            'lang_flag_src' => return_language_flag_src($page['page_language']),
+            'template' => $page['page_template'],
+            'labels' => $labels,
+            'modul' => $decode($page['page_modul']),
+            'lastedit' => se_format_datetime($page['page_lastedit']),
+            'lastedit_from' => $page['page_lastedit_from'],
+            'can_edit' => $can_edit
+        ];
     }
 
-    return $listing;
+    return $twig->render('pages/list-items.twig', ['pages' => $pages]);
 }

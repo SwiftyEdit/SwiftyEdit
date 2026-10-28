@@ -1,0 +1,80 @@
+{#
+ # page list in /admin/pages/, rendered by se_list_pages()
+ # in acp/core/pages/data-reader.php
+ #}
+{% for page in pages %}
+<div style="padding-left: {{ page.indent }}px">
+
+    <div class="page-list-controls page-list-item page-list-item-{{ page.status }}{% if page.redirect %} page-list-item-redirect{% endif %}">
+        <div class="label-page-status" title="{{ page.status_label }}"></div>
+
+        <div class="row">
+            <div class="col-12 col-xxl-8 flex-grow-1">
+
+                <div class="row">
+                    <div class="col-sm-2 d-none d-lg-block">
+                        <div class="w-100 h-100 rounded" style="background-image: url({{ page.thumb_src }}); background-size: contain; background-repeat: no-repeat;"></div>
+                    </div>
+                    <div class="col-sm-10">
+                        <p class="mb-1">
+                            <a class="btn btn-default btn-sm" href="/{{ page.permalink }}" title="/{{ page.permalink }}">
+                                <i class="bi bi-box-arrow-in-up-right"></i>
+                                {% if page.is_portal %}{{ icon.home|raw }} {% endif %}{{ page.linkname }}
+                            </a>
+                        </p>
+                        <h5 class="mb-0">
+                            {% if page.title %}
+                                {% if page.has_password %}{{ icon.lock|raw }} {% endif %}{{ page.title }}
+                            {% else %}
+                                <span class="text-danger">{{ icon.exclamation_triangle|raw }} {{ lang.msg_error_no_title }}</span>
+                            {% endif %}
+                        </h5>
+                        <p>
+                            {% if page.description %}
+                                {{ page.description }}{% if page.description_truncated %} <small>(&hellip;)</small>{% endif %}
+                            {% else %}
+                                <span class="text-danger">{{ icon.exclamation_triangle|raw }} {{ lang.msg_error_no_description }}</span>
+                            {% endif %}
+                        </p>
+                        <p class="small border-top py-1">
+                            <i class="bi bi-link-45deg"></i> {{ page.permalink }}
+                            {% if page.redirect %}<span class="text-primary">{{ icon.long_arrow_alt_right|raw }} {{ page.redirect }}</span>{% endif %}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-12 col-xxl-4" style="min-width:120px;">
+
+                <div class="controls-container d-flex justify-content">
+                    {% if page.can_edit %}
+                        <form action="/admin/pages/edit/" method="post" class="d-inline flex-fill me-1">
+                            <button class="btn btn-sm btn-default text-success w-100" name="page_id" value="{{ page.id }}">{{ icon.edit|raw }}</button>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        </form>
+                        <form action="/admin/pages/duplicate/" method="post" class="d-inline flex-fill me-1">
+                            <button class="btn btn-sm btn-default w-100" name="duplicate_id" value="{{ page.id }}">{{ icon.copy|raw }}</button>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        </form>
+                    {% endif %}
+                    <a class="btn btn-sm btn-default flex-fill" hx-get="/admin-xhr/pages/read/" hx-vals='{"page_info":"{{ page.id }}"}' hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" title="info">{{ icon.info_circle|raw }}</a>
+                </div>
+
+                <div class="text-muted small">
+                    <p class="my-1"><i class="bi bi-translate"></i> <img src="{{ page.lang_flag_src }}" width="15" title="{{ page.lang }}" alt="{{ page.lang }}"></p>
+                    <p class="my-1"><i class="bi-palette"></i> {{ page.template == 'use_standard' ? lang.label_default_template : page.template }}</p>
+                    <p class="my-1"><i class="bi bi-tag"></i>
+                        {% for label in page.labels %}
+                            <span class="label-dot" style="background-color:{{ label.color }};" data-bs-toggle="tooltip" data-bs-title="{{ label.title }}"></span>
+                        {% endfor %}
+                    </p>
+                    <p>{{ page.modul }}</p>
+                    <p class="my-1"><i class="bi bi-clock"></i> {{ page.lastedit }} ({{ page.lastedit_from }})</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endfor %}
