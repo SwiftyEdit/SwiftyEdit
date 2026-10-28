@@ -8,6 +8,16 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
+## 2.2.1 - 2026-10-27 (Build 26-0229)
+
+### Fixed
+
+- **Composer:** the package `swiftyedit/swiftyedit` in version 2.2.0
+  contained an earlier build (26-0225) without the last changes of 2.2.0
+  (e.g. "Compact database" and the removal of surplus page versions).
+  2.2.1 brings Composer installations to the full state of 2.2.0. Installations
+  updated in the backend already have it; there are no further changes.
+
 ## 2.2.0 - 2026-10-27 (Build 26-0228)
 
 ### Added
