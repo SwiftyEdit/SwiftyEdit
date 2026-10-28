@@ -126,11 +126,8 @@ if($_REQUEST['action'] == 'list') {
     $file_query = $_SESSION['disk'] ?? $media_file;
     $file_query = str_replace('assets/', '../', $file_query);
 
-    if(str_starts_with($file_query, '../images')) {
-        $tpl_list_files = file_get_contents('../acp/templates/list-files-thumbs.tpl');
-    } else {
-        $tpl_list_files = file_get_contents('../acp/templates/list-files-grid.tpl');
-    }
+    // images are shown as thumbnail cards, other files as rows
+    $list_view = str_starts_with($file_query, '../images') ? 'thumbs' : 'grid';
 
     $order_key = $_SESSION['sorting_media_list'] ?? $order_by;
     $order_direction = $_SESSION['sorting_direction'] ?? $order_direction;
@@ -188,14 +185,13 @@ if($_REQUEST['action'] == 'list') {
 
     echo se_print_pagination('/admin-xhr/uploads/write/',$nbr_pages,$_SESSION['pagination_page']);
 
-    echo '<div class="row">';
-
     // flags are base64 encoded images, build them only once per language
     $lang_flags = [];
     foreach($lang_codes as $lang_code) {
         $lang_flags[$lang_code] = return_language_flag_src($lang_code);
     }
 
+    $files = [];
     foreach($page_files as $file) {
 
         $file_rows = $media_rows_by_file[$file] ?? [];
@@ -205,64 +201,44 @@ if($_REQUEST['action'] == 'list') {
 
         // prefer the row of the current backend language, fall back to any existing row
         $media = $file_rows[$languagePack] ?? reset($file_rows);
-        $form_id = 'media-form-'.$media['media_id'];
-
-        $list_tpl = $tpl_list_files;
         $preview_src = str_replace('../', '/', $media['media_file']);
-        $preview_filename = str_replace('/images/', '', $preview_src);
-        $preview_lastedit = se_format_datetime($media['media_lastedit']);
-        $preview_filesize = readable_filesize($media['media_filesize']);
-        $media_file_hits = (int) $media['media_file_hits'];
 
-        // one flag per available language, languages without data are greyed out
-        $media_lang_thumb = '';
-        foreach($lang_codes as $lang_code) {
-            $flag_attr = isset($file_rows[$lang_code]) ? '' : ' style="filter:grayscale(1);opacity:.5"';
-            $media_lang_thumb .= '<button type="submit" form="'.$form_id.'" name="set_lang" value="'.$lang_code.'" class="btn btn-link p-0 border-0 align-baseline"'.$flag_attr.' title="'.$lang_code.'">';
-            $media_lang_thumb .= '<img src="'.$lang_flags[$lang_code].'" width="15" alt="'.$lang_code.'">';
-            $media_lang_thumb .= '</button> ';
-        }
-
-        $delete_btn = '<button class="btn btn-default btn-sm text-danger" name="delete" value="'.$media['media_id'].'" hx-post="'.$delete_uri.'" hx-target="#response" hx-confirm="'.$lang['msg_confirm_delete_media'].'" hx-swap="innerHTML" hx-include="[name=\'csrf_token\']">'.$icon['trash_alt'].'</button> ';
-        $edit_btn = '<button type="submit" class="btn btn-default btn-sm text-success w-100">'.$icon['edit'].' '.$lang['edit'].'</button>';
-
-
-        $labels = '';
+        // label titles are stored html-encoded (sanitizeUserInputs), Twig escapes on output
+        $labels = [];
         if($media['media_labels'] != '') {
-            $get_media_labels = explode(',',$media['media_labels']);
-            foreach($get_media_labels as $media_label) {
-
+            foreach(explode(',', $media['media_labels']) as $media_label) {
                 foreach($se_labels as $l) {
                     if($media_label == $l['label_id']) {
-                        $label_color = $l['label_color'];
-                        $label_title = $l['label_title'];
+                        $labels[] = [
+                            'color' => $l['label_color'],
+                            'title' => html_entity_decode((string) $l['label_title'], ENT_QUOTES, 'UTF-8')
+                        ];
                     }
                 }
-
-                $labels .= '<span class="label-dot" style="background-color:'.$label_color.';" title="'.$label_title.'"></span>';
             }
         }
 
-
-        $list_tpl = str_replace("{short_filename}","$preview_filename",$list_tpl);
-        $list_tpl = str_replace("{preview_link}","$preview_filename",$list_tpl);
-        $list_tpl = str_replace("{preview_img}",'<img src="'.$preview_src.'" class="card-img-top">',$list_tpl);
-        $list_tpl = str_replace("{show_filetime}","$preview_lastedit",$list_tpl);
-        $list_tpl = str_replace("{filesize}","$preview_filesize",$list_tpl);
-        $list_tpl = str_replace("{media_file_hits}","$media_file_hits",$list_tpl);
-        $list_tpl = str_replace("{labels}","$labels",$list_tpl);
-        $list_tpl = str_replace("{lang_thumb}","$media_lang_thumb",$list_tpl);
-        $list_tpl = str_replace("{form_id}","$form_id",$list_tpl);
-        $list_tpl = str_replace("{media_file}",htmlspecialchars($media['media_file'], ENT_QUOTES, 'UTF-8'),$list_tpl);
-        $list_tpl = str_replace("{edit_button}","$edit_btn",$list_tpl);
-        $list_tpl = str_replace("{delete_button}","$delete_btn",$list_tpl);
-        $list_tpl = str_replace("{csrf_token}",$_SESSION['token'],$list_tpl);
-
-        echo $list_tpl;
-
+        $files[] = [
+            'id' => (int) $media['media_id'],
+            'form_id' => 'media-form-'.$media['media_id'],
+            'path' => $media['media_file'],
+            'src' => $preview_src,
+            'filename' => str_replace('/images/', '', $preview_src),
+            'lastedit' => se_format_datetime($media['media_lastedit']),
+            'filesize' => readable_filesize($media['media_filesize']),
+            'hits' => (int) $media['media_file_hits'],
+            // languages with data for this file, the others get a greyed out flag
+            'langs' => array_keys($file_rows),
+            'labels' => $labels
+        ];
     }
 
-    echo '</div>';
+    echo $twig->render('uploads/list-files.twig', [
+        'view' => $list_view,
+        'files' => $files,
+        'lang_flags' => $lang_flags,
+        'delete_uri' => $delete_uri
+    ]);
 
     if($_SESSION['disk'] != 'assets/images' AND $_SESSION['disk'] != 'assets/files' AND $_SESSION['disk'] != '') {
         $delete_dir_btn = '<form hx-post="/admin-xhr/uploads/write/" hx-confirm="' . $lang['msg_confirm_delete_directory'] . '" hx-swap="none" class="mt-3 text-end">';

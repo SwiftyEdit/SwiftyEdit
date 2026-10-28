@@ -1,0 +1,78 @@
+{#
+ # media library list in /admin/uploads/, rendered by the uploads data-reader
+ # view "thumbs" for images (cards), "grid" for files (table-like rows)
+ #}
+
+{# one flag per language, submits the edit form with that language;
+   languages without data are greyed out #}
+{% macro lang_flags(file, lang_flags) %}
+    {% for code, flag_src in lang_flags %}
+        <button type="submit" form="{{ file.form_id }}" name="set_lang" value="{{ code }}" class="btn btn-link p-0 border-0 align-baseline"{% if code not in file.langs %} style="filter:grayscale(1);opacity:.5"{% endif %} title="{{ code }}"><img src="{{ flag_src }}" width="15" alt="{{ code }}"></button>
+    {% endfor %}
+{% endmacro %}
+
+{% macro labels(file) %}
+    {% for label in file.labels %}
+        <span class="label-dot" style="background-color:{{ label.color }};" title="{{ label.title }}"></span>
+    {% endfor %}
+{% endmacro %}
+
+{% macro edit_form(file, form_class) %}
+    <form action="/admin/uploads/edit/" method="POST" id="{{ file.form_id }}" class="{{ form_class }}">
+        <button type="submit" class="btn btn-default btn-sm text-success w-100">{{ icon.edit|raw }} {{ lang.edit }}</button>
+        <input type="hidden" name="file" value="{{ file.path }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+{% endmacro %}
+
+{% macro delete_button(file, delete_uri) %}
+    <button class="btn btn-default btn-sm text-danger" name="delete" value="{{ file.id }}" hx-post="{{ delete_uri }}" hx-target="#response" hx-confirm="{{ lang.msg_confirm_delete_media }}" hx-swap="innerHTML" hx-include="[name='csrf_token']">{{ icon.trash_alt|raw }}</button>
+{% endmacro %}
+
+{% import _self as m %}
+
+<div class="row">
+{% for file in files %}
+    {% if view == 'thumbs' %}
+        <div class="col-md-3 col-xl-2 mb-2">
+            <div class="card h-100">
+                <div class="card-header p-1 small text-center">{{ file.filename }}</div>
+                <div class="position-relative">
+                    <img src="{{ file.src }}" class="card-img-top">
+                    <div class="position-absolute bottom-0 start-0 m-1 px-1 rounded bg-dark bg-opacity-75 d-flex gap-1 lh-1">{{ m.lang_flags(file, lang_flags) }}</div>
+                </div>
+                <div class="card-body p-1">
+                    <p class="m-0"><small>{{ file.lastedit }}<br>{{ file.filesize }}</small></p>
+                    {{ m.labels(file) }}
+                </div>
+                <div class="card-footer p-1 d-flex justify-content">
+                    {{ m.edit_form(file, 'd-inline-flex') }}
+                    <div class="ms-auto">
+                        {{ m.delete_button(file, delete_uri) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-md-6">
+            <i class="bi bi-file-earmark"></i>
+            {{ m.lang_flags(file, lang_flags) }} <a href="{{ file.filename }}">{{ file.filename }}</a> {{ m.labels(file) }}
+        </div>
+        <div class="col-md-1">
+            {{ file.filesize }}
+        </div>
+        <div class="col-md-1">
+            <i class="bi bi-download"></i> {{ file.hits }}
+        </div>
+        <div class="col-md-2">
+            {{ file.lastedit }}
+        </div>
+        <div class="col-md-2">
+            <div class="d-flex justify-content">
+                {{ m.edit_form(file, 'd-inline') }}
+                {{ m.delete_button(file, delete_uri) }}
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+</div>
