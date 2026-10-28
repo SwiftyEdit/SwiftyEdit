@@ -213,10 +213,6 @@ if($_REQUEST['action'] == 'list_catalog') {
     // registry entry of either type correctly shows as already installed.
     $installed = array_merge(array_keys(se_get_all_addons()), array_keys(se_get_all_themes()));
 
-    // Reused for the per-card screenshots modal, same template/pattern as
-    // list_plugins' help-text modal above.
-    $modal_template_file = file_get_contents("../acp/templates/bs-modal.tpl");
-
     echo '<div class="row">';
     foreach($catalog['entries'] as $slug => $entry) {
 
@@ -264,12 +260,12 @@ if($_REQUEST['action'] == 'list_catalog') {
             foreach($screenshots as $shot) {
                 $modal_body .= '<img src="'.htmlspecialchars($shot, ENT_QUOTES).'" class="img-fluid mb-2 rounded">';
             }
-            $modal = str_replace(
-                ['{modalID}', '{modalTitle}', '{modalBody}'],
-                [$modal_id, $name.' - '.$lang['catalog_screenshots'], $modal_body],
-                $modal_template_file
-            );
-            echo $modal;
+            // title gets escaped by Twig, so use the raw name here
+            echo $twig->render('components/modal.twig', [
+                'id' => $modal_id,
+                'title' => ($entry['name'] ?? $slug).' - '.$lang['catalog_screenshots'],
+                'body' => $modal_body
+            ]);
         }
 
         $tags_attr = htmlspecialchars(implode(',', array_map('strtolower', $tags)), ENT_QUOTES);

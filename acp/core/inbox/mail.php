@@ -51,8 +51,6 @@ echo '<td>'.$lang['label_mail_recipients'].'</td>';
 echo '<td></td>';
 echo '</tr>';
 
-$modal_tpl = file_get_contents('../acp/templates/bs-modal.tpl');
-
 for($i=0;$i<$cnt_messages;$i++) {
 
     $format_time = $se_settings['dateformat'].' '.$se_settings['timeformat'];
@@ -89,10 +87,11 @@ for($i=0;$i<$cnt_messages;$i++) {
     }
     $log_str .= '</table>';
 
-    $this_modal = $modal_tpl;
-    $this_modal = str_replace('{modalID}',$modal_id,$this_modal);
-    $this_modal = str_replace('{modalTitle}',"Log",$this_modal);
-    $this_modal = str_replace('{modalBody}',$log_str,$this_modal);
+    $this_modal = $twig->render('components/modal.twig', [
+        'id' => $modal_id,
+        'title' => 'Log',
+        'body' => $log_str
+    ]);
 
     if($all_messages[$i]['time_send'] > 0) {
         $time_sent = '<a href="#" data-bs-toggle="modal" data-bs-target="#'.$modal_id.'">';
