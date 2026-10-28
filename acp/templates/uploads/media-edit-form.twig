@@ -1,0 +1,114 @@
+<div class="card p-3">
+    {% if message %}
+        <div class="alert alert-{{ message.type }} alert-auto-close">{{ message.text }}</div>
+    {% endif %}
+    <form role="form" action="/admin/uploads/edit/" id="media_form" method="POST">
+        <div class="row">
+            <div class="col-md-8">
+
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <label class="form-label">{{ lang.label_title }}</label>
+                        <input type="text" class="form-control" name="title" value="{{ media.title }}">
+                    </div>
+                    <div class="col-md-5 mb-3">
+                        <label class="form-label">{{ lang.label_alt }}</label>
+                        <input type="text" class="form-control" name="alt" value="{{ media.alt }}">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">{{ lang.label_priority }}</label>
+                        <input type="text" class="form-control" name="priority" value="{{ media.priority }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ lang.label_keywords }}</label>
+                        <input type="text" class="form-control tags" name="keywords" value="{{ media.keywords }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ lang.label_url }}</label>
+                        <input type="text" class="form-control" name="url" value="{{ media.url }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ lang.label_text }}</label>
+                    <textarea class="form-control" name="text" rows="5">{{ media.text }}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">{{ lang.label_license }}</label>
+                        <input type="text" class="form-control" name="license" value="{{ media.license }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">{{ lang.label_credits }}</label>
+                        <input type="text" class="form-control" name="credit" value="{{ media.credit }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">{{ lang.label_version }}</label>
+                        <input type="text" class="form-control" name="version" value="{{ media.version }}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ lang.notes }}</label>
+                    <textarea class="form-control" name="notes" rows="5">{{ media.notes }}</textarea>
+                </div>
+
+                <input type="hidden" name="saveMedia" value="save">
+                <input type="hidden" name="set_lang" value="{{ set_lang }}">
+                <input type="hidden" name="file" value="{{ file.path }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" name="save" class="btn btn-success" value="save_media_data">{{ lang.save }}</button>
+
+            </div>
+            <div class="col-md-4">
+                <div class="card border p-1">
+                    {% if file.is_image %}
+                        <img src="{{ file.src }}" class="img-fluid" alt="">
+                    {% else %}
+                        <p>Filetype: {{ file.extension }}</p>
+                    {% endif %}
+                </div>
+
+                <table class="table table-sm">
+                    <tr>
+                        <td class="text-end">{{ icon.clock|raw }}</td>
+                        <td>{{ file.lastedit }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-end">{{ icon.link|raw }}</td>
+                        <td><a href="{{ file.path }}">{{ file.path }}</a></td>
+                    </tr>
+                    <tr>
+                        <td class="text-end">{{ icon.info_circle|raw }}</td>
+                        <td>{{ file.filesize }}{% if file.dimensions %} | {{ file.dimensions }} px{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-end">{{ icon.code|raw }}</td>
+                        <td><input type="text" class="form-control" name="bn" value="[{{ file.shortcode }}={{ file.basename }}][/{{ file.shortcode }}]"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-end">{{ icon.translate|raw }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                {% for code in lang_codes %}
+                                    <button type="submit" class="btn btn-default btn-sm{% if code == set_lang %} active{% endif %}" name="set_lang" value="{{ code }}">{{ code }}</button>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            {% for label in labels %}
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" id="label{{ label.id }}" type="checkbox" name="media_labels[]" value="{{ label.id }}"{% if label.checked %} checked{% endif %}>
+                                    <label class="form-check-label" for="label{{ label.id }}" style="border-bottom: 1px solid {{ label.color }}">{{ label.title }}</label>
+                                </div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>

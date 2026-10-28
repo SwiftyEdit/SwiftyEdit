@@ -337,6 +337,7 @@ foreach ($hook_plugins as $pluginDir => $pluginData) {
     }
 }
 
+require SE_ROOT.'/acp/core/twig.php';
 
 /* build absolute URL */
 if ($se_settings['cms_ssl_domain'] != '') {
