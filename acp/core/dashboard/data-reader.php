@@ -360,7 +360,7 @@ if ($_REQUEST['action'] === 'list_cache') {
 
 
 /**
- * OPcache status ("OPcache" card, see dashboard_top.tpl / index.php - the
+ * OPcache status ("OPcache" card, see dashboard/cards.twig / index.php - the
  * whole card is only wired in for admins, see se_hasPermission() there, but
  * the read is harmless on its own so no extra check is repeated here).
  */

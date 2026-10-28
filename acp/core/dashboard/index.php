@@ -7,135 +7,6 @@
 
 $reader_uri = '/admin-xhr/dashboard/read/';
 
-$tpl_file = file_get_contents('../acp/templates/dashboard_top.tpl');
-$tpl_file = str_replace('{reader_uri}', $reader_uri, $tpl_file);
-$tpl_file = str_replace('{tab_pages}', $lang['nav_btn_pages'], $tpl_file);
-$tpl_file = str_replace('{tab_snippets}', $lang['nav_btn_snippets'], $tpl_file);
-$tpl_file = str_replace('{tab_blog}', $lang['nav_btn_blog'], $tpl_file);
-$tpl_file = str_replace('{tab_products}', $lang['nav_btn_products'], $tpl_file);
-$tpl_file = str_replace('{tab_events}', $lang['nav_btn_events'], $tpl_file);
-$tpl_file = str_replace('{tab_comments}', $lang['nav_btn_comments'], $tpl_file);
-$tpl_file = str_replace('{tab_user}', $lang['nav_btn_user'], $tpl_file);
-$tpl_file = str_replace('{tab_cache}', $lang['nav_btn_cache'], $tpl_file);
-$tpl_file = str_replace('{tab_addons}', $lang['nav_btn_addons'], $tpl_file);
-$tpl_file = str_replace('{tab_orders}', $lang['nav_btn_orders'], $tpl_file);
-
-$tpl_file = str_replace('{icon_pages}', $icon['files'], $tpl_file);
-$tpl_file = str_replace('{icon_snippets}', $icon['card_heading'], $tpl_file);
-$tpl_file = str_replace('{icon_blog}', $icon['file_earmark_post'], $tpl_file);
-$tpl_file = str_replace('{icon_products}', $icon['store'], $tpl_file);
-$tpl_file = str_replace('{icon_events}', $icon['calendar_event'], $tpl_file);
-$tpl_file = str_replace('{icon_user}', $icon['people'], $tpl_file);
-$tpl_file = str_replace('{icon_cache}', $icon['database'], $tpl_file);
-$tpl_file = str_replace('{icon_addons}', $icon['plugin'], $tpl_file);
-$tpl_file = str_replace('{icon_orders}', $icon['cart'], $tpl_file);
-$tpl_file = str_replace('{icon_activity}', $icon['activity'], $tpl_file);
-$tpl_file = str_replace('{icon_alerts}', $icon['exclamation_triangle'], $tpl_file);
-$tpl_file = str_replace('{icon_settings}', $icon['gear'], $tpl_file);
-
-$tpl_file = str_replace('{label_content}', $lang['dashboard_group_content'], $tpl_file);
-$tpl_file = str_replace('{label_system}', $lang['dashboard_group_system'], $tpl_file);
-$tpl_file = str_replace('{label_activity}', $lang['dashboard_label_activity'], $tpl_file);
-$tpl_file = str_replace('{label_alerts}', $lang['dashboard_label_alerts'], $tpl_file);
-$tpl_file = str_replace('{label_settings}', $lang['dashboard_label_settings'], $tpl_file);
-
-$btn_addons_overview = '<a href="/admin/addons/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$tpl_file = str_replace('{btn_addons_overview}', $btn_addons_overview, $tpl_file);
-
-$btn_settings_overview = '<a href="/admin/settings/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$tpl_file = str_replace('{btn_settings_overview}', $btn_settings_overview, $tpl_file);
-
-// Icon-only manual refresh for the two cards with no other footer action -
-// reloads just that card's own list, same target/indicator convention the
-// rest of the dashboard's hx-get widgets already use.
-$btn_reload_activity = '<button class="btn btn-default btn-sm" title="'.$lang['dashboard_btn_reload'].'" '
-    .'hx-get="'.$reader_uri.'?action=list_logfile" hx-target="#getLogfile" hx-swap="innerHTML" hx-indicator=".htmx-indicator">'
-    .$icon['arrow_clockwise'].'</button>';
-$tpl_file = str_replace('{btn_reload_activity}', $btn_reload_activity, $tpl_file);
-
-$btn_reload_alerts = '<button class="btn btn-default btn-sm" title="'.$lang['dashboard_btn_reload'].'" '
-    .'hx-get="'.$reader_uri.'?action=list_alerts" hx-target="#getAlerts" hx-swap="innerHTML" hx-indicator=".htmx-indicator">'
-    .$icon['arrow_clockwise'].'</button>';
-$tpl_file = str_replace('{btn_reload_alerts}', $btn_reload_alerts, $tpl_file);
-
-$btn_orders_overview = '<a href="/admin/shop/orders/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$tpl_file = str_replace('{btn_orders_overview}', $btn_orders_overview, $tpl_file);
-
-// OPcache status + manual reset - one card, right next to the Cache card
-// (see acp/core/dashboard/data-reader.php and data-writer.php), only wired
-// in for admins with the "sensitive files" right (same right that gates the
-// update/addon installers - resetting the server's bytecode cache is just as
-// server-wide/sensitive). Built here as a single HTML block instead of
-// per-placeholder substitution so it can be left out entirely for everyone
-// else, since dashboard_top.tpl itself has no conditionals.
-$opcache_card = '';
-if (se_hasPermission('drm_acp_sensitive_files')) {
-    $btn_opcache_reset = '<button hx-post="/admin-xhr/dashboard/write/" '
-        .'hx-vals=\'{"opcache_reset":1,"csrf_token":"'.$_SESSION['token'].'"}\' '
-        .'hx-target="#opcacheStatus" hx-swap="innerHTML" hx-indicator=".htmx-indicator" '
-        .'class="btn btn-default btn-sm">'.$icon['trash'].' '.$lang['btn_delete_cache'].'</button>'
-        .'<span id="opcacheStatus" class="align-self-center"></span>';
-
-    $opcache_card = '<div>'
-        .'<section class="card" style="--card-color: var(--section-color-system)">'
-        .'<div class="card-header d-flex align-items-center gap-2">'
-        .'<span class="dash-card-icon">'.$icon['cpu'].'</span>'
-        .'<h2 class="h6 mb-0">'.$lang['opcache_title'].'</h2>'
-        .'</div>'
-        .'<div class="card-body p-0">'
-        .'<div id="getOpcache" class="p-2 scroll-container scroll-container-h240" '
-        .'hx-get="'.$reader_uri.'?action=list_opcache" hx-trigger="load, opcache_reset from:body">'
-        .'<div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>'
-        .'</div>'
-        .'</div>'
-        .'<div class="card-footer d-flex align-items-center gap-2">'.$btn_opcache_reset.'</div>'
-        .'</section>'
-        .'</div>';
-}
-$tpl_file = str_replace('{opcache_card}', $opcache_card, $tpl_file);
-
-$btn_page_overview = '<a href="/admin/pages/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$tpl_file = str_replace('{btn_page_overview}', $btn_page_overview, $tpl_file);
-$btn_page_new = '<a href="/admin/pages/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';
-$tpl_file = str_replace('{btn_new_page}', $btn_page_new, $tpl_file);
-
-$btn_snippets_overview = '<a href="/admin/snippets/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$btn_snippets_new = '<a href="/admin/snippets/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';
-$tpl_file = str_replace('{btn_snippets_overview}', $btn_snippets_overview, $tpl_file);
-$tpl_file = str_replace('{btn_snippets_new}', $btn_snippets_new, $tpl_file);
-
-$btn_blog_overview = '<a href="/admin/blog/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$btn_blog_new = '<a href="/admin/blog/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';
-$tpl_file = str_replace('{btn_blog_overview}', $btn_blog_overview, $tpl_file);
-$tpl_file = str_replace('{btn_blog_new}', $btn_blog_new, $tpl_file);
-
-$btn_products_overview = '<a href="/admin/shop/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$btn_products_new = '<a href="/admin/shop/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';
-$tpl_file = str_replace('{btn_products_overview}', $btn_products_overview, $tpl_file);
-$tpl_file = str_replace('{btn_products_new}', $btn_products_new, $tpl_file);
-
-$btn_events_overview = '<a href="/admin/events/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$btn_events_new = '<a href="/admin/events/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';
-$tpl_file = str_replace('{btn_events_overview}', $btn_events_overview, $tpl_file);
-$tpl_file = str_replace('{btn_events_new}', $btn_events_new, $tpl_file);
-
-$btn_user_overview = '<a href="/admin/users/" class="btn btn-default btn-sm">'.$lang['overview'].'</a>';
-$tpl_file = str_replace('{btn_user_overview}', $btn_user_overview, $tpl_file);
-$btn_user_new = '<a href="/admin/users/new/" class="btn btn-default btn-sm btn-accent">'.$icon['plus'].$lang['btn_new'].'</a>';
-$tpl_file = str_replace('{btn_new_user}', $btn_user_new, $tpl_file);
-
-// Moved out of table-cache.twig into a static card-footer (like every other
-// card's overview/new buttons) instead of living inside the htmx-swapped
-// list, so it survives the "load, cache_rebuilt from:body" refresh instead
-// of briefly disappearing while that reloads. Same $_SESSION['token'] the
-// Twig side uses via the 'csrf_token' global (see header.php).
-$btn_cache_rebuild_all = '<button hx-post="/admin-xhr/dashboard/write/" '
-    .'hx-vals=\'{"cache_target":"all","csrf_token":"'.$_SESSION['token'].'"}\' '
-    .'hx-target="#cacheStatus_all" hx-swap="innerHTML" hx-indicator=".htmx-indicator" '
-    .'class="btn btn-default btn-sm">'.$icon['arrow_clockwise'].' '.$lang['cache_btn_rebuild_all'].'</button>'
-    .'<span id="cacheStatus_all" class="align-self-center"></span>';
-$tpl_file = str_replace('{btn_cache_rebuild_all}', $btn_cache_rebuild_all, $tpl_file);
-
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['speedometer'].' '.$lang['nav_btn_dashboard'];
 echo '<span class="ms-auto">';
@@ -159,4 +30,10 @@ if (is_array($se_2fa_bypass) && strtotime((string) ($se_2fa_bypass['until'] ?? '
     echo '</div>';
 }
 
-echo $tpl_file;
+// the OPcache card is only shown to admins with the "sensitive files" right
+// (same right that gates the update/addon installers - resetting the
+// server's bytecode cache is just as server-wide/sensitive)
+echo $twig->render('dashboard/cards.twig', [
+    'reader_uri' => $reader_uri,
+    'show_opcache' => se_hasPermission('drm_acp_sensitive_files')
+]);

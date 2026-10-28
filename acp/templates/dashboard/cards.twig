@@ -1,0 +1,285 @@
+{#
+ # Dashboard card grid, rendered by acp/core/dashboard/index.php
+ # the lists inside the cards are loaded via htmx from the dashboard
+ # data-reader (dashboard/table-*.twig)
+ #}
+
+{% macro loading() %}
+    <div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
+{% endmacro %}
+
+{% macro btn_overview(href) %}
+    <a href="{{ href }}" class="btn btn-default btn-sm">{{ lang.overview }}</a>
+{% endmacro %}
+
+{% macro btn_new(href) %}
+    <a href="{{ href }}" class="btn btn-default btn-sm btn-accent">{{ icon.plus|raw }}{{ lang.btn_new }}</a>
+{% endmacro %}
+
+{% import _self as m %}
+
+<p class="dash-group-label">{{ lang.dashboard_group_content }}</p>
+<div class="row g-3 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-5">
+
+    <div>
+    <section class="card dash-card-accent-border" style="--card-color: var(--section-color-contents)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.files|raw }}</span>
+            <a href="/admin/pages/" class="dash-card-title h6 mb-0 flex-grow-1">{{ lang.nav_btn_pages }}</a>
+            <span id="countPages" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=pages" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getPages" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_pages"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/pages/') }} {{ m.btn_new('/admin/pages/new/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card dash-card-accent-border" style="--card-color: var(--section-color-contents)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.card_heading|raw }}</span>
+            <a href="/admin/snippets/" class="dash-card-title h6 mb-0 flex-grow-1">{{ lang.nav_btn_snippets }}</a>
+            <span id="countSnippets" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=snippets" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getSnippets" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_snippets"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/snippets/') }} {{ m.btn_new('/admin/snippets/new/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card dash-card-accent-border" style="--card-color: var(--section-color-blog)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.file_earmark_post|raw }}</span>
+            <a href="/admin/blog/" class="dash-card-title h6 mb-0 flex-grow-1">{{ lang.nav_btn_blog }}</a>
+            <span id="countPosts" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=posts" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getPosts" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_posts"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/blog/') }} {{ m.btn_new('/admin/blog/new/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card dash-card-accent-border" style="--card-color: var(--section-color-shop)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.store|raw }}</span>
+            <a href="/admin/shop/" class="dash-card-title h6 mb-0 flex-grow-1">{{ lang.nav_btn_products }}</a>
+            <span id="countProducts" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=products" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getProducts" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_products"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/shop/') }} {{ m.btn_new('/admin/shop/new/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card dash-card-accent-border" style="--card-color: var(--section-color-events)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.calendar_event|raw }}</span>
+            <a href="/admin/events/" class="dash-card-title h6 mb-0 flex-grow-1">{{ lang.nav_btn_events }}</a>
+            <span id="countEvents" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=events" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getEvents" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_events"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/events/') }} {{ m.btn_new('/admin/events/new/') }}</div>
+    </section>
+    </div>
+
+</div>
+
+<p class="dash-group-label">{{ lang.dashboard_group_system }}</p>
+<div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xxl-4">
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-user)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.people|raw }}</span>
+            <a href="/admin/users/" class="dash-card-title h6 mb-0 flex-grow-1">{{ lang.nav_btn_user }}</a>
+            <span id="countUser" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=users" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getUser" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_user"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/users/') }} {{ m.btn_new('/admin/users/new/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-shop)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.cart|raw }}</span>
+            <h2 class="h6 mb-0 flex-grow-1">{{ lang.nav_btn_orders }}</h2>
+            <span id="countOrders" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=orders" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getOrdersCard" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_orders"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/shop/orders/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-system)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.activity|raw }}</span>
+            <h2 class="h6 mb-0">{{ lang.dashboard_label_activity }}</h2>
+        </div>
+        <div class="card-body p-0">
+            <div id="getLogfile" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_logfile"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            {# icon-only manual refresh, reloads just this card's list #}
+            <button class="btn btn-default btn-sm" title="{{ lang.dashboard_btn_reload }}"
+                    hx-get="{{ reader_uri }}?action=list_logfile" hx-target="#getLogfile" hx-swap="innerHTML" hx-indicator=".htmx-indicator">{{ icon.arrow_clockwise|raw }}</button>
+        </div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-system)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.exclamation_triangle|raw }}</span>
+            <h2 class="h6 mb-0">{{ lang.dashboard_label_alerts }}</h2>
+        </div>
+        <div class="card-body p-0">
+            <div id="getAlerts" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_alerts"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            <button class="btn btn-default btn-sm" title="{{ lang.dashboard_btn_reload }}"
+                    hx-get="{{ reader_uri }}?action=list_alerts" hx-target="#getAlerts" hx-swap="innerHTML" hx-indicator=".htmx-indicator">{{ icon.arrow_clockwise|raw }}</button>
+        </div>
+    </section>
+    </div>
+
+</div>
+
+<div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xxl-4 mt-3">
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-addons)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.plugin|raw }}</span>
+            <h2 class="h6 mb-0 flex-grow-1">{{ lang.nav_btn_addons }}</h2>
+            <span id="countAddons" class="dash-card-count" hx-get="/admin-xhr/counter/read/?count=addons" hx-trigger="load">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div id="getAddons" class="p-2 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_addons"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/addons/') }}</div>
+    </section>
+    </div>
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-system)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.database|raw }}</span>
+            <h2 class="h6 mb-0">{{ lang.nav_btn_cache }}</h2>
+        </div>
+        <div class="card-body p-0">
+            <div id="getCache" class="p-0 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_cache"
+                 hx-trigger="load, cache_rebuilt from:body">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex align-items-center gap-2">
+            {# static footer instead of inside the swapped list, so the button
+               survives the "cache_rebuilt" refresh #}
+            <button hx-post="/admin-xhr/dashboard/write/"
+                    hx-vals='{"cache_target":"all","csrf_token":"{{ csrf_token }}"}'
+                    hx-target="#cacheStatus_all" hx-swap="innerHTML" hx-indicator=".htmx-indicator"
+                    class="btn btn-default btn-sm">{{ icon.arrow_clockwise|raw }} {{ lang.cache_btn_rebuild_all }}</button>
+            <span id="cacheStatus_all" class="align-self-center"></span>
+        </div>
+    </section>
+    </div>
+
+    {# OPcache status + manual reset, see dashboard data-reader/data-writer #}
+    {% if show_opcache %}
+    <div>
+    <section class="card" style="--card-color: var(--section-color-system)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.cpu|raw }}</span>
+            <h2 class="h6 mb-0">{{ lang.opcache_title }}</h2>
+        </div>
+        <div class="card-body p-0">
+            <div id="getOpcache" class="p-2 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_opcache" hx-trigger="load, opcache_reset from:body">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex align-items-center gap-2">
+            <button hx-post="/admin-xhr/dashboard/write/"
+                    hx-vals='{"opcache_reset":1,"csrf_token":"{{ csrf_token }}"}'
+                    hx-target="#opcacheStatus" hx-swap="innerHTML" hx-indicator=".htmx-indicator"
+                    class="btn btn-default btn-sm">{{ icon.trash|raw }} {{ lang.btn_delete_cache }}</button>
+            <span id="opcacheStatus" class="align-self-center"></span>
+        </div>
+    </section>
+    </div>
+    {% endif %}
+
+    <div>
+    <section class="card" style="--card-color: var(--section-color-system)">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="dash-card-icon">{{ icon.gear|raw }}</span>
+            <h2 class="h6 mb-0">{{ lang.dashboard_label_settings }}</h2>
+        </div>
+        <div class="card-body p-0">
+            <div id="getInfos" class="p-2 scroll-container scroll-container-h240"
+                 hx-get="{{ reader_uri }}?action=list_infos"
+                 hx-trigger="load">
+                {{ m.loading() }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">{{ m.btn_overview('/admin/settings/') }}</div>
+    </section>
+    </div>
+
+</div>
