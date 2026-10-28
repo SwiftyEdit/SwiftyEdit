@@ -14,17 +14,12 @@ $bs_form_select = file_get_contents($tpl_dir.'/bs-form-select.tpl');
 $bs_form_input_text = file_get_contents($tpl_dir.'bs-form-input-text.tpl');
 $bs_form_input_textarea = file_get_contents($tpl_dir.'/bs-form-input-textarea.tpl');
 $bs_form_input_content_editor = file_get_contents($tpl_dir.'/bs-form-input-content-editor.tpl');
-$bs_form_control_group = file_get_contents($tpl_dir.'/bs-form-control-group.tpl');
 
 $bs_row_col2 = file_get_contents($tpl_dir.'/bs-row-col2.tpl');
 $bs_row_col3 = file_get_contents($tpl_dir.'/bs-row-col3.tpl');
 $bs_row_col4 = file_get_contents($tpl_dir.'/bs-row-col4.tpl');
 
 $bs_row_2_cols = file_get_contents($tpl_dir.'/bs-row-2-cols.tpl');
-$bs_row_3_cols = file_get_contents($tpl_dir.'/bs-row-3-cols.tpl');
-$bs_row_4_cols = file_get_contents($tpl_dir.'/bs-row-4-cols.tpl');
-
-$bs_modal = file_get_contents($tpl_dir.'/bs-modal.tpl');
 
 
 /**
@@ -403,50 +398,4 @@ function tpl_form_select(array $data): string {
 
 
     return $tpl;
-}
-
-
-
-function tpl_form_control_group($labelFor,$labelText,$formControls) {
-	global $bs_form_control_group;
-	$tpl = str_replace('{labelText}', $labelText, $bs_form_control_group);
-	$tpl = str_replace('{labelFor}', $labelText, $tpl);
-	$tpl = str_replace('{formControls}', $formControls, $tpl);
-	return $tpl;
-}
-
-
-function tpl_checkbox($checkbox_name,$checkbox_value,$checkbox_id,$checkbox_label,$checkbox_checked) {
-	global $bs_form_checkbox;
-	
-	$tpl = str_replace('{checkbox_name}', $checkbox_name, $bs_form_checkbox);
-	$tpl = str_replace('{checkbox_value}', $checkbox_value, $tpl);
-	$tpl = str_replace('{checkbox_id}', $checkbox_id, $tpl);
-	$tpl = str_replace('{checkbox_label}', $checkbox_label, $tpl);
-	
-	if($checkbox_checked == '') {
-		$tpl = str_replace('{checked}', '', $tpl);
-	} else {
-		$tpl = str_replace('{checked}', 'checked', $tpl);
-	}
-	
-	return $tpl;
-}
-
-
-function tpl_radio($radio_name,$radio_value,$radio_id,$radio_label,$radio_checked) {
-	global $bs_form_radio;
-	
-	$tpl = str_replace('{radio_name}', $radio_name, $bs_form_radio);
-	$tpl = str_replace('{radio_value}', $radio_value, $tpl);
-	$tpl = str_replace('{radio_id}', $radio_id, $tpl);
-	$tpl = str_replace('{radio_label}', $radio_label, $tpl);
-	
-	if($radio_checked == '') {
-		$tpl = str_replace('{checked}', '', $tpl);
-	} else {
-		$tpl = str_replace('{checked}', 'checked', $tpl);
-	}
-	
-	return $tpl;
 }
