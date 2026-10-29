@@ -51,7 +51,8 @@
       "@validate"
     ],
     "analyse": "phpstan analyse --memory-limit=1G",
-    "analyse:baseline": "phpstan analyse --memory-limit=1G --generate-baseline --allow-empty-baseline"
+    "analyse:baseline": "phpstan analyse --memory-limit=1G --generate-baseline --allow-empty-baseline",
+    "analyse:count": "PHPSTAN_NO_BASELINE=1 phpstan analyse --memory-limit=1G --no-progress --error-format=json | php phpstan-count.php"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.3"

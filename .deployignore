@@ -27,6 +27,7 @@ phpstan.neon
 phpstan-baseline.neon
 phpstan-baseline-loader.php
 phpstan-bootstrap.php
+phpstan-count.php
 .claude
 .ollamassist
 
