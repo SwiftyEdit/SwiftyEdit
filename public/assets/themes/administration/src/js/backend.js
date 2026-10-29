@@ -8,6 +8,7 @@ window.$ = $;
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/color-mode.js';
 import './components/privacy-blur.js';
+import './components/global-search.js';
 import ClipboardJS from "clipboard";
 
 import Sortable from 'sortablejs';

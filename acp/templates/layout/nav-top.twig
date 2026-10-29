@@ -1,0 +1,78 @@
+{#
+ # top navigation of the ACP, rendered by acp/core/nav_top.php
+ #}
+
+{% macro flag(src) %}<img src="{{ src }}" style="vertical-align: baseline; width:18px; height:auto;">{% endmacro %}
+{% import _self as m %}
+
+<nav class="navbar navbar-custom">
+    <div class="container-fluid px-0">
+
+        <button class="btn btn-link me-2 d-none d-lg-inline-flex" id="sidebarToggleDesktop">{{ icon.three_dots|raw }}</button>
+        <button class="btn btn-link me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">{{ icon.three_dots|raw }}</button>
+
+        <div class="opacity-25 me-auto d-none d-lg-inline">{{ server_name }}</div>
+
+        {#
+         # global live search - pages, snippets, products, blog posts, events, users.
+         # No dedicated search results page: acp/core/search/data-reader.php renders
+         # grouped matches straight into #globalSearchResults on every keystroke.
+         # Each content type self-filters by the same se_hasPermission() check its
+         # own module uses, so a restricted admin account never sees more here than
+         # it could already reach via that module's own list.
+         # Closing the dropdown: src/js/components/global-search.js
+         #}
+        <div class="position-relative me-1 d-none d-md-block" id="globalSearchWrapper" style="width:220px;">
+            <span class="position-absolute top-50 translate-middle-y text-body-secondary" style="left:0.9rem; pointer-events:none;">{{ icon.search|raw }}</span>
+            <input type="text" id="globalSearchInput" name="q" class="form-control form-control-sm rounded-pill no-enter" style="padding-left:2.1rem;" autocomplete="off" placeholder="{{ lang.search }}"
+                   hx-post="/admin-xhr/search/read/?live"
+                   hx-trigger="keyup changed delay:300ms"
+                   hx-target="#globalSearchResults"
+                   hx-swap="innerHTML"
+                   hx-vals="{{ {csrf_token: csrf_token}|json_encode }}"
+                   hx-on::after-request="document.getElementById('globalSearchResults').classList.toggle('show', this.value.trim().length > 1 && document.getElementById('globalSearchResults').innerHTML.trim() !== '')">
+            <div id="globalSearchResults" class="dropdown-menu" style="max-height:70vh; overflow-y:auto; width:320px;"></div>
+        </div>
+
+        {# filter offcanvas, see acp/core/nav_top_filter.php #}
+        <button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">
+            <span class="d-none d-md-inline me-1">Filter</span>
+            <span hx-get="/admin-xhr/counter/read/?count=count_global_filters" hx-trigger="load, updated_global_filter from:body" class="badge bg-primary">0</span>
+        </button>
+
+        {# select language #}
+        <div class="dropstart me-1">
+            <a class="btn btn-default" href="#" role="button" id="langMenuLink" data-bs-toggle="dropdown" aria-expanded="false">{{ m.flag(current_lang_flag) }}</a>
+            <ul class="dropdown-menu">
+                {% for language in languages %}
+                    <li><a class="dropdown-item" href="?set_lang={{ language.sign|url_encode }}">{{ m.flag(language.flag) }} {{ language.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {# user menu - the caret shows that the avatar opens a menu (profile, settings, logout),
+           Bootstrap's own .dropdown-toggle caret would point left here (dropstart) #}
+        <div class="dropstart me-1">
+            <a class="btn btn-default" href="#" role="button" id="userMenuLink" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"><img src="{{ avatar_src }}" class="rounded-circle border img-responsive align-top me-2" width="24" height="24"><span class="d-none d-md-inline">{{ user_nick }}</span><span class="ms-1 small opacity-75">{{ icon.caret_down|raw }}</span></a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/profile/">{{ icon.user|raw }} {{ lang.button_profile }}</a></li>
+                <li><a class="dropdown-item" href="/admin/users/settings/">{{ icon.gear|raw }} {{ lang.nav_btn_settings }}</a></li>
+                {# logout only per POST with the CSRF token (see app/routing.php) #}
+                <li><form method="post" action="/logout" class="m-0"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="dropdown-item">{{ icon.power|raw }} {{ lang.button_logout }}</button></form></li>
+            </ul>
+        </div>
+
+        <button class="btn btn-default ms-1" type="button" onclick="toggleTheme()">
+            <span id="toggle-dark"><i class="bi bi-moon"></i></span>
+            <span id="toggle-light"><i class="bi bi-sun"></i></span>
+        </button>
+
+        <button class="btn btn-default ms-1" type="button" onclick="togglePrivacyBlur()" title="{{ lang.btn_privacy_blur }}">
+            <span id="privacy-blur-off">{{ icon.eye|raw }}</span>
+            <span id="privacy-blur-on" class="text-danger">{{ icon.eye_slash_fill|raw }}</span>
+        </button>
+
+        <button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" hx-get="/admin-xhr/docs/read/?file=start" hx-target="#helpModal" hx-trigger="click">{{ icon.question_circle|raw }} <span class="d-none d-md-inline">{{ lang.btn_help }}</span></button>
+
+    </div>
+</nav>

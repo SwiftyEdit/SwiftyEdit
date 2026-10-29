@@ -1,121 +1,32 @@
 <?php
 
 /**
+ * top navigation of the ACP, markup in acp/templates/layout/nav-top.twig
+ *
  * global variables
- * @var array $icon
- * @var array $lang
  * @var array $active_lang
+ * @var object $twig
  */
 
-echo '<nav class="navbar navbar-custom">';
-echo '<div class="container-fluid px-0">';
-
-echo '<button class="btn btn-link me-2 d-none d-lg-inline-flex" id="sidebarToggleDesktop">'.$icon['three_dots'].'</button>';
-echo '<button class="btn btn-link me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">'.$icon['three_dots'].'</button>';
-
-
-echo '<div class="opacity-25 me-auto d-none d-lg-inline">'.htmlentities($_SERVER['SERVER_NAME']).'</div>';
-
-/**
- * global live search - pages, snippets, products, blog posts, events, users.
- * No dedicated search results page: acp/core/search/data-reader.php renders
- * grouped matches straight into #globalSearchResults on every keystroke.
- * Each content type self-filters by the same se_hasPermission() check its
- * own module uses, so a restricted admin account never sees more here than
- * it could already reach via that module's own list.
- */
-echo '<div class="position-relative me-1 d-none d-md-block" id="globalSearchWrapper" style="width:220px;">';
-echo '<span class="position-absolute top-50 translate-middle-y text-body-secondary" style="left:0.9rem; pointer-events:none;">'.$icon['search'].'</span>';
-echo '<input type="text" id="globalSearchInput" name="q" class="form-control form-control-sm rounded-pill no-enter" style="padding-left:2.1rem;" autocomplete="off" placeholder="'.$lang['search'].'"';
-echo ' hx-post="/admin-xhr/search/read/?live"';
-echo ' hx-trigger="keyup changed delay:300ms"';
-echo ' hx-target="#globalSearchResults"';
-echo ' hx-swap="innerHTML"';
-echo ' hx-vals=\'{"csrf_token":"'.$_SESSION['token'].'"}\'';
-echo ' hx-on::after-request="document.getElementById(\'globalSearchResults\').classList.toggle(\'show\', this.value.trim().length > 1 && document.getElementById(\'globalSearchResults\').innerHTML.trim() !== \'\')">';
-echo '<div id="globalSearchResults" class="dropdown-menu" style="max-height:70vh; overflow-y:auto; width:320px;"></div>';
-echo '</div>';
-
-echo '<script>
-document.addEventListener("click", function (e) {
-    var wrapper = document.getElementById("globalSearchWrapper");
-    var results = document.getElementById("globalSearchResults");
-    if (!wrapper || !results || wrapper.contains(e.target)) { return; }
-    results.classList.remove("show");
-});
-document.addEventListener("keydown", function (e) {
-    if (e.key !== "Escape") { return; }
-    var input = document.getElementById("globalSearchInput");
-    var results = document.getElementById("globalSearchResults");
-    if (results) { results.classList.remove("show"); }
-    if (input && document.activeElement === input) { input.blur(); }
-});
-</script>';
-
-/**
- * Filter modal
- */
-
-echo '<button id="globalFilter" class="btn btn-default me-1" data-bs-toggle="offcanvas" data-bs-target="#globalFilter">';
-echo '<span class="d-none d-md-inline me-1">Filter</span>';
-echo '<span hx-get="/admin-xhr/counter/read/?count=count_global_filters" hx-trigger="load, updated_global_filter from:body" class="badge bg-primary">0</span>';
-echo '</button>';
-
-
-/**
- * select language
- */
-
-$selected_lang_flag = '<img src="'.$active_lang[$_SESSION['lang']]['flag'].'" style="vertical-align: baseline; width:18px; height:auto;">';
-
-echo '<div class="dropstart me-1">';
-echo '<a class="btn btn-default" href="#" role="button" id="langMenuLink" data-bs-toggle="dropdown" aria-expanded="false">'.$selected_lang_flag.'</a>';
-echo '<ul class="dropdown-menu">';
-foreach($active_lang as $k => $v) {
-    $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
-    echo '<li><a class="dropdown-item" href="?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a></li>';
-}
-echo '</ul>';
-echo '</div>';
-
-/**
- * user menu
- */
-
-$user_avatar = '<img src="/themes/administration/images/avatar.png" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
-$my_avatar_path = '/assets/avatars/' . md5($_SESSION['user_nick']) . '.png';
-if(is_file(SE_PUBLIC.$my_avatar_path)) {
-    $user_avatar = '<img src="'.$my_avatar_path.'" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
-} else {
-    $user_avatar = '<img src="'.se_identicon_data_url($_SESSION['user_mail']).'" class="rounded-circle border img-responsive align-top me-2" width="24" height="24">';
+// uploaded avatar, otherwise an identicon from the mail address
+$avatar_src = '/assets/avatars/' . md5($_SESSION['user_nick']) . '.png';
+if(!is_file(SE_PUBLIC.$avatar_src)) {
+    $avatar_src = se_identicon_data_url($_SESSION['user_mail']);
 }
 
-echo '<div class="dropstart me-1">';
-// the caret shows that the avatar opens a menu (profile, settings, logout) -
-// Bootstrap's own .dropdown-toggle caret would point left here (dropstart)
-echo '<a class="btn btn-default" href="#" role="button" id="userMenuLink" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">'.$user_avatar.'<span class="d-none d-md-inline">'.$_SESSION['user_nick'].'</span><span class="ms-1 small opacity-75">'.$icon['caret_down'].'</span></a>';
-echo '<ul class="dropdown-menu">';
-echo '<li><a class="dropdown-item" href="/profile/">'.$icon['user'].' '.$lang['button_profile'].'</a></li>';
-echo '<li><a class="dropdown-item" href="/admin/users/settings/">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</a></li>';
-// logout only per POST with the CSRF token (see app/routing.php)
-echo '<li><form method="post" action="/logout" class="m-0"><input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'"><button type="submit" class="dropdown-item">'.$icon['power'].' '.$lang['button_logout'].'</button></form></li>';
-echo '</ul>';
-echo '</div>';
+$languages = [];
+foreach($active_lang as $v) {
+    $languages[] = [
+        'sign' => $v['sign'],
+        'name' => $v['name'],
+        'flag' => $v['flag']
+    ];
+}
 
-echo '<button class="btn btn-default ms-1" type="button" onclick="toggleTheme()">
-<span id="toggle-dark"><i class="bi bi-moon"></i></span>
-<span id="toggle-light"><i class="bi bi-sun"></i></span>
-</button>';
-
-echo '<button class="btn btn-default ms-1" type="button" onclick="togglePrivacyBlur()" title="'.$lang['btn_privacy_blur'].'">
-<span id="privacy-blur-off">'.$icon['eye'].'</span>
-<span id="privacy-blur-on" class="text-danger">'.$icon['eye_slash_fill'].'</span>
-</button>';
-
-echo '<button class="btn btn-default ms-1" data-bs-toggle="modal" data-bs-target="#helpModal" 
-hx-get="/admin-xhr/docs/read/?file=start"
-hx-target="#helpModal"
-hx-trigger="click">'.$icon['question_circle'].' <span class="d-none d-md-inline">'.$lang['btn_help'].'</span></button>';
-
-echo '</div>';
-echo '</nav>';
+echo $twig->render('layout/nav-top.twig', [
+    'server_name' => $_SERVER['SERVER_NAME'],
+    'current_lang_flag' => $active_lang[$_SESSION['lang']]['flag'],
+    'languages' => $languages,
+    'avatar_src' => $avatar_src,
+    'user_nick' => $_SESSION['user_nick']
+]);
