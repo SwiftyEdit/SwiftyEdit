@@ -1533,8 +1533,8 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 	/* thumbnail directories */
 	if($tmb_dir == NULL OR $tmb_dir == '') {
 		$dir = '../'.$img_tmb_path;
-		$dir_year = $tmb_dir.'/'.date('Y',time());
-		$tmb_destination = $tmb_dir_year.'/'.date('m',time());
+		$dir_year = $dir.'/'.date('Y',time());
+		$tmb_destination = $dir_year.'/'.date('m',time());
 	} else {
 		$tmb_destination = $tmb_dir;
 	}

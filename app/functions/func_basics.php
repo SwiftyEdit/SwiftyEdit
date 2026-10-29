@@ -554,37 +554,6 @@ function get_avatar_by_username($user_name) {
 
 
 /**
- * send a notification to admin
- */
-
-function mailto_admin($subject,$message) {
-
-	global $prefs_mailer_adr;
-	global $prefs_mailer_name;
-	
-	$subject = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $subject );
-	$message = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $message );
-
-	require_once("lib/Swift/lib/swift_required.php");
-	$transport = Swift_MailTransport::newInstance();
-	$mailer = Swift_Mailer::newInstance($transport);
-	$msg = Swift_Message::newInstance()
-		->setSubject("SwiftyEdit Notification - $subject")
-  		->setFrom(array("$prefs_mailer_adr" => "SwiftyEdit Notification"))
-  		->setTo(array("$prefs_mailer_adr" => "$prefs_mailer_name"))
-  		->setBody("$message", 'text/html')
-  	;
-  	$result = $mailer->send($msg);
-
-	if(!$result) {
-		echo"<hr>ERROR<hr>";
-	}
-}
-
-
-
-
-/**
  * returns the part of the $string
  * before the first occurrence of $separator
  */

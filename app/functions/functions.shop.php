@@ -1888,7 +1888,7 @@ function se_recalculate_stock_sales($items) {
  * @param array $sort key and direction
  * @param integer $start start for pagination
  * @param integer $limit number of entries
- * @return void
+ * @return array
  */
 
 function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
@@ -1965,9 +1965,9 @@ function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
         $orders[0]['cnt_matching_orders'] = $orders_cnt;
 
 	} else {
-		return;
+		return [];
 	}
-		
+
 	return $orders;
 }
 

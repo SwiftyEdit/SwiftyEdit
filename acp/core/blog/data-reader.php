@@ -327,7 +327,3 @@ if(isset($_GET['gallery_thumbs'])) {
     echo se_list_gallery_thumbs($gallery_id);
     exit;
 }
-
-if($_REQUEST['action'] == 'show_post_form') {
-    include 'blog-edit-form.php';
-}

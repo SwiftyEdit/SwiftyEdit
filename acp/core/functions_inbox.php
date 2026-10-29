@@ -54,7 +54,7 @@ function se_inbox_write_message($data) {
         return $message_id;
     }
 
-
+    return 0;
 }
 
 /**
