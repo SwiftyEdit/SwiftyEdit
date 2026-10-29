@@ -1,0 +1,105 @@
+{#
+ # sidebar of the ACP, rendered by acp/core/nav_sidebar.php
+ # (twice per page: desktop sidebar and the offcanvas for small screens)
+ #
+ # section: current module ($se_section), current_path: path of the request
+ #}
+
+{# a single link, active when its module is open #}
+{% macro link(section, current, href, link_icon, label, color = '') %}
+    <li class="sidebar-nav-item">
+        <a class="sidebar-nav-link {{ color }}{% if section == current %} sidebar-nav-active{% endif %}" href="{{ href }}">{{ link_icon|raw }}<span>{{ label }}</span></a>
+    </li>
+{% endmacro %}
+
+{# a collapsible group, open and active when its module is open
+   items: list of {href, label, icon (optional)} - the item with the longest href
+   that the current path starts with is the active one #}
+{% macro group(id, section, current, current_path, group_icon, label, color, items) %}
+    {% set open = (section == current) %}
+    {% set active_href = '' %}
+    {% for item in items %}
+        {% if open and current_path starts with item.href and item.href|length > active_href|length %}
+            {% set active_href = item.href %}
+        {% endif %}
+    {% endfor %}
+    <li class="sidebar-nav-item">
+        <a data-bs-toggle="collapse" href="#{{ id }}" aria-expanded="{{ open ? 'true' : 'false' }}" aria-controls="{{ id }}" class="sidebar-nav-link {{ color }} toggler{% if open %} sidebar-nav-active{% endif %}">{{ group_icon|raw }}<span>{{ label }}</span></a>
+        <div class="collapse{% if open %} show{% endif %}" id="{{ id }}">
+            <ul>
+                {% for item in items %}
+                    <li><a class="sidebar-nav{% if item.href == active_href %} sidebar-nav-active{% endif %}" href="{{ item.href }}">{{ (item.icon ?? icon.dot)|raw }} {{ item.label }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </li>
+{% endmacro %}
+
+{% import _self as m %}
+
+<div class="sidebar-logo">
+    <a href="/admin/dashboard/" title="Dashboard"></a>
+</div>
+
+<ul class="nav">
+    {{ m.link('pages', section, '/admin/pages/', icon.files, lang.nav_btn_pages, 'color-contents') }}
+    {{ m.link('snippets', section, '/admin/snippets/', icon.card_heading, lang.snippets, 'color-contents') }}
+    {{ m.link('blog', section, '/admin/blog/', icon.file_earmark_post, lang.nav_btn_blog, 'color-blog') }}
+
+    {{ m.group('sidebarShop', 'shop', section, current_path, icon.store, lang.nav_btn_shop, 'color-shop', [
+        {href: '/admin/shop/', label: lang.nav_btn_products},
+        {href: '/admin/shop/prices/', label: lang.nav_btn_price_groups},
+        {href: '/admin/shop/features/', label: lang.nav_btn_features},
+        {href: '/admin/shop/options/', label: lang.btn_options},
+        {href: '/admin/shop/filters/', label: lang.filter},
+        {href: '/admin/shop/orders/', label: lang.nav_btn_orders},
+        {href: '/admin/settings/shop/', label: lang.nav_btn_settings, icon: icon.gear}
+    ]) }}
+
+    {{ m.group('sidebarEvents', 'events', section, current_path, icon.calendar_event, lang.nav_btn_events, 'color-events', [
+        {href: '/admin/events/', label: lang.overview},
+        {href: '/admin/events/bookings/', label: lang.nav_btn_bookings}
+    ]) }}
+
+    {{ m.link('addons', section, '/admin/addons/', icon.plugin, lang.nav_btn_addons, 'color-addons') }}
+    {{ m.link('uploads', section, '/admin/uploads/', icon.folder, lang.nav_btn_uploads, 'color-uploads') }}
+
+    {{ m.group('sidebarReactions', 'inbox', section, current_path, icon.inbox, lang.nav_btn_inbox, 'color-reactions', [
+        {href: '/admin/inbox/', label: lang.nav_btn_mails},
+        {href: '/admin/inbox/comments/', label: lang.nav_btn_comments},
+        {href: '/admin/inbox/reactions/', label: lang.nav_btn_reactions}
+    ]) }}
+
+    {{ m.group('sidebarUser', 'users', section, current_path, icon.people, lang.nav_btn_user, 'color-user', [
+        {href: '/admin/users/', label: lang.overview},
+        {href: '/admin/users/groups/', label: lang.nav_btn_user_groups}
+    ]) }}
+
+    {{ m.link('categories', section, '/admin/categories/', icon.bookmarks_fill, lang.categories) }}
+    {{ m.link('tags', section, '/admin/tags/', icon.tags, lang.tags) }}
+
+    {% set settings_items = [
+        {href: '/admin/settings/', label: lang.nav_btn_general},
+        {href: '/admin/settings/user/', label: lang.nav_btn_user},
+        {href: '/admin/settings/posts/', label: lang.nav_btn_posts},
+        {href: '/admin/settings/shop/', label: lang.nav_btn_shop},
+        {href: '/admin/settings/events/', label: lang.nav_btn_events},
+        {href: '/admin/settings/labels/', label: lang.labels},
+        {href: '/admin/settings/api-keys/', label: lang.api_keys_nav}
+    ] %}
+    {# the database page is only available for SQLite #}
+    {% if show_database %}
+        {% set settings_items = settings_items|merge([{href: '/admin/settings/database/', label: lang.nav_btn_database}]) %}
+    {% endif %}
+    {{ m.group('sidebarPrefs', 'settings', section, current_path, icon.gear, lang.nav_btn_settings, '', settings_items) }}
+
+    {{ m.link('update', section, '/admin/update/', icon.arrow_clockwise, lang.update) }}
+</ul>
+
+<div class="sidebar-footer">
+    <ul class="nav">
+        <li class="sidebar-nav-item opacity-50"><a href="/">{{ icon.home|raw }} {{ lang.nav_btn_homepage }}</a></li>
+        {# logout only per POST with the CSRF token (see app/routing.php) - styled like the links around it #}
+        <li class="sidebar-nav-item opacity-50"><form method="post" action="/logout" class="m-0"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="btn btn-link p-0 text-reset text-decoration-none">{{ icon.power|raw }} {{ lang.nav_btn_logout }}</button></form></li>
+    </ul>
+</div>
