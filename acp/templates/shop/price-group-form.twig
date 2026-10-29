@@ -1,0 +1,60 @@
+{#
+ # price group form in /admin/shop/prices/, rendered by the shop data-reader
+ # group.id is 'new' for a new price group
+ #}
+
+<form>
+    <div class="row">
+        <div class="mb-1">
+            <label>{{ lang.label_title }}</label>
+            <input class="form-control" name="title" type="text" value="{{ group.title }}">
+        </div>
+        <div class="col-md-4">
+            <div class="mb-1">
+                <label>{{ lang.label_product_amount }}</label>
+                <input class="form-control" name="amount" type="number" value="{{ group.amount }}">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-1">
+                <label>{{ lang.label_product_unit }}</label>
+                <input class="form-control" name="unit" type="text" value="{{ group.unit }}">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-1">
+                <label>{{ lang.label_product_unit_content }}</label>
+                <input class="form-control" name="unit_content" type="text" value="{{ group.unit_content }}">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <label>{{ lang.label_product_price }} {{ lang.label_product_net }}</label>
+            <input class="form-control prod_price_net" id="price" name="price_net" type="text" value="{{ group.price_net }}">
+        </div>
+        <div class="col-md-2">
+            <div class="mb-1">
+                <label>{{ lang.label_product_tax }}</label>
+                <select name="tax" class="form-control custom-select" id="tax">
+                    {% for key, value in tax_options %}
+                        <option value="{{ key }}"{% if key == group.tax %} selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <label>{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
+            {# filled in by the price calculation script #}
+            <input class="form-control prod_price_gross" id="price_total" name="price_gross" type="text" value="">
+        </div>
+    </div>
+
+    {% include 'shop/volume-discounts.twig' with {
+        discounts: group.volume_discounts,
+        cols: ['col-md-4', 'col-md-4', 'col-md-4']
+    } only %}
+
+    <input type="hidden" name="id" value="{{ group.id }}">
+    <button hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name='csrf_token']" name="save_price" value="{{ group.id }}" class="btn btn-default">{{ group.id == 'new' ? lang.button_save : lang.button_update }}</button>
+</form>

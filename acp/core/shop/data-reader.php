@@ -546,105 +546,38 @@ if(isset($_REQUEST['open_price_group'])) {
 // form for price groups
 if($show_form) {
 
-    $form_tpl = file_get_contents('../acp/templates/form-edit-price-groups.tpl');
-    /* replace all entries from $lang */
-    foreach($lang as $k => $v) {
-        $form_tpl = str_replace('{'.$k.'}', $lang[$k], $form_tpl);
-    }
+    $price_group = $price_group ?? [];
 
-    // buid select for tax
     $tax_options = [
         1 => $se_settings['posts_products_default_tax'],
         2 => $se_settings['posts_products_tax_alt1'],
         3 => $se_settings['posts_products_tax_alt2'],
     ];
 
-    // use default tax if $price_group['tax'] is not set
-    $get_tax = $tax_options[$price_group['tax']] ?? $tax_options[1];
-
-    // Dropdown
-    $select_tax = "<select name='tax' class='form-control custom-select' id='tax'>";
-    foreach ($tax_options as $key => $value) {
-        $selected = ($price_group['tax'] == $key) ? 'selected' : '';
-        $select_tax .= "<option value='{$key}' {$selected}>{$value}</option>";
-    }
-    $select_tax .= '</select>';
-
-    // volume discounts
-
-    $volume_discounts = json_decode($price_group['price_volume_discount'],true);
-    $cnt_volume_discounts = 1;
-    if(is_array($volume_discounts)) {
-        $cnt_volume_discounts = count($volume_discounts);
+    // stored volume discounts plus five empty rows for new entries
+    $volume_discounts = json_decode($price_group['price_volume_discount'] ?? '', true);
+    $volume_discounts = is_array($volume_discounts) ? array_values($volume_discounts) : [];
+    $empty_rows = max(count($volume_discounts), 1) + 5 - count($volume_discounts);
+    for($i=0;$i<$empty_rows;$i++) {
+        $volume_discounts[] = ['amount' => '', 'price' => ''];
     }
 
+    // text fields are stored html-encoded (sanitizeUserInputs), Twig escapes on output
+    $decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
-    $show_price_volume_discount = '<div class="card my-2">';
-    $show_price_volume_discount .= '<div class="card-header">';
-    $show_price_volume_discount .= '<span>'.$lang['label_product_scaling_prices'].'</span>';
-    $show_price_volume_discount .= '<button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseExample">+</button>';
-    $show_price_volume_discount .= '</div>';
-    $show_price_volume_discount .= '<div class="card-body collapse" id="collapseVDP">';
-
-
-    for($i=0;$i<($cnt_volume_discounts+5);$i++) {
-
-        $this_ammount = $volume_discounts[$i]['amount'];
-        $price_net = $volume_discounts[$i]['price'];
-
-        $show_price_volume_discount .= '<div class="calculate_price">';
-        $show_price_volume_discount .= '<div class="row">';
-        $show_price_volume_discount .= '<div class="col-md-4">';
-        $show_price_volume_discount .= '<label>' . $lang['label_product_amount'] . '</label>';
-        $show_price_volume_discount .= '<input class="form-control" name="product_vd_amount[]" type="number" value="'.$this_ammount.'">';
-        $show_price_volume_discount .= '</div>';
-        $show_price_volume_discount .= '<div class="col-md-4">';
-        $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_net'] . '</label>';
-        $show_price_volume_discount .= '<input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="'.$price_net.'">';
-        $show_price_volume_discount .= '</div>';
-        $show_price_volume_discount .= '<div class="col-md-4">';
-        $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_gross'] . '</label>';
-        $show_price_volume_discount .= '<input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">';
-        $show_price_volume_discount .= '</div>';
-        $show_price_volume_discount .= '</div>';
-        $show_price_volume_discount .= '</div>';
-    }
-
-    $show_price_volume_discount .= '</div>';
-    $show_price_volume_discount .= '</div>';
-
-    $form_tpl = str_replace('{title}', $price_group['title'], $form_tpl);
-    $form_tpl = str_replace('{amount}', $price_group['amount'], $form_tpl);
-    $form_tpl = str_replace('{unit}', $price_group['unit'], $form_tpl);
-    $form_tpl = str_replace('{unit_content}', $price_group['unit_content'], $form_tpl);
-    $form_tpl = str_replace('{price_net}', $price_group['price_net'], $form_tpl);
-    $form_tpl = str_replace('{select_tax}', $select_tax, $form_tpl);
-    $form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
-
-    if(isset($price_group['id'])) {
-        $form_tpl = str_replace('{btn_send}', $lang['button_update'], $form_tpl);
-        $form_tpl = str_replace('{id}', $price_group['id'], $form_tpl);
-        $price_group_id = $price_group['id'];
-        $btn_name = $lang['button_update'];
-    } else {
-        $form_tpl = str_replace('{btn_send}', $lang['button_save'], $form_tpl);
-        $form_tpl = str_replace('{id}', 'new', $form_tpl);
-        $price_group_id = 'new';
-        $btn_name = $lang['button_save'];
-    }
-
-    echo '<form>';
-    echo $form_tpl;
-    echo '<button 
-                hx-post="/admin-xhr/shop/write/"
-                hx-trigger="click"
-                hx-swap="none"
-                hx-include="[name=\'csrf_token\']"
-                name="save_price"
-                value="'.$price_group_id.'"
-                class="btn btn-default">'.$btn_name.'</button>';
-    echo '</form>';
-
+    echo $twig->render('shop/price-group-form.twig', [
+        'group' => [
+            'id' => $price_group['id'] ?? 'new',
+            'title' => $decode($price_group['title'] ?? ''),
+            'amount' => $price_group['amount'] ?? '',
+            'unit' => $decode($price_group['unit'] ?? ''),
+            'unit_content' => $decode($price_group['unit_content'] ?? ''),
+            'price_net' => $decode($price_group['price_net'] ?? ''),
+            'tax' => $price_group['tax'] ?? null,
+            'volume_discounts' => $volume_discounts
+        ],
+        'tax_options' => $tax_options
+    ]);
 }
 
 // list categories in sidebar
