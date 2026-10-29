@@ -4,7 +4,6 @@
  * @var $icon array
  * @var $lang array
  * @var $se_settings array
- * @var $bs_row_col3 string template
  */
 
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
@@ -225,7 +224,7 @@ $input_modes = [
     se_print_form_input($input_select_product_cache),
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_modes,$bs_row_col3);
+echo se_print_row($input_modes);
 
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
@@ -241,7 +240,7 @@ $input_modes = [
     se_print_form_input($input_order_withdrawal_days)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}','{col4}'],$input_modes,$bs_row_col4);
+echo se_print_row($input_modes);
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
 
@@ -255,7 +254,7 @@ $input_group = [
     se_print_form_input($input_tax3)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 
 $input_group = [
@@ -264,7 +263,7 @@ $input_group = [
     se_print_form_input($input_select_price_visibility)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';
@@ -285,7 +284,7 @@ $input_group = [
     se_print_form_input($input_shipping_costs_cat3)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 echo '<button type="submit" class="btn btn-primary" name="update_shop_settings" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>';

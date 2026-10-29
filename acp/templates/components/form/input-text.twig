@@ -1,0 +1,14 @@
+{#
+ # text and password input, rendered by tpl_form_input_text()
+ # label, value and texts are printed as passed (raw) - the callers still
+ # build them as html, escaping moves into the callers with the echo pass
+ #}
+<div class="{{ container_class|raw }}">
+    <label for="{{ inputid|raw }}" class="form-label">{{ label|raw }}</label>
+    {% if group_start_text is not empty or group_end_text is not empty %}<div class="input-group">{% endif %}
+    {% if group_start_text is not empty %}<span class="input-group-text">{{ group_start_text|raw }}</span>{% endif %}
+    <input type="{{ type|raw }}"{% if type == 'password' %} autocomplete="new-password"{% endif %} class="{{ input_classes|raw }}" id="{{ inputid|raw }}" name="{{ input_name|raw }}" value="{{ input_value|raw }}">
+    {% if group_end_text is not empty %}<span class="input-group-text">{{ group_end_text|raw }}</span>{% endif %}
+    {% if group_start_text is not empty or group_end_text is not empty %}</div>{% endif %}
+    {% if form_text is not empty %}<div class="form-text">{{ form_text|raw }}</div>{% endif %}
+</div>

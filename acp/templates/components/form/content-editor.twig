@@ -1,0 +1,16 @@
+{#
+ # mount point for a content-format editor plugin, rendered by tpl_form_input_content_editor()
+ # the plugin's JS (window.seContentEditors[editor]) attaches to the mount and
+ # writes the serialized value into the hidden textarea
+ #}
+<div class="{{ container_class|raw }}">
+    <div class="d-flex justify-content-between align-items-center">
+        {{ format_switch|raw }}
+        <button type="button" class="btn btn-sm btn-outline-secondary content-editor-fullscreen-btn" data-bs-toggle="modal" data-bs-target="#contentEditorFullscreenModal" data-editor-target="{{ inputid|raw }}" title="Vollbild">
+            <i class="bi bi-arrows-fullscreen"></i>
+        </button>
+    </div>
+    <label for="{{ inputid|raw }}" class="form-label">{{ label|raw }}</label>
+    <div id="{{ inputid|raw }}" class="content-editor-mount" data-editor="{{ editor }}" data-value-field="{{ inputid|raw }}_value" data-content="{{ content_json }}"></div>
+    <textarea id="{{ inputid|raw }}_value" name="{{ input_name|raw }}" class="content-editor-value" style="display:none"></textarea>
+</div>

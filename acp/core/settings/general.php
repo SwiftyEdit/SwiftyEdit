@@ -291,7 +291,7 @@ $input_group = [
     se_print_form_input($input_page_subtitle)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 echo se_print_form_input($input_page_description);
 echo se_print_form_input($input_page_author);
@@ -305,7 +305,7 @@ $input_group = [
     se_print_form_input($input_pagesort_minlength)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 
 echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
@@ -363,7 +363,7 @@ $input_group = [
     )
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 $input_group = [
     se_print_form_input($input_max_img_width),
@@ -372,7 +372,7 @@ $input_group = [
     se_print_form_input($input_max_tmb_height)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}','{col4}'],$input_group,$bs_row_col4);
+echo se_print_row($input_group);
 
 
 echo se_print_form_input($input_max_upload_filesize);
@@ -405,7 +405,7 @@ $input_group = [
     se_print_form_input($input_select_time_format)
 ];
 
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+echo se_print_row($input_group);
 
 echo '<button type="submit" class="btn btn-primary" name="update_datetime" value="update">'.$lang['btn_update'].'</button>';
 echo '</form>'; // hx-post

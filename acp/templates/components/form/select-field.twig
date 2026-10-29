@@ -1,0 +1,9 @@
+{# select with label, rendered by tpl_form_select() - options: list of {value, label, selected}, raw like input-text.twig #}
+<div class="{{ container_class|raw }}">
+    <label for="{{ inputid }}" class="form-label">{{ label|raw }}</label>
+    <select class="form-select custom-select" name="{{ input_name|raw }}" id="{{ inputid }}">
+        {% for option in options %}
+            <option value="{{ option.value|raw }}"{% if option.selected %} selected{% endif %}>{{ option.label|raw }}</option>
+        {% endfor %}
+    </select>
+</div>

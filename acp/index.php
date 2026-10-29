@@ -586,7 +586,7 @@ if (is_file('../maintenance.html')) {
 </div>
 
 <!-- fullscreen modal for content-format editors (blocks_v1, markdown_v1, ...) -
-     see acp/templates/bs-form-input-content-editor.tpl's fullscreen button and
+     see acp/templates/components/form/content-editor.twig's fullscreen button and
      the content-editor JS glue below, which moves a .content-editor-mount into
      .content-editor-fullscreen-slot on show and moves it back on hide -->
 <div class="modal fade" id="contentEditorFullscreenModal" tabindex="-1" aria-hidden="true">
@@ -695,7 +695,7 @@ foreach ($se_editor_addons as $editor_addon) {
      * Content-format editors (blocks_v1, markdown_v1, ...). Each editor plugin
      * registers itself in window.seContentEditors keyed by its editor id, with
      * mount(el, content) / serialize(el) methods. Mount points are
-     * .content-editor-mount divs (see acp/templates/bs-form-input-content-editor.tpl);
+     * .content-editor-mount divs (see acp/templates/components/form/content-editor.twig);
      * the paired hidden textarea.content-editor-value (looked up via
      * data-value-field, not DOM adjacency - the mount can be moved into the
      * fullscreen modal below) carries the serialized value into the (HTMX)
@@ -768,7 +768,7 @@ foreach ($se_editor_addons as $editor_addon) {
 
     /*
      * Fullscreen toggle (see the .content-editor-fullscreen-btn in
-     * bs-form-input-content-editor.tpl and #contentEditorFullscreenModal
+     * components/form/content-editor.twig and #contentEditorFullscreenModal
      * above): moves the .content-editor-mount into the modal on open, moves
      * it back to its original spot in the form on close. The mount keeps its
      * SortableJS instances etc. intact across the move - only its position in

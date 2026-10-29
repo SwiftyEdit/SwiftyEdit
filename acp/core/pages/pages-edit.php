@@ -510,7 +510,7 @@ $input_group = [
     se_print_form_input($input_text_page_priority)
 ];
 
-$form_tpl .= str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
+$form_tpl .= se_print_row($input_group);
 
 $form_tpl .= se_print_form_input($input_select_page_type);
 
@@ -521,13 +521,11 @@ $form_tpl .= se_print_form_input($input_text_page_funnel_urls);
 
 
 $input_group = [
-    'col-md-3',
     se_print_form_input($input_select_page_redirect),
-    'col-md-9',
     se_print_form_input($input_text_page_redirect),
 ];
 
-$form_tpl .= str_replace(['{classes_1}','{col1}','{classes_2}','{col2}'],$input_group,$bs_row_2_cols);
+$form_tpl .= se_print_row($input_group, ['col-md-3', 'col-md-9']);
 
 $form_tpl .= '</div>'; // info tab
 

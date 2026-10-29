@@ -614,7 +614,7 @@ $input_group = [
     se_print_form_input($input_password_repeat)
 ];
 
-$form_tpl .= str_replace(['{col1}','{col2}'],$input_group,$bs_row_col2);
+$form_tpl .= se_print_row($input_group);
 $form_tpl .= '<hr>';
 
 $form_tpl .= '<div class="alert alert-danger mb-2">';
