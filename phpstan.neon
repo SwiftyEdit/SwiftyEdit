@@ -1,0 +1,30 @@
+# PHPStan configuration for SwiftyEdit
+# Run with: composer analyse
+#
+# The baseline (phpstan-baseline.neon) is local only and not tracked in git.
+# Create or refresh it with: composer analyse:baseline
+
+includes:
+    - phpstan-baseline-loader.php
+
+parameters:
+    level: 0
+    phpVersion: 80300
+    paths:
+        - acp
+        - app
+        - install
+        - public/admin.php
+        - public/admin_xhr.php
+        - public/dispatch.php
+        - public/index.php
+        - public/install.php
+        - public/rss.php
+        - public/assets/themes/default/php
+        - plugins/ace-editor
+        - plugins/se_cash-pay
+        - plugins/se_invoice-pay
+        - plugins/se_paypal-pay
+        - plugins/tinymce-editor
+    excludePaths:
+        - */node_modules/*

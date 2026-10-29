@@ -23,6 +23,9 @@ secrets.json
 test-results
 dev.env
 build_prepare.sh
+phpstan.neon
+phpstan-baseline.neon
+phpstan-baseline-loader.php
 .claude
 .ollamassist
 

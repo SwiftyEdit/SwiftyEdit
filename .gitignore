@@ -110,3 +110,6 @@ test-results/
 public/.htaccess
 
 .claude/settings.local.json
+
+# Local PHPStan baseline, see phpstan.neon
+/phpstan-baseline.neon

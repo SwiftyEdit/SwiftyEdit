@@ -23,6 +23,16 @@ echo "Created directory for build $BUILD"
 rsync -a --delete --exclude-from=.deployignore ./ dist/$BUILD/
 rsync -a config.php dist/$BUILD/config.php
 
+# Rebuild vendor without dev dependencies (e.g. PHPStan). The local vendor
+# directory includes them, and its autoloader would reference them as well.
+cp composer.json composer.lock dist/$BUILD/
+rm -rf dist/$BUILD/vendor
+if ! composer install --working-dir=dist/$BUILD --no-dev --no-scripts --no-interaction --quiet; then
+    echo "Error: composer install --no-dev failed."
+    exit 1
+fi
+rm -f dist/$BUILD/composer.json dist/$BUILD/composer.lock
+
 # Plugins
 mkdir -p dist/$BUILD/plugins/se_cash-pay dist/$BUILD/plugins/se_invoice-pay dist/$BUILD/plugins/se_paypal-pay
 rsync -a plugins/se_cash-pay/ dist/$BUILD/plugins/se_cash-pay/

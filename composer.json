@@ -49,6 +49,11 @@
     "check": [
       "@audit",
       "@validate"
-    ]
+    ],
+    "analyse": "phpstan analyse --memory-limit=1G",
+    "analyse:baseline": "phpstan analyse --memory-limit=1G --generate-baseline --allow-empty-baseline"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.3"
   }
 }
