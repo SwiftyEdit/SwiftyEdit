@@ -1,0 +1,37 @@
+{# post type "l" - link #}
+{% extends 'blog/post-form.twig' %}
+{% import 'blog/macros.twig' as blog %}
+
+{% block nav %}
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_content }}</a></li>
+{% endblock %}
+
+{% block panes %}
+    <div class="tab-pane fade show active" id="content">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label for="inputUrl" class="form-label">{{ lang.label_url }}</label>
+                    <input id="inputUrl" class="form-control" name="post_link" type="text" value="{{ post.post_link }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label for="inputLinkText" class="form-label">{{ lang.label_text }}</label>
+                    <input id="inputLinkText" class="form-control" name="post_link_text" type="text" value="{{ post.post_link_text }}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{ blog.title(post) }}
+                {{ inputs.teaser|raw }}
+            </div>
+            <div class="col-md-6">
+                {{ blog.images(images) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block source %}{% endblock %}

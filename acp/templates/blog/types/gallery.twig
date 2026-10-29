@@ -1,0 +1,62 @@
+{# post type "g" - gallery, images are uploaded into the gallery instead of picked #}
+{% extends 'blog/post-form.twig' %}
+{% import 'blog/macros.twig' as blog %}
+
+{% block nav %}
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_content }}</a></li>
+{% endblock %}
+
+{% block panes %}
+    <div class="tab-pane fade show active" id="content">
+        <div class="row">
+            <div class="col-md-8">
+                {{ blog.title(post) }}
+                {{ inputs.teaser|raw }}
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">{{ lang.label_upload }}</label>
+                    {# uploads need the post id, so the button is disabled for new galleries #}
+                    <button type="button" class="w-100 btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadGalModal"{% if not gallery_upload %} disabled{% endif %}>{{ lang.btn_upload }}</button>
+                    <p class="form-text text-muted">{{ lang.msg_info_gallery_upload }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card p-3 mt-3">
+            <div class="card-header">Uploads</div>
+            <div class="card-body">
+                <div id="listGalThumbs" hx-get="/admin-xhr/blog/read/?gallery_thumbs={{ post.post_id }}" hx-trigger="load, update_gallery_thumbs from:body">Loading thumbnails ...</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block after_form %}
+    {% if gallery_upload %}
+        <div class="modal fade" id="uploadGalModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload into Gallery ID #{{ post.post_id }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="/admin/upload/" id="dropperGallery" class="dropper-form">
+                            <div class="fallback">
+                                <input name="file" type="file" multiple>
+                            </div>
+                            <input type="hidden" name="gal" value="{{ post.post_id }}">
+                            <input type="hidden" name="post_year" value="{{ gallery_upload.post_year }}">
+                            <input type="hidden" name="w" value="{{ gallery_upload.max_img_width }}">
+                            <input type="hidden" name="w_tmb" value="{{ gallery_upload.max_tmb_width }}">
+                            <input type="hidden" name="h" value="{{ gallery_upload.max_img_height }}">
+                            <input type="hidden" name="h_tmb" value="{{ gallery_upload.max_tmb_height }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <input type="hidden" name="post_id" value="{{ post.post_id }}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

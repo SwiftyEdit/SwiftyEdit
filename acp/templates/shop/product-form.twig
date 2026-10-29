@@ -1,16 +1,10 @@
 {#
  # product form in /admin/shop/edit/, /new/ and /duplicate/, rendered by products-edit.php
  # product holds the decoded text fields, everything ending in _options is a list of
- # {value, label, selected} for the select() macro
+ # {value, label, selected} for form.select()
  #}
 
-{% macro select(name, options, id = null, class = 'form-control custom-select') %}
-    <select name="{{ name }}" class="{{ class }}"{% if id %} id="{{ id }}"{% endif %}>
-        {% for option in options %}
-            <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
-        {% endfor %}
-    </select>
-{% endmacro %}
+{% import 'components/form/macros.twig' as form %}
 
 {# drop zone for related products, accessories and addons, filled by the product-select widget #}
 {% macro product_dropper(id, picker_index, items) %}
@@ -185,7 +179,7 @@
 
                             <div class="mb-3">
                                 <label for="snippet_text" class="form-label">{{ lang.label_product_snippet_text }}</label>
-                                {{ m.select('product_textlib_content', snippet_text_options, 'snippet_tex') }}
+                                {{ form.select('product_textlib_content', snippet_text_options, 'snippet_tex') }}
                             </div>
                         </div> <!-- #content -->
 
@@ -195,7 +189,7 @@
                                 <div class="col-6">
                                     <p class="fw-bold">{{ lang.label_product_files_after_sale }}</p>
                                     <label>{{ lang.label_file_select }}</label>
-                                    {{ m.select('file_attachment_as', file_as_options) }}
+                                    {{ form.select('file_attachment_as', file_as_options) }}
                                     <div class="form-text">Downloads: {{ product.file_attachment_as_hits }}</div>
                                     <hr>
                                     <label>{{ lang.label_external_file }}</label>
@@ -204,7 +198,7 @@
                                 <div class="col-6">
                                     <p class="fw-bold">{{ lang.label_product_files_before_sale }}</p>
                                     <label>{{ lang.label_file_select }}</label>
-                                    {{ m.select('file_attachment', file_options) }}
+                                    {{ form.select('file_attachment', file_options) }}
                                     <div class="form-text">Downloads: {{ product.file_attachment_hits }}</div>
                                 </div>
                             </div>
@@ -248,7 +242,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label>{{ lang.label_product_tax }}</label>
-                                    {{ m.select('product_tax', tax_options, 'tax') }}
+                                    {{ form.select('product_tax', tax_options, 'tax') }}
                                 </div>
                                 <div class="col-md-4">
                                     <label>{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
@@ -266,7 +260,7 @@
 
                             <div class="mb-3">
                                 <label>{{ lang.label_product_price_group }}</label>
-                                {{ m.select('product_price_group', price_group_options) }}
+                                {{ form.select('product_price_group', price_group_options) }}
                             </div>
 
                             <hr>
@@ -306,19 +300,19 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{ lang.label_shipping }}</label>
-                                        {{ m.select('product_shipping_mode', shipping_mode_options, 'shipping_mode') }}
+                                        {{ form.select('product_shipping_mode', shipping_mode_options, 'shipping_mode') }}
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{ lang.label_shipping_costs_cat }}</label>
-                                        {{ m.select('product_shipping_cat', shipping_cat_options, 'shipping_mode_cat') }}
+                                        {{ form.select('product_shipping_cat', shipping_cat_options, 'shipping_mode_cat') }}
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{ lang.label_product_delivery_time }}</label>
-                                        {{ m.select('product_delivery_time', delivery_time_options) }}
+                                        {{ form.select('product_delivery_time', delivery_time_options) }}
                                     </div>
                                 </div>
                             </div>
@@ -328,7 +322,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label>{{ lang.label_product_cart_mode }}</label>
-                                    {{ m.select('product_cart_mode', cart_mode_options) }}
+                                    {{ form.select('product_cart_mode', cart_mode_options) }}
                                     <div class="form-check mt-3">
                                         <input class="form-check-input" type="checkbox" name="product_addon_only" value="1" id="addonOnly"{% if addon_only %} checked{% endif %}>
                                         <label class="form-check-label" for="addonOnly">{{ lang.label_product_addon_only }}</label>
@@ -336,7 +330,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label>{{ lang.label_product_pricetag_mode }}</label>
-                                    {{ m.select('product_pricetag_mode', pricetag_mode_options) }}
+                                    {{ form.select('product_pricetag_mode', pricetag_mode_options) }}
                                 </div>
                             </div>
 
@@ -345,7 +339,7 @@
                             <div class="mt-4">
                                 <div class="form-group">
                                     <label>{{ lang.label_product_snippet_price }}</label>
-                                    {{ m.select('product_textlib_price', snippet_price_options) }}
+                                    {{ form.select('product_textlib_price', snippet_price_options) }}
                                 </div>
                             </div>
                         </div> <!-- #prices_delivery -->
@@ -515,7 +509,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-2">
                                         <label>{{ lang.label_main_catalog_page }}</label>
-                                        {{ m.select('main_catalog_slug', main_catalog_options, null, 'custom-select form-control') }}
+                                        {{ form.select('main_catalog_slug', main_catalog_options, null, 'custom-select form-control') }}
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -550,7 +544,7 @@
                             <h5 class="heading-line">RSS</h5>
                             <div class="form-group">
                                 <label>{{ lang.label_activate_rss }}</label>
-                                {{ m.select('rss', rss_options) }}
+                                {{ form.select('rss', rss_options) }}
                             </div>
                             <div class="form-group">
                                 <label>{{ lang.label_rss_url }}</label>
@@ -632,14 +626,14 @@
                 <div class="mb-2 pb-3 border-bottom">
                     <div class="input-group">
                         <label class="input-group-text" for="product_status">{{ lang.label_status }}</label>
-                        {{ m.select('status', status_options, 'product_status') }}
+                        {{ form.select('status', status_options, 'product_status') }}
                     </div>
                 </div>
 
                 <div class="mb-2 pb-3 border-bottom">
                     <div class="input-group">
                         <label class="input-group-text" for="product_lang">{{ lang.label_language }}</label>
-                        {{ m.select('product_lang', lang_options, 'product_lang', 'custom-select form-control') }}
+                        {{ form.select('product_lang', lang_options, 'product_lang', 'custom-select form-control') }}
                     </div>
                 </div>
 
@@ -655,16 +649,7 @@
                 <div class="mb-3 pb-3 border-bottom">
                     <label>{{ lang.label_categories }}</label>
                     <div class="scroll-container scroll-container-resizable">
-                        <div class="list-group">
-                            {% for category in categories %}
-                                <label class="list-group-item d-flex gap-3">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" id="cat{{ loop.index0 }}" name="categories[]" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
-                                    <span class="pt-1 form-checked-content">
-                                        <strong>#{{ category.id }} {{ category.name }}</strong><small class="d-block opacity-75"><img src="{{ category.flag }}" width="16"> {{ category.description }}</small>
-                                    </span>
-                                </label>
-                            {% endfor %}
-                        </div>
+                        {{ form.categories('categories[]', categories) }}
                     </div>
                 </div>
 
@@ -675,14 +660,7 @@
 
                 <div class="mb-3 pb-3 border-bottom">
                     <label>{{ lang.labels }}</label>
-                    <div>
-                        {% for label in labels %}
-                            <div class="form-check form-check-inline" style="border-bottom: 1px solid {{ label.color }}">
-                                <input class="form-check-input" id="label{{ label.id }}" type="checkbox"{% if label.checked %} checked{% endif %} name="labels[]" value="{{ label.id }}">
-                                <label class="form-check-label" for="label{{ label.id }}">{{ label.title }}</label>
-                            </div>
-                        {% endfor %}
-                    </div>
+                    <div>{{ form.labels('labels[]', labels) }}</div>
                 </div>
 
                 {# rarely changed settings: collapsed, current value in the summary row #}
@@ -702,7 +680,7 @@
                         <span class="sidebar-setting-value">{{ comments_summary }}</span>
                     </summary>
                     <div class="sidebar-setting-body">
-                        {{ m.select('comments', comments_options, 'select_comments', 'custom-select form-control') }}
+                        {{ form.select('comments', comments_options, 'select_comments', 'custom-select form-control') }}
                     </div>
                 </details>
                 <details class="sidebar-setting">
@@ -711,7 +689,7 @@
                         <span class="sidebar-setting-value">{{ votings_summary }}</span>
                     </summary>
                     <div class="sidebar-setting-body">
-                        {{ m.select('votings', votings_options, 'select_votings', 'custom-select form-control') }}
+                        {{ form.select('votings', votings_options, 'select_votings', 'custom-select form-control') }}
                     </div>
                 </details>
 

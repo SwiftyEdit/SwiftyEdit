@@ -1,0 +1,51 @@
+{# post type "f" - file download #}
+{% extends 'blog/post-form.twig' %}
+{% import 'blog/macros.twig' as blog %}
+{% import 'components/form/macros.twig' as form %}
+
+{% block nav %}
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{{ lang.nav_btn_intro }}</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_content }}</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#file">{{ lang.nav_btn_files }}</a></li>
+{% endblock %}
+
+{% block panes %}
+    <div class="tab-pane fade show active" id="intro">
+        <div class="row">
+            <div class="col-md-6">
+                {{ blog.title(post) }}
+                {{ inputs.teaser|raw }}
+            </div>
+            <div class="col-md-6">
+                {{ blog.images(images) }}
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="content">
+        {{ inputs.text|raw }}
+    </div>
+    <div class="tab-pane fade" id="file">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label class="form-label">{{ lang.label_file_select }}</label>
+                    {{ form.select('post_file_attachment', file_options) }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">{{ lang.label_file_version }}</label>
+                    <input class="form-control" name="post_file_version" type="text" value="{{ post.post_file_version }}">
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ lang.label_external_file }}</label>
+            <input class="form-control" name="post_file_attachment_external" type="text" value="{{ post.post_file_attachment_external }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ lang.label_license }}</label>
+            <input class="form-control" name="post_file_license" type="text" value="{{ post.post_file_license }}">
+        </div>
+    </div>
+{% endblock %}

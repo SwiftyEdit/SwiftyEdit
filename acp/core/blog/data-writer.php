@@ -267,9 +267,14 @@ if(isset($_POST['save_post'])) {
         $post_uuid = se_generate_uuid();
     }
 
+    // counters are written by the frontend (views, link clicks, downloads) and
+    // are not part of the form - on update they must keep their stored value
+    $counter_cols = ['post_hits', 'post_link_hits', 'post_file_attachment_hits'];
+
     // build the columns from all $cols (loaded above)
     foreach($cols as $k => $v) {
         if($k == 'post_id') {continue;}
+        if($_POST['save_post'] == 'update' && in_array($k, $counter_cols)) {continue;}
         $value = $$k;
         $inputs[$k] = "$value";
     }

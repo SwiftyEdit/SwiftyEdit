@@ -1,0 +1,27 @@
+{# post type "v" - video #}
+{% extends 'blog/post-form.twig' %}
+{% import 'blog/macros.twig' as blog %}
+
+{% block nav %}
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_content }}</a></li>
+{% endblock %}
+
+{% block panes %}
+    <div class="tab-pane fade show active" id="content">
+        <div class="row">
+            <div class="col-md-6">
+                {{ blog.title(post) }}
+                <div class="mb-3">
+                    <label class="form-label">{{ lang.label_url }} (YouTube)</label>
+                    <input class="form-control" name="post_video_url" type="text" value="{{ post.post_video_url }}">
+                </div>
+                {{ inputs.teaser|raw }}
+            </div>
+            <div class="col-md-6">
+                {{ blog.images(images) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block source %}{% endblock %}

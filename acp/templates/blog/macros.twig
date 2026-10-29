@@ -1,0 +1,28 @@
+{#
+ # pieces used by several post types (blog/types/*.twig)
+ #}
+
+{% macro title(post) %}
+    <div class="mb-3">
+        <label class="form-label">{{ lang.label_title }}</label>
+        <input class="form-control" name="post_title" type="text" value="{{ post.post_title }}">
+    </div>
+{% endmacro %}
+
+{# selected images (picker_0) and the image-select widget #}
+{% macro images(images) %}
+    <label class="form-label">{{ lang.label_image }}</label>
+    <div class="images-list">
+        <div id="imgdropper" class="sortable_target list-group mb-3">
+            {% for image in images %}
+                <div class="list-group-item draggable" data-id="{{ image.path }}">
+                    <div class="d-flex flex-row gap-2">
+                        <div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url({{ image.src }});background-size:cover;"></div>
+                        <div class="text-muted small">{{ image.name }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name='csrf_token']" hx-trigger="load, update_image_widget from:body">Loading Images ...</div>
+    </div>
+{% endmacro %}

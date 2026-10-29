@@ -1,0 +1,21 @@
+{# post type "i" - image #}
+{% extends 'blog/post-form.twig' %}
+{% import 'blog/macros.twig' as blog %}
+
+{% block nav %}
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_content }}</a></li>
+{% endblock %}
+
+{% block panes %}
+    <div class="tab-pane fade show active" id="content">
+        <div class="row">
+            <div class="col-md-6">
+                {{ blog.title(post) }}
+                {{ inputs.teaser|raw }}
+            </div>
+            <div class="col-md-6">
+                {{ blog.images(images) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

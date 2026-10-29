@@ -122,20 +122,7 @@ if($product_lang == '' && $default_lang_code != '') {
 $lang_options = $build_options(array_combine($lang_codes, $lang_codes), $product_lang);
 
 /* categories */
-$cats = se_get_categories();
-$array_categories = explode("<->", $product_data['categories'] ?? '');
-$categories = [];
-foreach($cats as $cat) {
-    $description = trim(first_words($decode($cat['cat_description'] ?? ''), 10)) ?: '...';
-    $categories[] = [
-        'id' => (int) $cat['cat_id'],
-        'hash' => $cat['cat_hash'],
-        'name' => $decode($cat['cat_name']),
-        'description' => $description,
-        'flag' => return_language_flag_src($cat['cat_lang']),
-        'checked' => in_array($cat['cat_hash'], $array_categories)
-    ];
-}
+$categories = se_get_category_checklist(explode("<->", $product_data['categories'] ?? ''));
 
 /* release date */
 if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
@@ -484,18 +471,6 @@ if($product_order_quantity_max == 0) {
     $product_order_quantity_max = '';
 }
 
-// labels
-$arr_checked_labels = explode(",", $product_data['labels'] ?? '');
-$labels = [];
-foreach($se_labels as $label) {
-    $labels[] = [
-        'id' => $label['label_id'],
-        'color' => $label['label_color'],
-        'title' => $decode($label['label_title']),
-        'checked' => in_array((string) $label['label_id'], $arr_checked_labels)
-    ];
-}
-
 if(!isset($product_data['type']) OR $product_data['type'] == '') {
     $product_data['type'] = 'p';
 }
@@ -524,7 +499,7 @@ echo $twig->render('shop/product-form.twig', [
     'features' => $features,
     'options' => $options,
     'user_uploads' => (($product_data['file_attachment_user'] ?? '') == '2'),
-    'labels' => $labels,
+    'labels' => se_get_label_checklist(explode(",", $product_data['labels'] ?? '')),
     'hooks' => $hooks,
     'has_variants' => ($cnt_variants > 1),
     'variants' => $variant_links,

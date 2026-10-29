@@ -2055,3 +2055,52 @@ function se_get_opcache_status(): array {
         'start_time' => $stats['start_time'] ?? null,
     ];
 }
+
+/**
+ * categories for the checkbox list in the edit forms (products, blog, events),
+ * rendered by the categories() macro in components/form/macros.twig
+ *
+ * @param array $checked_hashes cat_hash values of the assigned categories
+ * @return array list of id, hash, name, description, flag, checked
+ */
+function se_get_category_checklist(array $checked_hashes): array {
+
+    $categories = [];
+    foreach(se_get_categories() as $cat) {
+        // stored html-encoded, Twig escapes on output
+        $description = html_entity_decode((string) ($cat['cat_description'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $categories[] = [
+            'id' => (int) $cat['cat_id'],
+            'hash' => $cat['cat_hash'],
+            'name' => html_entity_decode((string) $cat['cat_name'], ENT_QUOTES, 'UTF-8'),
+            'description' => trim(first_words($description, 10)) ?: '...',
+            'flag' => return_language_flag_src($cat['cat_lang']),
+            'checked' => in_array($cat['cat_hash'], $checked_hashes)
+        ];
+    }
+    return $categories;
+}
+
+/**
+ * labels for the checkboxes in the edit forms (products, blog, events),
+ * rendered by the labels() macro in components/form/macros.twig
+ *
+ * @param array $checked_ids label_id values of the assigned labels
+ * @return array list of id, color, title, checked
+ */
+function se_get_label_checklist(array $checked_ids): array {
+
+    global $se_labels;
+
+    $labels = [];
+    foreach($se_labels as $label) {
+        $labels[] = [
+            'id' => $label['label_id'],
+            'color' => $label['label_color'],
+            // stored html-encoded, Twig escapes on output
+            'title' => html_entity_decode((string) $label['label_title'], ENT_QUOTES, 'UTF-8'),
+            'checked' => in_array((string) $label['label_id'], $checked_ids)
+        ];
+    }
+    return $labels;
+}

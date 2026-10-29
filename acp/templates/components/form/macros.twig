@@ -1,0 +1,37 @@
+{#
+ # form macros shared by the edit forms (products, blog, events)
+ # {% import 'components/form/macros.twig' as form %}
+ #}
+
+{# options: list of {value, label, selected} #}
+{% macro select(name, options, id = null, class = 'form-control custom-select') %}
+    <select name="{{ name }}" class="{{ class }}"{% if id %} id="{{ id }}"{% endif %}>
+        {% for option in options %}
+            <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+{# categories: list of {id, hash, name, description, flag, checked}, see se_get_category_checklist() #}
+{% macro categories(name, categories) %}
+    <div class="list-group">
+        {% for category in categories %}
+            <label class="list-group-item d-flex gap-3">
+                <input class="form-check-input flex-shrink-0" type="checkbox" id="cat{{ category.id }}" name="{{ name }}" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
+                <span class="pt-1 form-checked-content">
+                    <strong>#{{ category.id }} {{ category.name }}</strong><small class="d-block opacity-75"><img src="{{ category.flag }}" width="16"> {{ category.description }}</small>
+                </span>
+            </label>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{# labels: list of {id, color, title, checked}, see se_get_label_checklist() #}
+{% macro labels(name, labels) %}
+    {% for label in labels %}
+        <div class="form-check form-check-inline" style="border-bottom: 1px solid {{ label.color }}">
+            <input class="form-check-input" id="label{{ label.id }}" type="checkbox"{% if label.checked %} checked{% endif %} name="{{ name }}" value="{{ label.id }}">
+            <label class="form-check-label" for="label{{ label.id }}">{{ label.title }}</label>
+        </div>
+    {% endfor %}
+{% endmacro %}
