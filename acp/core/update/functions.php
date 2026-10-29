@@ -419,11 +419,13 @@ function mkdir_recursive($dir, $chmod=0755){
  */
 function update_database() {
 
-    $all_tables = glob("../install/contents/*.php");
+    $all_tables = glob(__DIR__."/../../../install/contents/*.php");
 
     for($i=0;$i<count($all_tables);$i++) {
 
-        unset($db_path,$table_name,$database,$table_type);
+        // reset, so no values from the previous table file are carried over
+        $db_path = $table_name = $database = $table_type = null;
+        $cols = [];
 
         include $all_tables[$i]; // returns $cols and $table_name
 

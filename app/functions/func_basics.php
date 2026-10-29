@@ -44,7 +44,7 @@ function buffer_script(string $script, ?string $parameters=NULL) {
     $plugin_file = SE_ROOT.'plugins/'.basename($script).'/index.php';
 
 	if($parameters !== NULL) {
-		$parameter = parse_str(html_entity_decode($parameters),$output);
+		parse_str(html_entity_decode($parameters),$output);
         foreach($output as $plugin_key => $plugin_value) {
             // the query is exposed to the plugin as local variables - only plain
             // names, and never one of this function's own variables (e.g. a
@@ -209,7 +209,7 @@ function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
     $mod_str = '';
 
 	if($params !== NULL) {
-		$parameter = parse_str(html_entity_decode($params),$output);
+		parse_str(html_entity_decode($params),$output);
 	}
 	
     // $mod comes from content ([mod=name]) - a plain folder name only
