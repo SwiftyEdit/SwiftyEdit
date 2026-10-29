@@ -8,10 +8,14 @@ includes:
     - phpstan-baseline-loader.php
 
 parameters:
-    level: 0
+    level: 5
     phpVersion: 80300
     bootstrapFiles:
         - phpstan-bootstrap.php
+    # Medoo's class docblock has IDE-only @method overloads (e.g. select()
+    # with 4 required parameters); its own stub replaces them for PHPStan
+    stubFiles:
+        - vendor/catfan/medoo/phpstan/Medoo.stub
     dynamicConstantNames:
         - SE_INCLUDE_PATH
         - DB_PREFIX

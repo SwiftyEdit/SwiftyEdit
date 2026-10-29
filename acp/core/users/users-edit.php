@@ -1,11 +1,23 @@
 <?php
 
 /**
- * @var object $db_user
- * @var $lang array
+ * @var \Medoo\Medoo $db_user
+ * @var array $lang
+ * @var array $icon
  */
 
 $writer_uri = '/admin-xhr/users/write/';
+
+// defaults for new users - for existing users, the fields are set
+// from the database row below (empty values are skipped there)
+$get_user_id = null;
+$user_nick = $user_firstname = $user_lastname = $user_mail = '';
+$user_company = $user_street = $user_street_nbr = $user_zip = $user_city = '';
+$user_class = $user_drm = $user_verified = $user_verified_by_admin = '';
+$ba_company = $ba_firstname = $ba_lastname = $ba_mail = $ba_street = $ba_street_nbr = '';
+$ba_zip = $ba_city = $ba_country = $ba_tax_number = $ba_tax_id_number = '';
+$sa_company = $sa_firstname = $sa_lastname = $sa_mail = $sa_street = $sa_street_nbr = '';
+$sa_zip = $sa_city = $sa_country = $sa_tax_number = $sa_tax_id_number = '';
 
 if(isset($_POST['user_id']) && is_numeric($_POST['user_id'])) {
     $get_user_id = (int) $_POST['user_id'];
@@ -459,7 +471,7 @@ if(is_array($get_user ?? null)) {
     $account_tpl .= '</div>';
 }
 
-$form_tpl .= '<form hx-encoding="multipart/form-data">';
+$form_tpl = '<form hx-encoding="multipart/form-data">';
 
 $form_tpl .= '<div class="row">';
 $form_tpl .= '<div class="col-md-9">';
@@ -515,10 +527,6 @@ if(is_array($all_groups)) {
         $checked = "";
         if(in_array("$get_user_id", $array_group_user)) {
             $checked = "checked";
-        }
-
-        if($sub == "new") {
-            $checked = "";
         }
 
         $input_check_this_group = [

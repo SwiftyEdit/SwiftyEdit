@@ -2,7 +2,7 @@
 
 /**
  * global variables
- * @var object $db_user
+ * @var \Medoo\Medoo $db_user
  * @var array $icon
  * @var array $lang
  */
@@ -252,6 +252,7 @@ if($_REQUEST['action'] == "list_usergroups") {
 }
 
 if($_REQUEST['action'] == "list_active_searches") {
+    $btn_remove_keyword = '';
     if(isset($_SESSION['users_text_filter']) AND $_SESSION['users_text_filter'] != "") {
         unset($all_filter);
         $all_filter = explode(" ", $_SESSION['users_text_filter']);
@@ -263,7 +264,7 @@ if($_REQUEST['action'] == "list_active_searches") {
         }
     }
 
-    if(isset($btn_remove_keyword)) {
+    if($btn_remove_keyword != '') {
         echo '<div class="d-inline">';
         echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
         echo '</div><hr>';
@@ -273,6 +274,8 @@ if($_REQUEST['action'] == "list_active_searches") {
 /**
  * show the form
  */
+
+$show_form = false;
 
 if($_REQUEST['action'] == 'show_groups_form') {
     $show_form = true;

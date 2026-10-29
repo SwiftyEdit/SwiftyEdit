@@ -2,6 +2,11 @@
 //error_reporting(E_ALL);
 
 /**
+ * @var \Medoo\Medoo $db_user
+ * @var array $lang
+ */
+
+/**
  * pagination
  */
 
@@ -190,7 +195,7 @@ if(isset($_POST['delete_user_group'])) {
         "group_id" => $delete_id
     ]);
     if(($delete_group->rowCount()) > 0) {
-        record_log($_SESSION['user_nick'],"deleted usergroup id: $editgroup","10");
+        record_log($_SESSION['user_nick'],"deleted usergroup id: $delete_id","10");
         header( "HX-Trigger: update_groups_list");
     }
 }
