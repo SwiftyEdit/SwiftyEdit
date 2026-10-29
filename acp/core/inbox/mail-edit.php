@@ -4,7 +4,7 @@ echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['mailbox'].' '.$lang['nav_btn_mails'];
 echo '</div>';
 
-require '../acp/core/functions_inbox.php';
+require __DIR__.'/../functions_inbox.php';
 
 /**
  * send e-mail

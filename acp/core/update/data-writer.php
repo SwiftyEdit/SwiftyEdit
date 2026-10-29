@@ -6,7 +6,7 @@
 
 const INSTALLER = TRUE;
 require_once __DIR__.'/functions.php';
-require_once '../install/php/functions.php';
+require_once __DIR__.'/../../../install/php/functions.php';
 
 // Reachable directly via /admin-xhr/update/write/ regardless of whether
 // update/router.php's own gate is shown - every branch below downloads,

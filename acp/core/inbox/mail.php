@@ -5,7 +5,7 @@ echo $icon['mailbox'].' '.$lang['nav_btn_mails'];
 echo '<a href="/admin/inbox/mail/edit/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
 echo '</div>';
 
-require '../acp/core/functions_inbox.php';
+require __DIR__.'/../functions_inbox.php';
 
 $section_url = '/admin/inbox/mail/edit/';
 

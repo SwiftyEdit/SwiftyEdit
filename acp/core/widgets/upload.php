@@ -4,7 +4,7 @@ se_session_start();
 // production: don't show errors, but log serious ones (fatal, parse, exceptions)
 error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', '0');
-require '../vendor/autoload.php';
+require __DIR__.'/../../../vendor/autoload.php';
 use Medoo\Medoo;
 
 if($_SESSION['user_class'] != "administrator"){
@@ -12,7 +12,7 @@ if($_SESSION['user_class'] != "administrator"){
     die("PERMISSION DENIED!");
 }
 
-require '../config.php';
+require __DIR__.'/../../../config.php';
 if(is_file('../'.SE_CONTENT.'/config.php')) {
     include '../'.SE_CONTENT.'/config.php';
 }
@@ -48,7 +48,7 @@ if (in_array($branding_target, ['logo', 'thumbnail', 'favicon'], true)) {
         http_response_code(403);
         exit;
     }
-    require_once '../acp/core/settings/branding-widget.php';
+    require_once __DIR__.'/../settings/branding-widget.php';
 
     $result = se_handle_branding_upload(
         $branding_target,

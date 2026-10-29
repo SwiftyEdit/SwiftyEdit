@@ -18,7 +18,7 @@ function se_save_page($data) {
     $sanitized_data = se_freeze_editor_content($sanitized_data);
 
     // get all cols from the installer
-    require '../install/contents/se_pages.php';
+    require __DIR__.'/../../install/contents/se_pages.php';
 
     // add custom cols
     foreach($custom_fields as $f) {
@@ -73,7 +73,7 @@ function se_update_page($data,$id) {
     $sanitized_data = se_freeze_editor_content($sanitized_data);
 
     // get all cols from the installer
-    require '../install/contents/se_pages.php';
+    require __DIR__.'/../../install/contents/se_pages.php';
 
     // add custom cols
     foreach($custom_fields as $f) {
@@ -124,7 +124,7 @@ function se_save_preview_page($data) {
     $sanitized_data = se_freeze_editor_content($sanitized_data);
     $page_id_original = $sanitized_data['editpage'];
     // get all cols from the installer
-    require '../install/contents/se_pages.php';
+    require __DIR__.'/../../install/contents/se_pages.php';
 
     // add custom cols
     foreach($custom_fields as $f) {

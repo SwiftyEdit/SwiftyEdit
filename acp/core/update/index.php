@@ -27,7 +27,7 @@ echo '<div class="ms-auto">core updates build: <code>'.$se_version['build'].'</c
 echo '</div>';
 
 const INSTALLER = TRUE;
-require '../install/php/functions.php';
+require __DIR__.'/../../../install/php/functions.php';
 require __DIR__.'/functions.php';
 
 if(($se_backend_updates ?? true) === false) {
