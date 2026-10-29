@@ -41,14 +41,10 @@
       "@buildclean",
       "@buildprepare"
     ],
-    "audit": "composer audit",
-    "outdated": "composer outdated",
     "outdated:direct": "composer outdated --direct",
-    "licenses": "composer licenses",
-    "validate": "composer validate --strict",
     "check": [
-      "@audit",
-      "@validate"
+      "@composer audit",
+      "@composer validate --strict"
     ],
     "analyse": "phpstan analyse --memory-limit=1G",
     "analyse:baseline": "phpstan analyse --memory-limit=1G --generate-baseline --allow-empty-baseline",

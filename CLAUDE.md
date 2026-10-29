@@ -119,6 +119,9 @@ Example: `app.php` fires `page.display.after` after rendering.
   - First run: `npx playwright install`.
 - **Build a release:** `composer build` (runs `build_prepare.sh` → `dist/<build>/`; needs `jq`).
 - **Composer checks:** `composer check` (audit + validate), `composer outdated`.
+- **Static analysis (PHPStan, level 5):** `composer analyse` (new findings only, against the
+  local untracked `phpstan-baseline.neon`), `composer analyse:count` (all findings by type),
+  `composer analyse:baseline` (refresh the baseline after cleanups).
 - Version info: `version.json`.
 
 ## Known gotchas
