@@ -206,6 +206,8 @@ if(isset($_POST['save_post'])) {
         $id = $db_posts->id();
         record_log($_SESSION['user_nick'],"new event id: $id","6");
         show_toast($lang['msg_success_new_record'],'success');
+        // continue on the edit form, a second click on "save" must update instead of insert again
+        header( "HX-Redirect: /admin/events/edit/$id/");
     }
 
     se_set_content_tags('event', $id, explode(',', $_POST['content_tags'] ?? ''));

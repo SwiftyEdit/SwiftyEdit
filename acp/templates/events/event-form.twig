@@ -1,0 +1,231 @@
+{#
+ # event form in /admin/events/edit/ and /new/, rendered by events-edit.php
+ # event holds the decoded text fields, inputs the fields built by se_print_form_input()
+ #}
+
+{% import 'components/form/macros.twig' as form %}
+
+<form>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{{ lang.nav_btn_intro }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_content }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#info">{{ lang.nav_btn_info }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prices">{{ lang.nav_btn_prices }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{{ lang.nav_btn_seo }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{{ lang.nav_btn_settings }}</a></li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+
+                        <div class="tab-pane fade show active" id="intro">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ lang.label_title }}</label>
+                                        <input class="form-control" name="title" type="text" value="{{ event.title }}">
+                                    </div>
+                                    {{ inputs.teaser|raw }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.images(images) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content">
+                            {{ inputs.text|raw }}
+                        </div>
+
+                        <div class="tab-pane fade" id="info">
+                            <fieldset>
+                                <legend>{{ lang.label_event_dates }}</legend>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text">{{ lang.start }}</span>
+                                            <input class="dp form-control" name="event_start" type="datetime-local" value="{{ event_start }}">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ lang.end }}</span>
+                                            <input class="dp form-control" name="event_end" type="datetime-local" value="{{ event_end }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>{{ lang.label_location }}</legend>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ lang.label_street }}</label>
+                                            <input class="form-control" name="event_street" type="text" value="{{ event.event_street }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ lang.label_nr }}</label>
+                                            <input class="form-control" name="event_street_nbr" type="text" value="{{ event.event_street_nbr }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ lang.label_zip }}</label>
+                                            <input class="form-control" name="event_zip" type="text" value="{{ event.event_zip }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ lang.label_town }}</label>
+                                            <input class="form-control" name="event_city" type="text" value="{{ event.event_city }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>{{ lang.label_guestlist }}</legend>
+                                <div class="mb-3">
+                                    {{ inputs.guestlist|raw }}
+                                </div>
+                                <hr>
+                                {# 2 = show the number of guests, 1 = hide it #}
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="2" id="event_guestlist_public_nbr_yes"{% if guestlist_public_nbr == 2 %} checked{% endif %}>
+                                    <label class="form-check-label" for="event_guestlist_public_nbr_yes">{{ lang.label_guestlist_show_number }}</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="event_guestlist_public_nbr" value="1" id="event_guestlist_public_nbr_no"{% if guestlist_public_nbr == 1 %} checked{% endif %}>
+                                    <label class="form-check-label" for="event_guestlist_public_nbr_no">{{ lang.label_guestlist_hide_number }}</label>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ lang.label_guestlist_limit }}</label>
+                                    <input class="form-control" name="event_guestlist_limit" type="text" value="{{ event.event_guestlist_limit }}">
+                                </div>
+                            </fieldset>
+                        </div> <!-- #info -->
+
+                        <div class="tab-pane fade" id="prices">
+                            <label class="form-label">{{ lang.label_price_note }}</label>
+                            {{ inputs.price_note|raw }}
+                        </div>
+
+                        <div class="tab-pane fade" id="meta">
+                            <div class="mb-3">
+                                <label class="form-label">{{ lang.label_title }}</label>
+                                <input class="form-control" name="meta_title" type="text" value="{{ event.meta_title }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ lang.label_description }}</label>
+                                <textarea class="form-control count-chars" rows="4" name="meta_description">{{ event.meta_description }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ lang.label_keywords }}</label>
+                                <input type="text" class="form-control tags" name="tags" value="{{ event.tags }}">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label class="form-label">{{ lang.label_pages_permalink }}</label>
+                                        <input type="text" id="disabledTextInput" class="form-control" value="{{ se_base_url }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label class="form-label">{{ lang.label_main_category_page }}</label>
+                                        {{ form.select('main_category_slug', main_category_options, null, 'custom-select form-control') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label class="form-label">{{ lang.label_slug }}</label>
+                                        <input class="form-control" name="slug" type="text" value="{{ event.slug }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Canonical URL {{ canonical_docs_link|raw }}</label>
+                                <input class="form-control" name="canonical_url" type="text" value="{{ event.canonical_url }}">
+                            </div>
+                        </div> <!-- #meta -->
+
+                        <div class="tab-pane fade" id="prefs">
+                            <div class="mb-3">
+                                <label class="form-label">{{ lang.label_author }}</label>
+                                <input class="form-control" name="author" type="text" value="{{ event.author }}">
+                            </div>
+                            <fieldset>
+                                <legend>RSS</legend>
+                                <div class="mb-3">
+                                    {{ inputs.rss|raw }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ lang.label_rss_url }}</label>
+                                    <input class="form-control" name="rss_url" type="text" value="{{ event.rss_url }}">
+                                </div>
+                            </fieldset>
+                        </div> <!-- #prefs -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="mb-1 pb-1 border-bottom">
+                    {{ inputs.language|raw }}
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    <label>{{ lang.label_categories }}</label>
+                    <div class="scroll-container" style="max-height: 150px;">
+                        {{ form.categories('categories[]', categories) }}
+                    </div>
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    <label>{{ lang.label_tags }}</label>
+                    <input type="text" class="form-control tags" name="content_tags" value="{{ content_tags }}">
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    <label>{{ lang.label_releasedate }}</label>
+                    <input class="dp form-control" name="releasedate" type="datetime-local" value="{{ releasedate }}">
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    <label>{{ lang.label_priority }}</label>
+                    <input type="number" name="priority" value="{{ event.priority }}" class="form-control">
+                    <div class="form-check">
+                        <input class="form-check-input" id="fix" type="checkbox" name="fixed" value="fixed"{% if event.fixed == '1' %} checked{% endif %}>
+                        <label class="form-check-label" for="fix">{{ lang.label_fixed }}</label>
+                    </div>
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    {{ inputs.status|raw }}
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    {{ inputs.comments|raw }}
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    {{ inputs.votings|raw }}
+                </div>
+                <div class="mb-2 pb-1 border-bottom">
+                    <label>{{ lang.labels }}</label>
+                    <div>{{ form.labels('labels[]', labels) }}</div>
+                </div>
+                <input name="type" type="hidden" value="e">
+                <input name="id" type="hidden" value="{{ event.id }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="date" value="{{ event.date }}">
+                <button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="{{ mode == 'new' ? 'save' : 'update' }}">{{ mode == 'new' ? lang.save : lang.update }}</button>
+            </div>
+        </div>
+    </div>
+</form>

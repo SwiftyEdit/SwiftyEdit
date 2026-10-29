@@ -1,6 +1,7 @@
 {# post type "m" - message #}
 {% extends 'blog/post-form.twig' %}
 {% import 'blog/macros.twig' as blog %}
+{% import 'components/form/macros.twig' as form %}
 
 {% block nav %}
     <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{{ lang.nav_btn_intro }}</a></li>
@@ -15,7 +16,7 @@
                 {{ inputs.teaser|raw }}
             </div>
             <div class="col-md-6">
-                {{ blog.images(images) }}
+                {{ form.images(images) }}
             </div>
         </div>
     </div>
