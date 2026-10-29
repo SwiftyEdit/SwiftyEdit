@@ -2,7 +2,10 @@
 
 /**
  * @var array $lang
+ * @var array $icon
  * @var object $db_posts
+ * @var object $db_content
+ * @var object $twig
  * @var string $query - the current url
  */
 
@@ -10,10 +13,10 @@ $writer_uri = '/admin-xhr/shop/write/';
 $form_header_mode = $lang['btn_new'];
 $my_user_presets = se_get_my_presets();
 
-$btn_save = '<button type="submit" hx-trigger="click" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">'.$lang['save'].'</button>';
-$btn_update = '';
-$btn_delete = '';
-$submit_variant_btn = '';
+// edit mode shows the update and delete buttons, otherwise a plain save button
+$is_edit = false;
+$show_variant_button = false;
+$get_product_id = null;
 
 // check if last part of url is an id
 $path = parse_url($query, PHP_URL_PATH);
@@ -21,191 +24,118 @@ $segments = explode('/', rtrim($path, '/'));
 $lastSegment = end($segments);
 if(is_numeric($lastSegment)) {
     $get_product_id = (int) $lastSegment;
-    $form_mode = $get_product_id;
-    $btn_submit_text = $lang['update'];
+    $is_edit = true;
     $form_header_mode = $lang['edit'].' #'.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
 if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
-    $form_mode = $get_product_id;
-    $btn_submit_text = $lang['update'];
+    $is_edit = true;
     $form_header_mode = $lang['edit'].' #'.$get_product_id;
-    $btn_save = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-    $btn_delete = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="'.$get_product_id.'">'.$lang['btn_delete'].'</button>';
 }
 
 if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $get_product_id = (int) $_POST['duplicate_id'];
-    $form_mode = 'new';
-    $btn_submit_text = $lang['duplicate'];
     $form_header_mode = $lang['duplicate'].' #'.$get_product_id;
-    $submit_variant_btn = '<button type="submit" hx-post="'.$writer_uri.'" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="'.$get_product_id.'">'.$lang['submit_variant'].'</button>';
+    $show_variant_button = true;
 }
 
+$product_data = null;
 if(is_int($get_product_id)) {
-
     $product_data = $db_posts->get("se_products","*",[
         "id" => "$get_product_id"
     ]);
-
-    foreach($product_data as $k => $v) {
-        if($v == '') {
-            continue;
-        }
-        $$k = htmlentities(stripslashes($v), ENT_QUOTES, "UTF-8");
-    }
-
-} else {
-    $btn_submit_text = $lang['save'];
-    $form_mode = 'new';
 }
 
 $record_data = $product_data ?? [];
 
-if($product_data['type'] == 'v') {
+if(($product_data['type'] ?? '') == 'v') {
     // hide the submit as variant button
-    $submit_variant_btn = '';
+    $show_variant_button = false;
     $form_header_mode .= ' ('.$lang['product_type_variant'].')';
 } else {
     $form_header_mode .= ' ('.$lang['product_type_main'].')';
 }
-
 
 if(!is_array($product_data)) {
     $product_data = [];
     $product_data['product_amount'] = 1;
 }
 
-$editor_teaser = se_print_form_input([
-    "input_name" => "teaser",
-    "input_value" => $product_data['teaser'],
-    "label" => $lang['label_teaser'],
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
+// the editors get the stored (html-encoded) values, like before
+$editor_fields = [
+    'teaser' => $lang['label_teaser'],
+    'text' => '',
+    'text_additional1' => '',
+    'text_additional2' => '',
+    'text_additional3' => '',
+    'text_additional4' => '',
+    'text_additional5' => ''
+];
+$editors = [];
+foreach($editor_fields as $field => $label) {
+    $editors[$field] = se_print_form_input([
+        "input_name" => $field,
+        "input_value" => $product_data[$field] ?? null,
+        "label" => $label,
+        "type" => "textarea",
+        "mode" => "wysiwyg"
+    ]);
+}
 
-$editor_text = se_print_form_input([
-    "input_name" => "text",
-    "input_value" => $product_data['text'],
-    "label" => '',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
+// text fields are stored html-encoded (se_prepareProductData), Twig escapes on output
+$decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
-$editor_text_a1 = se_print_form_input([
-    "input_name" => "text_additional1",
-    "input_value" => $product_data['text_additional1'],
-    "label" => '',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
-
-$editor_text_a2 = se_print_form_input([
-    "input_name" => "text_additional2",
-    "input_value" => $product_data['text_additional2'],
-    "label" => '',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
-
-$editor_text_a3 = se_print_form_input([
-    "input_name" => "text_additional3",
-    "input_value" => $product_data['text_additional3'],
-    "label" => '',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
-
-$editor_text_a4 = se_print_form_input([
-    "input_name" => "text_additional4",
-    "input_value" => $product_data['text_additional4'],
-    "label" => '',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
-
-$editor_text_a5 = se_print_form_input([
-    "input_name" => "text_additional5",
-    "input_value" => $product_data['text_additional5'],
-    "label" => '',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-]);
+// options for the select() macro in the template, $selected is compared as string
+$build_options = static function(array $values, $selected) use ($decode) {
+    $options = [];
+    foreach($values as $value => $label) {
+        $options[] = [
+            'value' => $decode($value),
+            'label' => $decode($label),
+            'selected' => ((string) $value === (string) $selected)
+        ];
+    }
+    return $options;
+};
 
 // select main catalog page
-$all_catalog_pages = [];
 $all_catalog_pages = $db_content->select("se_pages","page_permalink",[
     "page_posts_types" => "p"
 ]);
 array_unshift($all_catalog_pages, "default");
 sort($all_catalog_pages);
-$product_main_catalog_slug = '';
-if(isset($product_data['main_catalog_slug'])) {
-    $product_main_catalog_slug = $product_data['main_catalog_slug'];
-}
-
-$select_main_catalog_page  = '<select name="main_catalog_slug" class="custom-select form-control">';
+$main_catalog_options = [];
 foreach($all_catalog_pages as $permalink) {
-    $label = $permalink;
-    if($permalink == 'default') {
-        $label = $lang['label_use_default'];
-    }
-    $select_main_catalog_page .= "<option value='$permalink'".($product_main_catalog_slug == "$permalink" ? 'selected="selected"' :'').">$label</option>";
+    $main_catalog_options[] = [
+        'value' => $decode($permalink),
+        'label' => ($permalink == 'default') ? $lang['label_use_default'] : $decode($permalink),
+        'selected' => (($product_data['main_catalog_slug'] ?? '') == "$permalink")
+    ];
 }
-$select_main_catalog_page .= '</select>';
-
-
 
 /* language */
-$product_lang = '';
-if(isset($product_data['product_lang'])) {
-    $product_lang = $product_data['product_lang'];
-}
-
+$product_lang = $product_data['product_lang'] ?? '';
 if($product_lang == '' && $default_lang_code != '') {
     $product_lang = $default_lang_code;
 }
-
-$select_lang  = '<select id="product_lang" name="product_lang" class="custom-select form-control">';
-foreach($lang_codes as $lang_code) {
-    $select_lang .= "<option value='$lang_code'".($product_lang == "$lang_code" ? 'selected="selected"' :'').">$lang_code</option>";
-}
-$select_lang .= '</select>';
-
-
+$lang_options = $build_options(array_combine($lang_codes, $lang_codes), $product_lang);
 
 /* categories */
-
 $cats = se_get_categories();
-$cnt_cats = count($cats);
-
-$array_categories = array();
-$checkboxes_cat = '<div class="list-group">';
-for($i=0;$i<$cnt_cats;$i++) {
-    $category = $cats[$i]['cat_name'];
-    if(isset($product_data['categories'])) {
-        $array_categories = explode("<->", $product_data['categories']);
-    }
-
-    $checked = "";
-    if(in_array($cats[$i]['cat_hash'], $array_categories)) {
-        $checked = "checked";
-    }
-    $lang_flag = '<img src="'.return_language_flag_src($cats[$i]['cat_lang']).'" width="16">';
-    $description = trim(first_words($cats[$i]['cat_description'] ?? '', 10)) ?: '...';
-    $id = (int)$cats[$i]['cat_id'];
-
-    $checkboxes_cat .= '<label class="list-group-item d-flex gap-3">';
-    $checkboxes_cat .= '<input class="form-check-input flex-shrink-0" type="checkbox" id="cat'.$i.'" name="categories[]" value="'.$cats[$i]['cat_hash'].'" '.$checked.'>';
-    $checkboxes_cat .= '<span class="pt-1 form-checked-content">';
-    $checkboxes_cat .= '<strong>#'.$id.' '.$category.'</strong><small class="d-block opacity-75">'.$lang_flag.' '.$description.'</small>';
-    $checkboxes_cat .= '</span>';
-    $checkboxes_cat .= '</label>';
+$array_categories = explode("<->", $product_data['categories'] ?? '');
+$categories = [];
+foreach($cats as $cat) {
+    $description = trim(first_words($decode($cat['cat_description'] ?? ''), 10)) ?: '...';
+    $categories[] = [
+        'id' => (int) $cat['cat_id'],
+        'hash' => $cat['cat_hash'],
+        'name' => $decode($cat['cat_name']),
+        'description' => $description,
+        'flag' => return_language_flag_src($cat['cat_lang']),
+        'checked' => in_array($cat['cat_hash'], $array_categories)
+    ];
 }
-$checkboxes_cat .= '</div>';
 
 /* release date */
 if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
@@ -215,68 +145,20 @@ if(isset($product_data['releasedate']) AND $product_data['releasedate'] > 0) {
 }
 // future dates are not allowed, see se_prepareProductData()
 $releasedate_max = date('Y-m-d\TH:i', time());
-$summary_releasedate = se_format_datetime(strtotime($releasedate));
-
-
-/* priority */
-$select_priority = "<select name='priority' class='form-control custom-select'>";
-for($i=1;$i<11;$i++) {
-    $option_add = '';
-    $sel_prio = '';
-    if($i == 1) {
-        $option_add = ' ('.$lang['label_priority_bottom'].')';
-    }
-    if($i == 10) {
-        $option_add = ' ('.$lang['label_priority_top'].')';
-    }
-    if(isset($product_data['priority']) AND $product_data['priority'] == $i) {
-        $sel_prio = 'selected';
-    }
-    $select_priority .= '<option value="'.$i.'" '.$sel_prio.'>'.$i.' '.$option_add.'</option>';
-}
-$select_priority .= '</select>';
-
-
-
-/* fix post on top */
-$checked_fixed = '';
-if($product_data['fixed'] == '1') {
-    $checked_fixed = 'checked';
-}
-$checkbox_fixed  = '<div class="form-check">';
-$checkbox_fixed .= '<input class="form-check-input" id="fix" type="checkbox" name="fixed" value="fixed" '.$checked_fixed.'>';
-$checkbox_fixed .= '<label class="form-check-label" for="fix">'.$lang['label_fixed'].'</label>';
-$checkbox_fixed .= '</div>';
-
 
 /* image widget */
-$images = se_get_all_media_data('image');
-$images = se_unique_multi_array($images,'media_file');
-$array_images = explode("<->", $product_data['images']);
-$draggable = '';
-if(is_array($array_images)) {
-    $array_images = array_filter($array_images);
-    foreach($array_images as $image) {
-        $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
-        $image_src = str_replace('../images/','/images/',$image_src);
-        $draggable .= '<div class="list-group-item d-flex align-items-start draggable" data-id="'.$image.'">';
-        $draggable .= '<div class="d-flex gap-2">';
-        $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
-        $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
-        $draggable .= '</div>';
-        $draggable .= '</div>';
-    }
+$images = [];
+foreach(array_filter(explode("<->", $product_data['images'] ?? '')) as $image) {
+    $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
+    $image_src = str_replace('../images/','/images/',$image_src);
+    $images[] = [
+        'path' => $image,
+        'src' => $image_src,
+        'name' => basename($image)
+    ];
 }
 
-$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3" data-picker-index="0">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
-$choose_images .= 'Loading Images ...</div>';
-
 /* status | draft or published */
-$sel_status_draft = '';
-$sel_status_published = '';
-$sel_status_ghost = '';
-
 if(!isset($product_data['status'])) {
     // new product, check if we have user presets
     if($my_user_presets['status'] == 'p') {
@@ -284,728 +166,317 @@ if(!isset($product_data['status'])) {
     } else if($my_user_presets['status'] == 'd') {
         $product_data['status'] = 2;
     }
-
 }
 
-if($product_data['status'] == "2") {
-    $sel_status_draft = "selected";
-} else if($product_data['status'] == "1") {
-    $sel_status_published = "selected";
-} else if($product_data['status'] == "3") {
-    $sel_status_ghost = "selected";
-}
-
-$select_status = "<select id='product_status' name='status' class='form-control custom-select'>";
-if (se_hasPermission('drm_can_publish')) {
-    $select_status .= '<option value="2" '.$sel_status_draft.'>'.$lang['status_draft'].'</option>';
-    $select_status .= '<option value="1" '.$sel_status_published.'>'.$lang['status_public'].'</option>';
-    $select_status .= '<option value="3" '.$sel_status_ghost.'>'.$lang['status_ghost'].'</option>';
+if(se_hasPermission('drm_can_publish')) {
+    $status_options = $build_options([
+        2 => $lang['status_draft'],
+        1 => $lang['status_public'],
+        3 => $lang['status_ghost']
+    ], $product_data['status'] ?? '');
 } else {
     /* user can not publish */
-    $select_status .= '<option value="draft" selected>'.$lang['status_draft'].'</option>';
+    $status_options = $build_options(['draft' => $lang['status_draft']], 'draft');
 }
-$select_status .= '</select>';
 
 /* comments yes/no */
-
-if($product_data['comments'] == 1) {
-    $sel_comments_yes = 'selected';
-    $sel_comments_no = '';
-} else {
-    $sel_comments_no = 'selected';
-    $sel_comments_yes = '';
-}
-
-$select_comments  = '<select id="select_comments" name="comments"  class="custom-select form-control">';
-$select_comments .= '<option value="1" '.$sel_comments_yes.'>'.$lang['yes'].'</option>';
-$select_comments .= '<option value="2" '.$sel_comments_no.'>'.$lang['no'].'</option>';
-$select_comments .= '</select>';
+$comments = (($product_data['comments'] ?? '') == 1) ? 1 : 2;
+$comments_options = $build_options([1 => $lang['yes'], 2 => $lang['no']], $comments);
 
 /* votings/reactions no, yes for registered users, yes for all */
-
-if($product_data['votings'] == '') {
+if(($product_data['votings'] ?? '') == '') {
     $product_data['votings'] = $se_settings['posts_default_votings'];
 }
-
 if($product_data['votings'] == 1 OR $product_data['votings'] == '') {
-    $sel_votings_1 = 'selected';
-    $sel_votings_2 = '';
-    $sel_votings_3 = '';
+    $votings = 1;
 } else if($product_data['votings'] == 2) {
-    $sel_votings_1 = '';
-    $sel_votings_2 = 'selected';
-    $sel_votings_3 = '';
+    $votings = 2;
 } else {
-    $sel_votings_1 = '';
-    $sel_votings_2 = '';
-    $sel_votings_3 = 'selected';
+    $votings = 3;
 }
-
-$select_votings  = '<select id="select_votings" name="votings"  class="custom-select form-control">';
-$select_votings .= '<option value="1" '.$sel_votings_1.'>'.$lang['label_votings_status_off'].'</option>';
-$select_votings .= '<option value="2" '.$sel_votings_2.'>'.$lang['label_votings_status_registered'].'</option>';
-$select_votings .= '<option value="3" '.$sel_votings_3.'>'.$lang['label_votings_status_global'].'</option>';
-$select_votings .= '</select>';
-
-/* current values for the collapsed sidebar rows */
-$summary_comments = ($sel_comments_yes == 'selected') ? $lang['yes'] : $lang['no'];
-if($sel_votings_2 == 'selected') {
-    $summary_votings = $lang['label_votings_status_registered'];
-} else if($sel_votings_3 == 'selected') {
-    $summary_votings = $lang['label_votings_status_global'];
-} else {
-    $summary_votings = $lang['label_votings_status_off'];
-}
-
-
-/* author */
-
-if($product_data['author'] == '') {
-    $product_data['author'] = $_SESSION['user_firstname'] .' '. $_SESSION['user_lastname'];
-}
-
-if($product_data['author'] == "" && $se_settings['default_publisher'] != '') {
-    $product_data['author'] = $se_settings['default_publisher'];
-}
-
-if($se_settings['publisher_mode'] == 'overwrite') {
-    $product_data['author'] = $se_settings['default_publisher'];
-}
-
+$votings_labels = [
+    1 => $lang['label_votings_status_off'],
+    2 => $lang['label_votings_status_registered'],
+    3 => $lang['label_votings_status_global']
+];
+$votings_options = $build_options($votings_labels, $votings);
 
 /* RSS */
-$sel_rss_on = '';
-$sel_rss_off = '';
-if($product_data['rss'] == "on") {
-    $sel_rss_on = "selected";
-} else {
-    $sel_rss_off = "selected";
+$rss = (($product_data['rss'] ?? '') == "on") ? 'on' : 'off';
+$rss_options = $build_options(['on' => $lang['yes'], 'off' => $lang['no']], $rss);
+
+/* translation urls */
+$translation_urls_array = [];
+if(($product_data['translation_urls'] ?? '') != '') {
+    $translation_urls_array = json_decode(html_entity_decode($product_data['translation_urls']), true) ?? [];
 }
-$select_rss = "<select name='rss' class='form-control custom-select'>";
-$select_rss .= '<option value="on" '.$sel_rss_on.'>'.$lang['yes'].'</option>';
-$select_rss .= '<option value="off" '.$sel_rss_off.'>'.$lang['no'].'</option>';
-$select_rss .=	'</select>';
-
-
-if($product_data['translation_urls'] != '') {
-    $product_translation_urls = html_entity_decode($product_data['translation_urls']);
-    $translation_urls_array = json_decode($product_translation_urls,true);
+$translation_urls = [];
+foreach($active_lang as $v) {
+    $translation_urls[$v['sign']] = $decode($translation_urls_array[$v['sign']] ?? '');
 }
 
-$translation_inputs = '<div class="card">';
-$translation_inputs .= '<div class="card-header d-flex justify-content-between">';
-$translation_inputs .= $lang['label_translations'].' (URLs)';
-$translation_inputs .= ' <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">'.$icon['plus'].'</button>';
-$translation_inputs .= '</div>';
-$translation_inputs .= '<div class="card-body collapse" id="collapseTranslationURL">';
-foreach($active_lang as $k => $v) {
-    $ls = $v['sign'];
-    $translation_inputs .= '<div class="input-group mb-3">';
-    $translation_inputs .= '<span class="input-group-text"><i class="bi bi-translate me-1"></i> '.$ls.'</span>';
-    $translation_inputs .= '<input class="form-control" type="text" autocomplete="off" name="translation_url['.$ls.']" id="set_canonical_url_'.$ls.'" value="'.$translation_urls_array[$ls].'">';
-    $translation_inputs .= '</div>';
-}
-$translation_inputs .= '</div>';
-$translation_inputs .= '</div>';
-
-// hooks
-
-$productHooks    = se_get_backend_hooks('product.');
-$productHookMeta = se_get_backend_hook_meta('product.');
-
-if (!empty($productHookMeta)) {
-    $x = 0;
-    $list_product_update_hooks .= '<div class="card">';
-    $list_product_update_hooks .= '<div class="card-header">Hooks</div>';
-    $list_product_update_hooks .= '<ul class="list-group list-group-flush">';
-
-    foreach ($productHookMeta as $hookName => $entries) {
-        foreach ($entries as $entryIndex => $meta) {
-            if (!is_array($meta)) {
-                continue;
-            }
-
-            $x++;
-            $id = 'hookid' . $x;
-
-            // Name: hooks[hookName][entryIndex]
-            $inputName = 'hooks['
-                . htmlspecialchars($hookName, ENT_QUOTES) . ']['
-                . (int)$entryIndex . ']';
-
-            $list_product_update_hooks .= '<li class="list-group-item">';
-            $list_product_update_hooks .= '<div class="mb-1 form-check">';
-            $list_product_update_hooks .= '<input type="checkbox" class="form-check-input"'
-                . ' name="' . $inputName . '"'
-                . ' value="1"'
-                . ' id="' . $id . '"> ';
-            $list_product_update_hooks .= '<label class="form-check-label" for="' . $id . '">';
-            $list_product_update_hooks .= '<code>' . htmlspecialchars($meta['plugin']) . '</code>';
-            $list_product_update_hooks .= '<span class="p-1">'
-                . htmlspecialchars($meta['label'] ?? '')
-                . '</span>';
-            $list_product_update_hooks .= '</label>';
-            $list_product_update_hooks .= '</div>';
-            $list_product_update_hooks .= '</li>';
+/* hooks */
+$hooks = [];
+foreach(se_get_backend_hook_meta('product.') as $hookName => $entries) {
+    foreach($entries as $entryIndex => $meta) {
+        if(!is_array($meta)) {
+            continue;
         }
+        $hooks[] = [
+            // hooks[hookName][entryIndex]
+            'input_name' => 'hooks['.$hookName.']['.(int) $entryIndex.']',
+            'plugin' => $meta['plugin'],
+            'label' => $meta['label'] ?? ''
+        ];
     }
-
-    $list_product_update_hooks .= '</ul>';
-    $list_product_update_hooks .= '</div>';
 }
-
 
 /* select tax */
-
-$get_tax = 0;
-if($product_data['product_tax'] == '2') {
-    $sel_tax_2 = 'selected';
-    $sel_tax_1 = '';
-    $sel_tax_3 = '';
-    $get_tax = $se_settings['posts_products_tax_alt1'];
-} else if($product_data['product_tax'] == '3') {
-    $sel_tax_3 = 'selected';
-    $sel_tax_2 = '';
-    $sel_tax_1 = '';
-    $get_tax = $se_settings['posts_products_tax_alt2'];
-} else {
-    $sel_tax_1 = 'selected';
-    $sel_tax_2 = '';
-    $sel_tax_3 = '';
-    $get_tax = $se_settings['posts_products_default_tax'];
+$tax = $product_data['product_tax'] ?? '';
+if($tax != '2' && $tax != '3') {
+    $tax = '1';
 }
-
-$select_tax = "<select name='product_tax' class='form-control custom-select' id='tax'>";
-$select_tax .= '<option value="1" '.$sel_tax_1.'>'.$se_settings['posts_products_default_tax'].'</option>';
-$select_tax .= '<option value="2" '.$sel_tax_2.'>'.$se_settings['posts_products_tax_alt1'].'</option>';
-$select_tax .= '<option value="3" '.$sel_tax_3.'>'.$se_settings['posts_products_tax_alt2'].'</option>';
-$select_tax .= '</select>';
+$tax_options = $build_options([
+    1 => $se_settings['posts_products_default_tax'],
+    2 => $se_settings['posts_products_tax_alt1'],
+    3 => $se_settings['posts_products_tax_alt2']
+], $tax);
 
 /* select shipping mode */
-
 if(!isset($product_data['product_shipping_mode'])) {
     if($my_user_presets['product_type'] == 'deliver') {
         $product_data['product_shipping_mode'] = 2;
     }
 }
-
-if(($product_data['product_shipping_mode'] == '1') OR ($product_data['product_shipping_mode'] == '')) {
-    $sel_shipping_mode_1 = 'selected';
-    $sel_shipping_mode_2 = '';
-} else {
-    $sel_shipping_mode_2 = 'selected';
-    $sel_shipping_mode_1 = '';
-}
-
-$select_shipping_mode = "<select name='product_shipping_mode' class='form-control custom-select' id='shipping_mode'>";
-$select_shipping_mode .= '<option value="1" '.$sel_shipping_mode_1.'>'.$lang['label_shipping_mode_digital'].'</option>';
-$select_shipping_mode .= '<option value="2" '.$sel_shipping_mode_2.'>'.$lang['label_shipping_mode_deliver'].'</option>';
-$select_shipping_mode .= '</select>';
+$shipping_mode = (($product_data['product_shipping_mode'] ?? '') == '1' OR ($product_data['product_shipping_mode'] ?? '') == '') ? 1 : 2;
+$shipping_mode_options = $build_options([
+    1 => $lang['label_shipping_mode_digital'],
+    2 => $lang['label_shipping_mode_deliver']
+], $shipping_mode);
 
 /* select shipping category */
-if($product_data['product_shipping_cat'] == '0' OR $product_data['product_shipping_cat'] == '') {
-    $sel_shipping_cat_0 = 'selected';
-    $sel_shipping_cat_1 = '';
-    $sel_shipping_cat_2 = '';
-    $sel_shipping_cat_3 = '';
-} else if($product_data['product_shipping_cat'] == '1') {
-    $sel_shipping_cat_0 = '';
-    $sel_shipping_cat_1 = 'selected';
-    $sel_shipping_cat_2 = '';
-    $sel_shipping_cat_3 = '';
-} else if($product_data['product_shipping_cat'] == '2') {
-    $sel_shipping_cat_0 = '';
-    $sel_shipping_cat_1 = '';
-    $sel_shipping_cat_2 = 'selected';
-    $sel_shipping_cat_3 = '';
-} else if($product_data['product_shipping_cat'] == '3') {
-    $sel_shipping_cat_0 = '';
-    $sel_shipping_cat_1 = '';
-    $sel_shipping_cat_2 = '';
-    $sel_shipping_cat_3 = 'selected';
+$shipping_cat = $product_data['product_shipping_cat'] ?? '';
+if($shipping_cat == '') {
+    $shipping_cat = '0';
 }
-
-$select_shipping_category = "<select name='product_shipping_cat' class='form-control custom-select' id='shipping_mode_cat'>";
-$select_shipping_category .= '<option value="0" '.$sel_shipping_cat_0.'>'.$lang['label_shipping_costs_no_cat'].'</option>';
-$select_shipping_category .= '<option value="1" '.$sel_shipping_cat_1.'>'.$lang['label_shipping_costs_cat1'].'</option>';
-$select_shipping_category .= '<option value="2" '.$sel_shipping_cat_2.'>'.$lang['label_shipping_costs_cat2'].'</option>';
-$select_shipping_category .= '<option value="3" '.$sel_shipping_cat_3.'>'.$lang['label_shipping_costs_cat3'].'</option>';
-$select_shipping_category .= '</select>';
+$shipping_cat_options = $build_options([
+    0 => $lang['label_shipping_costs_no_cat'],
+    1 => $lang['label_shipping_costs_cat1'],
+    2 => $lang['label_shipping_costs_cat2'],
+    3 => $lang['label_shipping_costs_cat3']
+], $shipping_cat);
 
 /* product filter */
+$get_product_filter = json_decode($product_data['filter'] ?? '', true);
+$filter_groups = [];
+foreach(se_get_product_filter_groups('all') as $group) {
 
-$all_filters = se_get_product_filter_groups('all');
-$get_product_filter = json_decode($product_data['filter'],true);
-
-
-$filter_list = '';
-
-$filter_btns = '<button type="button" id="toggle-all" class="btn-toggle btn btn-sm btn-default">'.$lang['btn_all'].'</button>';
-foreach($cats as $key => $value) {
-    $filter_btns .= '<button type="button" class="btn-toggle btn btn-sm btn-default" data-target="toggle-'.$value['cat_hash'].'">'.$value['cat_name'].'</button>';
-}
-
-$filter_list .= $filter_btns;
-
-foreach($all_filters as $k => $v) {
-
-    $group_categories = explode(",",$v['filter_categories']);
-    $filter_cats = '';
-    $toggle_class = 'd-none ';
-    foreach($cats as $key => $value) {
-        if (in_array($value['cat_hash'], $group_categories)) {
-            $filter_cats .= '<span class="badge badge-se text-opacity-50">'.$value['cat_name'].'</span>';
-            $toggle_class .= 'toggle-'.$value['cat_hash'].' ';
+    $group_categories = explode(",", $group['filter_categories']);
+    $filter_cats = [];
+    foreach($categories as $category) {
+        if(in_array($category['hash'], $group_categories)) {
+            $filter_cats[] = $category;
         }
     }
 
-    $flag = '<img src="'.return_language_flag_src($v['filter_lang']).'" width="15">';
-
-    $filter_list .= '<div class="toggle-item '.$toggle_class.' card mb-1">';
-    $filter_list .= '<div class="card-header">'.$flag.' '.$v['filter_title'].' <div class="float-end">'.$filter_cats.'</div></div>';
-    $filter_list .= '<div class="card-body">';
-    $get_filter_items = se_get_product_filter_values($v['filter_id']);
-    foreach($get_filter_items as $filter_item) {
-        $filter_id = $filter_item['filter_id'];
-
-        $checked_filter = '';
-        if(is_array($get_product_filter)) {
-            if(array_search("$filter_id", $get_product_filter) !== false) {
-                $checked_filter = 'checked';
-            }
-        }
-
-        $filter_list .= '<div class="form-check form-check-inline pe-3 border-end">';
-        $filter_list .= '<input class="form-check-input" id="filter_'.$filter_id.'" type="checkbox" name="product_filter[]" value="'.$filter_id.'" '.$checked_filter.'>';
-        $filter_list .= '<label class="form-check-label" for="filter_'.$filter_id.'">'.$filter_item['filter_title'].'</label>';
-        $filter_list .= '</div>';
-    }
-    $filter_list .= '</div>';
-    $filter_list .= '</div>';
-}
-
-
-/* features */
-$all_posts_features = se_get_posts_features();
-$get_post_features = json_decode($product_data['product_features'],true);
-$get_post_features_values = json_decode($product_data['product_features_values'],true);
-$checkbox_features = '';
-foreach($all_posts_features as $feature) {
-
-    $feature_id = $feature['snippet_id'];
-    $checked_feature = '';
-    if(is_array($get_post_features)) {
-        if(array_search("$feature_id", $get_post_features) !== false) {
-            $checked_feature = 'checked';
-        }
+    $items = [];
+    foreach(se_get_product_filter_values($group['filter_id']) as $filter_item) {
+        $items[] = [
+            'id' => $filter_item['filter_id'],
+            'title' => $decode($filter_item['filter_title']),
+            'checked' => is_array($get_product_filter) && in_array((string) $filter_item['filter_id'], $get_product_filter)
+        ];
     }
 
-    $feature_title = $feature['snippet_title'];
-    $feature_text = strip_tags(first_words($feature['snippet_content'],15));
-
-    $checkbox_features .= '<div class="form-check">';
-    $checkbox_features .= '<input class="form-check-input" id="feature_'.$feature_id.'" type="checkbox" name="product_features[]" value="'.$feature_id.'" '.$checked_feature.'>';
-    $checkbox_features .= '<label class="form-check-label" for="feature_'.$feature_id.'">'.$feature_title.' <small class="text-muted">'.$feature_text.'</small></label>';
-    $checkbox_features .= '</div>';
-    $checkbox_features .= '<div class="mb-3">';
-    $this_value = '';
-    if($get_post_features_values[$feature_id] != '') {
-        $this_value = $get_post_features_values[$feature_id];
-    }
-    $checkbox_features .= '<input type="text" class="form-control" name="product_features_values['.$feature_id.']" value="'.$this_value.'">';
-    $checkbox_features .= '</div>';
-}
-
-
-/* related products and accessories */
-
-$all_products = se_get_all_products();
-
-// temporary array for showing title and lang by product id
-foreach($all_products as $prod) {
-    $temp_prod[$prod['id']] = [
-      "title" => $prod['title'],
-      "lang" => $prod['product_lang'],
-      "number" => $prod['product_number']
+    $filter_groups[] = [
+        'title' => $decode($group['filter_title']),
+        'flag' => return_language_flag_src($group['filter_lang']),
+        'categories' => $filter_cats,
+        'items' => $items
     ];
 }
 
-$get_prod_related = json_decode($product_data['product_related'],true);
-$draggable_related = '';
-if(is_array($get_prod_related)) {
-    $get_prod_related = array_filter($get_prod_related);
-    foreach($get_prod_related as $id) {
-
-        $show_title = $temp_prod[$id]['title'];
-        $show_lang = return_language_flag_src($temp_prod[$id]['lang']);
-
-        $draggable_related .= '<div class="list-group-item draggable" data-id="'.$id.'">';
-        $draggable_related .= '<div class="d-flex flex-row gap-2">';
-        $draggable_related .= '<div class="text-muted small"><img src="'.$show_lang.'" width="15"> '.$show_title;
-        $draggable_related .= '[#'.$id.'] '.$temp_prod[$id]['number'];
-        $draggable_related .= '</div>';
-        $draggable_related .= '</div>';
-        $draggable_related .= '</div>';
-    }
+/* features */
+$get_post_features = json_decode($product_data['product_features'] ?? '', true);
+$get_post_features_values = json_decode($product_data['product_features_values'] ?? '', true);
+$features = [];
+foreach(se_get_posts_features() as $feature) {
+    $feature_id = $feature['snippet_id'];
+    $features[] = [
+        'id' => $feature_id,
+        'title' => $decode($feature['snippet_title']),
+        'text' => $decode(strip_tags(first_words($feature['snippet_content'], 15))),
+        // the values are stored as entered (json), not html-encoded
+        'value' => $get_post_features_values[$feature_id] ?? '',
+        'checked' => is_array($get_post_features) && in_array((string) $feature_id, $get_post_features)
+    ];
 }
 
-$get_prod_accessories = json_decode($product_data['product_accessories'],true);
-$draggable_accessories = '';
-if(is_array($get_prod_accessories)) {
-    $get_prod_accessories = array_filter($get_prod_accessories);
-    foreach($get_prod_accessories as $id) {
+/* related products, accessories and addons */
 
-        $show_title = $temp_prod[$id]['title'];
-        $show_lang = return_language_flag_src($temp_prod[$id]['lang']);
-
-        $draggable_accessories .= '<div class="list-group-item draggable" data-id="'.$id.'">';
-        $draggable_accessories .= '<div class="d-flex flex-row gap-2">';
-        $draggable_accessories .= '<div class="text-muted small"><img src="'.$show_lang.'" width="15"> '.$show_title;
-        $draggable_accessories .= '[#'.$id.'] '.$temp_prod[$id]['number'];
-        $draggable_accessories .= '</div>';
-        $draggable_accessories .= '</div>';
-        $draggable_accessories .= '</div>';
-    }
+// title and lang by product id
+$temp_prod = [];
+foreach(se_get_all_products() as $prod) {
+    $temp_prod[$prod['id']] = [
+        "title" => $decode($prod['title']),
+        "lang" => $prod['product_lang'],
+        "number" => $prod['product_number'] ?? ''
+    ];
 }
 
-$get_prod_addons = json_decode($product_data['product_addons'],true);
-$draggable_addons = '';
-if(is_array($get_prod_addons)) {
-    $get_prod_addons = array_filter($get_prod_addons);
-    foreach($get_prod_addons as $id) {
-
-        $show_title = $temp_prod[$id]['title'];
-        $show_lang = return_language_flag_src($temp_prod[$id]['lang']);
-
-        $draggable_addons .= '<div class="list-group-item draggable" data-id="'.$id.'">';
-        $draggable_addons .= '<div class="d-flex flex-row gap-2">';
-        $draggable_addons .= '<div class="text-muted small"><img src="'.$show_lang.'" width="15"> '.$show_title;
-        $draggable_addons .= '[#'.$id.'] '.$temp_prod[$id]['number'];
-        $draggable_addons .= '</div>';
-        $draggable_addons .= '</div>';
-        $draggable_addons .= '</div>';
-    }
-}
-
-$prod_related_dropper = '<div id="prodDropper_r" class="sortable_target target_products list-group mb-3" data-picker-index="2">'.$draggable_related.'</div>';
-$prod_accessories_dropper = '<div id="prodDropper_a" class="sortable_target target_products list-group mb-3" data-picker-index="1">'.$draggable_accessories.'</div>';
-$prod_addons_dropper = '<div id="prodDropper_addons" class="sortable_target target_products list-group mb-3" data-picker-index="3">'.$draggable_addons.'</div>';
-$prod_sel_widget = '<div id="prodWidget" hx-post="/admin-xhr/widgets/read/?widget=product-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_product_widget from:body"></div>';
-$prod_sel_widget .= '<div id="fake" class="sortable_source"><div></div></div>';
-/* product options */
-
-if($product_data['product_options'] != '' OR $product_data['product_options'] != null) {
-    $product_options = json_decode($product_data['product_options'],JSON_OBJECT_AS_ARRAY);
-}
-
-$get_options = se_get_posts_options();
-$cnt_options = count($get_options);
-$options_input_str = '';
-for($i=0;$i<$cnt_options;$i++) {
-    $option_values = '';
-    $option_title = $get_options[$i]['snippet_title'];
-    $option_values_array = json_decode($get_options[$i]['snippet_content']);
-    $sel = '';
-    if(is_array($product_options)) {
-        if(in_array($get_options[$i]['snippet_id'],$product_options)) {
-            $sel = 'checked';
+$dropper_items = static function($json) use ($temp_prod) {
+    $items = [];
+    $ids = json_decode($json ?? '', true);
+    if(is_array($ids)) {
+        foreach(array_filter($ids) as $id) {
+            $items[] = [
+                'id' => $id,
+                'title' => $temp_prod[$id]['title'] ?? '',
+                'flag' => return_language_flag_src($temp_prod[$id]['lang'] ?? null),
+                'number' => $temp_prod[$id]['number'] ?? ''
+            ];
         }
     }
+    return $items;
+};
 
-    foreach($option_values_array as $value) {
-        $option_values .= '<span class="badge text-bg-secondary">'.$value.'</span> ';
-    }
-    $option_label = $option_title.'<br>'.$option_values;
-    $options_input_str .= '<div class="form-check">';
-    $options_input_str .= '<input type="checkbox" id="opt_input'.$i.'" class="form-check-input" name="option_keys[]" value="'.$get_options[$i]['snippet_id'].'" '.$sel.'>';
-    $options_input_str .= '<label class="form-check-label" for="opt_input'.$i.'">'.$option_label.'</label>';
-    $options_input_str .= '</div>';
+/* product options */
+$product_options = json_decode($product_data['product_options'] ?? '', true);
+$options = [];
+foreach(se_get_posts_options() as $option) {
+    $values = json_decode($option['snippet_content']) ?? [];
+    $options[] = [
+        'id' => $option['snippet_id'],
+        'title' => $decode($option['snippet_title']),
+        'values' => array_map($decode, (array) $values),
+        'checked' => is_array($product_options) && in_array($option['snippet_id'], $product_options)
+    ];
 }
-
-$checked_user_uploads = '';
-if($product_data['file_attachment_user'] == '2') {
-    $checked_user_uploads = 'checked';
-}
-
-// template variable
-$options_input = $options_input_str;
-
-
-
 
 /* variants */
-
-$variants = array();
-if((isset($product_data['id'])) && (is_numeric($product_data['id']))) {
+$variant_links = [];
+$cnt_variants = 0;
+if(isset($product_data['id']) && is_numeric($product_data['id'])) {
     $variants = se_get_product_variants($product_data['id']);
     $cnt_variants = count($variants);
-}
-
-$variant_controls = '';
-if($cnt_variants > 1) {
-    // $product_data['id'] is a main product, inject variant controls
-    $variant_controls = '<div class="col-md-4">';
-
-    $checked_var_type_parameter = ($product_data['product_variant_type'] == 2) ? 'checked' : '';
-    $checked_var_type_page      = ($product_data['product_variant_type'] == 2) ? '' : 'checked';
-
-    // create input radios for selecting variant handling (type page or parameter)
-    $variant_controls .= '<p>'.$lang['label_product_variant_type'].'</p>';
-    $variant_controls .= '<div class="form-check">';
-    $variant_controls .= '<input class="form-check-input" type="radio" name="product_variant_type" value="1" id="variantPage" '.$checked_var_type_page.'>';
-    $variant_controls .= '<label class="form-check-label" for="variantPage">'.$lang['label_product_variant_type_page'].' <span class="ms-3 form-text">product-5.html</span></label>';
-    $variant_controls .= '</div>';
-    $variant_controls .= '<div class="form-check">';
-    $variant_controls .= '<input class="form-check-input" type="radio" name="product_variant_type" value="2" id="variantParameter" '.$checked_var_type_parameter.'>';
-    $variant_controls .= '<label class="form-check-label" for="variantParameter">'.$lang['label_product_variant_type_parameter'].' <span class="ms-3 form-text">product/?c=black</span></label>';
-    $variant_controls .= '</div><hr>';
-
-    // create buttons to edit variants
-    $variant_controls .= '<p>'.$lang['label_product_variants'].'<p>';
     foreach($variants as $variant) {
-        if($variant['id'] == $product_data['id']) {continue;} // skip the product which is itself
-        $variant_controls .= '<a href="/admin/shop/edit/'.$variant['id'].'/" class="btn btn-default btn-sm mb-1" ">'.$icon['edit'].' '.$variant['title'].' (#'.$variant['id'].')</a> ';
+        // skip the product which is itself
+        if($variant['id'] == $product_data['id']) {
+            continue;
+        }
+        $variant_links[] = [
+            'id' => $variant['id'],
+            'title' => $decode($variant['title'])
+        ];
     }
-
-    $variant_controls .= '</div>';
 }
 
-
-if($product_data['type'] == 'v') {
-    $variant_controls = '<div class="col-md-4">';
-    $variant_controls .= '<p>'.$lang['product_type_main'].'<p>';
-    $variant_controls .= '<a href="/admin/shop/edit/'.$product_data['parent_id'].'/" class="btn btn-default btn-sm" ">'.$icon['edit'].' '.$lang['btn_edit'].' (#'.$product_data['parent_id'].')</a> ';
-    $variant_controls .= '</div>';
-}
-
-
-$product_price_manufacturer = $product_data['product_price_manufacturer'];
-if($product_price_manufacturer == '') {
-    $product_price_net = '';
-}
-
-$product_price_net = $product_data['product_price_net'];
+/* prices */
+$product_price_net = $product_data['product_price_net'] ?? '';
 if($product_price_net == '') {
     $product_price_net = '0,00';
 }
 
-$product_currency = $product_data['product_currency'];
+$product_currency = $product_data['product_currency'] ?? '';
 if($product_currency == '') {
     $product_currency = $se_settings['posts_products_default_currency'];
 }
 
-if($product_data['product_price_addition'] == '') {
-    $product_data['product_price_addition'] = 0;
-}
-
-$product_price_net_purchasing = $product_data['product_price_net_purchasing'];
-if($product_price_net_purchasing == '') {
-    $product_price_net_purchasing = '0,00';
-}
-
 // select for price groups
-
-$get_price_groups = se_get_price_groups();
-
-$select_price_groups = '<select class="form-control custom-select" name="product_price_group">';
-$select_price_groups .= '<option value="null">'.$lang['label_product_price_group_no_selection'].'</option>';
-foreach($get_price_groups as $price_group) {
-    $selected = "";
-    if($price_group['hash'] == $product_data['product_price_group']) {
-        $selected = 'selected';
-    }
-    $select_price_groups .= '<option '.$selected.' value='.$price_group['hash'].'>'.$price_group['title'].'</option>';
-}
-$select_price_groups .= '</select>';
-
-/* volume discounts */
-
-$volume_discounts = json_decode($product_data['product_price_volume_discount'],true);
-$cnt_volume_discounts = 1;
-if(is_array($volume_discounts)) {
-    $cnt_volume_discounts = count($volume_discounts);
+$price_group_options = [
+    ['value' => 'null', 'label' => $lang['label_product_price_group_no_selection'], 'selected' => false]
+];
+foreach(se_get_price_groups() as $price_group) {
+    $price_group_options[] = [
+        'value' => $price_group['hash'],
+        'label' => $decode($price_group['title']),
+        'selected' => ($price_group['hash'] == ($product_data['product_price_group'] ?? ''))
+    ];
 }
 
-
-$show_price_volume_discount = '<div class="card my-2">';
-$show_price_volume_discount .= '<div class="card-header">';
-$show_price_volume_discount .= '<span>'.$lang['label_product_scaling_prices'].'</span>';
-$show_price_volume_discount .= '<button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseExample">+</button>';
-$show_price_volume_discount .= '</div>';
-$show_price_volume_discount .= '<div class="card-body collapse" id="collapseVDP">';
-
-
-for($i=0;$i<($cnt_volume_discounts+5);$i++) {
-
-    $this_ammount = $volume_discounts[$i]['amount'];
-    $price_net = $volume_discounts[$i]['price'];
-
-    $show_price_volume_discount .= '<div class="calculate_price">';
-    $show_price_volume_discount .= '<div class="row">';
-    $show_price_volume_discount .= '<div class="col-md-2">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_amount'] . '</label>';
-    $show_price_volume_discount .= '<input class="form-control" name="product_vd_amount[]" type="number" value="'.$this_ammount.'">';
-    $show_price_volume_discount .= '</div>';
-    $show_price_volume_discount .= '<div class="col-md-3">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_net'] . '</label>';
-    $show_price_volume_discount .= '<input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="'.$price_net.'">';
-    $show_price_volume_discount .= '</div>';
-    $show_price_volume_discount .= '<div class="col-md-3">';
-    $show_price_volume_discount .= '<label>' . $lang['label_product_price'] . ' ' . $lang['label_product_gross'] . '</label>';
-    $show_price_volume_discount .= '<input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">';
-    $show_price_volume_discount .= '</div>';
-    $show_price_volume_discount .= '</div>';
-    $show_price_volume_discount .= '</div>';
+/* volume discounts, stored ones plus five empty rows for new entries */
+$volume_discounts = json_decode($product_data['product_price_volume_discount'] ?? '', true);
+$volume_discounts = is_array($volume_discounts) ? array_values($volume_discounts) : [];
+$empty_rows = max(count($volume_discounts), 1) + 5 - count($volume_discounts);
+for($i=0;$i<$empty_rows;$i++) {
+    $volume_discounts[] = ['amount' => '', 'price' => ''];
 }
 
-$show_price_volume_discount .= '</div>';
-$show_price_volume_discount .= '</div>';
-
-
-/* select delivery time */
-// get all snippets where name starts with 'shop_delivery_time'
+/* select delivery time, snippets where name starts with 'shop_delivery_time' */
+$delivery_time_options = [
+    ['value' => 'no_specification', 'label' => $lang['label_product_no_delivery_time'], 'selected' => false]
+];
 $snippets_delivery_time = $db_content->select("se_snippets", "*", [
     "snippet_name[~]" => "shop_delivery_time%"
 ]);
-
-$snippet_select_delivery_time = '<select class="form-control custom-select" name="product_delivery_time">';
-$snippet_select_delivery_time .= '<option value="no_specification">'.$lang['label_product_no_delivery_time'].'</option>';
 foreach($snippets_delivery_time as $snippet) {
-    $selected = "";
-    if($snippet['snippet_id'] == $product_data['product_delivery_time']) {
-        $selected = 'selected';
-    }
-    $snippet_select_delivery_time .= '<option '.$selected.' value='.$snippet['snippet_id'].'>'.$snippet['snippet_title'].'</option>';
+    $delivery_time_options[] = [
+        'value' => $snippet['snippet_id'],
+        'label' => $decode($snippet['snippet_title']),
+        'selected' => ($snippet['snippet_id'] == ($product_data['product_delivery_time'] ?? ''))
+    ];
 }
-$snippet_select_delivery_time .= '</select>';
 
-
-/* add text snippet to prices */
-
-$snippet_select_pricelist = '<select class="form-control custom-select" name="product_textlib_price">';
-$snippet_select_pricelist .= '<option value="no_snippet">'.$lang['no_snippet_selected'].'</option>';
-
-$snippets_price_list = $db_content->select("se_snippets", "*", [
-    "snippet_name[~]" => "%post_price%"
-]);
-
-foreach($snippets_price_list as $snippet) {
-    $selected = "";
-    if($snippet['snippet_name'] == $product_data['product_textlib_price']) {
-        $selected = 'selected';
+/* text snippets for prices and for the description */
+$snippet_options = static function(string $name_pattern, $selected) use ($db_content, $decode, $lang) {
+    $options = [
+        ['value' => 'no_snippet', 'label' => $lang['no_snippet_selected'], 'selected' => false]
+    ];
+    $snippets = $db_content->select("se_snippets", "*", [
+        "snippet_name[~]" => $name_pattern
+    ]);
+    foreach($snippets as $snippet) {
+        $options[] = [
+            'value' => $decode($snippet['snippet_name']),
+            'label' => $decode($snippet['snippet_name'].' - '.$snippet['snippet_title']),
+            'selected' => ($snippet['snippet_name'] == $selected)
+        ];
     }
-    $snippet_select_pricelist .= '<option '.$selected.' value='.$snippet['snippet_name'].'>'.$snippet['snippet_name']. ' - ' .$snippet['snippet_title'].'</option>';
-}
-$snippet_select_pricelist .= '</select>';
+    return $options;
+};
+$snippet_price_options = $snippet_options("%post_price%", $product_data['product_textlib_price'] ?? '');
+$snippet_text_options = $snippet_options("%post_text%", $product_data['product_textlib_content'] ?? '');
 
-
-/* add text snippet to text */
-
-$snippet_select_text = '<select class="form-control custom-select" name="product_textlib_content" id="snippet_tex">';
-$snippet_select_text .= '<option value="no_snippet">'.$lang['no_snippet_selected'].'</option>';
-$snippets_text_list = $db_content->select("se_snippets", "*", [
-    "snippet_name[~]" => "%post_text%"
-]);
-foreach($snippets_text_list as $snippet) {
-    $selected = "";
-    if($snippet['snippet_name'] == $product_data['product_textlib_content']) {
-        $selected = 'selected';
-    }
-    $snippet_select_text .= '<option '.$selected.' value='.$snippet['snippet_name'].'>'.$snippet['snippet_name']. ' - ' .$snippet['snippet_title'].'</option>';
-}
-$snippet_select_text .= '</select>';
-
-/* select file from /content/files/ */
-
+/* select file from /assets/files/, pre-sale and after-sale files */
 $files_directory = SE_PUBLIC.'/assets/files';
-$all_files = se_scandir_rec($files_directory);
-
-/* pre-sale files */
-$select_file = '<select class="form-control custom-select" name="file_attachment">';
-$select_file .= '<option value="">-- '.$lang['label_no_file_selected'].' --</option>';
-
-foreach($all_files as $file) {
+$short_paths = [];
+foreach(se_scandir_rec($files_directory) as $file) {
     //$se_upload_file_types is set in config.php
     $file_info = pathinfo($file);
-    if(in_array($file_info['extension'],$se_upload_file_types)) {
-        $short_path = str_replace("$files_directory","",$file);
-        $selected = "";
-        if($product_data['file_attachment'] == $short_path) {
-            $selected = 'selected';
-        }
-        $select_file .= '<option '.$selected.' value='.$short_path.'>'.$short_path.'</option>';
+    if(in_array($file_info['extension'], $se_upload_file_types)) {
+        $short_paths[] = str_replace("$files_directory", "", $file);
     }
 }
-$select_file .= '</select>';
-
-/* after-sale files */
-$select_file_as = '<select class="form-control custom-select" name="file_attachment_as">';
-$select_file_as .= '<option value="">-- '.$lang['label_no_file_selected'].' --</option>';
-
-foreach($all_files as $file) {
-    //$se_upload_file_types is set in config.php
-    $file_info = pathinfo($file);
-    if(in_array($file_info['extension'],$se_upload_file_types)) {
-        $short_path = str_replace("$files_directory","",$file);
-        $selected = "";
-        if($product_data['file_attachment_as'] == $short_path) {
-            $selected = 'selected';
-        }
-        $select_file_as .= '<option '.$selected.' value='.$short_path.'>'.$short_path.'</option>';
+$file_options = static function($selected) use ($short_paths, $lang) {
+    $options = [
+        ['value' => '', 'label' => '-- '.$lang['label_no_file_selected'].' --', 'selected' => false]
+    ];
+    foreach($short_paths as $short_path) {
+        $options[] = [
+            'value' => $short_path,
+            'label' => $short_path,
+            'selected' => ($short_path == $selected)
+        ];
     }
-}
-$select_file_as .= '</select>';
+    return $options;
+};
 
+// shopping cart mode and price tag mode
+$cart_mode = (($product_data['product_cart_mode'] ?? '') == 2) ? 2 : 1;
+$cart_mode_options = $build_options([
+    1 => $lang['product_cart_mode_on'],
+    2 => $lang['product_cart_mode_off']
+], $cart_mode);
 
-// shopping cart mode
-$selected_scm_off = '';
-$selected_scm_on = '';
+$pricetag_mode = (($product_data['product_pricetag_mode'] ?? '') == 2) ? 2 : 1;
+$pricetag_mode_options = $build_options([
+    1 => $lang['product_pricetag_mode_on'],
+    2 => $lang['product_pricetag_mode_off']
+], $pricetag_mode);
 
-if($product_data['product_cart_mode'] == 2) {
-    $selected_scm_off = 'selected';
-} else {
-    $selected_scm_on = 'selected';
-}
-
-$select_cart_mode = '<select class="form-control custom-select" name="product_cart_mode">';
-$select_cart_mode .= '<option '.$selected_scm_on.' value="1">'.$lang['product_cart_mode_on'].'</option>';
-$select_cart_mode .= '<option '.$selected_scm_off.' value="2">'.$lang['product_cart_mode_off'].'</option>';
-$select_cart_mode .= '</select>';
-
-
-// price tag mode
-$selected_pricetag_off = '';
-$selected_pricetag_on = '';
-
-if($product_data['product_pricetag_mode'] == 2) {
-    $selected_pricetag_off = 'selected';
-} else {
-    $selected_pricetag_on = 'selected';
-}
-
-$select_pricetag_mode = '<select class="form-control custom-select" name="product_pricetag_mode">';
-$select_pricetag_mode .= '<option '.$selected_pricetag_on.' value="1">'.$lang['product_pricetag_mode_on'].'</option>';
-$select_pricetag_mode .= '<option '.$selected_pricetag_off.' value="2">'.$lang['product_pricetag_mode_off'].'</option>';
-$select_pricetag_mode .= '</select>';
-
-// stock
-$product_data['product_nbr_stock'] = (int) $product_data['product_nbr_stock'];
-$product_data['product_cnt_sales'] = (int) $product_data['product_cnt_sales'];
-
-if($product_data['product_stock_mode'] == 1) {
-    $checkIgnoreStock = 'checked';
-} else {
-    $checkIgnoreStock = '';
-}
-
-if(($product_data['product_addon_only'] ?? '2') == 1) {
-    $checkAddonOnly = 'checked';
-} else {
-    $checkAddonOnly = '';
-}
-
-$product_order_quantity_min = (int) $product_data['product_order_quantity_min'];
-$product_order_quantity_max = (int) $product_data['product_order_quantity_max'];
+// order quantity
+$product_order_quantity_min = (int) ($product_data['product_order_quantity_min'] ?? 0);
+$product_order_quantity_max = (int) ($product_data['product_order_quantity_max'] ?? 0);
 if($product_order_quantity_min < 2) {
     $product_order_quantity_min = 1;
 }
@@ -1014,201 +485,83 @@ if($product_order_quantity_max == 0) {
 }
 
 // labels
-$arr_checked_labels = explode(",", $product_data['labels']);
-$checkbox_set_labels = '';
-for($i=0;$i<$cnt_labels;$i++) {
-    $label_title = $se_labels[$i]['label_title'];
-    $label_id = $se_labels[$i]['label_id'];
-    $label_color = $se_labels[$i]['label_color'];
-
-    if(in_array("$label_id", $arr_checked_labels)) {
-        $checked_label = "checked";
-    } else {
-        $checked_label = "";
-    }
-
-    $checkbox_set_labels .= '<div class="form-check form-check-inline" style="border-bottom: 1px solid '.$label_color.'">';
-    $checkbox_set_labels .= '<input class="form-check-input" id="label'.$label_id.'" type="checkbox" '.$checked_label.' name="labels[]" value="'.$label_id.'">';
-    $checkbox_set_labels .= '<label class="form-check-label" for="label'.$label_id.'">'.$label_title.'</label>';
-    $checkbox_set_labels .= '</div>';
+$arr_checked_labels = explode(",", $product_data['labels'] ?? '');
+$labels = [];
+foreach($se_labels as $label) {
+    $labels[] = [
+        'id' => $label['label_id'],
+        'color' => $label['label_color'],
+        'title' => $decode($label['label_title']),
+        'checked' => in_array((string) $label['label_id'], $arr_checked_labels)
+    ];
 }
-
-
-// print the form
-
-$form_tpl = file_get_contents('../acp/templates/form-edit-products.tpl');
 
 if(!isset($product_data['type']) OR $product_data['type'] == '') {
     $product_data['type'] = 'p';
 }
 
+// decoded text fields for the template, the overrides below are prepared values
+$product = array_map($decode, $product_data);
+$product['product_currency'] = $decode($product_currency);
+$product['product_price_net'] = $decode($product_price_net);
+$product['product_nbr_stock'] = (int) ($product_data['product_nbr_stock'] ?? 0);
+$product['product_cnt_sales'] = (int) ($product_data['product_cnt_sales'] ?? 0);
+$product['product_order_quantity_min'] = $product_order_quantity_min;
+$product['product_order_quantity_max'] = $product_order_quantity_max;
 
-/* replace all entries from $lang */
-foreach($lang as $k => $v) {
-    $form_tpl = str_replace('{'.$k.'}', $lang[$k], $form_tpl);
-}
-
-$form_tpl = str_replace('{product_labels}', $checkbox_set_labels, $form_tpl);
-$form_tpl = str_replace('{show_price_volume_discount}', $show_price_volume_discount, $form_tpl);
-$form_tpl = str_replace('{checkIgnoreStock}', $checkIgnoreStock, $form_tpl);
-$form_tpl = str_replace('{checkAddonOnly}', $checkAddonOnly, $form_tpl);
-$form_tpl = str_replace('{label_product_addon_only}', $lang['label_product_addon_only'], $form_tpl);
-
-$form_tpl = str_replace('{variant_tooltip}', se_print_docs_link("05-00-shop.md"), $form_tpl);
-
-/* user inputs */
-
-$form_tpl = str_replace('{title}', $product_data['title'], $form_tpl);
-$form_tpl = str_replace('{teaser}', $product_data['teaser'], $form_tpl);
-$form_tpl = str_replace('{editor_teaser}', $editor_teaser, $form_tpl);
-$form_tpl = str_replace('{editor_text}', $editor_text, $form_tpl);
-$form_tpl = str_replace('{editor_text_a1}', $editor_text_a1, $form_tpl);
-$form_tpl = str_replace('{editor_text_a2}', $editor_text_a2, $form_tpl);
-$form_tpl = str_replace('{editor_text_a3}', $editor_text_a3, $form_tpl);
-$form_tpl = str_replace('{editor_text_a4}', $editor_text_a4, $form_tpl);
-$form_tpl = str_replace('{editor_text_a5}', $editor_text_a5, $form_tpl);
-$form_tpl = str_replace('{link_name}', $product_data['link_name'], $form_tpl);
-$form_tpl = str_replace('{link_classes}', $product_data['link_classes'], $form_tpl);
-$form_tpl = str_replace('{text}', $product_data['text'], $form_tpl);
-$form_tpl = str_replace('{text_label}', $product_data['text_label'], $form_tpl);
-$form_tpl = str_replace('{text_additional_1}', $product_data['text_additional1'], $form_tpl);
-$form_tpl = str_replace('{text_label_additional_1}', $product_data['text_additional1_label'], $form_tpl);
-$form_tpl = str_replace('{text_additional_2}', $product_data['text_additional2'], $form_tpl);
-$form_tpl = str_replace('{text_label_additional_2}', $product_data['text_additional2_label'], $form_tpl);
-$form_tpl = str_replace('{text_additional_3}', $product_data['text_additional3'], $form_tpl);
-$form_tpl = str_replace('{text_label_additional_3}', $product_data['text_additional3_label'], $form_tpl);
-$form_tpl = str_replace('{text_additional_4}', $product_data['text_additional4'], $form_tpl);
-$form_tpl = str_replace('{text_label_additional_4}', $product_data['text_additional4_label'], $form_tpl);
-$form_tpl = str_replace('{text_additional_5}', $product_data['text_additional5'], $form_tpl);
-$form_tpl = str_replace('{text_label_additional_5}', $product_data['text_additional5_label'], $form_tpl);
-$form_tpl = str_replace('{label_scope_of_delivery}', $lang['label_scope_of_delivery'], $form_tpl);
-$form_tpl = str_replace('{text_scope_of_delivery}', $product_data['text_scope_of_delivery'], $form_tpl);
-$form_tpl = str_replace('{author}', $product_data['author'], $form_tpl);
-$form_tpl = str_replace('{slug}', $product_data['slug'], $form_tpl);
-$form_tpl = str_replace('{translation_inputs}', $translation_inputs, $form_tpl);
-
-$form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
-$form_tpl = str_replace('{select_main_catalog_page}', $select_main_catalog_page, $form_tpl);
-
-// note: placeholder is {keywords}, not {tags} - the latter collides with the
-// "tags" language key (used for the site-wide content tags feature) and would
-// get overwritten by the earlier `foreach($lang as $k => $v)` replacement loop
-$form_tpl = str_replace('{keywords}', $product_data['tags'], $form_tpl);
-$form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('product', (int)($product_data['id'] ?? 0)), $form_tpl);
-$form_tpl = str_replace('{rss_url}', $product_data['rss_url'], $form_tpl);
-$form_tpl = str_replace('{select_rss}', $select_rss, $form_tpl);
-$form_tpl = str_replace('{select_status}', $select_status, $form_tpl);
-
-$form_tpl = str_replace('{meta_title}', $product_data['meta_title'], $form_tpl);
-$form_tpl = str_replace('{meta_description}', $product_data['meta_description'], $form_tpl);
-$form_tpl = str_replace('{product_canonical_url}', $product_data['product_canonical_url'] ?? '', $form_tpl);
-$form_tpl = str_replace('{canonical_url_tooltip}', se_print_docs_link("05-00-shop.md", null, "canonical-url"), $form_tpl);
-
-$form_tpl = str_replace('{checkboxes_lang}', $select_lang, $form_tpl);
-$form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
-$form_tpl = str_replace('{releasedate}', $releasedate, $form_tpl);
-$form_tpl = str_replace('{releasedate_max}', $releasedate_max, $form_tpl);
-$form_tpl = str_replace('{summary_releasedate}', $summary_releasedate, $form_tpl);
-$form_tpl = str_replace('{summary_comments}', $summary_comments, $form_tpl);
-$form_tpl = str_replace('{summary_votings}', $summary_votings, $form_tpl);
-$form_tpl = str_replace('{widget_images}', $choose_images, $form_tpl);
-
-$form_tpl = str_replace('{input_priority}', $product_data['priority'], $form_tpl);
-$form_tpl = str_replace('{checkbox_fixed}', $checkbox_fixed, $form_tpl);
-$form_tpl = str_replace('{select_status}', $select_status, $form_tpl);
-$form_tpl = str_replace('{select_comments}', $select_comments, $form_tpl);
-$form_tpl = str_replace('{select_votings}', $select_votings, $form_tpl);
-
-$form_tpl = str_replace('{list_products_filter}', $filter_list, $form_tpl);
-$form_tpl = str_replace('{variant_controls}', $variant_controls, $form_tpl);
-$form_tpl = str_replace('{product_variant_title}', $product_data['product_variant_title'], $form_tpl);
-$form_tpl = str_replace('{product_variant_description}', $product_data['product_variant_description'], $form_tpl);
-$form_tpl = str_replace('{product_variant_color}', $product_data['product_variant_color'], $form_tpl);
-$form_tpl = str_replace('{options_input}', $options_input, $form_tpl);
-$form_tpl = str_replace('{product_options_comment_label}', $product_data['product_options_comment_label'], $form_tpl);
-
-$form_tpl = str_replace('{prod_sel_widget}', $prod_sel_widget, $form_tpl);
-$form_tpl = str_replace('{prod_accessories_dropper}', $prod_accessories_dropper, $form_tpl);
-$form_tpl = str_replace('{prod_related_dropper}', $prod_related_dropper, $form_tpl);
-$form_tpl = str_replace('{prod_addons_dropper}', $prod_addons_dropper, $form_tpl);
-$form_tpl = str_replace('{product_addons_label}', $product_data['product_addons_label'], $form_tpl);
-$form_tpl = str_replace('{product_accessories_label}', $product_data['product_accessories_label'], $form_tpl);
-$form_tpl = str_replace('{product_related_label}', $product_data['product_related_label'], $form_tpl);
-
-$form_tpl = str_replace('{product_list_related}', $checkbox_related_prod, $form_tpl);
-$form_tpl = str_replace('{product_list_accessories}', $checkbox_accessories_prod, $form_tpl);
-
-/* links */
-$form_tpl = str_replace('{link}', $product_data['link'], $form_tpl);
-
-$form_tpl = str_replace('{product_number}', $product_data['product_number'], $form_tpl);
-$form_tpl = str_replace('{product_ean}', $product_data['product_ean'], $form_tpl);
-$form_tpl = str_replace('{product_mpn}', $product_data['product_mpn'], $form_tpl);
-$form_tpl = str_replace('{product_manufacturer}', $product_data['product_manufacturer'], $form_tpl);
-$form_tpl = str_replace('{product_price_manufacturer}', $product_data['product_price_manufacturer'], $form_tpl);
-
-$form_tpl = str_replace('{product_url}', $product_data['product_url'], $form_tpl);
-$form_tpl = str_replace('{product_supplier}', $product_data['product_supplier'], $form_tpl);
-$form_tpl = str_replace('{product_currency}', $product_currency, $form_tpl);
-$form_tpl = str_replace('{product_price_label}', $product_data['product_price_label'], $form_tpl);
-$form_tpl = str_replace('{product_amount}', $product_data['product_amount'], $form_tpl);
-$form_tpl = str_replace('{product_unit}', $product_data['product_unit'], $form_tpl);
-$form_tpl = str_replace('{product_unit_content}', $product_data['product_unit_content'], $form_tpl);
-$form_tpl = str_replace('{product_price_net}', $product_price_net, $form_tpl);
-$form_tpl = str_replace('{select_tax}', $select_tax, $form_tpl);
-$form_tpl = str_replace('{select_shipping_mode}', $select_shipping_mode, $form_tpl);
-$form_tpl = str_replace('{select_shipping_category}', $select_shipping_category, $form_tpl);
-$form_tpl = str_replace('{select_price_group}', $select_price_groups, $form_tpl);
-
-$form_tpl = str_replace('{product_nbr_stock}', $product_data['product_nbr_stock'], $form_tpl);
-$form_tpl = str_replace('{product_cnt_sales}', $product_data['product_cnt_sales'], $form_tpl);
-
-$form_tpl = str_replace('{product_order_quantity_min}', $product_order_quantity_min, $form_tpl);
-$form_tpl = str_replace('{product_order_quantity_max}', $product_order_quantity_max, $form_tpl);
-
-$form_tpl = str_replace('{snippet_select_pricelist}', $snippet_select_pricelist, $form_tpl);
-$form_tpl = str_replace('{snippet_select_text}', $snippet_select_text, $form_tpl);
-
-$form_tpl = str_replace('{product_price_net_purchasing}', $product_price_net_purchasing, $form_tpl);
-$form_tpl = str_replace('{product_price_addition}', $product_data['product_price_addition'], $form_tpl);
-
-$form_tpl = str_replace('{product_features_label}', $product_data['product_features_label'], $form_tpl);
-$form_tpl = str_replace('{checkboxes_features}', $checkbox_features, $form_tpl);
-
-$form_tpl = str_replace('{select_product_cart_mode}', $select_cart_mode, $form_tpl);
-$form_tpl = str_replace('{select_product_pricetag_mode}', $select_pricetag_mode, $form_tpl);
-$form_tpl = str_replace('{select_delivery_time}', $snippet_select_delivery_time, $form_tpl);
-
-$addon_module_forms = se_render_record_addons('product', $record_data);
-$form_tpl = str_replace('{addon_module_forms}', $addon_module_forms, $form_tpl);
-$form_tpl = str_replace('{list_product_update_hooks}', $list_product_update_hooks, $form_tpl);
-
-
-/* files */
-$form_tpl = str_replace('{file_attachment_external}', $product_data['file_attachment_external'], $form_tpl);
-$form_tpl = str_replace('{file_license}', $product_data['file_license'], $form_tpl);
-$form_tpl = str_replace('{file_version}', $product_data['file_version'], $form_tpl);
-$form_tpl = str_replace('{select_file}', $select_file, $form_tpl);
-$form_tpl = str_replace('{select_file_as}', $select_file_as, $form_tpl);
-$form_tpl = str_replace('{cnt_attachment_as_hits}', $product_data['file_attachment_as_hits'], $form_tpl);
-$form_tpl = str_replace('{cnt_attachment_hits}', $product_data['file_attachment_hits'], $form_tpl);
-$form_tpl = str_replace('{checked_user_uploads}', $checked_user_uploads, $form_tpl);
-
-$form_tpl = str_replace('{form_header_message}', $form_header_message, $form_tpl);
-$form_tpl = str_replace('{form_header_mode}', $form_header_mode, $form_tpl);
-
-$form_tpl = str_replace('{type}', $product_data['type'], $form_tpl);
-$form_tpl = str_replace('{id}', $product_data['id'], $form_tpl);
-$form_tpl = str_replace('{parent_id}', $product_data['parent_id'], $form_tpl);
-$form_tpl = str_replace('{date}', $product_data['date'], $form_tpl);
-$form_tpl = str_replace('{year}', date('Y',$product_data['date']), $form_tpl);
-$form_tpl = str_replace('{modus}', $modus, $form_tpl);
-$form_tpl = str_replace('{token}', $_SESSION['token'], $form_tpl);
-$form_tpl = str_replace('{formaction}', '?tn=shop&sub=edit', $form_tpl);
-$form_tpl = str_replace('{submit_button}', $btn_save, $form_tpl);
-$form_tpl = str_replace('{submit_variant_button}', $submit_variant_btn, $form_tpl);
-$form_tpl = str_replace('{submit_delete_button}', $btn_delete, $form_tpl);
-
-
-
-echo $form_tpl;
+echo $twig->render('shop/product-form.twig', [
+    'product' => $product,
+    'product_id' => $get_product_id,
+    'is_edit' => $is_edit,
+    'is_variant' => ($product_data['type'] == 'v'),
+    'show_variant_button' => $show_variant_button,
+    'form_header_mode' => $form_header_mode,
+    'writer_uri' => $writer_uri,
+    'editors' => $editors,
+    'images' => $images,
+    'categories' => $categories,
+    'filter_groups' => $filter_groups,
+    'features' => $features,
+    'options' => $options,
+    'user_uploads' => (($product_data['file_attachment_user'] ?? '') == '2'),
+    'labels' => $labels,
+    'hooks' => $hooks,
+    'has_variants' => ($cnt_variants > 1),
+    'variants' => $variant_links,
+    'variant_type' => (int) ($product_data['product_variant_type'] ?? 0),
+    'accessories' => $dropper_items($product_data['product_accessories'] ?? null),
+    'related' => $dropper_items($product_data['product_related'] ?? null),
+    'addons' => $dropper_items($product_data['product_addons'] ?? null),
+    'volume_discounts' => $volume_discounts,
+    'translation_urls' => $translation_urls,
+    'content_tags' => $decode(se_tags_csv_for_content('product', (int) ($product_data['id'] ?? 0))),
+    'se_base_url' => $se_base_url,
+    'releasedate' => $releasedate,
+    'releasedate_max' => $releasedate_max,
+    'releasedate_summary' => se_format_datetime(strtotime($releasedate)),
+    'comments_summary' => ($comments == 1) ? $lang['yes'] : $lang['no'],
+    'votings_summary' => $votings_labels[$votings],
+    'fixed' => (($product_data['fixed'] ?? '') == '1'),
+    'ignore_stock' => (($product_data['product_stock_mode'] ?? '') == 1),
+    'addon_only' => (($product_data['product_addon_only'] ?? '2') == 1),
+    'variant_docs_link' => se_print_docs_link("05-00-shop.md"),
+    'canonical_docs_link' => se_print_docs_link("05-00-shop.md", null, "canonical-url"),
+    'addon_module_forms' => se_render_record_addons('product', $record_data),
+    'main_catalog_options' => $main_catalog_options,
+    'lang_options' => $lang_options,
+    'status_options' => $status_options,
+    'comments_options' => $comments_options,
+    'votings_options' => $votings_options,
+    'rss_options' => $rss_options,
+    'tax_options' => $tax_options,
+    'shipping_mode_options' => $shipping_mode_options,
+    'shipping_cat_options' => $shipping_cat_options,
+    'price_group_options' => $price_group_options,
+    'delivery_time_options' => $delivery_time_options,
+    'snippet_price_options' => $snippet_price_options,
+    'snippet_text_options' => $snippet_text_options,
+    'file_options' => $file_options($product_data['file_attachment'] ?? ''),
+    'file_as_options' => $file_options($product_data['file_attachment_as'] ?? ''),
+    'cart_mode_options' => $cart_mode_options,
+    'pricetag_mode_options' => $pricetag_mode_options
+]);

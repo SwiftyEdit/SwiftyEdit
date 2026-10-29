@@ -1,0 +1,728 @@
+{#
+ # product form in /admin/shop/edit/, /new/ and /duplicate/, rendered by products-edit.php
+ # product holds the decoded text fields, everything ending in _options is a list of
+ # {value, label, selected} for the select() macro
+ #}
+
+{% macro select(name, options, id = null, class = 'form-control custom-select') %}
+    <select name="{{ name }}" class="{{ class }}"{% if id %} id="{{ id }}"{% endif %}>
+        {% for option in options %}
+            <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+{# drop zone for related products, accessories and addons, filled by the product-select widget #}
+{% macro product_dropper(id, picker_index, items) %}
+    <div id="{{ id }}" class="sortable_target target_products list-group mb-3" data-picker-index="{{ picker_index }}">
+        {% for item in items %}
+            <div class="list-group-item draggable" data-id="{{ item.id }}">
+                <div class="d-flex flex-row gap-2">
+                    <div class="text-muted small"><img src="{{ item.flag }}" width="15"> {{ item.title }}[#{{ item.id }}] {{ item.number }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% import _self as m %}
+
+<div class="subHeader"></div>
+<div id="formResponse"></div>
+<form class="no-enter">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#intro">{{ lang.nav_btn_intro }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#content">{{ lang.nav_btn_descriptions }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prices_delivery">{{ lang.nav_btn_prices_delivery }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#features">{{ lang.nav_btn_features }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#seo">{{ lang.nav_btn_seo }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#links" title="{{ lang.nav_btn_links }}"><i class="bi bi-link"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#downloads" title="{{ lang.nav_btn_downloads }}"><i class="bi bi-download"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter" title="Filter"><i class="bi bi-filter"></i></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#addons" title="{{ lang.nav_btn_addons }}"><i class="bi bi-plugin"></i></a></li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+
+                        <div class="tab-pane fade show active" id="intro">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ lang.label_title }}</label>
+                                        <input class="form-control" name="title" type="text" value="{{ product.title }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ editors.teaser|raw }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">{{ lang.label_link_name }}</label>
+                                                <input class="form-control" name="link_name" type="text" value="{{ product.link_name }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">{{ lang.label_classes }}</label>
+                                                <input class="form-control" name="link_classes" type="text" value="{{ product.link_classes }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">{{ lang.label_image }}</div>
+                                        <div class="card-body">
+                                            <div id="imgdropper" class="sortable_target list-group mb-3" data-picker-index="0">
+                                                {% for image in images %}
+                                                    <div class="list-group-item d-flex align-items-start draggable" data-id="{{ image.path }}">
+                                                        <div class="d-flex gap-2">
+                                                            <div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url({{ image.src }});background-size:cover;"></div>
+                                                            <div class="text-muted small">{{ image.name }}</div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name='csrf_token']" hx-trigger="load, update_image_widget from:body">Loading Images ...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card">
+                                        <h6 class="card-header">{{ lang.nav_btn_product }}</h6>
+                                        <div class="card-body">
+                                            <div class="mb-1">
+                                                <label class="form-label">SKU / {{ lang.label_product_number }}</label>
+                                                <input class="form-control" name="product_number" type="text" value="{{ product.product_number }}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">EAN</label>
+                                                <input class="form-control" name="product_ean" type="text" value="{{ product.product_ean }}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">MPN</label>
+                                                <input class="form-control" name="product_mpn" type="text" value="{{ product.product_mpn }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card">
+                                        <h6 class="card-header">{{ lang.label_product_manufacturer }}</h6>
+                                        <div class="card-body">
+                                            <div class="mb-1">
+                                                <label class="form-label">{{ lang.label_product_manufacturer }}</label>
+                                                <input class="form-control" name="product_manufacturer" type="text" value="{{ product.product_manufacturer }}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">{{ lang.label_url }}</label>
+                                                <input class="form-control" name="product_url" type="text" value="{{ product.product_url }}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">{{ lang.label_product_manufacturer }} {{ lang.label_product_price }} {{ lang.label_product_net }}</label>
+                                                <input class="form-control" name="product_price_manufacturer" type="text" value="{{ product.product_price_manufacturer }}">
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="form-label">{{ lang.label_product_supplier }}</label>
+                                                <input class="form-control" name="product_supplier" type="text" value="{{ product.product_supplier }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- #intro -->
+
+                        <div class="tab-pane fade" id="content">
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="content_Sections" role="tablist">
+                                        <li class="nav-item"><a class="nav-link active me-auto" data-bs-toggle="tab" href="#main-content">{{ lang.nav_btn_description }}</a></li>
+                                        {% for i in 1..5 %}
+                                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#add-content{{ i }}" title="{{ lang.nav_btn_additional_description }}">{{ i }}</a></li>
+                                        {% endfor %}
+                                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#sod" title="{{ lang.label_scope_of_delivery }}">{{ lang.label_scope_of_delivery }}</a></li>
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content my-2">
+                                        <div class="tab-pane fade show active" id="main-content">
+                                            <div class="mb-3">
+                                                <label for="text_label" class="form-label">Label</label>
+                                                <input type="text" name="text_label" value="{{ product.text_label }}" class="form-control" id="text_label">
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ editors.text|raw }}
+                                            </div>
+                                        </div>
+                                        {% for i in 1..5 %}
+                                            <div class="tab-pane fade" id="add-content{{ i }}">
+                                                <div class="mb-3">
+                                                    <label for="text_label{{ i }}" class="form-label">Label</label>
+                                                    <input type="text" name="text_additional{{ i }}_label" value="{{ attribute(product, 'text_additional' ~ i ~ '_label') }}" class="form-control" id="text_label{{ i }}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    {{ attribute(editors, 'text_additional' ~ i)|raw }}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        <div class="tab-pane fade" id="sod">
+                                            <div class="mb-3">
+                                                <textarea class="mceEditor" name="text_scope_of_delivery">{{ product.text_scope_of_delivery }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <label for="snippet_text" class="form-label">{{ lang.label_product_snippet_text }}</label>
+                                {{ m.select('product_textlib_content', snippet_text_options, 'snippet_tex') }}
+                            </div>
+                        </div> <!-- #content -->
+
+                        <div class="tab-pane fade" id="downloads">
+                            <h4>{{ lang.label_product_attachments }}</h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="fw-bold">{{ lang.label_product_files_after_sale }}</p>
+                                    <label>{{ lang.label_file_select }}</label>
+                                    {{ m.select('file_attachment_as', file_as_options) }}
+                                    <div class="form-text">Downloads: {{ product.file_attachment_as_hits }}</div>
+                                    <hr>
+                                    <label>{{ lang.label_external_file }}</label>
+                                    <input class="form-control" name="file_attachment_external" type="text" value="{{ product.file_attachment_external }}">
+                                </div>
+                                <div class="col-6">
+                                    <p class="fw-bold">{{ lang.label_product_files_before_sale }}</p>
+                                    <label>{{ lang.label_file_select }}</label>
+                                    {{ m.select('file_attachment', file_options) }}
+                                    <div class="form-text">Downloads: {{ product.file_attachment_hits }}</div>
+                                </div>
+                            </div>
+                        </div> <!-- #downloads -->
+
+                        <div class="tab-pane fade" id="prices_delivery">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_amount }}</label>
+                                        <input class="form-control" name="product_amount" type="number" value="{{ product.product_amount }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_unit }}</label>
+                                        <input class="form-control" name="product_unit" type="text" value="{{ product.product_unit }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_unit_content }}</label>
+                                        <input class="form-control" name="product_unit_content" type="text" value="{{ product.product_unit_content }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_price_label }}</label>
+                                        <input class="form-control" name="product_price_label" type="text" value="{{ product.product_price_label }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>{{ lang.label_product_currency }}</label>
+                                    <input class="form-control" name="product_currency" type="text" value="{{ product.product_currency }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>{{ lang.label_product_price }} {{ lang.label_product_net }}</label>
+                                    <input class="form-control prod_price_net" id="price" name="product_price_net" type="text" value="{{ product.product_price_net }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>{{ lang.label_product_tax }}</label>
+                                    {{ m.select('product_tax', tax_options, 'tax') }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label>{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
+                                    {# filled in by the price calculation script #}
+                                    <input class="form-control prod_price_gross" id="price_total" name="product_price_gross" type="text" value="">
+                                </div>
+                            </div>
+
+                            {% include 'shop/volume-discounts.twig' with {
+                                discounts: volume_discounts,
+                                cols: ['col-md-2', 'col-md-3', 'col-md-3']
+                            } only %}
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <label>{{ lang.label_product_price_group }}</label>
+                                {{ m.select('product_price_group', price_group_options) }}
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_nbr_stock }}</label>
+                                        <input class="form-control" id="nbr_stock" name="product_nbr_stock" type="text" value="{{ product.product_nbr_stock }}">
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="product_ignore_stock" value="1" id="ignoreStock"{% if ignore_stock %} checked{% endif %}>
+                                        <label class="form-check-label" for="ignoreStock">{{ lang.label_product_ignore_stock }}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_cnt_sales }}</label>
+                                        <input class="form-control" id="cnt_sales" name="product_cnt_sales" type="text" value="{{ product.product_cnt_sales }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_order_quantity_min }}</label>
+                                        <input class="form-control" id="product_order_quantity_min" name="product_order_quantity_min" type="text" value="{{ product.product_order_quantity_min }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>{{ lang.label_order_quantity_max }}</label>
+                                    <input class="form-control" id="product_order_quantity_max" name="product_order_quantity_max" type="text" value="{{ product.product_order_quantity_max }}">
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_shipping }}</label>
+                                        {{ m.select('product_shipping_mode', shipping_mode_options, 'shipping_mode') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_shipping_costs_cat }}</label>
+                                        {{ m.select('product_shipping_cat', shipping_cat_options, 'shipping_mode_cat') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{ lang.label_product_delivery_time }}</label>
+                                        {{ m.select('product_delivery_time', delivery_time_options) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>{{ lang.label_product_cart_mode }}</label>
+                                    {{ m.select('product_cart_mode', cart_mode_options) }}
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" name="product_addon_only" value="1" id="addonOnly"{% if addon_only %} checked{% endif %}>
+                                        <label class="form-check-label" for="addonOnly">{{ lang.label_product_addon_only }}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ lang.label_product_pricetag_mode }}</label>
+                                    {{ m.select('product_pricetag_mode', pricetag_mode_options) }}
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mt-4">
+                                <div class="form-group">
+                                    <label>{{ lang.label_product_snippet_price }}</label>
+                                    {{ m.select('product_textlib_price', snippet_price_options) }}
+                                </div>
+                            </div>
+                        </div> <!-- #prices_delivery -->
+
+                        <div class="tab-pane fade" id="links">
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="content_Sections" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-bs-toggle="tab" href="#variants">{{ lang.nav_btn_variants }}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#cross_selling">Cross-Selling</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content my-2">
+                                        <div class="tab-pane fade show active" id="variants">
+                                            <span class="float-end">{{ variant_docs_link|raw }}</span>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label>{{ lang.label_title }}</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-text p-0 border-0">
+                                                                <input type="color" class="form-control-color radius-0" name="product_variant_color" value="{{ product.product_variant_color }}" title="Choose your color">
+                                                            </div>
+                                                            <input class="form-control" name="product_variant_title" type="text" value="{{ product.product_variant_title }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>{{ lang.label_description }}</label>
+                                                        <textarea class="form-control" rows="4" name="product_variant_description">{{ product.product_variant_description }}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                {% if is_variant %}
+                                                    {# a variant links back to its main product #}
+                                                    <div class="col-md-4">
+                                                        <p>{{ lang.product_type_main }}</p>
+                                                        <a href="/admin/shop/edit/{{ product.parent_id }}/" class="btn btn-default btn-sm">{{ icon.edit|raw }} {{ lang.btn_edit }} (#{{ product.parent_id }})</a>
+                                                    </div>
+                                                {% elseif has_variants %}
+                                                    {# a main product with variants: variant handling and links to the variants #}
+                                                    <div class="col-md-4">
+                                                        <p>{{ lang.label_product_variant_type }}</p>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="product_variant_type" value="1" id="variantPage"{% if variant_type != 2 %} checked{% endif %}>
+                                                            <label class="form-check-label" for="variantPage">{{ lang.label_product_variant_type_page }} <span class="ms-3 form-text">product-5.html</span></label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="product_variant_type" value="2" id="variantParameter"{% if variant_type == 2 %} checked{% endif %}>
+                                                            <label class="form-check-label" for="variantParameter">{{ lang.label_product_variant_type_parameter }} <span class="ms-3 form-text">product/?c=black</span></label>
+                                                        </div>
+                                                        <hr>
+                                                        <p>{{ lang.label_product_variants }}</p>
+                                                        {% for variant in variants %}
+                                                            <a href="/admin/shop/edit/{{ variant.id }}/" class="btn btn-default btn-sm mb-1">{{ icon.edit|raw }} {{ variant.title }} (#{{ variant.id }})</a>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="cross_selling">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div id="prodWidget" hx-post="/admin-xhr/widgets/read/?widget=product-select" hx-include="[name='csrf_token']" hx-trigger="load, update_product_widget from:body"></div>
+                                                    <div id="fake" class="sortable_source"><div></div></div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="row row-cols-3">
+                                                        <div class="col">
+                                                            <h6>{{ lang.nav_btn_accessories }}</h6>
+                                                            <input type="text" name="product_accessories_label" value="{{ product.product_accessories_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                            {{ m.product_dropper('prodDropper_a', 1, accessories) }}
+                                                        </div>
+                                                        <div class="col">
+                                                            <h6>{{ lang.nav_btn_related }}</h6>
+                                                            <input type="text" name="product_related_label" value="{{ product.product_related_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                            {{ m.product_dropper('prodDropper_r', 2, related) }}
+                                                        </div>
+                                                        <div class="col">
+                                                            <h6>Addons</h6>
+                                                            <input type="text" name="product_addons_label" value="{{ product.product_addons_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                            {{ m.product_dropper('prodDropper_addons', 3, addons) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- #links -->
+
+                        <div class="tab-pane fade" id="features">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-header">{{ lang.label_product_features }}</div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Label</label>
+                                                <input class="form-control" name="product_features_label" type="text" value="{{ product.product_features_label }}" placeholder="{{ lang.label_product_features }}">
+                                            </div>
+                                            {% for feature in features %}
+                                                <div class="form-check">
+                                                    <input class="form-check-input" id="feature_{{ feature.id }}" type="checkbox" name="product_features[]" value="{{ feature.id }}"{% if feature.checked %} checked{% endif %}>
+                                                    <label class="form-check-label" for="feature_{{ feature.id }}">{{ feature.title }} <small class="text-muted">{{ feature.text }}</small></label>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input type="text" class="form-control" name="product_features_values[{{ feature.id }}]" value="{{ feature.value }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-header">{{ lang.label_product_options }}</div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ lang.label_product_customer_feedback }}</label>
+                                                <input type="text" class="form-control" name="product_options_comment_label" value="{{ product.product_options_comment_label }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="file_attachment_user" value="2" id="file_attachment_user"{% if user_uploads %} checked{% endif %}>
+                                                    <label class="form-check-label" for="file_attachment_user">{{ lang.label_product_customer_upload }}</label>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            {% for option in options %}
+                                                <div class="form-check">
+                                                    <input type="checkbox" id="opt_input{{ loop.index0 }}" class="form-check-input" name="option_keys[]" value="{{ option.id }}"{% if option.checked %} checked{% endif %}>
+                                                    <label class="form-check-label" for="opt_input{{ loop.index0 }}">{{ option.title }}<br>{% for value in option.values %}<span class="badge text-bg-secondary">{{ value }}</span> {% endfor %}</label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- #features -->
+
+                        <div class="tab-pane fade" id="seo">
+                            <div class="form-group">
+                                <label>{{ lang.label_title }}</label>
+                                <input class="form-control" name="meta_title" type="text" value="{{ product.meta_title }}">
+                            </div>
+                            <div class="form-group">
+                                <label>{{ lang.label_description }}</label>
+                                <textarea class="form-control count-chars" rows="4" name="meta_description">{{ product.meta_description }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>{{ lang.label_keywords }}</label>
+                                <input type="text" class="form-control tags" name="tags" value="{{ product.tags }}">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label>{{ lang.label_pages_permalink }}</label>
+                                        <input type="text" id="disabledTextInput" class="form-control" value="{{ se_base_url }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label>{{ lang.label_main_catalog_page }}</label>
+                                        {{ m.select('main_catalog_slug', main_catalog_options, null, 'custom-select form-control') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label>{{ lang.label_slug }}</label>
+                                        <input class="form-control" name="slug" type="text" value="{{ product.slug }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Canonical URL {{ canonical_docs_link|raw }}</label>
+                                <input class="form-control" name="product_canonical_url" type="text" value="{{ product.product_canonical_url }}">
+                            </div>
+
+                            <h5 class="heading-line">{{ lang.label_translations }}</h5>
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between">
+                                    {{ lang.label_translations }} (URLs)
+                                    <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">{{ icon.plus|raw }}</button>
+                                </div>
+                                <div class="card-body collapse" id="collapseTranslationURL">
+                                    {% for code, url in translation_urls %}
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><i class="bi bi-translate me-1"></i> {{ code }}</span>
+                                            <input class="form-control" type="text" autocomplete="off" name="translation_url[{{ code }}]" id="set_canonical_url_{{ code }}" value="{{ url }}">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <h5 class="heading-line">RSS</h5>
+                            <div class="form-group">
+                                <label>{{ lang.label_activate_rss }}</label>
+                                {{ m.select('rss', rss_options) }}
+                            </div>
+                            <div class="form-group">
+                                <label>{{ lang.label_rss_url }}</label>
+                                <input class="form-control" name="rss_url" type="text" value="{{ product.rss_url }}">
+                            </div>
+                        </div> <!-- #seo -->
+
+                        <div class="tab-pane fade" id="filter">
+                            <h3>Filter</h3>
+                            <button type="button" id="toggle-all" class="btn-toggle btn btn-sm btn-default">{{ lang.btn_all }}</button>
+                            {% for category in categories %}
+                                <button type="button" class="btn-toggle btn btn-sm btn-default" data-target="toggle-{{ category.hash }}">{{ category.name }}</button>
+                            {% endfor %}
+                            {% for group in filter_groups %}
+                                {# groups are hidden until one of their categories is toggled #}
+                                <div class="toggle-item d-none{% for category in group.categories %} toggle-{{ category.hash }}{% endfor %} card mb-1">
+                                    <div class="card-header"><img src="{{ group.flag }}" width="15"> {{ group.title }} <div class="float-end">{% for category in group.categories %}<span class="badge badge-se text-opacity-50">{{ category.name }}</span>{% endfor %}</div></div>
+                                    <div class="card-body">
+                                        {% for item in group.items %}
+                                            <div class="form-check form-check-inline pe-3 border-end">
+                                                <input class="form-check-input" id="filter_{{ item.id }}" type="checkbox" name="product_filter[]" value="{{ item.id }}"{% if item.checked %} checked{% endif %}>
+                                                <label class="form-check-label" for="filter_{{ item.id }}">{{ item.title }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div> <!-- #filter -->
+
+                        <div class="tab-pane fade" id="addons">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ addon_module_forms|raw }}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if hooks %}
+                                        <div class="card">
+                                            <div class="card-header">Hooks</div>
+                                            <ul class="list-group list-group-flush">
+                                                {% for hook in hooks %}
+                                                    <li class="list-group-item">
+                                                        <div class="mb-1 form-check">
+                                                            <input type="checkbox" class="form-check-input" name="{{ hook.input_name }}" value="1" id="hookid{{ loop.index }}">
+                                                            <label class="form-check-label" for="hookid{{ loop.index }}"><code>{{ hook.plugin }}</code><span class="p-1">{{ hook.label }}</span></label>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div> <!-- #addons -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+
+                <div class="sidebar-actions sticky-lg-top">
+                    <div class="form-mode">
+                        {{ form_header_mode }}
+                    </div>
+
+                    {% if show_variant_button %}
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="{{ product_id }}">{{ lang.submit_variant }}</button>
+                    {% endif %}
+
+                    {% if is_edit %}
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="{{ product_id }}">{{ lang.update }}</button>
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-confirm="{{ lang.msg_confirm_delete }}" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="{{ product_id }}">{{ lang.btn_delete }}</button>
+                    {% else %}
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">{{ lang.save }}</button>
+                    {% endif %}
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <div class="input-group">
+                        <label class="input-group-text" for="product_status">{{ lang.label_status }}</label>
+                        {{ m.select('status', status_options, 'product_status') }}
+                    </div>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <div class="input-group">
+                        <label class="input-group-text" for="product_lang">{{ lang.label_language }}</label>
+                        {{ m.select('product_lang', lang_options, 'product_lang', 'custom-select form-control') }}
+                    </div>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{{ lang.label_priority }}</label>
+                    <input type="number" name="priority" value="{{ product.priority }}" class="form-control">
+                    <div class="form-check">
+                        <input class="form-check-input" id="fix" type="checkbox" name="fixed" value="fixed"{% if fixed %} checked{% endif %}>
+                        <label class="form-check-label" for="fix">{{ lang.label_fixed }}</label>
+                    </div>
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{{ lang.label_categories }}</label>
+                    <div class="scroll-container scroll-container-resizable">
+                        <div class="list-group">
+                            {% for category in categories %}
+                                <label class="list-group-item d-flex gap-3">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" id="cat{{ loop.index0 }}" name="categories[]" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
+                                    <span class="pt-1 form-checked-content">
+                                        <strong>#{{ category.id }} {{ category.name }}</strong><small class="d-block opacity-75"><img src="{{ category.flag }}" width="16"> {{ category.description }}</small>
+                                    </span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-2 pb-3 border-bottom">
+                    <label>{{ lang.label_tags }}</label>
+                    <input type="text" class="form-control tags" name="content_tags" value="{{ content_tags }}">
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom">
+                    <label>{{ lang.labels }}</label>
+                    <div>
+                        {% for label in labels %}
+                            <div class="form-check form-check-inline" style="border-bottom: 1px solid {{ label.color }}">
+                                <input class="form-check-input" id="label{{ label.id }}" type="checkbox"{% if label.checked %} checked{% endif %} name="labels[]" value="{{ label.id }}">
+                                <label class="form-check-label" for="label{{ label.id }}">{{ label.title }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# rarely changed settings: collapsed, current value in the summary row #}
+                <details class="sidebar-setting">
+                    <summary>
+                        <span>{{ lang.label_releasedate }}</span>
+                        <span class="sidebar-setting-value">{{ releasedate_summary }}</span>
+                    </summary>
+                    <div class="sidebar-setting-body">
+                        <input class="dp form-control" name="releasedate" type="datetime-local" value="{{ releasedate }}" max="{{ releasedate_max }}">
+                        <div class="form-text">{{ lang.label_releasedate_no_future }}</div>
+                    </div>
+                </details>
+                <details class="sidebar-setting">
+                    <summary>
+                        <span>{{ lang.label_comments }}</span>
+                        <span class="sidebar-setting-value">{{ comments_summary }}</span>
+                    </summary>
+                    <div class="sidebar-setting-body">
+                        {{ m.select('comments', comments_options, 'select_comments', 'custom-select form-control') }}
+                    </div>
+                </details>
+                <details class="sidebar-setting">
+                    <summary>
+                        <span>{{ lang.label_votings }}</span>
+                        <span class="sidebar-setting-value">{{ votings_summary }}</span>
+                    </summary>
+                    <div class="sidebar-setting-body">
+                        {{ m.select('votings', votings_options, 'select_votings', 'custom-select form-control') }}
+                    </div>
+                </details>
+
+                <input name="type" type="hidden" value="{{ product.type }}">
+                <input name="parent_id" type="hidden" value="{{ product.parent_id }}">
+                <input name="modus" type="hidden" value="">
+                <input name="edit_id" type="hidden" value="{{ product.id }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="date" value="{{ product.date }}">
+
+            </div>
+        </div>
+    </div>
+</form>
