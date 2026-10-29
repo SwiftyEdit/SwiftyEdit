@@ -26,6 +26,7 @@ build_prepare.sh
 phpstan.neon
 phpstan-baseline.neon
 phpstan-baseline-loader.php
+phpstan-bootstrap.php
 .claude
 .ollamassist
 

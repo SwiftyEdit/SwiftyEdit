@@ -10,7 +10,13 @@ includes:
 parameters:
     level: 0
     phpVersion: 80300
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    dynamicConstantNames:
+        - SE_INCLUDE_PATH
+        - DB_PREFIX
     paths:
+        - config.php
         - acp
         - app
         - install
