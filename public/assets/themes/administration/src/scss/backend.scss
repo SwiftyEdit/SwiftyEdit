@@ -608,25 +608,31 @@ textarea#textEditor2,
 
 /* popover */
 
+// Colors and spacing via Bootstrap's --bs-popover-* variables: the arrow reads
+// --bs-popover-bg, so a plain "background" on .popover left it in the page color.
+// The popover is set off from the cards below it: a lighter body than the widget
+// color (white / one step lighter in dark mode), a visible border and a shadow -
+// the widget-bg scale itself barely changes in light mode.
 .popover {
-  background: var(--bs-widget-bg);
+  --bs-popover-bg: #fff;
+  --bs-popover-header-bg: var(--bs-widget-bg-500);
+  --bs-popover-border-color: var(--bs-border-color-translucent);
+  --bs-popover-header-padding-y: .375rem;
+  --bs-popover-body-padding-y: .5rem;
+  box-shadow: var(--bs-box-shadow);
 
   .popover-header {
-    background: var(--bs-widget-bg-500);
-    border-bottom: 1px solid var(--bs-widget-bg-500);
-  }
-
-  .popover-body {
-   
+    border-bottom: 1px solid var(--bs-border-color-translucent);
   }
 
   img {
     max-width: 100%;
     height: auto;
   }
-  .arrow::after {
-    border-right-color: var(--bs-widget-bg-500);
-  }
+}
+
+[data-bs-theme="dark"] .popover {
+  --bs-popover-bg: var(--bs-widget-bg-400);
 }
 
 
