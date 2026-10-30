@@ -1,10 +1,11 @@
 <?php
 
 global $get_category;
-$category_template_data = json_decode($get_category['cat_template_values'],true);
+// new categories have no values yet
+$category_template_data = json_decode($get_category['cat_template_values'] ?? '', true) ?? [];
 echo '<h5>Theme Values <small>(Theme: default)</small></h5>';
 
-$category_template_teaser = html_entity_decode($category_template_data['teaser_text'], ENT_QUOTES | ENT_XML1, 'UTF-8');
+$category_template_teaser = html_entity_decode($category_template_data['teaser_text'] ?? '',ENT_QUOTES | ENT_XML1, 'UTF-8');
 
 $input_wysiwyg_page_teaser = [
     "input_name" => "theme_values[teaser_text]",
