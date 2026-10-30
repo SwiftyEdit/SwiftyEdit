@@ -107,6 +107,18 @@
 	}
 }
 
+// List area of the module overviews (acp/templates/layout/module-overview.twig):
+// translucent, so the page background shows through a little. .card sets its
+// background directly (see above), so --bs-card-bg would not apply here.
+.card.module-overview-list {
+	background: rgba($widget_background, .6);
+	backdrop-filter: blur(6px);
+}
+
+[data-bs-theme="dark"] .card.module-overview-list {
+	background: rgba($widget_background_dark, .6);
+}
+
 // Nested cards: set apart by one flat tonal step plus a hairline border instead
 // of gradients. The themed widget-bg scale darkens in both themes, so the inner
 // card sits a step darker than its parent and its header one step further.
