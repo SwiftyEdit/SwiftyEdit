@@ -204,8 +204,9 @@ if(isset($_POST['save_price'])) {
     $group_title = sanitizeUserInputs($_POST['title'] ?? '');
     $unit = sanitizeUserInputs($_POST['unit'] ?? '');
     $unit_content = sanitizeUserInputs($_POST['unit_content'] ?? '');
-    // prices are entered and stored formatted (1.234,56), without thousands separator
-    $price_net = str_replace('.', '', sanitizeUserInputs($_POST['price_net'] ?? ''));
+    // prices are stored with a decimal comma and without thousands separator,
+    // like the products (1.234,56 and 1234.56 -> 1234,56)
+    $price_net = (string) se_sanitize_price($_POST['price_net'] ?? '');
 
     $amount = (int) ($_POST['amount'] ?? 0);
     $tax = (int) ($_POST['tax'] ?? 1);
@@ -218,7 +219,7 @@ if(isset($_POST['save_price'])) {
         }
         $vd_price[] = [
             'amount' => (int) $vd_amount,
-            'price' => str_replace('.', '', sanitizeUserInputs($_POST['product_vd_price'][$i] ?? ''))
+            'price' => (string) se_sanitize_price($_POST['product_vd_price'][$i] ?? '')
         ];
     }
     $product_price_volume_discount = $vd_price ? json_encode($vd_price, JSON_FORCE_OBJECT) : '';
