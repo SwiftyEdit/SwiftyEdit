@@ -99,6 +99,9 @@ if($action == 'list_posts') {
         $db_where["post_categories[~]"] = $cat_filter;
     }
 
+    // global filter (top navigation), posts know public (1) and draft (2)
+    $db_where += se_get_global_filter_where('post_lang', 'post_status', 'post_labels', [1 => '1', 2 => '2']);
+
     $posts_data_cnt = $db_posts->count("se_posts", ["AND" => $db_where]);
     $nbr_pages = (int) ceil($posts_data_cnt/$nbr_show_items);
 

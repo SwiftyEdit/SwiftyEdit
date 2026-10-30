@@ -1432,18 +1432,28 @@ function se_reorder_gallery_tmbs($gid, $order) {
 
 
 
+/**
+ * delete the images of a gallery post and its directory
+ * public/assets/galleries/{year of post_date}/gallery{id}/ (see acp/core/widgets/upload.php)
+ *
+ * @param int|string $id post_id of the gallery
+ * @param int|string $dir year of the post_date
+ */
 function se_remove_gallery($id,$dir) {
 
-	$fp = '../content/galleries/'.$dir.'/gallery'.$id.'/';
-	$files = glob("$fp*jpg");
-
-	foreach($files as $file) {
-		unlink($file);
+	$fp = SE_PUBLIC.'/assets/galleries/'.(int) $dir.'/gallery'.(int) $id.'/';
+	if(!is_dir($fp)) {
+		return;
 	}
-	
+
+	// the directory belongs to this gallery only, remove everything in it
+	foreach(glob($fp.'*') ?: [] as $file) {
+		if(is_file($file)) {
+			unlink($file);
+		}
+	}
+
 	rmdir($fp);
-	
-	
 }
 
 
@@ -2106,4 +2116,63 @@ function se_get_label_checklist(array $checked_ids): array {
         ];
     }
     return $labels;
+}
+
+/**
+ * Medoo conditions for the global filter (status, labels, languages) of the
+ * module lists, the filter is set in the offcanvas (layout/nav-top-filter.twig)
+ * and stored as json in the session (acp/core/widgets/data-writer.php)
+ *
+ * the global status values are 1 public, 2 draft, 3 private, 4 ghost, 5 redirect,
+ * $status_map translates them to the stored values of the module - a selected
+ * status that the module does not know matches no entry
+ *
+ * @param string $lang_column column of the language code
+ * @param string $status_column column of the status
+ * @param string $labels_column column of the label ids (comma separated)
+ * @param array $status_map global status => stored status
+ * @return array conditions for the "AND" of a select, empty without filter
+ */
+function se_get_global_filter_where(string $lang_column, string $status_column, string $labels_column, array $status_map): array {
+
+    $decode_filter = static fn(string $key): array => array_values(array_filter(
+        (array) (json_decode($_SESSION[$key] ?? '', true) ?? []),
+        static fn($value) => $value !== '' && $value !== null
+    ));
+
+    $where = [];
+
+    $languages = $decode_filter('global_filter_languages');
+    if($languages) {
+        $where[$lang_column] = $languages;
+    }
+
+    $status = $decode_filter('global_filter_status');
+    if($status) {
+        $stored_status = [];
+        foreach($status as $value) {
+            if(isset($status_map[$value])) {
+                $stored_status[] = (string) $status_map[$value];
+            }
+        }
+        // only unknown status selected: an impossible value, the list stays empty
+        $where[$status_column] = $stored_status ?: ['-1'];
+    }
+
+    // labels are stored as "1,3,12" - match the whole id, label 1 must not match 12
+    $labels = array_map('intval', $decode_filter('global_filter_label'));
+    if($labels) {
+        $patterns = [];
+        foreach($labels as $id) {
+            $patterns[] = "$id,%";
+            $patterns[] = "%,$id";
+            $patterns[] = "%,$id,%";
+        }
+        $where["OR #global_filter_labels"] = [
+            $labels_column => array_map('strval', $labels),
+            $labels_column.'[~]' => $patterns
+        ];
+    }
+
+    return $where;
 }
