@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * post form in /admin/blog/edit/, /new/ and /duplicate/,
+ * markup in acp/templates/blog/post-form.twig and blog/types/
+ *
+ * global variables
  * @var array $lang
  * @var string $languagePack
  * @var array $icon
@@ -8,10 +12,11 @@
  * @var array $se_labels
  * @var array $se_upload_file_types
  * @var array $lang_codes
- * @var array $db_content
- * @var array $hidden_csrf_token
+ * @var object $db_content
+ * @var string $hidden_csrf_token
  * @var string $se_base_url
  * @var string $query
+ * @var object $twig
  */
 
 $writer_uri = '/admin-xhr/blog/write/';

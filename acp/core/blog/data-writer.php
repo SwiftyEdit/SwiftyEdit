@@ -10,6 +10,7 @@
  * @var object $db_posts
  * @var object $db_content
  * @var string $se_base_url
+ * @var array $cols columns of se_posts, from install/contents/se_posts.php (save_post)
  */
 
 // switch the template for editing posts
@@ -134,72 +135,71 @@ if(isset($_POST['delete_post'])) {
 }
 
 // save or update post
-
 if(isset($_POST['save_post'])) {
 
-    // all columns of se_posts ($cols) - only these POST fields become
-    // variables (read again by name below), so a POST field can't overwrite
-    // any other variable in this scope (e.g. $db_posts, $target_page)
+    // all columns of se_posts ($cols)
     require SE_ROOT.'install/contents/se_posts.php';
 
-    foreach($_POST as $key => $val) {
-        if(is_string($val) && array_key_exists($key, $cols)) {
-            $$key = @htmlspecialchars($val, ENT_QUOTES);
-        }
+    /*
+     * every column is written: by default from the same-named POST field
+     * (html-encoded), a column without a POST field is stored empty -
+     * the columns built below overwrite their value
+     */
+    $values = [];
+    foreach(array_keys($cols) as $col) {
+        $posted = $_POST[$col] ?? '';
+        $values[$col] = is_string($posted) ? htmlspecialchars($posted, ENT_QUOTES) : '';
     }
 
-    $post_releasedate = time();
-    $post_lastedit = time();
-    $post_lastedit_from = $_SESSION['user_nick'];
-    $post_priority = (int) $_POST['post_priority'];
+    $values['post_lastedit'] = time();
+    $values['post_lastedit_from'] = $_SESSION['user_nick'];
+    $values['post_priority'] = (int) ($_POST['post_priority'] ?? 0);
 
-    if($_POST['post_date'] == "") {
-        $post_date = time();
+    if(($_POST['post_date'] ?? '') == '') {
+        $values['post_date'] = time();
     }
 
-    if($_POST['post_releasedate'] != "") {
-        $post_releasedate = strtotime($_POST['post_releasedate']);
+    // release date from the form, otherwise now (an invalid date is stored empty, as before)
+    $values['post_releasedate'] = time();
+    if(($_POST['post_releasedate'] ?? '') != '') {
+        $values['post_releasedate'] = strtotime($_POST['post_releasedate']);
     }
 
-    $clean_title = clean_filename($_POST['post_title']);
-    $post_date_year = date("Y",$post_releasedate);
-    $post_date_month = date("m",$post_releasedate);
-    $post_date_day = date("d",$post_releasedate);
-
-    if($_POST['post_slug'] == "") {
-        $post_slug = $clean_title.'/';
+    if(($_POST['post_slug'] ?? '') == '') {
+        $values['post_slug'] = clean_filename($_POST['post_title'] ?? '').'/';
     } else {
-        $post_slug = se_clean_permalink($_POST['post_slug']);
+        $values['post_slug'] = se_clean_permalink($_POST['post_slug']);
     }
 
-    if($_POST['main_category_slug'] == "default") {
+    $post_lang = $_POST['post_lang'] ?? '';
+
+    if(($_POST['main_category_slug'] ?? '') == 'default') {
         //get a target page by page_type_of_use and language
-        $main_category_slug = $db_content->get("se_pages", "page_permalink", [
+        $values['main_category_slug'] = $db_content->get("se_pages", "page_permalink", [
             "AND" => [
                 "page_type_of_use" => "display_post",
-                "page_language" => $_POST['post_lang']
+                "page_language" => $post_lang
             ]
         ]);
         // if we have no page for display_post, find another catalog page
-        $main_category_slug = $db_content->get("se_pages", "page_permalink", [
+        $values['main_category_slug'] = $db_content->get("se_pages", "page_permalink", [
             "AND" => [
                 "page_posts_types[~]" => "m",
-                "page_language" => $_POST['post_lang']
+                "page_language" => $post_lang
             ]
         ]);
     } else {
-        $main_category_slug = se_clean_permalink($_POST['main_category_slug']);
+        $values['main_category_slug'] = se_clean_permalink($_POST['main_category_slug'] ?? '');
     }
 
-    // update rss feed
+    // the page that displays the posts, for the rss and canonical urls
     $target_page = $db_content->select("se_pages", "page_permalink", [
         "AND" => [
             "page_type_of_use" => "display_post",
             "page_language" => $post_lang
         ]
     ]);
-
-    if($target_page[0] == '') {
+    if(($target_page[0] ?? '') == '') {
         $target_page = $db_content->select("se_pages", "page_permalink", [
             "AND" => [
                 "page_posts_types[~]" => "m",
@@ -207,105 +207,86 @@ if(isset($_POST['save_post'])) {
             ]
         ]);
     }
+    $target_page_permalink = (string) ($target_page[0] ?? '');
 
-
-    if(is_numeric($post_id)) {
-        $filename = str_replace("/", "", $post_slug) . '-' . $post_id . '.html';
+    // existing posts: build the urls if the form has none
+    if(is_numeric($values['post_id'])) {
+        $filename = str_replace("/", "", $values['post_slug']) . '-' . $values['post_id'] . '.html';
 
         // rss url
-        if ($_POST['post_rss_url'] == "") {
-            $post_rss_url = $se_base_url . $target_page[0] . $filename;
+        if(($_POST['post_rss_url'] ?? '') == '') {
+            $values['post_rss_url'] = $se_base_url . $target_page_permalink . $filename;
         }
 
         // canonical url: keep an explicit value if one was set on the form,
         // otherwise build it from the detail page + slug, same pattern as
         // product canonical urls (see acp/core/functions_shop.php).
-        if ($_POST['post_canonical_url'] == "") {
-            $post_canonical_url = $se_base_url . $target_page[0] . $filename;
+        if(($_POST['post_canonical_url'] ?? '') == '') {
+            $values['post_canonical_url'] = $se_base_url . $target_page_permalink . $filename;
         }
     }
 
-    $post_categories = '';
-    if(is_array($_POST['post_categories'])) {
-        $post_categories = implode("<->", $_POST['post_categories']);
-    }
+    $values['post_categories'] = is_array($_POST['post_categories'] ?? null) ? implode("<->", $_POST['post_categories']) : '';
 
-    $post_images = '';
-    if(is_array($_POST['picker_0'])) {
-        $post_images_string = implode("<->", $_POST['picker_0']);
-        $post_images_string = "<->$post_images_string<->";
-        $post_images = $post_images_string;
+    $values['post_images'] = '';
+    if(is_array($_POST['picker_0'] ?? null)) {
+        $values['post_images'] = '<->'.implode("<->", $_POST['picker_0']).'<->';
     }
 
     /* labels */
-    $post_labels = '';
-    if(is_array($_POST['post_labels'])) {
-        $post_labels = implode(",", $_POST['post_labels']);
-    }
+    $values['post_labels'] = is_array($_POST['post_labels'] ?? null) ? implode(",", $_POST['post_labels']) : '';
 
-    $addon_string = se_encode_addon_values($_POST['addon_values'] ?? null);
+    $values['addon_string'] = se_encode_addon_values($_POST['addon_values'] ?? null);
 
     /* fix on top */
+    $values['post_fixed'] = (($_POST['post_fixed'] ?? '') == 'fixed') ? 1 : 2;
 
-    if($_POST['post_fixed'] == 'fixed') {
-        $post_fixed = 1;
-    } else {
-        $post_fixed = 2;
-    }
-
-    $post_hide_detail_page = 0;
+    $values['post_hide_detail_page'] = 0;
     if(isset($_POST['posts_hide_detail_page'])) {
-        $post_hide_detail_page = 1;
-        $post_rss = 'off';
+        $values['post_hide_detail_page'] = 1;
+        $values['post_rss'] = 'off';
     }
 
     /* metas */
-    if($_POST['post_meta_title'] == '') {
-        $post_meta_title = $_POST['post_title'];
-    } else {
-        $post_meta_title = $_POST['post_meta_title'];
+    $post_meta_title = $_POST['post_meta_title'] ?? '';
+    if($post_meta_title == '') {
+        $post_meta_title = $_POST['post_title'] ?? '';
     }
-    if($_POST['post_meta_description'] == '') {
-        $post_meta_description = strip_tags($_POST['post_teaser']);
-    } else {
-        $post_meta_description = $_POST['post_meta_description'];
+    $post_meta_description = $_POST['post_meta_description'] ?? '';
+    if($post_meta_description == '') {
+        $post_meta_description = strip_tags($_POST['post_teaser'] ?? '');
     }
-
-    $post_meta_title = se_return_clean_value($post_meta_title);
-    $post_meta_description = se_return_clean_value($post_meta_description);
+    $values['post_meta_title'] = se_return_clean_value($post_meta_title);
+    $values['post_meta_description'] = se_return_clean_value($post_meta_description);
 
     se_generate_xml_sitemap('posts');
 
-    // post_uuid is not part of the form - every column below is written from
-    // a same-named variable, so without this every save would store an empty
-    // uuid. Keep the existing one on update (or generate one if it is
-    // missing), generate a new one for new posts. Set after the $_POST loop
-    // above, so a posted "post_uuid" can't override it.
-    $post_uuid = '';
+    // post_uuid is not part of the form: keep the existing one on update
+    // (or generate one if it is missing), generate a new one for new posts
+    $values['post_uuid'] = '';
     if($_POST['save_post'] == 'update') {
-        $post_uuid = (string) $db_posts->get("se_posts", "post_uuid", ["post_id" => (int) $_POST['post_id']]);
+        $values['post_uuid'] = (string) $db_posts->get("se_posts", "post_uuid", ["post_id" => (int) ($_POST['post_id'] ?? 0)]);
     }
-    if($post_uuid === '') {
-        $post_uuid = se_generate_uuid();
+    if($values['post_uuid'] === '') {
+        $values['post_uuid'] = se_generate_uuid();
     }
 
     // counters are written by the frontend (views, link clicks, downloads) and
     // are not part of the form - on update they must keep their stored value
     $counter_cols = ['post_hits', 'post_link_hits', 'post_file_attachment_hits'];
 
-    // build the columns from all $cols (loaded above)
-    foreach($cols as $k => $v) {
-        if($k == 'post_id') {continue;}
-        if($_POST['save_post'] == 'update' && in_array($k, $counter_cols)) {continue;}
-        $value = $$k;
-        $inputs[$k] = "$value";
+    $inputs = [];
+    foreach(array_keys($cols) as $col) {
+        if($col == 'post_id') {continue;}
+        if($_POST['save_post'] == 'update' && in_array($col, $counter_cols)) {continue;}
+        $inputs[$col] = (string) $values[$col];
     }
 
-
+    $post_id = 0;
     if($_POST['save_post'] == 'save') {
         $db_posts->insert("se_posts", $inputs);
-        $post_id = $db_posts->id();
-        record_log($_SESSION['user_nick'],"new post id: $post_id","6");
+        $post_id = (int) $db_posts->id();
+        record_log($_SESSION['user_nick'],"new post id: $post_id",6);
         show_toast($lang['msg_success_new_record'],'success');
         header( "HX-Redirect: /admin/blog/edit/$post_id/");
     }
@@ -314,20 +295,21 @@ if(isset($_POST['save_post'])) {
         $db_posts->update("se_posts", $inputs, [
             "post_id" => $post_id
         ]);
-        record_log($_SESSION['user_nick'],"updated post id: $post_id","3");
+        record_log($_SESSION['user_nick'],"updated post id: $post_id",3);
         show_toast($lang['msg_success_db_changed'],'success');
     }
 
     se_set_content_tags('post', $post_id, explode(',', $_POST['content_tags'] ?? ''));
 
     // send to rss feed
-    if($_POST['post_rss'] == 'on' && $target_page[0] != '') {
+    if(($_POST['post_rss'] ?? '') == 'on' && $target_page_permalink != '') {
+        $post_rss_url = (string) $values['post_rss_url'];
         if($post_rss_url == '') {
-            $post_rss_url = $se_base_url . $target_page[0] . str_replace("/", "", $post_slug) . '-' . $post_id . '.html';
+            $post_rss_url = $se_base_url . $target_page_permalink . str_replace("/", "", $values['post_slug']) . '-' . $post_id . '.html';
         }
-        add_feed($post_title, $_POST['post_teaser'], $post_rss_url, "post_$post_id", "", $post_releasedate);
+        add_feed($values['post_title'], $_POST['post_teaser'] ?? '', $post_rss_url, "post_$post_id", "", $values['post_releasedate']);
     }
-
+    exit;
 }
 
 if(isset($_POST['reorder_gallery_tmbs'])) {
