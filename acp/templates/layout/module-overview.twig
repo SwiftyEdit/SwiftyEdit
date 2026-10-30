@@ -3,6 +3,7 @@
  # extended by <module>/list.twig, which fills the blocks
  #   list    - the htmx container that loads the list (rendered inside .module-overview-list)
  #   sidebar - module specific filters below the search
+ #   header_actions - buttons in the header (optional, default: the "new" button of new_url)
  #
  # variables: title, title_icon, docs_link (optional, html), new_url (optional), writer_uri, reader_uri,
  #   search_name (POST name of the search input, optional - no search card without it),
@@ -12,9 +13,12 @@
  #}
 <div class="subHeader d-flex align-items-center">
     {{ title_icon|raw }} {{ title }} {{ docs_link|default('')|raw }}
-    {% if new_url %}
-        <a href="{{ new_url }}" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
-    {% endif %}
+    {# header_actions: buttons on the right, default the "new" button of new_url #}
+    {% block header_actions %}
+        {% if new_url %}
+            <a href="{{ new_url }}" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
+        {% endif %}
+    {% endblock %}
 </div>
 
 <div class="row">

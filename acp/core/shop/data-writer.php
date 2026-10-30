@@ -485,117 +485,130 @@ if(isset($_POST['delete_option']) && is_numeric($_POST['delete_option'])) {
 }
 
 // save filter group
+// groups: filter_type 1 and no filter_parent_id (the frontend loads the groups by that)
 if(isset($_POST['save_filter_group'])) {
 
-    $filter_type = 1;
-    $filter_priority = (int) $_POST['filter_priority'];
-    $filter_input_type = (int) $_POST['filter_input_type'];
-    $filter_title = se_return_clean_value($_POST['filter_title']);
-    $filter_description = $_POST['filter_description'];
-    $filter_lang = $_POST['filter_lang'];
-    $filter_slug = se_generate_slug($filter_title);
+    $filter_title = se_return_clean_value($_POST['filter_title'] ?? '');
 
-    if(is_array($_POST['filter_cats'])) {
-        $filter_cats = implode(",", $_POST['filter_cats']);
-    } else {
-        $filter_cats = '';
-    }
+    // "all" and/or category hashes
+    $filter_cats = array_map(static fn($cat) => preg_replace('/[^a-z0-9]/i', '', (string) $cat), (array) ($_POST['filter_cats'] ?? []));
 
     $insert_data = [
-        "filter_type" =>  $filter_type,
-        "filter_input_type" =>  $filter_input_type,
-        "filter_priority" => $filter_priority,
-        "filter_title" =>  $filter_title,
-        "filter_slug" =>  $filter_slug,
-        "filter_description" =>  $filter_description,
-        "filter_lang" =>  $filter_lang,
-        "filter_categories" => $filter_cats
+        "filter_type" => 1,
+        "filter_input_type" => (int) ($_POST['filter_input_type'] ?? 1),
+        "filter_priority" => (int) ($_POST['filter_priority'] ?? 0),
+        "filter_title" => $filter_title,
+        // the frontend builds the filter urls from the slug
+        "filter_slug" => se_generate_slug($filter_title),
+        "filter_description" => se_purify_html($_POST['filter_description'] ?? ''),
+        "filter_lang" => se_sanitize_lang_input($_POST['filter_lang'] ?? ''),
+        "filter_categories" => implode(",", array_filter($filter_cats))
     ];
 
     if(is_numeric($_POST['save_filter_group'])) {
-        // update
         $id = (int) $_POST['save_filter_group'];
         $data = $db_content->update("se_filter", $insert_data, [
             "filter_id" => $id
         ]);
+        if($data !== null && $data->rowCount() > 0) {
+            record_log($_SESSION['user_nick'], "updated filter group id: $id", 3);
+            show_toast($lang['msg_success_db_changed'],'success');
+        } else {
+            show_toast($lang['msg_error_db_changed'],'error');
+        }
     } else {
-        // new
-        $data = $db_content->insert("se_filter", $insert_data);
+        $db_content->insert("se_filter", $insert_data);
+        $new_id = $db_content->id();
+        record_log($_SESSION['user_nick'], "new filter group id: $new_id", 1);
+        show_toast($lang['msg_success_new_record'],'success');
+        // open the new group, a second click on "save" must not create it again
+        header("HX-Redirect: /admin/shop/filters/edit/group/$new_id/");
     }
-    if($data->rowCount() > 0) {
-        show_toast($lang['msg_success_db_changed'],'success');
-    } else {
-        show_toast($lang['msg_error_db_changed'],'error');
-    }
+    exit;
 }
 
 // save filter value
+// values: filter_type 2, filter_parent_id = the group, products reference them by filter_id
 if(isset($_POST['save_filter_value'])) {
 
-    $filter_type = 2;
-    $filter_priority = (int) $_POST['filter_priority'];
-    $filter_title = se_return_clean_value($_POST['filter_title']);
-    $filter_description = $_POST['filter_description'];
-    $filter_parent_id = $_POST['filter_parent_id'];
-    $filter_hash = $_POST['filter_hash'];
-    $filter_slug = se_generate_slug($_POST['filter_title']);
+    // the hash is created by the form, values of older versions get one on their next save
+    $filter_hash = preg_replace('/[^a-z0-9]/i', '', (string) ($_POST['filter_hash'] ?? ''));
+    if($filter_hash == '') {
+        $filter_hash = uniqid();
+    }
 
     $insert_data = [
-        "filter_type" =>  $filter_type,
-        "filter_priority" => $filter_priority,
-        "filter_title" =>  $filter_title,
-        "filter_slug" =>  $filter_slug,
-        "filter_description" =>  $filter_description,
-        "filter_parent_id" => $filter_parent_id,
+        "filter_type" => 2,
+        "filter_priority" => (int) ($_POST['filter_priority'] ?? 0),
+        "filter_title" => se_return_clean_value($_POST['filter_title'] ?? ''),
+        // the frontend builds the filter urls from the slug
+        "filter_slug" => se_generate_slug($_POST['filter_title'] ?? ''),
+        "filter_description" => se_purify_html($_POST['filter_description'] ?? ''),
+        "filter_parent_id" => (int) ($_POST['filter_parent_id'] ?? 0),
         "filter_hash" => $filter_hash
     ];
 
     if(is_numeric($_POST['save_filter_value'])) {
-        // update
         $id = (int) $_POST['save_filter_value'];
         $data = $db_content->update("se_filter", $insert_data, [
             "filter_id" => $id
         ]);
+        if($data !== null && $data->rowCount() > 0) {
+            record_log($_SESSION['user_nick'], "updated filter value id: $id", 3);
+            show_toast($lang['msg_success_db_changed'],'success');
+        } else {
+            show_toast($lang['msg_error_db_changed'],'error');
+        }
     } else {
-        // new
-        $data = $db_content->insert("se_filter", $insert_data);
+        $db_content->insert("se_filter", $insert_data);
+        $new_id = $db_content->id();
+        record_log($_SESSION['user_nick'], "new filter value id: $new_id", 1);
+        show_toast($lang['msg_success_new_record'],'success');
+        // open the new value, a second click on "save" must not create it again
+        header("HX-Redirect: /admin/shop/filters/edit/value/$new_id/");
     }
-    if($data->rowCount() > 0) {
-        show_toast($lang['msg_success_db_changed'],'success');
-    } else {
-        show_toast($lang['msg_error_db_changed'],'error');
-    }
+    exit;
 }
 
 // delete filter value
 if(isset($_POST['delete_filter_value'])) {
     $id = (int) $_POST['delete_filter_value'];
     $data = $db_content->delete("se_filter", [
-        "filter_id" => $id
+        "AND" => [
+            "filter_id" => $id,
+            "filter_type" => 2
+        ]
     ]);
-    if($data->rowCount() > 0) {
+    if($data !== null && $data->rowCount() > 0) {
+        record_log($_SESSION['user_nick'], "deleted filter value id: $id", 10);
         show_toast($lang['msg_success_db_changed'],'success');
+        header("HX-Redirect: /admin/shop/filters/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
-    header( "HX-Redirect: /admin/shop/filters/");
+    exit;
 }
 
-// delete filter group
-// delete all values from this group
+// delete filter group and all its values
 if(isset($_POST['delete_filter_group'])) {
     $id = (int) $_POST['delete_filter_group'];
     $data = $db_content->delete("se_filter", [
         "OR" => [
-            "filter_id" => $id,
+            "AND #group" => [
+                "filter_id" => $id,
+                "filter_type" => 1
+            ],
             "filter_parent_id" => $id
         ]
     ]);
-    if($data->rowCount() > 0) {
+    if($data !== null && $data->rowCount() > 0) {
+        record_log($_SESSION['user_nick'], "deleted filter group id: $id", 10);
         show_toast($lang['msg_success_db_changed'],'success');
+        header("HX-Redirect: /admin/shop/filters/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
+    exit;
 }
 
 // change payment status

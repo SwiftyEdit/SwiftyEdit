@@ -1,0 +1,39 @@
+{#
+ # list of the filter groups with their values, loaded into #getFilter by the shop data-reader
+ # groups: see shop/data-reader.php (action list_filters)
+ #}
+{% if groups is empty %}
+    <p class="text-muted mb-0">{{ lang.msg_info_no_entries_so_far }}</p>
+{% else %}
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th>{{ icon.translate|raw }}</th>
+                <th>{{ icon.bars|raw }}</th>
+                <th>{{ lang.label_type }}</th>
+                <th>{{ lang.label_group }}</th>
+                <th>{{ lang.label_value }}</th>
+            </tr>
+        </thead>
+        {% for group in groups %}
+            <tr>
+                <td><img src="{{ group.lang_flag }}" width="15" title="{{ group.lang }}" alt="{{ group.lang }}"></td>
+                <td>{{ group.priority }}</td>
+                <td>{{ group.type_icon|raw }}</td>
+                <td>
+                    <a href="/admin/shop/filters/edit/group/{{ group.id }}/" class="btn btn-default"><code>#{{ group.id }}</code> {{ group.title }}</a>
+                    <div>
+                        {% if group.all_categories %}<span class="badge text-bg-secondary opacity-50">{{ lang.label_all_categories }}</span> {% endif %}
+                        {% for category in group.categories %}<span class="badge text-bg-secondary opacity-50">{{ category }}</span> {% endfor %}
+                    </div>
+                </td>
+                <td>
+                    {% for value in group.values %}
+                        <a href="/admin/shop/filters/edit/value/{{ value.id }}/" class="btn btn-sm btn-default me-1 mb-1"><span class="badge text-bg-secondary rounded-pill opacity-50">{{ value.priority }}</span> {{ value.title }}</a>
+                    {% endfor %}
+                    <a href="/admin/shop/filters/new/value/{{ group.id }}/" class="btn btn-sm btn-default me-1 mb-1"><span class="text-success">{{ icon.plus|raw }}</span></a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

@@ -243,25 +243,19 @@ if($_REQUEST['action'] == 'list_products') {
     exit;
 }
 
-// List of products that have been assigned to a specific filter
-if($_REQUEST['show'] == 'products_by_filter') {
+// list of products that have been assigned to a specific filter value
+if(($_REQUEST['show'] ?? '') == 'products_by_filter') {
     $filter_id = (int) $_REQUEST['filter_id'];
-    // search in json string
-    $get_filter = ':"'.$filter_id.'"';
-    $get_products = $db_posts->select("se_products",["id","title"],[
-        "filter[~]" => $get_filter,
+    // products store their values as json, e.g. {"0":"2","1":"5"}
+    $get_products = $db_posts->select("se_products", ["id", "title"], [
+        "filter[~]" => ':"'.$filter_id.'"',
         "ORDER" => ["lastedit" => "DESC"],
         "LIMIT" => 50,
     ]);
-
-    foreach($get_products as $prod) {
-        echo '<div class="d-flex justify-content-start border-end mb-1">';
-        echo '<div class="flex-shrink-0 p-1">#'.$prod['id'].'</div>';
-        echo '<div class="w-100 p-1">'.htmlentities($prod['title']).'</div>';
-        echo '</div>';
-    }
+    echo $twig->render('shop/filter-products.twig', [
+        'products' => array_map(static fn($product) => ['id' => $product['id'], 'title' => $decode($product['title'])], $get_products)
+    ]);
 }
-
 
 // list price groups
 if($_REQUEST['action'] == 'list_price_groups') {
@@ -458,133 +452,77 @@ if($_REQUEST['action'] == 'list_options') {
     ]);
 }
 
-// list filters
-
+// list filters (groups with their values)
 if($_REQUEST['action'] == 'list_filters') {
 
-
-    $filter_base = [
-        "AND" => [
-            "filter_type" => 1
-        ]
-    ];
-
-    $filter_by_category = array();
-    if($_SESSION['filter_prod_categories'] != '') {
-        $cat_filter = explode(" ",$_SESSION['filter_prod_categories']);
-        $cat_filter = array_filter($cat_filter);
-        $filter_by_category = [
-            "filter_categories[~]" => $cat_filter
-        ];
-    }
-
-    $filter_by_lang = array();
-    if($global_filter_languages != '') {
-        $filter_by_lang = [
-                "filter_lang" => $global_filter_languages
-        ];
-    }
-
     $db_where = [
-        "AND" => $filter_base+$filter_by_category+$filter_by_lang
+        "filter_type" => 1
     ];
 
-    $db_order = [
-        "ORDER" => [
-            "filter_priority" => "DESC"
-        ]
-    ];
-
-    $filters = $db_content->select("se_filter","*",
-        $db_where+$db_order
-    );
-
-    echo '<div class="card p-3">';
-    echo '<table class="table table-hover">';
-    echo '<thead>';
-    echo '<tr>';
-    echo '<th>'.$icon['translate'].'</th>';
-    echo '<th>'.$icon['bars'].'</th>';
-    echo '<th>Type</th>';
-    echo '<th>Group</th>';
-    echo '<th>Values</th>';
-    echo '</tr>';
-    echo '</thead>';
-    foreach($filters as $k => $v) {
-
-        $group_title = $v['filter_title'];
-        $group_id = $v['filter_id'];
-        $group_prio = $v['filter_priority'];
-        $group_categories = explode(",",$v['filter_categories']);
-        $group_slug = $v['filter_slug'];
-
-        if($group_slug == '') {
-            // add missing slug
-            $slug = se_generate_slug($group_title);
-            $db_content->update("se_filter",["filter_slug" => $slug],["filter_id" => $group_id]);
-        }
-
-        $type = '';
-        if($v['filter_input_type'] == '1') {
-            $type = $icon['ui_radios'];
-        } else if($v['filter_input_type'] == '2') {
-            $type = $icon['ui_checks'];
-        } else {
-            $type = $icon['sliders'];
-        }
-
-        $flag = '<img src="'.return_language_flag_src($v['filter_lang']).'" width="15">';
-
-        $get_filter_items = se_get_product_filter_values($group_id);
-
-        echo '<tr>';
-        echo '<td>'.$flag.'</td>';
-        echo '<td>'.$group_prio.'</td>';
-        echo '<td>'.$type.'</td>';
-        echo '<td>';
-
-        echo '<form action="/admin/shop/filters/edit/" method="post" class="">';
-        echo '<button class="btn btn-default" name="edit_group" value="'.$group_id.'"><code>#'.$group_id.'</code> '.$group_title.'</button>';
-        echo  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        echo  '</form>';
-
-        // show categories
-        $get_categories = se_get_categories();
-        foreach($get_categories as $key => $value) {
-            if (in_array($value['cat_hash'], $group_categories)) {
-                echo '<span class="badge text-bg-secondary opacity-50">'.$value['cat_name'].'</span> ';
-            }
-        }
-        echo '</td>';
-        echo '<td>';
-        echo '<form action="/admin/shop/filters/edit/" method="post" class="d-inline">';
-        foreach($get_filter_items as $item) {
-
-            if($item['filter_slug'] == '') {
-                // add missing slug
-                $item_slug = se_generate_slug($item['filter_title']);
-                $db_content->update("se_filter",["filter_slug" => $item_slug],["filter_id" => $item['filter_id']]);
-            }
-
-            echo '<button type="submit" name="edit_value" value="'.$item['filter_id'].'" class="btn btn-sm btn-default me-1">';
-            echo '<span class="badge text-bg-secondary rounded-pill opacity-50">'.$item['filter_priority'].'</span> ';
-            echo $item['filter_title'];
-            echo '</button>';
-        }
-        echo '<button type="submit" name="edit_value" value="new" class="btn btn-sm btn-default me-1">';
-        echo '<span class="text-success">'.$icon['plus'].'</span>';
-        echo '</button>';
-        echo '<input type="hidden" name="parent_id" value="'.$group_id.'">';
-        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        echo '</form>';
-        echo '</td>';
-        echo '</tr>';
-
+    // categories of the sidebar (shared with the products list)
+    $cat_filter = array_values(array_filter(explode(" ", $_SESSION['filter_prod_categories'] ?? '')));
+    if($cat_filter) {
+        $db_where["filter_categories[~]"] = $cat_filter;
     }
 
-    echo '</table>';
-    echo '</div>';
+    // global filter (top navigation): filter groups only have a language
+    $filter_languages = array_values(array_filter((array) ($global_filter_languages ?? [])));
+    if($filter_languages) {
+        $db_where["filter_lang"] = $filter_languages;
+    }
 
+    $filters = $db_content->select("se_filter", "*", [
+        "AND" => $db_where,
+        "ORDER" => ["filter_priority" => "DESC"]
+    ]);
+
+    $category_names = [];
+    foreach(se_get_categories() as $cat) {
+        $category_names[$cat['cat_hash']] = $decode($cat['cat_name']);
+    }
+
+    $type_icons = [
+        '1' => $icon['ui_radios'],
+        '2' => $icon['ui_checks']
+    ];
+
+    $groups = [];
+    foreach($filters as $group) {
+
+        // the frontend builds the filter urls from the slugs - add missing ones
+        if($group['filter_slug'] == '') {
+            $db_content->update("se_filter", ["filter_slug" => se_generate_slug($group['filter_title'])], ["filter_id" => $group['filter_id']]);
+        }
+
+        $values = [];
+        foreach(se_get_product_filter_values($group['filter_id']) as $item) {
+            if($item['filter_slug'] == '') {
+                $db_content->update("se_filter", ["filter_slug" => se_generate_slug($item['filter_title'])], ["filter_id" => $item['filter_id']]);
+            }
+            $values[] = [
+                'id' => (int) $item['filter_id'],
+                'title' => $decode($item['filter_title']),
+                'priority' => $item['filter_priority']
+            ];
+        }
+
+        $group_categories = explode(",", (string) $group['filter_categories']);
+        $groups[] = [
+            'id' => (int) $group['filter_id'],
+            'title' => $decode($group['filter_title']),
+            'priority' => $group['filter_priority'],
+            'lang' => $group['filter_lang'],
+            'lang_flag' => return_language_flag_src($group['filter_lang']),
+            'type_icon' => $type_icons[(string) $group['filter_input_type']] ?? $icon['sliders'],
+            'all_categories' => in_array('all', $group_categories),
+            'categories' => array_values(array_intersect_key($category_names, array_flip($group_categories))),
+            'values' => $values
+        ];
+    }
+
+    echo $twig->render('shop/filters-items.twig', [
+        'groups' => $groups
+    ]);
 }
 
 // list orders

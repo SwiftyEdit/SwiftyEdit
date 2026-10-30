@@ -1,0 +1,23 @@
+{# overview of the product filters (groups and their values) in /admin/shop/filters/, rendered by filters.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block header_actions %}
+    <div class="ms-auto">
+        <a href="/admin/shop/filters/new/group/" class="btn btn-default">{{ icon.plus|raw }} {{ lang.btn_new_group }}</a>
+        <a href="/admin/shop/filters/new/value/" class="btn btn-default">{{ icon.plus|raw }} {{ lang.btn_new_value }}</a>
+    </div>
+{% endblock %}
+
+{% block list %}
+    <div id="getFilter" hx-post="{{ reader_uri }}?action=list_filters" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+{% endblock %}
+
+{% block sidebar %}
+    {# the category filter is shared with the products list #}
+    <div class="card mb-2">
+        <div class="card-header">{{ lang.label_categories }}</div>
+        <div class="scroll-container p-0">
+            <div hx-get="{{ reader_uri }}?action=list_categories" hx-trigger="load, {{ list_triggers }}"></div>
+        </div>
+    </div>
+{% endblock %}

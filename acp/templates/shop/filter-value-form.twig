@@ -1,0 +1,48 @@
+{#
+ # filter value form in /admin/shop/filters/edit/value/<id>/ and /new/value/<group id>/, rendered by filters-edit.php
+ # inputs: fields built by se_print_form_input()
+ # value_id: id of the edited value, null for a new value
+ # filter_hash: kept on update, new for a new value
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
+</div>
+
+<form>
+    <div class="card">
+        <div class="card-header"><a href="/admin/shop/">{{ lang.nav_btn_shop }}</a> / <a href="/admin/shop/filters/">{{ lang.filter }}</a> / {{ lang.label_value }}</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-9">
+                    {{ inputs.title|raw }}
+                    {{ inputs.description|raw }}
+                </div>
+                <div class="col-md-3">
+                    <div class="ps-3 border-start">
+                        {{ inputs.group|raw }}
+                        {{ inputs.priority|raw }}
+                        <div class="mt-3 d-flex justify-content-between">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button hx-post="{{ writer_uri }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']" name="save_filter_value" value="{{ value_id ?? 'new' }}" class="btn btn-success">{{ value_id ? lang.btn_update : lang.btn_save }}</button>
+                            {% if value_id %}
+                                <button hx-post="{{ writer_uri }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_filter_value" value="{{ value_id }}" class="btn btn-danger">{{ icon.trash_alt|raw }}</button>
+                            {% endif %}
+                            <input type="hidden" name="filter_hash" value="{{ filter_hash }}">
+                        </div>
+                    </div>
+
+                    {% if value_id %}
+                        <div class="card mt-3">
+                            <div class="card-header">{{ lang.nav_btn_products }}</div>
+                            <div class="card-body">
+                                <div class="scroll-container">
+                                    <div hx-get="/admin-xhr/shop/read/?show=products_by_filter&filter_id={{ value_id }}" hx-trigger="load">Loading data ...</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
