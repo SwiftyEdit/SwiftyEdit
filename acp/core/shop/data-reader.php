@@ -39,19 +39,12 @@ if($_REQUEST['action'] == 'list_active_searches') {
 }
 
 if($_REQUEST['action'] == 'list_active_searches_orders') {
-    if(isset($_SESSION['orders_text_filter']) AND $_SESSION['orders_text_filter'] != "") {
-        unset($all_filter);
-        $all_filter_orders = explode(" ", $_SESSION['orders_text_filter']);
-
-        foreach($all_filter_orders as $f) {
-            if($_REQUEST['rm_keyword'] == "$f") { continue; }
-            if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_orders" value="'.$f.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
-        }
-        if(isset($btn_remove_keyword)) {
-            echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
-        }
-    }
+    $keywords = array_filter(explode(" ", $_SESSION['orders_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'remove_name' => 'rmkey_orders',
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
 
@@ -525,219 +518,112 @@ if($_REQUEST['action'] == 'list_filters') {
     ]);
 }
 
+/**
+ * the invoice address of an order as plain text lines - it is stored as
+ * html: the sanitized address fields, joined with <br> (see app/handlers/checkout.php)
+ *
+ * @param string $address
+ * @return array
+ */
+$order_address_lines = static function(string $address) use ($decode): array {
+    $lines = preg_split('/<br\s*\/?>/i', $address) ?: [];
+    return array_values(array_filter(array_map(static fn($line) => trim($decode(strip_tags($line))), $lines)));
+};
+
+/**
+ * the options of an ordered product as plain text - stored as <span>option</span>...
+ * by se_add_to_cart(), older orders may contain any markup
+ *
+ * @param string $options
+ * @return array
+ */
+$order_option_lines = static function(string $options) use ($decode): array {
+    if(preg_match_all('#<span>(.*?)</span>#s', $options, $matches) > 0) {
+        $options = $matches[1];
+    } else {
+        $options = [$options];
+    }
+    return array_values(array_filter(array_map(static fn($option) => trim($decode(strip_tags($option))), $options)));
+};
+
 // list orders
 if($_REQUEST['action'] == 'list_orders') {
 
-    // defaults
-    $order_by = 'order_time';
-    $order_direction = 'DESC';
-    $limit_start = $_SESSION['pagination_orders'] ?? 0;
     $nbr_show_items = 25;
+    $active_page = (int) ($_SESSION['pagination_orders'] ?? 0);
 
-    $match_str = $_SESSION['orders_text_filter'] ?? '';
-    $order_key = $_SESSION['sorting_orders'] ?? $order_by;
-    $order_direction = $_SESSION['sorting_orders_direction'] ?? $order_direction;
-
-    if($limit_start > 0) {
-        $limit_start = ($limit_start*$nbr_show_items);
-    }
-
-    $filter_base = [
-        "AND" => [
-            "id[>]" => 0
-        ]
-    ];
-
-    $filter_by_str = array();
-    if($match_str != '') {
-        $this_filter = explode(" ",$match_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_str = [
-                "OR" => [
-                    "order_invoice_mail[~]" => "%$f%",
-                    "order_invoice_address[~]" => "%$f%",
-                    "order_products[~]" => "%$f%",
-                    "order_user_comment[~]" => "%$f%",
-                    "order_admin_comment[~]" => "%$f%"
-                ]
-            ];
-        }
-    }
-
-
-
+    // search: every keyword has to be part of the address, mail, products or comments
+    $search_columns = ['order_invoice_mail', 'order_invoice_address', 'order_products', 'order_user_comment', 'order_admin_comment'];
     $db_where = [
-        "AND" => $filter_base+$filter_by_str
+        "id[>]" => 0
     ];
-
-    $db_order = [
-        "ORDER" => [
-            "$order_key" => "$order_direction"
-        ]
-    ];
-
-    $db_limit = [
-        "LIMIT" => [$limit_start, $nbr_show_items]
-    ];
-
-    $orders_data_cnt = $db_content->count("se_orders", $db_where);
-
-
-    $orders_data = $db_content->select("se_orders","*",
-        $db_where+$db_order+$db_limit
-    );
-
-    $nbr_pages = ceil($orders_data_cnt/$nbr_show_items);
-
-    echo '<div class="card p-3">';
-    echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_orders'],'10','','pagination_orders');
-
-    $show_order_status = [
-        "1" => $lang['status_order_received'],
-        "2" => '<span class="text-success">'.$lang['status_order_completed'].'</span>',
-        "3" => '<span class="text-danger">'.$lang['status_order_canceled'].'</span>'
-    ];
-
-    $show_payment_status = [
-        "1" => '<span class="text-danger">'.$lang['status_order_payment_open'].'</span>',
-        "2" => '<span class="text-success">'.$lang['status_order_payment_paid'].'</span>'
-    ];
-
-    echo '<table class="table table-hover">';
-    foreach($orders_data as $order) {
-
-        $order_status = $order['order_status'];
-        $payment_status = $order['order_status_payment'];
-
-        $vals = [
-            'csrf_token' => $_SESSION['token'],
-            'order_id' => $order['id']
-        ];
-
-        $dropdown = '<div class="dropdown">';
-        $dropdown .= '<button class="btn btn-default dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">'.$icon['edit'].'</button>';
-        $dropdown .= '<ul class="dropdown-menu">';
-        $dropdown .= '<li><span class="dropdown-item-text opacity-50">Payment</span></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_payment" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_open'].'</button></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_payment" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_payment_paid'].'</button></li>';
-        $dropdown .= '<li><hr class="dropdown-divider"></li>';
-        $dropdown .= '<li><span class="dropdown-item-text opacity-50">Order Status</span></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_received'].'</button></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="2" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_completed'].'</button></li>';
-        $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="set_order_status" value="3" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['status_order_canceled'].'</button></li>';
-
-        if($order['order_withdrawal_requested'] > 0) {
-            $dropdown .= '<li><hr class="dropdown-divider"></li>';
-            $dropdown .= '<li><button class="dropdown-item" hx-post="/admin-xhr/shop/write/" hx-trigger="click" name="clear_order_withdrawal_requested" value="1" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>'.$lang['btn_order_withdrawal_mark_handled'].'</button></li>';
-        }
-
-        $dropdown .= '</ul>';
-        $dropdown .= '</div>';
-
-
-        echo '<tr>';
-        echo '<td><span class="se-privacy-blur">'.se_format_datetime($order['order_time']).'</span></td>';
-        echo '<td><span class="se-privacy-blur">'.$order['order_nbr'].'</span></td>';
-        echo '<td><span class="se-privacy-blur">'.$order['order_invoice_address'].' '.$order['order_payment_type'].' '.$order['order_invoice_mail'].'</span></td>';
-        echo '<td><span class="se-privacy-blur">'.se_post_print_currency($order['order_price_total']).' ('.$show_payment_status[$payment_status].')</span></td>';
-        echo '<td><span class="se-privacy-blur">'.$show_order_status[$order_status];
-        if($order['order_withdrawal_requested'] > 0) {
-            echo ' <span class="badge text-bg-warning">'.$lang['status_order_withdrawal_requested'].'</span>';
-        }
-        echo '</span></td>';
-        echo '<td><div class="btn-group">'.$dropdown.' ';
-        echo '<button hx-get="/admin-xhr/shop/orders/read/?show_order='.$order['id'].'" hx-target="#order-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">'.$icon['info_circle'].'</button>';
-        echo '</div></td>';
-        echo '</tr>';
+    foreach(array_values(array_filter(explode(" ", $_SESSION['orders_text_filter'] ?? ''))) as $i => $keyword) {
+        $db_where["OR #search$i"] = array_fill_keys(array_map(static fn($column) => $column.'[~]', $search_columns), "%$keyword%");
     }
-    echo '</table>';
 
+    $orders_data_cnt = $db_content->count("se_orders", ["AND" => $db_where]);
+    $nbr_pages = (int) ceil($orders_data_cnt/$nbr_show_items);
 
-    echo '<div id="order-modal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">';
-    echo '<div class="modal-dialog modal-lg modal-dialog-centered" role="document"><div class="modal-content"></div></div>';
-    echo '</div>';
+    $orders_data = $db_content->select("se_orders", "*", [
+        "AND" => $db_where,
+        "ORDER" => ["order_time" => "DESC"],
+        "LIMIT" => [$active_page * $nbr_show_items, $nbr_show_items]
+    ]);
 
-    echo '</div>';
+    $orders = [];
+    foreach($orders_data as $order) {
+        $orders[] = [
+            'id' => (int) $order['id'],
+            'time' => se_format_datetime($order['order_time']),
+            'nbr' => $order['order_nbr'],
+            'address' => $order_address_lines((string) $order['order_invoice_address']),
+            'payment_type' => $order['order_payment_type'],
+            'mail' => $order['order_invoice_mail'],
+            'price' => se_post_print_currency($order['order_price_total']),
+            'payment_status' => (string) $order['order_status_payment'],
+            'status' => (string) $order['order_status'],
+            'withdrawal_requested' => ($order['order_withdrawal_requested'] > 0)
+        ];
+    }
+
+    echo $twig->render('shop/orders-items.twig', [
+        'orders' => $orders,
+        'pagination' => se_print_pagination($list_writer_uri, $nbr_pages, $active_page, '10', '', 'pagination_orders'),
+        'writer_uri' => $list_writer_uri
+    ]);
 }
 
+// details of an order, the modal of the orders list
 if(isset($_REQUEST['show_order'])) {
 
-    $get_order_id = (int) $_REQUEST['show_order'];
-    $get_order = se_get_order_details($get_order_id);
+    $get_order = se_get_order_details((int) $_REQUEST['show_order']) ?? [];
 
-    $order_invoice_address = html_entity_decode($get_order['order_invoice_address']);
-    $order_products = json_decode($get_order['order_products'],true);
-    $order_time = date('d.m.Y H:i', $get_order['order_time']);
-    $payment_status = $get_order['order_status_payment'];
-
-    $show_payment_status = [
-        "1" => '<span class="text-danger">'.$lang['status_order_payment_open'].'</span>',
-        "2" => '<span class="text-success">'.$lang['status_order_payment_paid'].'</span>'
-    ];
-
-    echo '<div class="modal-dialog modal-xl modal-dialog-centered">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">#'.$get_order['order_nbr'].'</h5>
-      <button class="btn btn-default ms-auto" onclick="printJS(\'printOrder\', \'html\')">Print</button>
-    </div>
-    <div class="modal-body" id="printOrder">';
-
-    echo '<div class="row">';
-    echo '<div class="col-md-6">';
-
-    echo '<p>#' . $get_order['order_nbr'] . '</p>';
-    echo '<p>' . $order_time . '</p>';
-    echo '<span class="fs-4 bg-success-subtle text-success-emphasis p-2 ">'.$get_order['order_currency'].' '.se_post_print_currency($get_order['order_price_total']).'</span> ';
-    echo '<span class="p-2">'.$show_payment_status[$payment_status].'</span>';
-    echo '</div>';
-    echo '<div class="col-md-4">';
-    echo $order_invoice_address;
-    echo '</div>';
-    echo '</div>';
-
-    echo '<div class="card p-3">';
-    echo '<table class="table table-bordered">';
-    foreach($order_products as $order_product) {
-        echo '<tr>';
-        echo '<td>'.$order_product['amount'].' x</td>';
-        echo '<td>'.$order_product['title'];
-        if($order_product['options'] != '') {
-            echo '<div class="item-options">';
-            echo $order_product['options'] . '<br>' . $order_product['options_comment_label'] . ':<br>' . $order_product['options_comment'];
-            echo '</div>';
-        }
-        echo '</td>';
-        echo '<td class="text-end">'.se_post_print_currency($order_product['price_net_raw']).'</td>';
-        echo '<td class="text-end">'.$order_product['tax'].' %</td>';
-        echo '<td class="text-end">'.se_post_print_currency($order_product['price_gross_raw']).'</td>';
-
-        echo '</tr>';
+    $products = [];
+    foreach(json_decode((string) ($get_order['order_products'] ?? ''), true) ?: [] as $order_product) {
+        $products[] = [
+            'amount' => $order_product['amount'] ?? '',
+            'title' => $decode($order_product['title'] ?? ''),
+            'options' => $order_option_lines((string) ($order_product['options'] ?? '')),
+            'options_comment_label' => $decode($order_product['options_comment_label'] ?? ''),
+            'options_comment' => $decode($order_product['options_comment'] ?? ''),
+            'price_net' => se_post_print_currency($order_product['price_net_raw'] ?? 0),
+            'tax' => $order_product['tax'] ?? '',
+            'price_gross' => se_post_print_currency($order_product['price_gross_raw'] ?? 0)
+        ];
     }
 
-    // shipping
-    echo '<tr>';
-    echo '<td colspan="4">'.$lang['label_shipping'].'</td>';
-    echo '<td class="text-end">'.se_post_print_currency($get_order['order_shipping_costs']).'</td>';
-    echo '</tr>';
-
-    // total
-    echo '<tr>';
-    echo '<td colspan="4">'.$lang['price_total'].'</td>';
-    echo '<td class="text-end">'.se_post_print_currency($get_order['order_price_total']).'</td>';
-    echo '</tr>';
-
-
-    echo '</table>';
-    echo '</div>';
-
-    echo '</div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.$lang['close'].'</button>
-    </div>
-  </div>
-</div>';
+    echo $twig->render('shop/order-details.twig', [
+        'order' => [
+            'nbr' => $get_order['order_nbr'] ?? '',
+            'time' => date('d.m.Y H:i', (int) ($get_order['order_time'] ?? 0)),
+            'currency' => $get_order['order_currency'] ?? '',
+            'price_total' => se_post_print_currency($get_order['order_price_total'] ?? 0),
+            'shipping_costs' => se_post_print_currency($get_order['order_shipping_costs'] ?? 0),
+            'payment_status' => (string) ($get_order['order_status_payment'] ?? ''),
+            'address' => $order_address_lines((string) ($get_order['order_invoice_address'] ?? '')),
+            'products' => $products
+        ]
+    ]);
 }
 
 if(isset($_REQUEST['calc_orders_canceled'])) {

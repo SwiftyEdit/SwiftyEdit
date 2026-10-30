@@ -23,6 +23,7 @@ if(isset($_POST['pagination'])) {
 if(isset($_POST['pagination_orders'])) {
     $_SESSION['pagination_orders'] = (int) $_POST['pagination_orders'];
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
 // text search in products
@@ -39,9 +40,14 @@ if(isset($_POST['products_text_filter'])) {
 
 // text search in orders
 if(isset($_POST['orders_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['orders_text_filter']);
+    $text_filter = $_SESSION['orders_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['orders_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
     $_SESSION['pagination_orders'] = 0;
-    $_SESSION['orders_text_filter'] = $_SESSION['orders_text_filter'] . ' ' . sanitizeUserInputs($_POST['orders_text_filter']);
-    header( "HX-Trigger: update_orders_list");
+    header("HX-Trigger: update_orders_list");
+    exit;
 }
 
 // remove keyword from products filter list
@@ -58,14 +64,14 @@ if(isset($_POST['rmkey'])) {
 
 // remove keyword from orders filter list
 if(isset($_POST['rmkey_orders'])) {
-    $all_filter = explode(" ", $_SESSION['orders_text_filter']);
-    $_SESSION['orders_text_filter'] = '';
-    foreach($all_filter as $f) {
-        if($_POST['rmkey_orders'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $_SESSION['orders_text_filter'] .= "$f ";
-    }
-    header( "HX-Trigger: update_orders_list");
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey_orders']);
+    $keywords = explode(' ', $_SESSION['orders_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['orders_text_filter'] = implode(' ', $keywords);
+    $_SESSION['pagination_orders'] = 0;
+    header("HX-Trigger: update_orders_list");
+    exit;
 }
 
 // keywords of the sidebar, add or remove one
@@ -131,7 +137,7 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
         ]);
 
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
+        record_log($_SESSION['user_nick'],"deleted product id: $delete_id",10);
         header( "HX-Redirect: /admin/shop/");
         $modus = 'new';
     }
@@ -152,7 +158,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         ]);
         $form_header_message = $lang['msg_success_db_changed'];
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"updated product id: $id","6");
+        record_log($_SESSION['user_nick'],"updated product id: $id",6);
     } else if(is_numeric($_POST['save_variant'])) {
         $prepared_data = se_prepareProductData($_POST);
         $db_posts->insert("se_products", $prepared_data);
@@ -160,7 +166,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"new product variant id: $id","6");
+        record_log($_SESSION['user_nick'],"new product variant id: $id",6);
 
     } else {
         $prepared_data = se_prepareProductData($_POST);
@@ -169,7 +175,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"new product id: $id","6");
+        record_log($_SESSION['user_nick'],"new product id: $id",6);
         // redirect to edit form
         header( "HX-Redirect: /admin/shop/edit/$id/");
     }
@@ -611,35 +617,44 @@ if(isset($_POST['delete_filter_group'])) {
     exit;
 }
 
-// change payment status
+// change payment status: 1 open, 2 paid
 if(isset($_POST['set_payment'])) {
     $set_payment = (int) $_POST['set_payment'];
-    $order_id = (int) $_POST['order_id'];
-    se_update_order_payment_status($order_id, $set_payment, 'admin');
+    if(in_array($set_payment, [1, 2])) {
+        $order_id = (int) ($_POST['order_id'] ?? 0);
+        se_update_order_payment_status($order_id, $set_payment, 'admin');
+        record_log($_SESSION['user_nick'], "order id: $order_id payment status: $set_payment", 3);
+    }
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
-// change order status
+// change order status: 1 received, 2 completed, 3 canceled
 if(isset($_POST['set_order_status'])) {
     $set_status = (int) $_POST['set_order_status'];
-    $order_id = (int) $_POST['order_id'];
-    $update = $db_content->update("se_orders", [
-        "order_status" => $set_status
-    ],[
-        "id" => $order_id
-    ]);
+    if(in_array($set_status, [1, 2, 3])) {
+        $order_id = (int) ($_POST['order_id'] ?? 0);
+        $db_content->update("se_orders", [
+            "order_status" => $set_status
+        ],[
+            "id" => $order_id
+        ]);
+        record_log($_SESSION['user_nick'], "order id: $order_id status: $set_status", 3);
+    }
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
 // acknowledge / clear a customer's withdrawal request
 if(isset($_POST['clear_order_withdrawal_requested'])) {
-    $order_id = (int) $_POST['order_id'];
-    $update = $db_content->update("se_orders", [
+    $order_id = (int) ($_POST['order_id'] ?? 0);
+    $db_content->update("se_orders", [
         "order_withdrawal_requested" => null
     ],[
         "id" => $order_id
     ]);
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
 if(isset($_POST['products_cache'])) {
