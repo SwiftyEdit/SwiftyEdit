@@ -1,0 +1,19 @@
+{# overview of the posts in /admin/blog/, rendered by blog-list.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getPosts" hx-get="{{ reader_uri }}?action=list_posts" hx-trigger="load, {{ list_triggers }}"></div>
+{% endblock %}
+
+{% block sidebar %}
+    <div class="card mb-2">
+        <div class="card-header">{{ lang.label_post_type }}</div>
+        <div hx-get="{{ reader_uri }}?action=list_post_types" hx-trigger="load, {{ list_triggers }}"></div>
+    </div>
+    <div class="card mb-2">
+        <div class="card-header">{{ lang.label_categories }}</div>
+        <div class="scroll-container p-0">
+            <div hx-get="{{ reader_uri }}?action=list_categories" hx-trigger="load, {{ list_triggers }}"></div>
+        </div>
+    </div>
+{% endblock %}

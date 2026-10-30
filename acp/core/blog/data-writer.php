@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * SwiftyEdit /admin-xhr/blog/write/
+ * list actions (pagination, search, filters, pin, priority, delete),
+ * saving posts and the gallery thumbnails
+ *
+ * global variables
+ * @var array $lang
+ * @var object $db_posts
+ * @var object $db_content
+ * @var string $se_base_url
+ */
+
 // switch the template for editing posts
 if(isset($_POST['set_post_type'])) {
     $_SESSION['post_type_form'] = sanitizeUserInputs($_POST['set_post_type']);
@@ -15,70 +27,79 @@ if(isset($_POST['pagination'])) {
 
 // search
 if(isset($_POST['blog_text_filter'])) {
-    $_SESSION['posts_text_filter'] = $_SESSION['posts_text_filter'] . ' ' . sanitizeUserInputs($_POST['blog_text_filter']);
-    header( "HX-Trigger: update_posts_list");
-}
-
-// remove keyword from filter list
-if(isset($_POST['rmkey'])) {
-    $all_filter = explode(" ", $_SESSION['posts_text_filter']);
-    $_SESSION['posts_text_filter'] = '';
-    foreach($all_filter as $f) {
-        if($_POST['rmkey'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $_SESSION['posts_text_filter'] .= "$f ";
+    $add_text_filter = sanitizeUserInputs($_POST['blog_text_filter']);
+    $text_filter = $_SESSION['posts_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['posts_text_filter'] = trim($text_filter.' '.$add_text_filter);
     }
-    header( "HX-Trigger: update_posts_list");
+    // the current page may not exist in the filtered list
+    $_SESSION['pagination_posts_page'] = 0;
+    header("HX-Trigger: update_posts_list");
+    exit;
 }
 
-// filter by category
+// remove a search keyword
+if(isset($_POST['rmkey'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey']);
+    $keywords = explode(' ', $_SESSION['posts_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['posts_text_filter'] = implode(' ', $keywords);
+    $_SESSION['pagination_posts_page'] = 0;
+    header("HX-Trigger: update_posts_list");
+    exit;
+}
+
+// filter by category, a click adds or removes the category
 if(isset($_POST['set_filter_cat'])) {
-
     $set_filter_cat = sanitizeUserInputs($_POST['set_filter_cat']);
-
-    $filter_posts_categories = explode(" ", $_SESSION['filter_posts_categories']);
-    $filter_posts_categories = array_unique($filter_posts_categories);
-
+    $filter_posts_categories = array_filter(explode(" ", $_SESSION['filter_posts_categories'] ?? ''));
     if(in_array($set_filter_cat, $filter_posts_categories)) {
-        // remove this category
-        $filter_posts_categories = array_diff($filter_posts_categories, array($set_filter_cat));
+        $filter_posts_categories = array_diff($filter_posts_categories, [$set_filter_cat]);
     } else {
-        // add this category
         $filter_posts_categories[] = $set_filter_cat;
     }
-
-    $_SESSION['filter_posts_categories'] = implode(" ", $filter_posts_categories);
-
-    header( "HX-Trigger: update_posts_list");
+    $_SESSION['filter_posts_categories'] = implode(" ", array_unique($filter_posts_categories));
+    $_SESSION['pagination_posts_page'] = 0;
+    header("HX-Trigger: update_posts_list");
+    exit;
 }
 
-// filter by type
+// filter by type, a click adds or removes the type
 if(isset($_POST['set_filter_post_types'])) {
     $set_filter_type = sanitizeUserInputs($_POST['set_filter_post_types']);
-    $filter_posts_types = explode(",", $_SESSION['filter_posts_types']);
-    $filter_posts_types = array_unique($filter_posts_types);
+    $filter_posts_types = array_filter(explode(",", $_SESSION['filter_posts_types'] ?? ''));
     if(in_array($set_filter_type, $filter_posts_types)) {
-        // remove this type
-        $filter_posts_types = array_diff($filter_posts_types, array($set_filter_type));
+        $filter_posts_types = array_diff($filter_posts_types, [$set_filter_type]);
     } else {
-        // add this type
         $filter_posts_types[] = $set_filter_type;
     }
-    $_SESSION['filter_posts_types'] = implode(",", $filter_posts_types);
-    header( "HX-Trigger: update_posts_list");
+    $_SESSION['filter_posts_types'] = implode(",", array_unique($filter_posts_types));
+    $_SESSION['pagination_posts_page'] = 0;
+    header("HX-Trigger: update_posts_list");
+    exit;
 }
 
-// change priority
-if(isset($_POST['post_priority'])) {
-
-    $change_id = (int) $_POST['prio_id'];
+// pin (sfixed) or unpin (rfixed) a post, the star in the list
+if(isset($_POST['sfixed']) || isset($_POST['rfixed'])) {
     $db_posts->update("se_posts", [
-        "post_priority" => $_POST['post_priority']
+        "post_fixed" => isset($_POST['sfixed']) ? 1 : 2
     ],[
-        "post_id" => $change_id
+        "post_id" => (int) ($_POST['sfixed'] ?? $_POST['rfixed'])
     ]);
+    header("HX-Trigger: update_posts_list");
+    exit;
+}
 
-    header( "HX-Trigger: update_posts_list");
+// change priority, the input in the list
+if(isset($_POST['priority'])) {
+    $db_posts->update("se_posts", [
+        "post_priority" => (int) $_POST['priority']
+    ],[
+        "post_id" => (int) $_POST['prio_id']
+    ]);
+    header("HX-Trigger: update_posts_list");
+    exit;
 }
 
 // delete post
@@ -89,9 +110,9 @@ if(isset($_POST['delete_post'])) {
     /* first get the post it's data and check the type */
     $this_post_data = se_get_post_data($del_id);
 
-    if($this_post_data['post_type'] == 'g') {
+    if(($this_post_data['post_type'] ?? '') == 'g') {
         /* it's a gallery, we have to delete the images too */
-        $year = date('Y',$this_post_data['post_date']);
+        $year = date('Y',(int) $this_post_data['post_date']);
         se_remove_gallery($del_id,$year);
     }
 
@@ -99,16 +120,17 @@ if(isset($_POST['delete_post'])) {
         "post_id" => $del_id
     ]);
 
-    if($delete->rowCount() > 0) {
+    if($delete !== null && $delete->rowCount() > 0) {
         $db_content->delete("se_tags_relations", [
             "content_type" => "post",
             "content_id" => $del_id
         ]);
         se_generate_xml_sitemap('posts');
         show_toast($lang['msg_success_entry_delete'],'success');
-        record_log($_SESSION['user_nick'],"delete post id: $del_id","8");
-        header( "HX-Trigger: update_posts_list");
+        record_log($_SESSION['user_nick'],"delete post id: $del_id",8);
     }
+    header("HX-Trigger: update_posts_list");
+    exit;
 }
 
 // save or update post
@@ -306,26 +328,6 @@ if(isset($_POST['save_post'])) {
         add_feed($post_title, $_POST['post_teaser'], $post_rss_url, "post_$post_id", "", $post_releasedate);
     }
 
-}
-
-if(isset($_POST['rfixed'])) {
-    $post_id = (int) $_POST['rfixed'];
-    $db_posts->update("se_posts", [
-        "post_fixed" => 2
-    ],[
-        "post_id" => $post_id
-    ]);
-    header( "HX-Trigger: update_posts_list");
-}
-
-if(isset($_POST['sfixed'])) {
-    $post_id = (int) $_POST['sfixed'];
-    $db_posts->update("se_posts", [
-        "post_fixed" => 1
-    ],[
-        "post_id" => $post_id
-    ]);
-    header( "HX-Trigger: update_posts_list");
 }
 
 if(isset($_POST['reorder_gallery_tmbs'])) {
