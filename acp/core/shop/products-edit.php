@@ -1,12 +1,22 @@
 <?php
 
 /**
+ * product form in /admin/shop/edit/, /new/ and /duplicate/,
+ * markup in acp/templates/shop/product-form.twig
+ *
+ * global variables
  * @var array $lang
  * @var array $icon
  * @var object $db_posts
  * @var object $db_content
  * @var object $twig
  * @var string $query - the current url
+ * @var array $se_settings
+ * @var array $lang_codes
+ * @var string $default_lang_code
+ * @var array $active_lang sign, name and flag of the active languages
+ * @var array $se_upload_file_types allowed file extensions, from config.php
+ * @var string $se_base_url
  */
 
 $writer_uri = '/admin-xhr/shop/write/';
