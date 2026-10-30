@@ -750,5 +750,11 @@
   "account.2fa.msg_revoked": "The device has to confirm the login with a code again.",
   "update.notices.title": "Notices from swiftyedit.net",
   "update.notices.read_more": "Read more",
-  "update.msg.server_unreachable": "The update server swiftyedit.net could not be reached. Please try again later."
+  "update.msg.server_unreachable": "The update server swiftyedit.net could not be reached. Please try again later.",
+  "tags.usage": "Usage",
+  "tags.unused": "unused",
+  "tags.only_unused": "Only unused tags",
+  "tags.btn_delete_unused": "Delete unused tags",
+  "tags.msg_confirm_delete_unused": "Delete all tags that are not used by any content?",
+  "tags.msg_deleted_unused": "Deleted unused tags:"
 }

@@ -1,0 +1,51 @@
+{#
+ # list of the tags, loaded into #getTags by the tags data-reader
+ # tags: see tags/data-reader.php (action list)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{% for tag in tags %}
+    <div class="border-bottom py-2">
+        <div class="d-flex align-items-center gap-3">
+            <div class="flex-grow-1">
+                <div class="fw-bold">{{ tag.name }}</div>
+                <small class="text-muted font-monospace">{{ tag.slug }}</small>
+            </div>
+            <div>
+                {% if tag.items %}
+                    <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#tag-usage-{{ tag.id }}" aria-expanded="false" aria-controls="tag-usage-{{ tag.id }}" title="{{ lang.tags_usage }}">
+                        {% for type in tag.types %}<span class="me-2 text-nowrap">{{ type.icon|raw }} {{ type.count }}</span>{% endfor %}
+                    </button>
+                {% else %}
+                    <span class="text-muted small fst-italic">{{ lang.tags_unused }}</span>
+                {% endif %}
+            </div>
+            <div class="text-nowrap">
+                <button class="btn btn-sm btn-default text-success" type="button" data-bs-toggle="collapse" data-bs-target="#tag-rename-{{ tag.id }}" aria-expanded="false" aria-controls="tag-rename-{{ tag.id }}" title="{{ lang.edit }}">{{ icon.edit|raw }}</button>
+                {{ list.delete_button('delete', tag.id, writer_uri) }}
+            </div>
+        </div>
+
+        {# rename - a name that already exists merges both tags (see the data-writer);
+           data-keep-open-skip: closes again when the list is reloaded after saving #}
+        <div class="collapse" id="tag-rename-{{ tag.id }}" data-keep-open-skip>
+            <form class="d-flex gap-2 mt-2" hx-post="{{ writer_uri }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']">
+                <input type="hidden" name="rename_tag" value="{{ tag.id }}">
+                <input type="text" name="tag_name" value="{{ tag.name }}" class="form-control form-control-sm" style="max-width:300px" aria-label="{{ lang.label_name }}">
+                <button type="submit" class="btn btn-sm btn-default text-success">{{ icon.check_lg|raw }} {{ lang.save }}</button>
+            </form>
+        </div>
+
+        {% if tag.items %}
+            <div class="collapse" id="tag-usage-{{ tag.id }}">
+                <ul class="list-unstyled small mt-2 mb-0">
+                    {% for item in tag.items %}
+                        <li>{{ item.icon|raw }} <a href="{{ item.url }}">{{ item.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <p class="text-muted mb-0">{{ lang.msg_info_no_entries_so_far }}</p>
+{% endfor %}

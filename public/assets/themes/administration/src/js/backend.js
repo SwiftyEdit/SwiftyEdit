@@ -10,6 +10,7 @@ import './components/color-mode.js';
 import './components/privacy-blur.js';
 import './components/global-search.js';
 import './components/copy-to-clipboard.js';
+import './components/keep-open.js';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;
