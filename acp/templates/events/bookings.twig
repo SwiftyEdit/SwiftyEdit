@@ -2,13 +2,8 @@
 {% extends 'layout/module-overview.twig' %}
 
 {% block list %}
-    {# keep opened events open when the list is reloaded (e.g. after deleting a confirmation) #}
-    <div id="getBookings" hx-get="{{ reader_uri }}?action=list_bookings" hx-trigger="load, {{ list_triggers }}"
-         hx-on::before-swap="this.dataset.open = [...this.querySelectorAll('.collapse.show')].map(e => e.id).join(',')"
-         hx-on::after-settle="(this.dataset.open || '').split(',').filter(Boolean).forEach(id => {
-             document.getElementById(id)?.classList.add('show');
-             this.querySelector('[data-bs-target=\'#' + id + '\']')?.setAttribute('aria-expanded', 'true');
-         })"></div>
+    {# data-keep-open: opened events stay open when the list is reloaded (src/js/components/keep-open.js) #}
+    <div id="getBookings" hx-get="{{ reader_uri }}?action=list_bookings" hx-trigger="load, {{ list_triggers }}" data-keep-open></div>
 {% endblock %}
 
 {% block sidebar %}
