@@ -1,0 +1,11 @@
+{# remove buttons for the active search keywords of a list, the writer handles "rmkey" #}
+{% if keywords %}
+    <div class="d-inline">
+        <p style="padding-top:5px;">
+            {% for keyword in keywords %}
+                <button class="btn btn-sm btn-default" name="rmkey" value="{{ keyword }}" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']">{{ icon.x|raw }} {{ keyword }}</button>
+            {% endfor %}
+        </p>
+    </div>
+    <hr>
+{% endif %}

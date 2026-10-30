@@ -1,0 +1,54 @@
+{#
+ # list of the events, loaded into #getEvents by the events data-reader
+ # events: see events/data-reader.php (action list_events)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{{ pagination|raw }}
+
+<table class="table table-sm table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class="text-center">{{ icon.star|raw }}</th>
+            <th>{{ lang.label_priority }}</th>
+            <th nowrap>{{ lang.label_date }}</th>
+            <th>{{ lang.label_title }}</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    {% for event in events %}
+        <tr{% if event.is_draft %} class="item_is_draft"{% endif %}>
+            <td>{{ event.id }}</td>
+            <td>{{ list.fixed_toggle(event.id, event.fixed, writer_uri) }}</td>
+            <td>{{ list.priority(event.id, event.priority, writer_uri) }}</td>
+            <td nowrap>
+                <small>
+                    <div class="card p-1">
+                        <span>{{ icon.calendar_event|raw }} {{ event.start }}</span>
+                        {% if event.end %}<span>{{ icon.arrow_right|raw }} {{ event.end }}</span>{% endif %}
+                    </div>
+                </small>
+            </td>
+            <td>
+                <h5 class="mb-0"><img src="{{ event.lang_flag }}" width="15" title="{{ event.lang }}" alt="{{ event.lang }}"> {{ event.title }}</h5>
+                <small>{{ event.teaser }}{% if event.teaser_trimmed %} <small><i>(...)</i></small>{% endif %}</small><br>
+                <span class="text-muted small">
+                    <span title="{{ lang.label_data_submited }}">{{ icon.save|raw }}: {{ event.date }}</span> |
+                    {% if event.lastedit %}<span title="{{ lang.label_data_lastedit }}">{{ icon.edit|raw }}: {{ event.lastedit }}</span>{% endif %} |
+                    <span title="{{ lang.label_data_releasedate }}">{{ icon.calendar_check|raw }}: {{ event.releasedate }}</span>
+                </span><br>
+                {{ list.categories(event.categories) }}<br>
+                {{ list.labels(event.labels) }}
+            </td>
+            <td>{{ list.thumb(event.thumb) }}</td>
+            <td style="min-width: 150px;">
+                <nav class="nav justify-content-end">
+                    <a href="/admin/events/edit/{{ event.id }}/" class="btn btn-default btn-sm text-success me-1">{{ icon.edit|raw }}</a>
+                    {{ list.delete_button('delete_event', event.id, writer_uri) }}
+                </nav>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
