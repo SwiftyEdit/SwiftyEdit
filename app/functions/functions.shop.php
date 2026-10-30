@@ -1259,8 +1259,57 @@ function se_increase_product_hits($product_id) {
 
 
 /**
+ * build the stored option string (<span>..</span> per option) from posted option values.
+ * only values that belong to an option assigned to the product are kept - themes post
+ * "{title}: {value}" (or just "{value}") - and every kept value is escaped for HTML output.
+ *
+ * @param string|null $product_options_json product_options of the product (JSON list of snippet ids)
+ * @param mixed $posted_options posted option values
+ * @return string
+ */
+
+function se_build_cart_option_string($product_options_json, $posted_options): string {
+
+    if(!is_array($posted_options)) {
+        return '';
+    }
+
+    $assigned_options = json_decode($product_options_json ?? '', true);
+    if(!is_array($assigned_options) || count($assigned_options) < 1) {
+        return '';
+    }
+
+    /* collect the values the product actually offers */
+    $allowed_values = [];
+    foreach(se_get_posts_options(array_values($assigned_options)) as $option) {
+        $values = json_decode($option['snippet_content'] ?? '', true);
+        if(!is_array($values)) {
+            continue;
+        }
+        foreach($values as $value) {
+            $value = (string) $value;
+            $title = (string) $option['snippet_title'];
+            // compare decoded, because the browser posts the decoded attribute text
+            $allowed_values[] = html_entity_decode($title.': '.$value, ENT_QUOTES, 'UTF-8');
+            $allowed_values[] = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
+        }
+    }
+
+    $option_string = '';
+    foreach($posted_options as $option) {
+        if(!is_string($option) || !in_array($option, $allowed_values, true)) {
+            continue;
+        }
+        $option_string .= '<span>'.htmlspecialchars($option, ENT_QUOTES, 'UTF-8').'</span>';
+    }
+
+    return $option_string;
+}
+
+
+/**
  * add a product to cart
- * 
+ *
  */
 
 function se_add_to_cart() {
@@ -1281,13 +1330,6 @@ function se_add_to_cart() {
 		$cart_user_hash = $_SESSION['token'];
 	}
 
-    $option_string = '';
-    if(is_array($_POST['product_options'])) {
-        foreach($_POST['product_options'] as $option) {
-            $option_string .= '<span>'.$option.'</span>';
-        }
-    }
-
     $cart_product_options_comment = clean_visitors_input($_POST['customer_options_comment']);
 
 	
@@ -1304,6 +1346,9 @@ function se_add_to_cart() {
 	if(($this_item['product_addon_only'] ?? '2') == 1) {
 		return 0;
 	}
+
+    /* validated and escaped options */
+    $option_string = se_build_cart_option_string($this_item['product_options'] ?? '', $_POST['product_options'] ?? null);
 
 	$cart_product_price_net = $this_item['product_price_net'];
 	$cart_product_title = $this_item['title'];
@@ -1365,12 +1410,7 @@ function se_add_to_cart() {
             }
 
             // options chosen for this addon (e.g. size/color), same format as the main product's
-            $addon_option_string = '';
-            if(isset($_POST['addon_options'][$addon_id]) && is_array($_POST['addon_options'][$addon_id])) {
-                foreach($_POST['addon_options'][$addon_id] as $addon_option) {
-                    $addon_option_string .= '<span>'.$addon_option.'</span>';
-                }
-            }
+            $addon_option_string = se_build_cart_option_string($addon_item['product_options'] ?? '', $_POST['addon_options'][$addon_id] ?? null);
 
             // free-text comment for this addon's own product_options_comment_label field
             $addon_option_comment = clean_visitors_input($_POST['addon_options_comment'][$addon_id] ?? '');
