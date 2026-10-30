@@ -2,10 +2,13 @@
 
 /**
  * SwiftyEdit /admin-xhr/events/read/
- * active search keywords and the list of the events (acp/templates/events/list-items.twig)
+ * active search keywords, the list of the events (acp/templates/events/list-items.twig)
+ * and the guestlist confirmations (acp/templates/events/bookings-items.twig)
  *
  * global variables
+ * @var array $lang
  * @var object $db_posts
+ * @var object $db_content
  * @var object $twig
  */
 
@@ -149,6 +152,64 @@ if($_REQUEST['action'] == 'list_events') {
 
     echo $twig->render('events/list-items.twig', [
         'pagination' => se_print_pagination($writer_uri, $nbr_pages, $_SESSION['pagination_events_page'] ?? 0),
+        'events' => $events,
+        'writer_uri' => $writer_uri
+    ]);
+}
+
+// events with an active guestlist and their confirmations (/admin/events/bookings/)
+if($_REQUEST['action'] == 'list_bookings') {
+
+    // 2 = registered users only, 3 = everybody (1 = no guestlist)
+    $db_where = ["event_guestlist" => [2, 3]];
+    if(($_SESSION['show_past_events'] ?? '') != 'true') {
+        $db_where["event_startdate[>]"] = time();
+    }
+
+    $events_data = $db_posts->select("se_events", ["id", "title", "event_lang", "event_startdate", "event_guestlist", "event_guestlist_limit"], [
+        "AND" => $db_where,
+        "ORDER" => ["event_startdate" => "ASC"]
+    ]);
+
+    // all confirmations of these events, grouped by event
+    $bookings_by_event = [];
+    if(count($events_data) > 0) {
+        $confirmations = $db_content->select("se_comments", ["comment_id", "comment_relation_id", "comment_time", "comment_author", "comment_author_id"], [
+            "comment_type" => "evc",
+            "comment_relation_id" => array_column($events_data, 'id'),
+            "ORDER" => ["comment_time" => "ASC"]
+        ]);
+        foreach($confirmations as $confirmation) {
+            $bookings_by_event[$confirmation['comment_relation_id']][] = [
+                'id' => (int) $confirmation['comment_id'],
+                // anonymous guests are stored with a hash as name and without user id
+                'registered' => ($confirmation['comment_author_id'] != ''),
+                'name' => $confirmation['comment_author'],
+                'time' => se_format_datetime($confirmation['comment_time'])
+            ];
+        }
+    }
+
+    $guestlist_modes = [
+        2 => $lang['label_guestlist_status_registered'],
+        3 => $lang['label_guestlist_status_global']
+    ];
+
+    $events = [];
+    foreach($events_data as $event) {
+        $events[] = [
+            'id' => (int) $event['id'],
+            'title' => $decode($event['title']),
+            'lang' => $event['event_lang'],
+            'lang_flag' => return_language_flag_src($event['event_lang']),
+            'start' => se_format_datetime($event['event_startdate']),
+            'mode_label' => $guestlist_modes[$event['event_guestlist']] ?? '',
+            'limit' => (int) $event['event_guestlist_limit'],
+            'bookings' => $bookings_by_event[$event['id']] ?? []
+        ];
+    }
+
+    echo $twig->render('events/bookings-items.twig', [
         'events' => $events,
         'writer_uri' => $writer_uri
     ]);

@@ -6,13 +6,5 @@
 {% endblock %}
 
 {% block sidebar %}
-    <div class="card mb-2">
-        <div class="card-header">{{ lang.label_status }}</div>
-        <div class="card-body">
-            {# the writer toggles the setting, the checkbox only shows the current state -
-               hx-vals, because an unchecked checkbox would not send its name #}
-            <input type="checkbox" class="btn-check" id="showPastEvents"{% if show_past_events %} checked{% endif %} autocomplete="off" hx-post="{{ writer_uri }}" hx-trigger="change" hx-swap="none" hx-vals='{"show_past_events": "1"}' hx-include="[name='csrf_token']">
-            <label class="btn btn-sm btn-default w-100" for="showPastEvents">{{ lang.label_events_show_past_events }}</label>
-        </div>
-    </div>
+    {% include 'events/past-events-toggle.twig' %}
 {% endblock %}

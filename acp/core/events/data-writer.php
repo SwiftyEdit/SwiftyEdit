@@ -91,6 +91,24 @@ if(isset($_POST['delete_event'])) {
 }
 
 
+// delete a guestlist confirmation (/admin/events/bookings/) - only confirmations,
+// never another comment type with the same id
+if(isset($_POST['delete_booking'])) {
+
+    $booking_id = (int) $_POST['delete_booking'];
+
+    $delete = $db_content->delete("se_comments", [
+        "comment_id" => $booking_id,
+        "comment_type" => "evc"
+    ]);
+
+    if($delete->rowCount() > 0) {
+        show_toast($lang['msg_success_entry_delete'],'success');
+        record_log($_SESSION['user_nick'],"delete guestlist confirmation id: $booking_id",5);
+        header( "HX-Trigger: update_bookings_list");
+    }
+}
+
 if(isset($_POST['save_post'])) {
 
     // all columns of se_events ($cols) - only these POST fields are taken

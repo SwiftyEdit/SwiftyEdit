@@ -5,8 +5,8 @@
  #   sidebar - module specific filters below the search
  #
  # variables: title, title_icon, new_url (optional), writer_uri, reader_uri,
- #   search_name (POST name of the search input), list_triggers (htmx events that
- #   reload the list and the active searches)
+ #   search_name (POST name of the search input, optional - no search card without it),
+ #   list_triggers (htmx events that reload the list and the active searches)
  #}
 <div class="subHeader d-flex align-items-center">
     {{ title_icon|raw }} {{ title }}
@@ -23,20 +23,25 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card mb-2">
-            <div class="card-header">{{ lang.filter }}</div>
-            <div class="card-body">
-                <form hx-post="{{ writer_uri }}" hx-swap="none" hx-on--after-request="this.reset()" method="POST">
-                    <div class="input-group">
-                        <span class="input-group-text">{{ icon.search|raw }}</span>
-                        <input class="form-control" type="text" name="{{ search_name }}" value="" placeholder="{{ lang.search }}">
-                    </div>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                </form>
-                {# remove buttons of the active search keywords, see components/list/active-searches.twig #}
-                <div class="pt-1" hx-post="{{ reader_uri }}?action=list_active_searches" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+        {% if search_name is defined and search_name %}
+            <div class="card mb-2">
+                <div class="card-header">{{ lang.filter }}</div>
+                <div class="card-body">
+                    <form hx-post="{{ writer_uri }}" hx-swap="none" hx-on--after-request="this.reset()" method="POST">
+                        <div class="input-group">
+                            <span class="input-group-text">{{ icon.search|raw }}</span>
+                            <input class="form-control" type="text" name="{{ search_name }}" value="" placeholder="{{ lang.search }}">
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+                    {# remove buttons of the active search keywords, see components/list/active-searches.twig #}
+                    <div class="pt-1" hx-post="{{ reader_uri }}?action=list_active_searches" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+                </div>
             </div>
-        </div>
+        {% else %}
+            {# the htmx actions of the list include this token #}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {% endif %}
         {% block sidebar %}{% endblock %}
     </div>
 </div>

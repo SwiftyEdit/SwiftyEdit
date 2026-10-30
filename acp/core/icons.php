@@ -83,6 +83,7 @@ $icon = [
 
     "images" => '<i class="bi bi-images"></i>',
     "inbox" => '<i class="bi bi-inbox"></i>',
+    "incognito" => '<i class="bi bi-incognito"></i>',
     "info_circle" => '<i class="bi bi-info-circle"></i>',
 
     "language" => '<i class="bi bi-translate"></i>',

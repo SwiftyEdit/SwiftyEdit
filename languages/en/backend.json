@@ -532,6 +532,8 @@
   "label.guestlist.limit": "Guestlist limit",
   "label.guestlist.show_number": "Show number of commitments",
   "label.guestlist.hide_number": "Hide number of commitments",
+  "label.guestlist.anonymous": "Anonymous guest",
+  "msg.info.no_guestlists": "No events with an active guestlist",
 
   "label.events.show_past_events": "Show past events",
   "label.events.time_offset": "Time offset",
