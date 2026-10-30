@@ -1,77 +1,65 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/categories/read/
+ * active search keywords and the list of the categories (acp/templates/categories/list-items.twig)
+ *
  * global variables
- * @var array $icon
- * @var array $lang
- * @var object $db_content
+ * @var object $twig
  */
+
+$writer_uri = '/admin-xhr/categories/write/';
+
+// names, descriptions and search keywords are stored html-encoded, Twig escapes on output
+$decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+
+if($_REQUEST['action'] == 'list_active_searches') {
+    $keywords = array_filter(explode(" ", $_SESSION['categories_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'writer_uri' => $writer_uri
+    ]);
+}
 
 if($_REQUEST['action'] == 'list') {
 
-    $all_categories = se_get_categories();
-    $cnt_categories = count($all_categories);
-    $redeclare_array = array();
+    // search: every keyword has to be part of the name, title, description or slug
+    $keywords = array_filter(explode(" ", $decode($_SESSION['categories_text_filter'] ?? '')));
 
-    echo '<table class="table">';
+    $categories = [];
+    foreach(se_get_categories() as $category) {
 
-    foreach ($all_categories as $cats) {
+        $name = $decode($category['cat_name']);
+        $description = $decode($category['cat_description']);
 
-        $redeclare_array += [
-            $cats['cat_id'] => $cats['cat_hash']
-        ];
-
-        $hx_vals = [
-            "csrf_token"=> $_SESSION['token']
-        ];
-
-        $flag = '<img src="'.return_language_flag_src($cats['cat_lang']).'" width="15">';
-
-        $category_images = explode('<->',$cats['cat_thumbnail']);
-        $show_thumb = '';
-        if(count($category_images) > 1) {
-            $x=0;
-            foreach($category_images as $img) {
-                $img = str_replace('../content/','/',$img);
-                if($img != '') {
-                    $x++;
-                    $show_thumb .= '<a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-title="'.$img.'" data-bs-content="<img src=\''.$img.'\'>">'.$icon['images'].'</a> ';
-                }
-                if($x>2) {
-                    $show_thumb .= '<small>(...)</small>';
-                    break;
-                }
+        $haystack = implode(' ', [$name, $decode($category['cat_title']), $description, $category['cat_name_clean']]);
+        foreach($keywords as $keyword) {
+            if(mb_stripos($haystack, $keyword) === false) {
+                continue 2;
             }
         }
 
-        $delete_btn = '<button name="delete" value="'.$cats['cat_id'].'" class="btn btn-sm btn-default text-danger" 
-                            hx-post="/admin-xhr/categories/write/"
-                            hx-confirm="'.$lang['msg_confirm_delete'].'"
-                            hx-swap="none"
-                            hx-vals=\''.json_encode($hx_vals).'\'
-                            >'.$icon['trash_alt'].'</button>';
+        // the first image as thumbnail, "null" is an empty value of older versions
+        $images = array_filter(explode('<->', (string) $category['cat_thumbnail']), static fn($image) => $image != '' && $image != 'null');
+        $image = (string) reset($images);
+        $image = str_replace('../content/', '/', $image); // old path from SwiftyEdit 1.x
+        $image = str_replace('../images/', '/images/', $image);
 
-        $edit_button  = '<form action="/admin/categories/edit/" method="post" class="d-inline">';
-        $edit_button .= '<button class="btn btn-sm btn-default text-success" name="category_id" value="'.$cats['cat_id'].'">'.$icon['edit'].'</button>';
-        $edit_button .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $edit_button .=  '</form>';
-
-        echo '<tr id="id_'.$cats['cat_hash'].'">';
-        echo '<td>#'.$cats['cat_id'].'</td>';
-        echo '<td width="50">' . $show_thumb . '</td>';
-        echo '<td>';
-        echo '<h5 class="card-title">' . $flag . ' <small>' . $cats['cat_sort'] . '</small> | ' . $cats['cat_name'] . '</h5>';
-        echo '<p>'.$cats['cat_description'].'</p>';
-        echo '<code>'.$cats['cat_name_clean'].'</code>';
-        echo '</td>';
-        echo '<td class="text-end text-nowrap">';
-        echo $delete_btn;
-        echo $edit_button;
-        echo '</td>';
-        echo '</tr>';
-
+        $categories[] = [
+            'id' => (int) $category['cat_id'],
+            'name' => $name,
+            'description' => $description,
+            'slug' => $category['cat_name_clean'],
+            'sort' => $category['cat_sort'],
+            'lang' => $category['cat_lang'],
+            'lang_flag' => return_language_flag_src($category['cat_lang']),
+            'image' => $image
+        ];
     }
 
-    echo '</table>';
+    echo $twig->render('categories/list-items.twig', [
+        'categories' => $categories,
+        'writer_uri' => $writer_uri
+    ]);
     exit;
 }

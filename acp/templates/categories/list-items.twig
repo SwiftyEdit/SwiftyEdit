@@ -1,0 +1,29 @@
+{#
+ # list of the categories, loaded into #getCategories by the categories data-reader
+ # categories: see categories/data-reader.php (action list)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{% if categories is empty %}
+    <p class="text-muted mb-0">{{ lang.msg_info_no_entries_so_far }}</p>
+{% else %}
+    <table class="table table-sm table-hover">
+        {% for category in categories %}
+            <tr>
+                <td class="text-muted">#{{ category.id }}</td>
+                <td><img src="{{ category.lang_flag }}" width="15" title="{{ category.lang }}" alt="{{ category.lang }}"></td>
+                <td>{{ list.thumb(category.image) }}</td>
+                <td>
+                    <h6 class="mb-0">{{ category.name }}</h6>
+                    {% if category.description is not empty %}<small class="d-block">{{ category.description }}</small>{% endif %}
+                    <code>{{ category.slug }}</code>
+                </td>
+                <td class="text-muted" title="{{ lang.label_priority }}">{{ category.sort }}</td>
+                <td class="text-end text-nowrap">
+                    <a href="/admin/categories/edit/{{ category.id }}/" class="btn btn-sm btn-default text-success">{{ icon.edit|raw }}</a>
+                    {{ list.delete_button('delete', category.id, writer_uri) }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

@@ -1,0 +1,6 @@
+{# overview of the categories in /admin/categories/, rendered by categories-list.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getCategories" hx-get="{{ reader_uri }}?action=list" hx-trigger="load, {{ list_triggers }}"></div>
+{% endblock %}

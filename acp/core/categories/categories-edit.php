@@ -1,306 +1,164 @@
 <?php
 
 /**
+ * category form in /admin/categories/edit/ and /new/,
+ * markup in acp/templates/categories/edit-form.twig
+ *
  * global variables
  * @var array $lang
- * @var array $icon
+ * @var array $lang_codes
  * @var object $db_content
  * @var array $se_settings
- * @var array $lang_codes
- * @var string $hidden_csrf_token
+ * @var object $twig
  */
 
 $writer_uri = '/admin-xhr/categories/write/';
-$q = pathinfo($_REQUEST['query']);
+
+$get_id = null;
+$category_id = null; // the edited category, stays null for new categories
 
 if(isset($_POST['category_id']) && is_numeric($_POST['category_id'])) {
     $get_id = (int) $_POST['category_id'];
-    $form_mode = $get_id;
-    $btn_submit_text = $lang['update'];
 }
 
-// open category from last part of $query
+// open category from last part of the url
+$q = pathinfo($_REQUEST['query'] ?? '');
 if(is_numeric($q['filename'])) {
     $get_id = (int) $q['filename'];
-    $form_mode = $get_id;
-    $btn_submit_text = $lang['update'];
 }
 
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['bookmarks_fill'].' '.$lang['categories'];
-echo '<a href="/admin/categories/" class="btn btn-default ms-auto">'.$icon['arrow_left_short'].' '.$lang['nav_btn_overview'].'</a>';
-echo '</div>';
-
+/*
+ * $get_category stays a global variable,
+ * the themes read it in php/category-values.php (see the theme tab below)
+ */
+$get_category = [];
 if(is_int($get_id)) {
-    $btn_submit_text = $lang['update'];
-    $form_mode = $get_id;
-    $get_category = $db_content->get("se_categories","*",[
-        "cat_id" => "$get_id"
-    ]);
-
-    $cat_name = $get_category['cat_name'];
-    $cat_lang = $get_category['cat_lang'];
-    $cat_name_clean = $get_category['cat_name_clean'];
-    $cat_sort = $get_category['cat_sort'];
-    $cat_thumbnail = $get_category['cat_thumbnail'];
-    $cat_description = $get_category['cat_description'];
-    $cat_text = $get_category['cat_text'];
-    $cat_title = $get_category['cat_title'];
-    $cat_teaser = $get_category['cat_teaser'];
-    $cat_keywords = $get_category['cat_keywords'];
-    $cat_hash = $get_category['cat_hash'];
-    $cat_template = $get_category['cat_template'];
-    $cat_template_values = $get_category['cat_template_values'];
-
-} else {
-    $btn_submit_text = $lang['save'];
-    $form_mode = 'new';
+    $get_category = $db_content->get("se_categories", "*", [
+        "cat_id" => $get_id
+    ]) ?? [];
+}
+if(!empty($get_category)) {
+    $category_id = (int) $get_category['cat_id'];
 }
 
-
-if($cat_lang == '') {
-    $cat_lang = $se_settings['default_language'];
-}
-
-$input_text_name = [
-    "input_name" => "cat_name",
-    "input_value" => $cat_name,
-    "label" => $lang['label_link_name'],
+/*
+ * the form helpers print the values as they are: the text fields are stored
+ * html-encoded (sanitizeUserInputs) and are passed unchanged, teaser and text
+ * are stored as html (se_purify_html) and are escaped for the textarea
+ */
+$text_input = static fn(string $name, string $label, string $classes = 'form-control') => se_print_form_input([
+    "input_name" => $name,
+    "input_value" => $get_category[$name] ?? '',
+    "input_classes" => $classes,
+    "label" => $label,
     "type" => "text"
+]);
+
+$editor_input = static fn(string $name, string $label) => se_print_form_input([
+    "input_name" => $name,
+    "input_value" => htmlspecialchars((string) ($get_category[$name] ?? ''), ENT_QUOTES, 'UTF-8'),
+    "label" => $label,
+    "type" => "textarea",
+    "mode" => "wysiwyg"
+]);
+
+$inputs = [
+    'name' => $text_input('cat_name', $lang['label_link_name']),
+    'title' => $text_input('cat_title', $lang['label_title']),
+    'keywords' => $text_input('cat_keywords', $lang['label_keywords'], 'form-control tags'),
+    'slug' => $text_input('cat_name_clean', $lang['label_slug']),
+    'teaser' => $editor_input('cat_teaser', $lang['label_teaser']),
+    'text' => $editor_input('cat_text', ' ')
 ];
 
-$input_text_title = [
-    "input_name" => "cat_title",
-    "input_value" => $cat_title,
-    "label" => $lang['label_title'],
-    "type" => "text"
-];
-
-$input_text_keywords = [
-    "input_name" => "cat_keywords",
-    "input_value" => $cat_keywords,
-    "input_classes" => "form-control tags",
-    "label" => $lang['label_keywords'],
-    "type" => "text"
-];
-
-$input_slug = [
-    "input_name" => "cat_name_clean",
-    "input_value" => $cat_name_clean,
-    "label" => $lang['label_slug'],
-    "type" => "text"
-];
-
-$input_text_description = [
+$inputs['description'] = se_print_form_input([
     "input_name" => "cat_description",
-    "input_value" => $cat_description,
+    "input_value" => $get_category['cat_description'] ?? '',
     "input_classes" => "form-control count-chars",
     "label" => $lang['label_description'],
     "type" => "textarea"
-];
+]);
 
-$input_wysiwyg_teaser = [
-    "input_name" => "cat_teaser",
-    "input_value" => $cat_teaser,
-    "label" => $lang['label_teaser'],
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-];
-
-$input_wysiwyg = [
-    "input_name" => "cat_text",
-    "input_value" => $cat_text,
-    "label" => ' ',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-];
-
-$input_text_priority = [
+$inputs['priority'] = se_print_form_input([
     "input_name" => "cat_sort",
-    "input_value" => $cat_sort,
+    "input_value" => (int) ($get_category['cat_sort'] ?? 0),
     "label" => $lang['label_priority'],
     "type" => "text"
-];
+]);
 
-$get_all_languages = get_all_languages();
-foreach($get_all_languages as $langs) {
+$lang_options = [];
+foreach(get_all_languages() as $langs) {
     if(!in_array($langs['lang_folder'],$lang_codes)) {
         continue;
     }
     $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
 }
 
-$input_select_language = [
+$inputs['language'] = se_print_form_input([
     "input_name" => "cat_lang",
-    "input_value" => $cat_lang,
+    "input_value" => ($get_category['cat_lang'] ?? '') ?: $se_settings['default_language'],
     "label" => $lang['label_language'],
     "options" => $lang_options,
     "type" => "select"
-];
+]);
 
-/* image widget */
-$images = se_get_all_media_data('image');
-$images = se_unique_multi_array($images,'media_file');
-$array_images = explode("<->", $cat_thumbnail);
-$draggable = '';
-if(is_array($array_images)) {
-    $array_images = array_filter($array_images);
-    foreach($array_images as $image) {
-        $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
-        $image_src = str_replace('../images/','/images/',$image_src);
-        $draggable .= '<div class="list-group-item draggable" data-id="'.$image.'">';
-        $draggable .= '<div class="d-flex flex-row gap-2">';
-        $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
-        $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
-        $draggable .= '</div>';
-        $draggable .= '</div>';
+/* image widget - "null" is an empty value of older versions */
+$images = [];
+foreach(explode("<->", (string) ($get_category['cat_thumbnail'] ?? '')) as $image) {
+    if($image == '' || $image == 'null') {
+        continue;
     }
+    $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
+    $image_src = str_replace('../images/','/images/',$image_src);
+    $images[] = [
+        'path' => $image,
+        'src' => $image_src,
+        'name' => basename($image)
+    ];
 }
 
-$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
-$choose_images .= 'Loading Images ...</div>';
-
-
-$form_tpl = '<div id="formResponse"></div>';
-
-$form_tpl .= '<form>';
-
-
-$form_tpl .= '<div class="row">';
-$form_tpl .= '<div class="col-md-9">';
-
-$form_tpl .= '<div class="card">';
-$form_tpl .= '<div class="card-header">';
-
-$form_tpl .= '<ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">';
-$form_tpl .= '<li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">'.$lang['nav_btn_info'].'</a></li>';
-$form_tpl .= '<li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">'.$lang['label_content'].'</a></li>';
-$form_tpl .= '<li class="nav-item"><a class="nav-link" href="#metas" data-bs-toggle="tab">'.$lang['nav_btn_metas'].'</a></li>';
-$form_tpl .= '<li class="nav-item"><a class="nav-link" href="#theme" data-bs-toggle="tab">Theme</a></li>';
-$form_tpl .= '</ul>';
-
-$form_tpl .= '</div>';
-$form_tpl .= '<div class="card-body">';
-
-$form_tpl .= '<div class="tab-content">';
-
-$form_tpl .= '<div class="tab-pane fade show active" id="info">';
-
-$form_tpl .= '<div class="row">';
-$form_tpl .= '<div class="col-md-6">';
-
-$form_tpl .= se_print_form_input($input_text_name);
-$form_tpl .= se_print_form_input($input_text_title);
-$form_tpl .= se_print_form_input($input_wysiwyg_teaser);
-
-
-$form_tpl .= '</div>';
-$form_tpl .= '<div class="col-md-6">';
-$form_tpl .= $choose_images;
-$form_tpl .= '</div>';
-$form_tpl .= '</div>';
-
-$form_tpl .= '</div>';
-$form_tpl .= '<div class="tab-pane fade" id="content">';
-
-$form_tpl .= se_print_form_input($input_wysiwyg);
-
-$form_tpl .= '</div>'; // tab-pane
-
-$form_tpl .= '<div class="tab-pane fade" id="metas">';
-$form_tpl .= se_print_form_input($input_text_description);
-$form_tpl .= se_print_form_input($input_text_keywords);
-$form_tpl .= se_print_form_input($input_slug);
-$form_tpl .= '</div>';
-
-$form_tpl .= '<div class="tab-pane fade" id="theme">';
-
-// check if this category can handle theme values
-if($cat_template == 'use_standard') {
-    // get theme from settings
-    $theme_base = SE_ROOT.'public/assets/themes/'.$se_settings['template'];
-} else {
-    $theme_base = SE_ROOT.'public/assets/themes/'.$cat_template;
+// themes, an empty value is the same as "use_standard"
+$cat_template = (string) ($get_category['cat_template'] ?? '');
+if($cat_template == '') {
+    $cat_template = 'use_standard';
+}
+$themes = [];
+foreach(get_all_templates() as $theme) {
+    if($theme == 'administration') {
+        continue;
+    }
+    $themes[] = [
+        'name' => $theme,
+        'selected' => ($theme == $cat_template)
+    ];
 }
 
-$theme_injector_base = $theme_base.'/php';
-$theme_injectors = ['category-values.php','category_values.php'];
-$theme_value_injector = null;
-
-foreach ($theme_injectors as $file) {
-    $path = $theme_injector_base . '/' . $file;
-    if (is_file($path)) {
-        $theme_value_injector = $path;
+/*
+ * theme values: the theme of the category (or the default theme) can add
+ * its own fields via php/category-values.php, they are posted as theme_values[...]
+ */
+$theme_base = SE_ROOT.'public/assets/themes/'.($cat_template == 'use_standard' ? $se_settings['template'] : $cat_template);
+$theme_values = null;
+foreach(['category-values.php', 'category_values.php'] as $file) {
+    $path = $theme_base.'/php/'.$file;
+    if(is_file($path)) {
+        $include_theme_values = static function(string $file) {
+            ob_start();
+            include $file;
+            return ob_get_clean();
+        };
+        $theme_values = $include_theme_values($path);
         break;
     }
 }
 
-if(is_file("$theme_value_injector")) {
-    function include_thmee_value_file($f) {
-        ob_start();
-        include $f;
-        return ob_get_clean();
-    }
-    $form_tpl .= include_thmee_value_file($theme_value_injector);
-} else {
-    $form_tpl .= 'No injection file found';
-}
-
-$form_tpl .= '</div>'; // tab-pane
-
-$form_tpl .= '</div>';
-$form_tpl .= '</div>';
-$form_tpl .= '</div>';
-
-$form_tpl .= '</div>';
-$form_tpl .= '<div class="col-md-3">';
-
-
-$form_tpl .= '<div class="card">';
-$form_tpl .= '<div class="card-header">'.$lang['label_settings'].'</div>';
-$form_tpl .= '<div class="card-body">';
-
-$form_tpl .= '<div class="mb-1">'.se_print_form_input($input_text_priority).'</div>';
-$form_tpl .= '<div class="mb-1">'.se_print_form_input($input_select_language).'</div>';
-
-
-// select template
-$get_themes = get_all_templates();
-$select_template = '<select id="select_template" name="cat_template"  class="form-control">';
-
-$selected_standard = ($cat_template == '') ? 'selected' : '';
-
-$select_template .= '<option value="use_standard"'. $selected_standard.'>'.$lang['label_use_default'].'</option>';
-foreach($get_themes as $template) {
-
-    if($template == 'administration') {continue;}
-
-    $selected = ($template == $cat_template) ? 'selected' : '';
-    $select_template .=  "<option $selected value='$template'>$template</option>";
-}
-
-$select_template .= '</select>';
-
-$form_tpl .= '<div class="mb-3">';
-$form_tpl .= '<div><label class="form-label">Theme / '.$lang['label_template'].'</label>'.$select_template.'</div>';
-$form_tpl .= '</div>';
-
-
-if($cat_hash != '') {
-    $form_tpl .= '<input type="hidden" name="cat_hash" value="'.htmlspecialchars($cat_hash, ENT_QUOTES).'">';
-}
-
-$form_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-$form_tpl .= '<button type="submit" hx-post="'.$writer_uri.'" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_category" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
-
-$form_tpl .= '</div>';
-$form_tpl .= '</div>';
-$form_tpl .= '</div>';
-
-$form_tpl .= '</div>'; // sidebar-col
-$form_tpl .= '</div>'; // row
-
-$form_tpl .= '</form>';
-
-echo $form_tpl;
+echo $twig->render('categories/edit-form.twig', [
+    'category_id' => $category_id,
+    'submit_label' => ($category_id ? $lang['update'] : $lang['save']),
+    'writer_uri' => $writer_uri,
+    'inputs' => $inputs,
+    'images' => $images,
+    'themes' => $themes,
+    'template_standard' => ($cat_template == 'use_standard'),
+    'theme_values' => $theme_values
+]);

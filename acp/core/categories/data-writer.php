@@ -1,26 +1,48 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/categories/write/
+ * list search, save and delete categories
+ *
  * global variables
  * @var array $lang
  * @var object $db_content
- * @var array $se_settings
- * @var array $lang_codes
- * @var string $hidden_csrf_token
  */
 
+// search
+if(isset($_POST['categories_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['categories_text_filter']);
+    $text_filter = $_SESSION['categories_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['categories_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
+    header("HX-Trigger: updated_categories");
+    exit;
+}
+
+// remove a search keyword
+if(isset($_POST['rmkey'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey']);
+    $keywords = explode(' ', $_SESSION['categories_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['categories_text_filter'] = implode(' ', $keywords);
+    header("HX-Trigger: updated_categories");
+    exit;
+}
 
 if(isset($_POST['delete'])) {
     $delete_id = (int) $_POST['delete'];
     $data = $db_content->delete("se_categories", [
         "cat_id" => $delete_id
     ]);
-    if($data->rowCount() > 0) {
-        record_log($_SESSION['user_nick'],"delete category id: $delete_id","8");
+    if($data !== null && $data->rowCount() > 0) {
+        record_log($_SESSION['user_nick'],"delete category id: $delete_id",8);
         se_updateCategoriesCache();
-        header( "HX-Trigger: updated_categories");
-        exit;
+        show_toast($lang['msg_success_entry_delete'],'success');
     }
+    header("HX-Trigger: updated_categories");
+    exit;
 }
 
 if (isset($_POST['save_category'])) {
