@@ -404,45 +404,64 @@ if(isset($_POST['delete_feature']) && is_numeric($_POST['delete_feature'])) {
     exit;
 }
 
+// text search in options
+if(isset($_POST['options_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['options_text_filter']);
+    $text_filter = $_SESSION['options_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['options_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
+    header("HX-Trigger: update_options_list");
+    exit;
+}
+
+// remove keyword from options search
+if(isset($_POST['rmkey_options'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey_options']);
+    $keywords = explode(' ', $_SESSION['options_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['options_text_filter'] = implode(' ', $keywords);
+    header("HX-Trigger: update_options_list");
+    exit;
+}
+
 // save options
 if(isset($_POST['save_option'])) {
-    $option_title = se_return_clean_value($_POST['option_title']);
-    $option_priority = (int) $_POST['option_priority'];
-    $option_lang = $_POST['option_lang'];
-    $option_text = array_filter($_POST['option_text']);
-    $option_text = json_encode($option_text,JSON_FORCE_OBJECT);
+
+    // the values in the order of the form, empty fields are skipped
+    $option_values = array_values(array_filter(
+        array_map(static fn($value) => trim((string) $value), (array) ($_POST['option_text'] ?? [])),
+        static fn($value) => $value !== ''
+    ));
 
     $insert_data = [
         "snippet_lastedit" =>  time(),
-        "snippet_priority" => $option_priority,
-        "snippet_title" =>  $option_title,
-        "snippet_content" =>  $option_text,
-        "snippet_lang" =>  $option_lang,
+        "snippet_priority" => (int) ($_POST['option_priority'] ?? 0),
+        "snippet_title" =>  se_return_clean_value($_POST['option_title'] ?? ''),
+        "snippet_content" =>  json_encode($option_values, JSON_FORCE_OBJECT),
+        "snippet_lang" =>  se_sanitize_lang_input($_POST['option_lang'] ?? ''),
         "snippet_type" => 'post_option'
     ];
 
     if(is_numeric($_POST['save_option'])) {
-        $id = (int)$_POST['save_option'];
+        $id = (int) $_POST['save_option'];
         $db_content->update("se_snippets", $insert_data, [
             "snippet_id" => $id
         ]);
+        record_log($_SESSION['user_nick'], "updated option id: $id", 3);
         show_toast($lang['msg_success_db_changed'],'success');
-        // reload the edit form so the value list (and the empty "add value"
-        // field) reflect what was just saved - otherwise a newly added value
-        // only becomes visible/addable-to after leaving and reopening the form
-        header( "HX-Redirect: /admin/shop/options/edit/$id/");
     } else {
         $db_content->insert("se_snippets", $insert_data);
-        $new_id = $db_content->id();
-
+        $id = $db_content->id();
+        record_log($_SESSION['user_nick'], "new option id: $id", 1);
         show_toast($lang['msg_success_new_record'],'success');
-        // switch the form into edit mode for the new option, so an
-        // unintended second click on "save" updates it instead of
-        // creating another one
-        header( "HX-Redirect: /admin/shop/options/edit/$new_id/");
     }
-
-    header( "HX-Trigger: update_options_list");
+    // reload the edit form: the value list and the empty "add value" field show
+    // what was just saved, and a new option is in edit mode (a second click on
+    // "save" updates it instead of creating another one)
+    header( "HX-Redirect: /admin/shop/options/edit/$id/");
+    exit;
 }
 
 // delete option
@@ -455,13 +474,14 @@ if(isset($_POST['delete_option']) && is_numeric($_POST['delete_option'])) {
         ]
     ]);
 
-    if(($cnt_changes->rowCount()) > 0) {
+    if($cnt_changes !== null && $cnt_changes->rowCount() > 0) {
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted option id: $delete_id","10");
+        record_log($_SESSION['user_nick'],"deleted option id: $delete_id",10);
         header( "HX-Redirect: /admin/shop/options/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
+    exit;
 }
 
 // save filter group

@@ -406,54 +406,56 @@ if($_REQUEST['action'] == 'list_features') {
     ]);
 }
 
+// active search keywords of the options, used in the sidebar
+if($_REQUEST['action'] == 'list_active_searches_options') {
+    $keywords = array_filter(explode(" ", $_SESSION['options_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'remove_name' => 'rmkey_options',
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
+}
+
 // list all options
 if($_REQUEST['action'] == 'list_options') {
-    $show_data = se_get_posts_options();
-    $cnt_data = count($show_data);
 
-    echo '<div class="card p-3">';
+    // global filter (top navigation): options only have a language
+    $filter_languages = array_filter((array) (json_decode($_SESSION['global_filter_languages'] ?? '', true) ?? []));
 
-    echo '<table class="table table-sm">';
-    echo '<tr>';
-    echo '<td>#</td>';
-    echo '<td>'.$lang['label_priority'].'</td>';
-    echo '<td>'.$lang['label_language'].'</td>';
-    echo '<td>'.$lang['label_text'].'</td>';
-    echo '<td></td>';
-    echo '</tr>';
+    // search: every keyword has to be part of the title or a value
+    $keywords = array_filter(explode(" ", $decode($_SESSION['options_text_filter'] ?? '')));
 
-    foreach($show_data as $data) {
+    $options = [];
+    foreach(se_get_posts_options() as $data) {
+        if($filter_languages && !in_array($data['snippet_lang'], $filter_languages)) {
+            continue;
+        }
+        // values are stored as entered (json), Twig escapes on output
+        $values = json_decode((string) $data['snippet_content'], true);
+        $values = is_array($values) ? array_values($values) : [];
 
-        $flag = '<img src="'.return_language_flag_src($data['snippet_lang']).'" width="15">';
-
-        $btn_edit  = '<form action="/admin/shop/options/edit/" method="post" class="d-inline">';
-        $btn_edit .= '<button class="btn btn-default" name="options-form" value="'.$data['snippet_id'].'">'.$icon['edit'].'</button>';
-        $btn_edit .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_edit .=  '</form>';
-
-        $get_show_values = json_decode($data['snippet_content']);
-        $show_values = '';
-        foreach($get_show_values as $value) {
-            $show_values .= '<span class="badge text-bg-secondary">'.$value.'</span> ';
+        $title = $decode($data['snippet_title']);
+        $haystack = $title.' '.implode(' ', $values);
+        foreach($keywords as $keyword) {
+            if(mb_stripos($haystack, $keyword) === false) {
+                continue 2;
+            }
         }
 
-        echo '<tr>';
-        echo '<td>'.$data['snippet_id'].'</td>';
-        echo '<td>'.$data['snippet_priority'].'</td>';
-        echo '<td>'.$flag.'</td>';
-        echo '<td><strong>'.$data['snippet_title'].'</strong><br>'.$show_values.'</td>';
-        echo '<td class="text-end" style="width:120px;">';
-
-        echo $btn_edit;
-
-        echo '</td>';
-        echo '</tr>';
+        $options[] = [
+            'id' => (int) $data['snippet_id'],
+            'priority' => $data['snippet_priority'],
+            'lang' => $data['snippet_lang'],
+            'lang_flag' => return_language_flag_src($data['snippet_lang']),
+            'title' => $title,
+            'values' => $values
+        ];
     }
 
-
-    echo '</table>';
-    echo '</div>'; // card
-
+    echo $twig->render('shop/options-items.twig', [
+        'options' => $options
+    ]);
 }
 
 // list filters

@@ -1,0 +1,6 @@
+{# overview of the product options in /admin/shop/options/, rendered by options.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getOptions" hx-post="{{ reader_uri }}?action=list_options" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+{% endblock %}
