@@ -36,6 +36,19 @@
     {% endif %}
 {% endmacro %}
 
+{# button that shows text (e.g. a snippet name) and copies copy_value on click (default: the text),
+   see src/js/components/copy-to-clipboard.js - all buttons have the same width (.copy-text in
+   _buttons.scss), long texts end with "...", the popover shows what is copied #}
+{% macro copy_text(text, copy_value = null) %}
+    {% set copy_value = copy_value ?? text %}
+    <button type="button" class="btn btn-sm btn-default font-monospace copy-btn copy-text" data-clipboard-text="{{ copy_value }}"
+            data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" data-bs-custom-class="popover-copy"
+            data-bs-title="{{ lang.copy }}" data-bs-content="{{ copy_value }}" data-copied-title="{{ lang.copied }}">
+        <span class="text-truncate">{{ text }}</span>
+        <span class="opacity-50">{{ icon.clipboard|raw }}</span>
+    </button>
+{% endmacro %}
+
 {# labels: list of {color, title} #}
 {% macro labels(labels) %}
     {% for label in labels %}<span class="label-dot" style="background-color:{{ label.color }};" title="{{ label.title }}"></span>{% endfor %}

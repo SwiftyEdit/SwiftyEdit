@@ -2092,8 +2092,11 @@ function se_get_label_checklist(array $checked_ids): array {
 
     global $se_labels;
 
+    // $se_labels is set for full pages (acp/index.php), xhr requests load the labels here
+    $all_labels = $se_labels ?? se_get_labels();
+
     $labels = [];
-    foreach($se_labels as $label) {
+    foreach($all_labels as $label) {
         $labels[] = [
             'id' => $label['label_id'],
             'color' => $label['label_color'],

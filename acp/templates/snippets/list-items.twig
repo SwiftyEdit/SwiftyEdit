@@ -1,0 +1,46 @@
+{#
+ # list of the snippets, loaded into #getSnippets by the snippets data-reader
+ # snippets: see snippets/data-reader.php (action list_snippets)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+<div class="d-flex justify-content-end">
+    <div>{{ pagination|raw }}</div>
+    <div class="ps-3">
+        <input type="number" class="form-control" hx-post="{{ writer_uri }}" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name='csrf_token']" name="items_per_page" min="5" max="99" value="{{ items_per_page }}">
+    </div>
+</div>
+
+<table class="table table-sm table-hover">
+    {% for snippet in snippets %}
+        <tr>
+            <td><img src="{{ snippet.lang_flag }}" width="15" title="{{ snippet.lang }}" alt="{{ snippet.lang }}"></td>
+            <td>{{ list.copy_text(snippet.name, '[snippet]' ~ snippet.name ~ '[/snippet]') }}</td>
+            <td>
+                <h6 class="mb-0">{% if snippet.title %}{{ snippet.title }}{% else %}<em class="opacity-50">{{ lang.msg_error_no_title }}</em>{% endif %}</h6>
+                <small>{{ snippet.content }}{% if snippet.content_trimmed %} <small><i>(...)</i></small>{% endif %}</small>
+            </td>
+            <td class="text-nowrap">{{ snippet.lastedit }}</td>
+            <td>{% for class in snippet.classes %}<span class="badge text-bg-secondary">{{ class }}</span> {% endfor %}</td>
+            <td>{{ list.labels(snippet.labels) }}</td>
+            <td>
+                {% for image in snippet.images|slice(0, 3) %}
+                    <a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-title="{{ image }}" data-bs-content="{{ '<img src="' ~ image|e ~ '">' }}">{{ icon.images|raw }}</a>
+                {% endfor %}
+                {% if snippet.images|length > 3 %}<small>(...)</small>{% endif %}
+            </td>
+            <td>
+                {% if snippet.link.url %}
+                    <a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" title="{{ snippet.link.title }}" data-bs-content="{{ 'URL: ' ~ snippet.link.url|e ~ '<br>Name: ' ~ snippet.link.name|e ~ '<br>' ~ lang.label_classes|e ~ ': ' ~ snippet.link.classes|e }}">{{ icon.link|raw }}</a>
+                {% endif %}
+            </td>
+            <td class="text-nowrap">
+                <a href="/admin/snippets/edit/{{ snippet.id }}/" class="btn btn-sm btn-default text-success">{{ icon.edit|raw }}</a>
+                <form action="/admin/snippets/duplicate/" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-default" name="duplicate_id" value="{{ snippet.id }}">{{ icon.copy|raw }}</button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

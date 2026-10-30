@@ -4,12 +4,12 @@
  #   list    - the htmx container that loads the list (rendered inside .module-overview-list)
  #   sidebar - module specific filters below the search
  #
- # variables: title, title_icon, new_url (optional), writer_uri, reader_uri,
+ # variables: title, title_icon, docs_link (optional, html), new_url (optional), writer_uri, reader_uri,
  #   search_name (POST name of the search input, optional - no search card without it),
  #   list_triggers (htmx events that reload the list and the active searches)
  #}
 <div class="subHeader d-flex align-items-center">
-    {{ title_icon|raw }} {{ title }}
+    {{ title_icon|raw }} {{ title }} {{ docs_link|default('')|raw }}
     {% if new_url %}
         <a href="{{ new_url }}" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
     {% endif %}

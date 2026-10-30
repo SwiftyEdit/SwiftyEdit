@@ -9,7 +9,7 @@ import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/color-mode.js';
 import './components/privacy-blur.js';
 import './components/global-search.js';
-import ClipboardJS from "clipboard";
+import './components/copy-to-clipboard.js';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;

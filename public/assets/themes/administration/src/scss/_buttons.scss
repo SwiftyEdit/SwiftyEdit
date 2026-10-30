@@ -184,3 +184,25 @@
 		  }
 	}	
 }
+// Text that is copied on click (copy_text macro in
+// acp/templates/components/list/macros.twig): all buttons have the same
+// width, a long text is cut with "..." (.text-truncate), the icon stays visible
+.copy-text {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .25rem;
+	width: 16rem;
+	max-width: 100%;
+	text-align: left;
+}
+
+// popover of the copy buttons: wide enough for a shortcode on one line
+.popover-copy {
+	--bs-popover-max-width: 32rem;
+
+	.popover-body {
+		font-family: var(--bs-font-monospace);
+		white-space: nowrap;
+	}
+}
