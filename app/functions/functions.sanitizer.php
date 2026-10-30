@@ -14,10 +14,22 @@ function clean_vars($var) {
 
 function clean_filename($str) {
 	$str = trim($str);
-	$str = strtolower($str);
-	$a = array('ä','ö','ü','ß',' - ',' + ',' / ','/'); 
+	// mb_strtolower: strtolower() leaves Ä, Ö, Ü as they are, they would not be
+	// replaced below and then removed as "not a-z" (Über -> ber)
+	$str = mb_strtolower($str, 'UTF-8');
+	$a = array('ä','ö','ü','ß',' - ',' + ',' / ','/');
 	$b = array('ae','oe','ue','ss','-','-','-','-');
 	$str = str_replace($a, $b, $str);
+	// other accents to plain letters (café -> cafe), like se_generate_slug() -
+	// iconv may add marks like ' or ? on some systems, the filter below removes them.
+	// Characters without an ASCII form (e.g. emoji, non-latin scripts) would make
+	// iconv fail for the whole string, they are removed first (the filter below
+	// would remove them anyway)
+	$str = preg_replace('/[^\p{Latin}\p{N}\s_\-]/u', '', $str) ?? $str; // null: invalid UTF-8
+	$transliterated = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+	if($transliterated !== false) {
+		$str = $transliterated;
+	}
 	$str = preg_replace('/\s/s', '_', $str);  // replace blanks -> '_'
 	$str = preg_replace('/[^a-z0-9_-]/isU', '', $str); // only a-z 0-9
 	$str = trim($str); 
