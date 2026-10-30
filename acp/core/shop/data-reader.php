@@ -1,7 +1,9 @@
 <?php
 
 /**
- * SwiftyEdit /admin/shop/
+ * SwiftyEdit /admin-xhr/shop/read/
+ * products: active search keywords, keywords, categories, the list (acp/templates/shop/list-items.twig)
+ * and the checks in the sidebar - and the lists of orders, price groups, features, options and filters
  *
  * global variables
  * @var array $icon
@@ -10,40 +12,29 @@
  * @var object $db_posts
  * @var string $hidden_csrf_token
  * @var array $se_settings
+ * @var object $twig
  */
 
-$writer_uri = '/admin/shop/edit/';
-$duplicate_uri = '/admin/shop/duplicate/';
+$list_writer_uri = '/admin-xhr/shop/write/';
 
-$global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
-$global_filter_status = json_decode($_SESSION['global_filter_status'],true);
-$global_filter_label = json_decode($_SESSION['global_filter_label'],true);
+// text fields are stored html-encoded (shop data-writer), Twig escapes on output
+$decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+
+$global_filter_languages = json_decode($_SESSION['global_filter_languages'] ?? '',true);
 
 include_once __DIR__.'/../templates.php';
 global $lang_codes;
-
-$se_labels = se_get_labels();
-$se_categories = se_get_categories();
 
 /**
  * list active keywords from search input
  * used in the sidebar
  */
 if($_REQUEST['action'] == 'list_active_searches') {
-
-    if(isset($_SESSION['products_text_filter']) AND $_SESSION['products_text_filter'] != "") {
-        unset($all_filter);
-        $all_filter_products = explode(" ", $_SESSION['products_text_filter']);
-
-        foreach($all_filter_products as $f) {
-            if($_REQUEST['rm_keyword'] == "$f") { continue; }
-            if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
-        }
-        if(isset($btn_remove_keyword)) {
-            echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
-        }
-    }
+    $keywords = array_filter(explode(" ", $_SESSION['products_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
 
@@ -64,395 +55,192 @@ if($_REQUEST['action'] == 'list_active_searches_orders') {
     exit;
 }
 
-// list all keywords
-// used in sidebar
+// keywords of all products, used in the sidebar
 if($_REQUEST['action'] == 'list_keyword_btn') {
+    $active_keywords = explode(",", $_SESSION['products_keyword_filter'] ?? '');
     $get_keywords = se_get_products_keywords();
     arsort($get_keywords);
-    $vals = ['csrf_token' => $_SESSION['token']];
-    echo '<div class="scroll-container">';
-    foreach($get_keywords as $k => $v) {
-        $k = trim($k);
-        if(str_contains($_SESSION['products_keyword_filter'],$k)) {
-            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
-        } else {
-            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin-xhr/shop/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
-        }
+    $keywords = [];
+    foreach($get_keywords as $keyword => $count) {
+        $keyword = trim((string) $keyword);
+        $keywords[] = [
+            // the value is posted back and compared with the stored (encoded) keywords
+            'name' => $decode($keyword),
+            'count' => $count,
+            'active' => in_array($keyword, $active_keywords)
+        ];
     }
-    echo '</div>';
+    echo $twig->render('shop/keyword-buttons.twig', [
+        'keywords' => $keywords,
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
-
 
 // list products
 if($_REQUEST['action'] == 'list_products') {
 
-    // defaults
-    $order_by = 'lastedit';
-    $order_direction = 'DESC';
-    $limit_start = $_SESSION['pagination_products_page'] ?? 0;
     $nbr_show_items = 10;
+    $active_page = (int) ($_SESSION['pagination_products_page'] ?? 0);
 
-    $match_str = $_SESSION['products_text_filter'] ?? '';
-    $keyword_str = $_SESSION['products_keyword_filter'] ?? '';
-    $order_key = $_SESSION['sorting_products'] ?? $order_by;
-    $order_direction = $_SESSION['sorting_products_direction'] ?? $order_direction;
-
-    if($limit_start > 0) {
-        $limit_start = ($limit_start*$nbr_show_items);
+    // sorting, only these columns
+    $order_key = $_SESSION['sorting_products'] ?? 'lastedit';
+    if(!in_array($order_key, ['priority', 'date', 'lastedit', 'product_price_net'])) {
+        $order_key = 'lastedit';
     }
+    $order_direction = (($_SESSION['sorting_products_direction'] ?? '') == 'ASC') ? 'ASC' : 'DESC';
 
-    $filter_base = [
-        "AND" => [
-            "type" => 'p'
-        ]
-    ];
-
-    $filter_by_str = array();
-    if($match_str != '') {
-        $this_filter = explode(" ",$match_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_str = [
-                "OR" => [
-                    "title[~]" => "%$f%",
-                    "teaser[~]" => "%$f%",
-                    "text[~]" => "%$f%",
-                    "text_additional1[~]" => "%$f%",
-                    "text_additional2[~]" => "%$f%",
-                    "text_additional3[~]" => "%$f%",
-                    "text_additional4[~]" => "%$f%",
-                    "text_additional5[~]" => "%$f%"
-                ]
-            ];
-        }
-    }
-
-    $filter_by_keyword = array();
-    if($keyword_str != '') {
-        $this_filter = explode(",",$keyword_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_keyword = [
-                "tags[~]" => "$f"
-            ];
-        }
-    }
-
-    $filter_by_category = array();
-    if($_SESSION['filter_prod_categories'] != '') {
-        $cat_filter = explode(" ",$_SESSION['filter_prod_categories']);
-        $cat_filter = array_filter($cat_filter);
-        $filter_by_category = [
-                "categories[~]" => $cat_filter
-        ];
-    }
-
-    // global language filter
-    $filter_by_language = array();
-    if(is_array($global_filter_languages)) {
-        $lang_filter = array_filter($global_filter_languages);
-        $filter_by_language = [
-            "product_lang[~]" => $lang_filter
-        ];
-    }
-
-    // global status filter
-    // global status for ghost = 4 in but in products = 3
-    $filter_by_status = array();
-    if(is_array($global_filter_status)) {
-        $status_filter = array_filter($global_filter_status);
-        $index = array_search(4,$status_filter);
-        if ($index !== false) {
-            $status_filter[$index] = 3;
-        }
-        $filter_by_status = [
-            "status[~]" => $status_filter
-        ];
-    }
-
-    // global label filter
-    $filter_by_label = array();
-    if(is_array($global_filter_label)) {
-        $label_filter = array_filter($global_filter_label);
-        $filter_by_label = [
-            "labels[~]" => $label_filter
-        ];
-    }
-
-
+    // variants are listed below their product
     $db_where = [
-        "AND" => $filter_base+$filter_by_str+$filter_by_keyword+$filter_by_category+$filter_by_language+$filter_by_status+$filter_by_label
+        "type" => 'p'
     ];
 
-    $db_order = [
-        "ORDER" => [
-            "$order_key" => "$order_direction"
-        ]
+    // search: every keyword has to be part of one of the texts
+    $search_columns = ['title', 'teaser', 'text', 'text_additional1', 'text_additional2', 'text_additional3', 'text_additional4', 'text_additional5'];
+    $search = array_values(array_filter(explode(" ", $_SESSION['products_text_filter'] ?? '')));
+    foreach($search as $i => $keyword) {
+        $db_where["OR #search$i"] = array_fill_keys(array_map(static fn($column) => $column.'[~]', $search_columns), "%$keyword%");
+    }
+
+    // keywords of the sidebar: every selected keyword has to be part of the tags
+    $tags = array_values(array_filter(explode(",", $_SESSION['products_keyword_filter'] ?? '')));
+    foreach($tags as $i => $tag) {
+        $db_where["AND #tag$i"] = ["tags[~]" => "%$tag%"];
+    }
+
+    // categories: products in one of the selected categories
+    $cat_filter = array_values(array_filter(explode(" ", $_SESSION['filter_prod_categories'] ?? '')));
+    if($cat_filter) {
+        $db_where["categories[~]"] = $cat_filter;
+    }
+
+    // global filter (top navigation), the status ghost is 3 in products
+    $db_where += se_get_global_filter_where('product_lang', 'status', 'labels', [1 => '1', 2 => '2', 4 => '3']);
+
+    $products_data_cnt = $db_posts->count("se_products", ["AND" => $db_where]);
+    $nbr_pages = (int) ceil($products_data_cnt/$nbr_show_items);
+
+    $products_data = $db_posts->select("se_products", "*", [
+        "AND" => $db_where,
+        "ORDER" => [$order_key => $order_direction],
+        "LIMIT" => [$active_page * $nbr_show_items, $nbr_show_items]
+    ]);
+
+    // categories by hash, for the category names in the rows
+    $categories_by_hash = [];
+    foreach(se_get_categories() as $cat) {
+        $categories_by_hash[$cat['cat_hash']] = [
+            'name' => $decode($cat['cat_name']),
+            'description' => $decode($cat['cat_description'] ?? '')
+        ];
+    }
+
+    $taxes = [
+        '1' => $se_settings['posts_products_default_tax'],
+        '2' => $se_settings['posts_products_tax_alt1'],
+        '3' => $se_settings['posts_products_tax_alt2']
     ];
 
-    $db_limit = [
-        "LIMIT" => [$limit_start, $nbr_show_items]
-    ];
-
-    $products_data_cnt = $db_posts->count("se_products", $db_where);
-
-
-    $products_data = $db_posts->select("se_products","*",
-        $db_where+$db_order+$db_limit
-    );
-
-    $nbr_pages = ceil($products_data_cnt/$nbr_show_items);
-
-    echo '<div class="card p-3">';
-    echo se_print_pagination('/admin-xhr/shop/write/',$nbr_pages,$_SESSION['pagination_products_page']);
-
-    echo '<div class="table-responsive">';
-    echo '<table class="table table-striped">';
-
-    echo '<thead><tr>';
-    echo '<th scope="col" style="width: 100px;">'.$lang['label_priority'].'</th>';
-    echo '<th scope="col" style="width: 30px;">'.$lang['label_image'].'</th>';
-    echo '<th scope="col" class="w-auto">'.$lang['label_description'].'</th>';
-    echo '<th scope="col" style="width: 150px;">'.$lang['label_price'].'</th>';
-    echo '<th scope="col" style="width: 50px;"> </th>';
-    echo '</tr></thead>';
-
+    $products = [];
     foreach($products_data as $product) {
 
         $product_id = (int) $product['id'];
-        $add_row_class = '';
-        $add_label = '';
 
-        if($product['status'] == '2') {
-            $add_row_class = 'item_is_draft';
-            $add_label = '<span class="badge badge-se">'.$lang['status_draft'].'</span>';
-        }
-        if($product['status'] == '3') {
-            $add_row_class = 'item_is_ghost';
-            $add_label = '<span class="badge badge-se">'.$lang['status_ghost'].'</span>';
+        $teaser_plain = strip_tags(htmlspecialchars_decode((string) $product['teaser']));
+
+        // images are stored as <->img1<->img2<->, the first one is the thumbnail
+        $prod_image = explode("<->", (string) $product['images']);
+        $thumb = '';
+        if(($prod_image[1] ?? '') != '') {
+            $thumb = str_replace(['../content/', '../images/'], ['/', '/images/'], $prod_image[1]);
         }
 
-        /* trim teaser to $trim chars */
-        $trimmed_teaser = se_return_first_chars($product['teaser'],100);
-
-        // show dates
-        $published_date = '<span title="'.$lang['label_data_submited'].'">'.$icon['save'].': '.se_format_datetime($product['date']).'</span>';
-        $release_date = '<span title="'.$lang['label_data_releasedate'].'">'.$icon['calendar_check'].': '.se_format_datetime($product['releasedate']).'</span>';
-        $lastedit_date = '';
-        if($product['lastedit'] != '') {
-            $lastedit_date = '<span title="'.$lang['label_data_lastedit'].'">'.$icon['edit'].': '.se_format_datetime($product['lastedit']).'</span>';
-        }
-        $show_items_dates = '<span class="text-muted small">'.$published_date.' | '.$lastedit_date.' | '.$release_date.'</span>';
-
-        $product_lang_thumb = '<img src="'.return_language_flag_src($product['product_lang']).'" width="15" title="'.$product['product_lang'].'" alt="'.$product['product_lang'].'">';
-
-        // labels
-        $get_labels = explode(',',$product['labels']);
-        $label = '';
-        if($product['labels'] != '') {
-            $label = '<p>';
-            foreach($get_labels as $labels) {
-
-                foreach($se_labels as $l) {
-                    if($labels == $l['label_id']) {
-                        $label_color = $l['label_color'];
-                        $label_title = $l['label_title'];
-                    }
-                }
-
-                $label .= '<span class="label-dot" style="background-color:'.$label_color.';" title="'.$label_title.'"></span>';
+        $categories = [];
+        foreach(array_filter(explode('<->', (string) $product['categories'])) as $hash) {
+            if(isset($categories_by_hash[$hash])) {
+                $categories[] = $categories_by_hash[$hash];
             }
-            $label .= '</p>';
         }
 
-        // categories
-        $get_categories = explode('<->',$product['categories']);
-        $categories = '';
-        if($product['categories'] != '') {
-            $categories = '<p>';
-            foreach($get_categories as $cats) {
+        $labels = array_filter(
+            se_get_label_checklist(explode(',', (string) $product['labels'])),
+            static fn($label) => $label['checked']
+        );
 
-                foreach($se_categories as $cat) {
-                    if($cats == $cat['cat_hash']) {
-                        $cat_title = $cat['cat_name'];
-                        $cat_description = $cat['cat_description'];
-                    }
-                }
-                $categories .= '<span class="text-muted small" title="'.$cat_description.'">'.$icon['tags'].' '.$cat_title.'</span> ';
-            }
-            $categories .= '</p>';
-        }
-
-        // thumbnail
-        $prod_image = explode("<->", $product['images']);
-        $show_thumb = '';
-        if($prod_image[1] != "") {
-            $image_src = str_replace("../images/","/",$prod_image[1]);
-            $show_thumb  = '<div data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="<img src=\''.$image_src.'\'>">';
-            $show_thumb .= '<div class="show-thumb" style="background-image: url('.$image_src.');">';
-            $show_thumb .= '</div>';
-            $show_thumb .= '</div>';
-        } else {
-            $show_thumb = '<div class="show-thumb" style="background-image: url(/themes/administration/images/no-image.png);">';
-        }
-
-        $show_slug = $icon['link'].' ';
-        if($product['main_catalog_slug'] != '') {
-            $show_slug .= '<span class="text-success">'.$product['main_catalog_slug'].'</span>';
-        }
-        if($product['slug'] != '') {
-            $show_slug .= '<span class="text-success">'.$product['slug'].'</span>';
-        }
-
-        // variants
-        $variants = [];
-        $variants = se_get_product_variants($product_id);
-        $cnt_variants = count($variants);
-
-        $edit_variant_collapse = '';
-        if($cnt_variants > 1) {
-
-            $edit_variant_collapse = '<div style="margin-top:-25px;" class="text-center">
-                                        <a class="btn btn-default btn-sm" 
-                                            data-bs-toggle="collapse" 
-                                            href="#collapseVariants'.$product_id.'" 
-                                            role="button" 
-                                            aria-expanded="false" 
-                                            aria-controls="collapseVariants'.$product_id.'"
-                                            >'.$lang['label_product_variants'].' ('.($cnt_variants-1).') 
-                                            <span class="toggle">'.$icon['caret_down'].'</span></a></div>';
-            $edit_variant_collapse .= '<div class="collapse" id="collapseVariants'.$product_id.'">';
-            $edit_variant_collapse .= '<table class="table table-sm mt-1">';
-
-            foreach($variants as $variant) {
-
-                $show_title = $variant['product_variant_title'] ?: $variant['title'];
-                $show_description = $variant['product_variant_description'] ?: $variant['teaser'];
-                $trimmed_description = se_return_first_chars($show_description,100);
-
-                if($product_id == $variant['id']) {
-                    continue;
-                }
-
-                $btn_edit_variant  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
-                $btn_edit_variant .= '<button class="btn btn-default btn-sm text-success" name="product_id" value="'.$variant['id'].'">'.$icon['edit'].'</button>';
-                $btn_edit_variant .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-                $btn_edit_variant .= '</form>';
-
-                $btn_duplicate_variant  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
-                $btn_duplicate_variant .= '<button class="btn btn-default btn-sm" name="duplicate_id" value="'.$variant['id'].'">'.$icon['copy'].'</button>';
-                $btn_duplicate_variant .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-                $btn_duplicate_variant .= '</form>';
-
-                $edit_variant_collapse .= '<tr>';
-                $edit_variant_collapse .= '<td>#'.$variant['id'].'</td>';
-                $edit_variant_collapse .= '<td>'.$show_title.'</td>';
-                $edit_variant_collapse .= '<td>'.$trimmed_description.'</td>';
-                $edit_variant_collapse .= '<td class="text-end">'.$btn_edit_variant.' '.$btn_duplicate_variant.'</td>';
-                $edit_variant_collapse .= '</tr>';
-            }
-
-            $edit_variant_collapse .= '</table>';
-            $edit_variant_collapse .= '</div>';
-        }
-
-        // fix button
-        $icon_fixed_form = '<form hx-post="/admin-xhr/shop/write/" method="POST" class="form-inline">';
-        if($product['fixed'] == '1') {
-            $icon_fixed_form .= '<button type="submit" class="btn btn-primary w-100" name="rfixed" value="'.$product['id'].'">'.$icon['star'].'</button>';
-        } else {
-            $icon_fixed_form .= '<button type="submit" class="btn btn-default w-100" name="sfixed" value="'.$product['id'].'">'.$icon['star_outline'].'</button>';
-        }
-        $icon_fixed_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $icon_fixed_form .= '</form>';
-
-        // priority form
-        $prio_form  = '<form hx-post="/admin-xhr/shop/write/" hx-trigger="keyup changed delay:1s,keydown[key==\'Enter\']" method="POST" class="no-enter">';
-        $prio_form .= '<input type="number" name="priority" value="'.$product['priority'].'" class="form-control" style="max-width:150px">';
-        $prio_form .= '<input type="hidden" name="prio_id" value="'.$product['id'].'">';
-        $prio_form .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $prio_form .= '</form>';
-
-
-        // buttons
-        $btn_edit_tpl  = '<form action="'.$writer_uri.'" method="post" class="d-inline">';
-        $btn_edit_tpl .= '<button class="btn btn-default text-success" name="product_id" value="'.$product_id.'">'.$icon['edit'].'</button>';
-        $btn_edit_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_edit_tpl .= '</form>';
-
-        $btn_duplicate_tpl  = '<form action="'.$duplicate_uri.'" method="post" class="d-inline">';
-        $btn_duplicate_tpl .= '<button class="btn btn-default" name="duplicate_id" value="'.$product_id.'">'.$icon['copy'].'</button>';
-        $btn_duplicate_tpl .= '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_duplicate_tpl .= '</form>';
-
-
-        // price tag from product or from price groups
-
-        if($product['product_price_group'] != '' AND $product['product_price_group'] != 'null') {
+        // price from the product or from its price group
+        if($product['product_price_group'] != '' && $product['product_price_group'] != 'null') {
             $price_data = se_get_price_group_data($product['product_price_group']);
             $product_tax = $price_data['tax'];
             $product_price_net = $price_data['price_net'];
-            $product_volume_discounts = $price_data['price_volume_discount'];
         } else {
             $product_tax = $product['product_tax'];
             $product_price_net = $product['product_price_net'];
-            $product_volume_discounts = $product['product_price_volume_discounts'];
+        }
+        $tax = $taxes[(string) $product_tax] ?? $taxes['3'];
+
+        // prices are stored formatted, e.g. 1.234,56
+        $price_net = (float) str_replace(['.', ','], ['', '.'], (string) ($product_price_net ?: 0));
+        $price_gross = $price_net * ((float) $tax + 100) / 100;
+
+        // variants, without the product itself
+        $variants = [];
+        foreach(se_get_product_variants($product_id) as $variant) {
+            if($variant['id'] == $product_id) {
+                continue;
+            }
+            $description = (string) ($variant['product_variant_description'] ?: $variant['teaser']);
+            $variants[] = [
+                'id' => (int) $variant['id'],
+                'title' => $decode($variant['product_variant_title'] ?: $variant['title']),
+                'description' => $decode(se_return_first_chars($description, 100, false)),
+                'description_trimmed' => (strlen(strip_tags(htmlspecialchars_decode($description))) > 100)
+            ];
         }
 
-        if ($product_tax == '1') {
-            $tax = $se_settings['posts_products_default_tax'];
-        } else if ($product['product_tax'] == '2') {
-            $tax = $se_settings['posts_products_tax_alt1'];
-        } else {
-            $tax = $se_settings['posts_products_tax_alt2'];
+        $status_class = '';
+        $status_label = '';
+        if($product['status'] == '2') {
+            $status_class = 'item_is_draft';
+            $status_label = $lang['status_draft'];
+        }
+        if($product['status'] == '3') {
+            $status_class = 'item_is_ghost';
+            $status_label = $lang['status_ghost'];
         }
 
-        if (empty($product_price_net)) {
-            $product_price_net = 0;
-        }
-
-        $post_price_net = str_replace('.', '', $product_price_net);
-        $post_price_net = str_replace(',', '.', $post_price_net);
-
-        $post_price_gross = $post_price_net * ($tax + 100) / 100;
-
-        $post_price_net_format = se_post_print_currency($post_price_net);
-        $post_price_gross_format = se_post_print_currency($post_price_gross);
-
-        $show_items_price = '<div class="card p-2 text-nowrap">';
-        $show_items_price .= '<span class="small">' . $product['product_currency'] . ' ' . $post_price_net_format . '</span>';
-        $show_items_price .= '<span class="small"> + ' . $tax . '%</span>';
-        $show_items_price .= '<span class="text-success">' . $product['product_currency'] . ' ' . $post_price_gross_format . '</span>';
-        $show_items_price .= '</div>';
-
-        echo '<tr class="'.$add_row_class.'">';
-        echo '<td><div class="d-flex flex-column gap-1">'.$icon_fixed_form.$prio_form.'</div></td>';
-        echo '<td>'.$show_thumb.'</td>';
-        echo '<td>';
-        echo '<h6>'.$product_lang_thumb.' '.$product['title'].' <span class="text-muted small fw-normal">#'.$product['id'].'</span> '.$add_label.'</h6>';
-        echo $trimmed_teaser.'<br>'.$show_items_dates;
-        echo '<p class="mb-0"><small>'.$show_slug.'</small></p>';
-        echo $label;
-        echo $categories;
-        echo '</td>';
-        echo '<td style="width:150px;">'.$show_items_price.'</td>';
-        echo '<td><div class="d-flex flex-column gap-1">'.$btn_edit_tpl.$btn_duplicate_tpl.'</div></td>';
-        echo '</tr>';
-
-        if($edit_variant_collapse != '') {
-            echo '<tr class="'.$add_row_class.'">';
-            echo '<td colspan="5">';
-            echo $edit_variant_collapse;
-            echo '</td>';
-            echo '</tr>';
-        }
+        $products[] = [
+            'id' => $product_id,
+            'title' => $decode($product['title']),
+            'teaser' => $decode(se_return_first_chars($product['teaser'], 100, false)),
+            'teaser_trimmed' => (strlen($teaser_plain) > 100),
+            'lang' => $product['product_lang'],
+            'lang_flag' => return_language_flag_src($product['product_lang']),
+            'status_class' => $status_class,
+            'status_label' => $status_label,
+            'fixed' => ($product['fixed'] == '1'),
+            'priority' => $product['priority'],
+            'date' => se_format_datetime($product['date']),
+            'lastedit' => ($product['lastedit'] != '') ? se_format_datetime($product['lastedit']) : '',
+            'releasedate' => se_format_datetime($product['releasedate']),
+            'main_catalog_slug' => $product['main_catalog_slug'],
+            'slug' => $product['slug'],
+            'thumb' => $thumb,
+            'labels' => $labels,
+            'categories' => $categories,
+            'currency' => $product['product_currency'],
+            'tax' => $tax,
+            'price_net' => se_post_print_currency($price_net),
+            'price_gross' => se_post_print_currency($price_gross),
+            'variants' => $variants
+        ];
     }
 
-    echo '</table>';
-    echo '</div>'; // table-responsive
-    echo '</div>';
-
+    echo $twig->render('shop/list-items.twig', [
+        'products' => $products,
+        'pagination' => se_print_pagination($list_writer_uri, $nbr_pages, $active_page),
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
 }
 
 // List of products that have been assigned to a specific filter
@@ -478,59 +266,35 @@ if($_REQUEST['show'] == 'products_by_filter') {
 // list price groups
 if($_REQUEST['action'] == 'list_price_groups') {
 
-    $get_all_price_groups = se_get_price_groups();
-    $cnt_price_groups = count($get_all_price_groups);
+    $tax_options = [
+        1 => $se_settings['posts_products_default_tax'],
+        2 => $se_settings['posts_products_tax_alt1'],
+        3 => $se_settings['posts_products_tax_alt2'],
+    ];
 
-    if($cnt_price_groups < 1) {
-        echo '<div class="alert alert-info">'.$lang['msg_no_entries_found'].'</div>';
-        exit;
-    } else {
-
-        echo '<table class="table table-sm">';
-        echo '<tr>';
-        echo '<td>'.$lang['label_title'].'</td>';
-        echo '<td>'.$lang['label_product_price'].' '.$lang['label_product_net'].'</td>';
-        echo '<td>'.$lang['label_product_price'].' '.$lang['label_product_gross'].'</td>';
-        echo '<td>'.$lang['label_product_scaling_prices'].'</td>';
-        echo '<td></td>';
-        echo '</tr>';
-
-        $tax_options = [
-            1 => $se_settings['posts_products_default_tax'],
-            2 => $se_settings['posts_products_tax_alt1'],
-            3 => $se_settings['posts_products_tax_alt2'],
+    $groups = [];
+    foreach(se_get_price_groups() as $group) {
+        $tax = $tax_options[$group['tax']] ?? $tax_options[1];
+        $group_prices = se_posts_calc_price($group['price_net'], $tax);
+        $groups[] = [
+            'id' => (int) $group['id'],
+            'title' => $decode($group['title']),
+            'net' => $group_prices['net_single'],
+            'gross' => $group_prices['gross_single'],
+            // older versions stored "null" for no volume discounts
+            'volume_discounts' => !in_array($group['price_volume_discount'], ['', 'null', null], true)
         ];
-
-        foreach ($get_all_price_groups as $group) {
-
-            $status_volume_discounts = $icon['check'];
-            if($group['price_volume_discount'] == '' OR $group['price_volume_discount'] == 'null') {
-                $status_volume_discounts = $icon['x'];
-            }
-
-            $tax = $tax_options[$group['tax']] ?? $tax_options[1];
-            $group_prices = se_posts_calc_price($group['price_net'], $tax);
-
-            echo '<tr>';
-            echo '<td>'.$group['title'].'</td>';
-            echo '<td>'.$group_prices['net_single'].'</td>';
-            echo '<td>'.$group_prices['gross_single'].'</td>';
-            echo '<td>'.$status_volume_discounts.'</td>';
-            echo '<td class="text-end">';
-            echo '<form>';
-            echo '<button type="button" hx-post="/admin-xhr/shop/read/" hx-trigger="click" hx-swap="innerHTML" hx-target="#PriceGroupForm" class="btn btn-default btn-sm text-success" name="open_price_group" value="'.$group['id'].'">'.$icon['edit'].'</button> ';
-            echo '<button type="button" hx-post="/admin-xhr/shop/write/" hx-target="#priceGroupResponse" hx-confirm="'.$lang['msg_confirm_delete'].'" class="btn btn-default btn-sm text-danger" name="delete_price_group" value="'.$group['id'].'">'.$icon['trash_alt'].'</button>';
-            echo $hidden_csrf_token;
-            echo '</form>';
-            echo '</td>';
-            echo '</tr>';
-        }
-        echo '</table>';
-
-
     }
+
+    echo $twig->render('shop/price-groups-items.twig', [
+        'groups' => $groups,
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
+
+// the price group form, empty (new) or with an opened group
+$show_form = false;
 
 if($_REQUEST['action'] == 'show_price_groups_form') {
     $show_form = true;
@@ -562,9 +326,6 @@ if($show_form) {
         $volume_discounts[] = ['amount' => '', 'price' => ''];
     }
 
-    // text fields are stored html-encoded (sanitizeUserInputs), Twig escapes on output
-    $decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
-
     echo $twig->render('shop/price-group-form.twig', [
         'group' => [
             'id' => $price_group['id'] ?? 'new',
@@ -580,31 +341,23 @@ if($show_form) {
     ]);
 }
 
-// list categories in sidebar
+// filter by category in the sidebar
 if($_REQUEST['action'] == 'list_categories') {
-
-    $get_categories = se_get_categories();
-    echo '<div class="list-group list-group-flush">';
-    foreach($get_categories as $c) {
-
-        $cat_lang_thumb = '<img src="'.return_language_flag_src($c['cat_lang']).'" width="15" alt="'.$c['cat_lang'].'">';
-        $active = '';
-        if(str_contains($_SESSION['filter_prod_categories'],$c['cat_hash'])) {
-            $active = 'active';
-        }
-
-        echo '<button 
-                hx-post="/admin-xhr/shop/write/"
-                hx-trigger="click"
-                hx-swap="none"
-                hx-include="[name=\'csrf_token\']"
-                name="set_filter_cat"
-                value="'.$c['cat_hash'].'"
-                class="list-group-item list-group-item-action '.$active.'">';
-        echo ''.$c['cat_name'].'';
-        echo '<span class="float-end">'.$cat_lang_thumb.'</span>';
-        echo '</button>';
+    $active_categories = explode(" ", $_SESSION['filter_prod_categories'] ?? '');
+    $items = [];
+    foreach(se_get_categories() as $category) {
+        $items[] = [
+            'value' => $category['cat_hash'],
+            'label' => $decode($category['cat_name']),
+            'active' => in_array($category['cat_hash'], $active_categories),
+            'flag' => return_language_flag_src($category['cat_lang'])
+        ];
     }
+    echo $twig->render('components/list/filter-buttons.twig', [
+        'name' => 'set_filter_cat',
+        'items' => $items,
+        'writer_uri' => $list_writer_uri
+    ]);
 }
 
 // list all features
@@ -1074,54 +827,36 @@ if(isset($_REQUEST['calc_orders_all'])) {
 
 // check for missing product numbers
 if($_REQUEST['action'] == 'check_missing_sku') {
-
-    $missing_sku = $db_posts->select("se_products","*", ["product_number" => ""]);
-    $cnt_missing_sku = count($missing_sku);
-
-
-    echo '<a href="#collapse_msku" data-bs-toggle="collapse" class="list-group-item list-group-item-action"><span class="badge text-bg-secondary">'.$cnt_missing_sku.'</span> Missing SKU</a>';
-
-    echo '<div class="collapse card-body" id="collapse_msku">';
-    foreach($missing_sku as $item) {
-        echo '<a href="/admin/shop/edit/'.$item['id'].'/" title="'.$item['title'].'" class="btn btn-default btn-sm me-1">';
-        echo '#'.$item['id'].'';
-        echo '</a>';
-    }
-    echo '</div>';
-
-
+    $missing_sku = $db_posts->select("se_products", ["id", "title"], ["product_number" => ""]);
+    echo $twig->render('shop/check.twig', [
+        'id' => 'collapse_msku',
+        'title' => 'Missing SKU',
+        'count' => count($missing_sku),
+        'groups' => [[
+            'products' => array_map(static fn($item) => ['id' => $item['id'], 'title' => $decode($item['title'])], $missing_sku)
+        ]]
+    ]);
     exit;
 }
 
 // check for double slugs
 if($_REQUEST['action'] == 'check_double_slugs') {
-
-    $products = $db_posts->select("se_products",["id","slug","title"]);
+    $products = $db_posts->select("se_products", ["id", "slug", "title"]);
     $counts = array_count_values(array_column($products, 'slug'));
-    $duplicateSlugs = array_keys(array_filter($counts, fn($count) => $count > 1));
-
-    $duplicates = array_filter($products, fn($p) => in_array($p['slug'], $duplicateSlugs));
-    $cnt_duplicates = count($duplicates);
-
-    echo '<a href="#collapse_double_slugs" data-bs-toggle="collapse" class="list-group-item list-group-item-action"><span class="badge text-bg-secondary">'.$cnt_duplicates.'</span> Double Slugs</a>';
-    echo '<div class="collapse card-body" id="collapse_double_slugs">';
-
-    $grouped = [];
-    foreach ($duplicates as $product) {
-        $grouped[$product['slug']][] = $product;
-    }
-
-    echo '<ul class="list-group list-group-flush">';
-    foreach ($grouped as $slug => $products) {
-        echo '<li class="list-group-item">' . $slug . '</li>';
-        echo '<li class="list-group-item">';
-        foreach ($products as $product) {
-            echo '<a href="/admin/shop/edit/'.$product['id'].'/" title="'.$product['title'].'" class="btn btn-default btn-sm me-1">#'.$product['id'].'</a>';
+    $groups = [];
+    $cnt_duplicates = 0;
+    foreach($products as $product) {
+        if($counts[$product['slug']] > 1) {
+            $groups[$product['slug']]['name'] = $product['slug'];
+            $groups[$product['slug']]['products'][] = ['id' => $product['id'], 'title' => $decode($product['title'])];
+            $cnt_duplicates++;
         }
-        echo '</li>';
     }
-
-    echo '</ul>';
-    echo '</div>';
+    echo $twig->render('shop/check.twig', [
+        'id' => 'collapse_double_slugs',
+        'title' => 'Double Slugs',
+        'count' => $cnt_duplicates,
+        'groups' => array_values($groups)
+    ]);
     exit;
 }

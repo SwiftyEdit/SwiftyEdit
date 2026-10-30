@@ -1,0 +1,34 @@
+{#
+ # list of the price groups, loaded into #getPriceGroups by the shop data-reader
+ # groups: see shop/data-reader.php (action list_price_groups)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{% if groups is empty %}
+    <div class="alert alert-info">{{ lang.msg_no_entries_found }}</div>
+{% else %}
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th>{{ lang.label_title }}</th>
+                <th>{{ lang.label_product_price }} {{ lang.label_product_net }}</th>
+                <th>{{ lang.label_product_price }} {{ lang.label_product_gross }}</th>
+                <th>{{ lang.label_product_scaling_prices }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for group in groups %}
+            <tr>
+                <td>{{ group.title }}</td>
+                {# net / gross: markup of se_post_print_currency() #}
+                <td>{{ group.net|raw }}</td>
+                <td>{{ group.gross|raw }}</td>
+                <td>{{ (group.volume_discounts ? icon.check : icon.x)|raw }}</td>
+                <td class="text-end text-nowrap">
+                    <button type="button" hx-post="/admin-xhr/shop/read/" hx-target="#PriceGroupForm" hx-include="[name='csrf_token']" class="btn btn-default btn-sm text-success" name="open_price_group" value="{{ group.id }}">{{ icon.edit|raw }}</button>
+                    {{ list.delete_button('delete_price_group', group.id, writer_uri) }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
