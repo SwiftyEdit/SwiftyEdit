@@ -1,0 +1,31 @@
+{#
+ # list of the product features, loaded into #getFeatures by the shop data-reader
+ # features: see shop/data-reader.php (action list_features)
+ #}
+{% if features is empty %}
+    <p class="text-muted mb-0">{{ lang.msg_info_no_entries_so_far }}</p>
+{% else %}
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{{ lang.label_priority }}</th>
+                <th>{{ lang.label_language }}</th>
+                <th>{{ lang.label_text }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for feature in features %}
+            <tr>
+                <td>{{ feature.id }}</td>
+                <td>{{ feature.priority }}</td>
+                <td><img src="{{ feature.lang_flag }}" width="15" title="{{ feature.lang }}" alt="{{ feature.lang }}"></td>
+                {# text: html of the editor, shown as it is shown in the shop #}
+                <td><strong>{{ feature.title }}</strong><br>{{ feature.text|raw }}</td>
+                <td class="text-end" style="width:120px;">
+                    <a href="/admin/shop/features/edit/{{ feature.id }}/" class="btn btn-sm btn-default text-success">{{ icon.edit|raw }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

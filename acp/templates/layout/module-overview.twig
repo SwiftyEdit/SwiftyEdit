@@ -6,6 +6,8 @@
  #
  # variables: title, title_icon, docs_link (optional, html), new_url (optional), writer_uri, reader_uri,
  #   search_name (POST name of the search input, optional - no search card without it),
+ #   searches_action (reader action of the active search keywords, optional - default list_active_searches,
+ #   for modules that share a reader with another list, e.g. shop products and features),
  #   list_triggers (htmx events that reload the list and the active searches)
  #}
 <div class="subHeader d-flex align-items-center">
@@ -35,7 +37,7 @@
                         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                     </form>
                     {# remove buttons of the active search keywords, see components/list/active-searches.twig #}
-                    <div class="pt-1" hx-post="{{ reader_uri }}?action=list_active_searches" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+                    <div class="pt-1" hx-post="{{ reader_uri }}?action={{ searches_action|default('list_active_searches') }}" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
                 </div>
             </div>
         {% else %}

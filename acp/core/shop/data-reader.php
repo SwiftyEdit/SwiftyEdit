@@ -360,48 +360,50 @@ if($_REQUEST['action'] == 'list_categories') {
     ]);
 }
 
+// active search keywords of the features, used in the sidebar
+if($_REQUEST['action'] == 'list_active_searches_features') {
+    $keywords = array_filter(explode(" ", $_SESSION['features_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'remove_name' => 'rmkey_features',
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
+}
+
 // list all features
 if($_REQUEST['action'] == 'list_features') {
-    $show_data = se_get_posts_features();
-    $cnt_data = count($show_data);
 
-    echo '<div class="card p-3">';
+    // global filter (top navigation): features only have a language
+    $filter_languages = array_filter((array) (json_decode($_SESSION['global_filter_languages'] ?? '', true) ?? []));
 
-    echo '<table class="table table-sm">';
-    echo '<tr>';
-    echo '<td>#</td>';
-    echo '<td>'.$lang['label_priority'].'</td>';
-    echo '<td>'.$lang['label_language'].'</td>';
-    echo '<td>'.$lang['label_text'].'</td>';
-    echo '<td></td>';
-    echo '</tr>';
+    // search: every keyword has to be part of the title or the text
+    $keywords = array_filter(explode(" ", $decode($_SESSION['features_text_filter'] ?? '')));
 
-    foreach($show_data as $data) {
-
-        $flag = '<img src="'.return_language_flag_src($data['snippet_lang']).'" width="15">';
-
-        $btn_edit  = '<form action="/admin/shop/features/edit/" method="post" class="d-inline">';
-        $btn_edit .= '<button class="btn btn-default" name="features-form" value="'.$data['snippet_id'].'">'.$icon['edit'].'</button>';
-        $btn_edit .=  '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        $btn_edit .=  '</form>';
-
-        echo '<tr>';
-        echo '<td>'.$data['snippet_id'].'</td>';
-        echo '<td>'.$data['snippet_priority'].'</td>';
-        echo '<td>'.$flag.'</td>';
-        echo '<td><strong>'.$data['snippet_title'].'</strong><br>'.$data['snippet_content'].'</td>';
-        echo '<td class="text-end" style="width:120px;">';
-
-        echo $btn_edit;
-
-        echo '</td>';
-        echo '</tr>';
+    $features = [];
+    foreach(se_get_posts_features() as $data) {
+        if($filter_languages && !in_array($data['snippet_lang'], $filter_languages)) {
+            continue;
+        }
+        $haystack = $decode($data['snippet_title']).' '.strip_tags($decode($data['snippet_content']));
+        foreach($keywords as $keyword) {
+            if(mb_stripos($haystack, $keyword) === false) {
+                continue 2;
+            }
+        }
+        $features[] = [
+            'id' => (int) $data['snippet_id'],
+            'priority' => $data['snippet_priority'],
+            'lang' => $data['snippet_lang'],
+            'lang_flag' => return_language_flag_src($data['snippet_lang']),
+            'title' => $decode($data['snippet_title']),
+            'text' => $data['snippet_content']
+        ];
     }
 
-
-    echo '</table>';
-    echo '</div>'; // card
-
+    echo $twig->render('shop/features-items.twig', [
+        'features' => $features
+    ]);
 }
 
 // list all options

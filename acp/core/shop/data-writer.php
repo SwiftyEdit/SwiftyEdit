@@ -328,47 +328,60 @@ if(isset($_POST['set_filter_cat'])) {
     exit;
 }
 
+// text search in features
+if(isset($_POST['features_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['features_text_filter']);
+    $text_filter = $_SESSION['features_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['features_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
+    header("HX-Trigger: update_feature_list");
+    exit;
+}
+
+// remove keyword from features search
+if(isset($_POST['rmkey_features'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey_features']);
+    $keywords = explode(' ', $_SESSION['features_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['features_text_filter'] = implode(' ', $keywords);
+    header("HX-Trigger: update_feature_list");
+    exit;
+}
+
 // save features
 if(isset($_POST['save_feature'])) {
 
-    $lastedit = time();
-    $feature_title = se_return_clean_value($_POST['feature_title']);
-    $feature_text = $_POST['feature_text'];
-    $feature_priority = (int) $_POST['feature_priority'];
-    $feature_lang = $_POST['feature_lang'];
+    $feature_data = [
+        "snippet_title" => se_return_clean_value($_POST['feature_title'] ?? ''),
+        // html of the editor, shown in the product page
+        "snippet_content" => se_purify_html($_POST['feature_text'] ?? ''),
+        "snippet_priority" => (int) ($_POST['feature_priority'] ?? 0),
+        "snippet_lastedit" => time(),
+        "snippet_lang" => se_sanitize_lang_input($_POST['feature_lang'] ?? ''),
+        "snippet_type" => 'post_feature'
+    ];
 
     if(is_numeric($_POST['save_feature'])) {
         $id = (int) $_POST['save_feature'];
-        $db_content->update("se_snippets", [
-            "snippet_title" => $feature_title,
-            "snippet_content" => $feature_text,
-            "snippet_priority" => $feature_priority,
-            "snippet_lastedit" => $lastedit,
-            "snippet_lang" => $feature_lang,
-            "snippet_type" => 'post_feature'
-        ],[
+        $db_content->update("se_snippets", $feature_data, [
             "snippet_id" => $id
         ]);
+        record_log($_SESSION['user_nick'], "updated feature id: $id", 3);
         show_toast($lang['msg_success_db_changed'],'success');
+        header( "HX-Trigger: update_feature_list");
     } else {
-        $db_content->insert("se_snippets", [
-            "snippet_title" => $feature_title,
-            "snippet_content" => $feature_text,
-            "snippet_priority" => $feature_priority,
-            "snippet_lastedit" => $lastedit,
-            "snippet_lang" => $feature_lang,
-            "snippet_type" => 'post_feature'
-        ]);
+        $db_content->insert("se_snippets", $feature_data);
         $new_id = $db_content->id();
-
+        record_log($_SESSION['user_nick'], "new feature id: $new_id", 1);
         show_toast($lang['msg_success_new_record'],'success');
         // switch the form into edit mode for the new feature, so an
         // unintended second click on "save" updates it instead of
         // creating another one
         header( "HX-Redirect: /admin/shop/features/edit/$new_id/");
     }
-
-    header( "HX-Trigger: update_feature_list");
+    exit;
 }
 
 // delete feature
@@ -381,13 +394,14 @@ if(isset($_POST['delete_feature']) && is_numeric($_POST['delete_feature'])) {
         ]
     ]);
 
-    if(($cnt_changes->rowCount()) > 0) {
+    if($cnt_changes !== null && $cnt_changes->rowCount() > 0) {
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted feature id: $delete_id","10");
+        record_log($_SESSION['user_nick'],"deleted feature id: $delete_id",10);
         header( "HX-Redirect: /admin/shop/features/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
+    exit;
 }
 
 // save options

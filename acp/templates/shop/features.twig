@@ -1,0 +1,6 @@
+{# overview of the product features in /admin/shop/features/, rendered by features.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getFeatures" hx-post="{{ reader_uri }}?action=list_features" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+{% endblock %}

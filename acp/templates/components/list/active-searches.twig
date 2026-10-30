@@ -1,9 +1,12 @@
-{# remove buttons for the active search keywords of a list, the writer handles "rmkey" #}
+{#
+ # remove buttons for the active search keywords of a list
+ # the writer handles "rmkey", or remove_name for lists that share a writer (e.g. shop products and features)
+ #}
 {% if keywords %}
     <div class="d-inline">
         <p style="padding-top:5px;">
             {% for keyword in keywords %}
-                <button class="btn btn-sm btn-default" name="rmkey" value="{{ keyword }}" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']">{{ icon.x|raw }} {{ keyword }}</button>
+                <button class="btn btn-sm btn-default" name="{{ remove_name|default('rmkey') }}" value="{{ keyword }}" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']">{{ icon.x|raw }} {{ keyword }}</button>
             {% endfor %}
         </p>
     </div>
