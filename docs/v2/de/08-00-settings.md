@@ -20,29 +20,67 @@ Die Einstellungen sind in folgende Unterkategorien unterteilt
 * Labels
 * API-Keys
 
-## Allgemein
+## Allgemein {#general}
 
-Die Seite Allgemein ist in drei Tabs unterteilt:
+Die Seite Allgemein ist in drei Tabs unterteilt: <kbd>Allgemein</kbd>, <kbd>System</kbd> und
+<kbd>E-Mail</kbd>. Jeder Abschnitt wird mit seinem eigenen Button gespeichert.
 
-* <kbd>Allgemein</kbd> Die Standard-Metadaten (Seitenname, Titel, Untertitel, Beschreibung, Autor),
-  der RSS-Zeitversatz, die Anzahl gespeicherter Seitenversionen sowie die Bild-Einstellungen
-  (Bild-Präfix, Logo/Vorschaubild/Favicon, maximale Bild- und Vorschaubildgrößen, maximale
-  Upload-Dateigröße). Sämtliche Metadaten können später von einzelnen Seiten oder Produkten usw.
-  überschrieben werden.
-* <kbd>System</kbd> Domain, SSL-Domain, Basis-Pfad und Login-Slug sowie Datums-/Zeitformat und
-  Zeitzone, Themes & Templates, der Wartungs-Code, der Smarty Compile Check, die
-  Standardsprache und die Möglichkeit, einzelne Sprachen auszublenden.
-* <kbd>E-Mail</kbd> Die Mailer-Konfiguration (Absendername und -adresse, Mail-Typ / SMTP,
-  Benachrichtigungsadresse) sowie eine Test-Mail-Funktion.
+Die Texte der folgenden Abschnitte werden im Backend auch direkt neben den Einstellungen angezeigt.
 
-### RSS Time offset
-Hier kannst Du einen Zeitversatz festlegen. Dies verhindert, dass Beiträge direkt nach dem Speichern
-im RSS Feed landen.
+### Website {#general-website}
+Name, Titel, Untertitel und Beschreibung Deiner Website. Themes zeigen sie z.B. im Kopfbereich an
+und nutzen sie für die Meta-Tags aller Seiten, die keine eigenen Werte haben.
 
-### Seitenversionen
-Jedes mal, wenn Du eine Seite aktualisierst, speichert SwiftyEdit die überschriebene Version.
-Damit kannst Du, falls Du mal einen Fehler gemacht hast, wieder zu einer älteren Version zurückwechseln.
-Hier legst Du fest, wie viele Versionen einer Seite gespeichert bleiben sollen.
+### Logo und Icons {#general-branding}
+Logo, Vorschaubild und Favicon werden direkt beim Hochladen gespeichert. Aus dem Favicon (PNG, JPG
+oder WebP, mindestens 512×512 px) erzeugt SwiftyEdit alle Icon-Größen inklusive Apple Touch Icon
+und das Web-Manifest.
+
+### Bildgrößen {#general-images}
+Hochgeladene Bilder werden auf die maximale Breite und Höhe verkleinert, Vorschaubilder auf die
+Thumbnail-Größe. Alle Angaben in Pixel.
+
+### Uploads {#general-uploads}
+Die maximale Dateigröße von Uploads in KB. Bleiben Uploads unverändert, werden Bilder so
+gespeichert, wie sie hochgeladen wurden - ohne Verkleinerung und ohne Vorschaubild.
+
+### Seitenversionen {#general-page-versions}
+Jedes Mal, wenn Du eine Seite aktualisierst, speichert SwiftyEdit die überschriebene Version.
+Damit kannst Du, falls Du mal einen Fehler gemacht hast, wieder zu einer älteren Version
+zurückwechseln. Gibt es mehr Versionen als hier angegeben, werden beim Speichern der Seite die
+ältesten gelöscht.
+
+### Domain {#general-domain}
+Domain und SSL-Domain (inklusive `http://` bzw. `https://`) und der Basis-Pfad ergeben die Adresse
+Deiner Website - ist eine SSL-Domain eingetragen, wird sie verwendet. SwiftyEdit braucht die
+Adresse für absolute Links, z.B. Canonical URLs, Sitemaps, Feeds und E-Mails.
+
+Mit einem Login-Slug ist die Anmeldung zum Backend nur noch unter `/admin/{slug}` erreichbar,
+`/admin/` führt dann zur Startseite.
+
+### Datum und Uhrzeit {#general-datetime}
+Die Zeitzone und die Formate von Datum und Uhrzeit, im Frontend und im Backend.
+
+### Themes und Templates {#general-themes}
+Solange ein Wartungs-Code eingetragen ist, sehen Besucher nur die Wartungsseite. Wer dort den Code
+eingibt, sieht die Website wie gewohnt (z.B. um sie vor dem Livegang zu prüfen).
+
+Außerdem legst Du fest, ob Besucher selbst ein Theme wählen dürfen. Der Smarty Compile Check
+übersetzt geänderte Templates bei jedem Aufruf neu - praktisch, während Du ein Theme entwickelst,
+ansonsten bleibt er aus.
+
+### Sprache {#general-language}
+Die Standardsprache Deiner Website. Ausgeblendete Sprachen werden im Backend nicht mehr angeboten,
+z.B. in der Sprachauswahl von Seiten und Beiträgen.
+
+### E-Mail {#general-mail}
+Absendername und -adresse aller E-Mails Deiner Website. Sie werden mit PHP `mail()` oder per SMTP
+verschickt - die SMTP-Zugangsdaten stehen in `data/config_smtp.php`. Die Benachrichtigungs-Adresse
+erhält eine Kopie der Bestell-E-Mails und Bestellanfragen sowie die Widerrufe von Bestellungen.
+
+### Test-E-Mail {#general-mail-test}
+Schickt eine E-Mail mit den gespeicherten Einstellungen an die Benachrichtigungs-Adresse, oder an
+die Absenderadresse, falls keine eingetragen ist. Speichere Deine Änderungen also vorher.
 
 ## User
 Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion:

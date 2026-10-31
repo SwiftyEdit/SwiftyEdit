@@ -1,0 +1,113 @@
+{# general settings in /admin/settings/, rendered by acp/core/settings/general.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block tab_general %}
+    {% embed 'components/settings/section.twig' with {help: help['general-website'], section: 'website'} %}
+        {% block fields %}
+            {{ inputs.page_name|raw }}
+            {{ inputs.page_title|raw }}
+            {{ inputs.page_subtitle|raw }}
+            {{ inputs.page_description|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-branding']} %}
+        {% block fields %}
+            <div class="row">
+                {% for field in branding_fields %}
+                    <div class="col-md-4">{{ field|raw }}</div>
+                {% endfor %}
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-images'], section: 'images'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.max_img_width|raw }}</div>
+                <div class="col-md-6">{{ inputs.max_img_height|raw }}</div>
+                <div class="col-md-6">{{ inputs.max_tmb_width|raw }}</div>
+                <div class="col-md-6">{{ inputs.max_tmb_height|raw }}</div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-uploads'], section: 'uploads'} %}
+        {% block fields %}
+            {{ inputs.max_filesize|raw }}
+            {{ inputs.uploads_unchanged|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-page-versions'], section: 'pages'} %}
+        {% block fields %}
+            {{ inputs.nbr_page_versions|raw }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block tab_system %}
+    {% embed 'components/settings/section.twig' with {help: help['general-domain'], section: 'domain'} %}
+        {% block fields %}
+            {{ inputs.cms_domain|raw }}
+            {{ inputs.cms_ssl_domain|raw }}
+            {{ inputs.cms_base|raw }}
+            {{ inputs.login_slug|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-datetime'], title: lang.label_settings_datetime, section: 'datetime'} %}
+        {% block fields %}
+            {{ inputs.timezone|raw }}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.date_format|raw }}</div>
+                <div class="col-md-6">{{ inputs.time_format|raw }}</div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-themes'], title: lang.label_settings_themes, section: 'themes'} %}
+        {% block fields %}
+            {{ inputs.maintenance_code|raw }}
+            <div class="mb-3">{{ inputs.usertemplate|raw }}</div>
+            {{ inputs.smarty_compile_check|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-language'], title: lang.label_language, section: 'language'} %}
+        {% block fields %}
+            {{ inputs.default_language|raw }}
+            <label class="form-label">{{ lang.label_settings_hide_languages }}</label>
+            <table class="table table-sm table-hover">
+                {% for language in languages %}
+                    <tr>
+                        <td><input type="checkbox" id="hide_lang_{{ language.folder }}" class="form-check-input" name="hide_langs[]" value="{{ language.folder }}"{% if language.hidden %} checked{% endif %}></td>
+                        <td><label for="hide_lang_{{ language.folder }}" class="d-block">{{ language.sign }}</label></td>
+                        <td><label for="hide_lang_{{ language.folder }}" class="d-block">{{ language.desc }}</label></td>
+                        <td><label for="hide_lang_{{ language.folder }}" class="d-block">{{ language.folder }}</label></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block tab_email %}
+    {% embed 'components/settings/section.twig' with {help: help['general-mail'], section: 'mail'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.mailer_name|raw }}</div>
+                <div class="col-md-6">{{ inputs.mailer_address|raw }}</div>
+            </div>
+            <div class="mb-3">{{ inputs.mailer_type|raw }}</div>
+            {{ inputs.notify_mail|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['general-mail-test']} %}
+        {% block fields %}
+            <button class="btn btn-default" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="#sendmail_test" name="sendmail_test" value="1">{{ lang.label_settings_mailer_send_test }} {{ test_recipient }}</button>
+            <div id="sendmail_test" class="mt-3"></div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

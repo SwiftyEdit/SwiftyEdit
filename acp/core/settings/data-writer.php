@@ -13,6 +13,19 @@
  */
 
 
+// save a section of a settings page, only the fields of the section are stored
+// (see se_settings_sections() in acp/core/settings/functions.php)
+if (isset($_POST['save_settings'])) {
+    require_once __DIR__ . '/functions.php';
+
+    $data = se_settings_section_values((string) $_POST['save_settings'], $_POST);
+    if ($data !== null) {
+        se_write_option($data, 'se');
+        show_toast($lang['msg_success_db_changed'], 'success');
+    }
+    exit;
+}
+
 // remove a branding image (page logo / page thumbnail / favicon set)
 if (isset($_POST['delete_branding'])) {
     require_once __DIR__ . '/branding-widget.php';
@@ -105,18 +118,6 @@ if (isset($_POST['update_shipping_plugins'])) {
     show_toast($lang['msg_success_db_changed'],'success');
 }
 
-if(isset($_POST['update_language'])) {
-    $data['prefs_default_language'] = htmlentities($_POST['prefs_default_language']);
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-if(isset($_POST['update_hide_languages'])) {
-    $data['prefs_deactivated_languages'] = json_encode($_POST['hide_langs']);
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
 // save delivery area
 if (isset($_POST['send_delivery_country'])) {
 
@@ -166,34 +167,6 @@ if (isset($_POST['delete_delivery_country'])) {
         "id" => $delete_id
     ]);
     header( "HX-Trigger: update_deliveryCountries_list");
-}
-
-if (isset($_POST['update_email'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write general settings
-if (isset($_POST['update_general'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-
-    $data['prefs_publisher_mode'] = '';
-    if(isset($_POST['prefs_publisher_mode'])) {
-        $data['prefs_publisher_mode'] = 'overwrite';
-    }
-
-    $data['prefs_uploads_remain_unchanged'] = '';
-    if(isset($_POST['prefs_uploads_remain_unchanged'])) {
-        $data['prefs_uploads_remain_unchanged'] = 'yes';
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
 }
 
 // write database (SQLite WAL mode) settings
@@ -268,49 +241,6 @@ if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
     } else {
         show_toast($lang['msg_error_vacuum'].' '.$sqlite_error, 'danger');
     }
-}
-
-// write domain and server settings
-if (isset($_POST['update_general_system'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write date and time settings
-if (isset($_POST['update_datetime'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write themes settings
-if (isset($_POST['update_themes'])) {
-
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-
-    $data['prefs_smarty_compile_check'] = 0;
-    if(isset($_POST['prefs_smarty_compile_check'])) {
-        $data['prefs_smarty_compile_check'] = 1;
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write mail settings
-if (isset($_POST['update_email'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
 }
 
 // write user settings
@@ -482,7 +412,7 @@ if(isset($_POST['sendmail_test'])) {
     if($testmail == 1) {
         echo '<p class="alert alert-success mt-3">'.$icon['check'].' '.$lang['msg_success_mailer_sent_test'].'</p>';
     } else {
-        echo '<div class="alert alert-danger mt-3">'.print_r($testmail).'</div>';;
+        echo '<div class="alert alert-danger mt-3">'.htmlspecialchars(print_r($testmail, true), ENT_QUOTES, 'UTF-8').'</div>';
     }
 }
 

@@ -20,27 +20,66 @@ The settings are divided into the following sub-categories
 * Labels
 * API keys
 
-## General
+## General {#general}
 
-The General page is divided into three tabs:
+The General page is divided into three tabs: <kbd>General</kbd>, <kbd>System</kbd> and
+<kbd>E-Mail</kbd>. Each section is saved with its own button.
 
-* <kbd>General</kbd> The standard metadata (page name, title, subtitle, description, author),
-  the RSS time offset, the number of saved page versions, and image settings (image prefix,
-  logo/thumbnail/favicon, maximum image and thumbnail sizes, maximum upload file size).
-  All metadata can be overwritten later by individual pages or products etc.
-* <kbd>System</kbd> Domain, SSL domain, base path and the login slug, as well as date/time
-  format and timezone, themes & templates, the maintenance code, the Smarty compile check,
-  the default language and the option to hide individual languages.
-* <kbd>E-Mail</kbd> The mailer configuration (sender name and address, mail type / SMTP,
-  notification address) and a test-mail function.
+The texts of the following sections are also shown next to the settings in the backend.
 
-### RSS Time offset
-You can set a time offset here. This prevents posts from ending up in the RSS feed immediately.
+### Website {#general-website}
+Name, title, subtitle and description of your website. Themes show them in the header, for
+example, and use them for the meta tags of all pages that don't have their own values.
 
-### Number of page versions
-Every time you update a page, SwiftyEdit saves the overwritten version.
-This allows you to switch back to an older version if you have made a mistake.
-Here you can specify how many versions of a page should be saved.
+### Logo and icons {#general-branding}
+The logo, thumbnail and favicon are stored right away when you upload them. From the favicon
+(PNG, JPG or WebP, at least 512×512 px) SwiftyEdit creates all icon sizes, including the
+Apple Touch Icon, and the web manifest.
+
+### Image sizes {#general-images}
+Uploaded images are scaled down to the maximum width and height, thumbnails to the thumbnail
+size. All values in pixels.
+
+### Uploads {#general-uploads}
+The maximum file size of uploads in KB. If uploads remain unchanged, images are stored as they
+were uploaded - without scaling and without a thumbnail.
+
+### Page versions {#general-page-versions}
+Every time you update a page, SwiftyEdit saves the overwritten version. This allows you to
+switch back to an older version if you have made a mistake. If there are more versions than
+the number set here, the oldest ones are deleted when the page is saved.
+
+### Domain {#general-domain}
+Domain and SSL domain (including `http://` or `https://`) and the base path make up the
+address of your website - if an SSL domain is set, it is used. SwiftyEdit needs the address
+for absolute links, e.g. canonical URLs, sitemaps, feeds and e-mails.
+
+With a login slug, the backend login is only available at `/admin/{slug}`, `/admin/` leads to
+the start page.
+
+### Date and time {#general-datetime}
+The timezone and the formats of dates and times, used in the frontend and in the backend.
+
+### Themes and templates {#general-themes}
+As long as a maintenance code is set, visitors only see the maintenance page. Whoever enters
+the code there sees the website as usual (e.g. to check it before going live).
+
+You can also decide whether visitors may choose a theme themselves. The Smarty compile check
+recompiles changed templates on every request - useful while you develop a theme, otherwise
+leave it off.
+
+### Language {#general-language}
+The default language of your website. Hidden languages are no longer offered in the backend,
+e.g. in the language selection of pages and posts.
+
+### E-mail {#general-mail}
+The sender name and address of all e-mails of your website. They are sent with PHP `mail()`
+or via SMTP - the SMTP access data are stored in `data/config_smtp.php`. The notification
+address receives a copy of the order e-mails and order requests, as well as order withdrawals.
+
+### Test e-mail {#general-mail-test}
+Sends an e-mail with the saved settings to the notification address, or to the sender address
+if there is none. Save your changes first.
 
 ## User
 These settings control everything around user accounts and interaction:

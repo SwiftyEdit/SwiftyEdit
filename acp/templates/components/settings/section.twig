@@ -1,0 +1,43 @@
+{#
+ # one section of a settings page: title and fields on the left, the help text on the right
+ # (it is read once, the fields are what is used again - they are the first thing of the section)
+ # {% embed 'components/settings/section.twig' with {help: help['general-website'], section: 'website'} %}
+ #     {% block fields %}...{% endblock %}
+ # {% endembed %}
+ #
+ # help: a section of the docs {title, content, link}, see se_docs_sections() -
+ #   the text is written once, in the docs (docs/v2/{lang}/), and shown here
+ # title (optional): used if the docs have no such section
+ # section (optional): the fields are a form, saved by the writer as save_settings=<section>
+ #   without section the block is shown as it is (e.g. uploads that are stored right away)
+ # writer_uri: the settings writer, the response (a toast) is appended to the body
+ #}
+<div class="card mb-3 settings-section">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-8">
+                <h5 class="mb-3">{{ help.title|default(title|default('')) }}</h5>
+                {% if section is defined and section %}
+                    <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
+                        {% block fields %}{% endblock %}
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary" name="save_settings" value="{{ section }}">{{ lang.btn_update }}</button>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+                {% else %}
+                    {{ block('fields') }}
+                {% endif %}
+            </div>
+            {% if help.content is defined and help.content %}
+                <div class="col-lg-4 mt-3 mt-lg-0">
+                    {# the docs are part of the repository, their html is trusted #}
+                    <div class="text-muted small border-start ps-3 settings-help">
+                        {{ help.content|raw }}
+                        <div class="text-end">{{ help.link|raw }}</div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

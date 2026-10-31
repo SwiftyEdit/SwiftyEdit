@@ -16,7 +16,7 @@ function se_print_form_input(array $input): string {
 
     if($input['type'] === 'text') {
         $block = tpl_form_input_text($input);
-    } else if($input['type'] === 'password') {
+    } else if($input['type'] === 'password' || $input['type'] === 'number') {
         $block = tpl_form_input_text($input);
     } else if($input['type'] === 'textarea') {
         $block = tpl_form_input_textarea($input);

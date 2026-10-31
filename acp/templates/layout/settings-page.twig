@@ -1,0 +1,60 @@
+{#
+ # page of the settings in /admin/settings/*, extended by settings/<page>.twig
+ # the content is a list of sections, see components/settings/section.twig
+ # the sidebar lists all settings pages, the tabs of the current page are shown below it
+ #
+ # variables: title, title_icon, docs_link (optional, html),
+ #   settings_nav: list of {href, label, active}, see se_settings_nav()
+ #   tabs (optional): list of {id, label} - the page fills one block per tab: tab_<id>
+ #   without tabs the page fills the block content
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ title_icon|raw }} {{ title }} {{ docs_link|default('')|raw }}
+</div>
+
+<div class="row settings-page">
+    <div class="col-lg-8 col-xl-9 order-2 order-lg-1">
+        {% if tabs is defined and tabs %}
+            <div class="tab-content">
+                {% for tab in tabs %}
+                    <div class="tab-pane fade{% if loop.first %} show active{% endif %}" id="{{ tab.id }}-pane" role="tabpanel" aria-labelledby="{{ tab.id }}-tab" tabindex="0">
+                        {{ block('tab_' ~ tab.id) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% block content %}{% endblock %}
+        {% endif %}
+    </div>
+    <div class="col-lg-4 col-xl-3 order-1 order-lg-2 mb-3">
+        {# sticky only next to the content, on small screens the list is above it #}
+        <div class="card sticky-lg-top settings-nav" style="top: 1rem;">
+            <div class="card-header">{{ lang.nav_btn_settings }}</div>
+            <div class="list-group list-group-flush">
+                {% set has_tabs = tabs is defined and tabs %}
+                {% for item in settings_nav %}
+                    {# with tabs the current tab is highlighted, the page is only bold #}
+                    <a href="{{ item.href }}" class="list-group-item list-group-item-action{% if item.active %}{{ has_tabs ? ' fw-semibold' : ' active' }}{% endif %}"{% if item.active %} aria-current="page"{% endif %}>{{ item.label }}</a>
+                    {# tabs of the current page, an own list-group so switching tabs keeps the page active #}
+                    {% if item.active and has_tabs %}
+                        <div class="list-group list-group-flush settings-tabs" role="tablist">
+                            {% for tab in tabs %}
+                                <button type="button" class="list-group-item list-group-item-action small py-1 ps-4{% if loop.first %} active{% endif %}" id="{{ tab.id }}-tab" data-bs-toggle="list" data-bs-target="#{{ tab.id }}-pane" role="tab" aria-controls="{{ tab.id }}-pane" aria-selected="{{ loop.first ? 'true' : 'false' }}"><span class="opacity-50 me-1" aria-hidden="true">{{ icon.arrow_return_right|raw }}</span>{{ tab.label }}</button>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if tabs is defined and tabs %}
+    <script>
+        // a tab starts at its top - otherwise switching tabs while scrolled down shows the end of the new tab
+        document.querySelector('.settings-tabs').addEventListener('shown.bs.tab', function () {
+            var scroller = document.querySelector('.main-scrollable') || document.scrollingElement;
+            scroller.scrollTop = 0;
+        });
+    </script>
+{% endif %}

@@ -1715,6 +1715,72 @@ function se_parse_docs_file($file): array {
 }
 
 /**
+ * sections of a core docs file (docs/v2/{lang}/), e.g. as help texts next to the settings -
+ * so the text is only written once, in the docs
+ *
+ * a section is a heading with an {#anchor} and everything up to the next heading
+ * of the same or a higher level, rendered like the help modal (se_parse_docs_file())
+ *
+ * @param string $file name of the docs file, e.g. 08-00-settings.md
+ * @param array $anchors the anchors of the sections
+ * @return array anchor => {title, content (html), link (button that opens the docs there)},
+ *   anchors that are not found are missing
+ */
+function se_docs_sections(string $file, array $anchors): array {
+
+    global $languagePack, $languagePackFallback, $Parsedown;
+
+    $docs_root = SE_ROOT.'docs/v2';
+    $doc_filepath = $docs_root.'/'.$languagePack.'/'.basename($file);
+    if(!is_file($doc_filepath)) {
+        $doc_filepath = $docs_root.'/'.($languagePackFallback ?? 'en').'/'.basename($file);
+    }
+    if(!is_file($doc_filepath)) {
+        return [];
+    }
+
+    // se_parse_docs_file() uses the global parser
+    if(!$Parsedown instanceof ParsedownExtra) {
+        $Parsedown = new ParsedownExtra();
+    }
+    $html = se_parse_docs_file($doc_filepath)['content'];
+
+    $dom = new DOMDocument();
+    $previous_errors = libxml_use_internal_errors(true);
+    $dom->loadHTML('<?xml encoding="UTF-8"><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous_errors);
+    $xpath = new DOMXPath($dom);
+
+    $sections = [];
+    foreach($anchors as $anchor) {
+        if(!preg_match('/^[a-z0-9_-]+$/i', $anchor)) {
+            continue;
+        }
+        $heading = $xpath->query('//*[@id="'.$anchor.'"]')->item(0);
+        if(!$heading instanceof DOMElement || !preg_match('/^h([1-6])$/i', $heading->nodeName, $match)) {
+            continue;
+        }
+
+        $content = '';
+        for($node = $heading->nextSibling; $node !== null; $node = $node->nextSibling) {
+            if($node instanceof DOMElement && preg_match('/^h([1-6])$/i', $node->nodeName, $next) && (int) $next[1] <= (int) $match[1]) {
+                break;
+            }
+            $content .= $dom->saveHTML($node);
+        }
+
+        $sections[$anchor] = [
+            'title' => trim($heading->textContent),
+            'content' => trim($content),
+            'link' => se_print_docs_link($file, null, $anchor, 'btn btn-link btn-sm p-0')
+        ];
+    }
+
+    return $sections;
+}
+
+/**
  * @param string $file
  * @param string|null $text
  * @param string|null $anchor

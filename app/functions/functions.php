@@ -587,7 +587,7 @@ function se_return_words_str(string $string, int $nbr=5): string {
  * @param array $recipient 'mail' and 'name'
  * @param string $subject subject of the email
  * @param string $message string/html content of the email
- * @return 1 if success or ErrorInfo if failed
+ * @return int|string 1 if success or ErrorInfo if failed
  * @throws Exception
  */
 

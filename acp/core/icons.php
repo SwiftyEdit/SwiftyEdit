@@ -14,6 +14,7 @@ $icon = [
     "arrow_repeat" => '<i class="bi bi-arrow-repeat"></i>',
     "arrow_right" => '<i class="bi bi-arrow-right"></i>',
     "arrow_right_short" => '<i class="bi bi-arrow-right-short"></i>',
+    "arrow_return_right" => '<i class="bi bi-arrow-return-right"></i>',
     "arrow_up" => '<i class="bi bi-arrow-up"></i>',
     "at" => '<i class="bi bi-at"></i>',
 
