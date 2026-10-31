@@ -266,6 +266,6 @@ echo $twig->render($form_template, [
     'file_options' => $file_options,
     'gallery_upload' => $gallery_upload,
     'se_base_url' => $se_base_url,
-    'canonical_docs_link' => se_print_docs_link("04-00-blog.md", null, "canonical-url"),
+    'canonical_docs_link' => se_print_docs_link("04-03-post-seo.md", null, "canonical-url"),
     'addon_module_forms' => se_render_record_addons('post', $record_data)
 ]);

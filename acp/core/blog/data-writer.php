@@ -204,20 +204,33 @@ if(isset($_POST['save_post'])) {
     // same as events (acp/core/events/data-writer.php)
     $post_page_permalink = $values['main_category_slug'] ?: $target_page_permalink;
 
-    // existing posts: build the urls if the form has none
+    // url of a post: main category page + slug + id
+    $build_post_url = static function(string $page_permalink, string $slug, int $id) use ($se_base_url): string {
+        return $se_base_url . $page_permalink . str_replace("/", "", $slug) . '-' . $id . '.html';
+    };
+
+    // rss and canonical url: keep an explicit value if one was set on the form,
+    // otherwise build it from the main category page + slug, same pattern as
+    // product canonical urls (see acp/core/functions_shop.php).
+    // A value that is still the auto-built url of the stored post counts as
+    // "not set", so it follows changes of the slug or the main category page.
+    // New posts have no id yet, their urls are built after the insert.
+    $url_cols = ['post_rss_url', 'post_canonical_url'];
     if(is_numeric($values['post_id'])) {
-        $filename = str_replace("/", "", $values['post_slug']) . '-' . $values['post_id'] . '.html';
-
-        // rss url
-        if(($_POST['post_rss_url'] ?? '') == '') {
-            $values['post_rss_url'] = $se_base_url . $post_page_permalink . $filename;
+        $stored_post = $db_posts->get("se_posts", ["post_slug", "main_category_slug", "post_rss_url", "post_canonical_url"], [
+            "post_id" => (int) $values['post_id']
+        ]);
+        $old_auto_url = '';
+        if(is_array($stored_post)) {
+            $old_auto_url = $build_post_url((string) ($stored_post['main_category_slug'] ?: $target_page_permalink), (string) $stored_post['post_slug'], (int) $values['post_id']);
         }
+        $new_auto_url = $build_post_url($post_page_permalink, $values['post_slug'], (int) $values['post_id']);
 
-        // canonical url: keep an explicit value if one was set on the form,
-        // otherwise build it from the main category page + slug, same
-        // pattern as product canonical urls (see acp/core/functions_shop.php).
-        if(($_POST['post_canonical_url'] ?? '') == '') {
-            $values['post_canonical_url'] = $se_base_url . $post_page_permalink . $filename;
+        foreach($url_cols as $url_col) {
+            $is_auto_url = is_array($stored_post) && $values[$url_col] == $stored_post[$url_col] && $stored_post[$url_col] == $old_auto_url;
+            if($values[$url_col] == '' || $is_auto_url) {
+                $values[$url_col] = $new_auto_url;
+            }
         }
     }
 
@@ -254,8 +267,6 @@ if(isset($_POST['save_post'])) {
     $values['post_meta_title'] = se_return_clean_value($post_meta_title);
     $values['post_meta_description'] = se_return_clean_value($post_meta_description);
 
-    se_generate_xml_sitemap('posts');
-
     // post_uuid is not part of the form: keep the existing one on update
     // (or generate one if it is missing), generate a new one for new posts
     $values['post_uuid'] = '';
@@ -281,6 +292,22 @@ if(isset($_POST['save_post'])) {
     if($_POST['save_post'] == 'save') {
         $db_posts->insert("se_posts", $inputs);
         $post_id = (int) $db_posts->id();
+
+        // the urls need the id, see above
+        $new_auto_url = $build_post_url($post_page_permalink, $values['post_slug'], $post_id);
+        $url_updates = [];
+        foreach($url_cols as $url_col) {
+            if($values[$url_col] == '') {
+                $values[$url_col] = $new_auto_url;
+                $url_updates[$url_col] = $new_auto_url;
+            }
+        }
+        if($url_updates != []) {
+            $db_posts->update("se_posts", $url_updates, [
+                "post_id" => $post_id
+            ]);
+        }
+
         record_log($_SESSION['user_nick'],"new post id: $post_id",6);
         show_toast($lang['msg_success_new_record'],'success');
         header( "HX-Redirect: /admin/blog/edit/$post_id/");
@@ -296,13 +323,17 @@ if(isset($_POST['save_post'])) {
 
     se_set_content_tags('post', $post_id, explode(',', $_POST['content_tags'] ?? ''));
 
-    // send to rss feed
-    if(($_POST['post_rss'] ?? '') == 'on' && $post_page_permalink != '') {
-        $post_rss_url = (string) $values['post_rss_url'];
-        if($post_rss_url == '') {
-            $post_rss_url = $se_base_url . $post_page_permalink . str_replace("/", "", $values['post_slug']) . '-' . $post_id . '.html';
-        }
-        add_feed($values['post_title'], $_POST['post_teaser'] ?? '', $post_rss_url, "post_$post_id", "", $values['post_releasedate']);
+    // after the insert/update, otherwise the sitemap misses this save
+    se_generate_xml_sitemap('posts');
+
+    // send to rss feed - $values, "hide detail page" switches rss off
+    if($values['post_rss'] == 'on' && $post_page_permalink != '') {
+        add_feed($values['post_title'], $_POST['post_teaser'] ?? '', (string) $values['post_rss_url'], "post_$post_id", "", $values['post_releasedate']);
+    } else {
+        // rss switched off: remove the entry from the feed
+        $db_content->delete("se_feeds", [
+            "feed_subid" => "post_$post_id"
+        ]);
     }
     exit;
 }

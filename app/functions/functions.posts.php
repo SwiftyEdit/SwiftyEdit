@@ -521,6 +521,44 @@ function se_post_is_publicly_visible(array $data): bool {
 }
 
 /**
+ * YouTube video id from the url of a video post (post_video_url).
+ * Supports youtube.com/watch?v=, youtu.be/, /embed/, /shorts/ and /live/ urls.
+ *
+ * @param string $url stored html-encoded (blog data-writer)
+ * @return string the video id, empty if there is none
+ */
+function se_get_youtube_video_id(string $url): string {
+
+    $parts = parse_url(trim(html_entity_decode($url, ENT_QUOTES, 'UTF-8')));
+    if (!is_array($parts)) {
+        return '';
+    }
+
+    $host = preg_replace('/^(www|m)\./', '', strtolower($parts['host'] ?? ''));
+    $path = $parts['path'] ?? '';
+    parse_str($parts['query'] ?? '', $query);
+
+    if (!in_array($host, ['youtube.com', 'youtube-nocookie.com', 'youtu.be'])) {
+        return '';
+    }
+
+    $video_id = '';
+    if (isset($query['v']) && is_string($query['v'])) {
+        $video_id = $query['v'];
+    } else if ($host == 'youtu.be') {
+        $video_id = explode('/', trim($path, '/'))[0];
+    } else if (preg_match('~^/(embed|shorts|live)/([^/]+)~', $path, $matches)) {
+        $video_id = $matches[2];
+    }
+
+    // youtube ids are 11 characters, the id ends up in the embed url
+    if (!preg_match('/^[A-Za-z0-9_-]{11}$/', $video_id)) {
+        return '';
+    }
+    return $video_id;
+}
+
+/**
  * Whether an event is visible to a non-admin frontend visitor - same rules
  * as se_post_is_publicly_visible(). Past events stay visible by URL, only
  * the listing hides them.

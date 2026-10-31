@@ -280,10 +280,11 @@ foreach($get_posts as $k => $post) {
 		$thumbs_array = glob("$fp");
 		arsort($thumbs_array);
 		$cnt_thumbs_array = count($thumbs_array);
+		// reset per post, otherwise an empty gallery shows the thumbs of the previous one
+		$gallery_thumbs = array();
 		if($cnt_thumbs_array > 0) {
 
 			$x = 0;
-            $gallery_thumbs = array();
 			foreach($thumbs_array as $tmb) {
 				$x++;
 				$tmb_src = '/'.$tmb;
@@ -306,9 +307,7 @@ foreach($get_posts as $k => $post) {
 	}
 
 	if($get_posts[$k]['post_type'] == 'v') {
-		$vURL = parse_url($get_posts[$k]['post_video_url']);
-		parse_str($vURL['query'],$video); //$video['v'] -> youtube video id
-        $get_posts[$k]['video_id'] = $video['v'];
+        $get_posts[$k]['video_id'] = se_get_youtube_video_id((string) $get_posts[$k]['post_video_url']);
 	}
 
 

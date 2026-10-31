@@ -88,9 +88,7 @@ if($post_data['post_type'] == 'g') {
 	}
 
 } else if($post_data['post_type'] == 'v') {
-	$vURL = parse_url($post_data['post_video_url']);
-	parse_str($vURL['query'],$video); //$video['v'] -> youtube video id
-    $smarty->assign('video_id', $video['v']);
+    $smarty->assign('video_id', se_get_youtube_video_id((string) $post_data['post_video_url']));
 }
 
 $show_comments = false;
