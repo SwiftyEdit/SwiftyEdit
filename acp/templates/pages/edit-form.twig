@@ -1,0 +1,308 @@
+{#
+ # page form in /admin/pages/edit/, /new/ and /duplicate/, rendered by acp/core/pages/pages-edit.php
+ # inputs: fields rendered by se_print_form_input(), they get the stored (html-encoded) values
+ # page: the decoded row, Twig escapes on output
+ #}
+{% import 'components/form/macros.twig' as form %}
+
+<div class="subHeader d-flex align-items-center">
+    {{ icon.file|raw }} {{ lang.nav_btn_pages }}
+    <a href="/admin/pages/" class="btn btn-default ms-auto">{{ icon.arrow_left_short|raw }} {{ lang.nav_btn_overview }}</a>
+</div>
+
+<div id="formResponse"></div>
+
+<form>
+    <div class="row">
+        <div class="col-md-9">
+
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item"><a href="#" class="nav-link active" id="position" data-bs-toggle="tab" data-bs-target="#position-tab">{{ lang.label_pages_position }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="info" data-bs-toggle="tab" data-bs-target="#info-tab">{{ lang.nav_btn_info }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="content" data-bs-toggle="tab" data-bs-target="#content-tab">{{ lang.nav_btn_content }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="metas" data-bs-toggle="tab" data-bs-target="#metas-tab">{{ lang.nav_btn_metas }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="theme" data-bs-toggle="tab" data-bs-target="#theme-tab">Theme</a></li>
+                        <li class="nav-item ms-auto"><a class="nav-link" href="#posts" data-bs-toggle="tab" title="{{ lang.nav_btn_posts }}">{{ icon.file_earmark_post|raw }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#addons" data-bs-toggle="tab" title="{{ lang.nav_btn_addons }}">{{ icon.plugin|raw }}</a></li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+
+                        <div class="tab-pane fade show active" id="position-tab" role="tabpanel" tabindex="0">
+                            {# three mutually exclusive page roles, the docs link sits right after the buttons #}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="btn-group" role="group">
+                                    {% for role, role_label in {'single': lang.label_pages_single, 'portal': lang.label_pages_portal, 'tree': lang.label_pages_mainmenu} %}
+                                        <input type="radio" class="btn-check" name="page_role" id="page_role_{{ role }}" value="{{ role }}" autocomplete="off"{% if page_role == role %} checked{% endif %} onchange="sePageRoleToggle()">
+                                        <label class="btn btn-outline-primary" for="page_role_{{ role }}">{{ role_label }}</label>
+                                    {% endfor %}
+                                </div>
+                                {{ docs_link_sorting|raw }}
+                            </div>
+
+                            {#
+                             # parent page and insert position only have an effect with page_role=tree
+                             # (see se_sanitize_page_inputs()), hidden until "main menu" is picked -
+                             # hidden fields are still submitted, only what's shown changes
+                             #}
+                            <div id="parentPickerGroup" style="display:{{ page_role == 'tree' ? 'block' : 'none' }};">
+                                <label class="form-label mt-2">{{ lang.label_pages_parent_page }}</label>
+                                <select name="new_parent_id" class="form-select custom-select mb-2"
+                                        hx-get="/admin-xhr/pages/read/?action=page_siblings"
+                                        hx-target="#siblingPicker" hx-swap="innerHTML"
+                                        hx-include="[name='new_parent_id'],[name='csrf_token']"
+                                        hx-vals='{{ {'language': page_language, 'exclude_page_id': current_page_id ?? 0}|json_encode|e('html_attr') }}'
+                                        hx-trigger="change">
+                                    {{ parent_options|raw }}
+                                </select>
+
+                                <label class="form-label mb-0">{{ lang.label_pages_insert_position }}</label>
+                                <p class="text-muted small">{{ lang.label_pages_insert_position_sub }}</p>
+                                <div id="siblingPicker" class="scroll-container">
+                                    {{ sibling_picker|raw }}
+                                </div>
+                            </div>
+
+                            <script>function sePageRoleToggle() {
+                                var t = document.getElementById("page_role_tree");
+                                var g = document.getElementById("parentPickerGroup");
+                                if (t && g) { g.style.display = t.checked ? "block" : "none"; }
+                            }</script>
+                        </div>
+
+                        <div class="tab-pane" id="info-tab" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-4">{{ inputs.linkname|raw }}</div>
+                                <div class="col-md-4">{{ inputs.classes|raw }}</div>
+                                <div class="col-md-2">{{ inputs.target|raw }}</div>
+                                <div class="col-md-2">{{ inputs.hash|raw }}</div>
+                            </div>
+
+                            {{ inputs.permalink|raw }}
+                            {{ inputs.canonical_url|raw }}
+                            {{ inputs.content_tags|raw }}
+
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between">
+                                    {{ lang.label_translations }} (URLs)
+                                    <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">{{ icon.plus|raw }}</button>
+                                </div>
+                                <div class="card-body collapse" id="collapseTranslationURL">
+                                    {% for translation in translations %}
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><i class="bi bi-translate me-1"></i> {{ translation.sign }}</span>
+                                            <input class="form-control" type="text" autocomplete="off" name="translation_url[{{ translation.sign }}]" value="{{ translation.url }}">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            {{ inputs.custom_row|raw }}
+                            {{ inputs.type_of_use|raw }}
+
+                            <div class="heading-line">{{ lang.label_redirect }} &nbsp; {{ docs_link_redirects|raw }}</div>
+
+                            {{ inputs.shortlink|raw }}
+                            {{ inputs.funnel_urls|raw }}
+                            {{ inputs.redirect_row|raw }}
+                        </div>
+
+                        <div class="tab-pane" id="content-tab" role="tabpanel" tabindex="0">
+                            {# swapped in place when the format dropdown changes, see acp/core/pages/data-reader.php #}
+                            <div id="pageContentField">
+                                {{ inputs.content|raw }}
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="metas-tab" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ inputs.title|raw }}
+                                    {{ inputs.meta_description|raw }}
+                                    {{ inputs.keywords|raw }}
+                                    {{ inputs.author|raw }}
+
+                                    <p>{{ lang.label_pages_meta_robots }}</p>
+                                    {% for robot in robots %}
+                                        <div class="form-check form-check-inline">
+                                            <input type="checkbox" class="form-check-input" id="btn-check-{{ robot.value }}" name="page_meta_robots[]" value="{{ robot.value }}"{% if robot.checked %} checked{% endif %}>
+                                            <label class="form-check-label" for="btn-check-{{ robot.value }}">{{ robot.value }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.images(images) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="theme-tab" role="tabpanel" tabindex="0">
+                            {# fields of the theme, from its php/page-values.php #}
+                            {% if theme_values is not null %}
+                                {{ theme_values|raw }}
+                            {% else %}
+                                No injection file found
+                            {% endif %}
+                        </div>
+
+                        <div class="tab-pane fade" id="posts">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">{{ lang.label_pages_select_post_type }}</div>
+                                        <div class="card-body">
+                                            {% for type in post_types %}
+                                                {% if type.value == 'e' or type.value == 'p' %}<hr>{% endif %}
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input post-types post-type-group" id="type_{{ type.value }}" name="page_post_types[]" value="{{ type.value }}"{% if type.checked %} checked{% endif %}>
+                                                    <label class="form-check-label" for="type_{{ type.value }}">{{ type.label }}</label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">{{ lang.categories }}</div>
+                                        <div class="card-body">
+                                            {{ inputs.categories_mode|raw }}
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="cat_all" name="page_post_categories[]" value="all"{% if categories_all %} checked{% endif %}>
+                                                <label class="form-check-label" for="cat_all">{{ lang.label_categories_activate_all }}</label>
+                                            </div>
+                                            <hr>
+                                            {% for category in categories %}
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input checkbox-categories" id="cat{{ loop.index0 }}" name="page_post_categories[]" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
+                                                    <label class="form-check-label" for="cat{{ loop.index0 }}">{{ category.name }} <small>({{ category.lang }})</small></label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="addons">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="selMod">{{ lang.label_pages_select_addon }}</label>
+                                        <select name="page_modul" class="custom-select form-control" id="selMod">
+                                            <option value="">{{ lang.label_pages_no_addon }}</option>
+                                            {% for addon in addon_options %}
+                                                <option value="{{ addon.value }}"{% if addon.selected %} selected{% endif %}>{{ addon.label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {{ addon_module_forms|raw }}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if hooks %}
+                                        <div class="card">
+                                            <div class="card-header">Hooks</div>
+                                            <ul class="list-group list-group-flush">
+                                                {% for hook in hooks %}
+                                                    <li class="list-group-item">
+                                                        <div class="mb-1 form-check">
+                                                            <input type="checkbox" class="form-check-input" name="{{ hook.name }}" value="1" id="hookid{{ loop.index }}">
+                                                            <label class="form-check-label" for="hookid{{ loop.index }}">
+                                                                <code>{{ hook.plugin }}</code><span class="p-1">{{ hook.label }}</span>
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="card p-3">
+                {{ inputs.status|raw }}
+                {{ inputs.language|raw }}
+
+                <div>
+                    <label class="form-label" for="select_template">Theme / {{ lang.label_template }}</label>
+                    <select id="select_template" name="select_template" class="form-control">
+                        <option value="use_standard<|-|>use_standard"{% if template_standard %} selected{% endif %}>{{ lang.label_use_default }}</option>
+                        {% for template in templates %}
+                            <optgroup label="{{ template.name }}">
+                                {% for layout in template.layouts %}
+                                    <option value="{{ layout.value }}"{% if layout.selected %} selected{% endif %}>{{ layout.label }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="my-2">
+                    <label class="form-label">{{ lang.label_password }}</label>
+                    <input class="form-control" type="text" name="page_psw" value="" placeholder="{{ has_password ? '*****' : '' }}">
+                    {% if has_password %}
+                        <div class="checkbox"><label><input type="checkbox" name="page_psw_reset" value="reset"> {{ lang.label_password_reset }}</label></div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label" for="select_comments">{{ lang.label_comments }}</label>
+                    <select id="select_comments" name="page_comments" class="custom-select form-control">
+                        <option value="1"{% if page.page_comments == '1' %} selected{% endif %}>{{ lang.yes }}</option>
+                        <option value="2"{% if page.page_comments != '1' %} selected{% endif %}>{{ lang.no }}</option>
+                    </select>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <a href="#" data-bs-toggle="collapse" data-bs-target="#usergroups">{{ lang.label_choose_group }}</a>
+                    </div>
+                    <div class="card-body p-1">
+                        <div id="usergroups" class="collapse">
+                            {% for group in usergroups %}
+                                <div class="form-check">
+                                    <input id="check{{ group.id }}" class="form-check-input" type="checkbox"{% if group.checked %} checked{% endif %} name="set_usergroup[]" value="{{ group.name }}">
+                                    <label class="form-check-label" for="check{{ group.id }}">{{ group.name }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="my-2">
+                    <label>{{ lang.labels }} {{ labels_docs_link|raw }}</label>
+                    <div class="p-3">
+                        {{ form.labels('set_page_labels[]', labels) }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content">
+                    <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" hx-disabled-elt="this" class="btn btn-success w-100" name="save_page" value="{{ form_mode }}">{{ btn_submit_text }}</button>
+                    {% if form_mode != 'new' %}
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-confirm="{{ lang.msg_confirm_delete }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="{{ form_mode }}">{{ lang.btn_delete }}</button>
+                    {% endif %}
+                </div>
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            </div>
+
+        </div>
+    </div>
+</form>
+
+{# older versions of this page #}
+{% if current_page_id %}
+    <div id="timeWarp" hx-get="/admin-xhr/pages/read/?snapshots={{ current_page_id }}" hx-trigger="load, updated_pages from:body">Loading Snapshots ...</div>
+{% endif %}

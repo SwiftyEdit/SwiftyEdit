@@ -5,9 +5,7 @@
  * routed) - required by both pages-edit.php (initial page load) and
  * data-reader.php (HTMX partial swap when the content-format dropdown
  * changes), so both build the exact same field markup.
- *
- * @var array $lang
- * @var array $se_editor_addons
+ * The functions read $lang, $se_editor_addons and $icon as globals.
  */
 
 /**
