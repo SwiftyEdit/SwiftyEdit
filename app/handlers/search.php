@@ -107,7 +107,7 @@ if($s != '' && $start_search == "true") {
     // posts (blog) and events - prefer the stored canonical url (auto-built
     // at save time from the post's/event's own detail page + slug, see
     // acp/core/blog/data-writer.php / acp/core/events/data-writer.php -
-    // respects a per-event main_category_slug override, which the fallback
+    // respects a per-post/per-event main_category_slug override, which the fallback
     // below can't). Older rows saved before that feature existed can still
     // have an empty canonical url (no backfill migration for posts/events
     // yet, unlike products' install/migrations/..._product_canonical_url_

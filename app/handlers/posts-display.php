@@ -172,8 +172,8 @@ if($first_post_image != '') {
 	$smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
 }
 
-// canonical link: stored on the post itself (auto-built from its detail
-// page + slug at save time, see acp/core/blog/data-writer.php), same
+// canonical link: stored on the post itself (auto-built from its main
+// category page + slug at save time, see acp/core/blog/data-writer.php), same
 // pattern as product canonical urls.
 $smarty->assign('page_canonical_url', $post_data['post_canonical_url'] ?? '');
 

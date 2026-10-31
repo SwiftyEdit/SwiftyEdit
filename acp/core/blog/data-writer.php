@@ -126,6 +126,9 @@ if(isset($_POST['delete_post'])) {
             "content_type" => "post",
             "content_id" => $del_id
         ]);
+        $db_content->delete("se_feeds", [
+            "feed_subid" => "post_$del_id"
+        ]);
         se_generate_xml_sitemap('posts');
         show_toast($lang['msg_success_entry_delete'],'success');
         record_log($_SESSION['user_nick'],"delete post id: $del_id",8);
@@ -173,26 +176,8 @@ if(isset($_POST['save_post'])) {
 
     $post_lang = $_POST['post_lang'] ?? '';
 
-    if(($_POST['main_category_slug'] ?? '') == 'default') {
-        //get a target page by page_type_of_use and language
-        $values['main_category_slug'] = $db_content->get("se_pages", "page_permalink", [
-            "AND" => [
-                "page_type_of_use" => "display_post",
-                "page_language" => $post_lang
-            ]
-        ]);
-        // if we have no page for display_post, find another catalog page
-        $values['main_category_slug'] = $db_content->get("se_pages", "page_permalink", [
-            "AND" => [
-                "page_posts_types[~]" => "m",
-                "page_language" => $post_lang
-            ]
-        ]);
-    } else {
-        $values['main_category_slug'] = se_clean_permalink($_POST['main_category_slug'] ?? '');
-    }
-
-    // the page that displays the posts, for the rss and canonical urls
+    // the page that displays the posts (display_post), if there is none
+    // a catalog page for posts - used as the "default" main category page
     $target_page = $db_content->select("se_pages", "page_permalink", [
         "AND" => [
             "page_type_of_use" => "display_post",
@@ -209,20 +194,30 @@ if(isset($_POST['save_post'])) {
     }
     $target_page_permalink = (string) ($target_page[0] ?? '');
 
+    if(($_POST['main_category_slug'] ?? '') == 'default') {
+        $values['main_category_slug'] = $target_page_permalink;
+    } else {
+        $values['main_category_slug'] = se_clean_permalink($_POST['main_category_slug'] ?? '');
+    }
+
+    // the rss and canonical urls point to the main category page,
+    // same as events (acp/core/events/data-writer.php)
+    $post_page_permalink = $values['main_category_slug'] ?: $target_page_permalink;
+
     // existing posts: build the urls if the form has none
     if(is_numeric($values['post_id'])) {
         $filename = str_replace("/", "", $values['post_slug']) . '-' . $values['post_id'] . '.html';
 
         // rss url
         if(($_POST['post_rss_url'] ?? '') == '') {
-            $values['post_rss_url'] = $se_base_url . $target_page_permalink . $filename;
+            $values['post_rss_url'] = $se_base_url . $post_page_permalink . $filename;
         }
 
         // canonical url: keep an explicit value if one was set on the form,
-        // otherwise build it from the detail page + slug, same pattern as
-        // product canonical urls (see acp/core/functions_shop.php).
+        // otherwise build it from the main category page + slug, same
+        // pattern as product canonical urls (see acp/core/functions_shop.php).
         if(($_POST['post_canonical_url'] ?? '') == '') {
-            $values['post_canonical_url'] = $se_base_url . $target_page_permalink . $filename;
+            $values['post_canonical_url'] = $se_base_url . $post_page_permalink . $filename;
         }
     }
 
@@ -302,10 +297,10 @@ if(isset($_POST['save_post'])) {
     se_set_content_tags('post', $post_id, explode(',', $_POST['content_tags'] ?? ''));
 
     // send to rss feed
-    if(($_POST['post_rss'] ?? '') == 'on' && $target_page_permalink != '') {
+    if(($_POST['post_rss'] ?? '') == 'on' && $post_page_permalink != '') {
         $post_rss_url = (string) $values['post_rss_url'];
         if($post_rss_url == '') {
-            $post_rss_url = $se_base_url . $target_page_permalink . str_replace("/", "", $values['post_slug']) . '-' . $post_id . '.html';
+            $post_rss_url = $se_base_url . $post_page_permalink . str_replace("/", "", $values['post_slug']) . '-' . $post_id . '.html';
         }
         add_feed($values['post_title'], $_POST['post_teaser'] ?? '', $post_rss_url, "post_$post_id", "", $values['post_releasedate']);
     }
