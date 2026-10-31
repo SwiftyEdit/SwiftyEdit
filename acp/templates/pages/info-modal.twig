@@ -1,0 +1,55 @@
+{# info modal of a page in /admin/pages/, rendered by acp/core/pages/pages-info.php #}
+<div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">{{ page.title }}</h5>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <table class="table table-sm">
+                        <tr><td class="text-end">ID</td><td><code>{{ page.id }}</code></td></tr>
+                        <tr><td class="text-end">Hash</td><td><code>{{ page.hash }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_classes }}</td><td><code>{{ page.classes }}</code></td></tr>
+                        <tr><td class="text-end text-nowrap">{{ lang.label_pages_pageviews }}</td><td><code>{{ page.hits }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_title }}</td><td><code>{{ page.title }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_description }}</td><td><code>{{ page.description }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_keywords }}</td><td><code>{{ page.keywords }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_pages_meta_robots }}</td><td><code>{{ page.robots }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_status }}</td><td><code>{{ page.status }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_pages_link_name }}</td><td><code>{{ page.linkname }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_pages_permalink }}</td><td><code>{{ page.permalink }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_pages_permalink_short }}</td><td><code>{{ page.permalink_short }}</code></td></tr>
+                        <tr><td class="text-end">{{ lang.label_pages_clicks }}</td><td><code>{{ page.short_link_hits }}</code></td></tr>
+                        {% if page.redirect %}
+                            <tr><td class="text-end">{{ lang.label_pages_redirect }}</td><td><code>{{ page.redirect }} [{{ page.redirect_code }}]</code></td></tr>
+                        {% endif %}
+                        {% if page.funnels %}
+                            <tr>
+                                <td class="text-end">{{ lang.label_pages_funnel_uri }}</td>
+                                <td>{% for funnel in page.funnels %}<code>{{ funnel }}</code><br>{% endfor %}</td>
+                            </tr>
+                        {% endif %}
+                        <tr><td class="text-end">{{ lang.label_content }}</td><td><code>{{ page.content }}</code></td></tr>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <img src="{{ page.thumb_src ?: '/assets/themes/administration/images/swiftyedit-page-icon.png' }}" class="img-fluid">
+                </div>
+            </div>
+
+            {% if can_edit %}
+                <hr>
+                <div class="btn-group d-flex justify-content-end">
+                    <form action="/admin/pages/edit/" method="post" class="d-inline">
+                        <button class="btn btn-default" name="page_id" value="{{ page.id }}">{{ icon.edit|raw }} {{ lang.edit }}</button>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ lang.close }}</button>
+        </div>
+    </div>
+</div>

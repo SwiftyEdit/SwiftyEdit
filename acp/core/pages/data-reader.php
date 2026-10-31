@@ -299,44 +299,22 @@ if(isset($_REQUEST['snapshots']) && is_numeric($_REQUEST['snapshots'])) {
         ]
     ]);
 
-    echo '<div class="card my-3">';
-    echo '<div class="accordion accordion-flush" id="accordionVersions">';
-    echo '<div class="accordion-item">';
-    echo '<div class="accordion-header" id="headingOne">';
-    echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVersions" aria-expanded="false" aria-controls="collapseOne">Versions ('.count($get_snapshots).')</button>';
-    echo '</div>';
-    echo '<div id="collapseVersions" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionVersions">';
-    echo '<div class="accordion-body">';
-    echo '<div class="scroll-container">';
-    echo '<table class="table table-hover">';
+    $snapshots = [];
     foreach($get_snapshots as $snapshot) {
-
-        $page_id = $snapshot['page_id'];
-
-        echo '<tr>';
-        echo '<td>'.se_format_datetime($snapshot['page_lastedit']).'</td>';
-        echo '<td>'.htmlentities($snapshot['page_title']).'</td>';
-        echo '<td>'.htmlentities($snapshot['page_lastedit_from']).'</td>';
-        echo '<td>';
-        echo '<form action="/admin/pages/edit/" method="POST">';
-        echo '<button class="btn btn-sm btn-default w-100" name="restore_id" value="'.$page_id.'" title="'.$lang['edit'].'">'.$icon['edit'].' '.$lang['edit'].'</button>';
-        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        echo '</form>';
-        echo '</td>';
-        echo '</tr>';
+        $snapshots[] = [
+            'id' => (int) $snapshot['page_id'],
+            'lastedit' => se_format_datetime($snapshot['page_lastedit']),
+            'title' => $decode($snapshot['page_title']),
+            'lastedit_from' => $decode($snapshot['page_lastedit_from'])
+        ];
     }
-    echo '</table>';
-    echo '</div>'; // scroll-container
-    echo '</div>'; // accordion-body
-    echo '</div>'; // collapse
-    echo '</div>'; // accordion-item
-    echo '</div>'; // accordion
-    echo '</div>';
-
+    echo $twig->render('pages/snapshots.twig', ['snapshots' => $snapshots]);
+    exit;
 }
 
 if(isset($_GET['page_info'])) {
-    include 'pages-info.php';
+    include __DIR__.'/pages-info.php';
+    exit;
 }
 
 /**
