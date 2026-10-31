@@ -63,7 +63,7 @@ if($_REQUEST['action'] == 'list_keyword_btn') {
             'active' => in_array($keyword, $active_keywords)
         ];
     }
-    echo $twig->render('shop/keyword-buttons.twig', [
+    echo $twig->render('components/list/keyword-buttons.twig', [
         'keywords' => $keywords,
         'writer_uri' => $list_writer_uri
     ]);

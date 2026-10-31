@@ -2,6 +2,15 @@
  # page list in /admin/pages/, rendered by se_list_pages()
  # in acp/core/pages/data-reader.php
  #}
+<div class="d-flex justify-content-end">
+    <div>{{ pagination|raw }}</div>
+    <div class="ps-3">
+        <div class="input-group mb-3">
+            <input type="number" class="form-control" hx-post="{{ writer_uri }}" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name='csrf_token']" name="items_per_page" min="5" max="99" value="{{ items_per_page }}">
+            <span class="input-group-text"> / {{ total }}</span>
+        </div>
+    </div>
+</div>
 {% for page in pages %}
 <div style="padding-left: {{ page.indent }}px">
 

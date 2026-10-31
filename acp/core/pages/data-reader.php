@@ -1,182 +1,106 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/pages/read/
+ * the page list (acp/templates/pages/list-items.twig), the active search keywords,
+ * keywords and page types of the sidebar - and the parts of the edit form
+ * (content field, sibling picker, snapshots) and the info modal
+ *
  * global variables
  * @var object $db_content
- * @var object $db_settings
  * @var array $icon
  * @var array $lang
  * @var array $se_page_types
  * @var array $se_settings
- *
+ * @var object $twig
  */
 
-use Medoo\Medoo;
+$list_writer_uri = '/admin-xhr/pages/write/';
 
-$writer_uri = '/admin/pages/edit/';
-$duplicate_uri = '/admin/pages/duplicate/';
+// text fields are stored html-encoded (se_sanitize_page_inputs), Twig escapes on output
+$decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
-$se_labels = se_get_labels();
-
-$global_filter_languages = json_decode($_SESSION['global_filter_languages'],true);
-$global_filter_status = json_decode($_SESSION['global_filter_status'],true);
-$global_filter_label = json_decode($_SESSION['global_filter_label'],true);
-
-$sort_single_pages = 'page_lastedit';
-$sort_single_pages_direction = 'DESC';
-
-
-if(!isset($_SESSION['sorting_single_pages'])) {
-    $_SESSION['sorting_single_pages'] = $sort_single_pages;
-}
-if(!isset($_SESSION['sorting_single_pages_dir'])) {
-    $_SESSION['sorting_single_pages_dir'] = $sort_single_pages_direction;
-}
+$action = $_REQUEST['action'] ?? '';
 
 // list pages
-if($_REQUEST['action'] == 'list_pages') {
+if($action == 'list_pages') {
 
-    $type = (int) $_REQUEST['type']; // 1 = sorted 2 = single
+    $type = (int) ($_REQUEST['type'] ?? 1); // 1 = sorted 2 = single
 
-    // defaults
-    $order_by = 'page_lastedit';
-    $order_direction = 'DESC';
-    $limit_start = $_SESSION['pagination_get_pages'] ?? 0;
+    $active_page = (int) ($_SESSION['pagination_get_pages'] ?? 0);
     $nbr_show_items = (int) ($_SESSION['items_per_page'] ?? 25);
-
-    $match_str = $_SESSION['pages_text_filter'] ?? '';
-    $keyword_str = $_SESSION['pages_keyword_filter'] ?? '';
-    $page_type_str = $_SESSION['checked_page_type_string'] ?? '';
-    $order_key = $_SESSION['sorting_single_pages'] ?? $order_by;
-    $order_direction = $_SESSION['sorting_single_pages_dir'] ?? $order_direction;
-
-    if($limit_start > 0) {
-        $limit_start = ($limit_start*$nbr_show_items);
+    if($nbr_show_items < 1) {
+        $nbr_show_items = 25;
     }
+    $limit_start = $active_page * $nbr_show_items;
+
+    // sorting of the single pages, only these columns
+    $order_key = $_SESSION['sorting_single_pages'] ?? 'page_lastedit';
+    if(!in_array($order_key, ['page_lastedit', 'page_linkname', 'page_priority'])) {
+        $order_key = 'page_lastedit';
+    }
+    $order_direction = (($_SESSION['sorting_single_pages_dir'] ?? '') == 'ASC') ? 'ASC' : 'DESC';
 
     // "sorted" (type 1) = part of the page tree: has a parent, or is the
     // portal itself (the portal's own page_parent_id is NULL, like an
     // unsorted page's - page_sort = 'portal' is what tells them apart).
     // "single" (type 2) = not in the tree at all.
     if ($type == 1) {
-        $filter_base = [
-            'OR' => [
+        $db_where = [
+            'OR #tree' => [
                 'page_parent_id[!]' => null,
                 'page_sort' => 'portal'
             ]
         ];
     } else {
-        $filter_base = [
-            'AND' => [
-                'page_parent_id' => null,
-                'page_sort[!]' => 'portal'
-            ]
+        $db_where = [
+            'page_parent_id' => null,
+            'page_sort[!]' => 'portal'
         ];
     }
 
-    // text search
-    $filter_by_str = [];
-    if($match_str != '') {
-        $this_filter = explode(" ",$match_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_str = [
-                "OR" => [
-                    "page_title[~]" => "%$f%",
-                    "page_meta_description[~]" => "%$f%",
-                    "page_meta_keywords[~]" => "%$f%",
-                    "page_content[~]" => "%$f%",
-                    "page_content_values[~]" => "%$f%",
-                    "page_permalink[~]" => "%$f%"
-                ]
+    // search: every keyword has to be part of one of the texts
+    $search_columns = ['page_title', 'page_meta_description', 'page_meta_keywords', 'page_content', 'page_content_values', 'page_permalink'];
+    $search = array_values(array_filter(explode(" ", $_SESSION['pages_text_filter'] ?? '')));
+    foreach($search as $i => $keyword) {
+        $db_where["OR #search$i"] = array_fill_keys(array_map(static fn($column) => $column.'[~]', $search_columns), "%$keyword%");
+    }
+
+    // keywords of the sidebar: every selected keyword has to be part of the meta keywords
+    $tags = array_values(array_filter(explode(",", $_SESSION['pages_keyword_filter'] ?? '')));
+    foreach($tags as $i => $tag) {
+        $db_where["AND #tag$i"] = ["page_meta_keywords[~]" => "%$tag%"];
+    }
+
+    // page types of the sidebar: pages of one of the selected types
+    $page_types = array_values(array_filter(explode(" ", $_SESSION['checked_page_type_string'] ?? '')));
+    if($page_types) {
+        $db_where['page_type_of_use'] = $page_types;
+    }
+
+    // global filter (top navigation), pages store the status as a word
+    $db_where += se_get_global_filter_where('page_language', 'page_status', 'page_labels', [1 => 'public', 2 => 'draft', 3 => 'private', 4 => 'ghost']);
+
+    // the global status 5 means pages with a redirect - selected, they are listed
+    // whatever their status is, not selected (but another status), they are hidden
+    $global_status = (array) (json_decode($_SESSION['global_filter_status'] ?? '', true) ?? []);
+    $global_status = array_filter($global_status, static fn($value) => $value !== '' && $value !== null);
+    if($global_status) {
+        if(in_array('5', array_map('strval', $global_status))) {
+            $db_where['OR #status'] = [
+                'page_status' => $db_where['page_status'],
+                'page_redirect[!]' => ''
+            ];
+            unset($db_where['page_status']);
+        } else {
+            $db_where['OR #no_redirect'] = [
+                'page_redirect' => '',
+                'AND #redirect_null' => ['page_redirect' => null]
             ];
         }
     }
 
-    // filter by keywords
-    $filter_by_keyword = [];
-    if($keyword_str != '') {
-        $this_filter = explode(",",$keyword_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_keyword = [
-                "page_meta_keywords[~]" => "$f"
-            ];
-        }
-    }
-
-    // filter by page types
-    $filter_by_page_types = [];
-    if($page_type_str != '') {
-        $this_filter = explode(" ",$page_type_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_page_types = [
-                "page_type_of_use[~]" => "$f"
-            ];
-        }
-    }
-
-    // global language filter
-    $filter_by_language = [];
-    if(is_array($global_filter_languages)) {
-        $lang_filter = array_filter($global_filter_languages);
-        $filter_by_language = [
-            "page_language[~]" => $lang_filter
-        ];
-    }
-
-    // global status filter and redirects
-    $filter_by_status = [];
-    $filter_by_redirect = [];
-    if(is_array($global_filter_status)) {
-        $status_filter = array_filter($global_filter_status);
-
-        $index = array_search(5,$status_filter);
-        if ($index !== false) {
-            $filter_by_redirect = [
-                "page_redirect[!]" => ' '
-            ];
-        }
-
-        $index = array_search(1,$status_filter);
-        if ($index !== false) { $status_filter[$index] = 'public'; }
-        $index = array_search(2,$status_filter);
-        if ($index !== false) { $status_filter[$index] = 'draft'; }
-        $index = array_search(3,$status_filter);
-        if ($index !== false) { $status_filter[$index] = 'private'; }
-        $index = array_search(4,$status_filter);
-        if ($index !== false) { $status_filter[$index] = 'ghost'; }
-        $index = array_search(5,$status_filter);
-        if ($index !== false) { $status_filter[$index] = 'redirect'; }
-        $filter_by_status = [
-            "page_status[~]" => $status_filter
-        ];
-    }
-
-    // global label filter
-    $filter_by_label = [];
-    if(is_array($global_filter_label)) {
-        $label_filter = array_filter($global_filter_label);
-        $filter_by_label = [
-            "page_labels[~]" => $label_filter
-        ];
-    }
-
-    $db_where = [
-        "AND" => $filter_base+$filter_by_str+$filter_by_keyword+$filter_by_page_types+$filter_by_language+$filter_by_status+$filter_by_redirect+$filter_by_label
-    ];
-
-    // order single pages
-    $db_order = [
-        "ORDER" => [
-            "$order_key" => "$order_direction"
-        ]
-    ];
-
-    $db_limit = [
-        "LIMIT" => [$limit_start, $nbr_show_items]
-    ];
+    $db_where = ["AND" => $db_where];
 
     $pages_data_cnt = $db_content->count("se_pages", $db_where);
 
@@ -224,53 +148,31 @@ if($_REQUEST['action'] == 'list_pages') {
         $pages_data = array_slice($flattened, $limit_start, $nbr_show_items);
 
     } else {
-        $pages_data = $db_content->select("se_pages","*",
-            $db_where+$db_order+$db_limit
-        );
+        $pages_data = $db_content->select("se_pages", "*", $db_where + [
+            "ORDER" => [$order_key => $order_direction],
+            "LIMIT" => [$limit_start, $nbr_show_items]
+        ]);
     }
 
-    $nbr_pag_pages = ceil($pages_data_cnt/$nbr_show_items);
-    
-    echo '<div class="card p-3">';
-    echo '<div class="d-flex justify-content-end">';
-    echo '<div>';
-    echo se_print_pagination('/admin-xhr/pages/write/',$nbr_pag_pages,$_SESSION['pagination_get_pages']);
-    echo '</div>';
-    echo '<div class="ps-3">';
-    echo '<div class="input-group mb-3">';
-    echo '<input type="number" class="form-control" hx-post="/admin-xhr/pages/write/" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name=\'csrf_token\']" name="items_per_page" min="5" max="99" value="'.$nbr_show_items.'">';
-    echo '<span class="input-group-text" id="basic-addon2"> / '.$pages_data_cnt.'</span>';
-    echo '</div>';
-    echo '</div>';
-    echo '</div>';
-    echo se_list_pages($pages_data);
-    echo '</div>';
-
-
+    echo se_list_pages($pages_data, [
+        'pagination' => se_print_pagination($list_writer_uri, (int) ceil($pages_data_cnt/$nbr_show_items), $active_page),
+        'items_per_page' => $nbr_show_items,
+        'total' => $pages_data_cnt,
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
 }
 
 /**
  * list active keywords from search input
  * used in sidebar
  */
-if($_REQUEST['action'] == 'list_active_searches') {
-
-    if(isset($_SESSION['pages_text_filter']) AND $_SESSION['pages_text_filter'] != "") {
-        unset($all_filter);
-        $all_filter = explode(" ", $_SESSION['pages_text_filter']);
-
-        foreach($all_filter as $f) {
-            if($_REQUEST['rm_keyword'] == "$f") { continue; }
-            if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default" name="rmkey" value="'.$f.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button> ';
-        }
-    }
-
-    if(isset($btn_remove_keyword)) {
-        echo '<div class="d-inline">';
-        echo '<p style="padding-top:5px;">' . $btn_remove_keyword . '</p>';
-        echo '</div><hr>';
-    }
+if($action == 'list_active_searches') {
+    $keywords = array_filter(explode(" ", $_SESSION['pages_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
 
@@ -278,20 +180,24 @@ if($_REQUEST['action'] == 'list_active_searches') {
  * list all keywords
  * used in sidebar
  */
-if($_REQUEST['action'] == 'list_keyword_btn') {
+if($action == 'list_keyword_btn') {
+    $active_keywords = explode(",", $_SESSION['pages_keyword_filter'] ?? '');
     $get_keywords = se_get_pages_keywords();
     arsort($get_keywords);
-    $vals = ['csrf_token' => $_SESSION['token']];
-    echo '<div class="scroll-container">';
-    foreach($get_keywords as $k => $v) {
-        $k = trim($k);
-        if(str_contains($_SESSION['pages_keyword_filter'],$k)) {
-            echo '<button name="remove_keyword" value="'.$k.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default active btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
-        } else {
-            echo '<button name="add_keyword" value="'.$k.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\' class="btn btn-default btn-xs mb-1">'.$k.' <span class="badge bg-secondary">'.$v.'</span></button> ';
-        }
+    $keywords = [];
+    foreach($get_keywords as $keyword => $count) {
+        $keyword = trim((string) $keyword);
+        $keywords[] = [
+            // the value is posted back and compared with the stored (encoded) keywords
+            'name' => $decode($keyword),
+            'count' => $count,
+            'active' => in_array($keyword, $active_keywords)
+        ];
     }
-    echo '</div>';
+    echo $twig->render('components/list/keyword-buttons.twig', [
+        'keywords' => $keywords,
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
 
@@ -299,33 +205,30 @@ if($_REQUEST['action'] == 'list_keyword_btn') {
  * list all page types
  * used in the sidebar
  */
-
-if($_REQUEST['action'] == 'list_page_types') {
+if($action == 'list_page_types') {
 
     $find_target_page = $db_content->select("se_pages", "page_type_of_use", [
         "page_type_of_use" => $se_page_types
     ]);
-
-    $cnt_page_types = array_count_values($find_target_page);
-    echo '<div class="scroll-container">';
-    foreach($se_page_types as $types) {
-        $str = 'type_of_use_'.$types;
-        $name = $lang[$str];
-        $classes = 'list-group-item list-group-item-action d-flex justify-content-between align-items-start';
-        if(str_contains($_SESSION['checked_page_type_string'],"$types")) {
-            $classes .= ' active';
-        }
-        $vals = ['csrf_token' => $_SESSION['token']];
-        echo '<button class=" '.$classes.'" name="filter_type" value="'.$types.'" hx-post="/admin-xhr/pages/write/" hx-trigger="click" hx-swap="none" hx-vals=\''.json_encode($vals).'\'>';
-        echo '<div class="me-auto">'.$name.'</div>';
-        if($cnt_page_types[$types] < 1) {
-            echo '<span class="badge text-bg-danger">0</span>';
-        } else {
-            echo '<span class="badge text-bg-secondary">' . $cnt_page_types[$types] . '</span>';
-        }
-        echo '</button>';
+    $cnt_page_types = [];
+    foreach($find_target_page as $page_type) {
+        $cnt_page_types[$page_type] = ($cnt_page_types[$page_type] ?? 0) + 1;
     }
-    echo '</div>';
+    $active_types = explode(" ", $_SESSION['checked_page_type_string'] ?? '');
+
+    $types = [];
+    foreach($se_page_types as $page_type) {
+        $types[] = [
+            'value' => $page_type,
+            'label' => $lang['type_of_use_'.$page_type] ?? $page_type,
+            'count' => $cnt_page_types[$page_type] ?? 0,
+            'active' => in_array($page_type, $active_types)
+        ];
+    }
+    echo $twig->render('pages/page-types.twig', [
+        'types' => $types,
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
 
@@ -357,7 +260,7 @@ if(isset($_REQUEST['content_field'])) {
 // when the parent dropdown changes (see se_build_parent_options() /
 // se_build_sibling_picker() in functions.php) - an HTMX partial swap
 // targeting #siblingPicker.
-if ($_REQUEST['action'] == 'page_siblings') {
+if ($action == 'page_siblings') {
     require_once __DIR__ . '/functions.php';
 
     $language = $_REQUEST['language'] ?? '';
@@ -437,20 +340,21 @@ if(isset($_GET['page_info'])) {
 }
 
 /**
- * @param $data array page contents
+ * render the page list, the redirects are already filtered by the query (global status 5)
+ *
+ * @param array|null $data page rows (null if the query failed)
+ * @param array $list pagination, items_per_page, total, writer_uri for the template
  * @return string
  */
+function se_list_pages(?array $data, array $list = []): string {
 
-function se_list_pages($data) {
+    global $twig, $lang;
 
-    global $twig, $global_filter_status, $lang, $se_labels;
-
-    if(!is_array($data)) {
-        return '';
-    }
+    $data = $data ?? [];
+    $se_labels = se_get_labels();
 
     $status_labels = [
-        'public' => $lang['status_puplic'],
+        'public' => $lang['status_public'],
         'ghost' => $lang['status_ghost'],
         'private' => $lang['status_private'],
         'draft' => $lang['status_draft']
@@ -462,11 +366,6 @@ function se_list_pages($data) {
 
     $pages = [];
     foreach($data as $page) {
-
-        // redirects are only listed if the global status filter includes them
-        if($page['page_redirect'] != '' && is_array($global_filter_status) && !in_array("5", $global_filter_status)) {
-            continue;
-        }
 
         $page_thumb_src = '/assets/themes/administration/images/swiftyedit-page-icon.png';
         if($page['page_thumbnail'] != '') {
@@ -528,5 +427,5 @@ function se_list_pages($data) {
         ];
     }
 
-    return $twig->render('pages/list-items.twig', ['pages' => $pages]);
+    return $twig->render('pages/list-items.twig', ['pages' => $pages] + $list);
 }
