@@ -82,21 +82,46 @@ erhält eine Kopie der Bestell-E-Mails und Bestellanfragen sowie die Widerrufe v
 Schickt eine E-Mail mit den gespeicherten Einstellungen an die Benachrichtigungs-Adresse, oder an
 die Absenderadresse, falls keine eingetragen ist. Speichere Deine Änderungen also vorher.
 
-## User
-Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion:
+## User {#user}
+Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion.
 
-* Ob sich Besucher selbst registrieren dürfen, ob das Login-Formular angezeigt wird
-  und ob neue Benutzer von einem Administrator freigeschaltet werden müssen. Ohne Login-Formular
-  ist die Anmeldung im Frontend ganz abgeschaltet (die Backend-Anmeldung unter `/admin/` ist
-  nicht betroffen, "Passwort vergessen" funktioniert weiterhin).
-* Die Session-Lebensdauer des Backends und eine Blacklist von Benutzernamen, die nicht
-  registriert werden dürfen.
-* Welche Felder bei der Registrierung Pflichtfelder sind.
-* Kommentare: der Modus, die Autorisierung, die Auto-Close-Zeit, die maximale Anzahl an
-  Einträgen und die maximale Verschachtelungstiefe.
-* Votings und Reaktionen (aus, nur für registrierte Benutzer oder global). Gegen doppelte
-  Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse
-  gespeichert; nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
+### Registrierung und Login {#user-registration}
+Ob sich Besucher selbst registrieren dürfen und ob das Login-Formular angezeigt wird. Ohne
+Login-Formular ist die Anmeldung im Frontend ganz abgeschaltet (die Backend-Anmeldung unter
+`/admin/` ist nicht betroffen, "Passwort vergessen" funktioniert weiterhin).
+
+Müssen neue Benutzer von einem Administrator freigeschaltet werden, können sie sich zwar anmelden,
+im Shop aber erst bestellen, wenn sie in der Benutzerverwaltung freigeschaltet wurden.
+
+### Pflichtfelder {#user-required-fields}
+Felder des Registrierungsformulars, die zusätzlich zu Benutzername, E-Mail und Passwort ausgefüllt
+werden müssen. Wähle nur Felder aus, die das Registrierungsformular Deines Themes auch enthält -
+sonst kann sich niemand mehr registrieren.
+
+### Gesperrte Benutzernamen {#user-blacklist}
+Benutzernamen, die nicht registriert werden dürfen, durch Kommas getrennt. Groß- und
+Kleinschreibung spielt keine Rolle.
+
+### Backend-Session {#user-session}
+Wie lange (in Sekunden) ein Administrator ohne Aktivität im Backend angemeldet bleibt. Ist die
+PHP-Einstellung `session.gc_maxlifetime` des Servers länger, gilt diese.
+
+### Kommentare {#user-comments}
+Ob Kommentare von einem Administrator freigegeben werden müssen, sofort erscheinen oder ganz
+abgeschaltet sind. Zusätzlich werden Kommentare bei jeder Seite, jedem Beitrag und jedem Produkt
+einzeln ein- oder ausgeschaltet. Wer kommentiert, gibt immer einen Namen und eine E-Mail-Adresse an.
+
+Mit „Die Kommentarfunktion schließen nach *n* Tagen“ kannst Du Kommentare automatisch beenden: Bei
+Beiträgen und Produkten zählen die Tage ab dem Veröffentlichungsdatum, bei Seiten ab der letzten
+Änderung - jedes Speichern einer Seite öffnet die Kommentare also wieder. Danach bleiben die
+vorhandenen Kommentare sichtbar, neue Kommentare und Antworten sind aber nicht mehr möglich.
+0 oder ein leeres Feld bedeutet: nie schließen.
+
+### Votings und Reaktionen {#user-votings}
+Die Voreinstellung für neue Beiträge, Produkte und Veranstaltungen - bei jedem Eintrag kannst Du
+sie einzeln ändern: aus, nur für registrierte Benutzer oder für alle Besucher. Gegen doppelte
+Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse gespeichert;
+nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
 
 ## Posts
 Diese Einstellungen betreffen die Posts (Blog).

@@ -81,20 +81,44 @@ address receives a copy of the order e-mails and order requests, as well as orde
 Sends an e-mail with the saved settings to the notification address, or to the sender address
 if there is none. Save your changes first.
 
-## User
-These settings control everything around user accounts and interaction:
+## User {#user}
+These settings control everything around user accounts and interaction.
 
-* Whether visitors may register themselves, whether the login form is shown,
-  and whether new users have to be unlocked by an administrator. Without the login form, the
-  frontend login is switched off completely (the backend login at `/admin/` is not affected,
-  and "forgot password" keeps working).
-* The session lifetime of the backend and a blacklist of user names that may not be registered.
-* Which fields are required on registration.
-* Comments: the mode, the authorization, the auto-close time, the maximum number of entries
-  and the maximum nesting level.
-* Votings and reactions (off, for registered users only, or globally). To prevent double votes,
-  anonymous votes and guest list confirmations are stored with a hash of the visitor's IP
-  address; after 90 days the hash is removed - the vote keeps counting.
+### Registration and login {#user-registration}
+Whether visitors may register themselves and whether the login form is shown. Without the login
+form, the frontend login is switched off completely (the backend login at `/admin/` is not
+affected, and "forgot password" keeps working).
+
+If new users have to be unlocked by an administrator, they can log in, but can only order in the
+shop after they have been unlocked in the user management.
+
+### Required fields {#user-required-fields}
+Fields of the registration form that have to be filled in, in addition to user name, e-mail and
+password. Only select fields that the registration form of your theme contains - otherwise nobody
+can register anymore.
+
+### Blocked user names {#user-blacklist}
+User names that may not be registered, separated by commas. Upper and lower case don't matter.
+
+### Backend session {#user-session}
+How long (in seconds) an administrator stays logged in to the backend without any activity. If
+the PHP setting `session.gc_maxlifetime` of the server is longer, it is used instead.
+
+### Comments {#user-comments}
+Whether comments have to be approved by an administrator, appear immediately or are switched off
+completely. In addition, comments are switched on or off for each page, post and product. Whoever
+writes a comment always enters a name and an e-mail address.
+
+"Close the comment function after *n* days" ends comments automatically: for posts and products
+the days count from the release date, for pages from the last edit - so saving a page opens its
+comments again. After that, existing comments stay visible, but new comments and answers are no
+longer possible. 0 or an empty field means: never close.
+
+### Votings and reactions {#user-votings}
+The default for new posts, products and events - you can change it for each entry: off, only for
+registered users, or for all visitors. To prevent double votes, anonymous votes and guest list
+confirmations are stored with a hash of the visitor's IP address; after 90 days the hash is
+removed - the vote keeps counting.
 
 ## Posts
 These settings affect the posts (blog).

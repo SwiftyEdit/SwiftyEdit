@@ -243,46 +243,6 @@ if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
     }
 }
 
-// write user settings
-if (isset($_POST['update_user'])) {
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $data[htmlentities($key)] = htmlentities($val);
-        }
-    }
-
-    $data['prefs_required_fields_registration'] = json_encode($_POST['required_fields']);
-
-    $data['prefs_showloginform'] = 'no';
-    if(isset($_POST['prefs_showloginform'])) {
-        $data['prefs_showloginform'] = 'yes';
-    }
-
-    $data['prefs_user_unlock_by_admin'] = 'no';
-    if(isset($_POST['prefs_user_unlock_by_admin'])) {
-        $data['prefs_user_unlock_by_admin'] = 'yes';
-    }
-
-    $data['prefs_userregistration'] = 'no';
-    if(isset($_POST['prefs_userregistration'])) {
-        $data['prefs_userregistration'] = 'yes';
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write comments and reactions settings
-if (isset($_POST['update_reactions'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    //print_r($_POST);
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
 // labels
 if (isset($_POST['post_label'])) {
 

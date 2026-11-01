@@ -53,14 +53,45 @@ function se_settings_options(): array {
         'prefs_usertemplate' => ['off', 'on', 'overwrite'],
         'prefs_mailer_type' => ['mail', 'smtp'],
         'prefs_default_language' => $languages,
-        'prefs_deactivated_languages' => $languages
+        'prefs_deactivated_languages' => $languages,
+        'prefs_required_fields_registration' => se_settings_registration_fields(),
+        // 1 = approved by an admin, 2 = appear immediately, 3 = off
+        'prefs_comments_mode' => ['1', '2', '3'],
+        // 1 = off, 2 = registered users, 3 = all visitors
+        'prefs_posts_default_votings' => ['1', '2', '3']
     ];
+}
+
+/**
+ * columns of se_user that can be required on registration -
+ * everything else is login data, internal state or set by the system
+ *
+ * @return array list of column names
+ */
+function se_settings_registration_fields(): array {
+
+    // columns of se_user, the installer file sets $cols
+    $cols = [];
+    include SE_ROOT.'install/contents/se_user.php';
+
+    $excluded_fields = [
+        'user_nick', 'user_psw', 'user_mail', 'user_social_media',
+        // filled by the system: on registration, an e-mail change or a deletion
+        'user_uuid', 'user_mail_temp', 'user_deleted_at', 'user_deleted_nick',
+        'user_id', 'user_class', 'user_psw_hash', 'user_failed_logins', 'user_failed_login_time', 'user_unlock_code', 'user_unlock_expires', 'user_locked_until',
+        'user_groups', 'user_avatar', 'user_registerdate', 'user_verified', 'user_verified_by_admin', 'user_drm',
+        'user_acp_settings', 'user_activationkey', 'user_reset_psw', 'user_reset_psw_expires',
+        'user_2fa_method', 'user_2fa_secret', 'user_2fa_last_step', 'user_2fa_mail_code', 'user_2fa_mail_expires', 'user_2fa_mail_sent', 'user_2fa_recovery', 'user_2fa_since', 'user_2fa_failed', 'user_2fa_locked_until', 'user_2fa_mail_blocked'
+    ];
+
+    return array_values(array_diff(array_keys($cols), $excluded_fields));
 }
 
 /**
  * the fields of each section, a section is saved as a whole
  *   text     - stored html-encoded
  *   int      - stored as number
+ *   days     - entered in days, stored in seconds
  *   option   - one of se_settings_options(), other values are not stored
  *   options  - a list of se_settings_options() (array input), stored as json, empty as ''
  *   [checkbox, on, off] - value if checked / not checked
@@ -115,6 +146,28 @@ function se_settings_sections(): array {
             'prefs_mailer_adr' => 'text',
             'prefs_mailer_type' => 'option',
             'prefs_notify_mail' => 'text'
+        ],
+        'user-registration' => [
+            'prefs_userregistration' => ['checkbox', 'yes', 'no'],
+            'prefs_showloginform' => ['checkbox', 'yes', 'no'],
+            'prefs_user_unlock_by_admin' => ['checkbox', 'yes', 'no']
+        ],
+        'user-required-fields' => [
+            // posted as required_fields[]
+            'prefs_required_fields_registration' => 'options'
+        ],
+        'user-blacklist' => [
+            'prefs_blacklist_usernames' => 'text'
+        ],
+        'user-session' => [
+            'prefs_acp_session_lifetime' => 'int'
+        ],
+        'user-comments' => [
+            'prefs_comments_mode' => 'option',
+            'prefs_comments_autoclose' => 'days'
+        ],
+        'user-votings' => [
+            'prefs_posts_default_votings' => 'option'
         ]
     ];
 }
@@ -137,7 +190,8 @@ function se_settings_section_values(string $section, array $post): ?array {
 
     // inputs whose name differs from the option key
     $post_names = [
-        'prefs_deactivated_languages' => 'hide_langs'
+        'prefs_deactivated_languages' => 'hide_langs',
+        'prefs_required_fields_registration' => 'required_fields'
     ];
 
     $data = [];
@@ -151,6 +205,8 @@ function se_settings_section_values(string $section, array $post): ?array {
             $data[$key] = htmlentities(trim(is_string($value) ? $value : ''), ENT_QUOTES, 'UTF-8');
         } else if($type == 'int') {
             $data[$key] = (int) $value;
+        } else if($type == 'days') {
+            $data[$key] = max(0, (int) $value) * 86400;
         } else if($type == 'option') {
             if(is_string($value) && in_array($value, $options[$key], true)) {
                 $data[$key] = $value;

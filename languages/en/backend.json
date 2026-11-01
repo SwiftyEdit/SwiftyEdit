@@ -500,7 +500,7 @@
   "label.settings.comments_auth.1": "Only registered users may comment",
   "label.settings.comments_auth.2": "Users must enter their name and e-mail address",
   "label.settings.comments_auth.3": "Allow all comments (not recommended)",
-  "label.settings.comments_autoclose_time": "Close the comment function after <i>n</i> seconds",
+  "label.settings.comments_autoclose_days": "Close the comment function after <i>n</i> days",
   "label.settings.comments_max_entries": "Maximum number of posts per thread",
   "label.settings.comments_max_level": "Maximum depth of a thread",
   "label.settings.votings_off": "Deactivated",

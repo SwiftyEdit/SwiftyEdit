@@ -1,0 +1,52 @@
+{# user settings in /admin/settings/user/, rendered by acp/core/settings/user.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block content %}
+    {% embed 'components/settings/section.twig' with {help: help['user-registration'], section: 'user-registration'} %}
+        {% block fields %}
+            {{ inputs.userregistration|raw }}
+            {{ inputs.showloginform|raw }}
+            {{ inputs.user_unlock_by_admin|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['user-required-fields'], title: lang.legend_required_fields, section: 'user-required-fields'} %}
+        {% block fields %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 mb-3">
+                {% for field in registration_fields %}
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="required_fields[]" value="{{ field.name }}" id="required_{{ field.name }}"{% if field.checked %} checked{% endif %}>
+                            <label class="form-check-label" for="required_{{ field.name }}"><code>{{ field.name }}</code></label>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['user-blacklist'], section: 'user-blacklist'} %}
+        {% block fields %}
+            {{ inputs.blacklist_usernames|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['user-session'], section: 'user-session'} %}
+        {% block fields %}
+            {{ inputs.acp_session_lifetime|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['user-comments'], title: lang.label_comments, section: 'user-comments'} %}
+        {% block fields %}
+            <div class="mb-3">{{ inputs.comments_mode|raw }}</div>
+            {{ inputs.comments_autoclose|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['user-votings'], title: lang.label_votings, section: 'user-votings'} %}
+        {% block fields %}
+            {{ inputs.default_votings|raw }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

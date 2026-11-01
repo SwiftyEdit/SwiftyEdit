@@ -412,11 +412,16 @@ function se_comment_target(array $data): ?array {
  * to the visitor (no draft) and - for pages - not locked by a page password
  * the visitor hasn't entered (see template-setup.php).
  *
+ * With $for_writing, new comments must also still be open: they are closed
+ * comments_autoclose seconds after the reference date (posts and products:
+ * release date, pages: last edit). Existing comments stay readable.
+ *
  * @param string $type 'p' page, 'b' post, 'c' product
  * @param int $relation_id id of the page, post or product
+ * @param bool $for_writing also check that the entry is not auto-closed
  * @return bool
  */
-function se_comments_allowed(string $type, int $relation_id): bool {
+function se_comments_allowed(string $type, int $relation_id, bool $for_writing = false): bool {
 
 	global $db_content, $db_posts, $se_settings;
 
@@ -427,7 +432,7 @@ function se_comments_allowed(string $type, int $relation_id): bool {
 	$can_see_drafts = se_frontend_visitor_can_see_drafts();
 
 	if($type === 'p') {
-		$page = $db_content->get("se_pages", ["page_comments", "page_status", "page_psw"], [
+		$page = $db_content->get("se_pages", ["page_comments", "page_status", "page_psw", "page_lastedit"], [
 			"page_id" => $relation_id
 		]);
 		if(!is_array($page) || (int) $page['page_comments'] !== 1) {
@@ -440,24 +445,49 @@ function se_comments_allowed(string $type, int $relation_id): bool {
 		if($page_psw !== '' && ($_SESSION['page_psw'] ?? '') !== $page_psw) {
 			return false;
 		}
-		return true;
+		return !$for_writing || !se_comments_autoclosed((int) $page['page_lastedit']);
 	}
 
 	if($type === 'b') {
 		$post = se_get_post_data($relation_id);
-		return is_array($post) && (int) $post['post_comments'] === 1
-			&& ($can_see_drafts || se_post_is_publicly_visible($post));
+		if(!is_array($post) || (int) $post['post_comments'] !== 1
+			|| !($can_see_drafts || se_post_is_publicly_visible($post))) {
+			return false;
+		}
+		return !$for_writing || !se_comments_autoclosed((int) $post['post_releasedate']);
 	}
 
 	if($type === 'c') {
 		$product = $db_posts->get("se_products", "*", [
 			"id" => $relation_id
 		]);
-		return is_array($product) && (int) $product['comments'] === 1
-			&& ($can_see_drafts || se_product_is_publicly_visible($product));
+		if(!is_array($product) || (int) $product['comments'] !== 1
+			|| !($can_see_drafts || se_product_is_publicly_visible($product))) {
+			return false;
+		}
+		return !$for_writing || !se_comments_autoclosed((int) $product['releasedate']);
 	}
 
 	return false;
+}
+
+/**
+ * Whether the comment function of an entry is closed by the setting
+ * comments_autoclose (seconds after $reference_time). 0 or empty = never.
+ *
+ * @param int $reference_time unix timestamp the period starts from
+ * @return bool
+ */
+function se_comments_autoclosed(int $reference_time): bool {
+
+	global $se_settings;
+
+	$autoclose = (int) ($se_settings['comments_autoclose'] ?? 0);
+	if($autoclose <= 0 || $reference_time <= 0) {
+		return false;
+	}
+
+	return time() > $reference_time + $autoclose;
 }
 
 /**
@@ -505,9 +535,10 @@ function se_write_comment($data) {
 		
 		$comment_time = time();
 
-		// only for an existing entry with comments switched on (and an unlocked page)
+		// only for an existing entry with comments switched on (and an unlocked page),
+		// which is not closed by comments_autoclose
 		$target = se_comment_target($data);
-		if($target === null || !se_comments_allowed($target['type'], $target['relation_id'])) {
+		if($target === null || !se_comments_allowed($target['type'], $target['relation_id'], true)) {
 			return 0;
 		}
 		$type = $target['type'];
