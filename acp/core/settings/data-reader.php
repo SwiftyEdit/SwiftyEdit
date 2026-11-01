@@ -1,109 +1,93 @@
 <?php
 
 /**
- * global
+ * SwiftyEdit /admin-xhr/settings/read/
+ * delivery areas of the shop settings (list and form), the API keys and the labels
+ *
+ * global variables
  * @var array $icon
  * @var array $lang
  * @var object $db_content
  * @var array $se_settings
+ * @var object $twig
  */
 
+$action = $_REQUEST['action'] ?? '';
+$settings_reader_uri = '/admin-xhr/settings/read/';
+$settings_writer_uri = '/admin-xhr/settings/general/write/';
 
-if($_REQUEST['action'] == 'deliveryCountries') {
+// delivery areas, status and tax: 1 = yes, 2 = no
+if($action == 'deliveryCountries') {
 
-    $get_countries = $db_content->select("se_delivery_areas", "*");
-
-    echo '<table class="table">';
-    echo '<tr>';
-    echo '<td>Code</td>';
-    echo '<td>'.$lang['label_country'].'</td>';
-    echo '<td>'.$lang['label_status'].'</td>';
-    echo '<td>'.$lang['label_plus_tax'].'</td>';
-    echo '<td></td>';
-    echo '</tr>';
-    foreach($get_countries as $country) {
-
-        $status = '<span class="badge text-danger">'.$icon['circle'].'</span>';
-        if($country['status'] == '1') {
-            $status = '<span class="badge text-success">'.$icon['check_circle'].'</span>';
-        }
-
-        $tax = '<span class="badge text-danger">'.$icon['circle'].'</span>';
-        if($country['tax'] == '1') {
-            $tax = '<span class="badge text-success">'.$icon['check_circle'].'</span>';
-        }
-
-        echo '<tr>';
-        echo '<td><code>'.$country['code'].'</code></td>';
-        echo '<td>'.$country['name'].'</td>';
-        echo '<td>'.$status.'</td>';
-        echo '<td>'.$tax.'</td>';
-        echo '<td>';
-        echo '<button class="btn btn-sm btn-default text-success" hx-get="/admin-xhr/settings/read/?edit_delivery_country='.$country['id'].'" hx-target="#deliveryCountriesForm">'.$icon['edit'].'</button>';
-        echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin-xhr/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$country['id'].'">'.$icon['trash'].'</button>';
-        echo '</td>';
-        echo '</tr>';
+    $countries = [];
+    foreach($db_content->select("se_delivery_areas", "*", ["ORDER" => ["name" => "ASC"]]) as $country) {
+        $countries[] = [
+            'id' => (int) $country['id'],
+            'code' => $country['code'],
+            'name' => $country['name'],
+            'public' => ($country['status'] == '1'),
+            'tax' => ($country['tax'] == '1')
+        ];
     }
-    echo '</table>';
+    echo $twig->render('settings/delivery-areas.twig', [
+        'countries' => $countries,
+        'reader_uri' => $settings_reader_uri,
+        'writer_uri' => $settings_writer_uri
+    ]);
     exit;
 }
 
-if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_country']) {
+// form of a new or an edited delivery area
+if(($_REQUEST['show'] ?? '') == 'deliveryCountriesForm' || isset($_REQUEST['edit_delivery_country'])) {
 
-    $all_countries = se_get_countries();
-
-    $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="save">'.$lang['btn_save'].'</button>';
-
-    if(isset($_REQUEST['edit_delivery_country'])) {
-        $edit_country = (int) $_REQUEST['edit_delivery_country'];
-        $get_country = $db_content->get("se_delivery_areas", "*", ["id" => $edit_country]);
-        $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="'.$edit_country.'">'.$lang['btn_update'].'</button>';
+    $edit_id = (int) ($_REQUEST['edit_delivery_country'] ?? 0);
+    $get_country = [];
+    if($edit_id > 0) {
+        $get_country = $db_content->get("se_delivery_areas", "*", ["id" => $edit_id]) ?: [];
     }
 
     $country_options = [
         $lang['label_please_select'] => ''
     ];
-
-    foreach($all_countries as $country) {
+    foreach(se_get_countries() as $country) {
         $country_options[$country['name']] = $country['alpha2'];
     }
 
-    $input_delivery_country = [
-        "input_name" => "delivery_country",
-        "input_value" => $get_country['code'] ?? '',
-        "label" => $lang['label_shop_add_delivery_area'],
-        "options" => $country_options,
-        "type" => "select"
-    ];
-
-    $input_delivery_country_status = [
-        "input_name" => "delivery_country_status",
-        "input_value" => $get_country['status'] ?? '1',
-        "label" => $lang['label_status'],
-        "options" => [
-            $lang['status_public'] => 1,
-            $lang['status_draft'] => 2
-        ],
-        "type" => "select"
-    ];
-
-    $input_delivery_country_tax = [
-        "input_name" => "delivery_country_tax",
-        "input_value" => $get_country['tax'] ?? '2',
-        "label" => $lang['label_tax'],
-        "options" => [
-            $lang['yes'] => 1,
-            $lang['no'] => 2
-        ],
-        "type" => "select"
-    ];
-
-    echo '<form id="deliveryCountriesForm" hx-post="/admin-xhr/settings/shop/write/" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-    echo se_print_form_input($input_delivery_country);
-    echo se_print_form_input($input_delivery_country_status);
-    echo se_print_form_input($input_delivery_country_tax);
-    echo $submit_btn;
-    echo '</form>';
+    echo $twig->render('settings/delivery-area-form.twig', [
+        'edit_id' => $get_country ? $edit_id : 0,
+        'reader_uri' => $settings_reader_uri,
+        'writer_uri' => $settings_writer_uri,
+        'inputs' => [
+            'country' => se_print_form_input([
+                "input_name" => "delivery_country",
+                "input_value" => $get_country['code'] ?? '',
+                "label" => $lang['label_shop_add_delivery_area'],
+                "options" => $country_options,
+                "type" => "select"
+            ]),
+            'status' => se_print_form_input([
+                "input_name" => "delivery_country_status",
+                "input_value" => $get_country['status'] ?? '1',
+                "label" => $lang['label_status'],
+                "options" => [
+                    $lang['status_public'] => '1',
+                    $lang['status_draft'] => '2'
+                ],
+                "type" => "select"
+            ]),
+            'tax' => se_print_form_input([
+                "input_name" => "delivery_country_tax",
+                "input_value" => $get_country['tax'] ?? '2',
+                "label" => $lang['label_tax'],
+                "options" => [
+                    $lang['yes'] => '1',
+                    $lang['no'] => '2'
+                ],
+                "type" => "select"
+            ])
+        ]
+    ]);
+    exit;
 }
 
 // API keys (Settings > API keys)

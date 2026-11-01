@@ -1,0 +1,110 @@
+{# shop settings in /admin/settings/shop/, rendered by acp/core/settings/shop.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block tab_general %}
+    {% embed 'components/settings/section.twig' with {help: help['shop-list'], section: 'shop-list'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-4">{{ inputs.products_per_page|raw }}</div>
+                <div class="col-md-5">{{ inputs.product_sorting|raw }}</div>
+                <div class="col-md-3">{{ inputs.products_cache|raw }}</div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['shop-cart'], section: 'shop-cart'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.cart_mode|raw }}</div>
+                <div class="col-md-6">{{ inputs.order_mode|raw }}</div>
+            </div>
+            {{ inputs.max_order_value|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['shop-lists'], section: 'shop-lists'} %}
+        {% block fields %}
+            <div class="mb-3">{{ inputs.wishlist_enabled|raw }}</div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['shop-guest-orders'], section: 'shop-guest-orders'} %}
+        {% block fields %}
+            <div class="mb-3">{{ inputs.guest_orders|raw }}</div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['shop-withdrawal'], section: 'shop-withdrawal'} %}
+        {% block fields %}
+            {{ inputs.withdrawal_days|raw }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['shop-taxes'], section: 'shop-taxes'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-4">{{ inputs.tax1|raw }}</div>
+                <div class="col-md-4">{{ inputs.tax2|raw }}</div>
+                <div class="col-md-4">{{ inputs.tax3|raw }}</div>
+                <div class="col-md-4">{{ inputs.currency|raw }}</div>
+                <div class="col-md-4">{{ inputs.price_mode|raw }}</div>
+                <div class="col-md-4">{{ inputs.price_visibility|raw }}</div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block tab_shipping %}
+    {% embed 'components/settings/section.twig' with {help: help['shop-shipping'], title: lang.label_shipping, section: 'shop-shipping'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.shipping_mode|raw }}</div>
+                <div class="col-md-6">{{ inputs.shipping_flat|raw }}</div>
+                <div class="col-md-4">{{ inputs.shipping_cat1|raw }}</div>
+                <div class="col-md-4">{{ inputs.shipping_cat2|raw }}</div>
+                <div class="col-md-4">{{ inputs.shipping_cat3|raw }}</div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% for kind, plugins in {delivery: delivery_plugins, payment: payment_plugins} %}
+        {% embed 'components/settings/section.twig' with {help: help['shop-' ~ kind ~ '-plugins'], section: 'shop-' ~ kind ~ '-plugins'} %}
+            {% block fields %}
+                {% if plugins %}
+                    <div class="list-group mb-3">
+                        {% for plugin in plugins %}
+                            <label class="list-group-item d-flex gap-3">
+                                <input class="form-check-input flex-shrink-0" type="checkbox" name="{{ kind }}_addons[]" value="{{ plugin.folder }}"{% if plugin.active %} checked{% endif %}>
+                                <span>
+                                    <a href="/admin/addons/plugin/{{ plugin.folder }}/">{{ plugin.name }}</a> <code class="small">{{ plugin.folder }}</code>
+                                    {% if plugin.description %}<small class="d-block text-muted">{{ plugin.description }}</small>{% endif %}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">{{ lang.msg_no_entries_found }}</p>
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+    {% endfor %}
+{% endblock %}
+
+{% block tab_delivery %}
+    {% embed 'components/settings/section.twig' with {help: help['shop-delivery-areas']} %}
+        {% block fields %}
+            {# the form (new or edit) and the list are loaded by the settings data-reader #}
+            <div id="deliveryCountryForm" hx-get="{{ reader_uri }}?show=deliveryCountriesForm" hx-trigger="load, update_deliveryCountries_list from:body"></div>
+            <div id="deliveryCountryList" hx-get="{{ reader_uri }}?action=deliveryCountries" hx-trigger="load, update_deliveryCountries_list from:body"></div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block tab_business %}
+    {% embed 'components/settings/section.twig' with {help: help['shop-business'], section: 'shop-business'} %}
+        {% block fields %}
+            {{ inputs.business_address|raw }}
+            {{ inputs.business_taxnumber|raw }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

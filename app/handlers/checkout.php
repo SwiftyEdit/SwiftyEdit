@@ -273,8 +273,9 @@ if($shipping_products > 0) {
 	}
 
     // check for delivery plugins and maybe overwrite $shipping_costs
-    $active_delivery_addons = json_decode($se_settings['delivery_addons'],true);
-    foreach($active_delivery_addons as $delivery_addon) {
+    // stored as json, empty if no delivery plugin is active
+    $active_delivery_addons = json_decode(html_entity_decode((string) ($se_settings['delivery_addons'] ?? '')), true);
+    foreach(is_array($active_delivery_addons) ? $active_delivery_addons : [] as $delivery_addon) {
         $addon_root = SE_ROOT.'/plugins/'.basename($delivery_addon);
         if(file_exists("$addon_root/global/index.php")) {
             include "$addon_root/global/index.php";

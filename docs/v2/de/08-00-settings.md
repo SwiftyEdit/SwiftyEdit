@@ -131,67 +131,71 @@ Wie viele Beiträge eine Blog-Liste pro Seite zeigt, weitere Beiträge sind übe
 erreichbar. Die Listen der Veranstaltungen verwenden dieselbe Anzahl. Ist kein Wert oder 0 eingetragen,
 sind es 10 Einträge.
 
-## Shop
-Die Shop-Seite ist in vier Tabs unterteilt:
+## Shop {#shop}
+Die Shop-Seite ist in vier Tabs unterteilt: <kbd>Allgemein</kbd>, <kbd>Zahlung & Versand</kbd>,
+<kbd>Liefergebiete</kbd> und <kbd>Geschäftsangaben</kbd>. Jeder Abschnitt wird mit seinem eigenen
+Button gespeichert.
 
-* <kbd>Allgemein</kbd> Einträge pro Seite und die Standard-Sortierung für die Produktliste, ob der
-  Cache für die Produktliste aktiviert ist, der Warenkorb-Modus, der Bestell-Modus und Gastbestellungen,
-  ein maximaler Bestellwert, die Widerrufsfrist, bis zu drei Steuersätze, die Standardwährung sowie wie
-  und für wen Preise angezeigt werden.
-* <kbd>Zahlung & Versand</kbd> Der Versand-Modus und die Versandkosten sowie Aktivierungsschalter für
-  installierte Zahlungs- und Versand-Plugins.
-* <kbd>Liefergebiete</kbd> Länder, in die Du lieferst, hinzufügen, bearbeiten oder entfernen.
-* <kbd>Geschäftsangaben</kbd> Deine Geschäftsadresse und Steuernummer.
+### Produktliste {#shop-list}
+Wie viele Produkte eine Produktliste pro Seite zeigt (ohne Wert oder mit 0 sind es 10) und wie sie
+standardmäßig sortiert ist - Besucher können die Sortierung in der Liste selbst ändern. Ist der Cache
+eingeschaltet, werden die Daten der Produkte zwischengespeichert, statt sie bei jedem Aufruf aus der
+Datenbank zu lesen.
 
-### Warenkorb und Bestellungen
+### Warenkorb und Bestellungen {#shop-cart}
 Der Warenkorb-Modus schaltet den Warenkorb komplett aus, beschränkt ihn auf registrierte Benutzer oder
 öffnet ihn für alle. Der Bestell-Modus legt fest, ob Produkte direkt bestellt werden können, ob
-Besucher stattdessen nur eine Bestellanfrage senden können (statt zu bezahlen), oder beides. Wenn Du
-einen maximalen Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die
-Anfrage-Funktion zurück, auch wenn die Direktbestellung aktiviert ist.
+Besucher stattdessen nur eine Bestellanfrage senden können, oder beides. Wenn Du einen maximalen
+Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die Anfrage-Funktion
+zurück, auch wenn die Direktbestellung aktiviert ist.
 
-### Listen {#listen}
+### Listen {#shop-lists}
 Aktiviere Listen, damit angemeldete Kunden Produkte über die Produktkarte oder Produktseite in eine
 oder mehrere persönliche Listen speichern können. Eine Liste kann optional über einen öffentlichen Link
 geteilt werden - wer diesen Link öffnet, kann die Liste ansehen und die enthaltenen Produkte ohne
 eigenes Konto in den eigenen Warenkorb legen.
 
-### Gastbestellungen
+### Gastbestellungen {#shop-guest-orders}
 Aktiviere Gastbestellungen, damit Kunden den Checkout abschließen können, ohne ein Konto anzulegen.
 Gastbestellungen werden per E-Mail bestätigt, die eingegebene Lieferadresse wird nur für die aktuelle
 Sitzung gespeichert.
 
-### Widerrufsfrist
-Das Feld "Widerrufsbutton sichtbar für (Tage)" legt fest, wie viele Tage lang der Button "Bestellung
-widerrufen" bei einer Bestellung auf der Seite "Meine Bestellungen" angezeigt wird. Standardmäßig sind
-das 14 Tage (die gesetzliche EU-Widerrufsfrist); mit `0` wird der Button unabhängig vom Bestellalter
-immer angezeigt. Das betrifft nur die Sichtbarkeit des Buttons - die Seite "Bestellung widerrufen"
-selbst ist weiterhin jederzeit direkt erreichbar.
+### Widerrufsfrist {#shop-withdrawal}
+Wie viele Tage lang der Button "Bestellung widerrufen" bei einer Bestellung auf der Seite "Meine
+Bestellungen" angezeigt wird. Ohne Wert sind es 14 Tage (die gesetzliche EU-Widerrufsfrist); mit `0`
+wird der Button unabhängig vom Bestellalter immer angezeigt. Das betrifft nur die Sichtbarkeit des
+Buttons - die Seite "Bestellung widerrufen" selbst ist weiterhin jederzeit direkt erreichbar.
 
-### Steuersätze und Währung
+### Steuersätze und Währung {#shop-taxes}
 Du kannst bis zu drei feste Steuersätze festlegen (Steuer #1-#3); jedes Produkt wählt dann individuell
 einen davon aus - eine separate Verwaltung von Steuerklassen gibt es nicht. Die Standardwährung ist ein
-Freitextfeld (z. B. `EUR`). Außerdem kannst Du festlegen, ob Preise brutto, netto oder beides angezeigt
+Freitextfeld (z. B. `EUR`). Außerdem legst Du fest, ob Preise brutto, netto oder beides angezeigt
 werden, und ob sie für alle Besucher oder nur für registrierte Benutzer sichtbar sind.
 
-### Versandkosten
+### Versandkosten {#shop-shipping}
 Lege fest, ob der Versand mit einer Pauschale berechnet wird oder anhand von Versandkategorien, wobei
 die teuerste im Warenkorb vorhandene Kategorie die Versandkosten bestimmt. Du kannst sowohl die
 Pauschale als auch bis zu drei kategorie-basierte Versandkosten definieren.
 
-### Zahlungs- und Versand-Plugins
-Zahlungsarten (z. B. Barzahlung, Rechnung, PayPal) und Versandoptionen werden über Plugins
-bereitgestellt. Jedes installierte Zahlungs- oder Versand-Plugin erscheint in einer eigenen Liste im
-Tab Zahlung & Versand, wo Du es für den Shop aktivieren kannst.
+### Versand-Plugins {#shop-delivery-plugins}
+Versandoptionen werden über Plugins bereitgestellt (Ordnername endet auf `-delivery`). Jedes
+installierte Versand-Plugin erscheint hier und kann für den Shop aktiviert werden.
 
-### Liefergebiete
-Füge über die Länderauswahl die Länder hinzu, in die Du lieferst. Jedes Liefergebiet kann auf
-öffentlich oder Entwurf gesetzt werden, außerdem kannst Du festlegen, ob für Bestellungen in dieses
-Land Steuer hinzugerechnet werden soll.
+### Zahlungs-Plugins {#shop-payment-plugins}
+Zahlungsarten wie Barzahlung, Rechnung oder PayPal werden über Plugins bereitgestellt (Ordnername
+endet auf `-pay`). Jedes installierte Zahlungs-Plugin erscheint hier, aktivierte Plugins werden im
+Checkout als Zahlungsart angeboten.
 
-### Geschäftsangaben
-Deine Geschäftsadresse und Steuernummer werden hier hinterlegt und für Bestellungen und Rechnungen
-verwendet.
+### Liefergebiete {#shop-delivery-areas}
+Füge über die Länderauswahl die Länder hinzu, in die Du lieferst - jedes Land gibt es nur einmal,
+erneutes Hinzufügen ändert den vorhandenen Eintrag. Jedes Liefergebiet kann auf öffentlich oder
+Entwurf gesetzt werden, außerdem legst Du fest, ob für Bestellungen in dieses Land Steuer
+hinzugerechnet wird.
+
+### Geschäftsangaben {#shop-business}
+Deine Geschäftsadresse und Steuernummer. SwiftyEdit selbst verwendet sie derzeit nicht, Plugins
+können sie aber auslesen (`$se_settings['business_address']` und
+`$se_settings['business_taxnumber']`).
 
 ## Veranstaltungen / Events
 Hier findest Du die Voreinstellungen für das Event-Modul. Du kannst z.B. festlegen ob die Gästelisten

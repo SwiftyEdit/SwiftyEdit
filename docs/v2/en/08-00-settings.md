@@ -127,61 +127,64 @@ These settings affect the posts (blog).
 How many posts a blog list shows per page, further posts can be reached via the pagination. The
 event lists use the same number. If no value or 0 is set, there are 10 entries.
 
-## Shop
-The Shop page is divided into four tabs:
+## Shop {#shop}
+The Shop page is divided into four tabs: <kbd>General</kbd>, <kbd>Payment & Shipping</kbd>,
+<kbd>Delivery areas</kbd> and <kbd>Business details</kbd>. Each section is saved with its own button.
 
-* <kbd>General</kbd> Products per page and the default sorting for the product listing, whether the
-  product listing cache is enabled, the shopping cart mode, the order mode and guest checkout, a
-  maximum order value, the order withdrawal period, up to three tax rates, the default currency, and
-  how prices are displayed and to whom.
-* <kbd>Payment & Shipping</kbd> The shipping mode and shipping costs, plus activation switches for
-  any installed payment and delivery plugins.
-* <kbd>Delivery areas</kbd> Add, edit or remove the countries you deliver to.
-* <kbd>Business details</kbd> Your business address and tax number.
+### Product list {#shop-list}
+How many products a product list shows per page (no value or 0 means 10) and how it is sorted by
+default - visitors can change the sorting in the list themselves. If the cache is switched on, the
+data of the products is cached instead of being read from the database on every request.
 
-### Shopping carts and orders
-The shopping carts setting turns the cart off entirely, or restricts it to registered users, or opens
-it to everyone. The orders setting controls whether products can be ordered directly, whether visitors
-can only send an order request instead of checking out, or both. If you set a maximum order value,
-carts that exceed it automatically fall back to the request form, even if direct ordering is enabled.
+### Shopping carts and orders {#shop-cart}
+The shopping carts setting turns the cart off entirely, restricts it to registered users, or opens it
+to everyone. The orders setting controls whether products can be ordered directly, whether visitors
+can only send an order request instead, or both. If you set a maximum order value, carts that exceed
+it automatically fall back to the request form, even if direct ordering is enabled.
 
-### Lists {#lists}
+### Lists {#shop-lists}
 Enable lists to let logged-in customers save products to one or more personal lists from the product
 card or product page. A list can optionally be shared via a public link — visitors who open that link
 can view the list and add its products to their own cart without needing an account.
 
-### Guest orders
+### Guest orders {#shop-guest-orders}
 Enable guest orders to let customers complete checkout without creating an account. Guest orders are
 confirmed by e-mail, and the delivery address entered is only kept for the current session.
 
-### Order withdrawal period
-The "order withdrawal button visible for" setting controls how many days the "withdraw order" button
-stays visible next to an order on the "My orders" page. It defaults to 14 days (the EU-mandated
-withdrawal period); enter `0` to always show the button regardless of order age. This only affects the
-button's visibility, not the "Order Withdrawal" page itself, which is always reachable directly.
+### Order withdrawal period {#shop-withdrawal}
+How many days the "withdraw order" button stays visible next to an order on the "My orders" page.
+Without a value it is 14 days (the EU-mandated withdrawal period); enter `0` to always show the button
+regardless of order age. This only affects the button's visibility, not the "Order Withdrawal" page
+itself, which is always reachable directly.
 
-### Tax rates and currency
+### Tax rates and currency {#shop-taxes}
 You can define up to three flat tax rates (tax #1-#3); each product then picks one of them
 individually — there is no separate tax-class management. The default currency is a free-text field
-(e.g. `EUR`). You can also choose whether prices are shown gross, net, or both, and whether they are
+(e.g. `EUR`). You also choose whether prices are shown gross, net, or both, and whether they are
 visible to all visitors or only to registered users.
 
-### Shipping costs
+### Shipping costs {#shop-shipping}
 Choose whether shipping is charged as a flat rate, or based on shipping categories, where the most
 expensive category present in the shopping cart determines the shipping cost. You can define the flat
 rate as well as up to three category-based shipping rates.
 
-### Payment and delivery plugins
-Payment methods (e.g. cash, invoice, PayPal) and delivery options are provided by plugins. Any
-installed payment or delivery plugin shows up in its own list on the Payment & Shipping tab, where you
-can activate it for the shop.
+### Delivery plugins {#shop-delivery-plugins}
+Delivery options are provided by plugins (folder name ending in `-delivery`). Every installed delivery
+plugin shows up here and can be activated for the shop.
 
-### Delivery areas
-Add the countries you deliver to from the country dropdown. Each delivery area can be set to public
-or draft, and you can specify whether tax should be added for orders shipped there.
+### Payment plugins {#shop-payment-plugins}
+Payment methods such as cash, invoice or PayPal are provided by plugins (folder name ending in
+`-pay`). Every installed payment plugin shows up here, activated plugins are offered as payment
+methods in the checkout.
 
-### Business details
-Your business address and tax number are stored here for use on orders and invoices.
+### Delivery areas {#shop-delivery-areas}
+Add the countries you deliver to from the country dropdown - each country is listed once, adding it
+again changes the existing entry. Each delivery area can be set to public or draft, and you can
+specify whether tax is added for orders shipped there.
+
+### Business details {#shop-business}
+Your business address and tax number. SwiftyEdit itself doesn't use them at the moment, but plugins
+can read them (`$se_settings['business_address']` and `$se_settings['business_taxnumber']`).
 
 ## Events
 Here you will find the default settings for the event module. For example, you can specify whether the guest lists

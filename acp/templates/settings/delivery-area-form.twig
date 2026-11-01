@@ -1,0 +1,20 @@
+{#
+ # add or edit a delivery area in /admin/settings/shop/, loaded by the settings data-reader
+ # into #deliveryCountryForm - edit_id is set when an area is edited
+ #}
+<form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend" class="mb-3">
+    <div class="row align-items-end">
+        <div class="col-md-6">{{ inputs.country|raw }}</div>
+        <div class="col-md-3">{{ inputs.status|raw }}</div>
+        <div class="col-md-3">{{ inputs.tax|raw }}</div>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+        {% if edit_id %}
+            <button type="button" class="btn btn-default" hx-get="{{ reader_uri }}?show=deliveryCountriesForm" hx-target="#deliveryCountryForm">{{ lang.btn_cancel|default(lang.close) }}</button>
+            <button type="submit" class="btn btn-primary" name="send_delivery_country" value="{{ edit_id }}">{{ lang.btn_update }}</button>
+        {% else %}
+            <button type="submit" class="btn btn-primary" name="send_delivery_country" value="save">{{ lang.btn_save }}</button>
+        {% endif %}
+    </div>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>

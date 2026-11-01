@@ -67,97 +67,54 @@ if (isset($_POST['update_events'])) {
     show_toast($lang['msg_success_db_changed'],'success');
 }
 
-// write shop settings
-if (isset($_POST['update_shop_settings'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-
-    $data['prefs_posts_guest_order_enable'] = 0;
-    if(isset($_POST['prefs_posts_guest_order_enable'])) {
-        $data['prefs_posts_guest_order_enable'] = 1;
-    }
-
-    $data['prefs_wishlist_enabled'] = 0;
-    if(isset($_POST['prefs_wishlist_enabled'])) {
-        $data['prefs_wishlist_enabled'] = 1;
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write payment plugins
-if (isset($_POST['update_payment_plugins'])) {
-    $data['prefs_payment_addons'] = '';
-    if(isset($_POST['payment_addons'])) {
-        $pm_addon_str = json_encode($_POST['payment_addons'],JSON_FORCE_OBJECT);
-        $data['prefs_payment_addons'] = $pm_addon_str;
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write shipping plugins
-if (isset($_POST['update_shipping_plugins'])) {
-    $data['prefs_delivery_addons'] = '';
-    if(isset($_POST['delivery_addons'])) {
-        $sh_addon_str = json_encode($_POST['delivery_addons'],JSON_FORCE_OBJECT);
-        $data['prefs_delivery_addons'] = $sh_addon_str;
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// save delivery area
+// save a delivery area (send_delivery_country = save or the id of the area)
 if (isset($_POST['send_delivery_country'])) {
 
-    if($_POST['delivery_country'] == '') {
-        header( "HX-Trigger: update_deliveryCountries_list");
-        exit;
-    }
-
-    $country_code = sanitizeUserInputs($_POST['delivery_country']);
-    $status = (int) $_POST['delivery_country_status'];
-    $tax = (int) $_POST['delivery_country_tax'];
-
-    $countries = se_get_countries();
-    foreach ($countries as $country) {
-        if ($country['alpha2'] == $country_code) {
+    // the code has to be an ISO 3166 country, status and tax are 1 (yes) or 2 (no)
+    $country_code = (string) ($_POST['delivery_country'] ?? '');
+    $country_name = '';
+    foreach (se_get_countries() as $country) {
+        if ($country['alpha2'] === $country_code) {
             $country_name = $country['name'];
         }
     }
-
-    if($_POST['send_delivery_country'] == 'save') {
-        $db_content->insert("se_delivery_areas", [
-            "code" => $country_code,
-            "name" => $country_name,
-            "status" => $status,
-            "tax" => $tax
-        ]);
-    } else {
-        $db_content->update("se_delivery_areas", [
-            "code" => $country_code,
-            "name" => $country_name,
-            "status" => $status,
-            "tax" => $tax
-        ],[
-            "id" => (int) $_POST['send_delivery_country']
-        ]);
+    if ($country_name === '') {
+        show_toast($lang['label_please_select'], 'danger');
+        exit;
     }
 
+    $values = [
+        "code" => $country_code,
+        "name" => $country_name,
+        "status" => ($_POST['delivery_country_status'] ?? '') == '2' ? '2' : '1',
+        "tax" => ($_POST['delivery_country_tax'] ?? '') == '1' ? '1' : '2'
+    ];
 
-    header( "HX-Trigger: update_deliveryCountries_list");
+    // a country is listed once, adding it again updates it
+    $area_id = (int) $_POST['send_delivery_country'];
+    if ($area_id < 1) {
+        $area_id = (int) $db_content->get("se_delivery_areas", "id", ["code" => $country_code]);
+    }
+
+    if ($area_id > 0) {
+        $db_content->update("se_delivery_areas", $values, ["id" => $area_id]);
+    } else {
+        $db_content->insert("se_delivery_areas", $values);
+    }
+
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: update_deliveryCountries_list");
+    exit;
 }
 
-// delete delivery country
+// delete a delivery area
 if (isset($_POST['delete_delivery_country'])) {
-    $delete_id = (int) $_POST['delete_delivery_country'];
-
     $db_content->delete("se_delivery_areas", [
-        "id" => $delete_id
+        "id" => (int) $_POST['delete_delivery_country']
     ]);
-    header( "HX-Trigger: update_deliveryCountries_list");
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: update_deliveryCountries_list");
+    exit;
 }
 
 // write database (SQLite WAL mode) settings

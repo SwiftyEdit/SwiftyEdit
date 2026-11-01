@@ -58,7 +58,23 @@ function se_settings_options(): array {
         // 1 = approved by an admin, 2 = appear immediately, 3 = off
         'prefs_comments_mode' => ['1', '2', '3'],
         // 1 = off, 2 = registered users, 3 = all visitors
-        'prefs_posts_default_votings' => ['1', '2', '3']
+        'prefs_posts_default_votings' => ['1', '2', '3'],
+        // 1 = default, 2 = topseller, 3 = name, 4 = price ascending, 5 = price descending
+        'prefs_product_sorting' => ['1', '2', '3', '4', '5'],
+        // 1 = on, 2 = off
+        'prefs_products_cache' => ['1', '2'],
+        // 1 = off, 2 = registered users, 3 = all visitors
+        'prefs_posts_products_cart' => ['1', '2', '3'],
+        // 1 = order, 2 = request, 3 = both
+        'prefs_posts_order_mode' => ['1', '2', '3'],
+        // 1 = gross, 2 = both, 3 = net
+        'prefs_posts_price_mode' => ['1', '2', '3'],
+        // 1 = all visitors, 2 = registered users
+        'prefs_posts_price_visibility' => ['1', '2'],
+        // 1 = flat rate, 2 = shipping categories
+        'prefs_shipping_costs_mode' => ['1', '2'],
+        'prefs_delivery_addons' => se_get_delivery_addons(),
+        'prefs_payment_addons' => se_get_payment_addons()
     ];
 }
 
@@ -171,6 +187,53 @@ function se_settings_sections(): array {
         ],
         'posts-entries' => [
             'prefs_posts_entries_per_page' => 'int'
+        ],
+        'shop-list' => [
+            'prefs_products_per_page' => 'int',
+            'prefs_product_sorting' => 'option',
+            'prefs_products_cache' => 'option'
+        ],
+        'shop-cart' => [
+            'prefs_posts_products_cart' => 'option',
+            'prefs_posts_order_mode' => 'option',
+            // a price with decimal comma or point, see app/handlers/checkout.php
+            'prefs_posts_max_order_value' => 'text'
+        ],
+        'shop-lists' => [
+            'prefs_wishlist_enabled' => ['checkbox', 1, 0]
+        ],
+        'shop-guest-orders' => [
+            'prefs_posts_guest_order_enable' => ['checkbox', 1, 0]
+        ],
+        'shop-withdrawal' => [
+            'prefs_posts_order_withdrawal_days' => 'int'
+        ],
+        'shop-taxes' => [
+            'prefs_posts_products_default_tax' => 'text',
+            'prefs_posts_products_tax_alt1' => 'text',
+            'prefs_posts_products_tax_alt2' => 'text',
+            'prefs_posts_products_default_currency' => 'text',
+            'prefs_posts_price_mode' => 'option',
+            'prefs_posts_price_visibility' => 'option'
+        ],
+        'shop-shipping' => [
+            'prefs_shipping_costs_mode' => 'option',
+            'prefs_shipping_costs_flat' => 'text',
+            'prefs_shipping_costs_cat1' => 'text',
+            'prefs_shipping_costs_cat2' => 'text',
+            'prefs_shipping_costs_cat3' => 'text'
+        ],
+        'shop-delivery-plugins' => [
+            // posted as delivery_addons[]
+            'prefs_delivery_addons' => 'options'
+        ],
+        'shop-payment-plugins' => [
+            // posted as payment_addons[]
+            'prefs_payment_addons' => 'options'
+        ],
+        'shop-business' => [
+            'prefs_business_address' => 'text',
+            'prefs_business_taxnumber' => 'text'
         ]
     ];
 }
@@ -194,7 +257,9 @@ function se_settings_section_values(string $section, array $post): ?array {
     // inputs whose name differs from the option key
     $post_names = [
         'prefs_deactivated_languages' => 'hide_langs',
-        'prefs_required_fields_registration' => 'required_fields'
+        'prefs_required_fields_registration' => 'required_fields',
+        'prefs_delivery_addons' => 'delivery_addons',
+        'prefs_payment_addons' => 'payment_addons'
     ];
 
     $data = [];
