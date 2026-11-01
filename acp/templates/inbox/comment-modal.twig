@@ -1,0 +1,32 @@
+{#
+ # edit form of a comment, loaded by the inbox data-reader into #infoModal
+ # comment: {id, author, mail, text}
+ #}
+<div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+        <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ lang.edit }}: #{{ comment.id }}</h5>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label" for="comment_author">{{ lang.label_name }}</label>
+                    <input type="text" class="form-control" id="comment_author" name="comment_author" value="{{ comment.author }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="comment_author_mail">{{ lang.label_mail }}</label>
+                    <input type="email" class="form-control" id="comment_author_mail" name="comment_author_mail" value="{{ comment.mail }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="comment_text">{{ lang.label_comment }}</label>
+                    <textarea class="form-control" id="comment_text" name="comment_text" rows="10">{{ comment.text }}</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ lang.close }}</button>
+                <button type="submit" class="btn btn-primary" name="update_comment" value="{{ comment.id }}">{{ lang.update }}</button>
+            </div>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        </form>
+    </div>
+</div>
