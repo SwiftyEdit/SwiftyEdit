@@ -4,6 +4,7 @@
  * SwiftyEdit /admin-xhr/inbox/read/
  * comments: active search keywords, the list (acp/templates/inbox/comments-items.twig)
  * and the edit form in the modal - reactions: the list of votes and the filter
+ * - mails: the log of a sent message
  *
  * global variables
  * @var array $icon
@@ -227,6 +228,31 @@ if($action == 'reactions_filter') {
     echo $twig->render('inbox/reactions-filter.twig', [
         'groups' => array_values($groups),
         'writer_uri' => $list_writer_uri
+    ]);
+    exit;
+}
+
+// log of a sent message in the modal
+if(isset($_GET['mail_log'])) {
+    require_once __DIR__.'/../functions_inbox.php';
+
+    $message = se_inbox_get_message((int) $_GET['mail_log']);
+    if($message === null) {
+        exit;
+    }
+
+    $log = json_decode((string) $message['log'], true);
+    $entries = [];
+    foreach(is_array($log) ? $log : [] as $entry) {
+        $entries[] = [
+            'sent' => (($entry['status'] ?? '') == 'sent'),
+            'time' => se_format_datetime((int) ($entry['time'] ?? 0)),
+            'recipient' => (string) ($entry['recipient'] ?? '')
+        ];
+    }
+    echo $twig->render('inbox/mail-log.twig', [
+        'subject' => $decode($message['subject']),
+        'entries' => $entries
     ]);
     exit;
 }

@@ -3,6 +3,7 @@
 /**
  * SwiftyEdit /admin-xhr/inbox/write/
  * comments: search, pagination, edit, status and delete - reactions: filter and delete
+ * - mails: save, send and delete
  *
  * global variables
  * @var array $lang
@@ -78,6 +79,45 @@ if(isset($_POST['delete_comment'])) {
         show_toast($lang['msg_success_entry_delete'], 'success');
     }
     header("HX-Trigger: update_comments_list");
+    exit;
+}
+
+// save a message, a new one opens its edit page
+if(isset($_POST['save_mail'])) {
+    require_once __DIR__.'/../functions_inbox.php';
+
+    if(trim((string) ($_POST['mail_subject'] ?? '')) === '') {
+        show_toast($lang['msg_error_no_title'], 'danger');
+        exit;
+    }
+
+    $is_new = ((int) ($_POST['mail_id'] ?? 0) < 1);
+    $mail_id = se_inbox_write_message($_POST);
+    if($is_new && $mail_id > 0) {
+        header("HX-Redirect: /admin/inbox/mail/edit/$mail_id/");
+        exit;
+    }
+    show_toast($lang['msg_success_db_changed'], 'success');
+    exit;
+}
+
+// send the saved version of a message
+if(isset($_POST['send_mail'])) {
+    require_once __DIR__.'/../functions_inbox.php';
+
+    $result = se_inbox_send_message((int) $_POST['send_mail']);
+    if($result === null) {
+        exit;
+    }
+    record_log($_SESSION['user_nick'], "sent mail #".(int) $_POST['send_mail']." (sent: ".$result['sent'].", failed: ".$result['failed'].")", 5);
+    show_toast($lang['msg_success_mails_sent'].' ('.$result['sent'].' / '.($result['sent'] + $result['failed']).')', $result['failed'] > 0 ? 'warning' : 'success');
+    exit;
+}
+
+// delete a message, the list removes the row itself
+if(isset($_POST['delete_message'])) {
+    require_once __DIR__.'/../functions_inbox.php';
+    se_inbox_delete_message((int) $_POST['delete_message']);
     exit;
 }
 

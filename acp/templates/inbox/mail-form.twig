@@ -1,59 +1,55 @@
-<form action="/admin/inbox/mail/edit/" method="post">
-<div class="row">
-    <div class="col-8">
-        <div class="card">
-            <div class="card-header">{{ mail.id ? lang.label_form_status_edit : lang.label_form_status_new }}</div>
-            <div class="card-body">
-                <label class="form-label">{{ lang.label_mail_subject }}</label>
-                <input class="form-control" type="text" name="mail_subject" value="{{ mail.subject }}">
-                <label class="form-label">{{ lang.label_mail_text }}</label>
-                <textarea class="form-control" name="mail_content" rows="8">{{ mail.content }}</textarea>
+{#
+ # new or edited message in /admin/inbox/mail/, rendered by acp/core/inbox/mail-edit.php
+ # mail: {id (0 = new), subject, recipients ('all' or a group id), sent}
+ # saving a new message redirects to its edit page, sending uses the saved version
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.mailbox|raw }} {{ lang.nav_btn_mails }}
+    <a href="/admin/inbox/mail/" class="btn btn-default ms-auto">{{ icon.arrow_left_short|raw }} {{ lang.nav_btn_overview }}</a>
+</div>
+
+<form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">{{ mail.id ? lang.label_form_status_edit : lang.label_form_status_new }}</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="mail_subject">{{ lang.label_mail_subject }}</label>
+                        <input class="form-control" type="text" id="mail_subject" name="mail_subject" value="{{ mail.subject }}" required>
+                    </div>
+                    {{ content_input|raw }}
+                </div>
             </div>
         </div>
-
-    </div>
-    <div class="col-4">
-        <div class="card">
-            <div class="card-header">{{ lang.label_mail_recipients }}</div>
-            <div class="card-body">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="mail_recipients" value="all" id="checkAll"{% if mail.recipients == 'all' %} checked{% endif %}>
-                    <label class="form-check-label" for="checkAll">
-                        {{ lang.label_mail_recipients_all }}
-                    </label>
-                </div>
-                <div class="mt-2">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">{{ lang.label_mail_recipients }}</div>
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="mail_recipients" value="all" id="checkAll"{% if mail.recipients == 'all' %} checked{% endif %}>
+                        <label class="form-check-label" for="checkAll">{{ lang.label_mail_recipients_all }}</label>
+                    </div>
                     {% for group in user_groups %}
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="mail_recipients" value="{{ group.id }}" id="group{{ group.id }}"{% if mail.recipients == group.id %} checked{% endif %}>
-                            <label class="form-check-label" for="group{{ group.id }}">{{ group.name }}</label>
+                            <label class="form-check-label" for="group{{ group.id }}">{{ icon.user_friends|raw }} {{ group.name }}</label>
                         </div>
                     {% endfor %}
                 </div>
             </div>
 
-        </div>
-
-        <hr>
-        <div class="card p-3">
-        <div class="d-flex gap-2">
-            {% if mail.id %}
-                <button class="btn btn-default flex-grow-1" name="save_mail" value="update">{{ lang.update }}</button>
-            {% else %}
-                <button class="btn btn-default flex-grow-1" name="save_mail" value="save">{{ lang.save }}</button>
-            {% endif %}
-            {# back to the list of messages, without saving #}
-            <a href="/admin/inbox/mail/" class="btn btn-default">{{ lang.close }}</a>
-        </div>
-        {% if mail.id %}
-            <div class="my-3 text-center">
-                <button class="btn btn-primary" name="send_mail" value="{{ mail.id }}">{{ icon.paper_plane|raw }} {{ lang.btn_send_mail }}</button>
+            <div class="card p-3">
+                <button type="submit" class="btn btn-success w-100" name="save_mail" value="{{ mail.id ?: 'new' }}">{{ mail.id ? lang.update : lang.save }}</button>
+                {% if mail.id %}
+                    <hr>
+                    {# sends the saved version, unsaved changes are not part of the mail #}
+                    <button type="button" class="btn btn-primary w-100" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="body" hx-swap="beforeend" hx-confirm="{{ lang.btn_send_mail }}?" name="send_mail" value="{{ mail.id }}">{{ icon.paper_plane|raw }} {{ lang.btn_send_mail }}</button>
+                    {% if mail.sent %}<small class="d-block text-muted text-center mt-2">{{ lang.label_time_sent }}: {{ mail.sent }}</small>{% endif %}
+                {% endif %}
             </div>
-        {% endif %}
         </div>
-
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <input type="hidden" name="mail_id" value="{{ mail.id }}">
     </div>
-</div>
+    <input type="hidden" name="mail_id" value="{{ mail.id }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 </form>

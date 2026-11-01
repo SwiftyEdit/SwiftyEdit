@@ -597,6 +597,7 @@
   "msg.error.page_saved": "An error has occurred, the page has not been saved",
   "msg.success.page_deleted": "Page has been deleted",
   "msg.success.mailer_sent_test": "The test e-mail has been sent",
+  "msg.success.mails_sent": "E-mails sent",
 
   "msg.confirm.no_access": "You do not have the necessary access rights to edit these data",
   "msg.confirm.delete": "Are you sure you want to delete this data?",
