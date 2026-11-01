@@ -216,6 +216,16 @@ Besucher ihre Teilnahme ein.
 Sämtliche Einträge und Daten im Backend können mit Labels versehen werden.
 Wenn Du viele Daten und Einträge verwaltest, helfen diese Labels den Überblick zu behalten.
 
+### Labels bearbeiten {#labels-list}
+Farbe, Titel und Beschreibung jedes Labels änderst Du direkt in der Liste und speicherst sie mit dem
+Button daneben. Die Beschreibung erscheint als Tooltip, wenn Du in einer Liste mit der Maus über das
+Label fährst. Wird ein Label gelöscht, behalten die Einträge zwar seine Nummer, das Label wird aber
+nicht mehr angezeigt.
+
+### Neues Label {#labels-new}
+Ein neues Label braucht einen Titel, Farbe und Beschreibung sind optional. Danach steht es bei allen
+Einträgen zur Auswahl und im globalen Filter zur Verfügung.
+
 ## API-Keys {#api-keys}
 API-Keys geben anderen Anwendungen Zugriff auf die öffentliche API - zum Beispiel einer zweiten
 Website, die Deine Produkte anzeigt. Wie die API benutzt wird, erfahren Entwickler im Kapitel

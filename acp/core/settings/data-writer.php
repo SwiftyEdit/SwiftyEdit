@@ -184,54 +184,52 @@ if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
 }
 
 // labels
-if (isset($_POST['post_label'])) {
+// create (post_label) or update (update_label = id) a label
+if (isset($_POST['post_label']) || isset($_POST['update_label'])) {
 
-    $label_color = sanitizeUserInputs($_POST['label_color']);
-    $label_title = sanitizeUserInputs($_POST['label_title']);
-    $label_description = sanitizeUserInputs($_POST['label_description']);
+    $label_title = sanitizeUserInputs((string) ($_POST['label_title'] ?? ''));
+    if ($label_title === '') {
+        show_toast($lang['msg_error_no_title'], 'danger');
+        exit;
+    }
 
-    $label_custom_id = clean_filename($label_title);
+    // a color of the color input (#rrggbb), anything else becomes grey
+    $label_color = (string) ($_POST['label_color'] ?? '');
+    if (!preg_match('/^#[0-9a-f]{6}$/i', $label_color)) {
+        $label_color = '#999999';
+    }
 
-    $data = $db_content->insert("se_labels", [
-        "label_custom_id" => $label_custom_id,
+    $values = [
+        "label_custom_id" => clean_filename(html_entity_decode($label_title, ENT_QUOTES, 'UTF-8')),
         "label_color" => $label_color,
         "label_title" => $label_title,
-        "label_description" => $label_description
-    ]);
+        "label_description" => sanitizeUserInputs((string) ($_POST['label_description'] ?? ''))
+    ];
 
-    show_toast($lang['msg_success_db_changed'],'success');
-    record_log($_SESSION['user_nick'],"create new label","1");
-    header( "HX-Trigger: updated_labels");
+    if (isset($_POST['post_label'])) {
+        $db_content->insert("se_labels", $values);
+        record_log($_SESSION['user_nick'], "create new label", 1);
+    } else {
+        $db_content->update("se_labels", $values, [
+            "label_id" => (int) $_POST['update_label']
+        ]);
+    }
+
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: updated_labels");
+    exit;
 }
 
-if(isset($_POST['update_label'])) {
+if (isset($_POST['delete_label'])) {
 
-    $label_color = sanitizeUserInputs($_POST['label_color']);
-    $label_title = sanitizeUserInputs($_POST['label_title']);
-    $label_description = sanitizeUserInputs($_POST['label_description']);
-
-    $data = $db_content->update("se_labels", [
-        "label_custom_id" => $label_custom_id,
-        "label_color" => $label_color,
-        "label_title" => $label_title,
-        "label_description" => $label_description
-    ],[
-        "label_id" => (int) $_POST['label_id']
+    // entries keep the id, a missing label is just not shown anymore
+    $db_content->delete("se_labels", [
+        "label_id" => (int) $_POST['delete_label']
     ]);
-
-    show_toast("Label updated successfully","success");
-    header( "HX-Trigger: updated_labels");
-}
-
-if(isset($_POST['delete_label'])) {
-
-    $label_id = (int) $_POST['label_id'];
-
-    $data = $db_content->delete("se_labels", [
-        "label_id" => $label_id
-    ]);
-    show_toast($lang['msg_success_db_changed'],'success');
-    record_log($_SESSION['user_nick'],"deleted label","5");
+    show_toast($lang['msg_success_db_changed'], 'success');
+    record_log($_SESSION['user_nick'], "deleted label", 5);
+    header("HX-Trigger: updated_labels");
+    exit;
 }
 
 // API keys (Settings > API keys)

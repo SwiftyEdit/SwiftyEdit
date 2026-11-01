@@ -205,6 +205,15 @@ registered users, or for all visitors. Visitors sign the guest list to confirm t
 Most entries and data in the Backend can be provided with labels.
 If you manage a lot of data and entries, these labels help you to keep an overview.
 
+### Edit labels {#labels-list}
+You change the color, title and description of each label right in the list and save them with the
+button next to it. The description shows up as a tooltip when you hover over the label in a list. If
+a label is deleted, the entries keep its number, but the label is no longer shown.
+
+### New label {#labels-new}
+A new label needs a title, color and description are optional. It is then available for all entries
+and in the global filter.
+
 ## API keys {#api-keys}
 API keys give other applications access to the public API - for example a second website that
 displays your products. Developers can find out how to use the API in the [API](09-04-api.md)

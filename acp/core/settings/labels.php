@@ -1,40 +1,23 @@
 <?php
 
-echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['labels'].'</div>';
+/**
+ * labels in /admin/settings/labels/, markup in acp/templates/settings/labels.twig
+ * the list is loaded by the settings data-reader, labels are saved by the data-writer
+ *
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $twig
+ */
 
-$writer_uri = '/admin-xhr/settings/labels/write/';
-$reader_uri = '/admin-xhr/settings/labels/read/';
+require_once __DIR__ . '/functions.php';
 
-echo '<div id="getLabels" class="card p-3" hx-get="'.$reader_uri.'" hx-trigger="load, changed, updated_labels from:body" hx-vals=\'{"load_labels": "labels"}\'>';
-echo '<span class="sr-only">Loading...</span>';
-echo'</div>';
-
-echo '<hr>';
-
-echo '<div class="card">';
-echo '<div class="card-header">'.$lang['new'].' ...</div>';
-echo '<div class="card-body">';
-echo '<form id="create_label" name="create_label" hx-post="'.$writer_uri.'" hx-target="#getLabels" hx-on::after-request="this.reset()">';
-echo '<div class="row">';
-echo '<div class="col-md-4">';
-
-echo '<div class="input-group">';
-echo '<input type="color" class="form-control form-control-color" name="label_color" value="#3366cc" title="Choose your color">';
-echo '<input class="form-control" type="text" name="label_title" value="" placeholder="'.$lang['label_title'].'" required="">';
-echo '</div>';
-
-echo '</div>';
-echo '<div class="col-md-6">';
-
-echo '<input class="form-control" type="text" name="label_description" value="" placeholder="'.$lang['label_description'].'">';
-echo '</div>';
-echo '<div class="col-md-2">';
-echo '<button type="submit" id="new_label" name="post_label" value="new" class="btn btn-default w-100 text-success">'.$lang['save'].'</button>';
-echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-echo '</div>';
-echo '</div>';
-echo '</form>';
-echo '</div>';
-echo '</div>';
-
-
+echo $twig->render('settings/labels.twig', [
+    'title' => $lang['nav_btn_settings'].' / '.$lang['labels'],
+    'title_icon' => $icon['gear'],
+    'settings_nav' => se_settings_nav('labels'),
+    'reader_uri' => '/admin-xhr/settings/labels/read/',
+    'writer_uri' => '/admin-xhr/settings/labels/write/',
+    // titles and help texts of the sections come from the docs
+    'help' => se_docs_sections('08-00-settings.md', ['labels-list', 'labels-new'])
+]);
