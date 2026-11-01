@@ -7,8 +7,12 @@ $status_404 = true;
 
 /* defaults */
 $events_start = 0;
-$events_limit = (int) $se_settings['posts_entries_per_page'];
-if($events_limit == '' || $events_limit < 1) {
+// own setting of the events, without it the number of the posts
+$events_limit = (int) ($se_settings['events_entries_per_page'] ?? 0);
+if($events_limit < 1) {
+    $events_limit = (int) ($se_settings['posts_entries_per_page'] ?? 0);
+}
+if($events_limit < 1) {
     $events_limit = 10;
 }
 

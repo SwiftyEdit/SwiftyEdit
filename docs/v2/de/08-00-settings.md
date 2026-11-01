@@ -128,8 +128,8 @@ Diese Einstellungen betreffen die Posts (Blog).
 
 ### Einträge pro Seite {#posts-entries}
 Wie viele Beiträge eine Blog-Liste pro Seite zeigt, weitere Beiträge sind über die Seitennavigation
-erreichbar. Die Listen der Veranstaltungen verwenden dieselbe Anzahl. Ist kein Wert oder 0 eingetragen,
-sind es 10 Einträge.
+erreichbar. Ist kein Wert oder 0 eingetragen, sind es 10 Einträge. Die Veranstaltungen haben eine
+eigene Einstellung - ist dort nichts eingetragen, gilt diese Anzahl auch für sie.
 
 ## Shop {#shop}
 Die Shop-Seite ist in vier Tabs unterteilt: <kbd>Allgemein</kbd>, <kbd>Zahlung & Versand</kbd>,
@@ -197,9 +197,20 @@ Deine Geschäftsadresse und Steuernummer. SwiftyEdit selbst verwendet sie derzei
 können sie aber auslesen (`$se_settings['business_address']` und
 `$se_settings['business_taxnumber']`).
 
-## Veranstaltungen / Events
-Hier findest Du die Voreinstellungen für das Event-Modul. Du kannst z.B. festlegen ob die Gästelisten
-aktiviert werden sollen.
+## Veranstaltungen / Events {#events}
+Die Voreinstellungen für das Event-Modul.
+
+### Einträge {#events-list}
+Wie viele Veranstaltungen eine Liste pro Seite zeigt. Ist kein Wert eingetragen, gilt die Anzahl aus
+den Posts-Einstellungen, fehlt auch die, sind es 10.
+
+Der Zeitversatz legt fest, wie viele Stunden eine Veranstaltung nach ihrem Ende noch angezeigt wird -
+im Frontend und über die API. Im Backend gilt er, wenn vergangene Veranstaltungen ausgeblendet sind.
+
+### Gästeliste {#events-guestlist}
+Die Voreinstellung der Gästeliste für neue Veranstaltungen - bei jeder Veranstaltung kannst Du sie
+einzeln ändern: aus, nur für registrierte Benutzer oder für alle Besucher. In die Gästeliste tragen
+Besucher ihre Teilnahme ein.
 
 ## Labels {#labels}
 Sämtliche Einträge und Daten im Backend können mit Labels versehen werden.

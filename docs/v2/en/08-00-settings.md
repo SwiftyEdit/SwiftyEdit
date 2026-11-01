@@ -124,8 +124,9 @@ removed - the vote keeps counting.
 These settings affect the posts (blog).
 
 ### Entries per page {#posts-entries}
-How many posts a blog list shows per page, further posts can be reached via the pagination. The
-event lists use the same number. If no value or 0 is set, there are 10 entries.
+How many posts a blog list shows per page, further posts can be reached via the pagination. If no
+value or 0 is set, there are 10 entries. Events have a setting of their own - if nothing is set
+there, this number is used for them as well.
 
 ## Shop {#shop}
 The Shop page is divided into four tabs: <kbd>General</kbd>, <kbd>Payment & Shipping</kbd>,
@@ -186,9 +187,19 @@ specify whether tax is added for orders shipped there.
 Your business address and tax number. SwiftyEdit itself doesn't use them at the moment, but plugins
 can read them (`$se_settings['business_address']` and `$se_settings['business_taxnumber']`).
 
-## Events
-Here you will find the default settings for the event module. For example, you can specify whether the guest lists
-should be activated.
+## Events {#events}
+The default settings of the event module.
+
+### Entries {#events-list}
+How many events a list shows per page. If no value is set, the number from the posts settings is
+used, without that one it is 10.
+
+The time offset sets how many hours an event is still shown after its end - in the frontend and via
+the API. In the backend it applies when past events are hidden.
+
+### Guest list {#events-guestlist}
+The default guest list setting for new events - you can change it for each event: off, only for
+registered users, or for all visitors. Visitors sign the guest list to confirm that they take part.
 
 ## Labels {#labels}
 Most entries and data in the Backend can be provided with labels.

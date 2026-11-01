@@ -537,7 +537,7 @@
 
   "label.events.show_past_events": "Show past events",
   "label.events.time_offset": "Time offset",
-  "label.events.time_offset_text": "Time (seconds) that an event is still displayed after the end",
+  "label.events.time_offset_hours_text": "Hours that an event is still displayed after its end",
 
   "label.price_note": "Notes on the prices",
 

@@ -1,51 +1,57 @@
 <?php
 
-error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
-echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_events'].'</div>';
+/**
+ * event settings in /admin/settings/events/, markup in acp/templates/settings/events.twig
+ * the sections are saved by the settings data-writer (save_settings=<section>)
+ *
+ * global variables
+ * @var array $se_settings
+ * @var array $icon
+ * @var array $lang
+ * @var object $twig
+ */
 
-$writer_uri = '/admin-xhr/settings/general/write/';
+require_once __DIR__ . '/functions.php';
 
-$input_entries_per_page = [
+// the settings are stored html-encoded, the form helpers print them as they are
+$setting = static fn(string $key): string => (string) ($se_settings[$key] ?? '');
+
+$inputs = [];
+$inputs['entries_per_page'] = se_print_form_input([
     "input_name" => "prefs_events_entries_per_page",
-    "input_value" => $se_settings['events_entries_per_page'],
+    "input_value" => $setting('events_entries_per_page'),
     "label" => $lang['label_entries_per_page'],
-    "type" => "text"
-];
+    "type" => "number"
+]);
 
-$input_event_time_offset = [
+// stored in seconds, entered in hours (see the "hours" type in se_settings_sections())
+$inputs['time_offset'] = se_print_form_input([
     "input_name" => "prefs_posts_event_time_offset",
-    "input_value" => $se_settings['posts_event_time_offset'],
+    "input_value" => (string) (int) round((int) $setting('posts_event_time_offset') / 3600),
     "label" => $lang['label_events_time_offset'],
-    "form_text" => $lang['label_events_time_offset_text'],
-    "type" => "text"
-];
+    "form_text" => $lang['label_events_time_offset_hours_text'],
+    "input_group_end_text" => "h",
+    "type" => "number"
+]);
 
-$input_select_guestlist = [
+$inputs['guestlist'] = se_print_form_input([
     "input_name" => "prefs_posts_default_guestlist",
-    "input_value" => $se_settings['posts_default_guestlist'],
+    "input_value" => $setting('posts_default_guestlist'),
     "label" => $lang['label_guestlist'],
     "options" => [
-        $lang['label_guestlist_status_off'] => 1,
-        $lang['label_guestlist_status_registered'] => 2,
-        $lang['label_guestlist_status_global'] => 3
+        $lang['label_guestlist_status_off'] => '1',
+        $lang['label_guestlist_status_registered'] => '2',
+        $lang['label_guestlist_status_global'] => '3'
     ],
     "type" => "select"
-];
+]);
 
-
-echo '<div class="card p-3">';
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-
-echo '<h5 class="heading-line">'.$lang['label_entries'].'</h5>';
-
-echo se_print_form_input($input_entries_per_page);
-echo se_print_form_input($input_event_time_offset);
-
-echo '<h5 class="heading-line">'.$lang['label_guestlist'].'</h5>';
-
-echo se_print_form_input($input_select_guestlist);
-
-
-echo '<button type="submit" class="btn btn-primary" name="update_events" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>';
-echo '</div>';
+echo $twig->render('settings/events.twig', [
+    'title' => $lang['nav_btn_settings'].' / '.$lang['nav_btn_events'],
+    'title_icon' => $icon['gear'],
+    'settings_nav' => se_settings_nav('events'),
+    'writer_uri' => '/admin-xhr/settings/general/write/',
+    // titles and help texts of the sections come from the docs
+    'help' => se_docs_sections('08-00-settings.md', ['events-list', 'events-guestlist']),
+    'inputs' => $inputs
+]);

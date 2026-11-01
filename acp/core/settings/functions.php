@@ -71,6 +71,8 @@ function se_settings_options(): array {
         'prefs_posts_price_mode' => ['1', '2', '3'],
         // 1 = all visitors, 2 = registered users
         'prefs_posts_price_visibility' => ['1', '2'],
+        // 1 = off, 2 = registered users, 3 = all visitors
+        'prefs_posts_default_guestlist' => ['1', '2', '3'],
         // 1 = flat rate, 2 = shipping categories
         'prefs_shipping_costs_mode' => ['1', '2'],
         'prefs_delivery_addons' => se_get_delivery_addons(),
@@ -108,6 +110,7 @@ function se_settings_registration_fields(): array {
  *   text     - stored html-encoded
  *   int      - stored as number
  *   days     - entered in days, stored in seconds
+ *   hours    - entered in hours, stored in seconds
  *   option   - one of se_settings_options(), other values are not stored
  *   options  - a list of se_settings_options() (array input), stored as json, empty as ''
  *   [checkbox, on, off] - value if checked / not checked
@@ -187,6 +190,13 @@ function se_settings_sections(): array {
         ],
         'posts-entries' => [
             'prefs_posts_entries_per_page' => 'int'
+        ],
+        'events-list' => [
+            'prefs_events_entries_per_page' => 'int',
+            'prefs_posts_event_time_offset' => 'hours'
+        ],
+        'events-guestlist' => [
+            'prefs_posts_default_guestlist' => 'option'
         ],
         'shop-list' => [
             'prefs_products_per_page' => 'int',
@@ -275,6 +285,8 @@ function se_settings_section_values(string $section, array $post): ?array {
             $data[$key] = (int) $value;
         } else if($type == 'days') {
             $data[$key] = max(0, (int) $value) * 86400;
+        } else if($type == 'hours') {
+            $data[$key] = max(0, (int) $value) * 3600;
         } else if($type == 'option') {
             if(is_string($value) && in_array($value, $options[$key], true)) {
                 $data[$key] = $value;

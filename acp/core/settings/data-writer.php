@@ -59,14 +59,6 @@ if (isset($_POST['delete_branding'])) {
 }
 
 // write event settings
-if (isset($_POST['update_events'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
 // save a delivery area (send_delivery_country = save or the id of the area)
 if (isset($_POST['send_delivery_country'])) {
 

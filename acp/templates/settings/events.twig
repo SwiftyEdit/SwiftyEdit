@@ -1,0 +1,19 @@
+{# event settings in /admin/settings/events/, rendered by acp/core/settings/events.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block content %}
+    {% embed 'components/settings/section.twig' with {help: help['events-list'], title: lang.label_entries, section: 'events-list'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.entries_per_page|raw }}</div>
+                <div class="col-md-6">{{ inputs.time_offset|raw }}</div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['events-guestlist'], title: lang.label_guestlist, section: 'events-guestlist'} %}
+        {% block fields %}
+            {{ inputs.guestlist|raw }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
