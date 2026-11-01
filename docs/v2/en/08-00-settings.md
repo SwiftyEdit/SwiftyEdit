@@ -250,9 +250,10 @@ last used and how many requests it made.
 * Only revoked keys can be __deleted__.
 
 ## Database {#database}
-This tab only appears when the site runs on SQLite (it is hidden on MySQL installations,
+This page only appears when the site runs on SQLite (it is hidden on MySQL installations,
 where it does not apply).
 
+### WAL mode {#database-wal}
 **Enable WAL mode** switches SQLite's journal mode from the default `DELETE` mode to
 `WAL` (Write-Ahead Logging). In `DELETE` mode, a write locks the entire database file, so
 concurrent reads have to wait until the write is finished. `WAL` mode lets reads continue
@@ -272,7 +273,8 @@ Two things to know before enabling it:
   haven't been checkpointed yet. Make sure your backup includes the `-wal`/`-shm` files, or
   runs a checkpoint (`PRAGMA wal_checkpoint(TRUNCATE)`) before copying.
 
-**Compact database** shows the size and the free space inside each of the three database
+### Compact database {#database-vacuum}
+The table shows the size and the free space inside each of the three database
 files. Deleted data leaves free space in the file that SQLite reuses for new data - but the
 file doesn't get smaller by that. The button compacts the files (`VACUUM`) and gives this
 space back to the disk. Each file is rewritten: nothing can be saved while it runs, and it

@@ -262,10 +262,11 @@ wann der Key zuletzt benutzt wurde und wie viele Anfragen damit gestellt wurden.
 * __Löschen__ lassen sich nur gesperrte Keys.
 
 ## Database {#database}
-Dieser Tab erscheint nur, wenn die Seite mit SQLite betrieben wird (bei MySQL-Installationen
-wird er ausgeblendet, da dort nicht relevant).
+Diese Seite erscheint nur, wenn die Website mit SQLite betrieben wird (bei MySQL-Installationen
+wird sie ausgeblendet, da dort nicht relevant).
 
-**Enable WAL mode** schaltet den Journal-Modus von SQLite vom Standard `DELETE` auf `WAL`
+### WAL-Modus {#database-wal}
+**WAL-Modus aktivieren** schaltet den Journal-Modus von SQLite vom Standard `DELETE` auf `WAL`
 (Write-Ahead Logging) um. Im `DELETE`-Modus sperrt ein Schreibvorgang die gesamte
 Datenbankdatei, sodass gleichzeitige Lesezugriffe warten müssen, bis der Schreibvorgang
 abgeschlossen ist. Im `WAL`-Modus können Lesezugriffe weiterlaufen, während geschrieben
@@ -287,7 +288,8 @@ Zwei Dinge solltest Du vor dem Aktivieren wissen:
   Backup die `-wal`/`-shm`-Dateien mit einschließt, oder führe vor dem Kopieren einen
   Checkpoint aus (`PRAGMA wal_checkpoint(TRUNCATE)`).
 
-**Compact database** zeigt für jede der drei Datenbankdateien die Größe und den freien
+### Datenbank komprimieren {#database-vacuum}
+Die Tabelle zeigt für jede der drei Datenbankdateien die Größe und den freien
 Platz darin. Gelöschte Daten hinterlassen freien Platz in der Datei, den SQLite für neue
 Daten wiederverwendet - kleiner wird die Datei dadurch aber nicht. Der Button komprimiert
 die Dateien (`VACUUM`) und gibt diesen Platz an die Festplatte zurück. Dabei wird jede

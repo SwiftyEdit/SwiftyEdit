@@ -483,7 +483,6 @@
   "label.settings.wal_mode.toggle": "Enable WAL mode",
   "label.settings.wal_mode.mysql_hint": "This site runs on MySQL, so WAL mode (a SQLite-only feature) does not apply here.",
   "label.settings.vacuum": "Compact database",
-  "label.settings.vacuum.description": "Deleted data leaves free space in the database files. SQLite reuses it for new data, but the files only get smaller when they are compacted. Compacting rewrites each file: the site is locked for writing while it runs, and it needs as much free disk space as the largest file.",
   "label.settings.vacuum.file": "File",
   "label.settings.vacuum.size": "Size",
   "label.settings.vacuum.free": "Free space inside",

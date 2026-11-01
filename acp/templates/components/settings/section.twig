@@ -31,9 +31,12 @@
             </div>
             {% if help.content is defined and help.content %}
                 <div class="col-lg-4 mt-3 mt-lg-0">
-                    {# the docs are part of the repository, their html is trusted #}
+                    {# the docs are part of the repository, their html is trusted -
+                       long texts scroll, the link to the docs stays visible below #}
                     <div class="text-muted small border-start ps-3 settings-help">
-                        {{ help.content|raw }}
+                        <div class="overflow-auto pe-2" style="max-height: 18rem;">
+                            {{ help.content|raw }}
+                        </div>
                         <div class="text-end">{{ help.link|raw }}</div>
                     </div>
                 </div>
