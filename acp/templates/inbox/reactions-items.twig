@@ -1,0 +1,37 @@
+{#
+ # votes in /admin/inbox/reactions/, loaded by the inbox data-reader (action list_reactions)
+ # votes: list of {id, time, up, voter (empty = anonymous), relation: {type, title}}
+ # counts: {all, up, down} of the listed votes
+ #}
+<form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend" hx-confirm="{{ lang.msg_confirm_delete }}">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge text-bg-secondary">{{ counts.all }}</span>
+        <span class="badge text-bg-success">{{ icon.thumbs_up|raw }} {{ counts.up }}</span>
+        <span class="badge text-bg-danger">{{ icon.thumbs_down|raw }} {{ counts.down }}</span>
+        {% if votes %}
+            <button type="submit" name="delete_reactions" value="selected" class="btn btn-sm btn-default text-danger ms-auto">{{ lang.btn_delete_selected }}</button>
+        {% endif %}
+    </div>
+
+    {% if votes %}
+        <div class="scroll-box">
+            <table class="table table-sm align-middle">
+                <tbody>
+                    {% for vote in votes %}
+                        <tr>
+                            <td><input class="form-check-input" type="checkbox" name="bulk_delete[]" value="{{ vote.id }}" aria-label="#{{ vote.id }}"></td>
+                            <td><span class="badge text-bg-secondary">#{{ vote.id }}</span></td>
+                            <td class="text-nowrap">{{ vote.time }}</td>
+                            <td>{% if vote.up %}<span class="text-success">{{ icon.thumbs_up|raw }}</span>{% else %}<span class="text-danger">{{ icon.thumbs_down|raw }}</span>{% endif %}</td>
+                            <td>{% if vote.voter %}{{ vote.voter }}{% else %}<i class="text-muted">anonymous</i>{% endif %}</td>
+                            <td><small class="text-muted">{{ vote.relation.type }}:</small> {{ vote.relation.title|default('-') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted mb-0">{{ lang.msg_no_entries_found }}</p>
+    {% endif %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>

@@ -2,7 +2,7 @@
 
 /**
  * SwiftyEdit /admin-xhr/inbox/write/
- * comments: search, pagination, edit, status and delete
+ * comments: search, pagination, edit, status and delete - reactions: filter and delete
  *
  * global variables
  * @var array $lang
@@ -78,6 +78,30 @@ if(isset($_POST['delete_comment'])) {
         show_toast($lang['msg_success_entry_delete'], 'success');
     }
     header("HX-Trigger: update_comments_list");
+    exit;
+}
+
+// filter of the reactions: "type:id" of an entry, empty for all
+if(isset($_POST['reactions_filter'])) {
+    $filter = (string) $_POST['reactions_filter'];
+    $_SESSION['reactions_filter'] = preg_match('/^[pbes]:\d+$/', $filter) ? $filter : '';
+    header("HX-Trigger: update_reactions_list");
+    exit;
+}
+
+// delete the selected votes - only votes, never comments
+if(isset($_POST['delete_reactions'])) {
+    $delete_ids = array_map('intval', (array) ($_POST['bulk_delete'] ?? []));
+    $deleted = 0;
+    if($delete_ids) {
+        $delete = $db_content->delete("se_comments", [
+            "comment_id" => $delete_ids,
+            "comment_type" => ["upv", "dnv"]
+        ]);
+        $deleted = ($delete !== null) ? $delete->rowCount() : 0;
+    }
+    show_toast($lang['msg_info_data_deleted'].' ('.$deleted.')', 'info');
+    header("HX-Trigger: update_reactions_list");
     exit;
 }
 

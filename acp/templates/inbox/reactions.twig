@@ -1,0 +1,15 @@
+{# reactions (votes) in /admin/inbox/reactions/, rendered by acp/core/inbox/reactions.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getReactions" hx-get="{{ reader_uri }}?action=list_reactions" hx-trigger="load, {{ list_triggers }}"></div>
+{% endblock %}
+
+{% block sidebar %}
+    <div class="card mb-2">
+        <div class="card-header">{{ lang.label_filter }}</div>
+        <div class="card-body">
+            <div hx-get="{{ reader_uri }}?action=reactions_filter" hx-trigger="load, {{ list_triggers }}"></div>
+        </div>
+    </div>
+{% endblock %}
