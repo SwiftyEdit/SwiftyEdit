@@ -1,0 +1,34 @@
+{#
+ # API keys in /admin/settings/api-keys/, loaded by the settings data-reader (?load_api_keys)
+ # keys: list of {id, label, prefix, scopes, created, last_used, requests, active}
+ # revoking is final - a revoked key can only be deleted, not reactivated
+ #}
+{% if keys %}
+    <div class="list-group">
+        {% for key in keys %}
+            <div class="list-group-item{% if not key.active %} text-muted{% endif %}">
+                <div class="d-flex align-items-center gap-2">
+                    <strong class="me-auto">{{ key.label }}</strong>
+                    {% if key.active %}
+                        <span class="badge text-bg-success">{{ lang.api_keys_active }}</span>
+                        <button hx-post="{{ writer_uri }}" hx-confirm="{{ lang.api_keys_confirm_revoke }}" hx-target="#apiKeyCreated" hx-include="[name='csrf_token']" name="revoke_api_key" value="{{ key.id }}" class="btn btn-sm btn-default text-danger" title="{{ lang.api_keys_btn_revoke }}">{{ icon.ban|raw }} {{ lang.api_keys_btn_revoke }}</button>
+                    {% else %}
+                        <span class="badge text-bg-secondary">{{ lang.api_keys_revoked }}</span>
+                        <button hx-post="{{ writer_uri }}" hx-confirm="{{ lang.msg_confirm_delete }}" hx-target="#apiKeyCreated" hx-include="[name='csrf_token']" name="delete_api_key" value="{{ key.id }}" class="btn btn-sm btn-default text-danger" title="{{ lang.btn_delete }}">{{ icon.trash_alt|raw }}</button>
+                    {% endif %}
+                </div>
+                <div class="mt-1">
+                    <code class="me-2" title="{{ lang.api_keys_key }}">{{ key.prefix }}…</code>
+                    {% for scope in key.scopes %}<code class="d-inline-block text-muted me-1">{{ scope }}</code>{% endfor %}
+                </div>
+                <small class="text-muted">
+                    {{ lang.api_keys_last_used }}: {{ key.last_used }}
+                    &middot; {{ lang.api_keys_requests }}: {{ key.requests }}
+                    &middot; {{ lang.api_keys_created }}: {{ key.created }}
+                </small>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="mb-0 text-muted">{{ lang.api_keys_none }}</p>
+{% endif %}

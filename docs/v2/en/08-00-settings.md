@@ -219,8 +219,18 @@ API keys give other applications access to the public API - for example a second
 displays your products. Developers can find out how to use the API in the [API](09-04-api.md)
 chapter.
 
+### New API key {#api-keys-new}
 To create a key, enter a name (e.g. the name of the application using it) and select the
-permissions:
+permissions - what each of them means is described in the section Permissions of the
+documentation.
+
+{alert:warning}
+__The key is shown only once__, right after creating it. Copy it and store it in a safe place -
+SwiftyEdit only stores a fingerprint (hash) of the key and can't show it again later. If a key
+gets lost, simply create a new one.
+{/alert}
+
+### Permissions {#api-keys-scopes}
 
 | Permission | Meaning |
 |------------|---------|
@@ -231,12 +241,7 @@ permissions:
 | Read pages | The key can fetch public pages. Password protected pages and pages for user groups stay hidden. |
 | Read categories | The key can fetch the categories of products, posts and events. |
 
-{alert:warning}
-__The key is shown only once__, right after creating it. Copy it and store it in a safe place -
-SwiftyEdit only stores a fingerprint (hash) of the key and can't show it again later. If a key
-gets lost, simply create a new one.
-{/alert}
-
+### Manage keys {#api-keys-list}
 The list shows the beginning of each key so you can tell them apart, as well as when the key was
 last used and how many requests it made.
 

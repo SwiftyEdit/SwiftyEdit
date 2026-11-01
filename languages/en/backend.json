@@ -632,8 +632,6 @@
   "update.btn.select_this_update": "Select this update",
   "update.label.installed": "Installed",
   "api_keys.nav": "API keys",
-  "api_keys.title": "API keys",
-  "api_keys.intro": "API keys give external applications access to the public API (/api/v1/). Each key only gets the permissions you select here.",
   "api_keys.none": "No API keys have been created yet.",
   "api_keys.label": "Name",
   "api_keys.key": "Key",

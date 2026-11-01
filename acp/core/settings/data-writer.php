@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/settings/.../write/
+ * sections of the settings pages (save_settings), branding images, delivery areas,
+ * labels, API keys, database and the test mail
+ *
  * global variables
  * @var array $lang
  * @var object $db_content
@@ -10,6 +14,7 @@
  * @var array $icon
  * @var array $se_settings
  * @var string $se_branding_path
+ * @var object $twig
  */
 
 
@@ -242,7 +247,7 @@ if(isset($_POST['create_api_key']) || isset($_POST['revoke_api_key']) || isset($
 
 if(isset($_POST['create_api_key'])) {
 
-    $api_key_label = trim(sanitizeUserInputs($_POST['api_key_label']));
+    $api_key_label = trim(sanitizeUserInputs((string) ($_POST['api_key_label'] ?? '')));
     $api_key_scopes = se_api_filter_scopes((array) ($_POST['api_key_scopes'] ?? []));
 
     if($api_key_label === '' || count($api_key_scopes) < 1) {
@@ -252,19 +257,13 @@ if(isset($_POST['create_api_key'])) {
 
     $new_api_key = se_api_create_key($api_key_label, $api_key_scopes, (int) $_SESSION['user_id']);
 
-    record_log($_SESSION['user_nick'], "created API key: $api_key_label", "5");
+    record_log($_SESSION['user_nick'], "created API key: $api_key_label", 5);
     // api-key-created resets the form - only on success, so a failed
     // attempt keeps the entered name and scopes
     header("HX-Trigger: updated_api_keys, api-key-created");
 
     // the only time the plaintext key is ever shown
-    echo '<div class="alert alert-warning">';
-    echo '<p class="mb-2"><strong>'.$lang['api_keys_msg_created'].'</strong></p>';
-    echo '<div class="input-group">';
-    echo '<input type="text" class="form-control font-monospace" id="apiKeyPlain" value="'.htmlspecialchars($new_api_key, ENT_QUOTES).'" readonly onclick="this.select()">';
-    echo '<button type="button" class="btn btn-default" onclick="navigator.clipboard.writeText(document.getElementById(\'apiKeyPlain\').value)" title="'.$lang['api_keys_btn_copy'].'">'.$icon['clipboard'].'</button>';
-    echo '</div>';
-    echo '</div>';
+    echo $twig->render('settings/api-key-created.twig', ['api_key' => $new_api_key]);
     exit;
 }
 
@@ -276,7 +275,7 @@ if(isset($_POST['revoke_api_key'])) {
         "id" => (int) $_POST['revoke_api_key']
     ]);
 
-    record_log($_SESSION['user_nick'], "revoked API key #".(int) $_POST['revoke_api_key'], "5");
+    record_log($_SESSION['user_nick'], "revoked API key #".(int) $_POST['revoke_api_key'], 5);
     header("HX-Trigger: updated_api_keys");
     show_toast($lang['msg_success_db_changed'], 'success');
     exit;
@@ -290,7 +289,7 @@ if(isset($_POST['delete_api_key'])) {
         "is_active" => 0
     ]);
 
-    record_log($_SESSION['user_nick'], "deleted API key #".(int) $_POST['delete_api_key'], "5");
+    record_log($_SESSION['user_nick'], "deleted API key #".(int) $_POST['delete_api_key'], 5);
     header("HX-Trigger: updated_api_keys");
     show_toast($lang['msg_success_db_changed'], 'success');
     exit;

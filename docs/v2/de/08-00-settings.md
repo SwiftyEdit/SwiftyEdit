@@ -231,8 +231,18 @@ API-Keys geben anderen Anwendungen Zugriff auf die öffentliche API - zum Beispi
 Website, die Deine Produkte anzeigt. Wie die API benutzt wird, erfahren Entwickler im Kapitel
 [API](09-04-api.md).
 
+### Neuer API-Key {#api-keys-new}
 Zum Anlegen eines Keys vergibst Du einen Namen (z.B. den Namen der Anwendung, die ihn nutzt) und
-wählst die Berechtigungen aus:
+wählst die Berechtigungen aus - was sie im Einzelnen bedeuten, steht im Abschnitt Berechtigungen
+der Dokumentation.
+
+{alert:warning}
+__Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn
+sicher auf - SwiftyEdit speichert nur einen Fingerabdruck (Hash) des Keys und kann ihn später
+nicht mehr anzeigen. Ist ein Key verloren gegangen, legst Du einfach einen neuen an.
+{/alert}
+
+### Berechtigungen {#api-keys-scopes}
 
 | Berechtigung | Bedeutung |
 |--------------|-----------|
@@ -243,12 +253,7 @@ wählst die Berechtigungen aus:
 | Seiten lesen | Der Key kann öffentliche Seiten abrufen. Passwortgeschützte Seiten und Seiten für Benutzergruppen bleiben verborgen. |
 | Kategorien lesen | Der Key kann die Kategorien von Produkten, Beiträgen und Veranstaltungen abrufen. |
 
-{alert:warning}
-__Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn
-sicher auf - SwiftyEdit speichert nur einen Fingerabdruck (Hash) des Keys und kann ihn später
-nicht mehr anzeigen. Ist ein Key verloren gegangen, legst Du einfach einen neuen an.
-{/alert}
-
+### Keys verwalten {#api-keys-list}
 In der Liste siehst Du den Anfang jedes Keys, damit Du sie auseinanderhalten kannst, außerdem
 wann der Key zuletzt benutzt wurde und wie viele Anfragen damit gestellt wurden.
 
