@@ -67,15 +67,6 @@ if (isset($_POST['update_events'])) {
     show_toast($lang['msg_success_db_changed'],'success');
 }
 
-// write blog settings
-if (isset($_POST['update_posts'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
 // write shop settings
 if (isset($_POST['update_shop_settings'])) {
     foreach($_POST as $key => $val) {

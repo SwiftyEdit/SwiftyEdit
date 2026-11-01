@@ -120,8 +120,12 @@ registered users, or for all visitors. To prevent double votes, anonymous votes 
 confirmations are stored with a hash of the visitor's IP address; after 90 days the hash is
 removed - the vote keeps counting.
 
-## Posts
+## Posts {#posts}
 These settings affect the posts (blog).
+
+### Entries per page {#posts-entries}
+How many posts a blog list shows per page, further posts can be reached via the pagination. The
+event lists use the same number. If no value or 0 is set, there are 10 entries.
 
 ## Shop
 The Shop page is divided into four tabs:

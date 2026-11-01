@@ -1,25 +1,32 @@
 <?php
 
-error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
-echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].' '.$lang['nav_btn_posts'].'</div>';
+/**
+ * blog settings in /admin/settings/posts/, markup in acp/templates/settings/posts.twig
+ * the sections are saved by the settings data-writer (save_settings=<section>)
+ *
+ * global variables
+ * @var array $se_settings
+ * @var array $icon
+ * @var array $lang
+ * @var object $twig
+ */
 
-$writer_uri = '/admin-xhr/settings/general/write/';
+require_once __DIR__ . '/functions.php';
 
-$input_entries_per_page = [
+$inputs = [];
+$inputs['entries_per_page'] = se_print_form_input([
     "input_name" => "prefs_posts_entries_per_page",
-    "input_value" => $se_settings['posts_entries_per_page'],
+    "input_value" => (string) ($se_settings['posts_entries_per_page'] ?? ''),
     "label" => $lang['label_entries_per_page'],
-    "type" => "text"
-];
+    "type" => "number"
+]);
 
-
-echo '<div class="card p-3">';
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-
-echo '<h5 class="heading-line">'.$lang['label_entries'].'</h5>';
-
-echo se_print_form_input($input_entries_per_page);
-
-echo '<button type="submit" class="btn btn-primary" name="update_posts" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>';
-echo '</div>';
+echo $twig->render('settings/posts.twig', [
+    'title' => $lang['nav_btn_settings'].' / '.$lang['nav_btn_posts'],
+    'title_icon' => $icon['gear'],
+    'settings_nav' => se_settings_nav('posts'),
+    'writer_uri' => '/admin-xhr/settings/general/write/',
+    // titles and help texts of the sections come from the docs
+    'help' => se_docs_sections('08-00-settings.md', ['posts-entries']),
+    'inputs' => $inputs
+]);

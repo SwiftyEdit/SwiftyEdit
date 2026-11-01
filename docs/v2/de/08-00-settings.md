@@ -123,8 +123,13 @@ sie einzeln ändern: aus, nur für registrierte Benutzer oder für alle Besucher
 Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse gespeichert;
 nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
 
-## Posts
+## Posts {#posts}
 Diese Einstellungen betreffen die Posts (Blog).
+
+### Einträge pro Seite {#posts-entries}
+Wie viele Beiträge eine Blog-Liste pro Seite zeigt, weitere Beiträge sind über die Seitennavigation
+erreichbar. Die Listen der Veranstaltungen verwenden dieselbe Anzahl. Ist kein Wert oder 0 eingetragen,
+sind es 10 Einträge.
 
 ## Shop
 Die Shop-Seite ist in vier Tabs unterteilt:

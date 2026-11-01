@@ -168,6 +168,9 @@ function se_settings_sections(): array {
         ],
         'user-votings' => [
             'prefs_posts_default_votings' => 'option'
+        ],
+        'posts-entries' => [
+            'prefs_posts_entries_per_page' => 'int'
         ]
     ];
 }
