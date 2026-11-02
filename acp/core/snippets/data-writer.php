@@ -6,6 +6,8 @@
  *
  * global variables
  * @var array $lang
+ * @var array $lang_codes
+ * @var string $languagePack
  * @var object $db_content
  */
 
@@ -95,7 +97,11 @@ if(isset($_POST['save_snippet'])) {
     $snippet_name = clean_filename($_POST['snippet_name']);
     $snippet_title = sanitizeUserInputs($_POST['snippet_title']);
     $snippet_keywords = sanitizeUserInputs($_POST['snippet_keywords']);
-    $snippet_lang = sanitizeUserInputs($_POST['snippet_lang']);
+    // whitelist - the language becomes part of the cache file name below
+    $snippet_lang = (string) ($_POST['snippet_lang'] ?? '');
+    if(!in_array($snippet_lang, $lang_codes, true)) {
+        $snippet_lang = $languagePack;
+    }
     $snippet_label = sanitizeUserInputs($_POST['snippet_label']);
     $snippet_classes = sanitizeUserInputs($_POST['snippet_classes']);
     $snippet_permalink = sanitizeUserInputs($_POST['snippet_permalink']);
