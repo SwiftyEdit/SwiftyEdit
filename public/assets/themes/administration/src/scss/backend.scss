@@ -203,6 +203,19 @@ div#page-content {
 div#container {
   margin: 0;
   padding: 10px 15px;
+  // at least the remaining height of .main-scrollable - the footer
+  // (margin-top: auto) sits at the bottom of short pages and moves
+  // down with longer content
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+// the module output - only this and the footer are flex items of #container
+div#container > .page-main {
+  min-width: 0;
+  // the gap above the footer on long pages
+  margin-bottom: 1rem;
 }
 
 
@@ -345,7 +358,7 @@ a#dashboard {
 
 div#footer {
   clear: both;
-  margin-top: 1rem;
+  margin-top: auto;
   padding: 1rem;
   text-align: center;
   background: var(--footer-bg);

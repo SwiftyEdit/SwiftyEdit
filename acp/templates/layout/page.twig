@@ -65,8 +65,11 @@
             {{ nav_top|raw }}
         </header>
 
+        {# #container fills the rest of the scroll area, so the footer sits at the bottom of short pages #}
         <div class="container-fluid py-3" id="container">
-            {{ content|raw }}
+            <div class="page-main">
+                {{ content|raw }}
+            </div>
 
             <div id="footer">
                 <p class="text-center">
