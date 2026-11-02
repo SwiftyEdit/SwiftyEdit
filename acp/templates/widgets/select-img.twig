@@ -1,3 +1,7 @@
+{#
+ # image picker of the forms (components/form/macros.twig images, shop/product-form.twig),
+ # rendered by acp/core/widgets/widgets.php - the images are dragged into the drop zone
+ #}
 <div class="card">
     <div class="card-header">Uploads</div>
 
@@ -10,7 +14,7 @@
                          hx-params="media_widget_text_filter,csrf_token"
                          hx-trigger="input changed delay:1500ms"
                          hx-swap="none">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <span class="input-group-text">{{ icon.search|raw }}</span>
                         <input type="text" class="form-control no-enter"
                                name="media_widget_text_filter"
                                value="{{ media_widget_text_filter }}">
@@ -40,7 +44,8 @@
                             <div class="rounded-circle flex-shrink-0"
                                  style="width:64px;height:64px;background-image:url({{ image.preview }});background-size:cover;"></div>
                             <div class="text-muted small">
-                                {{ image.image_title }}{{ image.img_filename_short }}{% if image.img_filename_truncated %} <small><i>(...)</i></small>{% endif %}<br>
+                                {% if image.image_title %}<strong>{{ image.image_title }}</strong><br>{% endif %}
+                                {{ image.img_filename_short }}{% if image.img_filename_truncated %} <small><i>(...)</i></small>{% endif %}<br>
                                 {{ image.image_upload_time }}
                             </div>
                         </div>
