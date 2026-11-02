@@ -28,12 +28,14 @@
  * @var string $editor_img_list_url   TinyMCE image-list endpoint
  * @var string $editor_link_list_url  TinyMCE link-list endpoint
  *
- * others
- * @var string $tn get parameter
- * @var string $sub
- * @var string $maininc
+ * from config.php
+ * @var string $se_environment
  *
+ * built here
+ * @var array $se_settings preferences without the 'prefs_' prefix
+ * @var object $twig from acp/core/twig.php
  *
+ * The page frame is acp/templates/layout/page.twig, see the end of this file.
  */
 
 require_once __DIR__.'/../app/session.php';
@@ -179,6 +181,7 @@ $all_langs = get_all_languages();
  * example use: $se_settings['default_language']
  */
 
+$se_settings = [];
 $se_get_preferences = se_get_preferences();
 
 foreach ($se_get_preferences as $k => $v) {
@@ -256,6 +259,7 @@ if (isset($se_settings['deactivated_languages']) AND $se_settings['deactivated_l
     $arr_lang_deactivated = json_decode($se_settings['deactivated_languages']);
 }
 
+$langs = [];
 foreach ($all_langs as $l) {
     if (isset($arr_lang_deactivated) && (in_array($l['lang_folder'], $arr_lang_deactivated))) {
         continue;
@@ -266,6 +270,7 @@ foreach ($all_langs as $l) {
 
 $lang_codes = array_values(array_unique($langs));
 
+$active_lang = [];
 foreach($lang_codes as $l) {
 
     $lang_file = SE_ROOT.'/languages/' . $l . '/index.php';
@@ -373,236 +378,44 @@ if (strlen($se_settings['pagename']) > 30) {
     $se_title_pagename .= '…';
 }
 
-?>
-<!DOCTYPE html>
-<html lang="<?php echo htmlentities($languagePack); ?>" data-bs-theme="auto">
-<head>
-    <meta charset="utf-8">
-    <title><?php echo htmlentities($se_title_pagename); ?> ~ <?php echo htmlentities($se_section); ?></title>
+/*
+ * The page frame is acp/templates/layout/page.twig. The editor plugins, the
+ * navigation and the modules print their markup themselves - it is captured
+ * in the same order as before and passed to the template as html. The
+ * includes stay in this scope, e.g. editors.php sets the variables the
+ * init scripts of the editor plugins read.
+ */
 
-    <link rel="icon" type="image/png" sizes="32x32" href="/themes/administration/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
-    <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
-
-    <link rel="stylesheet" href="<?php echo se_acp_asset_url('backend.css'); ?>" type="text/css" media="screen, projection">
-
-    <script type="text/javascript">
-        const languagePack = "<?php echo htmlentities($languagePack); ?>";
-        let ace_theme;
-        let tinymce_skin;
-        ace_theme = 'chrome';
-        tinymce_skin = 'oxide';
-
-        const storedTheme = localStorage.getItem('backendTheme');
-
-        if (storedTheme === 'dark') {
-            ace_theme = 'twilight';
-            tinymce_skin = 'oxide-dark';
-        }
-    </script>
-
-    <script src="<?php echo se_acp_asset_url('backend.js'); ?>"></script>
-    <?php
-    /* load the <head> assets of every installed editor plugin */
-    foreach ($se_editor_addons as $editor_addon) {
-        $se_editor_current = $editor_addon;
-        $editor_head = SE_ROOT . 'plugins/' . $editor_addon['dir'] . '/backend/head.php';
-        if (is_file($editor_head)) {
-            include $editor_head;
-        }
+/* the <head> assets of every installed editor plugin */
+ob_start();
+foreach ($se_editor_addons as $editor_addon) {
+    $se_editor_current = $editor_addon;
+    $editor_head = SE_ROOT . 'plugins/' . $editor_addon['dir'] . '/backend/head.php';
+    if (is_file($editor_head)) {
+        include $editor_head;
     }
-    ?>
-
-
-    <?php
-    include_once '../acp/core/templates.php';
-    ?>
-
-</head>
-<body>
-
-
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas">
-    <div class="offcanvas-header">
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-        <?php include '../acp/core/nav_sidebar.php'; ?>
-    </div>
-</div>
-
-<?php
-if (is_file('../maintenance.html')) {
-    echo '<div class="alert alert-danger rounded-0 m-0">';
-    echo $lang['update_msg_modus_activated'];
-    echo '</div>';
 }
-?>
+$editor_heads = (string) ob_get_clean();
 
-<div class="d-flex" id="page-content">
+include_once '../acp/core/templates.php';
 
-    <nav id="sidebar" class="d-none d-lg-block">
-        <?php include '../acp/core/nav_sidebar.php'; ?>
-    </nav>
+ob_start();
+include '../acp/core/nav_sidebar.php';
+$nav_sidebar = (string) ob_get_clean();
 
+ob_start();
+require '../acp/core/nav_top_filter.php';
+require '../acp/core/nav_top.php';
+$nav_top = (string) ob_get_clean();
 
-    <div class="flex-grow-1 main-scrollable">
+/* the module of the current section */
+ob_start();
+include '../acp/core/' . $maininc;
+include '../acp/core/editors.php';
+$content = (string) ob_get_clean();
 
-    <?php
-    $page_header_class = 'ph-dashboard';
-    if($se_section != '') {
-        $page_header_class = 'ph-'.$se_section;
-    }
-    echo '<header class="'.$page_header_class.' page-header">';
-    require '../acp/core/nav_top_filter.php';
-    require '../acp/core/nav_top.php';
-    echo '</header>';
-    ?>
-
-
-    <div class="container-fluid py-3" id="container">
-        <?php include '../acp/core/' . $maininc; ?>
-        <?php include '../acp/core/editors.php'; ?>
-
-
-    <div id="footer">
-        <p class="text-center">
-            <?php
-            foreach($active_lang as $k => $v) {
-                $lang_icon = '<img src="' . $v['flag'] . '" style="vertical-align: baseline; width:18px; height:auto;">';
-                echo '<a class="btn btn-sm btn-default" href="?set_lang=' . $v['sign'] . '">' . $lang_icon . ' ' . $v['name'] . '</a> ';
-            }
-            ?>
-        </p>
-        <hr>
-        <p><img src="/themes/administration/images/swiftyedit_icon.svg" alt="se-logo" width="60px"><br>
-            <b>SwiftyEdit</b><br>copyright © <?php echo date('Y'); ?>, <a href="https://swiftyedit.dev/" target="_blank">SwiftyEdit.dev</a><br>
-            <small class="text-muted se-privacy-blur">Build <?php echo $se_version['build']; ?></small></p>
-        <p class="d-none"><?php echo microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']; ?></p>
-    </div>
-
-    </div>
-
-    </div>
-</div>
-<div class="bottom-bar">
-    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-            data-bs-target="#uploadModal"><?php echo $icon['upload']; ?> Upload
-    </button>
-</div>
-
-<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel"><?php echo $icon['upload']; ?> Upload</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="dropper" class="dropper-form" action="/admin/upload/" method="POST">
-                    <!--
-                    <input type="file" />
-                    <button type="submit">Upload</button>
-                    -->
-
-                    <?php
-
-                    $path_img = IMAGES_FOLDER;
-                    $img_dirs = se_get_dirs_rec($path_img);
-
-                    $path_files = FILES_FOLDER;
-                    $files_dirs = se_get_dirs_rec($path_files);
-
-                    $img_folder = basename($path_img);
-                    $files_folder = basename($path_files);
-                    ?>
-
-                    <div class="row mb-2">
-                        <div class="col-md-6">
-                            <label><?php echo $lang['upload_destination']; ?></label>
-                            <select name="upload_destination" class="form-control custom-select">
-                                <optgroup label="<?php echo $lang['images']; ?>">
-                                    <option value="<?php echo $path_img; ?>"><?php echo $img_folder; ?></option>
-                                    <?php
-                                    foreach($img_dirs as $d) {
-                                        $short_d = str_replace($path_img, '', $d);
-                                        echo '<option value="'.$d.'">'.$img_folder.$short_d.'</option>';
-                                    }
-                                    ?>
-                                </optgroup>
-                                <optgroup label="<?php echo $lang['files']; ?>">
-                                    <option value="<?php echo $path_files; ?>"><?php echo $files_folder; ?></option>
-                                    <?php
-                                    foreach($files_dirs as $d) {
-                                        $short_d = str_replace($path_files, '', $d);
-                                        echo '<option value="'.$d.'">'.$files_folder.$short_d.'</option>';
-                                    }
-                                    ?>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="file_mode" value="overwrite" id="overwrite">
-                                <label class="form-check-label" for="overwrite">
-                                    <?php echo $lang['upload_overwrite_existing_files']; ?>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <input type="hidden" name="w" value="<?php echo $se_settings['maximagewidth']; ?>" />
-                    <input type="hidden" name="w_tmb" value="<?php echo $se_settings['maxtmbwidth']; ?>" />
-                    <input type="hidden" name="h" value="<?php echo $se_settings['maximageheight']; ?>" />
-                    <input type="hidden" name="h_tmb" value="<?php echo $se_settings['maxtmbheight']; ?>" />
-                    <input type="hidden" name="fz" value="<?php echo $se_settings['maxfilesize']; ?>" />
-                    <input type="hidden" name="unchanged" value="<?php echo $se_settings['uploads_remain_unchanged']; ?>" />
-                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- modal for documentation -->
-<div id="helpModal" class="modal fade"
-     style="display: none"
-     aria-hidden="true" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content"></div>
-    </div>
-</div>
-
-<!-- modal for page infos -->
-<div id="infoModal" class="modal fade"
-     style="display: none"
-     aria-hidden="true" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content"></div>
-    </div>
-</div>
-
-<!-- fullscreen modal for content-format editors (blocks_v1, markdown_v1, ...) -
-     see acp/templates/components/form/content-editor.twig's fullscreen button and
-     the content-editor JS glue below, which moves a .content-editor-mount into
-     .content-editor-fullscreen-slot on show and moves it back on hide -->
-<div class="modal fade" id="contentEditorFullscreenModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-            <div class="modal-header py-2">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body content-editor-fullscreen-slot"></div>
-        </div>
-    </div>
-</div>
-
-
-<?php
-/* load the footer init of every installed editor plugin (registers window.seEditors) */
+/* the footer init of every installed editor plugin (registers window.seEditors) */
+ob_start();
 foreach ($se_editor_addons as $editor_addon) {
     $se_editor_current = $editor_addon;
     $editor_init = SE_ROOT . 'plugins/' . $editor_addon['dir'] . '/backend/init.js.php';
@@ -610,248 +423,39 @@ foreach ($se_editor_addons as $editor_addon) {
         include $editor_init;
     }
 }
-?>
-<script type="text/javascript">
+$editor_inits = (string) ob_get_clean();
 
-    window.seEditors = window.seEditors || {};
-
-    /*
-     * Content editor switch. Each editor plugin registers itself in
-     * window.seEditors keyed by its editor id (e.g. "tinymce", "ace"). The
-     * switch value "plain" is the built-in plain-text mode and has no
-     * registered editor object.
-     */
-    var seDefaultEditor = '<?php echo $se_default_editor; ?>';
-
-    function seCurrentEditorMode() {
-        var editor_mode = localStorage.getItem('editor_mode');
-        /* fall back to the default if the stored editor is no longer installed */
-        if (editor_mode && editor_mode !== 'plain' && !window.seEditors[editor_mode]) {
-            editor_mode = null;
-        }
-        if (!editor_mode) {
-            editor_mode = seDefaultEditor;
-        }
-        return editor_mode;
+/* folders of the upload modal, e.g. images, images/gallery, files */
+$upload_folders = [];
+foreach ([IMAGES_FOLDER => $lang['images'], FILES_FOLDER => $lang['files']] as $upload_root => $upload_label) {
+    $folders = [];
+    foreach (array_merge([$upload_root], se_get_dirs_rec($upload_root)) as $upload_dir) {
+        $folders[] = [
+            'value' => $upload_dir,
+            'label' => basename($upload_root) . substr($upload_dir, strlen($upload_root))
+        ];
     }
+    $upload_folders[] = ['label' => $upload_label, 'folders' => $folders];
+}
 
-    function switchEditorMode(mode) {
+/* the countdown to the automatic logout */
+$maxlifetime = max((int) $se_settings['acp_session_lifetime'], (int) ini_get("session.gc_maxlifetime"));
 
-        var textEditor = $('textarea[class*=switchEditor]');
-
-        /* tear down whichever editor is currently attached */
-        Object.keys(window.seEditors).forEach(function (id) {
-            try {
-                window.seEditors[id].detach(textEditor);
-            } catch (e) {}
-        });
-
-        textEditor.removeClass();
-        textEditor.removeAttr('style');
-
-        var editor = window.seEditors[mode];
-        if (editor) {
-            textEditor.addClass((editor.cls || '') + ' form-control switchEditor');
-            textEditor.css("display", "flex");
-            editor.attach(textEditor);
-        } else {
-            /* plain textarea */
-            textEditor.addClass('plain form-control switchEditor');
-            textEditor.css("visibility", "visible");
-            textEditor.css("display", "flex");
-        }
-
-        $("input[value=" + mode + "]").prop('checked', true);
-        $("input[name='optEditor']").parent().removeClass('active');
-        $("input[value=" + mode + "]").parent().addClass('active');
-
-    }
-
-    $(function () {
-
-        var editor_mode = seCurrentEditorMode();
-        localStorage.setItem("editor_mode", editor_mode);
-
-        /*
-         * Delegated binding (on document, not the specific radio elements) so
-         * this keeps working after an HTMX swap replaces #pageContentField -
-         * and its optEditor radios - with fresh DOM (e.g. switching the
-         * content format back to "Legacy (HTML)", see
-         * tpl_content_format_switch() in acp/core/templates.php). A direct
-         * .on("change", fn) binding would only ever reach the radios present
-         * at page-load time.
-         */
-        $(document).on("change", 'input[name="optEditor"]', function () {
-            var button = $("input[name='optEditor']:checked").val();
-            localStorage.setItem("editor_mode", button);
-            switchEditorMode(button);
-        });
-
-        switchEditorMode(editor_mode);
-
-    });
-
-    /*
-     * Content-format editors (blocks_v1, markdown_v1, ...). Each editor plugin
-     * registers itself in window.seContentEditors keyed by its editor id, with
-     * mount(el, content) / serialize(el) methods. Mount points are
-     * .content-editor-mount divs (see acp/templates/components/form/content-editor.twig);
-     * the paired hidden textarea.content-editor-value (looked up via
-     * data-value-field, not DOM adjacency - the mount can be moved into the
-     * fullscreen modal below) carries the serialized value into the (HTMX)
-     * form submit.
-     */
-    window.seContentEditors = window.seContentEditors || {};
-
-    function seMountContentEditors(scope) {
-        (scope || document).querySelectorAll('.content-editor-mount').forEach(function (el) {
-            if (el.dataset.mounted === '1') {
-                return;
-            }
-            var editor = window.seContentEditors[el.dataset.editor];
-            if (!editor) {
-                el.innerHTML = '<div class="alert alert-warning">Editor "' + el.dataset.editor + '" not installed.</div>';
-                return;
-            }
-            var content = null;
-            try {
-                content = JSON.parse(el.dataset.content || 'null');
-            } catch (e) {}
-            editor.mount(el, content);
-            el.dataset.mounted = '1';
-        });
-    }
-
-    $(function () {
-        seMountContentEditors(document);
-    });
-
-    document.body.addEventListener('htmx:configRequest', function (evt) {
-        document.querySelectorAll('.content-editor-mount').forEach(function (el) {
-            var editor = window.seContentEditors[el.dataset.editor];
-            var valueField = document.getElementById(el.dataset.valueField);
-            if (!editor || !valueField) {
-                return;
-            }
-            /*
-             * The plugin's serialize() only returns its own inner "content"
-             * value (a markdown string, a block tree, ...) - Core owns the
-             * {"editor":...,"content":...} envelope on both the PHP side
-             * (se_decode_editor_content()) and here, so plugins never need to
-             * know the wrapper shape.
-             */
-            evt.detail.parameters[valueField.name] = JSON.stringify({
-                editor: el.dataset.editor,
-                content: editor.serialize(el)
-            });
-        });
-    });
-
-    document.body.addEventListener('htmx:afterSwap', function (evt) {
-        /*
-         * Deliberately not scoped to evt.detail.target: for an outerHTML
-         * swap (used by the content-format switch, see
-         * tpl_content_format_switch() in acp/core/templates.php), htmx
-         * removes the original target element from the DOM and inserts the
-         * new content in its place, but evt.detail.target still points at
-         * that now-detached original element - scoping to it silently finds
-         * nothing in the (correct) new content. Both functions below already
-         * tolerate a document-wide scan (seMountContentEditors() is guarded
-         * by data-mounted, switchEditorMode() already queries
-         * document-wide internally), so scan the whole document instead.
-         */
-        seMountContentEditors(document);
-        if (document.querySelector('textarea[class*=switchEditor]')) {
-            switchEditorMode(seCurrentEditorMode());
-        }
-    });
-
-    /*
-     * Fullscreen toggle (see the .content-editor-fullscreen-btn in
-     * components/form/content-editor.twig and #contentEditorFullscreenModal
-     * above): moves the .content-editor-mount into the modal on open, moves
-     * it back to its original spot in the form on close. The mount keeps its
-     * SortableJS instances etc. intact across the move - only its position in
-     * the DOM tree changes, nothing is re-mounted.
-     */
-    (function () {
-        var modalEl = document.getElementById('contentEditorFullscreenModal');
-        if (!modalEl) {
-            return;
-        }
-        var slotEl = modalEl.querySelector('.content-editor-fullscreen-slot');
-        var origin = null;
-
-        modalEl.addEventListener('show.bs.modal', function (evt) {
-            var trigger = evt.relatedTarget;
-            var mountEl = trigger ? document.getElementById(trigger.dataset.editorTarget) : null;
-            if (!mountEl) {
-                return;
-            }
-            origin = { el: mountEl, parent: mountEl.parentNode, nextSibling: mountEl.nextSibling };
-            slotEl.appendChild(mountEl);
-        });
-
-        modalEl.addEventListener('hidden.bs.modal', function () {
-            if (origin) {
-                origin.parent.insertBefore(origin.el, origin.nextSibling);
-                origin = null;
-            }
-        });
-    })();
-
-    <?php
-    $gc_maxlifetime = ini_get("session.gc_maxlifetime");
-    if ($se_settings['acp_session_lifetime'] > $gc_maxlifetime) {
-        $maxlifetime = $se_settings['acp_session_lifetime'];
-    } else {
-        $maxlifetime = $gc_maxlifetime;
-    }
-
-    // the session lifetime is enforced on the server (se_acp_session_expired()),
-    // so the countdown always runs - a "remember me" cookie no longer turns it off
-    echo "var auto_logout = true;";
-    echo "var maxlifetime = '{$maxlifetime}';";
-    ?>
-    var countdown = {
-        startInterval: function () {
-            var currentId = setInterval(function () {
-                $('#currentSeconds').html(maxlifetime);
-
-                if (maxlifetime == 60) {
-                    $('#expireDiv').removeClass('expire-hidden');
-                    $('#expireDiv').addClass('expire-start');
-                }
-                if (maxlifetime == 30) {
-                    $('#expireDiv').addClass('expire-soon');
-                }
-                if (maxlifetime == 15) {
-                    $('#expireDiv').addClass('expire-danger');
-                }
-                if (maxlifetime < 0) {
-                    // logout only per POST with the CSRF token (see app/routing.php)
-                    clearInterval(countdown.intervalId);
-                    var logoutForm = document.createElement('form');
-                    logoutForm.method = 'post';
-                    logoutForm.action = '/logout';
-                    var logoutToken = document.createElement('input');
-                    logoutToken.type = 'hidden';
-                    logoutToken.name = 'csrf_token';
-                    logoutToken.value = <?php echo json_encode((string) $_SESSION['token']); ?>;
-                    logoutForm.appendChild(logoutToken);
-                    document.body.appendChild(logoutForm);
-                    logoutForm.submit();
-                }
-                --maxlifetime;
-            }, 1000);
-            countdown.intervalId = currentId;
-        }
-    };
-    if (auto_logout !== false) {
-        countdown.startInterval();
-    }
-
-</script>
-
-</body>
-</html>
+echo $twig->render('layout/page.twig', [
+    'lang_code' => $languagePack,
+    'title_pagename' => $se_title_pagename,
+    'section' => $se_section,
+    'css_url' => se_acp_asset_url('backend.css'),
+    'js_url' => se_acp_asset_url('backend.js'),
+    'editor_heads' => $editor_heads,
+    'editor_inits' => $editor_inits,
+    'nav_sidebar' => $nav_sidebar,
+    'nav_top' => $nav_top,
+    'content' => $content,
+    'maintenance' => is_file('../maintenance.html'),
+    'footer_langs' => array_values($active_lang),
+    'build' => $se_version['build'],
+    'upload_folders' => $upload_folders,
+    'default_editor' => $se_default_editor,
+    'maxlifetime' => $maxlifetime
+]);
