@@ -1,0 +1,162 @@
+{#
+ # backend login, rendered by acp/login.php - the password form or a step of the
+ # two-factor authentication (see app/functions/functions.twofactor.php)
+ #
+ # form_path: url of the forms (/admin/ or /admin/<login_slug>)
+ # login_failed, alerts: list of {type, text}
+ # twofa.view: '' (password form), recovery, choose, setup, setup_app or verify
+ # twofa: {mail (masked), app, code_sent, show_code, blocked, intro, otpauth_uri, secret,
+ #   recovery_codes, recovery_mail_hint}
+ #}
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token }}">{% endmacro %}
+{% import _self as m %}
+
+{# texts with a {MAIL} placeholder - the address is shown bold #}
+{% set mail_html = '<strong>' ~ (twofa.mail|default('')|e) ~ '</strong>' %}
+
+<!DOCTYPE html>
+<html data-bs-theme="dark" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login {{ global.server_name }}</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="{{ css_url }}" type="text/css" media="screen, projection">
+    <style>
+        .form-center {
+            max-width: 475px;
+            padding: 25px;
+            background: var(--bs-widget-bg-300);
+        }
+        .icon {
+            text-align: left;
+            margin-top: -65px;
+        }
+        .icon img {
+            width: 64px;
+            height: auto;
+            margin: 0 auto;
+            filter: drop-shadow(1px 1px 5px rgb(0,0,0,.4));
+        }
+    </style>
+</head>
+<body class="d-flex h-100">
+<div class="form-center w-100 m-auto border-info border-2 rounded shadow">
+    <div class="icon">
+        <img src="/themes/administration/images/swiftyedit_icon.svg" class="img-fluid" alt="">
+    </div>
+
+    {% if login_failed %}
+        <div class="alert alert-danger">{{ lang.msg_login_false }}</div>
+    {% endif %}
+    {% for alert in alerts %}
+        <div class="alert alert-{{ alert.type }}">{{ alert.text }}</div>
+    {% endfor %}
+
+    {% if twofa.view == 'recovery' %}
+
+        <h5>{{ lang.login_2fa_recovery_title }}</h5>
+        <p>{{ lang.login_2fa_recovery_intro }}</p>
+        {% if twofa.recovery_mail_hint %}
+            <p><strong>{{ lang.login_2fa_recovery_mail_hint }}</strong></p>
+        {% endif %}
+        <pre class="border rounded p-3 text-center fs-5">{{ twofa.recovery_codes|join("\n") }}</pre>
+        <form action="{{ form_path }}" method="post">
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="2fa_trust" value="1" id="twofaTrust">
+                <label class="form-check-label" for="twofaTrust">{{ lang.login_2fa_trust_device }}</label>
+            </div>
+            <input type="submit" class="btn btn-primary w-100" name="2fa_recovery_saved" value="{{ lang.login_2fa_btn_recovery_saved }}">
+            {{ m.csrf() }}
+        </form>
+
+    {% elseif twofa.view == 'choose' %}
+
+        <h5>{{ lang.login_2fa_title }}</h5>
+        <p>{{ lang.login_2fa_choose_method }}</p>
+        <form action="{{ form_path }}" method="post">
+            <button type="submit" class="btn btn-default w-100 text-start mb-2" name="2fa_choose" value="mail">
+                <strong>{{ lang.login_2fa_method_mail }}</strong><br>
+                <small class="text-muted">{{ lang.login_2fa_method_mail_help|e|replace({'{MAIL}': twofa.mail|e})|raw }}</small>
+            </button>
+            <button type="submit" class="btn btn-default w-100 text-start mb-3" name="2fa_choose" value="totp">
+                <strong>{{ lang.login_2fa_method_app }}</strong><br>
+                <small class="text-muted">{{ lang.login_2fa_method_app_help }}</small>
+            </button>
+            <input type="submit" class="btn btn-default w-100" name="2fa_cancel" value="{{ lang.login_2fa_btn_cancel }}">
+            {{ m.csrf() }}
+        </form>
+
+    {% elseif twofa.view != '' %}
+
+        <h5>{{ lang.login_2fa_title }}</h5>
+        <p>{{ twofa.intro|e|replace({'{MAIL}': mail_html})|raw }}</p>
+
+        {% if twofa.view == 'setup_app' %}
+            {# the QR code is drawn by twofa.js from data-otpauth #}
+            <div class="bg-white p-2 rounded mx-auto mb-2" style="max-width:220px" data-otpauth="{{ twofa.otpauth_uri }}"></div>
+            <p class="text-center small">{{ lang.login_2fa_app_key }}: <code class="user-select-all">{{ twofa.secret }}</code></p>
+            <script type="module" src="{{ twofa_js_url }}"></script>
+        {% endif %}
+
+        {% if twofa.show_code %}
+            <form action="{{ form_path }}" method="post" class="mb-3">
+                <label class="form-label" for="twofaCode">{{ lang.login_2fa_label_code }}</label>
+                {# after a password reset only a recovery code is accepted - no numeric keyboard, no one-time-code autofill #}
+                <input type="text" class="form-control mb-2" name="2fa_code" id="twofaCode" inputmode="{{ twofa.blocked ? 'text' : 'numeric' }}" autocomplete="{{ twofa.blocked ? 'off' : 'one-time-code' }}" autofocus="autofocus" required>
+                {% if twofa.view == 'verify' and not twofa.blocked %}
+                    <div class="form-text mb-2">{{ twofa.app ? lang.login_2fa_help_recovery_app : lang.login_2fa_help_recovery }}</div>
+                {% endif %}
+                {% if twofa.view == 'verify' %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="2fa_trust" value="1" id="twofaTrust">
+                        <label class="form-check-label" for="twofaTrust">{{ lang.login_2fa_trust_device }}</label>
+                    </div>
+                {% endif %}
+                <input type="submit" class="btn btn-primary w-100" name="2fa_verify" value="{{ lang.login_2fa_btn_verify }}">
+                {{ m.csrf() }}
+            </form>
+        {% endif %}
+
+        <form action="{{ form_path }}" method="post" class="d-flex gap-2">
+            {% if not twofa.app and not twofa.blocked %}
+                {# mail setup: the first code is sent with this button, the code field appears afterwards #}
+                {% set send_first = (twofa.view == 'setup' and not twofa.code_sent) %}
+                <input type="submit" class="btn btn-{{ send_first ? 'primary' : 'default' }} flex-fill" name="2fa_send" value="{{ (twofa.view == 'verify' or twofa.code_sent) ? lang.login_2fa_btn_resend : lang.login_2fa_btn_send }}">
+            {% endif %}
+            {% if twofa.view == 'setup_app' %}
+                <input type="submit" class="btn btn-default" name="2fa_back" value="{{ lang.login_2fa_btn_back }}">
+            {% endif %}
+            <input type="submit" class="btn btn-default{% if twofa.app or twofa.blocked %} flex-fill{% endif %}" name="2fa_cancel" value="{{ lang.login_2fa_btn_cancel }}">
+            {{ m.csrf() }}
+        </form>
+
+    {% else %}
+
+        {# no "remember me" here: the backend session lifetime is enforced on the server -
+           with 2FA, "trust this device" skips the second factor #}
+        <form action="{{ form_path }}" method="post">
+            <div class="row mb-2">
+                <label class="col-sm-3 col-form-label" for="loginName">{{ lang.label_username }}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="login_name" id="loginName" autofocus="autofocus">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <label class="col-sm-3 col-form-label" for="loginPsw">{{ lang.label_password }}</label>
+                <div class="col-sm-9">
+                    <input type="password" class="form-control" name="login_psw" id="loginPsw">
+                </div>
+            </div>
+            <div class="row">
+                <div class="offset-sm-3 col-sm-9">
+                    <input type="submit" class="btn btn-primary w-100" name="check" value="Login">
+                    {{ m.csrf() }}
+                </div>
+            </div>
+        </form>
+
+    {% endif %}
+</div>
+</body>
+</html>
