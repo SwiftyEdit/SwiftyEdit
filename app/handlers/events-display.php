@@ -1,7 +1,21 @@
 <?php
+/**
+ * SwiftyEdit frontend
+ * display an event from se_events - included by events.php, which already
+ * sends a 404 for unknown or invisible events
+ *
+ * @var int $get_event_id events.php
+ * @var array $page_contents
+ * @var string $mod_slug routing.php
+ * @var string $swifty_slug routing.php
+ * @var object $smarty
+ * @var array $lang
+ * @var array $se_settings
+ * @var string $se_base_url
+ * @var string $cache_id smarty.php
+ */
 
 $event_data = se_get_event_data($get_event_id);
-$hits = (int) $event_data['hits'];
 se_increase_events_hits($get_event_id);
 
 
@@ -10,14 +24,10 @@ $event_text = text_parser(htmlspecialchars_decode($event_data['text']));
 
 $event_images = explode("<->", $event_data['images']);
 
-$event_releasedate = date("$prefs_dateformat $prefs_timeformat",$event_data['releasedate']);
-$event_releasedate_year = date('Y',$event_data['releasedate']);
-$event_releasedate_month = date('m',$event_data['releasedate']);
-$event_releasedate_day = date('d',$event_data['releasedate']);
-$event_releasedate_time = date('H:i:s',$event_data['releasedate']);
-
-$event_lastedit = date('Y-m-d H:i',$event_data['lastedit']);
-$event_lastedit_from = $event_data['lastedit_from'];
+// the template shows author and release date next to the teaser
+$event_releasedate = date($se_settings['dateformat'].' '.$se_settings['timeformat'], (int) $event_data['releasedate']);
+$smarty->assign('event_releasedate', $event_releasedate);
+$smarty->assign('event_author', $event_data['author'] ?? '');
 
 /* tags */
 $tags = se_get_content_tags('event', (int) $get_event_id);
@@ -48,17 +58,15 @@ $smarty->assign('event_end_day', $event_end_day);
 $smarty->assign('event_end_month', $event_end_month);
 $smarty->assign('event_end_year', $event_end_year);
 
-/* entry date */
-$entrydate_year = date('Y',$event_data['date']);
 
+/* images - stored as ../images/... or /images/..., public url is /images/... */
 
-/* images */
-
-if($event_images[1] != "") {
-    $first_image = '/' . $img_path . '/' . str_replace('../content/images/','',$event_images[1]);
+$first_image = '';
+$first_image_caption = '';
+if(($event_images[1] ?? '') != "") {
+    $first_image = str_replace('../images/','/images/',$event_images[1]);
     $event_image_data = se_get_images_data($first_image,'data=array');
-} else {
-    $first_image = '';
+    $first_image_caption = $event_image_data['media_text'] ?? '';
 }
 
 /* show guestlist */
@@ -66,7 +74,7 @@ $show_guestlist = false;
 if($event_data['event_guestlist'] == 2 OR $event_data['event_guestlist'] == 3) {
     $show_guestlist = true;
 
-    if($event_data['event_guestlist'] == 2 AND $_SESSION['user_nick'] == '') {
+    if($event_data['event_guestlist'] == 2 AND ($_SESSION['user_nick'] ?? '') == '') {
         /* only registered user can confirm */
         $smarty->assign('disabled', "disabled");
     } else {
@@ -83,8 +91,6 @@ if($event_data['event_guestlist'] == 2 OR $event_data['event_guestlist'] == 3) {
 
     if($event_data['event_guestlist_public_nbr'] == 2) {
         $cnt_commitments = se_get_event_confirmation_data($event_data['id']);
-        $guestlist = str_replace("{label_nbr_commitments}", $lang['guestlist_label_nbr_commitments'], $guestlist);
-        $guestlist = str_replace("{nbr_commitments}", $cnt_commitments['evc'], $guestlist);
         $smarty->assign('label_nbr_commitments', $lang['guestlist_label_nbr_commitments']);
         $smarty->assign('nbr_commitments', $cnt_commitments['evc']);
     } else {
@@ -104,20 +110,21 @@ if($event_data['votings'] == 2 || $event_data['votings'] == 3) {
     $show_voting = true;
     $voter_data = false;
     $voting_type = array("upv", "dnv");
+    $user_nick = (string) ($_SESSION['user_nick'] ?? '');
     if ($event_data['votings'] == 2) {
-        if ($_SESSION['user_nick'] == '') {
+        if ($user_nick == '') {
             $voter_data = false;
         } else {
-            $voter_data = se_check_user_legitimacy($event_data['id'], $_SESSION['user_nick'], $voting_type);
+            $voter_data = se_check_user_legitimacy($event_data['id'], $user_nick, $voting_type);
         }
     }
 
     if ($event_data['votings'] == 3) {
-        if ($_SESSION['user_nick'] == '') {
+        if ($user_nick == '') {
             $voter_name = se_generate_anonymous_voter();
             $voter_data = se_check_user_legitimacy($event_data['id'], $voter_name, $voting_type);
         } else {
-            $voter_data = se_check_user_legitimacy($event_data['id'], $_SESSION['user_nick'], $voting_type);
+            $voter_data = se_check_user_legitimacy($event_data['id'], $user_nick, $voting_type);
         }
     }
 
@@ -143,17 +150,6 @@ if($event_data['votings'] == 2 || $event_data['votings'] == 3) {
 
 
 $form_action = '/'.$swifty_slug.$mod_slug;
-$this_entry = str_replace("{form_action}", $form_action, $this_entry);
-
-
-if($event_data['product_textlib_content'] != 'no_snippet') {
-    $textlib_content = se_get_snippet($event_data['product_textlib_content'],$languagePack,'all');
-    $smarty->assign('product_snippet_text', $textlib_content);
-}
-
-
-
-$form_action = '/'.$swifty_slug.$mod_slug;
 
 
 if($event_data['meta_title'] == '') {
@@ -161,7 +157,7 @@ if($event_data['meta_title'] == '') {
 }
 
 if($event_data['meta_description'] == '') {
-    $event_data['meta_description'] = substr(strip_tags($event_teaser),0,160);
+    $event_data['meta_description'] = mb_substr(trim(strip_tags($event_teaser)),0,160);
 }
 
 
@@ -171,7 +167,7 @@ $smarty->assign('page_meta_keywords', html_entity_decode($event_data['tags']));
 
 // without an image, keep the page/global thumbnail set in template-setup.php
 if($first_image != '') {
-    $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_image);
+    $page_contents['page_thumbnail'] = rtrim($se_base_url,'/').'/'.ltrim($first_image,'/');
     $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
 }
 
@@ -187,6 +183,7 @@ $smarty->assign('votes_dn', $event_data['votes_dn']);
 
 $smarty->assign('show_voting', $show_voting);
 $smarty->assign('event_img_src', $first_image);
+$smarty->assign('event_img_caption', $first_image_caption);
 
 $smarty->assign('event_id', $event_data['id']);
 $smarty->assign('event_title', $event_data['title']);
