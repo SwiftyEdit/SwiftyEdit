@@ -202,6 +202,7 @@
   "comment_msg_auth1": "Πρέπει να συνδεθείτε για να γράψετε σχόλια.",
   "comment_msg_auth2": "Πρέπει να εισάγετε το όνομά σας και τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας.",
   "comments_title": "Σχόλια ({cnt_comments})",
+  "comments_closed": "Comments are closed.",
   "label_guestlist": "Λίστα καλεσμένων",
   "guestlist_description": "Υπογράψτε τη λίστα επισκεπτών.",
   "guestlist_description_for_members": "Μόνο εγγεγραμμένοι χρήστες μπορούν να υπογράψουν τη λίστα επισκεπτών.",
