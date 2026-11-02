@@ -41,7 +41,9 @@ $array_mod_slug = explode("/", $mod_slug);
 foreach($all_categories as $cats) {
 
     //$this_nav_cat_item = $tpl_nav_cats_item;
-    $show_category_title = $cats['cat_description'];
+    // the title of the category (tab "info"), the name if it has none -
+    // cat_description is the meta description, it is passed on as such
+    $show_category_title = ($cats['cat_title'] != '') ? $cats['cat_title'] : $cats['cat_name'];
     $show_category_name = $cats['cat_name'];
     $cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';
 
@@ -57,6 +59,7 @@ foreach($all_categories as $cats) {
     $categories[] = array(
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
+        "cat_description" => $cats['cat_description'],
         "cat_name" => $show_category_name,
         "cat_class" => $cat_class,
         "cat_hash" => $cats['cat_hash']

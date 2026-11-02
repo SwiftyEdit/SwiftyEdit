@@ -15,7 +15,9 @@
                 <td>{{ list.thumb(category.image) }}</td>
                 <td>
                     <h6 class="mb-0">{{ category.name }}</h6>
-                    {% if category.description is not empty %}<small class="d-block">{{ category.description }}</small>{% endif %}
+                    {# title (only if it differs from the name) and teaser of the "info" tab #}
+                    {% if category.title is not empty %}<small class="d-block fw-semibold">{{ category.title }}</small>{% endif %}
+                    {% if category.teaser is not empty %}<small class="d-block text-muted">{{ category.teaser }}</small>{% endif %}
                     <code>{{ category.slug }}</code>
                 </td>
                 <td class="text-muted" title="{{ lang.label_priority }}">{{ category.sort }}</td>

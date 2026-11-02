@@ -62,7 +62,7 @@ Assigned by `app/handlers/posts-list.php` and `app/handlers/posts-display.php` r
 | Variable | Meaning |
 |---|---|
 | `$posts` | Array of posts to display. Each entry already carries frontend-ready keys: `post_title`, `post_teaser` / `post_text` (already decoded), `post_tmb_src` (thumbnail or empty), `post_href` (**`false`** when "hide detail page" is set in the ACP!), `post_categories` (array of `cat_href` / `cat_title`), `content_tags`, `show_voting`, `votes_status_up` / `votes_status_dn`, `votes_up` / `votes_dn`, `draft_message` / `post_css_classes` (drafts only, for admins), `post_thumbnails` (gallery posts only), `video_id` (video posts only), `btn_open_post`. |
-| `$categories` | Category navigation for this listing page (same shape as the shop's, see below). |
+| `$categories` | Category navigation for this listing page: `cat_href`, `cat_name`, `cat_title` (the title of the category, its name if it has none), `cat_description` (meta description), `cat_class`. |
 | `$category_template_data` | Decoded `page_template_values` of the active category - only set when that category has its own theme values defined for the current template. |
 | `$post_cnt`, `$post_start_nbr`, `$post_end_nbr` | Total match count plus "showing X-Y of Z". |
 | `$show_posts_list`, `$show_pagination`, `$pagination` (array of `href` / `nbr` / `active_class`), `$pag_prev_href`, `$pag_next_href` | List/pagination state. |
@@ -95,7 +95,7 @@ respectively.
 | `$product_filter` | Sidebar filter definition: array of groups with `items` (each `title`, `checked`, `filter_url`, `count` – number of matching products, taking the active filters of the other groups into account; not set for range filters), `has_active`, `clear_url`; range filters (`input_type == 3`) additionally carry `range_min` / `range_max` / `current_min` / `current_max`. See [Filter](05-05-filter.md). |
 | `$active_filter_tags`, `$has_active_filters` | Currently active filter chips with their "remove" URL. |
 | `$sort_urls` (array `default` / `name` / `ts` / `pasc` / `pdesc`), `$class_sort_name` / `$class_sort_topseller` / `$class_sort_price_asc` / `$class_sort_price_desc` | Sort links, and the `active` CSS class for the current sort. |
-| `$categories`, `$cat_hashes` | Category navigation. |
+| `$categories`, `$cat_hashes` | Category navigation. Each entry: `cat_href`, `cat_name`, `cat_title` (the title of the category, its name if it has none), `cat_description` (meta description), `cat_teaser` / `cat_text`, `cat_class` (`active` for the current category), `cat_hash`. On a category page, its title, meta description and keywords replace those of the page (description and keywords only if set). |
 | `$product_cnt` / `$nbr_products`, `$show_products_list`, `$show_pagination`, `$pagination`, `$pag_prev_href`, `$pag_next_href` | List/pagination state. |
 | `$show_shopping_cart` | Site-wide shopping cart toggle (ACP setting) - not to be confused with the field of the same name inside each `$products` entry. |
 | `$wishlist_login_uri`, `$filter_base_url`, `$form_action`, `$page_slug` | |

@@ -270,7 +270,8 @@ foreach($all_categories as $cats) {
         }
     }
 
-    $show_category_title = $cats['cat_title'];
+    // the name if the category has no title of its own
+    $show_category_title = ($cats['cat_title'] != '') ? $cats['cat_title'] : $cats['cat_name'];
     $show_category_description = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
     $show_category_text = $cats['cat_text'];
@@ -292,8 +293,13 @@ foreach($all_categories as $cats) {
         // replace contents and metas with category it's data
         $page_content = text_parser(stripslashes($show_category_text));
         $page_title = $show_category_title;
-        $page_meta_description = $show_category_description;
-        $page_meta_keywords = $show_category_keywords;
+        // without own meta data the ones of the page stay
+        if($show_category_description != '') {
+            $page_meta_description = $show_category_description;
+        }
+        if($show_category_keywords != '') {
+            $page_meta_keywords = $show_category_keywords;
+        }
 
         // get the theme name for the category it's theme values
         $this_page_theme = $page_contents['page_template'];

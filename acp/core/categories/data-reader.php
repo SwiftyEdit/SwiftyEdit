@@ -23,16 +23,18 @@ if($_REQUEST['action'] == 'list_active_searches') {
 
 if($_REQUEST['action'] == 'list') {
 
-    // search: every keyword has to be part of the name, title, description or slug
+    // search: every keyword has to be part of the name, title, teaser, description or slug
     $keywords = array_filter(explode(" ", $decode($_SESSION['categories_text_filter'] ?? '')));
 
     $categories = [];
     foreach(se_get_categories() as $category) {
 
         $name = $decode($category['cat_name']);
-        $description = $decode($category['cat_description']);
+        $title = $decode($category['cat_title']);
+        // the teaser is stored as html (se_purify_html), the list shows it as plain text
+        $teaser = trim(preg_replace('/\s+/', ' ', $decode(strip_tags((string) $category['cat_teaser']))));
 
-        $haystack = implode(' ', [$name, $decode($category['cat_title']), $description, $category['cat_name_clean']]);
+        $haystack = implode(' ', [$name, $title, $teaser, $decode($category['cat_description']), $category['cat_name_clean']]);
         foreach($keywords as $keyword) {
             if(mb_stripos($haystack, $keyword) === false) {
                 continue 2;
@@ -48,7 +50,9 @@ if($_REQUEST['action'] == 'list') {
         $categories[] = [
             'id' => (int) $category['cat_id'],
             'name' => $name,
-            'description' => $description,
+            // the fields of the "info" tab - the description belongs to the meta information
+            'title' => ($title != $name) ? $title : '',
+            'teaser' => mb_strimwidth($teaser, 0, 120, '…'),
             'slug' => $category['cat_name_clean'],
             'sort' => $category['cat_sort'],
             'lang' => $category['cat_lang'],

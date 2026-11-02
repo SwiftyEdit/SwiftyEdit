@@ -62,7 +62,7 @@ Zugewiesen von `app/handlers/posts-list.php` bzw. `app/handlers/posts-display.ph
 | Variable | Bedeutung |
 |---|---|
 | `$posts` | Array der anzuzeigenden Beiträge. Jeder Eintrag trägt bereits frontend-fertige Schlüssel: `post_title`, `post_teaser` / `post_text` (bereits dekodiert), `post_tmb_src` (Thumbnail oder leer), `post_href` (**`false`**, wenn im ACP "Detailseite ausblenden" gesetzt ist!), `post_categories` (Array `cat_href` / `cat_title`), `content_tags`, `show_voting`, `votes_status_up` / `votes_status_dn`, `votes_up` / `votes_dn`, `draft_message` / `post_css_classes` (nur Entwürfe, für Admins), `post_thumbnails` (nur Galerie-Beiträge), `video_id` (nur Video-Beiträge), `btn_open_post`. |
-| `$categories` | Kategorie-Navigation für diese Listenseite (gleiche Struktur wie im Shop, siehe unten). |
+| `$categories` | Kategorie-Navigation für diese Listenseite: `cat_href`, `cat_name`, `cat_title` (der Titel der Kategorie, ohne Titel ihr Name), `cat_description` (Meta-Beschreibung), `cat_class`. |
 | `$category_template_data` | Dekodierte `page_template_values` der aktiven Kategorie - nur gesetzt, wenn diese Kategorie eigene Theme-Werte für das aktuelle Template hinterlegt hat. |
 | `$post_cnt`, `$post_start_nbr`, `$post_end_nbr` | Gesamtzahl Treffer sowie "zeige X-Y von Z". |
 | `$show_posts_list`, `$show_pagination`, `$pagination` (Array `href` / `nbr` / `active_class`), `$pag_prev_href`, `$pag_next_href` | Listen-/Pagination-Status. |
@@ -94,7 +94,7 @@ Zugewiesen von `app/handlers/products-list.php` bzw. `app/handlers/products-disp
 | `$product_filter` | Sidebar-Filterdefinition: Array von Gruppen mit `items` (je `title`, `checked`, `filter_url`, `count` – Anzahl passender Produkte unter Berücksichtigung der aktiven Filter der anderen Gruppen; nicht bei Bereichs-Filtern), `has_active`, `clear_url`; bei Bereichs-Filtern (`input_type == 3`) zusätzlich `range_min` / `range_max` / `current_min` / `current_max`. Siehe [Filter](05-05-filter.md). |
 | `$active_filter_tags`, `$has_active_filters` | Aktuell aktive Filter-Chips mit ihrer "entfernen"-URL. |
 | `$sort_urls` (Array `default` / `name` / `ts` / `pasc` / `pdesc`), `$class_sort_name` / `$class_sort_topseller` / `$class_sort_price_asc` / `$class_sort_price_desc` | Sortier-Links bzw. die `active`-CSS-Klasse für die aktuelle Sortierung. |
-| `$categories`, `$cat_hashes` | Kategorie-Navigation. |
+| `$categories`, `$cat_hashes` | Kategorie-Navigation. Jeder Eintrag: `cat_href`, `cat_name`, `cat_title` (der Titel der Kategorie, ohne Titel ihr Name), `cat_description` (Meta-Beschreibung), `cat_teaser` / `cat_text`, `cat_class` (`active` für die aktuelle Kategorie), `cat_hash`. Auf einer Kategorie-Seite ersetzen ihr Titel, ihre Meta-Beschreibung und ihre Keywords die der Seite (Beschreibung und Keywords nur, wenn gesetzt). |
 | `$product_cnt` / `$nbr_products`, `$show_products_list`, `$show_pagination`, `$pagination`, `$pag_prev_href`, `$pag_next_href` | Listen-/Pagination-Status. |
 | `$show_shopping_cart` | Site-weiter Warenkorb-Schalter (ACP-Einstellung), nicht zu verwechseln mit dem Feld gleichen Namens innerhalb jedes `$products`-Eintrags. |
 | `$wishlist_login_uri`, `$filter_base_url`, `$form_action`, `$page_slug` | |
