@@ -1,8 +1,15 @@
 <?php
 
 /**
+ * SwiftyEdit frontend - list of posts, included by posts.php (all posts, a category, a page of the list)
+ *
+ * variables of posts.php
+ * @var string $display_mode list_posts or list_posts_category
+ * @var bool $status_404
+ *
  * global variables
  * @var object $db_content see database.php
+ * @var string $query the requested path, see routing.php
  * @var array $page_contents
  * @var array $se_settings
  * @var array $lang
@@ -18,7 +25,7 @@
 /* defaults */
 $posts_start = 0;
 $posts_limit = (int) $se_settings['posts_entries_per_page'];
-if($posts_limit == '' || $posts_limit < 1) {
+if($posts_limit < 1) {
     $posts_limit = 10;
 }
 $posts_order = 'id';
@@ -43,6 +50,7 @@ $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 
 // only set below when the active category has matching theme values
 $category_template_data = null;
+$categories = [];
 
 foreach($all_categories as $cats) {
 
@@ -100,12 +108,13 @@ foreach($all_categories as $cats) {
         }
 
         if($array_mod_slug[1] == 'p') {
-            if(is_numeric($array_mod_slug[2])) {
+            if(is_numeric($array_mod_slug[2] ?? '')) {
                 $posts_start = $array_mod_slug[2];
             } else {
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: /$swifty_slug");
                 header("Connection: close");
+                exit;
             }
         }
     }
@@ -113,15 +122,15 @@ foreach($all_categories as $cats) {
 
 
 // Pagination
-if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_GET['page'])) {
+if($array_mod_slug[0] == 'p' OR ($array_mod_slug[1] ?? '') == 'p' OR isset($_GET['page'])) {
 
     $status_404 = false;
 
     if(isset($_GET['page'])) {
         $posts_start = (int) $_GET['page'];
-    } else if(is_numeric($array_mod_slug[1])) {
+    } else if(is_numeric($array_mod_slug[1] ?? '')) {
         $posts_start = $array_mod_slug[1];
-    } else if(is_numeric($array_mod_slug[2])) {
+    } else if(is_numeric($array_mod_slug[2] ?? '')) {
         $posts_start = $array_mod_slug[2];
     } else {
         header("HTTP/1.1 301 Moved Permanently");
@@ -190,6 +199,8 @@ $pagination = array();
 
 if($cnt_pages > 1) {
     $show_pagination = true;
+    // a page beyond the last one has no active link
+    $current_page = 1;
 	
 	for($i=0;$i<$cnt_pages;$i++) {
 		
@@ -357,20 +368,22 @@ foreach($get_posts as $k => $post) {
         $get_posts[$k]['show_voting'] = true;
 		$voter_data = false;
 		$voting_type = array("upv","dnv");
+		$user_nick = (string) ($_SESSION['user_nick'] ?? '');
 		if($get_posts[$k]['post_votings'] == 2) {
-			if($_SESSION['user_nick'] == '') {
+			if($user_nick == '') {
 				$voter_data = false;
 			} else {
-				$voter_data = se_check_user_legitimacy($get_posts[$k]['post_id'],$_SESSION['user_nick'],$voting_type);
+				$voter_data = se_check_user_legitimacy($get_posts[$k]['post_id'],$user_nick,$voting_type);
 			}
 		}
 		
+		// same as the post page: an empty nick is an anonymous voter
 		if($get_posts[$k]['post_votings'] == 3) {
-			if(!isset($_SESSION['user_nick'])) {
+			if($user_nick == '') {
 				$voter_name = se_generate_anonymous_voter();
 				$voter_data = se_check_user_legitimacy($get_posts[$k]['post_id'],$voter_name,$voting_type);	
 			} else {
-				$voter_data = se_check_user_legitimacy($get_posts[$k]['post_id'],$_SESSION['user_nick'],$voting_type);
+				$voter_data = se_check_user_legitimacy($get_posts[$k]['post_id'],$user_nick,$voting_type);
 			}
 		}
 				
