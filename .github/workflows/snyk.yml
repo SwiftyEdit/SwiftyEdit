@@ -27,4 +27,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: code test
-          args: --all-projects --exclude=ace-editor,tinymce-editor --target-reference=develop
+          args: --report --org=patkon --project-name=SwiftyEdit --target-reference=develop
