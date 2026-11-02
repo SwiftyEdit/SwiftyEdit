@@ -11,9 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: snyk/actions/php@master
+      - name: Abhängigkeiten
+        uses: snyk/actions/php@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
-          args: --target-reference=develop
+          args: --all-projects --target-reference=develop
+
+      - name: Eigener Code
+        uses: snyk/actions/php@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --report --project-name=SwiftyEdit --target-reference=develop
