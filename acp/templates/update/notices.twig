@@ -1,0 +1,16 @@
+{#
+ # notices of swiftyedit.net ("notices" in versions.json), see se_update_notices() -
+ # the content of the notices card in index.twig
+ # notices: list of {title, text, build, link} - plain text, links only for https:// urls
+ #}
+{% for notice in notices %}
+    <div class="{{ loop.last ? 'mb-0' : 'mb-3' }}">
+        <h6 class="mb-1">{% if notice.build %}From build {{ notice.build }} · {% endif %}{{ notice.title }}</h6>
+        <p class="mb-1">{{ notice.text|nl2br }}</p>
+        {% if notice.link %}
+            <a href="{{ notice.link }}" target="_blank" rel="noopener noreferrer">{{ lang.update_notices_read_more }}</a>
+        {% endif %}
+    </div>
+{% else %}
+    <p class="text-muted mb-0">{{ lang.update_notices_none }}</p>
+{% endfor %}

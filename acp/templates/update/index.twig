@@ -1,0 +1,63 @@
+{#
+ # core update in /admin/update/, rendered by acp/core/update/index.php
+ # version: installed version {version, build, date}, base_url: url of this installation
+ # the channels (channels.twig) and the downloaded releases (downloads.twig) are loaded by the update data-reader
+ #}
+{% set loading %}<div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span>{% endset %}
+
+<div class="subHeader d-flex align-items-center">
+    {{ icon.arrow_clockwise|raw }} {{ lang.update }}
+    <div class="ms-auto">core updates build: <code>{{ version.build }}</code></div>
+</div>
+
+{# the actions of the channels and the downloads include this token #}
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+{% if updates_disabled %}
+    <div class="alert alert-info mb-4">{{ lang.update_msg_disabled }}</div>
+{% endif %}
+{% if zip_missing %}
+    <div class="alert alert-danger mb-4">{{ lang.update_msg_zip_missing }}</div>
+{% endif %}
+
+<div class="row g-2 mb-2">
+    <div class="col-md-6">
+        {# the installed version and below it the channels of swiftyedit.net #}
+        <div class="card h-100">
+            <div class="card-header">{{ icon.database|raw }} {{ base_url }}</div>
+            <div class="card-body">
+                <p>Version: {{ version.version }}<br>Build {{ version.build }}<br>{{ lang.label_date }}: {{ version.date }}</p>
+                <h6 class="border-top pt-3">{{ icon.server|raw }} SwiftyEdit Server</h6>
+                <div hx-get="{{ reader_uri }}?action=read_versions" hx-trigger="load">{{ loading }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        {# notices of swiftyedit.net, filled by the channels request (hx-swap-oob) -
+           next to the channels, because they should be read before choosing an update #}
+        <div class="card h-100">
+            <div class="card-header">{{ icon.info_circle|raw }} {{ lang.update_notices_title }}</div>
+            <div class="card-body p-0">
+                <div id="updateNotices" class="p-3">{{ loading }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# downloaded files - directly below the channels, so the result of a download
+   (and later of the installation) shows up right where it was triggered #}
+<div class="card mb-2">
+    {# indicators of download and installation sit in the header, outside the swap targets #}
+    <div class="card-header d-flex align-items-center">
+        {{ lang.update_label_downloads }}
+        <span id="updateIndicator" class="htmx-indicator ms-auto">{{ loading }}</span>
+        <span id="htmxIndicator" class="htmx-indicator ms-auto">{{ loading }}</span>
+    </div>
+    <div class="card-body">
+        {# response of a download (load_update_data) #}
+        <div id="updateResponse"></div>
+        <div hx-get="{{ reader_uri }}?action=check_download" hx-trigger="load, update_downloads_list from:body">{{ loading }}</div>
+        {# protocol of an installation (install_update) #}
+        <div id="updateDone"></div>
+    </div>
+</div>

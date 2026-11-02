@@ -1,0 +1,20 @@
+{# database helpers after an import from SwiftyEdit 1.x in /admin/update/helpers/, rendered by acp/core/update/helpers.php #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.arrow_clockwise|raw }} {{ lang.update }}
+    <div class="ms-auto">helpers</div>
+</div>
+
+<div id="response"></div>
+
+<div class="card mb-3">
+    <div class="card-header"><h5>Search &amp; Replace contents</h5></div>
+    <div class="card-body">
+        <p>If you have imported a database from SwiftyEdit 1.x, all paths to your images and downloads must be adjusted.<br>
+        This tool searches the entire database for the character string <code>../content/images/</code> and replaces it with <code>/images/</code> etc.</p>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-default text-danger m-1" hx-post="{{ writer_uri }}" hx-target="#response" hx-include="[name='csrf_token']" name="helper_update_table" value="se_content">Update page, snippets and categories</button>
+        <button class="btn btn-default text-danger m-1" hx-post="{{ writer_uri }}" hx-target="#response" hx-include="[name='csrf_token']" name="helper_update_table" value="se_posts">Update posts, products and events</button>
+    </div>
+</div>
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">

@@ -1,52 +1,55 @@
 <?php
 
+/**
+ * SwiftyEdit /admin-xhr/update/read/
+ * versions of the update channels with the notices of swiftyedit.net, and the downloaded releases
+ *
+ * global variables
+ * @var object $twig
+ */
+
 require_once __DIR__.'/functions.php';
 
-if($_GET['action'] == 'read_versions') {
+$action = $_GET['action'] ?? '';
 
-    $remote_versions_array = get_remote_versions();
-    compare_versions();
+// the channels of swiftyedit.net, the notices of the same versions.json are swapped into their own area
+if($action == 'read_versions') {
 
-    // notices from the same versions.json, swapped into their own area below
-    // the version cards (see index.php) - no second request to swiftyedit.net
-    echo '<div id="updateNotices" hx-swap-oob="true">'.se_render_update_notices($remote_versions_array).'</div>';
+    $remote_versions = get_remote_versions();
+    $channels = se_update_channels($remote_versions);
+
+    $stable_available = false;
+    foreach($channels ?? [] as $channel) {
+        if($channel['name'] == 'stable' && $channel['available']) {
+            $stable_available = true;
+        }
+    }
+
+    echo $twig->render('update/channels.twig', [
+        'channels' => $channels,
+        'stable_available' => $stable_available,
+        'notices' => se_update_notices($remote_versions),
+        'writer_uri' => '/admin-xhr/update/write/'
+    ]);
     exit;
 }
 
-// check if there are downloaded files to install
-if($_GET['action'] == 'check_download') {
+// downloaded releases that can be installed
+if($action == 'check_download') {
 
-    $extract_dir = __DIR__.'/download/extract';
-
-    $hx_vals = [
-        "csrf_token"=> $_SESSION['token']
-    ];
-
-    // only the list itself - the surrounding card is part of index.php
     $downloads = [];
+    $extract_dir = __DIR__.'/download/extract';
     if(is_dir($extract_dir)) {
-        foreach(scandir($extract_dir) as $download) {
-            if(str_starts_with($download, '.')) {continue;}
-            $downloads[] = $download;
+        foreach(scandir($extract_dir) ?: [] as $download) {
+            if(!str_starts_with($download, '.')) {
+                $downloads[] = $download;
+            }
         }
     }
 
-    if($downloads !== []) {
-        foreach($downloads as $download) {
-            // folder names come from the file system - escape them for text and attributes
-            $download = htmlspecialchars($download, ENT_QUOTES);
-            echo '<div class="row">';
-            echo '<div class="col-md-4">'.$download.'</div>';
-            echo '<div class="col-md-8 text-end">';
-            echo '<button class="btn btn-default text-success" hx-post="/admin-xhr/update/write/" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="install_update" value="'.$download.'">'.$icon['sync_alt'].' Install</button>';
-            echo '<button class="btn btn-danger" hx-post="/admin-xhr/update/write/" hx-vals=\''.json_encode($hx_vals).'\' hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="remove_download" value="'.$download.'">'.$icon['trash_alt'].' Delete</button>';
-            echo '</div>';
-            echo '</div>';
-        }
-
-    } else {
-        echo '<p class="mb-0">There are no files available for an installation. Select a source above, if available.</p>';
-    }
-
+    echo $twig->render('update/downloads.twig', [
+        'downloads' => $downloads,
+        'writer_uri' => '/admin-xhr/update/write/'
+    ]);
     exit;
 }

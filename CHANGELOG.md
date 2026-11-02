@@ -8,6 +8,10 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
+## 2.3.0 - 2026-11-02 (Build 26-0231)
+
+- Migrate the Backend from inline PHP to Twig templates
+
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 
 ### Fixed

@@ -1,11 +1,21 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/update/write/
+ * download, installation and removal of core updates, the database helpers
+ *
+ * The output stays plain HTML (se_update_alert()) instead of Twig templates: during
+ * an update this file runs as the old version, templates loaded after move_new_files()
+ * would already be the ones of the new version.
+ *
+ * global variables
  * @var array $lang
+ * @var bool $se_backend_updates from config.php
  */
 
-const INSTALLER = TRUE;
 require_once __DIR__.'/functions.php';
+// install/php/functions.php checks it
+const INSTALLER = TRUE;
 require_once __DIR__.'/../../../install/php/functions.php';
 
 // Reachable directly via /admin-xhr/update/write/ regardless of whether
@@ -15,32 +25,33 @@ require_once __DIR__.'/../../../install/php/functions.php';
 // router (see acp/core/update/router.php, and the identical fix just
 // applied to acp/core/addons/data-writer.php).
 if(!se_hasPermission('drm_acp_sensitive_files')) {
-    echo '<div class="alert alert-info">'.$lang['rm_no_access'].'</div>';
+    echo se_update_alert('info', $lang['rm_no_access']);
     exit;
 }
 
 // switched off in SE_CONTENT/config.php - no downloads, no installation
-if(($se_backend_updates ?? true) === false && (isset($_POST['load_update_data']) || isset($_POST['install_update']))) {
-    echo '<div class="alert alert-info">'.$lang['update_msg_disabled'].'</div>';
+if($se_backend_updates === false && (isset($_POST['load_update_data']) || isset($_POST['install_update']))) {
+    echo se_update_alert('info', $lang['update_msg_disabled']);
     exit;
 }
 
 // helpers
 if(isset($_POST['helper_update_table'])) {
     include __DIR__.'/helpers_update_data.php';
+    exit;
 }
 
 // load data from swiftyedit.net
 if(isset($_POST['load_update_data'])) {
 
-    $get_filename = basename($_POST['file']);
+    $get_filename = basename((string) ($_POST['file'] ?? ''));
 
     // each channel is served from its own directory on swiftyedit.net
     $update_channels = ['alpha', 'beta', 'stable'];
     $update_channel = $_POST['load_update_data'];
 
     if(!in_array($update_channel, $update_channels, true)) {
-        echo '<div class="alert alert-warning">Error: unknown update channel</div>';
+        echo se_update_alert('warning', 'Error: unknown update channel');
         exit;
     }
 
@@ -55,7 +66,7 @@ if(isset($_POST['load_update_data'])) {
 
     $download_dir = __DIR__.'/download/';
     if (!is_writable($download_dir)) {
-        echo '<div class="alert alert-warning">Download dir not writable!</div>';
+        echo se_update_alert('warning', 'Download dir not writable!');
     }
     $extract_dir = __DIR__.'/download/extract';
     if(!is_dir("$extract_dir")) {
@@ -64,9 +75,9 @@ if(isset($_POST['load_update_data'])) {
 
     if(is_dir("$extract_dir")) {
         if(copy("$source_file","$download_dir/$get_filename")) {
-            echo '<div class="alert alert-info">Download complete. File: '.htmlspecialchars(basename($get_filename), ENT_QUOTES).'</div>';
+            echo se_update_alert('info', 'Download complete. File: '.$get_filename);
         } else {
-            echo '<div class="alert alert-warning">Error: cannot copy file</div>';
+            echo se_update_alert('warning', 'Error: cannot copy file');
         }
     }
 
@@ -74,9 +85,9 @@ if(isset($_POST['load_update_data'])) {
     if($archive->open("$download_dir/$get_filename") === TRUE) {
         $archive->extractTo("$extract_dir");
         $archive->close();
-        echo '<div class="alert alert-info">Files extracted from: '.htmlspecialchars(basename($get_filename), ENT_QUOTES).'</div>';
+        echo se_update_alert('info', 'Files extracted from: '.$get_filename);
     } else {
-        echo '<div class="alert alert-warning">Error: cannot open zip file</div>';
+        echo se_update_alert('warning', 'Error: cannot open zip file');
     }
     exit;
 }
@@ -85,7 +96,7 @@ if(isset($_POST['load_update_data'])) {
 if(isset($_POST['remove_download'])) {
 
     $download_dir = __DIR__.'/download/';
-    $remove_dir_name = basename($_POST['remove_download']);
+    $remove_dir_name = basename((string) $_POST['remove_download']);
 
     $remove_dir = $download_dir.'extract/'.$remove_dir_name;
     $remove_zip_file = $download_dir.$remove_dir_name.'.zip';
@@ -104,10 +115,13 @@ if(isset($_POST['remove_download'])) {
 // install update, copy new files
 if(isset($_POST['install_update'])) {
 
-    $source_directory = basename($_POST['install_update']);
+    $source_directory = basename((string) $_POST['install_update']);
     $_SESSION['protocol'] = '';
     $_SESSION['update_notices'] = [];
-    move_new_files($source_directory);
+    if(!move_new_files($source_directory)) {
+        echo se_update_alert('danger', 'No complete release found in download/extract/'.$source_directory.' - nothing has been changed.');
+        exit;
+    }
     update_database();
 
     // move_new_files() explicitly skips /data/ (see rmdir_recursive() callers
@@ -139,7 +153,7 @@ if(isset($_POST['install_update'])) {
     }
 
     echo '<div style="height:350px;overflow:auto;margin:0;" class="well well-sm">';
-    echo '<h3>ERRORS: '.$_SESSION['errors_cnt'].'</h3>';
+    echo '<h3>ERRORS: '.(int) ($_SESSION['errors_cnt'] ?? 0).'</h3>';
     $protocol = explode('<|>', $_SESSION['protocol']);
     $protocol = array_filter($protocol);
     echo '<ul>';
@@ -151,12 +165,12 @@ if(isset($_POST['install_update'])) {
 
     // things the person running the update has to look at (e.g. .htaccess, see update_htaccess_file())
     foreach($_SESSION['update_notices'] as $update_notice) {
-        echo '<div class="alert alert-warning">'.htmlspecialchars($update_notice, ENT_QUOTES).'</div>';
+        echo se_update_alert('warning', $update_notice);
     }
     unset($_SESSION['update_notices']);
 
     if ($migration_result['error'] !== null) {
-        echo '<div class="alert alert-danger">A migration failed - the update is not complete. Fix the underlying issue and reload this page to retry; already-applied migrations will not run again.</div>';
+        echo se_update_alert('danger', 'A migration failed - the update is not complete. Fix the underlying issue and reload this page to retry; already-applied migrations will not run again.');
     } else {
         $installer_url = '<a href="/install/">/install/</a>';
         echo '<div class="alert alert-info">'.str_replace("{url}","$installer_url",$lang['update_msg_post_install']).'</div>';

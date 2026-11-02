@@ -1,0 +1,83 @@
+{#
+ # update channels of swiftyedit.net, loaded by the update data-reader into the server card of index.twig
+ # channels: list of {name, title, build, date, file, available, installed, reloadable} - null if the server was not reachable
+ # stable_available: a stable update is available - the status message is only about the stable channel
+ # notices: notices of versions.json, swapped into #updateNotices (notices.twig)
+ # the data comes from swiftyedit.net, Twig escapes it
+ #}
+{% set channel_colors = {
+    stable: {badge: 'bg-success', text: ''},
+    beta: {badge: 'bg-warning text-dark', text: 'text-warning'},
+    alpha: {badge: 'bg-danger', text: 'text-danger'}
+} %}
+
+{# one channel with its version and the download button #}
+{% macro channel_item(channel, colors, writer_uri) %}
+    <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+        <div>
+            <span class="badge {{ colors.badge }} me-2">{{ channel.name|capitalize }}</span>
+            <strong>{{ channel.title }}</strong>
+            <div class="small text-muted mt-1">Build {{ channel.build }} · {{ channel.date }}</div>
+            {# beta/alpha: show the "not for production" warning right at the entry #}
+            {% if channel.available and channel.name != 'stable' %}
+                <div class="small {{ colors.text }} mt-1">{{ icon.info_circle|raw }} {{ lang.update_msg_not_for_production }}</div>
+            {% endif %}
+        </div>
+        <div class="flex-shrink-0 d-flex flex-column align-items-end gap-1">
+            {% if channel.available or channel.reloadable %}
+                {# the download is shown in the card of the loaded files (index.twig) #}
+                <button class="btn btn-default btn-sm text-nowrap" hx-post="{{ writer_uri }}" hx-vals="{{ {file: channel.file}|json_encode }}" hx-include="[name='csrf_token']" hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="innerHTML" name="load_update_data" value="{{ channel.name }}">
+                    {{ lang.btn_choose_this_update }}{% if not channel.available %} {{ icon.arrow_clockwise|raw }}{% endif %}
+                </button>
+            {% elseif channel.installed %}
+                <span class="badge bg-secondary">{{ icon.check_circle|raw }} {{ lang.update_label_installed }}</span>
+            {% endif %}
+        </div>
+    </li>
+{% endmacro %}
+{% import _self as m %}
+
+{% if channels is null %}
+    <div class="alert alert-warning">{{ lang.update_msg_server_unreachable }}</div>
+{% else %}
+    {% set stable = channels|filter(c => c.name == 'stable') %}
+    {% set prereleases = channels|filter(c => c.name != 'stable') %}
+
+    <ul class="list-group list-group-flush mb-2">
+        {% for channel in stable %}
+            {{ m.channel_item(channel, channel_colors[channel.name], writer_uri) }}
+        {% endfor %}
+    </ul>
+
+    {# only about the stable channel - beta and alpha are for testing #}
+    <div class="alert alert-success">
+        {% if stable_available %}
+            {{ icon.info_circle|raw }} {{ lang.update_msg_update_available }}
+        {% else %}
+            {{ icon.check_circle|raw }} {{ lang.update_msg_no_update_available }}
+        {% endif %}
+    </div>
+
+    {% if prereleases %}
+        {# collapsed, unless a beta/alpha is installed or alpha can be reloaded (development mode) #}
+        {% set stable_installed = stable|filter(c => c.installed)|length > 0 %}
+        {% set show_prereleases = (not stable_installed and prereleases|filter(c => c.installed)|length > 0) or prereleases|filter(c => c.reloadable)|length > 0 %}
+        {# same collapsed row as the rarely changed settings of the product form (.sidebar-setting) #}
+        <details class="sidebar-setting mb-0 pb-0 border-0"{% if show_prereleases %} open{% endif %}>
+            <summary>
+                <span>{{ lang.update_label_prereleases }}</span>
+                <span class="sidebar-setting-value">{% for channel in prereleases %}{{ channel.name|capitalize }} {{ channel.build }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
+            </summary>
+            <div class="sidebar-setting-body">
+                <ul class="list-group list-group-flush">
+                    {% for channel in prereleases %}
+                        {{ m.channel_item(channel, channel_colors[channel.name], writer_uri) }}
+                    {% endfor %}
+                </ul>
+            </div>
+        </details>
+    {% endif %}
+{% endif %}
+
+{# the notices card next to the channels (index.twig) - its scroll-container grows up to its max-height, then scrolls #}
+<div id="updateNotices" class="scroll-container p-3" hx-swap-oob="true">{% include 'update/notices.twig' %}</div>

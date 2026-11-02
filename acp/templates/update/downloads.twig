@@ -1,0 +1,13 @@
+{#
+ # downloaded releases in acp/core/update/download/extract/, loaded by the update data-reader
+ # into the card of the loaded files (index.twig) - downloads: list of directory names
+ #}
+{% for download in downloads %}
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <div class="flex-grow-1"><code>{{ download }}</code></div>
+        <button class="btn btn-default text-success" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="install_update" value="{{ download }}">{{ icon.sync_alt|raw }} {{ lang.btn_install }}</button>
+        <button class="btn btn-danger" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="#updateDone" hx-indicator="#htmxIndicator" hx-swap="innerHTML" name="remove_download" value="{{ download }}">{{ icon.trash_alt|raw }} {{ lang.btn_delete }}</button>
+    </div>
+{% else %}
+    <p class="mb-0">{{ lang.update_msg_no_downloads }}</p>
+{% endfor %}
