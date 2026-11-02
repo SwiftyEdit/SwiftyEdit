@@ -603,7 +603,7 @@ function se_post_print_currency($number) {
 /**
  * calculate product's price
  * return net and gross price, formatted and raw
- * @param float $price price net (stored in the database)
+ * @param float|string $price price net (stored in the database, decimal comma)
  * @param integer $tax
  * @param integer $amount
  * @return array gross, gross_single, gross_raw, net, net_single, net_raw
