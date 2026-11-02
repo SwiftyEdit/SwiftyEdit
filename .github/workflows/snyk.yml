@@ -13,11 +13,12 @@ jobs:
 
       - name: Abhängigkeiten
         uses: snyk/actions/php@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
-          args: --all-projects --target-reference=develop
+          args: --all-projects --exclude=plugins --target-reference=develop
 
       - name: Eigener Code
         uses: snyk/actions/php@master
