@@ -1,0 +1,61 @@
+{# media library in /admin/uploads/, rendered by acp/core/uploads/index.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block header_actions %}
+    {# the upload modal is part of acp/index.php #}
+    <button type="button" class="btn btn-default text-success ms-auto" data-bs-toggle="modal" data-bs-target="#uploadModal">{{ icon.upload|raw }} {{ lang.btn_upload }}</button>
+{% endblock %}
+
+{% block list %}
+    <div class="row g-2 mb-3">
+        <div class="col-md-8">
+            {# reloaded after a folder was created or deleted #}
+            <div id="selDirectory" hx-get="{{ reader_uri }}?action=select_directory" hx-trigger="load, update_directories from:body"></div>
+        </div>
+        <div class="col-md-4">
+            {# a new folder is created inside the selected one #}
+            <form hx-post="{{ writer_uri }}" hx-swap="none" hx-on--after-request="this.reset()" method="POST">
+                <div class="input-group">
+                    <input type="text" name="new_folder" class="form-control" placeholder="{{ lang.btn_create_new_folder }}" required>
+                    <button type="submit" class="btn btn-default" title="{{ lang.btn_create_new_folder }}">{{ icon.folder|raw }}{{ icon.plus|raw }}</button>
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            </form>
+        </div>
+    </div>
+    <div id="getUploads" hx-get="{{ reader_uri }}?action=list" hx-trigger="load, {{ list_triggers }}"></div>
+{% endblock %}
+
+{% block sidebar %}
+    {% import 'components/form/macros.twig' as form %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-8">
+                    <form hx-post="{{ writer_uri }}" hx-swap="none" hx-trigger="change">
+                        <label class="form-label" for="sorting_media_list">{{ lang.sorting }}</label>
+                        {{ form.select('sorting_media_list', sorting_options, 'sorting_media_list') }}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+                </div>
+                <div class="col-4">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="btn-group d-flex">
+                        {% for direction, direction_icon in {'ASC': icon.arrow_up, 'DESC': icon.arrow_down} %}
+                            <button hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-swap="none" name="sorting_media_dir" value="{{ direction }}" title="{{ direction == 'ASC' ? lang.btn_sort_asc : lang.btn_sort_desc }}" class="btn btn-default w-100">{{ direction_icon|raw }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-2">
+        <div class="card-header">{{ icon.database|raw }} {{ lang.nav_btn_database }}</div>
+        <div class="card-body">
+            <div hx-get="{{ reader_uri }}?action=show_stats" hx-trigger="load, {{ list_triggers }}"></div>
+            {# adds files uploaded via FTP to the database and removes entries of files that no longer exist #}
+            <button class="btn btn-default w-100" name="rebase" value="files_to_database" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="body" hx-swap="beforeend">{{ icon.arrow_repeat|raw }} {{ lang.btn_media_rebase }}</button>
+        </div>
+    </div>
+{% endblock %}

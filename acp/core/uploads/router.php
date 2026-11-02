@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * SwiftyEdit backend
+ * switch file for section uploads
+ *
+ * global variables
+ * @var string $query - the current url
+ */
+
 require __DIR__.'/functions.php';
 
 $subinc = match (true) {
@@ -7,6 +15,4 @@ $subinc = match (true) {
     default => 'index'
 };
 
-if($subinc != '') {
-    include __DIR__.'/'.$subinc.'.php';
-}
+include __DIR__.'/'.$subinc.'.php';

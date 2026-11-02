@@ -1,220 +1,184 @@
 <?php
 
+/**
+ * SwiftyEdit /admin-xhr/uploads/write/
+ * media library: delete files, search, sorting, pagination, folders
+ * and the sync of the database with the files on the server
+ *
+ * global variables
+ * @var array $lang
+ * @var object $db_content
+ * @var string $languagePack
+ * @var string $img_path
+ * @var string $files_path
+ */
+
 require_once __DIR__.'/functions.php';
 
-/**
- * delete media
- */
-
+// delete a file with all its language entries and its thumbnail
 if(isset($_POST['delete'])) {
 
-    $delete_id = (int) $_POST['delete'];
-    $get_file_data = se_get_media_data_by_id($delete_id);
-
-    $delete_file = $get_file_data['media_file']; // f.e. ../images/example.jpg
-    $delete_thumb = $get_file_data['media_thumb']; // f.e. ../images_tmb/2025/02/...jpg
-
-    if(str_starts_with($delete_file, "../images/")) {
-        $delete_file_src = str_replace('../images/', "assets/images/", $delete_file);
-    }
-    if(str_starts_with($delete_thumb, "../images_tmb/")) {
-        $delete_thumb_src = str_replace('../images_tmb/', "assets/images_tmb/", $delete_thumb);
-    }
-    if(str_starts_with($delete_file, "../files/")) {
-        $delete_file_src = str_replace('../files/', "assets/files/", $delete_file);
+    $media = se_get_media_data_by_id((int) $_POST['delete']);
+    if(!is_array($media)) {
+        exit;
     }
 
+    // media DB paths are stored as "../images/..." / "../files/...", the files are in public/assets/
+    $delete_file = (string) $media['media_file'];
+    $delete_thumb = (string) $media['media_thumb'];
+    $delete_file_src = '';
+    if(str_starts_with($delete_file, '../images/') || str_starts_with($delete_file, '../files/')) {
+        $delete_file_src = se_resolve_within(SE_PUBLIC.'/assets', substr($delete_file, 3));
+    }
+    if($delete_file_src === false || $delete_file_src === '') {
+        exit;
+    }
 
-    if(is_file($delete_file_src)) {
-        if(unlink($delete_file_src)) {
-            se_delete_media_data($delete_file);
-            if(is_file($delete_thumb)) {
-                unlink($delete_thumb);
+    if(!is_file($delete_file_src)) {
+        // deleted via FTP, the entry is useless without the file
+        se_delete_media_data($delete_file);
+        show_toast($lang['msg_error_file_not_found'], 'info');
+    } else if(unlink($delete_file_src)) {
+        se_delete_media_data($delete_file);
+        if(str_starts_with($delete_thumb, '../images_tmb/')) {
+            $delete_thumb_src = se_resolve_within(SE_PUBLIC.'/assets/images_tmb', substr($delete_thumb, strlen('../images_tmb/')));
+            if($delete_thumb_src !== false && is_file($delete_thumb_src)) {
+                unlink($delete_thumb_src);
             }
-            echo '<div class="alert alert-success alert-auto-close">'.$lang['msg_success_file_delete'].'</div>';
-        } else {
-            echo '<div class="alert alert-danger"><strong>'.$delete_file_src.'</strong><br>'.$lang['msg_error_file_delete'].'</div>';
         }
+        show_toast($lang['msg_success_file_delete'], 'success');
     } else {
-        echo '<div class="alert alert-error">File ('.$delete_file_src.') not found</div>';
+        show_toast($lang['msg_error_file_delete'].' ('.basename($delete_file).')', 'danger');
     }
-    header( "HX-Trigger: update_uploads_list");
+    header("HX-Trigger: update_uploads_list");
+    exit;
 }
 
-
-
-
-/**
- * pagination
- */
-
-if(isset($_POST['pagination'])) {
-    $_SESSION['pagination_page'] = (int) $_POST['pagination'];
-    header( "HX-Trigger: update_uploads_list");
+// pagination
+if(isset($_POST['pagination_uploads'])) {
+    $_SESSION['pagination_uploads'] = (int) $_POST['pagination_uploads'];
+    header("HX-Trigger: update_uploads_list");
+    exit;
 }
 
-
-/**
- * filter files by text
- */
+// text search in the file names
 if(isset($_POST['uploads_text_filter'])) {
-
-    $_SESSION['uploads_text_filter'] = $_SESSION['uploads_text_filter'] . ' ' . sanitizeUserInputs($_POST['uploads_text_filter']);
-
-    header( "HX-Trigger: update_uploads_list");
-}
-
-/**
- * switch sorting
- * and sort direction
- */
-
-if(isset($_POST['sorting'])) {
-    if($_POST['sorting'] == 'date') {
-        $_SESSION['sorting_media_list'] = 'media_lastedit';
-    } else if($_POST['sorting'] == 'name') {
-        $_SESSION['sorting_media_list'] = 'media_file';
-    } else if($_POST['sorting'] == 'size') {
-        $_SESSION['sorting_media_list'] = 'media_filesize';
+    $add_text_filter = sanitizeUserInputs($_POST['uploads_text_filter']);
+    $text_filter = $_SESSION['uploads_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['uploads_text_filter'] = trim($text_filter.' '.$add_text_filter);
     }
-
-    if($_POST['sorting'] == 'direction') {
-        if($_SESSION['sorting_direction'] == 'ASC') {
-            $_SESSION['sorting_direction'] = 'DESC';
-        } else if($_SESSION['sorting_direction'] == 'DESC') {
-            $_SESSION['sorting_direction'] = 'ASC';
-        }
-    }
-
-    header( "HX-Trigger: update_uploads_list");
+    $_SESSION['pagination_uploads'] = 0;
+    header("HX-Trigger: update_uploads_list");
+    exit;
 }
 
 // remove keyword from filter list
 if(isset($_POST['rmkey'])) {
-    $all_filter = explode(" ", $_SESSION['uploads_text_filter']);
-    $_SESSION['uploads_text_filter'] = '';
-    foreach($all_filter as $f) {
-        if($_POST['rmkey'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $_SESSION['uploads_text_filter'] .= "$f ";
-    }
-    header( "HX-Trigger: update_uploads_list");
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey']);
+    $keywords = explode(' ', $_SESSION['uploads_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['uploads_text_filter'] = implode(' ', $keywords);
+    $_SESSION['pagination_uploads'] = 0;
+    header("HX-Trigger: update_uploads_list");
+    exit;
 }
 
-// change directory
-if(isset($_POST['selected_folder']) OR isset($_POST['repeat_selected_folder'])) {
-    // only folders of the media library (assets/images, assets/files)
-    $selected_folder = se_media_folder(se_filter_filepath($_POST['selected_folder'] ?? ''));
+// sorting column and direction
+if(isset($_POST['sorting_media_list'])) {
+    $sorting = (string) $_POST['sorting_media_list'];
+    $_SESSION['sorting_media_list'] = in_array($sorting, ['media_lastedit', 'media_file', 'media_filesize']) ? $sorting : 'media_lastedit';
+    header("HX-Trigger: update_uploads_list");
+    exit;
+}
+
+if(isset($_POST['sorting_media_dir'])) {
+    $_SESSION['sorting_media_direction'] = ($_POST['sorting_media_dir'] == 'ASC') ? 'ASC' : 'DESC';
+    header("HX-Trigger: update_uploads_list");
+    exit;
+}
+
+// change directory - only folders of the media library (assets/images, assets/files)
+if(isset($_POST['selected_folder'])) {
+    $selected_folder = se_media_folder(se_filter_filepath((string) $_POST['selected_folder']));
     if($selected_folder !== false) {
         $_SESSION['disk'] = $selected_folder;
+        $_SESSION['pagination_uploads'] = 0;
     }
-    header( "HX-Trigger: update_uploads_list");
+    header("HX-Trigger: update_uploads_list");
+    exit;
 }
 
-// create new folder
-if((isset($_POST['new_folder'])) && ($_POST['new_folder'] != '')) {
-    $folder_name = clean_filename($_POST['new_folder']);
-    // check the session folder again, it may predate this check
-    $parent_folder = se_media_folder($_SESSION['disk'] ?? '');
-    if($folder_name !== '' && $parent_folder !== false) {
-        $create_path = SE_PUBLIC . '/' . $parent_folder . '/' . $folder_name;
+// create a new folder inside the selected one
+if(isset($_POST['new_folder'])) {
+    $folder_name = clean_filename((string) $_POST['new_folder']);
+    if($folder_name !== '') {
+        $create_path = SE_PUBLIC.'/'.se_media_current_folder().'/'.$folder_name;
         if(!is_dir($create_path)) {
             mkdir($create_path, 0755, true);
         }
     }
-    header( "HX-Trigger: update_directories, update_uploads_list");
+    header("HX-Trigger: update_directories, update_uploads_list");
+    exit;
 }
 
-// delete folder
+// delete a subfolder with its content
 if(isset($_POST['delete_dir'])) {
-    $del_dir = se_filter_filepath($_POST['delete_dir']);
-    if(delete_folder($del_dir) === true) {
-        $_SESSION['disk'] = 'assets/images/';
-        header( "HX-Trigger: update_directories, update_uploads_list");
+    if(delete_folder((string) $_POST['delete_dir']) === true) {
+        $_SESSION['disk'] = $img_path;
+        $_SESSION['pagination_uploads'] = 0;
+        header("HX-Trigger: update_directories, update_uploads_list");
+    } else {
+        show_toast($lang['msg_error_file_delete'], 'danger');
     }
+    exit;
 }
-
 
 /**
- * rebase the database
- * we check if there are files which are not in the database
- * or if there are files in the database that not exists on the server
- * f.e. someone uploaded or deleted files via FTP
+ * sync the database with the files on the server,
+ * e.g. someone uploaded or deleted files via FTP
+ * new files get an entry, entries of missing files are removed
  */
+if(($_POST['rebase'] ?? '') == 'files_to_database') {
 
-if(isset($_POST['rebase'])) {
-    if($_POST['rebase'] == "files_to_database") {
-
-        $stats_files_to_db = 0;
-        $stats_files_from_db = 0;
-        $all_files = [];
-
-        $images_dir = 'assets/images';
-        $files_dir = 'assets/files';
-
-        $scan_images = se_scandir_recursive("$images_dir");
-        $scan_files = se_scandir_recursive("$files_dir");
-        $images_and_files = array_merge($scan_images, $scan_files);
-
-        $cnt_images_on_disk = 0;
-        if(is_array($scan_images)) {
-            $cnt_images_on_disk = count($scan_images);
+    // media DB paths are stored as "../images/..." / "../files/..."
+    $all_files = [];
+    foreach(array_merge(se_scandir_recursive($img_path), se_scandir_recursive($files_path)) as $path) {
+        if(is_dir($path) || basename($path) == 'index.html') {
+            continue;
         }
-
-        $cnt_files_on_disk = 0;
-        if(is_array($scan_files)) {
-            $cnt_files_on_disk = count($scan_files);
-        }
-
-        foreach ($images_and_files as $key => $value) {
-            if(str_contains("$value","index.html")) { continue; }
-            $all_files[] = str_replace('assets/', '../', $value);
-        }
-
-        $cnt_all_files = count($all_files);
-
-        $mediaData = $db_content->select("se_media", "media_file");
-
-
-        foreach($all_files as $filename) {
-            if(!in_array($filename, $mediaData)) {
-                // filename is not in database, make an entry
-                $file_src = str_replace("../","assets/",$filename);
-                $filesize = filesize($file_src);
-                $filemtime = filemtime($file_src);
-                $filetype = mime_content_type(realpath($file_src));
-
-                if($filetype == 'directory') {
-                    continue;
-                }
-
-                $stats_files_to_db++;
-
-                $db_content->insert("se_media", [
-                    "media_file" => "$filename",
-                    "media_lang" => "$languagePack",
-                    "media_filesize" => "$filesize",
-                    "media_lastedit" => "$filemtime",
-                    "media_upload_time" => "$filemtime",
-                    "media_type" => "$filetype"
-                ]);
-            }
-        }
-
-        foreach($mediaData as $k => $v) {
-            if(!in_array($v, $all_files)) {
-                $stats_files_from_db++;
-                $db_content->delete("se_media", [
-                    "media_file" => "$v"
-                ]);
-            }
-        }
-
-        echo '<p>Found <code>'.$cnt_images_on_disk.'</code> images and <code>'.$cnt_files_on_disk.'</code> files.</p>';
-        echo '<p><code>'.$stats_files_to_db.'</code> were added to the database<br>';
-        echo '<code>'.$stats_files_from_db.'</code> were removed from the database</p>';
-        header( "HX-Trigger: update_uploads_list");
-
+        $all_files[] = str_replace('assets/', '../', $path);
     }
 
+    $known_files = array_unique($db_content->select("se_media", "media_file"));
+
+    $added = 0;
+    foreach(array_diff($all_files, $known_files) as $filename) {
+        $file_src = str_replace('../', 'assets/', $filename);
+        $filemtime = filemtime($file_src);
+        $db_content->insert("se_media", [
+            "media_file" => $filename,
+            "media_lang" => $languagePack,
+            "media_filesize" => filesize($file_src),
+            "media_lastedit" => $filemtime,
+            "media_upload_time" => $filemtime,
+            "media_type" => mime_content_type($file_src)
+        ]);
+        $added++;
+    }
+
+    $missing_files = array_values(array_diff($known_files, $all_files));
+    $removed = count($missing_files);
+    if($removed > 0) {
+        $db_content->delete("se_media", ["media_file" => $missing_files]);
+    }
+
+    show_toast(str_replace(
+        ['{found}', '{added}', '{removed}'],
+        [(string) count($all_files), (string) $added, (string) $removed],
+        $lang['msg_info_media_rebase']
+    ), 'info');
+    header("HX-Trigger: update_uploads_list");
+    exit;
 }

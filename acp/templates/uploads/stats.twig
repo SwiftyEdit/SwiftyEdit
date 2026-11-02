@@ -1,0 +1,11 @@
+{# number of images and files in the database, rendered by the uploads data-reader #}
+<table class="table table-sm">
+    <tr>
+        <td>{{ icon.images|raw }} {{ lang.images }}</td>
+        <td class="text-end">{{ images }}</td>
+    </tr>
+    <tr>
+        <td>{{ icon.files|raw }} {{ lang.files }}</td>
+        <td class="text-end">{{ files }}</td>
+    </tr>
+</table>

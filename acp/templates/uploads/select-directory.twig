@@ -1,0 +1,19 @@
+{#
+ # folder select of the media library, rendered by the uploads data-reader
+ # groups: list of {label, folders: list of {value, label, selected}}
+ #}
+<form hx-post="{{ writer_uri }}" hx-swap="none" hx-trigger="change" method="POST">
+    <div class="input-group">
+        <span class="input-group-text">{{ icon.folder_open|raw }}</span>
+        <select name="selected_folder" class="form-control custom-select">
+            {% for group in groups %}
+                <optgroup label="{{ group.label }}">
+                    {% for folder in group.folders %}
+                        <option value="{{ folder.value }}"{% if folder.selected %} selected{% endif %}>{{ folder.label }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        </select>
+    </div>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>

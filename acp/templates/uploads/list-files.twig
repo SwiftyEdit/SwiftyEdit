@@ -1,6 +1,7 @@
 {#
  # media library list in /admin/uploads/, rendered by the uploads data-reader
- # view "thumbs" for images (cards), "grid" for files (table-like rows)
+ # view "thumbs" for images (cards), "grid" for files (rows)
+ # delete_folder: the selected subfolder (empty for the media roots, they can't be deleted)
  #}
 
 {# one flag per language, submits the edit form with that language;
@@ -25,54 +26,66 @@
     </form>
 {% endmacro %}
 
-{% macro delete_button(file, delete_uri) %}
-    <button class="btn btn-default btn-sm text-danger" name="delete" value="{{ file.id }}" hx-post="{{ delete_uri }}" hx-target="#response" hx-confirm="{{ lang.msg_confirm_delete_media }}" hx-swap="innerHTML" hx-include="[name='csrf_token']">{{ icon.trash_alt|raw }}</button>
+{% macro delete_button(file, writer_uri) %}
+    <button class="btn btn-default btn-sm text-danger" name="delete" value="{{ file.id }}" hx-post="{{ writer_uri }}" hx-confirm="{{ lang.msg_confirm_delete_media }}" hx-target="body" hx-swap="beforeend" hx-include="[name='csrf_token']">{{ icon.trash_alt|raw }}</button>
 {% endmacro %}
 
 {% import _self as m %}
 
-<div class="row">
-{% for file in files %}
-    {% if view == 'thumbs' %}
-        <div class="col-md-3 col-xl-2 mb-2">
-            <div class="card h-100">
-                <div class="card-header p-1 small text-center">{{ file.filename }}</div>
-                <div class="position-relative">
-                    <img src="{{ file.src }}" class="card-img-top">
-                    <div class="position-absolute bottom-0 start-0 m-1 px-1 rounded bg-dark bg-opacity-75 d-flex gap-1 lh-1">{{ m.lang_flags(file, lang_flags) }}</div>
-                </div>
-                <div class="card-body p-1">
-                    <p class="m-0"><small>{{ file.lastedit }}<br>{{ file.filesize }}</small></p>
-                    {{ m.labels(file) }}
-                </div>
-                <div class="card-footer p-1 d-flex justify-content">
-                    {{ m.edit_form(file, 'd-inline-flex') }}
-                    <div class="ms-auto">
-                        {{ m.delete_button(file, delete_uri) }}
+{{ pagination|raw }}
+
+{% if files is empty %}
+    <p class="text-muted">{{ lang.msg_no_entries_found }}</p>
+{% elseif view == 'thumbs' %}
+    <div class="row g-2">
+        {% for file in files %}
+            <div class="col-md-3 col-xl-2">
+                <div class="card h-100">
+                    <div class="card-header p-1 small text-center text-truncate" title="{{ file.filename }}">{{ file.filename }}</div>
+                    <div class="position-relative">
+                        <img src="{{ file.thumb_src }}" class="card-img-top" alt="" loading="lazy">
+                        <div class="position-absolute bottom-0 start-0 m-1 px-1 rounded bg-dark bg-opacity-75 d-flex gap-1 lh-1">{{ m.lang_flags(file, lang_flags) }}</div>
+                    </div>
+                    <div class="card-body p-1">
+                        <p class="m-0"><small>{{ file.lastedit }}<br>{{ file.filesize }}</small></p>
+                        {{ m.labels(file) }}
+                    </div>
+                    <div class="card-footer p-1 d-flex">
+                        {{ m.edit_form(file, 'd-inline-flex') }}
+                        <div class="ms-auto">
+                            {{ m.delete_button(file, writer_uri) }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% else %}
-        <div class="col-md-6">
-            <i class="bi bi-file-earmark"></i>
-            {{ m.lang_flags(file, lang_flags) }} <a href="{{ file.filename }}">{{ file.filename }}</a> {{ m.labels(file) }}
-        </div>
-        <div class="col-md-1">
-            {{ file.filesize }}
-        </div>
-        <div class="col-md-1">
-            <i class="bi bi-download"></i> {{ file.hits }}
-        </div>
-        <div class="col-md-2">
-            {{ file.lastedit }}
-        </div>
-        <div class="col-md-2">
-            <div class="d-flex justify-content">
-                {{ m.edit_form(file, 'd-inline') }}
-                {{ m.delete_button(file, delete_uri) }}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="list-group list-group-flush">
+        {% for file in files %}
+            <div class="list-group-item d-flex flex-wrap align-items-center gap-3">
+                <div class="flex-grow-1 text-truncate">
+                    {{ icon.file|raw }} <a href="{{ file.src }}" target="_blank">{{ file.filename }}</a>
+                    <span class="ms-1">{{ m.lang_flags(file, lang_flags) }}</span>
+                    {{ m.labels(file) }}
+                </div>
+                <small class="text-nowrap">{{ file.filesize }}</small>
+                <small class="text-nowrap" title="{{ lang.nav_btn_downloads }}">{{ icon.download|raw }} {{ file.hits }}</small>
+                <small class="text-nowrap">{{ file.lastedit }}</small>
+                <div class="d-flex gap-1">
+                    {{ m.edit_form(file, 'd-inline') }}
+                    {{ m.delete_button(file, writer_uri) }}
+                </div>
             </div>
-        </div>
-    {% endif %}
-{% endfor %}
-</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{{ pagination|raw }}
+
+{% if delete_folder %}
+    <form hx-post="{{ writer_uri }}" hx-confirm="{{ lang.msg_confirm_delete_directory }}" hx-target="body" hx-swap="beforeend" class="mt-3 text-end">
+        <button name="delete_dir" value="{{ delete_folder }}" class="btn btn-danger">{{ icon.trash_alt|raw }} {{ lang.btn_delete_folder }}: {{ delete_folder }}</button>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+{% endif %}
