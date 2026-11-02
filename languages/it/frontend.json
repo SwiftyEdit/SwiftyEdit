@@ -202,6 +202,7 @@
   "comment_msg_auth1": "Devi effettuare il login per scrivere commenti.",
   "comment_msg_auth2": "Devi inserire il tuo nome e il tuo indirizzo email.",
   "comments_title": "Commenti ({cnt_comments})",
+  "comments_closed": "Comments are closed.",
   "label_guestlist": "Elenco ospiti",
   "guestlist_description": "Firma l'elenco degli ospiti.",
   "guestlist_description_for_members": "Solo gli utenti registrati possono firmare l'elenco degli ospiti.",
