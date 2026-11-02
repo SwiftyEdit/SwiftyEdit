@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SfiftyEdit frontend
+ * SwiftyEdit frontend
  * display product from se_products
  *
  * @var integer $get_product_id is set in core/products.php
@@ -9,7 +9,7 @@
  * @var array $product_data product it's data
  *
  * global variables
- * @var object $db_content meedoo database object
+ * @var object $db_content medoo database object
  * @var object $smarty smarty templates
  * @var string $languagePack de | en ...
  * @var array $lang translations
