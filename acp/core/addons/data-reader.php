@@ -1,20 +1,28 @@
 <?php
-//error_reporting(E_ALL);
 
 /**
+ * SwiftyEdit /admin-xhr/addons/read/
+ * installed plugins and themes, their update status and the catalog -
+ * requests of activated plugins are handed over to their backend/reader.php
+ *
  * global variables
  * @var array $icon
  * @var array $lang
  * @var array $se_settings
- * @var string $se_upload_addons from config.php
+ * @var object $twig
+ * @var bool $se_upload_addons from config.php
  */
 
+$reader_uri = '/admin-xhr/addons/read/';
+$writer_uri = '/admin-xhr/addons/write/';
+
+// the readers of the plugins rely on it
 if(!isset($languagePack)) {
     $languagePack = $_SESSION['lang'] ?? 'en';
 }
 
 // give the plugins the possibility to read via xhr
-$path = explode('/', $_REQUEST['query']);
+$path = explode('/', $_REQUEST['query'] ?? '');
 // strict whitelist instead of basename() - basename() alone still lets a bare
 // ".." through (no "/" for it to strip), which would point $plugin_root one
 // level above plugins/; this also rules out reaching any plugin that hasn't
@@ -25,341 +33,167 @@ if ($plugin !== '' && se_is_plugin_activated($plugin)) {
     $plugin_base = '/admin/addons/plugin/' . $plugin . '/';
     $plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
     $plugin_reader_file = $plugin_root.'backend/reader.php';
-    if(is_file("$plugin_reader_file")) {
-        include_once "$plugin_reader_file";
+    if(is_file($plugin_reader_file)) {
+        include_once $plugin_reader_file;
         exit;
     }
 }
 
-
+$action = $_REQUEST['action'] ?? '';
+$can_manage = se_hasPermission('drm_acp_sensitive_files');
 
 // list all plugins
-if($_REQUEST['action'] == 'list_plugins') {
+if($action == 'list_plugins') {
 
     // se_docs_context_files() for the help buttons
     require_once __DIR__.'/../docs/functions.php';
 
-    $get_all_addons = se_get_all_addons();
-    $se_addons = se_get_addons($t='plugin');
+    $activated = array_column(se_get_addons('plugin'), 'addon_dir');
+    $default_image = 'data:image/png;base64,'.base64_encode((string) file_get_contents(SE_PUBLIC.'/assets/themes/administration/images/poster-addons.png'));
 
-    foreach($get_all_addons as $k => $v) {
+    $plugins = [];
+    foreach(se_get_all_addons() as $dir => $info) {
 
-        $get_image = base64_encode(file_get_contents(SE_PUBLIC.'/assets/themes/administration/images/poster-addons.png'));
-
-        // d-flex, so the loaded badge lines up with the activation badge next to it
-        $update_btn = '<div class="d-flex" hx-get="/admin-xhr/addons/read/?check_plugin='.$k.'" hx-trigger="load"></div>';
-
-        $addon_name = $v['addon']['name'];
-        $addon_version = $v['addon']['version'];
-        $addon_description = $v['addon']['description'];
-        $addon_author = $v['addon']['author'];
-        $addon_image_src = SE_ROOT.'plugins/'.$k.'/poster.png';
-        if(is_file($addon_image_src)) {
-            $get_image = base64_encode(file_get_contents($addon_image_src));
+        $image = $default_image;
+        $poster = SE_ROOT.'plugins/'.$dir.'/poster.png';
+        if(is_file($poster)) {
+            $image = 'data:image/png;base64,'.base64_encode((string) file_get_contents($poster));
         }
 
-        $addon_lang = se_return_addon_translations($k);
+        // plugin navigation, the texts may be translated by the plugin
+        $addon_lang = se_return_addon_translations($dir);
+        $navigation = [];
+        foreach($info['navigation'] ?? [] as $nav) {
+            $navigation[] = [
+                'url' => '/admin/addons/plugin/'.$dir.'/'.$nav['file'].'/',
+                'text' => $addon_lang[$nav['text']] ?? $nav['text']
+            ];
+        }
 
         // open the first doc (docs/{lang}/*.md by priority, else readme.md) in the help window
-        $btn_help_text = '';
-        $help_files = se_docs_context_files('plugin', $k);
+        $help_link = '';
+        $help_files = se_docs_context_files('plugin', $dir);
         if(!empty($help_files)) {
-            $btn_help_text = se_print_plugin_docs_link($k, basename($help_files[0]['path']), $icon['question'], null, 'btn btn-sm btn-outline-default me-1');
+            $help_link = se_print_plugin_docs_link($dir, basename($help_files[0]['path']), $icon['question'], null, 'btn btn-sm btn-outline-default me-1');
         }
 
-        $vals = ['csrf_token' => $_SESSION['token']];
-
-        $delete_btn = '<button name="delete_plugin" value="'.$k.'" class="btn btn-sm btn-outline-default text-danger" 
-                            hx-post="/admin-xhr/addons/write/"
-                            hx-trigger="click"
-                            hx-confirm="'.$lang['msg_confirm_delete'].'"
-                            hx-vals=\''.json_encode($vals).'\'
-                            hx-swap="none"
-                            >'.$icon['trash_alt'].'</button>';
-
-        // only offer activation if the plugin ships something that depends on it,
-        // see se_plugin_needs_activation()
-        $activate_btn = '';
-        if(se_plugin_needs_activation($k, $v ?? [])) {
-            $activate_btn = '<button name="activate_addon" value="'.$k.'" class="btn btn-sm btn-outline-default text-success ms-1"
-                                hx-post="/admin-xhr/addons/write/"
-                                hx-trigger="click"
-                                hx-vals=\''.json_encode($vals).'\'
-                                hx-swap="none"
-                                >'.$lang['btn_addon_enable'].'</button>';
+        // category for the filter buttons in list.twig - editors by their info.json type,
+        // payment addons by the "-pay" suffix the shop relies on (see se_get_payment_addons())
+        $category = 'plugin';
+        if(($info['addon']['type'] ?? '') === 'editor') {
+            $category = 'editor';
+        } else if(str_ends_with($dir, '-pay')) {
+            $category = 'payment';
         }
 
-        // an already activated plugin can always be deactivated, even if it
-        // no longer needs activation (e.g. after an update)
-        $is_activated = false;
-        foreach($se_addons as $a) {
-            if($k == $a['addon_dir']) {
-                $is_activated = true;
-                $activate_btn = '<button name="deactivate_addon" value="'.$k.'" class="btn btn-sm btn-outline-default text-danger ms-1"
-                                hx-post="/admin-xhr/addons/write/"
-                                hx-trigger="click"
-                                hx-vals=\''.json_encode($vals).'\'
-                                hx-swap="none"
-                                >'.$lang['btn_addon_disable'].'</button>';
-            }
-        }
-
-        // category for the filter buttons in list.php - unlike the catalog
-        // (registry tags), installed plugins are classified the same way the
-        // core treats them: editors by their info.json type, payment addons
-        // by the "-pay" suffix the shop relies on (see se_get_payment_addons())
-        $addon_category = 'plugin';
-        if(($v['addon']['type'] ?? '') === 'editor') {
-            $addon_category = 'editor';
-        } else if(str_ends_with($k, '-pay')) {
-            $addon_category = 'payment';
-        }
-
-        // activation state next to the update status - plugins that don't
-        // need activation (and aren't activated) get no badge at all
-        $activation_badge = '';
-        if($is_activated) {
-            $activation_badge = '<span class="badge text-bg-success">'.ucfirst($lang['status_active']).'</span>';
-        } else if($activate_btn != '') {
-            $activation_badge = '<span class="badge badge-se">'.ucfirst($lang['status_inactive']).'</span>';
-        }
-
-        echo '<div class="card mb-3 border-bottom" data-addon-category="'.$addon_category.'">';
-        echo '<div class="card-header d-flex justify-content-between align-items-center">';
-        echo '<div><span class="">'.$addon_name.'</span> <span class="badge badge-se">'.$addon_version.'</span></div>';
-        echo '<div class="d-flex align-items-center gap-1">';
-        echo $activation_badge;
-        echo $update_btn;
-        echo '</div>';
-        echo '</div>';
-
-        echo '<div class="card-body">';
-        echo '<div class="d-flex gap-3">';
-        // fixed icon size, so the description doesn't lose width to a growing image
-        echo '<img src="data:image/png;base64,'.$get_image.'" class="rounded-circle flex-shrink-0" width="48" height="48" alt="">';
-        echo '<div class="flex-grow-1" style="min-width: 0">';
-        echo '<div id="update-response-'.$k.'"></div>';
-        echo '<div class="card-text">'.$addon_description.'</div>';
-
-        // plugin navigation as plain links below the description, so it
-        // wraps freely and isn't mistaken for the actions in the footer
-        if(array_key_exists('navigation',$v)) {
-            echo '<div class="d-flex flex-wrap column-gap-3 row-gap-1 mt-2 small">';
-            foreach ($v['navigation'] as $nav) {
-
-                $nav_text = $nav['text'];
-                if (array_key_exists($nav['text'], $addon_lang)) {
-                    $nav_text = $addon_lang[$nav['text']];
-                }
-
-                echo '<a href="/admin/addons/plugin/' . $k . '/' . $nav['file'] . '/">' . $nav_text . '</a>';
-            }
-            echo '</div>';
-        }
-
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
-
-        // actions always at the same position, independent of text and navigation length
-        // transparent footer - with the header color it blended into the
-        // header of the next card, making it hard to tell the plugins apart
-        echo '<div class="card-footer d-flex justify-content-end">';
-        echo $btn_help_text;
-        echo $delete_btn;
-        echo $activate_btn;
-        echo '</div>';
-
-        echo '</div>';
+        $plugins[] = [
+            'id' => $dir,
+            'name' => $info['addon']['name'] ?? $dir,
+            'version' => $info['addon']['version'] ?? '',
+            'description' => $info['addon']['description'] ?? '',
+            'image' => $image,
+            'category' => $category,
+            'activated' => in_array($dir, $activated),
+            // only offer activation if the plugin ships something that depends on it
+            'needs_activation' => se_plugin_needs_activation($dir, $info),
+            'navigation' => $navigation,
+            'help_link' => $help_link
+        ];
     }
 
+    echo $twig->render('addons/plugins-list.twig', [
+        'plugins' => $plugins,
+        'can_check_updates' => $can_manage,
+        'can_delete' => $can_manage,
+        'reader_uri' => $reader_uri,
+        'writer_uri' => $writer_uri
+    ]);
     exit;
 }
 
 // list catalog entries from the SwiftyEdit registry
-if($_REQUEST['action'] == 'list_catalog') {
+if($action == 'list_catalog') {
 
-    // Reachable directly regardless of whether catalog.php's own link is
-    // shown - same "can upload sensitive files" right as install/router.php.
-    if(!se_hasPermission('drm_acp_sensitive_files')) {
-        echo '<div class="card p-3">'.$lang['rm_no_access'].'</div>';
+    $render_notice = static fn(string $notice) => $twig->render('addons/catalog-list.twig', ['notice' => $notice]);
+
+    // same "can upload sensitive files" right as the install page (see router.php)
+    if(!$can_manage) {
+        echo $render_notice($lang['rm_no_access']);
         exit;
     }
-
     if(!$se_upload_addons) {
-        echo '<div class="card p-3">'.$lang['catalog_disabled'].'</div>';
+        echo $render_notice($lang['catalog_disabled']);
         exit;
     }
 
     $catalog = se_get_catalog_entries();
-
     if(!$catalog['success']) {
-        echo '<div class="card p-3 text-muted">';
-        echo $lang['catalog_unavailable'].' ('.htmlspecialchars($catalog['message']).')';
-        echo '</div>';
+        echo $render_notice($lang['catalog_unavailable'].' ('.$catalog['message'].')');
         exit;
     }
-
-    if($catalog['source'] === 'stale_cache') {
-        echo '<div class="alert alert-warning">'.$lang['catalog_stale'].'</div>';
-    }
-
     if(empty($catalog['entries'])) {
-        echo '<div class="card p-3 text-muted">'.$lang['catalog_empty'].'</div>';
+        echo $render_notice($lang['catalog_empty']);
         exit;
     }
 
-    // Plugins live under SE_PLUGINS, themes under SE_THEMES - merge both so a
-    // registry entry of either type correctly shows as already installed.
+    // links and images of the registry are third-party urls, only https is used
+    $https = static fn($url): string => (is_string($url) && str_starts_with($url, 'https://')) ? $url : '';
+
+    // plugins live under SE_PLUGINS, themes under SE_THEMES - an entry of either type can be installed
     $installed = array_merge(array_keys(se_get_all_addons()), array_keys(se_get_all_themes()));
 
-    echo '<div class="row">';
+    $entries = [];
     foreach($catalog['entries'] as $slug => $entry) {
 
-        $name          = htmlspecialchars($entry['name'] ?? $slug, ENT_QUOTES);
-        $description   = htmlspecialchars($entry['description'] ?? '', ENT_QUOTES);
-        $author        = htmlspecialchars($entry['author'] ?? '', ENT_QUOTES);
-        $requires_build = htmlspecialchars($entry['requires_build'] ?? '', ENT_QUOTES);
-        $latest        = htmlspecialchars($entry['version'] ?? '', ENT_QUOTES);
-        $tags          = $entry['tags'] ?? [];
-        $screenshots   = $entry['screenshots'] ?? [];
-        $type_attr     = htmlspecialchars(strtolower($entry['type'] ?? 'plugin'), ENT_QUOTES);
-        $fallback_poster = '/assets/themes/administration/images/poster-addons.png';
-        // The addon's own icon (poster.png for plugins, optional per its own
-        // repo - see docs/v2/en/09-02-plugins.md; images/icon.png for themes)
-        // takes priority as the card thumbnail over a screenshot, since it's
-        // the addon's actual branding. Not every addon has one, so the
-        // <img onerror> below falls back client-side instead of doing an
-        // extra existence-check request per card on every cache refresh.
-        $poster_path = $type_attr === 'theme' ? 'images/icon.png' : 'poster.png';
-        $poster = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', $poster_path) ?: (($screenshots[0] ?? null) ?: $fallback_poster);
+        $type = (strtolower($entry['type'] ?? 'plugin') === 'theme') ? 'theme' : 'plugin';
+        $tags = array_map('strval', (array) ($entry['tags'] ?? []));
+        $screenshots = array_values(array_filter(array_map($https, (array) ($entry['screenshots'] ?? []))));
+        $repo_url = $https($entry['repo_url'] ?? '');
 
-        $info_json_url = se_registry_repo_to_raw_url($entry['repo_url'] ?? '', 'info.json');
-        $modal_id      = 'catalog-screenshots-'.preg_replace('/[^a-zA-Z0-9_-]/', '', $slug);
-
-        // Small square thumbnail with rounded corners - addon icons (theme
-        // icons in particular) are square, a circle would crop them. The
-        // screenshots gallery gets its own explicit link below (see
-        // $screenshots_link) instead of being a silent click-target on the
-        // image itself, which nobody would discover on their own.
-        $poster_attrs = 'src="'.htmlspecialchars($poster, ENT_QUOTES).'" class="rounded flex-shrink-0" width="48" height="48" style="object-fit: cover;" alt="" onerror="this.onerror=null;this.src=\''.$fallback_poster.'\';"';
-
-        $screenshots_link = '';
-        if(!empty($screenshots)) {
-            $screenshots_link = '<button type="button" class="btn btn-sm btn-link p-0"
-                    data-bs-toggle="modal" data-bs-target="#'.$modal_id.'">'
-                    .$icon['images'].' '.$lang['catalog_screenshots'].' ('.count($screenshots).')</button>';
-        }
-
-        // Emitted as a sibling before the card (not nested inside it) -
-        // same placement list_plugins already uses for its help-text modal,
-        // since Bootstrap modals are position:fixed overlays and shouldn't
-        // sit inside a .card's own stacking/scroll context.
-        if(!empty($screenshots)) {
-            $modal_body = '';
-            foreach($screenshots as $shot) {
-                $modal_body .= '<img src="'.htmlspecialchars($shot, ENT_QUOTES).'" class="img-fluid mb-2 rounded">';
-            }
-            // title gets escaped by Twig, so use the raw name here
-            echo $twig->render('components/modal.twig', [
-                'id' => $modal_id,
-                'title' => ($entry['name'] ?? $slug).' - '.$lang['catalog_screenshots'],
-                'body' => $modal_body
-            ]);
-        }
-
-        $tags_attr = htmlspecialchars(implode(',', array_map('strtolower', $tags)), ENT_QUOTES);
-        // Card layout: header (icon, type, name, author), description,
-        // tags as plain text, and a card-footer with version/requirement and
-        // the action - the footer keeps the action aligned across a grid row
-        // regardless of description length. The type line (Theme/Plugin)
-        // keeps both distinguishable while the "all" filter is active.
-        if($type_attr === 'theme') {
-            $type_label = '<div class="small text-info">'.$icon['palette'].' Theme</div>';
-        } else {
-            $type_label = '<div class="small text-muted">'.$icon['plugin'].' Plugin</div>';
-        }
-        $repo_url_attr = htmlspecialchars($entry['repo_url'] ?? '', ENT_QUOTES);
-
-        echo '<div class="col-md-4 mb-3" data-catalog-type="'.$type_attr.'" data-catalog-tags="'.$tags_attr.'">';
-        echo '<div class="card h-100">';
-        echo '<div class="card-body d-flex flex-column">';
-
-        echo '<div class="d-flex align-items-center gap-3 mb-3">';
-        echo '<img '.$poster_attrs.'>';
-        echo '<div style="min-width: 0;">';
-        echo $type_label;
-        echo '<div class="fw-semibold text-truncate">'.$name.'</div>';
-        echo '<div class="small text-muted">'.$lang['catalog_by'].' <a href="'.$repo_url_attr.'" target="_blank" rel="noopener">'.$author.'</a></div>';
-        echo '</div>';
-        echo '</div>';
-
-        // clamped to three lines so long descriptions don't stretch the
-        // whole grid row - the full text stays available via title
-        echo '<div class="flex-grow-1">';
-        echo '<p class="card-text small mb-2" title="'.$description.'" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">'.$description.'</p>';
-        echo '</div>';
-
-        if(!empty($tags)) {
-            echo '<div class="small text-muted">'.htmlspecialchars(implode(' · ', $tags), ENT_QUOTES).'</div>';
-        }
-        if($screenshots_link !== '') {
-            echo '<div class="small mt-1">'.$screenshots_link.'</div>';
-        }
-
-        echo '</div>'; // card-body
+        // the addon's own icon (poster.png for plugins, images/icon.png for themes) is the thumbnail,
+        // else the first screenshot - not every addon has one, the template falls back client-side
+        $poster = $https(se_registry_repo_to_raw_url($repo_url, ($type === 'theme') ? 'images/icon.png' : 'poster.png'))
+            ?: ($screenshots[0] ?? '/assets/themes/administration/images/poster-addons.png');
 
         $meta = [];
-        if($latest !== '') {
-            $meta[] = 'v'.$latest;
+        if(($entry['version'] ?? '') !== '') {
+            $meta[] = 'v'.$entry['version'];
         }
-        if($requires_build !== '') {
-            $meta[] = $lang['catalog_requires'].' '.$requires_build;
-        }
-
-        echo '<div class="card-footer d-flex justify-content-between align-items-center gap-2">';
-        echo '<span class="small text-muted">'.implode(' · ', $meta).'</span>';
-
-        if(in_array($slug, $installed, true)) {
-            echo '<span class="small text-success text-nowrap">'.$icon['check'].' '.$lang['catalog_installed'].'</span>';
-        } elseif($info_json_url) {
-            // Targets the shared #catalogInstallModalBody (see catalog.php)
-            // instead of an inline per-card div - swapping the confirm/
-            // install response in inline would grow that card and desync
-            // the grid row's height against its siblings.
-            $vals = json_encode([
-                'csrf_token' => $_SESSION['token'],
-                'get_addon_info_from_url' => $info_json_url,
-                'target_id' => 'catalogInstallModalBody'
-            ]);
-            echo '<button class="btn btn-sm btn-primary"
-                    hx-post="/admin-xhr/addons/write/"
-                    hx-vals=\''.$vals.'\'
-                    hx-target="#catalogInstallModalBody"
-                    data-bs-toggle="modal"
-                    data-bs-target="#catalogInstallModal">'
-                    .$lang['btn_install'].'</button>';
-        } else {
-            echo '<span class="small text-danger">'.$lang['catalog_invalid_repo'].'</span>';
+        if(($entry['requires_build'] ?? '') !== '') {
+            $meta[] = $lang['catalog_requires'].' '.$entry['requires_build'];
         }
 
-        echo '</div>'; // card-footer
-        echo '</div>'; // card
-        echo '</div>'; // col
+        $entries[] = [
+            'name' => $entry['name'] ?? $slug,
+            'description' => $entry['description'] ?? '',
+            'author' => $entry['author'] ?? '',
+            'repo_url' => $repo_url,
+            'type' => $type,
+            'tags' => $tags,
+            'tags_attr' => implode(',', array_map('strtolower', $tags)),
+            'poster' => $poster,
+            'screenshots' => $screenshots,
+            'modal_id' => 'catalog-screenshots-'.preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $slug),
+            'meta' => $meta,
+            'installed' => in_array($slug, $installed, true),
+            'info_json_url' => $https(se_registry_repo_to_raw_url($repo_url, 'info.json'))
+        ];
     }
-    echo '</div>'; // row
 
+    echo $twig->render('addons/catalog-list.twig', [
+        'entries' => $entries,
+        'stale' => ($catalog['source'] === 'stale_cache'),
+        'writer_uri' => $writer_uri
+    ]);
     exit;
 }
 
 // check if a plugin or theme is up to date
 if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
 
-    // same "can upload sensitive files" right as install/router.php - this
-    // triggers an outbound request to the addon's own self-declared
-    // update_url (see se_check_addon_update()), so it needs the same gate
-    // as the install/update actions in data-writer.php, not just any admin
-    if(!se_hasPermission('drm_acp_sensitive_files')) {
+    // this triggers an outbound request to the addon's own self-declared update_url
+    // (see se_check_addon_update()), so it needs the same right as the install and update actions
+    if(!$can_manage) {
         exit;
     }
 
@@ -371,189 +205,114 @@ if(isset($_REQUEST['check_plugin']) || isset($_REQUEST['check_theme'])) {
     if(isset($_REQUEST['check_theme'])) {
         $addon_type = 'theme';
         $addon_root = SE_THEMES;
-        $plugin_dir = basename($_REQUEST['check_theme']);
+        $addon_dir = basename((string) $_REQUEST['check_theme']);
         // themes use a prefixed id, a plugin may share the same directory name
-        $response_id = 'update-response-theme-'.$plugin_dir;
+        $response_id = 'update-response-theme-'.$addon_dir;
     } else {
         $addon_type = 'plugin';
         $addon_root = SE_PLUGINS;
-        $plugin_dir = basename($_REQUEST['check_plugin']);
-        $response_id = 'update-response-'.$plugin_dir;
+        $addon_dir = basename((string) $_REQUEST['check_plugin']);
+        $response_id = 'update-response-'.$addon_dir;
     }
 
     // confine the info file to the addon directory (traversal safeguard, see #338)
-    $addon_info_file = se_resolve_within($addon_root, $plugin_dir . '/info.json');
-    if ($addon_info_file === false) {
+    $addon_info_file = se_resolve_within($addon_root, $addon_dir.'/info.json');
+    if($addon_info_file === false || !is_file($addon_info_file)) {
         exit;
     }
 
-    // load addon info
-    $json = @file_get_contents($addon_info_file);
-    $plugin_info = json_decode($json, true);
+    $addon_info = json_decode((string) file_get_contents($addon_info_file), true);
+    $update_info = se_check_addon_update(is_array($addon_info) ? $addon_info : []);
 
-    $update_info = se_check_addon_update($plugin_info ?? []);
-
-    if($update_info['status'] == 'update_available' && !$se_upload_addons) {
-        // updates are installed via se_install_addon_zip(), which is disabled
-        // together with the addon upload - only report that an update exists
-        echo '<span class="badge text-bg-info" title="'.htmlspecialchars($lang['msg_info_upload_addons_deactivated'], ENT_QUOTES).'">';
-        echo $icon['info_circle'].' '.$lang['update_msg_update_available'];
-        echo '</span>';
-    } else if($update_info['status'] == 'update_available') {
-
-        $vals = [
-            'csrf_token' => $_SESSION['token'],
-            'plugin_id' => $plugin_dir,
-            'addon_type' => $addon_type,
-            'download_url' => $update_info['download_url']
-        ];
-
-        $update_btn = '<button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success"
-                            hx-post="/admin-xhr/addons/write/"
-                            hx-vals=\''.json_encode($vals).'\'
-                            hx-target="#'.htmlspecialchars($response_id, ENT_QUOTES).'"
-                            >Update '.$icon['arrow_clockwise'].'</button>';
-        echo $update_btn;
-    } else if($update_info['status'] == 'up_to_date') {
-        echo '<span class="badge text-bg-success">';
-        echo 'Status: '.$icon['check_circle'];
-        echo '</span>';
-    } else {
-        echo '<span class="badge badge-se">';
-        echo 'Status: '.$icon['question_circle'];
-        echo '</span>';
+    $status = $update_info['status'];
+    if($status == 'update_available' && !$se_upload_addons) {
+        $status = 'update_disabled';
     }
-    echo '</span>';
 
+    echo $twig->render('addons/update-status.twig', [
+        'status' => $status,
+        'update' => [
+            'plugin_id' => $addon_dir,
+            'addon_type' => $addon_type,
+            'download_url' => $update_info['download_url'] ?? '',
+            'target' => $response_id
+        ],
+        'writer_uri' => $writer_uri
+    ]);
     exit;
 }
 
 // list all themes
-if($_REQUEST['action'] == 'list_themes') {
+if($action == 'list_themes') {
 
     // se_docs_context_files() for the help buttons
     require_once __DIR__.'/../docs/functions.php';
 
-    $all_themes = get_all_templates();
     $all_theme_info = se_get_all_themes();
 
-    foreach($all_themes as $template) {
+    $themes = [];
+    foreach(get_all_templates() as $template) {
 
         if($template == 'administration') {
             continue;
         }
 
-        $class = '';
-        $active = '';
-        if($template == $se_settings['template']) {
-            $class = 'border-success border-2 border-opacity-50';
-            $active = '(active)';
+        $is_active = ($template == $se_settings['template']);
+
+        // layout templates of the theme, the selected one only counts for the active theme
+        $layouts = [];
+        foreach(glob(SE_THEMES.'/'.$template.'/templates/layout*.tpl') ?: [] as $layout_tpl) {
+            $layouts[] = [
+                'value' => basename($layout_tpl),
+                'label' => basename($layout_tpl, '.tpl'),
+                'selected' => ($is_active && $se_settings['template_layout'] == basename($layout_tpl))
+            ];
         }
 
-        // get all layout templates from this theme
-        $arr_layout_tpls = glob(SE_PUBLIC."/assets/themes/".$template."/templates/layout*.tpl");
-
-        // Themes without an info.json (older themes, still shipping the retired
-        // info.xml) simply fall back to their raw directory name, same as before.
-        $theme_addon = $all_theme_info[$template]['addon'] ?? [];
-        $theme_name = htmlspecialchars($theme_addon['name'] ?? $template, ENT_QUOTES);
-        $theme_version = htmlspecialchars($theme_addon['version'] ?? '', ENT_QUOTES);
-
-        echo '<div class="card mb-3 '.$class.'">';
-        echo '<div class="card-header d-flex justify-content-between align-items-center">';
-        echo '<div>'.$theme_name;
-        if($theme_version !== '') {
-            echo ' <span class="badge badge-se">'.$theme_version.'</span>';
-        }
-        echo ' '.$active.'</div>';
-        // the default theme ships with the core and is updated along with it
-        if($template != 'default' && se_hasPermission('drm_acp_sensitive_files')) {
-            echo '<div hx-get="/admin-xhr/addons/read/?check_theme='.urlencode($template).'" hx-trigger="load"></div>';
-        }
-        echo '</div>';
-        echo '<div class="card-body">';
-        echo '<div id="update-response-theme-'.htmlspecialchars($template, ENT_QUOTES).'"></div>';
-
-        echo '<div class="row">';
-        echo '<div class="col-md-8">';
-
-        echo '<form hx-post="/admin-xhr/addons/write/" hx-swap="none">';
-
-        echo '<label>Layout</label>';
-        echo '<select name="select_template" class="form-control image-picker">';
-        foreach($arr_layout_tpls as $layout_tpl) {
-            $active = '';
-            if($se_settings['template_layout'] == basename($layout_tpl) && ($template == $se_settings['template'])) {
-                $active = 'selected';
-            }
-            $tpl_name = basename($layout_tpl,'.tpl');
-            $value = "$template<|-|>$tpl_name".'.tpl';
-            echo '<option value="'.$value.'" '.$active.'>'.$tpl_name.'</option>';
-        }
-        echo '</select>';
-
-        // Color variants of this theme, e.g. src/scss/skins/ocean.scss in
-        // the default theme's Vite build -> dist/skins/ocean.css. Loaded
-        // in addition to the theme's core stylesheet - see
-        // templates/head.tpl in the theme itself.
-        $stylesheets = glob(SE_PUBLIC."/assets/themes/".$template."/dist/skins/*.css");
-        echo '<label>Stylesheet</label>';
-        echo '<select name="select_template_sytlesheet" class="form-control">';
-        echo '<option value="">'.$lang['label_default_template'].'</option>';
-        foreach($stylesheets as $css) {
-
-            $css_file = basename($css);
-            $active = '';
-            if($css_file == $se_settings['template_stylesheet']) {
-                $active = 'selected';
-            }
-
-            $css_name = ucfirst(basename($css, '.css'));
-            echo '<option value="'.htmlspecialchars($css_file, ENT_QUOTES).'" '.$active.'>'.htmlspecialchars($css_name, ENT_QUOTES).'</option>';
+        // color variants, e.g. dist/skins/ocean.css of the default theme
+        $stylesheets = [];
+        foreach(glob(SE_THEMES.'/'.$template.'/dist/skins/*.css') ?: [] as $css) {
+            $stylesheets[] = [
+                'value' => basename($css),
+                'label' => ucfirst(basename($css, '.css')),
+                'selected' => ($is_active && $se_settings['template_stylesheet'] == basename($css))
+            ];
         }
 
-        echo '</select><hr>';
-
-        echo '<input type="submit" class="btn btn-success btn-md" name="save_default_layout" value="Layout '.$lang['save'].'">';
-        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-
-        echo '</form>';
-
-        echo '</div>';
-        echo '<div class="col-md-4">';
-        $theme_poster = '/themes/'.$template.'/images/icon.png';
-        $real_theme_poster = SE_PUBLIC.'/assets'.$theme_poster;
-        if (!file_exists($real_theme_poster) && !is_file($real_theme_poster) && !is_readable($real_theme_poster)) {
-            $theme_poster = '/themes/administration/images/poster-addons.png';
+        $poster = '/themes/'.$template.'/images/icon.png';
+        if(!is_file(SE_PUBLIC.'/assets'.$poster)) {
+            $poster = '/themes/administration/images/poster-addons.png';
         }
-        echo '<img src="'.$theme_poster.'" class="img-fluid rounded">';
-        echo '<a class="btn btn-default btn-sm mt-3 w-100" href="/admin/addons/theme/'.$template.'/">'.$lang['btn_options'].'</a>';
 
         // open the first doc (docs/{lang}/*.md by priority, else readme.md) in the help window
+        $help_link = '';
         $help_files = se_docs_context_files('theme', $template);
         if(!empty($help_files)) {
-            echo se_print_theme_docs_link($template, basename($help_files[0]['path']), $icon['question'].' '.$lang['btn_help'], null, 'btn btn-default btn-sm mt-1 w-100');
+            $help_link = se_print_theme_docs_link($template, basename($help_files[0]['path']), $icon['question'].' '.$lang['btn_help'], null, 'btn btn-default btn-sm mt-1 w-100');
         }
 
-        // the default theme and the active theme can't be deleted,
-        // pages still using the theme are checked in data-writer.php
-        if($template != 'default' && $template != $se_settings['template'] && se_hasPermission('drm_acp_sensitive_files')) {
-            $vals = ['csrf_token' => $_SESSION['token']];
-            echo '<button name="delete_theme" value="'.htmlspecialchars($template, ENT_QUOTES).'" class="btn btn-default btn-sm text-danger mt-1 w-100"
-                        hx-post="/admin-xhr/addons/write/"
-                        hx-confirm="'.$lang['msg_confirm_delete'].'"
-                        hx-vals=\''.json_encode($vals).'\'
-                        hx-target="#theme-delete-response"
-                        >'.$icon['trash_alt'].' '.$lang['btn_delete'].'</button>';
-        }
-        echo '</div>';
-        echo '</div>';
+        // themes without an info.json (older themes) fall back to their directory name
+        $theme_addon = $all_theme_info[$template]['addon'] ?? [];
 
-        echo '</div>';
-        echo '</div>';
-
-
+        $themes[] = [
+            'id' => $template,
+            'name' => $theme_addon['name'] ?? $template,
+            'version' => $theme_addon['version'] ?? '',
+            'active' => $is_active,
+            'poster' => $poster,
+            'layouts' => $layouts,
+            'stylesheets' => $stylesheets,
+            'help_link' => $help_link,
+            // the default theme ships with the core and is updated along with it
+            'check_update' => ($template != 'default' && $can_manage),
+            'deletable' => ($template != 'default' && !$is_active && $can_manage)
+        ];
     }
 
+    echo $twig->render('addons/themes-list.twig', [
+        'themes' => $themes,
+        'reader_uri' => $reader_uri,
+        'writer_uri' => $writer_uri
+    ]);
     exit;
 }

@@ -1,0 +1,36 @@
+{#
+ # backend page of a plugin in /admin/addons/plugin/<plugin>/<page>/, rendered by acp/core/addons/edit-plugin.php
+ # plugin is null if there is no such plugin
+ # navigation: list of {url, text, active} from the plugin's info.json
+ # content: html printed by the plugin's backend/<page>.php
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.plugin|raw }} <a href="/admin/addons/">{{ lang.nav_btn_addons }}</a>
+    {% if plugin %}
+        <div class="ms-auto">
+            <span class="badge bg-primary-subtle px-2 align-items-center rounded-pill">
+                <a href="{{ plugin.start_url }}" class="mx-2">{{ plugin.name }}</a>
+                {{ plugin.help_link|raw }}
+            </span>
+        </div>
+    {% endif %}
+</div>
+
+{% if not plugin %}
+    <div class="card p-3 text-muted">{{ lang.msg_no_entries_found }}</div>
+{% else %}
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                {% for nav in navigation %}
+                    <li class="nav-item">
+                        <a href="{{ nav.url }}" class="nav-link{% if nav.active %} active{% endif %}">{{ nav.text }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-body">
+            {{ content|raw }}
+        </div>
+    </div>
+{% endif %}

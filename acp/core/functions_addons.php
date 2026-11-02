@@ -695,7 +695,7 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
         ) {
             $zip->close();
             unlink($tmp_zip);
-            return ['success' => false, 'message' => 'ZIP contains an invalid path: '.htmlspecialchars($filename, ENT_QUOTES)];
+            return ['success' => false, 'message' => 'ZIP contains an invalid path: '.$filename];
         }
 
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -1195,6 +1195,30 @@ function mods_check_in() {
         SE_CONTENT . '/cache/bootstrap_endpoints.json',
         json_encode($bootstrap_endpoints, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
     );
+}
+
+/**
+ * option fields a theme defines for /admin/addons/theme/<theme>/
+ * the theme's php/options.php sets $theme_options in the backend section
+ *
+ * @param string $theme directory name of an installed theme
+ * @return array key => [label, type (text, checkbox, select), options (select)]
+ */
+function se_get_theme_option_fields(string $theme): array {
+
+	$theme = preg_replace('/[^a-zA-Z0-9_-]/', '', $theme);
+	$options_file = SE_THEMES.'/'.$theme.'/php/options.php';
+	if($theme === '' || !is_file($options_file)) {
+		return [];
+	}
+
+	// isolated scope, the file must not overwrite variables of the caller
+	$load = static function(string $file): array {
+		$theme_options = [];
+		include $file;
+		return is_array($theme_options) ? $theme_options : [];
+	};
+	return $load($options_file);
 }
 
 /**

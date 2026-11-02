@@ -1,99 +1,51 @@
 <?php
-// production: don't show errors, but log serious ones (fatal, parse, exceptions)
-error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
-ini_set('display_errors', '0');
+
+/**
+ * options and readme of a theme in /admin/addons/theme/<theme>/, markup in acp/templates/addons/theme-options.twig
+ * the options are defined by the theme in php/options.php, saved by the addons data-writer
+ *
+ * global variables
+ * @var string $query - the current url
+ * @var object $twig
+ */
+
 $path = explode('/', $query);
+$theme = preg_replace('/[^a-zA-Z0-9_-]/', '', $path[2] ?? '');
+$theme_root = SE_THEMES.'/'.$theme;
 
-$theme = basename($path[2]);
-$include_file = basename($path[3]);
-$this_theme_root_url = '/admin/addons/theme/'.$theme;
-$this_theme_root = SE_ROOT."public/assets/themes/".$theme;
+if($theme === '' || $theme === 'administration' || !is_dir($theme_root)) {
+    echo $twig->render('addons/theme-options.twig', ['theme' => null]);
+    return;
+}
 
+// saved values, stored html-encoded (sanitizeUserInputs) - Twig escapes on output
+$saved_values = array_column(se_get_theme_options($theme), 'theme_value', 'theme_label');
 
-
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['plugin'].' <a href="/admin/addons/">'.$lang['nav_btn_addons'].'</a>';
-echo '</div>';
-
-echo '<div class="row">';
-echo '<div class="col-md-6">';
-
-$theme_include_file = $this_theme_root.'/php/options.php';
-include $theme_include_file;
-
-if(is_array($theme_options)) {
-
-    $theme_data = se_get_theme_options($theme);
-
-    echo '<form hx-post="/admin-xhr/addons/write/" hx-target="body" hx-swap="beforeend">';
-    echo '<div class="card mb-3">';
-    echo '<div class="card-header">'.$theme.'</div>';
-
-    echo '<div class="card-body">';
-
-    foreach($theme_options as $key => $value) {
-
-        $post_key = 'theme_'.$key;
-
-        $this_value = '';
-        $get_key = '';
-        $get_key = array_search("$post_key", array_column($theme_data, 'theme_label'));
-        if(is_numeric($get_key)) {
-            $this_value = $theme_data[$get_key]['theme_value'];
-        }
-
-        if($value['type'] === 'text') {
-            echo '<div class="mb-3">';
-            echo '<label class="form-label">'.$value['label'].'</label>';
-            echo '<input type="text" name="'.$post_key.'" value="'.$this_value.'" class="form-control">';
-            echo '</div>';
-        }
-
-        if ($value['type'] === 'checkbox') {
-            $checked = ($this_value == "1") ? "checked" : "";
-            echo '<div class="form-check my-3">';
-            echo '<input class="form-check-input" type="checkbox" name="'.$post_key.'" value="1" '.$checked.'>';
-            echo '<label class="form-check-label">'.$value['label'].'</label>';
-            echo '</div>';
-        }
-
-        if ($value['type'] === 'select') {
-            echo '<div class="mb-3">';
-            echo '<label>'.$value['label'].'</label>';
-            echo '<select class="form-select" name="'.$post_key.'">';
-            foreach ($value['options'] as $optValue => $optLabel) {
-                $selected = ($optValue == $this_value) ? "selected" : "";
-                echo "<option value=\"$optValue\" $selected>$optLabel</option>";
-            }
-            echo "</select>";
-            echo '</div>';
-        }
+$fields = [];
+foreach(se_get_theme_option_fields($theme) as $key => $option) {
+    $value = html_entity_decode((string) ($saved_values['theme_'.$key] ?? ''), ENT_QUOTES, 'UTF-8');
+    $options = [];
+    foreach($option['options'] ?? [] as $option_value => $option_label) {
+        $options[] = ['value' => $option_value, 'label' => $option_label, 'selected' => ((string) $option_value === $value)];
     }
-
-    echo '</div>';
-
-    echo '<div class="card-footer">';
-    echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-    echo '<input type="hidden" name="theme" value="'.$theme.'">';
-    echo '<input type="submit" name="save_theme_options" value="'.$lang['save'].'" class="btn btn-success">';
-    echo '</div>';
-    echo '</div>';
-    echo '</form>';
+    $fields[] = [
+        'name' => 'theme_'.$key,
+        'label' => $option['label'] ?? $key,
+        'type' => $option['type'] ?? 'text',
+        'value' => $value,
+        'options' => $options
+    ];
 }
 
-echo '</div>';
-echo '<div class="col-md-6">';
-echo '<div class="card mb-3">';
-echo '<div class="card-header">readme</div>';
-echo '<div class="card-body">';
-if(file_exists($this_theme_root.'/readme.md')) {
-    $Parsedown = new Parsedown();
-    $readme_content = file_get_contents($this_theme_root.'/readme.md');
-    $parsed_content = $Parsedown->text("$readme_content");
-    echo $parsed_content;
+// the readme is part of the installed theme
+$readme = '';
+if(is_file($theme_root.'/readme.md')) {
+    $readme = (new Parsedown())->text((string) file_get_contents($theme_root.'/readme.md'));
 }
-echo '</div>';
-echo '</div>';
 
-echo '</div>';
-echo '</div>';
+echo $twig->render('addons/theme-options.twig', [
+    'theme' => $theme,
+    'fields' => $fields,
+    'readme' => $readme,
+    'writer_uri' => '/admin-xhr/addons/write/'
+]);

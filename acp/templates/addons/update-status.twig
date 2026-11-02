@@ -1,0 +1,19 @@
+{#
+ # update status of a plugin or theme, loaded into its card header by the addons data-reader
+ # status: update_available, update_disabled (upload of addons switched off), up_to_date or unknown
+ # update: {plugin_id, addon_type, download_url, target} for the update button
+ #}
+{% if status == 'update_disabled' %}
+    {# updates are installed via se_install_addon_zip(), which is disabled together with the addon upload #}
+    <span class="badge text-bg-info" title="{{ lang.msg_info_upload_addons_deactivated }}">{{ icon.info_circle|raw }} {{ lang.update_msg_update_available }}</span>
+{% elseif status == 'update_available' %}
+    <button name="update_addon_from_url" value="1" class="btn btn-sm btn-default text-success"
+            hx-post="{{ writer_uri }}"
+            hx-vals="{{ {plugin_id: update.plugin_id, addon_type: update.addon_type, download_url: update.download_url}|json_encode }}"
+            hx-include="[name='csrf_token']"
+            hx-target="#{{ update.target }}">{{ lang.update }} {{ icon.arrow_clockwise|raw }}</button>
+{% elseif status == 'up_to_date' %}
+    <span class="badge text-bg-success" title="{{ lang.update_msg_no_update_available }}">{{ icon.check_circle|raw }}</span>
+{% else %}
+    <span class="badge badge-se">{{ icon.question_circle|raw }}</span>
+{% endif %}

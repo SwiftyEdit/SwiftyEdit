@@ -1,0 +1,48 @@
+{#
+ # steps of the installation from an url, rendered by the addons data-writer
+ # into #get-addon-response (install.twig) or the modal of the catalog (in_modal)
+ # step: error (message), confirm (addon, addon_url, target_id) or result (message, success)
+ # the addon data comes from a third-party info.json, Twig escapes it
+ #}
+{% if step == 'confirm' %}
+    {% set content %}
+        <table class="table">
+            <tr><th>{{ lang.addons_label_name }}</th><td>{{ addon.name }}</td></tr>
+            <tr><th>{{ lang.addons_label_author }}</th><td>{{ addon.author }}</td></tr>
+            <tr><th>{{ lang.label_description }}</th><td>{{ addon.description }}</td></tr>
+            <tr><th>{{ lang.addons_label_version }}</th><td>{{ addon.version }} (Build {{ addon.build }})</td></tr>
+            <tr><th>{{ lang.catalog_requires }}</th><td>&gt;= {{ addon.requires_build }}</td></tr>
+        </table>
+    {% endset %}
+    {% set install_button %}
+        <button class="btn btn-primary"
+                hx-post="{{ writer_uri }}"
+                hx-vals="{{ {install_addon_from_url: 1, addon_url: addon_url, target_id: target_id}|json_encode }}"
+                hx-include="[name='csrf_token']"
+                hx-target="#{{ target_id }}">{{ lang.btn_install }}</button>
+    {% endset %}
+{% else %}
+    {% set content %}
+        <div class="alert alert-{{ step == 'result' and success ? 'success' : 'danger' }} mb-0">{{ message }}</div>
+    {% endset %}
+    {% set install_button = '' %}
+{% endif %}
+
+{% if in_modal %}
+    {# swapped into the modal-content of catalog.twig #}
+    <div class="modal-header">
+        <h5 class="modal-title">{{ addon.name|default(lang.catalog_title) }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.close }}"{% if step == 'result' %} onclick="htmx.trigger('body', 'refresh_catalog')"{% endif %}></button>
+    </div>
+    <div class="modal-body">{{ content }}</div>
+    <div class="modal-footer">
+        {# after the installation the grid is refreshed, the entry switches to "installed" #}
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"{% if step == 'result' %} onclick="htmx.trigger('body', 'refresh_catalog')"{% endif %}>{{ lang.close }}</button>
+        {{ install_button }}
+    </div>
+{% else %}
+    <div class="mt-3">
+        {{ content }}
+        {{ install_button }}
+    </div>
+{% endif %}
