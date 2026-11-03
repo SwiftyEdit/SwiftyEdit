@@ -241,6 +241,7 @@ function se_prepareProductData($data, $id = null) {
     }
 
     if(is_numeric($id)) {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
         $filename = str_replace("/", "", $slug) . '-' . $id . '.html';
         // rss url
         if ($data['rss_url'] == "") {
@@ -258,10 +259,13 @@ function se_prepareProductData($data, $id = null) {
     // canonical url on the frontend, same as before.
     $product_canonical_url = trim($product_canonical_url ?? '');
     if ($product_canonical_url === '') {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
         $product_canonical_url = $se_base_url . $main_catalog_slug . $slug;
     }
 
+    // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
     $meta_title = se_return_clean_value($meta_title);
+    // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
     $meta_description = se_return_clean_value($meta_description);
     $product_variant_color = se_return_clean_value($data['product_variant_color']);
 

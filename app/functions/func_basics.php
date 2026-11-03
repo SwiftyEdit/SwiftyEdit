@@ -158,7 +158,7 @@ function se_get_images_data($image,$parameters=NULL) {
 /**
  * @param string $file filename
  * @param mixed $parameters
- * @return array|false|string|string[]
+ * @return string
  */
 
 function se_get_files_data($file,$parameters=NULL) {

@@ -800,7 +800,7 @@ function se_getProductCachePath($id, $lang) {
     $baseDir = SE_CONTENT . '/cache/products';
     $range   = floor($id / 1000) * 1000; // 1542 → 1000
 
-    $dir = $baseDir . '/' . str_pad($range, 3, '0', STR_PAD_LEFT);
+    $dir = $baseDir . '/' . str_pad((string) $range, 3, '0', STR_PAD_LEFT);
 
     if (!is_dir($dir)) {
         mkdir($dir, SE_DIR_PERMISSIONS, true);
@@ -1031,7 +1031,7 @@ function se_get_product_variants($id) {
  * check variants, volume discounts, and price groups
  *
  * @param integer $id
- * @return string|void
+ * @return string|null lowest net price with decimal comma, null without prices
  */
 function se_get_product_lowest_price(int $id) {
     global $db_posts;
@@ -1103,7 +1103,7 @@ function se_get_product_lowest_price(int $id) {
     }
 
     $lowestPrice = min($allPrices);
-    return str_replace('.', ',', $lowestPrice);
+    return str_replace('.', ',', (string) $lowestPrice);
 }
 
 /**
@@ -2114,7 +2114,6 @@ function se_checkout_address_complete(array $data, string $prefix): bool {
 
 
 /**
- * @param int $type 1 or 2
  * @param string $lang en, de ...
  * @return array
  */

@@ -69,7 +69,7 @@ function se_set_user_groups(int $user, array $group_ids): void {
     $groups = $db_user->select("se_groups", ["group_id", "group_user"]);
 
     foreach($groups as $group) {
-        $users = array_filter(explode(" ", (string) $group['group_user']), 'strlen');
+        $users = array_filter(explode(" ", (string) $group['group_user']), fn($v) => $v !== '');
         $is_member = in_array((string) $user, $users, true);
         $should_be_member = in_array((int) $group['group_id'], $group_ids, true);
 
