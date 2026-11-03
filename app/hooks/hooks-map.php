@@ -139,9 +139,7 @@ return [
             'context' => ['user_id', 'data', 'changes', 'updated_by'],
         ],
 
-        // 'user.deleted' is not available yet - the ACP has no function to
-        // delete users. Add it here (and to docs/v2/{de,en}/09-03-hooks.md)
-        // together with that function.
+        // 'user.deleted' is a global hook, see below
     ],
 
 
@@ -160,6 +158,18 @@ return [
         'order.paid' => [
             'type'    => 'action',
             'context' => ['order_id', 'order', 'triggered_by'],
+        ],
+
+        // ----- Users -----
+
+        // A user account has been deleted, either by an admin in the ACP
+        // (deleted_by = admin's nick) or by the user in the frontend profile
+        // (deleted_by = 'self'). The row is already emptied when the hook
+        // fires, 'user' holds the data from before (without passwords and
+        // 2FA secrets, see se_user_deleted_snapshot()).
+        'user.deleted' => [
+            'type'    => 'action',
+            'context' => ['user_id', 'user', 'deleted_by'],
         ],
     ],
 ];

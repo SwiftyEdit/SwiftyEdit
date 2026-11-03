@@ -146,6 +146,34 @@ function se_user_delete_blocker(int $user_id, string $context): string {
 }
 
 /**
+ * the account data as it was before the deletion, for the 'user.deleted' hook -
+ * plugins need e.g. the mail address to remove the contact from external services.
+ * passwords, 2FA secrets, lock/reset codes and backend settings are left out
+ *
+ * @param array $user row of se_user
+ * @return array
+ */
+function se_user_deleted_snapshot(array $user): array {
+
+    $skip_prefixes = ['user_psw', 'user_2fa_', 'user_unlock_', 'user_reset_psw', 'user_failed_login'];
+    $skip_columns = ['user_activationkey', 'user_locked_until', 'user_acp_settings', 'user_deleted_at', 'user_deleted_nick'];
+
+    $snapshot = [];
+    foreach($user as $column => $value) {
+        if(in_array($column, $skip_columns, true)) {
+            continue;
+        }
+        foreach($skip_prefixes as $prefix) {
+            if(str_starts_with($column, $prefix)) {
+                continue 2;
+            }
+        }
+        $snapshot[$column] = $value;
+    }
+    return $snapshot;
+}
+
+/**
  * delete an account - the checks of se_user_delete_blocker() must be done before
  *
  * @param int $user_id
@@ -253,9 +281,11 @@ function se_delete_user(int $user_id, bool $delete_comments = false, string $del
 
     record_log($deleted_by === 'self' ? 'user' : $deleted_by, "deleted user id: $user_id", 10);
 
-    if(function_exists('se_do_hook')) {
-        se_do_hook('backend', 'user.deleted', [
+    // global hook: accounts are deleted in the ACP and by the user in the frontend profile
+    if(function_exists('se_do_global_hook')) {
+        se_do_global_hook('user.deleted', [
             'user_id' => $user_id,
+            'user' => se_user_deleted_snapshot($user),
             'deleted_by' => $deleted_by
         ]);
     }
