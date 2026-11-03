@@ -1173,39 +1173,6 @@ function se_get_product_price_tag(array $product): array {
     ];
 }
 
-/**
- * @param $id
- * @return int|mixed
- */
-function se_delete_product($id) {
-    global $db_posts;
-    $del_id = (int) $id;
-    $cnt_delete = 0;
-
-    $delete = $db_posts->delete("se_products", ["id" => $del_id]);
-    $cnt_delete = $delete->rowCount();
-
-    /* get product it's variants and delete them also */
-    $variants = se_get_product_variants($del_id);
-    $cnt_variants = count($variants);
-    if($cnt_variants > 0) {
-        foreach($variants as $variant) {
-            $delete_variant_id = $variant['id'];
-            $delete_variant = $db_posts->delete("se_products", ["id" => $delete_variant_id]);
-            $cnt_delete_variant = $delete_variant->rowCount();
-            $cnt_delete += $cnt_delete_variant;
-        }
-    }
-
-
-    if($cnt_delete > 0) {
-        return $cnt_delete;
-    }
-    return 0;
-}
-
-
-
 
 /**
  * increase the downloads counter

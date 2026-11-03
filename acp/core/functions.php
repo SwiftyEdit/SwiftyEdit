@@ -89,6 +89,7 @@ function se_html_response($html, int $statusCode = 200) {
  * @param int   $statusCode   Optional HTTP status code (default: 200).
  *
  * @return void
+ * @deprecated not used by the core, will be removed in a later version
  */
 function se_json_response(array $data, int $statusCode = 200) {
     http_response_code($statusCode);
@@ -139,21 +140,6 @@ function return_language_flag_src($lang): string {
 }
 
 
-/**
- * get all preferences
- * return as array
- * @deprecated - this function will be removed in the near future. Use se_get_preferences() from global functions.
- */
- 
-function get_preferences() {
-	global $db_content;
-	
-	$prefs = $db_content->get("se_preferences", "*", [
-		"prefs_id" => 1
-	]);
-	
-	return $prefs;
-}
 
 /**
  * write preferences table se_options
@@ -233,80 +219,6 @@ function get_all_groups() {
 }
 
 
-/**
- * get all admins
- * return as array
- */
-
-function get_all_admins() {
-
-	global $db_user;
-		
-	$admins = $db_user->select("se_user", "*", [
-	"user_class" => "administrator"
-	]);
-	
-	return $admins;
-}
-
-
-
-
-
-/**
- * show all images
- * return array
- */
-
-function get_all_images() {
-
-	global $img_path;
-	$images = array();
-
-	$dir = "../$img_path";
-	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
-	$types = array('jpg','jpeg','png','gif');
-	
-	foreach($scan_dir as $key => $file) {
-		$suffix = substr($file, strrpos($file, '.') + 1);
-			if(in_array($suffix, $types)) {
-			$images[] = basename($file);
-		}
-	}
-	 return $images;
-}
-
-/**
- * show all images from images folder
- * optional filter by prefix
- * return array
- */
-
-function se_get_all_images($prefix='') {
-
-	global $img_path;
-	$images = array();
-
-	$dir = "$img_path";
-	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
-	$types = array('jpg','jpeg','png','gif','webp');
-	
-	foreach($scan_dir as $key => $file) {
-		$suffix = substr($file, strrpos($file, '.') + 1);
-		
-			if(in_array($suffix, $types)) {
-			
-				if($prefix != '') {
-					if(substr(basename($file), 0,strlen($prefix)) !== $prefix) {
-						continue;
-					}
-				}
-			
-				$images[] = basename($file);
-		  }
-	}
-	 return $images;
-}
 
 /**
  * show all images from images folder and it's subfolders
@@ -452,6 +364,8 @@ function se_dir_size($dir) {
 
 /**
  * PRINT SYSTEM MESSAGE
+ * @deprecated not used by the core, will be removed in a later version -
+ *             use show_toast() instead
  */
 
 function print_sysmsg($msg) {
@@ -505,22 +419,6 @@ function show_toast($text,$color='') {
 
 
 
-
-
-/**
- * Get Page Impression
- */
-
-function get_page_impression($pid) {
-	
-	global $db_content;
-
-	$counter = $db_content->get("se_pages", "page_hits", [
-		"page_id" => $pid
-	]);
-		
-	return $counter;
-}
 
 
 
@@ -808,95 +706,6 @@ function se_write_xml_sitemap_file(string $file, array $entries): void
 
 
 
-/**
- * get custom columns from table se_pages
- * return array
- */
-
-function get_custom_fields() {
-	
-	global $db_content;
-
-	$customs_fields = array();
-	
-	$cf = $db_content->get("se_pages", "*");
-	
-	$cf = array_keys($cf);
-	$cnt_cf = count($cf);
-	
-	for($i=0;$i<$cnt_cf;$i++) {
-		if(substr($cf[$i],0,7) == "custom_") {
-			$customs_fields[] = $cf[$i];
-		}
-	}
-	return $customs_fields;
-
-}
-
-
-/**
- * get custom columns from table se_user
- * return array
- */
-
-function get_custom_user_fields() {
-	
-	global $db_user;
-
-	$customs_fields = array();
-	
-	$cf = $db_user->get("se_user", "*");
-
-	$cf = array_keys($cf);
-	$cnt_cf = count($cf);
-	
-	for($i=0;$i<$cnt_cf;$i++) {
-		if(substr($cf[$i],0,7) == "custom_") {
-			$customs_fields[] = $cf[$i];
-		}
-	}
-	
-	return $customs_fields;
-
-}
-
-
-
-/**
- * show editor's switch buttons
- * for plain text, code or wysiwyg
- */
-
-function show_editor_switch($tn,$sub) {
-
-	$btn_wysiwyg_link = "acp.php?tn=$tn&sub=$sub&editor=wysiwyg";
-	$btn_code_link = "acp.php?tn=$tn&sub=$sub&editor=code";
-	$btn_text_link = "acp.php?tn=$tn&sub=$sub&editor=plain";
-	
-	if($_SESSION['editor_class'] == "plain") {
-		$btn_wysiwyg = 'btn btn-light btn-sm';
-		$btn_text = 'btn btn-primary btn-sm disabled';
-		$btn_code = 'btn btn-light btn-sm';
-	} elseif($_SESSION['editor_class'] == "wysiwyg") {
-		$btn_wysiwyg = 'btn btn-primary btn-sm disabled';
-		$btn_text = 'btn btn-light btn-sm';
-		$btn_code = 'btn btn-light btn-sm';
-	} else {
-		$btn_wysiwyg = 'btn btn-light btn-sm';
-		$btn_text = 'btn btn-light btn-sm';
-		$btn_code = 'btn btn-primary btn-sm disabled';
-	}
-	
-	
-	echo '<div class="btn-group btn-group-justified">';
-	echo '<a href="'.$btn_wysiwyg_link.'" class="'.$btn_wysiwyg.'">WYSIWYG</a>';
-	echo '<a href="'.$btn_text_link.'" class="'.$btn_text.'">Text</a>';
-	echo '<a href="'.$btn_code_link.'" class="'.$btn_code.'">Code</a>';
-	echo '</div>';
-	
-}
-
-
 
 /**
  * show the first xx words of a string
@@ -1150,6 +959,9 @@ function se_write_media_data($data) {
  *
  * https://www.php.net/manual/de/function.array-unique.php#116302
  *
+ * @deprecated not used by the core, will be removed in a later version -
+ *             use array_values(array_column($array, null, $key)) instead
+ *             (keeps the last entry per key instead of the first)
  */
 
 function se_unique_multi_array($array, $key) { 
@@ -1190,129 +1002,6 @@ function se_get_labels() {
 	return $labels;
 }
 
-
-/**
- * generate an select image widget
- * we use input type checkbox
- *
- * @param array $images
- * @param array $selected_img
- * @param string $prefix
- * @param integer $id
- * @return string
- */
-
-function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
-
-    global $lang;
-    $path = '../public/assets';
-
-    if(!is_array($selected_img)) {
-        $cnt_selected_img = 0;
-    } else {
-        $selected_img = array_filter($selected_img);
-        $cnt_selected_img = count($selected_img);
-    }
-
-
-    $images_container  = '<div class="scroll-container scroll-container-h500 p-1">';
-
-    /* if we have selected images, show them first */
-    if($cnt_selected_img > 0) {
-        $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
-        $images_container .= '<div class="sortableListGroup list-group my-1">';
-        foreach($selected_img as $sel_images) {
-            $sel_images_src = str_replace('../',$path.'/',$sel_images);
-            $sel_images_abs = str_replace('../','/',$sel_images);
-
-            if(file_exists("$sel_images_src")) {
-                $images_container .= '<div class="list-group-item p-1">';
-                $images_container .= '<div class="image-checkbox image-checkbox-checked">';
-                $images_container .= '<div class="row">';
-                $images_container .= '<div class="col-3">';
-                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.htmlspecialchars($sel_images_abs, ENT_QUOTES).')">';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-                $images_container .= '<div class="col-9">';
-                $images_container .= '<span class="input-group-text d-inline-block float-end" id="basic-addon1">';
-                $images_container .= '<i class="bi bi-arrows-move" aria-hidden="true"></i>';
-                $images_container .= '</span>';
-                $images_container .= '<input name="picker'.$id.'_images[]" value="'.htmlspecialchars($sel_images, ENT_QUOTES).'" type="checkbox" checked>';
-                $images_container .= '<div class="small text-muted">'.htmlspecialchars(basename($sel_images), ENT_QUOTES).'</div>';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-            }
-        }
-        $images_container .= '</div>';
-    }
-
-    $images_container .= '<input class="filter-images form-control" name="filter-images" placeholder="Filter ..." type="text">';
-    $images_container .= '<div class="row g-1">';
-
-    $cnt_images = count($images);
-
-    for($i=0;$i<$cnt_images;$i++) {
-
-        $img_filename = basename($images[$i]['media_file']);
-        // plain text + flag; markup is added (statically) at output and the
-        // value itself is htmlspecialchars-escaped below (no Twig here)
-        $img_filename_short = se_return_first_chars($img_filename,15,false);
-        $img_filename_truncated = strlen(strip_tags(htmlspecialchars_decode($img_filename))) > 15;
-        $image_name = $images[$i]['media_file'];
-        $image_tmb_name = $images[$i]['media_thumb'];
-        $lastedit = (int) $images[$i]['media_lastedit'];
-        $lastedit_year = date('Y',$lastedit);
-        $filemtime = $lastedit_year;
-
-        if($prefix != '') {
-            if((strpos($image_name, $prefix)) === false) {
-                continue;
-            }
-        }
-
-        if(file_exists($image_tmb_name)) {
-            $preview = $image_tmb_name;
-        } else {
-            $preview = $image_name;
-        }
-
-        $preview = str_replace("../","/",$preview);
-
-        /* new label for each year */
-        $prev_image_ts = (int) $images[$i-1]['media_lastedit'];
-        if(date('Y',$prev_image_ts) != $lastedit_year) {
-            $images_container .= '<div class="col-12 mt-2"><div class="card p-1"><h6 class="m-0">'.$filemtime.'</h6></div></div>';
-        }
-
-        if(!in_array($image_name, $selected_img)) {
-            $images_container .= '<div class="col col-lg-3" title="'.htmlspecialchars($img_filename, ENT_QUOTES).'">';
-            $images_container .= '<div class="image-checkbox h-100">';
-            $images_container .= '<div class="card h-100">';
-            $images_container .= '<div class="card-body p-0">';
-            $images_container .= '<div class="image-select-preview" style="background-image: url('.htmlspecialchars($preview, ENT_QUOTES).')"></div>';
-            $images_container .= '<input name="picker'.$id.'_images[]" value="'.htmlspecialchars($image_name, ENT_QUOTES).'" type="checkbox">';
-            $images_container .= '</div>';
-            $images_container .= '<div class="text-muted small">'.htmlspecialchars($img_filename_short, ENT_QUOTES);
-            if($img_filename_truncated) {
-                $images_container .= ' <small><i>(...)</i></small>';
-            }
-            $images_container .= '</div>';
-
-            $images_container .= '</div>';
-            $images_container .= '</div>';
-            $images_container .= '</div>';
-        }
-
-    }
-
-    $images_container .= '</div>';
-    $images_container .= '</div>';
-
-    return $images_container;
-
-}
 
 
 function se_list_gallery_thumbs($gid) {
@@ -1457,135 +1146,6 @@ function se_remove_gallery($id,$dir) {
 }
 
 
-
-/**
- * please use the new function se_create_thumbnail()
- */
- 
-function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_quality) {
-	
-	global $img_tmb_path;
-	
-	/* thumbnail directories */
-	$tmb_dir = '../'.$img_tmb_path;
-	$tmb_dir_year = $tmb_dir.'/'.date('Y',time());
-	$tmb_destination = $tmb_dir_year.'/'.date('m',time());
-	if(!is_dir($tmb_dir_year)) {
-		mkdir($tmb_dir_year);
-	}
-	if(!is_dir($tmb_destination)) {
-		mkdir($tmb_destination);
-	}
-
-	$arr_image_details	= GetImageSize("$img_src");
-	$original_width		= $arr_image_details[0];
-	$original_height	= $arr_image_details[1];
-	$a = $tmb_width / $tmb_height;
-    $b = $original_width / $original_height;
-	
-	
-	if ($a<$b) {
-     $new_width = $tmb_width;
-     $new_height	= intval($original_height*$new_width/$original_width);
-  } else {
-     $new_height = $tmb_height;
-     $new_width	= intval($original_width*$new_height/$original_height);
-  }
-	
-	if(($original_width <= $tmb_width) AND ($original_height <= $tmb_height)) {
-	  $new_width = $original_width;
-	  $new_height = $original_height;
-  }
-  
-	$imgt = '';
-	$imgcreatefrom = '';
-	if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-	if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-	if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-	
-	
-	if($imgt) { 
-		$old_image	= $imgcreatefrom("$img_src");
-		$new_image	= imagecreatetruecolor($new_width, $new_height);
-		imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
-		imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
-		imagedestroy($new_image);
-	}
-	
-}
-
-
-/**
- * @param string $img_src path to original image
- * @param string $tmb_name name of the new thumbnail
- * @param string $tmb_dir directory where the thumb should be saved
- * @param integer $tmb_width size
- * @param integer $tmb_height size
- * @param integer $tmb_quality quality
- * @return void
- */
-
-function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100, $tmb_height=100, $tmb_quality=50) {
-	
-	global $img_tmb_path;
-
-    $arr_image_details	= GetImageSize("$img_src");
-    $original_width		= $arr_image_details[0];
-    $original_height	= $arr_image_details[1];
-
-    if($original_width < 1) {
-        return;
-    }
-
-    $a = $tmb_width / $tmb_height;
-    $b = $original_width / $original_height;
-
-
-		
-	/* thumbnail directories */
-	if($tmb_dir == NULL OR $tmb_dir == '') {
-		$dir = '../'.$img_tmb_path;
-		$dir_year = $dir.'/'.date('Y',time());
-		$tmb_destination = $dir_year.'/'.date('m',time());
-	} else {
-		$tmb_destination = $tmb_dir;
-	}
-	
-	if(!is_dir($tmb_destination)) {
-		mkdir($tmb_destination, SE_DIR_PERMISSIONS, true);
-	}
-	
-
-	
-	
-	if ($a<$b) {
-     $new_width = $tmb_width;
-     $new_height	= intval($original_height*$new_width/$original_width);
-  } else {
-     $new_height = $tmb_height;
-     $new_width	= intval($original_width*$new_height/$original_height);
-  }
-	
-	if(($original_width <= $tmb_width) AND ($original_height <= $tmb_height)) {
-	  $new_width = $original_width;
-	  $new_height = $original_height;
-  }
-  
-	$imgt = '';
-	$imgcreatefrom = '';
-	if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-	if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-	if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-	
-	
-	if($imgt) { 
-		$old_image	= $imgcreatefrom("$img_src");
-		$new_image	= imagecreatetruecolor($new_width, $new_height);
-		imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
-		imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
-		imagedestroy($new_image);
-	}
-}
 
 
 /**
@@ -1847,175 +1407,6 @@ function se_print_plugin_docs_link(string $plugin, string $file = 'index.md', ?s
     return se_print_docs_link('/plugins/' . basename($plugin) . '/' . basename($file), $text, $anchor, $class);
 }
 
-/**
- * @param string $file
- * @param string|null $trigger_text
- * @return string
- */
-function se_print_docs_tip(string $file, ?string $trigger_text = null) :string {
-    global $icon, $languagePack, $languagePackFallback;
-
-    if ($trigger_text == null or $trigger_text == 'icon') {
-        $trigger_text = $icon['question_circle'];
-    }
-
-    $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.$file;
-    if(!is_file($doc_filepath)) {
-        $doc_filepath = '../acp/docs/'.$languagePackFallback.'/tooltips/'.$file;
-    }
-
-    $show_file = se_parse_docs_file($doc_filepath);
-    $id = uniqid('help-');
-
-    $tooltip = '<span data-help-template="'.$id.'">'.$trigger_text.'</span>';
-    $tooltip .= '<template id="'.$id.'">
-  <div class="tooltip-body">
-    <div class="tooltip-title"><h6>'.$show_file['title'].'</h6></div>
-    <div class="tooltip-content">'.$show_file['content'].'</div>
-    <div class="tooltip-arrow" data-arrow></div>
-  </div>
-</template>';
-
-
-    return $tooltip;
-}
-
-/**
- * @param $key
- * @param string|null $trigger
- * @return string
- */
-
-function se_return_tooltip($key, ?string $trigger = null) :string {
-    global $lang,$languagePackFallback,$icon;
-
-    if ($trigger == null or $trigger == 'icon') {
-        $trigger = $icon['question_circle'];
-    }
-    $tt_text = '';
-    if(isset($lang[$key])) {
-        $tt_text = $lang[$key];
-    }
-
-    $id = uniqid('help-');
-
-    $tooltip = '<span data-help-template="'.$id.'">'.$trigger.'</span>';
-    $tooltip .= '<template id="'.$id.'">
-  <div class="tooltip-body">
-    <div class="tooltip-content">'.$tt_text.'</div>
-    <div class="tooltip-arrow" data-arrow></div>
-  </div>
-</template>';
-
-    return $tooltip;
-
-}
-
-
-/**
- * display pagination
- *
- * @param string $query will be set as href="$query" - {page} will be replaced
- * @param integer $pages_limit how many numbers should be displayed (max)
- * @param integer $align 1 = left, 2 = center, 3 = right
- * @param integer $size 1 = sm, 2 = default, 3 = lg
- * @param integer $items_cnt number of items
- * @param integer $sql_start_nbr start from the sql query
- * @param integer $items_per_page how many items per page
- * @return string
- */
-
-function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr, int $items_per_page, int $pages_limit=10, int $align=1, int $size=2): string
-{
-
-    $cnt_pages = ceil($items_cnt / $items_per_page);
-    if($cnt_pages < 2) {
-        // no pages, no pagination
-        return '';
-    }
-
-    $nextPage = $sql_start_nbr+$items_per_page;
-    $lastPage = ($cnt_pages*$items_per_page)-$items_per_page;
-    if($nextPage >= $lastPage) {
-        $nextPage = $lastPage;
-    }
-    $prevPage = max(0,$sql_start_nbr-$items_per_page);
-
-    $next_query = str_replace("{page}","$nextPage",$query);
-    $prev_query = str_replace("{page}","$prevPage",$query);
-
-    $align_class = '';
-    $size_class = '';
-    if($align == 1) {
-        $align_class = '';
-    } else if($align == 2) {
-        $align_class = 'justify-content-center';
-    } else if($align == 3) {
-        $align_class = 'justify-content-end';
-    }
-
-    if($size == 1) {
-        $size_class = 'pagination-sm';
-    } else if($size == 2) {
-        $size_class = '';
-    } else if($size == 3) {
-        $size_class = 'pagination-lg';
-    }
-
-    $pagination = '<nav aria-label="Pagination">';
-    $pagination .= '<ul class="pagination '.$align_class.' '.$size_class.'">';
-    $pagination .= '<li class="page-item">
-                    <a class="page-link" href="'.$prev_query.'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-                  </li>';
-
-    $activePage = ceil(($sql_start_nbr*$items_per_page)/$cnt_pages);
-    $activePage = ceil(($sql_start_nbr/$items_per_page)+1);
-
-    if($activePage < 2) {
-        $activePage = 1;
-    }
-
-    $pagination_start = $activePage-($pages_limit/2);
-    if($pagination_start < 1) {
-        $pagination_start = 1;
-    }
-    $pagination_end = $activePage+($pages_limit/2);
-    if($pagination_end > $cnt_pages) {
-        $pagination_end = $cnt_pages;
-    }
-    
-    for($i=1;$i<=$cnt_pages;$i++) {
-
-        $active_class = '';
-        //$page_nbr = $i+1;
-        $thisPage = ($i*$items_per_page)-$items_per_page;
-
-        if($activePage == $i) {
-            $active_class = 'active';
-        }
-
-        if($i > $pagination_end) {
-            continue;
-        }
-        if($i < $pagination_start) {
-            continue;
-        }
-
-        $href = str_replace("{page}","$thisPage",$query);
-
-        $pagination .= '<li class="page-item '.$active_class.'">
-                        <a class="page-link" href="'.$href.'">'.$i.'</a>
-                    </li>';
-    }
-
-    $pagination .= '<li class="page-item">
-                    <a class="page-link" href="'.$next_query.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
-                </li>';
-    $pagination .= '</ul>';
-    $pagination .= '</nav>';
-
-    return $pagination;
-}
 
 function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,$post_name='pagination'): string {
 

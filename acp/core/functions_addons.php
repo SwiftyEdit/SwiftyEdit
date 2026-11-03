@@ -1,31 +1,5 @@
 <?php
 
-/**
- * get all installed Plugins
- * return as array
- */
-
-function get_all_plugins() {
-	
-	$plugins = array();
-	$scanned_directory = array_diff(scandir('assets/plugins/'), array('..', '.','.DS_Store'));
-	foreach($scanned_directory as $p) {
-		
-		$path_parts = pathinfo($p);
-		if($path_parts['extension'] == 'php') {
-			$plugins[] = $p;
-		} else {
-			if((is_dir('assets/plugins/'.$p)) && (is_file('assets/plugins/'.$p.'/index.php'))) {
-				$plugins[] = $p;
-			}
-		}
-		
-	}
-	return $plugins;
-}
-
-
-
 function se_get_all_addons(): array {
 
     $addons_root = SE_PLUGINS;
@@ -1066,25 +1040,6 @@ function get_all_templates() {
 
 	return($arr_Styles);
 }
-
-/**
- * return available stylesheets from a theme
- * find css files theme_*.css
- */
- 
-function se_get_stylesheets($theme){
-	
-	$stylesheets = glob('../styles/'.$theme.'/css/theme_*.css');
-	
-	if(is_array($stylesheets) && (count($stylesheets) > 0)){
-		return $stylesheets;
-	} else {
-		return '0';
-	}
-	
-	
-}
-
 
 
 /**

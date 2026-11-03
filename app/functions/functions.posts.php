@@ -449,32 +449,6 @@ function se_get_event_entries($start,$limit,$filter) {
 }
 
 
-/**
- * count all entries
- */
- 
-function se_cnt_post_entries() {
-	
-	global $db_posts;
-	
-	$sql = "SELECT count(*) AS 'All',
-		(SELECT count(*) FROM se_posts WHERE post_status LIKE '%1%' ) AS 'Public',
-		(SELECT count(*) FROM se_posts WHERE post_status LIKE '%2%' ) AS 'Draft',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%m%' ) AS 'Message',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%l%' ) AS 'Link',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%v%' ) AS 'Video',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%i%' ) AS 'Image',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%e%' ) AS 'Event',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%p%' ) AS 'Product',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%f%' ) AS 'File'
-	FROM se_posts
-	";
-	
-	$stats = $db_posts->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-	return $stats;
-}
-
 
 function se_get_post_data($id) {
 	

@@ -52,36 +52,6 @@ function se_get_userdata_by_id($id) {
     return $user_data;
 }
 
-/**
- * @param integer $user
- * @param integer $group
- * @return void
- */
-function se_add_user_to_group(int $user, int $group): void {
-
-    global $db_user;
-
-    // get data from group
-    $group_user = $db_user->get("se_groups", "group_user", [
-        "group_id" => $group
-    ]);
-    if($group_user === null) {
-        return;
-    }
-
-    $users = array_filter(explode(" ", (string) $group_user), 'strlen');
-    if(in_array((string) $user, $users, true)) {
-        return;
-    }
-
-    $users[] = (string) $user;
-    sort($users);
-    $db_user->update("se_groups",[
-        "group_user" => implode(" ", $users)
-    ],[
-        "group_id" => $group
-    ]);
-}
 
 /**
  * make the user a member of exactly the given groups - adds the missing
@@ -450,21 +420,6 @@ function se_hasPermission(string $permission): bool {
 }
 
 
-/**
- * @param integer $length
- * @return string
- */
-function randpsw(int $length=8): string {
-
-    $chars = '123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
-
-    $random_s = '';
-    $cnt_chars = strlen($chars);
-    for($i=0;$i<$length;$i++) {
-        $random_s .= $chars[random_int(0, $cnt_chars - 1)];
-    }
-    return $random_s;
-}
 
 /**
  * @param $token
@@ -627,45 +582,6 @@ function se_username_exists($username): bool
     return se_deleted_nick_reserved($username);
 }
 
-function show_identicon(string $email, int $size = 80): string {
-    $hash = md5(strtolower(trim($email)));
-
-    // Farbe aus den ersten Hash-Bytes ableiten
-    $hue = hexdec(substr($hash, 0, 2)) * 1.41; // 0–360°
-    $color = "hsl($hue, 55%, 45%)";
-    $bg    = "hsl($hue, 55%, 92%)";
-
-    // 5×5 Grid berechnen (nur linke 3 Spalten, dann spiegeln)
-    $cells = [];
-    for ($row = 0; $row < 5; $row++) {
-        for ($col = 0; $col < 3; $col++) {
-            $byte = hexdec($hash[($row * 3 + $col) + 4]);
-            $cells[$row][$col] = $byte % 2;
-        }
-        // Spiegeln: Spalte 3 = Spalte 1, Spalte 4 = Spalte 0
-        $cells[$row][3] = $cells[$row][1];
-        $cells[$row][4] = $cells[$row][0];
-    }
-
-    // SVG zusammenbauen
-    $cell = $size / 5;
-    $svg  = "<svg xmlns='http://www.w3.org/2000/svg' width='$size' height='$size'>";
-    $svg .= "<rect width='$size' height='$size' fill='$bg'/>";
-
-    for ($row = 0; $row < 5; $row++) {
-        for ($col = 0; $col < 5; $col++) {
-            if ($cells[$row][$col]) {
-                $x = $col * $cell;
-                $y = $row * $cell;
-                $svg .= "<rect x='$x' y='$y' width='$cell' height='$cell' fill='$color'/>";
-            }
-        }
-    }
-
-    $svg .= "</svg>";
-    return $svg;
-}
-
 
 /**
  * @param string $email
@@ -725,14 +641,6 @@ function get_all_usermail() {
     return $user_mails;
 }
 
-/**
- * @return mixed
- */
-function get_all_usernames() {
-    global $db_user;
-    $user_nicks = $db_user->select("se_user", ["user_nick"]);
-    return $user_nicks;
-}
 
 /**
  * Simple per-client rate limit (login, password reset), stored as small JSON

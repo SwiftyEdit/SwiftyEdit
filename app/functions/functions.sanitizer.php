@@ -1,17 +1,5 @@
 <?php
 
-
-/**
- * CLEAN VARS // URL PARAMETERS
- */
-
-function clean_vars($var) {
-	$chars = array('<', '>', '\\', '/', '=','..'); 
-	$var = str_replace($chars, "", $var);
-	$var = strip_tags($var);
-	return $var;
-}
-
 function clean_filename($str) {
 	$str = trim($str);
 	// mb_strtolower: strtolower() leaves Ä, Ö, Ü as they are, they would not be
