@@ -18,6 +18,7 @@
 $price_all_net = 0; // reset price net
 $price_all_gross = 0; // reset price gross
 $shipping_costs = 0; // reset shipping costs
+$shipping_type = ''; // stored with the order
 $shipping_products = 0; // number of products which will be shipped
 $store_shipping_cat = 0; // reset shipping category
 $all_items_subtotal_net = 0;
