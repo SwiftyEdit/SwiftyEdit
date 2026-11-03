@@ -427,6 +427,11 @@ function se_sanitize_page_inputs($data) {
             }
         }
 
+        // schema.org type of the page, '' = WebPage
+        if($key == 'page_schema_type') {
+            $sanitized[$key] = in_array($val, se_structured_data_page_types(), true) ? $val : '';
+        }
+
         // page meta robots
         if($key == 'page_meta_robots') {
             if(is_array($val)) {

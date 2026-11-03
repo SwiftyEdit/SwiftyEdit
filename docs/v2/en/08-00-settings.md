@@ -31,6 +31,15 @@ The texts of the following sections are also shown next to the settings in the b
 Name, title, subtitle and description of your website. Themes show them in the header, for
 example, and use them for the meta tags of all pages that don't have their own values.
 
+### Organization (structured data) {#general-organization}
+Who runs this website. SwiftyEdit adds these details as schema.org structured data (JSON-LD) to
+every page, search engines use them e.g. for the knowledge panel. Organization is the general
+type for projects, clubs and everything that doesn't fit better. Corporation is a company,
+NGO a non-profit organization, EducationalOrganization a school or other educational
+institution. OnlineStore sells only online, Store has a shop you can visit and LocalBusiness is
+any other business with a location. Person stands for a single person. Without a name, the page name is used. Under profiles, enter the URLs of your
+social media or other profiles, one per line. The logo comes from "Logo and icons".
+
 ### Logo and icons {#general-branding}
 The logo, thumbnail and favicon are stored right away when you upload them. From the favicon
 (PNG, JPG or WebP, at least 512×512 px) SwiftyEdit creates all icon sizes, including the

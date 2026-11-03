@@ -50,7 +50,8 @@ sie führen Code aus, verändern aber keinen Wert.
 ### Frontend-Hooks
 
 Die Frontend-Hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
-`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`)
+`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`,
+`structured_data.graph`)
 sind zusammen mit den Template-Variablen und Rendering-Konventionen, die sie betreffen,
 dokumentiert - siehe [Hooks](09-01-00-themes.md#hooks) im Themes-Kapitel.
 

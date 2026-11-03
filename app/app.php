@@ -22,7 +22,8 @@
  * @var array $a_allowed_p
  * @var object $smarty Smarty template engine
  * @var int|null $error_code
- * @var array $page_json_ld
+ * @var array|null $page_json_ld set by a theme's php/options.php (optional)
+ * @var array $structuredDataContext template-setup.php, handlers
  *
  */
 
@@ -176,6 +177,14 @@ if ($error_code !== null) {
 // Include theme options if available
 if(is_file($themes_path.'/'.$se_template.'/php/options.php')) {
     include $themes_path.'/'.$se_template.'/php/options.php';
+}
+
+// structured data of the page, unless the theme built its own $page_json_ld
+if(!isset($page_json_ld)) {
+    $page_json_ld = [
+        '@context' => 'https://schema.org',
+        '@graph' => se_structured_data_build($structuredDataContext, $se_settings, $se_base_url, (string) ($page_contents['page_language'] ?? $languagePack))
+    ];
 }
 
 if(is_array($page_json_ld)) {

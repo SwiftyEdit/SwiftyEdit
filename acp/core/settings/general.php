@@ -50,6 +50,47 @@ $inputs['page_description'] = se_print_form_input([
     "type" => "textarea"
 ]);
 
+/* organization (structured data) */
+
+$settings_options = se_settings_options();
+
+$inputs['org_type'] = se_print_form_input([
+    "input_name" => "prefs_org_type",
+    "input_value" => $setting('org_type') ?: 'Organization',
+    "label" => $lang['label_type'],
+    "options" => array_combine($settings_options['prefs_org_type'], $settings_options['prefs_org_type']),
+    "type" => "select"
+]);
+foreach([
+    'org_name' => $lang['label_name'],
+    'org_street' => $lang['label_street'],
+    'org_street_nbr' => $lang['label_nr'],
+    'org_zip' => $lang['label_zip'],
+    'org_city' => $lang['label_town'],
+    'org_phone' => $lang['label_tel'],
+    'org_email' => $lang['label_mail']
+] as $key => $label) {
+    $inputs[$key] = se_print_form_input([
+        "input_name" => "prefs_$key",
+        "input_value" => $setting($key),
+        "label" => $label,
+        "type" => "text"
+    ]);
+}
+$inputs['org_country'] = se_print_form_input([
+    "input_name" => "prefs_org_country",
+    "input_value" => $setting('org_country'),
+    "label" => $lang['label_country'],
+    "options" => ['–' => ''] + array_flip(se_get_countries_options()),
+    "type" => "select"
+]);
+$inputs['org_sameas'] = se_print_form_input([
+    "input_name" => "prefs_org_sameas",
+    "input_value" => $setting('org_sameas'),
+    "label" => $lang['label_settings_org_sameas'],
+    "type" => "textarea"
+]);
+
 /* page versions */
 
 $inputs['nbr_page_versions'] = se_print_form_input([
@@ -150,7 +191,6 @@ $inputs['login_slug'] = se_print_form_input([
 
 /* date and time, the options are checked again by the writer (se_settings_options()) */
 
-$settings_options = se_settings_options();
 
 $inputs['timezone'] = se_print_form_input([
     "input_name" => "prefs_timezone",
@@ -278,7 +318,7 @@ echo $twig->render('settings/general.twig', [
     'writer_uri' => $writer_uri,
     // titles and help texts of the sections come from the docs
     'help' => se_docs_sections('08-00-settings.md', [
-        'general-website', 'general-branding', 'general-images', 'general-uploads', 'general-page-versions',
+        'general-website', 'general-organization', 'general-branding', 'general-images', 'general-uploads', 'general-page-versions',
         'general-domain', 'general-datetime', 'general-themes', 'general-language',
         'general-mail', 'general-mail-test'
     ]),

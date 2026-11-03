@@ -166,6 +166,13 @@ if($first_post_image != '') {
 // pattern as product canonical urls.
 $smarty->assign('page_canonical_url', $post_data['post_canonical_url'] ?? '');
 
+// schema.org BlogPosting, see app/functions/functions.structured-data.php
+$structuredDataContext = [
+    'type' => 'BlogPosting',
+    'data' => $post_data,
+    'image' => $first_post_image != '' ? $page_contents['page_thumbnail'] : ''
+];
+
 $smarty->assign('post_id', $get_post_id);
 $smarty->assign('post_type', $post_data['post_type']);
 

@@ -11,6 +11,23 @@
         {% endblock %}
     {% endembed %}
 
+    {% embed 'components/settings/section.twig' with {help: help['general-organization'], section: 'organization'} %}
+        {% block fields %}
+            <div class="row">
+                <div class="col-md-6">{{ inputs.org_type|raw }}</div>
+                <div class="col-md-6">{{ inputs.org_name|raw }}</div>
+                <div class="col-md-8">{{ inputs.org_street|raw }}</div>
+                <div class="col-md-4">{{ inputs.org_street_nbr|raw }}</div>
+                <div class="col-md-6">{{ inputs.org_zip|raw }}</div>
+                <div class="col-md-6">{{ inputs.org_city|raw }}</div>
+                <div class="col-md-12">{{ inputs.org_country|raw }}</div>
+                <div class="col-md-6">{{ inputs.org_phone|raw }}</div>
+                <div class="col-md-6">{{ inputs.org_email|raw }}</div>
+            </div>
+            {{ inputs.org_sameas|raw }}
+        {% endblock %}
+    {% endembed %}
+
     {% embed 'components/settings/section.twig' with {help: help['general-branding']} %}
         {% block fields %}
             <div class="row">

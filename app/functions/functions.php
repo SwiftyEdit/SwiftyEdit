@@ -24,6 +24,7 @@ include_once 'functions.editors.php';
 include_once 'functions.tags.php';
 include_once 'functions.img.php';
 include_once 'functions.api.php';
+include_once 'functions.structured-data.php';
 
 /**
  * Retrieves all active system preferences

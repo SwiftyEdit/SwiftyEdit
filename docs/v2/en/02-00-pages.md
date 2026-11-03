@@ -153,6 +153,13 @@ use it to view and manage their personal lists; a single public list is also sho
 when opened via its share link. This usage type is only relevant if lists are enabled
 in Settings → Shop.
 
+### Page type (structured data) {#page-schema-type}
+
+In the Meta tab you can choose which kind of page this is for search engines, e.g. an about page,
+a contact page or an FAQ page. SwiftyEdit outputs it as the schema.org type of the page in the
+structured data (JSON-LD). Without a choice, the page is a regular `WebPage`. Products, posts and
+events get their own types (`Product`, `BlogPosting`, `Event`) automatically.
+
 ---
 
 ## Sorting search results

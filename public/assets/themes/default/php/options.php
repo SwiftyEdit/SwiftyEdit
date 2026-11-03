@@ -4,8 +4,6 @@
  * default Theme options
  * @var object $smarty
  * @var string $se_base_url
- * @var string $first_product_img_src
- * @var array $structuredDataContext app/template-setup.php, products-display.php
  *
  * @var array $theme_values data from -> edit page - theme tab
  * @var array $category_template_data data from -> edit category - theme tab
@@ -61,40 +59,30 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
   }
 
 
-  // $structuredDataContext
-    if (!empty($structuredDataContext['type']) && !empty($structuredDataContext['data'])) {
-        switch ($structuredDataContext['type']) {
-            case 'Product':
-                $data = $structuredDataContext['data'];
-                $page_json_ld = [
-                    "@context" => "https://schema.org",
-                    "@type" => "Product",
-                    "name" => html_entity_decode($data['meta_title']) ?? '',
-                    "image" => rtrim($se_base_url, '/') . $first_product_img_src ?? [],
-                    "description" => html_entity_decode($data['meta_description'] ?? ''),
-                    "sku" => $data['product_number'] ?? '',
-                    "offers" => [
-                        "@type" => "Offer",
-                        "priceCurrency" => $data['product_currency'],
-                        "price" => $data['product_price_gross'] ?? '',
-                        "availability" => "https://schema.org/" . ($data['product_availability'] ?? 'InStock'),
-                        "url" => $data['product_canonical_url'] ?? ''
-                    ]
-                ];
-                break;
-
-            case 'WebPage':
-                $data = $structuredDataContext['data'];
-                $page_json_ld = [
-                    "@context" => "https://schema.org",
-                    "@type" => "WebPage",
-                    "name" => html_entity_decode($data['page_title'] ?? ''),
-                    "description" => html_entity_decode($data['page_meta_description'] ?? ''),
-                    "url" => $se_base_url.$data['page_permalink'] ?? ''
-                ];
-                break;
-        }
-    }
+  /**
+   * structured data is built by the core (app/functions/functions.structured-data.php),
+   * the theme adds its social media links to the organization's sameAs
+   */
+  $theme_same_as = [];
+  foreach($social_media_links as [$option_labels]) {
+      foreach($option_labels as $option_label) {
+          $url = trim(html_entity_decode((string) ($theme_option_values[$option_label] ?? ''), ENT_QUOTES, 'UTF-8'));
+          if(preg_match('#^https?://#i', $url)) {
+              $theme_same_as[] = $url;
+              break;
+          }
+      }
+  }
+  if($theme_same_as !== []) {
+      se_add_hook('frontend', 'structured_data.graph', static function(array $graph) use ($theme_same_as): array {
+          foreach($graph as $i => $node) {
+              if(($node['@id'] ?? '') !== '' && str_ends_with($node['@id'], '#organization')) {
+                  $graph[$i]['sameAs'] = array_values(array_unique(array_merge($node['sameAs'] ?? [], $theme_same_as)));
+              }
+          }
+          return $graph;
+      });
+  }
 
     /**
      * which optional theme components (CSS+JS) to load on this page, auto-

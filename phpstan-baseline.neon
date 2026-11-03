@@ -157,12 +157,6 @@ parameters:
 			path: public/assets/themes/default/php/options.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 3
-			path: public/assets/themes/default/php/options.php
-
-		-
 			message: '#^Variable \$category_template_data in isset\(\) always exists and is not nullable\.$#'
 			identifier: isset.variable
 			count: 1

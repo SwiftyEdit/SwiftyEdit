@@ -88,6 +88,15 @@ return [
             'context' => ['src', 'widths', 'ratio', 'fit'],
         ],
 
+        // Filter the schema.org @graph (list of nodes) of the current page
+        // before it is printed as JSON-LD (app/app.php). The context is
+        // $structuredDataContext: 'type' (WebPage, Product, BlogPosting,
+        // Event), 'data' and optionally 'image'.
+        'structured_data.graph' => [
+            'type' => 'filter',
+            'context' => ['type', 'data', 'image'],
+        ],
+
     ],
 
 

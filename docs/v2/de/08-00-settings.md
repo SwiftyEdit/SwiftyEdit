@@ -31,6 +31,17 @@ Die Texte der folgenden Abschnitte werden im Backend auch direkt neben den Einst
 Name, Titel, Untertitel und Beschreibung Deiner Website. Themes zeigen sie z.B. im Kopfbereich an
 und nutzen sie für die Meta-Tags aller Seiten, die keine eigenen Werte haben.
 
+### Organisation (strukturierte Daten) {#general-organization}
+Wer diese Website betreibt. SwiftyEdit gibt diese Angaben als strukturierte Daten nach schema.org
+(JSON-LD) auf jeder Seite aus, Suchmaschinen nutzen sie z.B. für das Knowledge Panel.
+Organization ist der allgemeine Typ für Projekte, Vereine und alles, was nicht besser passt.
+Corporation ist ein Unternehmen, NGO eine gemeinnützige Organisation, EducationalOrganization
+eine Schule oder andere Bildungseinrichtung. OnlineStore verkauft nur online, Store hat ein
+Ladengeschäft und LocalBusiness ist jedes andere Geschäft mit Standort. Person steht für eine
+einzelne Person. Ohne Namen wird der Seitenname verwendet.
+Unter Profile trägst Du die URLs Deiner Social-Media- oder anderen Profile ein, eine pro Zeile.
+Das Logo kommt aus "Logo und Icons".
+
 ### Logo und Icons {#general-branding}
 Logo, Vorschaubild und Favicon werden direkt beim Hochladen gespeichert. Aus dem Favicon (PNG, JPG
 oder WebP, mindestens 512×512 px) erzeugt SwiftyEdit alle Icon-Größen inklusive Apple Touch Icon

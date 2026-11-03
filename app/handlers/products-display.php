@@ -705,6 +705,8 @@ if($product_lowest_price_gross != '') {
 $product_data['product_price_gross'] = str_replace(".","",$product_data['product_price_gross']);
 $product_data['product_price_gross'] = str_replace(",",".",$product_data['product_price_gross']);
 
+$product_data['product_img_src'] = $first_product_img_src;
+
 $structuredDataContext = [
     'type' => 'Product',
     'data' => $product_data

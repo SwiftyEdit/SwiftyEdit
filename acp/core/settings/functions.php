@@ -76,7 +76,11 @@ function se_settings_options(): array {
         // 1 = flat rate, 2 = shipping categories
         'prefs_shipping_costs_mode' => ['1', '2'],
         'prefs_delivery_addons' => se_get_delivery_addons(),
-        'prefs_payment_addons' => se_get_payment_addons()
+        'prefs_payment_addons' => se_get_payment_addons(),
+        // schema.org type of the organization in the structured data
+        'prefs_org_type' => se_structured_data_org_types(),
+        // ISO 3166 alpha-2, '' = not set
+        'prefs_org_country' => array_merge([''], array_keys(se_get_countries_options()))
     ];
 }
 
@@ -125,6 +129,19 @@ function se_settings_sections(): array {
             'prefs_pagetitle' => 'text',
             'prefs_pagesubtitle' => 'text',
             'prefs_pagedescription' => 'text'
+        ],
+        // structured data (schema.org) of all pages, see app/functions/functions.structured-data.php
+        'organization' => [
+            'prefs_org_type' => 'option',
+            'prefs_org_name' => 'text',
+            'prefs_org_street' => 'text',
+            'prefs_org_street_nbr' => 'text',
+            'prefs_org_zip' => 'text',
+            'prefs_org_city' => 'text',
+            'prefs_org_country' => 'option',
+            'prefs_org_phone' => 'text',
+            'prefs_org_email' => 'text',
+            'prefs_org_sameas' => 'text'
         ],
         'pages' => [
             'prefs_nbr_page_versions' => 'int'

@@ -176,6 +176,13 @@ if($first_image != '') {
 // pattern as post and product canonical urls.
 $smarty->assign('page_canonical_url', $event_data['canonical_url'] ?? '');
 
+// schema.org Event, see app/functions/functions.structured-data.php
+$structuredDataContext = [
+    'type' => 'Event',
+    'data' => $event_data,
+    'image' => $first_image != '' ? $page_contents['page_thumbnail'] : ''
+];
+
 $smarty->assign('votes_status_up', $event_data['votes_status_up']);
 $smarty->assign('votes_status_dn', $event_data['votes_status_dn']);
 $smarty->assign('votes_up', $event_data['votes_up']);

@@ -240,6 +240,18 @@ $inputs['author'] = se_print_form_input([
     "type" => "text"
 ]);
 
+$schema_type_options = ['WebPage' => ''];
+foreach(se_structured_data_page_types() as $schema_type) {
+    $schema_type_options[$schema_type] = $schema_type;
+}
+$inputs['schema_type'] = se_print_form_input([
+    "input_name" => "page_schema_type",
+    "input_value" => $stored('page_schema_type'),
+    "label" => $lang['label_pages_schema_type'] . ' '. se_print_docs_link("02-00-pages.md#page-schema-type"),
+    "options" => $schema_type_options,
+    "type" => "select"
+]);
+
 $page_meta_robots = $stored('page_meta_robots') ?: 'all';
 $robots = [];
 foreach(["all", "noindex", "nofollow", "none", "noarchive", "nosnippet", "noodp", "notranslate", "noimageindex"] as $robot) {
