@@ -27,7 +27,7 @@
   "addons.label_version": "Version",
   "addons.label_layout": "Layout",
   "addons.label_stylesheet": "Stylesheet",
-  "addons.btn_save_layout": "Save layout",
+  "addons.btn_set_default_theme": "Set as default theme",
   "addons.msg_https_only": "Only HTTPS URLs are allowed.",
   "addons.msg_unknown_type": "Unknown addon type.",
   "addons.msg_missing_update_data": "Missing addon ID or download URL.",
