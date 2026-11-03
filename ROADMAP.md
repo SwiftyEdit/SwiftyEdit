@@ -37,7 +37,7 @@ See [CHANGELOG.md](CHANGELOG.md) for all changes.
 
 ## Upcoming
 ### Version 2.3
-- [ ] Remove the unused Guzzle package from the core
+- [x] Remove the unused Guzzle package from the core
 - [ ] Move the PayPal plugin from the core to the plugin catalog (it ships its own PayPal SDK then; cash and invoice payment stay bundled)
 
 ### Later

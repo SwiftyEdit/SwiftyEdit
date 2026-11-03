@@ -11,6 +11,9 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 ## 2.3.0 - 2026-11-02 (Build 26-0231)
 
 - Migrate the Backend from inline PHP to Twig templates
+- Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
+  need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
+  in their own `vendor/`
 
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 
