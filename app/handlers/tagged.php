@@ -11,6 +11,6 @@
  */
 
 $array_mod_slug = explode("/", $mod_slug);
-$tag_name_clean = clean_filename($array_mod_slug[0] ?? '');
+$tag_name_clean = clean_filename($array_mod_slug[0]);
 
 include __DIR__.'/tagged-list.php';

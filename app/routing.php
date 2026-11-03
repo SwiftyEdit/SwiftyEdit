@@ -106,6 +106,7 @@ foreach($cached_url_data as $cached_url) {
 }
 
 // loop through installed modules
+$active_plugins = [];
 for($i=0;$i<$cnt_active_mods;$i++) {
     $mod_permalink = $active_mods[$i]['page_permalink'];
     $mod_name = $active_mods[$i]['page_modul'];

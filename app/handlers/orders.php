@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * global variables
+ * @var object $smarty
+ * @var string $cache_id
+ */
+
 /* get permalink for orders page */
 $order_page = se_get_type_of_use_pages('orders');
-if($order_page['page_permalink'] == '') {
+if(($order_page['page_permalink'] ?? '') == '') {
 	$order_page_uri = '/orders/';
 } else {
 	$order_page_uri = '/'.$order_page['page_permalink'];

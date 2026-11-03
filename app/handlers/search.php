@@ -61,6 +61,11 @@ if($s != '' && $start_search == "true") {
     $assign_section_pagination('posts', $postsPage, $get_posts['totalResults'], $resultsLimit);
     $assign_section_pagination('events', $eventsPage, $get_events['totalResults'], $resultsLimit);
 
+    $pages = [];
+    $products = [];
+    $posts = [];
+    $events = [];
+
     $x = 0;
     foreach($get_pages['pages'] as $page) {
 
@@ -86,7 +91,7 @@ if($s != '' && $start_search == "true") {
 
         $thumbs = [];
         $thumbs = explode('<->',$product['images']);
-        if($thumbs[1] != '') {
+        if(($thumbs[1] ?? '') != '') {
             $products[$x]['thumbnail_src'] = $thumbs[1];
         }
 

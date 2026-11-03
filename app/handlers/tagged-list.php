@@ -5,6 +5,7 @@
  * @var object $db_content see database.php
  * @var object $smarty
  * @var array $lang
+ * @var array $se_settings
  * @var array $page_contents
  * @var string $swifty_slug
  * @var string $cache_id
