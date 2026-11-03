@@ -92,9 +92,10 @@ $active_mods = se_get_active_mods(); // plugins activated manually or included i
 $cnt_active_mods = is_array($active_mods) ? count($active_mods) : 0;
 
 // get existing urls from the cache file
+$cached_url_data = [];
 $cache_file_active_urls = SE_CONTENT . '/cache/active_urls.json';
 if(file_exists($cache_file_active_urls)) {
-    $cached_url_data = json_decode(file_get_contents($cache_file_active_urls), true);
+    $cached_url_data = json_decode(file_get_contents($cache_file_active_urls), true) ?: [];
 }
 
 $query_is_cached = false;
@@ -132,13 +133,14 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
 }
 
 // include (once) modules global/index.php if exists
+$clean_mods = [];
 foreach($active_mods as $mods) {
     $clean_mods[] = $mods['page_modul'];
 }
 
 require_once SE_ROOT . 'app/hooks/hooks-frontend.php';
 
-if(is_array($clean_mods)) {
+if(!empty($clean_mods)) {
     $activeplugins = array_unique($clean_mods);
 
     // Load global hook handlers (fire on both frontend and backend triggers)

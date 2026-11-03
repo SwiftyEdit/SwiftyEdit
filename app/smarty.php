@@ -1,6 +1,17 @@
 <?php
 
-// init smarty
+/**
+ * init smarty, select the theme/layout
+ *
+ * global variables
+ * @var array $se_settings bootstrap.php
+ * @var array $page_contents routing.php
+ * @var string $swifty_slug routing.php
+ * @var string $mod_slug routing.php
+ * @var string $themes_path config.php
+ * @var string $hidden_csrf_token bootstrap.php
+ */
+
 use Smarty\Smarty;
 
 $smarty = new Smarty;
@@ -16,9 +27,9 @@ $smarty->registerPlugin('block', 'plugin', 'se_smarty_block_plugin');
 $cache_id = md5($swifty_slug.$mod_slug);
 
 if($se_settings['smarty_compile_check'] == 1) {
-    $smarty->compile_check = true;
+    $smarty->setCompileCheck(Smarty::COMPILECHECK_ON);
 } else {
-    $smarty->compile_check = false;
+    $smarty->setCompileCheck(Smarty::COMPILECHECK_OFF);
 }
 
 /* reset of the user-defined theme */
@@ -50,8 +61,8 @@ if($se_settings['usertemplate'] == 'on' OR $se_settings['usertemplate'] == 'over
     if(isset($_POST['set_theme_stylesheet'])) {
         $set_theme_stylesheet = explode("/",$_POST['set_theme_stylesheet']);
 
-        $set_theme_folder = $set_theme_stylesheet[2];
-        $set_stylesheet = $set_theme_stylesheet[4];
+        $set_theme_folder = $set_theme_stylesheet[2] ?? '';
+        $set_stylesheet = $set_theme_stylesheet[4] ?? '';
 
         if(is_dir($themes_path."/$set_theme_folder")) {
             $_SESSION['prefs_template'] = sanitizeUserInputs($set_theme_folder);
@@ -63,11 +74,11 @@ if($se_settings['usertemplate'] == 'on' OR $se_settings['usertemplate'] == 'over
     }
 
 
-    if($_SESSION['prefs_template'] != '') {
+    if(($_SESSION['prefs_template'] ?? '') != '') {
         $se_settings['template'] = $_SESSION['prefs_template'];
     }
 
-    if($_SESSION['prefs_template_stylesheet'] != '') {
+    if(($_SESSION['prefs_template_stylesheet'] ?? '') != '') {
         $se_settings['template_stylesheet'] = $_SESSION['prefs_template_stylesheet'];
     }
 
@@ -104,7 +115,7 @@ if(is_dir($themes_path.'/'.$page_contents['page_template'].'/templates/')) {
 
     if($se_settings['usertemplate'] == 'overwrite') {
         /* the user theme has the same tpl file, so we can overwrite */
-        if(is_file($themes_path.'/'.$_SESSION['prefs_template'].'/templates/'.$page_contents['page_template_layout'])) {
+        if(($_SESSION['prefs_template'] ?? '') != '' && is_file($themes_path.'/'.$_SESSION['prefs_template'].'/templates/'.$page_contents['page_template_layout'])) {
             $se_template = $_SESSION['prefs_template'];
             $se_template_layout = $page_contents['page_template_layout'];
             //$se_template_stylesheet = $se_template_stylesheet;

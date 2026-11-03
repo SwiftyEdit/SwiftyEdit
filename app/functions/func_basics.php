@@ -572,12 +572,13 @@ function get_left_string($string,$separator) {
 
 function se_get_active_mods() {
 
+    $active_addons = [];
     $cache_file_active_addons = SE_CONTENT . '/cache/active_addons.json';
     if(file_exists($cache_file_active_addons)) {
         $active_addons = json_decode(file_get_contents($cache_file_active_addons), true);
     }
-	
-	return $active_addons;
+
+	return is_array($active_addons) ? $active_addons : [];
 }
 
 function se_get_activated_addons() {
