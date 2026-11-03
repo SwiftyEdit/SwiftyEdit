@@ -1018,7 +1018,7 @@ function se_delete_addon($addon,$type) {
 	$remove_dir = $dir.'/'.$addon;
 	se_reomove_addon_files($remove_dir);
 	$record_msg = 'removed addon: <strong>'.$addon.' ('.$type.')</strong>';
-	record_log($_SESSION['user_nick'],$record_msg,"8");
+	record_log($_SESSION['user_nick'],$record_msg,8);
 }
 
 /**

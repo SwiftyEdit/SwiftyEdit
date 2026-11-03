@@ -104,7 +104,7 @@ if(isset($_POST['save_user'])) {
 
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
-            record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>","5");
+            record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>",5);
 
             se_do_backend_hook('user.updated', [
                 'user_id' => $edit_user_id,
@@ -133,7 +133,7 @@ if(isset($_POST['save_user'])) {
             se_set_user_groups((int) $edituser, $user_group_ids);
 
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
-            record_log($_SESSION['user_nick'],"new user <i>$user_nick</i>","5");
+            record_log($_SESSION['user_nick'],"new user <i>$user_nick</i>",5);
 
             se_do_backend_hook('user.created', [
                 'user_id' => $edituser,
@@ -173,7 +173,7 @@ if(isset($_POST['save_user_group'])) {
         $data = $db_user->update("se_groups",$columns,["group_id" => $group_id]);
         if($data->rowCount()) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
-            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>","5");
+            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>",5);
             header( "HX-Trigger: update_groups_list");
         }
 
@@ -182,7 +182,7 @@ if(isset($_POST['save_user_group'])) {
         $editgroup = $db_user->id();
         if($editgroup > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
-            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>","5");
+            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>",5);
             header( "HX-Trigger: update_groups_list");
         }
     }
@@ -195,7 +195,7 @@ if(isset($_POST['delete_user_group'])) {
         "group_id" => $delete_id
     ]);
     if(($delete_group->rowCount()) > 0) {
-        record_log($_SESSION['user_nick'],"deleted usergroup id: $delete_id","10");
+        record_log($_SESSION['user_nick'],"deleted usergroup id: $delete_id",10);
         header( "HX-Trigger: update_groups_list");
     }
 }

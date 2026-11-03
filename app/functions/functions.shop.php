@@ -2287,6 +2287,7 @@ function se_get_products_keywords() {
     ]);
 
     $get_keywords = array_filter( $get_keywords );
+    $keys_string = '';
     foreach($get_keywords as $keys) {
         $keys_string .= trim($keys).',';
     }

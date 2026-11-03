@@ -1029,7 +1029,7 @@ function se_delete_media_data($filename) {
 	]);
 	
 	$record_msg = 'delete media data: <strong>'.basename($filename).'</strong>';
-	record_log($_SESSION['user_nick'],$record_msg,"2");
+	record_log($_SESSION['user_nick'],$record_msg,2);
 
 }
 

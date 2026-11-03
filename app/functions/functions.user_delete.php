@@ -251,7 +251,7 @@ function se_delete_user(int $user_id, bool $delete_comments = false, string $del
         ], ["comment_author_id" => $user_id]);
     }
 
-    record_log($deleted_by === 'self' ? 'user' : $deleted_by, "deleted user id: $user_id", "10");
+    record_log($deleted_by === 'self' ? 'user' : $deleted_by, "deleted user id: $user_id", 10);
 
     if(function_exists('se_do_hook')) {
         se_do_hook('backend', 'user.deleted', [

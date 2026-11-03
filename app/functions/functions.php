@@ -1177,6 +1177,7 @@ function se_get_shortcodes($filter=NULL) {
 	} else {
 			
 		$filter_labels = explode('-', $filter['labels']);
+		$set_label_filter = '';
 		
 		for($i=0;$i<count($se_labels);$i++) {
 			$label = $se_labels[$i]['label_id'];
@@ -1211,6 +1212,7 @@ function se_get_shortcodes($filter=NULL) {
 function se_get_posts_features($mode=null) {
 	
 	global $db_content;
+	$features = [];
 
     if($mode === null) {
         $features = $db_content->select("se_snippets", "*", [
@@ -1242,6 +1244,7 @@ function se_get_posts_features($mode=null) {
 function se_get_posts_options($mode=null) {
 
     global $db_content;
+    $features = [];
 
     if($mode === null) {
         $features = $db_content->select("se_snippets", "*",[
@@ -1350,10 +1353,10 @@ function se_upload_avatar($file,$username) {
  * @param string $log_trigger system or username
  * @param string $log_entry what's happened
  * @param integer $log_priority 0-10
- * @example record_log("$_SESSION[user_nick]","the message","5");
+ * @example record_log("$_SESSION[user_nick]","the message",5);
  */
 
-function record_log($log_trigger, $log_entry, $log_priority = '0') {
+function record_log($log_trigger, $log_entry, $log_priority = 0) {
 
     global $db_content;
 

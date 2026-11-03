@@ -370,6 +370,7 @@ function se_sanitize_page_inputs($data) {
         // translation urls
         if($key == 'translation_url') {
             if(is_array($val)) {
+                $urls = [];
                 foreach($val as $k => $v) {
                     $urls[$k] = se_clean_permalink($v);
                 }
@@ -484,6 +485,7 @@ function se_sanitize_page_inputs($data) {
         // theme values
         if($key == 'theme_values') {
             if(is_array($val)) {
+                $theme_values = [];
                 foreach($val as $k => $v) {
                     $theme_values[$k] = htmlentities(stripslashes($v), ENT_QUOTES);
                 }
@@ -613,7 +615,7 @@ function se_csrf_failed(): never {
         se_rate_limit_add('csrf_log', 3600, false);
         $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
         $nick = (string) ($_SESSION['user_nick'] ?? '');
-        record_log($nick !== '' ? $nick : 'system', 'CSRF token missing or invalid: '.htmlspecialchars(substr($path, 0, 200), ENT_QUOTES), '5');
+        record_log($nick !== '' ? $nick : 'system', 'CSRF token missing or invalid: '.htmlspecialchars(substr($path, 0, 200), ENT_QUOTES),5);
     }
 
     $message = 'The form has expired or was sent from another page. Please reload the page and try again.';

@@ -127,6 +127,7 @@ function se_get_post_entries($start,$limit,$filter): array {
 		$sql_cat_filter = '';
 	} else {
 
+		$sql_cat_filter = '';
 		$cats = explode(',', $filter['categories']);
 		foreach($cats as $c) {
 			if($c != '') {
@@ -157,6 +158,7 @@ function se_get_post_entries($start,$limit,$filter): array {
 		$sql_label_filter = '';
 	} else {
 
+		$sql_label_filter = '';
 		$checked_labels_array = explode('-', $filter['labels']);
 
 		for($i=0;$i<count($se_labels);$i++) {
@@ -334,6 +336,7 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql_cat_filter = '';
     } else {
 
+        $sql_cat_filter = '';
         $cats = explode(',', $filter['categories']);
         foreach($cats as $c) {
             if($c != '') {
@@ -349,6 +352,7 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql_label_filter = '';
     } else {
 
+        $sql_label_filter = '';
         $checked_labels_array = explode('-', $filter['labels']);
 
         for($i=0;$i<count($se_labels);$i++) {

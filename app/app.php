@@ -61,21 +61,9 @@ if($p == "") {
     se_check_shortlinks($swifty_slug);
 }
 
-// Handle preview mode
-if(isset($_GET['preview']) AND ($_SESSION['user_class'] == "administrator")) {
-    $p = (int) $_GET['preview'];
-    list($page_contents,$se_nav) = se_get_content($p,'preview');
-    unset($prefs_logfile);
-}
-
 // Security check
 if(isset($p) && preg_match('/[^0-9A-Za-z]/', $p)) {
     die('void id');
-}
-
-// Load page content if needed
-if(!is_array($page_contents) AND ($p != "")) {
-    list($page_contents,$se_nav) = se_get_content($p);
 }
 
 // Fallback to homepage

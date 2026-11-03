@@ -38,16 +38,6 @@ function se_get_content($page, $mode = 'p') {
 		]);		
 	
 	
-	} elseif ($mode == 'preview') {
-	
-		$page_contents = $db_content->get("se_pages_cache", "*", [
-				"AND" => [
-				"page_id_original" => "$page",
-				"page_language" => "$languagePack"
-			],
-				"ORDER" => ["page_id" => "DESC"]
-			]);			
-	
 	} else {
 		
 	

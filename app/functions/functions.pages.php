@@ -18,6 +18,7 @@ function se_save_page($data) {
     $sanitized_data = se_freeze_editor_content($sanitized_data);
 
     // get all cols from the installer
+    $cols = []; // replaced by install/contents/se_pages.php
     require __DIR__.'/../../install/contents/se_pages.php';
 
     // add custom cols
@@ -27,6 +28,7 @@ function se_save_page($data) {
 
     // loop through sanitized data
     // if key exists in $cols -> insert
+    $insert = [];
     foreach($sanitized_data as $k => $v) {
         if(array_key_exists($k,$cols)) {
             $insert[$k] = $v;
@@ -46,7 +48,7 @@ function se_save_page($data) {
 
     if($cnt_changes->rowCount() > 0) {
         $page_title = $sanitized_data['page_title'];
-        record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>","5");
+        record_log("$_SESSION[user_nick]","new Page <i>$page_title</i>",5);
         se_generate_xml_sitemap('pages');
         show_toast($lang['msg_success_page_saved'],'success');
     } else {
@@ -73,6 +75,7 @@ function se_update_page($data,$id) {
     $sanitized_data = se_freeze_editor_content($sanitized_data);
 
     // get all cols from the installer
+    $cols = []; // replaced by install/contents/se_pages.php
     require __DIR__.'/../../install/contents/se_pages.php';
 
     // add custom cols
@@ -82,6 +85,7 @@ function se_update_page($data,$id) {
 
     // loop through sanitized data
     // if key exists in $cols -> update
+    $updates = [];
     foreach($sanitized_data as $k => $v) {
         if(array_key_exists($k,$cols)) {
             $updates[$k] = $v;
@@ -102,7 +106,7 @@ function se_update_page($data,$id) {
 
     if($cnt_changes->rowCount() > 0) {
         $page_title = $sanitized_data['page_title'];
-        record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;","5");
+        record_log("$_SESSION[user_nick]","page update &raquo;$page_title&laquo;",5);
         se_generate_xml_sitemap('pages');
         show_toast($lang['msg_success_page_saved'],'success');
     } else {
@@ -112,42 +116,6 @@ function se_update_page($data,$id) {
     se_set_content_tags('page', $id, explode(',', $data['content_tags'] ?? ''));
 
 }
-
-/**
- * @param array $data $_POST data
- * @return void
- */
-function se_save_preview_page($data) {
-    global $db_content, $custom_fields, $lang;
-
-    $sanitized_data = se_sanitize_page_inputs($data);
-    $sanitized_data = se_freeze_editor_content($sanitized_data);
-    $page_id_original = $sanitized_data['editpage'];
-    // get all cols from the installer
-    require __DIR__.'/../../install/contents/se_pages.php';
-
-    // add custom cols
-    foreach($custom_fields as $f) {
-        $cols[$f] = "";
-    }
-
-    // loop through sanitized data
-    // if key exists in $cols -> insert
-    foreach($sanitized_data as $k => $v) {
-        if(array_key_exists($k,$cols)) {
-            $insert[$k] = $v;
-        }
-    }
-
-    $insert += [
-        "page_id_original" => $page_id_original,
-        "page_cache_type" => "preview"
-    ];
-
-    $db_content->insert("se_pages_cache",$insert);
-}
-
-
 
 /**
  * Take a snapshot of a page
@@ -165,6 +133,7 @@ function se_snapshot_page($id) {
         "page_id" => $id
     ]);
 
+    $columns_cache = [];
     foreach($get_data as $k => $v) {
         $columns_cache[$k] = $v;
     }
@@ -227,6 +196,7 @@ function se_get_pages_keywords() {
     ]);
 
     $get_keywords = array_filter( $get_keywords );
+    $keys_string = '';
     foreach($get_keywords as $keys) {
         $keys_string .= trim($keys).',';
     }
