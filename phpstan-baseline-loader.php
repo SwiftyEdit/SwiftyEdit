@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Includes the local PHPStan baseline if it exists.
- * The baseline is not tracked in git, so a fresh checkout runs without it.
+ * Includes the PHPStan baseline (tracked in git, see phpstan.neon).
  * PHPSTAN_NO_BASELINE=1 skips it, e.g. to count all findings (composer analyse:count).
  */
 

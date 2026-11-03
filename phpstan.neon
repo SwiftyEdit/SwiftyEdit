@@ -1,8 +1,10 @@
 # PHPStan configuration for SwiftyEdit
 # Run with: composer analyse
 #
-# The baseline (phpstan-baseline.neon) is local only and not tracked in git.
-# Create or refresh it with: composer analyse:baseline
+# Level 5 is clean: the baseline (phpstan-baseline.neon) only holds
+# defensive checks that are kept on purpose (is_array/isset/?? on values
+# whose DocBlock types are narrower than reality). Fix new findings instead
+# of adding them; refresh with composer analyse:baseline only after cleanups.
 
 includes:
     - phpstan-baseline-loader.php

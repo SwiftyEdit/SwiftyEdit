@@ -119,9 +119,13 @@ Example: `app.php` fires `page.display.after` after rendering.
   - First run: `npx playwright install`.
 - **Build a release:** `composer build` (runs `build_prepare.sh` → `dist/<build>/`; needs `jq`).
 - **Composer checks:** `composer check` (audit + validate), `composer outdated`.
-- **Static analysis (PHPStan, level 5):** `composer analyse` (new findings only, against the
-  local untracked `phpstan-baseline.neon`), `composer analyse:count` (all findings by type),
-  `composer analyse:baseline` (refresh the baseline after cleanups).
+- **Static analysis (PHPStan, level 5 — clean):** `composer analyse` must report no errors;
+  the GitHub workflow `.github/workflows/phpstan.yml` runs it on every push to `develop`.
+  The tracked `phpstan-baseline.neon` only holds defensive checks kept on purpose
+  (`is_array`/`isset`/`??` where DocBlock types are narrower than reality) — fix new findings
+  instead of adding them. Deliberate exceptions get an inline
+  `// @phpstan-ignore <identifier> (reason)`. `composer analyse:count` (all findings by type,
+  without baseline), `composer analyse:baseline` (refresh only after cleanups).
 - Version info: `version.json`.
 
 ## Known gotchas
