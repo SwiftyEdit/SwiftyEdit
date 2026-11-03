@@ -26,7 +26,7 @@
   "addons.label_version": "Version",
   "addons.label_layout": "Layout",
   "addons.label_stylesheet": "Stylesheet",
-  "addons.btn_set_default_theme": "Set as default theme",
+  "addons.btn_set_default_theme": "Als Standard-Theme festlegen",
   "addons.msg_https_only": "Es sind nur HTTPS-URLs erlaubt.",
   "addons.msg_unknown_type": "Unbekannter Addon-Typ.",
   "addons.msg_missing_update_data": "Fehlende Addon-ID oder Download-URL.",
