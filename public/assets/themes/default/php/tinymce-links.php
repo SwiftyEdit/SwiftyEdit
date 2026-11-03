@@ -5,6 +5,16 @@
  * used in tinyMCE's links popup
  *
  *	{title: 'My page', value: '/my_page/'}, ...
+ *
+ * mysql - from config_database.php
+ * @var string $database_name
+ * @var string $database_host
+ * @var string $database_user
+ * @var string $database_psw
+ * @var int|string $database_port
+ *
+ * sqlite - from config.php
+ * @var string $se_db_content
  */
 error_reporting(E_ALL);
 require_once __DIR__.'/../../../../../app/session.php';
@@ -22,8 +32,8 @@ require '../../../../../acp/core/functions.php';
 
 $counter = 0;
 
-if(is_file('../../config_database.php')) {
-	include '../../config_database.php';
+if(is_file(SE_ROOT.'config_database.php')) {
+	include SE_ROOT.'config_database.php';
 	$db_type = 'mysql';
 
     $database = new Medoo([

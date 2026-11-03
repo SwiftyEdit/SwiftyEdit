@@ -1,6 +1,11 @@
 <?php
 
-if($_GET['show'] == 'cash') {
+/**
+ * @var object $db_content
+ * @var array $lang
+ */
+
+if(($_GET['show'] ?? '') == 'cash') {
     $get_orders = $db_content->select("se_orders", "*", [
         "order_payment_type" => "se_cash-pay",
         "ORDER" => ["order_time" => "DESC"],

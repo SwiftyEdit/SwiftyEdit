@@ -1596,6 +1596,11 @@ function se_parse_docs_file($file): array {
 
     global $languagePack,$Parsedown;
 
+    // not every caller sets up the parser (e.g. plugin readers via xhr)
+    if(!$Parsedown instanceof ParsedownExtra) {
+        $Parsedown = new ParsedownExtra();
+    }
+
     if(is_file($file)) {
         $src = file_get_contents($file);
 

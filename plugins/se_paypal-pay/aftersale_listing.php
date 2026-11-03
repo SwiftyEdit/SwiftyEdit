@@ -43,7 +43,7 @@ $reference_id = $order_data['order_nbr'];
 
 $order_value = se_sanitize_price($order_data['order_price_total']);
 $order_value = str_replace(',', '.', $order_value);
-$order_value = round($order_value,2);
+$order_value = round((float) $order_value,2);
 $order_currency = $se_settings['posts_products_default_currency'];
 
 $response_str = '';

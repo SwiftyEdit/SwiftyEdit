@@ -1,6 +1,11 @@
 <?php
 
-if($_GET['show'] == 'invoice') {
+/**
+ * @var object $db_content
+ * @var array $lang
+ */
+
+if(($_GET['show'] ?? '') == 'invoice') {
 
     $get_orders = $db_content->select("se_orders", "*", [
         "order_payment_type" => "se_invoice-pay",

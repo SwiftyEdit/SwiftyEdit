@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @var array $lang
+ * @var string $hidden_csrf_token acp/core/access.php
+ */
+
 use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
 use PaypalServerSdkLib\Environment;
 use PaypalServerSdkLib\PaypalServerSdkClientBuilder;

@@ -3,6 +3,9 @@
 /**
  * PayPal
  * check if payment was successful
+ *
+ * @var array $lang
+ * @var object $db_content
  */
 
 use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;

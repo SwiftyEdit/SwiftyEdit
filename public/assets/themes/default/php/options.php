@@ -5,7 +5,7 @@
  * @var object $smarty
  * @var string $se_base_url
  * @var string $first_product_img_src
- * @var string $target_page
+ * @var array $structuredDataContext app/template-setup.php, products-display.php
  *
  * @var array $theme_values data from -> edit page - theme tab
  * @var array $category_template_data data from -> edit category - theme tab
@@ -71,14 +71,14 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
                     "@type" => "Product",
                     "name" => html_entity_decode($data['meta_title']) ?? '',
                     "image" => rtrim($se_base_url, '/') . $first_product_img_src ?? [],
-                    "description" => html_entity_decode($product_data['meta_description']) ?? '',
+                    "description" => html_entity_decode($data['meta_description'] ?? ''),
                     "sku" => $data['product_number'] ?? '',
                     "offers" => [
                         "@type" => "Offer",
                         "priceCurrency" => $data['product_currency'],
                         "price" => $data['product_price_gross'] ?? '',
                         "availability" => "https://schema.org/" . ($data['product_availability'] ?? 'InStock'),
-                        "url" => $se_base_url.$target_page.$product_data['slug'] ?? ''
+                        "url" => $data['product_canonical_url'] ?? ''
                     ]
                 ];
                 break;
@@ -88,8 +88,8 @@ if(defined('SE_SECTION') && SE_SECTION === 'frontend') {
                 $page_json_ld = [
                     "@context" => "https://schema.org",
                     "@type" => "WebPage",
-                    "name" => $data['paget_title'] ?? '',
-                    "description" => $data['page_meta_description'] ?? '',
+                    "name" => html_entity_decode($data['page_title'] ?? ''),
+                    "description" => html_entity_decode($data['page_meta_description'] ?? ''),
                     "url" => $se_base_url.$data['page_permalink'] ?? ''
                 ];
                 break;

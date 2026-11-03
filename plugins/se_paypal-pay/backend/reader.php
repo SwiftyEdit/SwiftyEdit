@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @var object $db_content
+ * @var array $lang
+ * @var array $se_settings
+ * @var string $languagePack
+ */
+
 use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
 use PaypalServerSdkLib\Environment;
 use PaypalServerSdkLib\Exceptions\ApiException;
@@ -9,7 +16,7 @@ use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
 require_once SE_ROOT.'plugins/se_paypal-pay/global/functions.php';
 
 
-if($_GET['show'] == 'paypal') {
+if(($_GET['show'] ?? '') == 'paypal') {
     $get_orders = $db_content->select("se_orders", "*", [
         "order_payment_type" => "se_paypal-pay",
         "ORDER" => ["order_time" => "DESC"],
@@ -41,7 +48,7 @@ if($_GET['show'] == 'paypal') {
     echo '</div>';
 }
 
-if($_GET['show'] == 'paypal_tests') {
+if(($_GET['show'] ?? '') == 'paypal_tests') {
 
     $paypal_settings = pp_get_settings();
 
@@ -124,14 +131,16 @@ if($_GET['show'] == 'paypal_tests') {
 
 }
 
-if($_GET['show'] == 'docs_nav') {
+if(($_GET['show'] ?? '') == 'docs_nav') {
 
-    $docs_root = SE_ROOT.'/plugins/se_paypal-pay/docs/en/*.md';
+    $docs_root = SE_ROOT.'/plugins/se_paypal-pay/docs/en';
     if(is_dir(SE_ROOT.'/plugins/se_paypal-pay/docs/'.$languagePack)) {
         $docs_root = SE_ROOT.'/plugins/se_paypal-pay/docs/'.$languagePack;
     }
 
     $docsfiles = glob($docs_root.'/*.md');
+    $parsed_files = [];
+    $doc_filepath = '';
 
        foreach($docsfiles as $doc) {
            // skip tooltips
@@ -173,7 +182,7 @@ if($_GET['show'] == 'docs_nav') {
        exit;
 }
 
-if($_GET['show'] == 'docs_content') {
+if(($_GET['show'] ?? '') == 'docs_content') {
 
     $df = isset($_GET['file']) ? basename($_GET['file']) : 'index.md';
 

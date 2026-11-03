@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var string $this_addon_root acp/core/addons/edit-plugin.php
+ */
+
 $readme = file_get_contents($this_addon_root."/readme.md");
 
 echo '<div class="card p-3">';
