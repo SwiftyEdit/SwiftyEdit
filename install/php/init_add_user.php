@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var array $lang install/index.php
+ */
+
 if(!defined('INSTALLER')) {
 	header("location:../login.php");
 	die("PERMISSION DENIED!");
@@ -19,17 +23,17 @@ if(!isset($_SESSION['temp_userpsw'])) {
 
 if(isset($_POST['check_user_data'])) {
 	
-	if($_POST['username'] != '') {
+	if(($_POST['username'] ?? '') != '') {
 		$_SESSION['temp_username'] = $_POST['username'];
 	} else {
 		$checked_user_data[] = 'error';
 	}
-	if($_POST['mail'] != '') {
+	if(($_POST['mail'] ?? '') != '') {
 		$_SESSION['temp_usermail'] = $_POST['mail'];
 	} else {
 		$checked_user_data[] = 'error';
 	}
-	if(strlen($_POST['psw']) >= 8) {
+	if(strlen((string) ($_POST['psw'] ?? '')) >= 8) {
 		$_SESSION['temp_userpsw'] = $_POST['psw'];
 	} else {
 		$checked_user_data[] = 'error';

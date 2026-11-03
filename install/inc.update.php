@@ -3,6 +3,18 @@
 /**
  * copy maintenance.hml to root folder
  * update existing tables
+ *
+ * mysql - from config_database.php
+ * @var string $database_name
+ * @var string $database_host
+ * @var string $database_user
+ * @var string $database_psw
+ * @var int|string $database_port
+ *
+ * sqlite - from config.php
+ * @var string $se_db_content
+ * @var string $se_db_user
+ * @var string $se_db_posts
  */
 
 if(!defined('INSTALLER')) {
@@ -10,7 +22,7 @@ if(!defined('INSTALLER')) {
     exit;
 }
 
-if($_SESSION['user_class'] !== "administrator"){
+if(($_SESSION['user_class'] ?? '') !== "administrator"){
 	header("location:../");
 	exit;
 }
@@ -78,11 +90,24 @@ echo '<h2>UPDATE</h2>';
 /* build an array from all php files in folder contents */
 $all_tables = glob(__DIR__."/contents/*.php");
 
+$table_updates = [];
+$col_updates = [];
+$fails = [];
+$wins = [];
+
 
 for($i=0;$i<count($all_tables);$i++) {
 
-	unset($db_path,$table_name,$table_type);
-	include $all_tables[$i]; // returns $cols and $table_name
+	// set by the template file - $table_type only for virtual tables
+	/** @var string $database */
+	$database = '';
+	/** @var string $table_name */
+	$table_name = '';
+	/** @var string $table_type */
+	$table_type = '';
+	/** @var array<string, string> $cols */
+	$cols = [];
+	include $all_tables[$i];
 	
 	$is_table = table_exists("$database","$table_name");
 	
@@ -130,7 +155,7 @@ for($i=0;$i<count($all_tables);$i++) {
 
 /* echo fails and wins */
 
-if(is_array($fails)) {
+if(!empty($fails)) {
 	echo "<h3>" . count($fails) . " ERRORS</h3>";
 
 	foreach ($fails as $value) {
@@ -138,16 +163,16 @@ if(is_array($fails)) {
 		}
 
 }
-if(is_array($wins)) {
+if(!empty($wins)) {
 	echo "<h3>" . count($wins) . " Columns are ready</h3>";
 
-	if(is_array($table_updates)) {
+	if(!empty($table_updates)) {
 		foreach ($table_updates as $value) {
 			echo"<span class='text-success'>$value</span><br />";
 		}
 	}
 
-	if(is_array($col_updates)) {
+	if(!empty($col_updates)) {
 		foreach ($col_updates as $value) {
 			echo"<span class='text-success'>$value</span><br />";
 		}

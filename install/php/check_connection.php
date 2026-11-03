@@ -1,22 +1,28 @@
 <?php
 
+/**
+ * @var array $lang install/index.php
+ */
+
 use Medoo\Medoo;
 
 $conn = false;
+$success_msg = '';
+$fail_msg = '';
 
 try {
 	$db_mysql = new Medoo([
 
 		'type' => 'mysql',
-		'database' => $_POST['prefs_database_name'],
-		'server' => $_POST['prefs_database_host'],
-		'username' => $_POST['prefs_database_username'],
-		'password' => $_POST['prefs_database_psw'],
-	 
+		'database' => $_POST['prefs_database_name'] ?? '',
+		'server' => $_POST['prefs_database_host'] ?? '',
+		'username' => $_POST['prefs_database_username'] ?? '',
+		'password' => $_POST['prefs_database_psw'] ?? '',
+
 		'charset' => 'utf8',
-		'port' => $_POST['prefs_database_port'],
-	 
-		'prefix' => $_POST['prefs_database_prefix']
+		'port' => $_POST['prefs_database_port'] ?? '',
+
+		'prefix' => $_POST['prefs_database_prefix'] ?? ''
 	]);
 	
 	$conn = true;
@@ -28,7 +34,7 @@ try {
   $fail_msg .= '</div>';
 }
 
-if($_POST['prefs_database_name'] == '' || $_POST['prefs_database_host'] == '' || $_POST['prefs_database_username'] == '') {
+if(($_POST['prefs_database_name'] ?? '') == '' || ($_POST['prefs_database_host'] ?? '') == '' || ($_POST['prefs_database_username'] ?? '') == '') {
 	$conn = false;
 }
 

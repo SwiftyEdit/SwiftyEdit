@@ -3,6 +3,17 @@
 /**
  * install SwiftyEdit
  * create the database
+ *
+ * @var array $lang install/index.php
+ * @var string $prefs_database_host inc.install.php
+ * @var string $prefs_database_port inc.install.php
+ * @var string $prefs_database_name inc.install.php
+ * @var string $prefs_database_username inc.install.php
+ * @var string $prefs_database_psw inc.install.php
+ * @var string $prefs_database_prefix inc.install.php
+ * @var string $se_db_content config.php
+ * @var string $se_db_user config.php
+ * @var string $se_db_posts config.php
  */
 
 if(!defined('INSTALLER')) {
