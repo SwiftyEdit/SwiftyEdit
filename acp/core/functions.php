@@ -1497,6 +1497,8 @@ function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_qualit
 	  $new_height = $original_height;
   }
   
+	$imgt = '';
+	$imgcreatefrom = '';
 	if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
 	if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
 	if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
@@ -1569,6 +1571,8 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 	  $new_height = $original_height;
   }
   
+	$imgt = '';
+	$imgcreatefrom = '';
 	if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
 	if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
 	if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
@@ -1703,6 +1707,7 @@ function se_parse_docs_file($file): array {
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
         $parsed_content = 'FILE NOT FOUND ('.$file.')';
+        $filemtime = null;
     }
 
     $parsed['header'] = $parsed_header;
@@ -1934,6 +1939,8 @@ function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr,
     $next_query = str_replace("{page}","$nextPage",$query);
     $prev_query = str_replace("{page}","$prevPage",$query);
 
+    $align_class = '';
+    $size_class = '';
     if($align == 1) {
         $align_class = '';
     } else if($align == 2) {

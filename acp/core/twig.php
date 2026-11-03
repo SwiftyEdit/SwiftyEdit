@@ -5,6 +5,11 @@
  * shared by acp/index.php (full pages) and acp/header.php (xhr requests)
  *
  * expects $icon, $lang, $se_settings and $se_environment to be set
+ *
+ * @var array $icon
+ * @var array $lang
+ * @var array $se_settings
+ * @var string $se_environment
  */
 
 $loader = new \Twig\Loader\FilesystemLoader(SE_ROOT.'/acp/templates');

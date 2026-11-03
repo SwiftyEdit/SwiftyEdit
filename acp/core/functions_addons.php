@@ -1,12 +1,6 @@
 <?php
 
 /**
- * @var array $lang
- * @var array $mod
- */
-
-
-/**
  * get all installed Plugins
  * return as array
  */
@@ -37,6 +31,7 @@ function se_get_all_addons(): array {
     $addons_root = SE_PLUGINS;
     $scanned_directory = array_diff(scandir($addons_root), array('..', '.','.DS_Store'));
 
+    $addon_info = [];
     foreach($scanned_directory as $plugin_dir) {
         $addon_info_file = "$addons_root/$plugin_dir/info.json";
         if(is_file("$addon_info_file")) {
@@ -1062,6 +1057,7 @@ function get_all_templates() {
 	$cntStyles = 0;
 	$scanned_directory = array_diff(scandir($sdir), array('..', '.','.DS_Store'));
 	
+	$arr_Styles = [];
 	foreach($scanned_directory as $tpl_folder) {
 		if(is_dir("$sdir/$tpl_folder")) {
 			$arr_Styles[] = "$tpl_folder";

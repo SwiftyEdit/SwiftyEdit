@@ -2,6 +2,8 @@
 
 /**
 * routing - read data
+*
+* @var array $lang header.php
 */
 
 

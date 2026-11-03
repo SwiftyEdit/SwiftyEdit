@@ -63,6 +63,8 @@ function se_prepareProductData($data, $id = null) {
     // all columns of se_products ($cols) - only these keys of $data become
     // variables (read again by name below), so a key can't overwrite any
     // other variable in this function (e.g. the globals $db_posts, $se_base_url)
+    /** @var array<string, string> $cols replaced by install/contents/se_products.php */
+    $cols = [];
     require SE_ROOT.'install/contents/se_products.php';
 
     if (!empty($data['context']) && $data['context'] === 'cache') {
@@ -141,7 +143,8 @@ function se_prepareProductData($data, $id = null) {
 
         // translation url
         $translation_urls = '';
-        if(is_array($data['translation_url'])) {
+        if(is_array($data['translation_url'] ?? null)) {
+            $t_urls = [];
             foreach($data['translation_url'] as $k => $v) {
                 $t_urls[$k] = se_clean_permalink($v);
             }
@@ -224,7 +227,7 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
-    if($date == '') {
+    if(($date ?? '') == '') {
         $date = time();
     }
 
@@ -301,6 +304,7 @@ function se_prepareProductData($data, $id = null) {
     // volume discounts
     if(isset($data['product_vd_amount'])) {
         $cnt_vd_prices = count($data['product_vd_amount']);
+        $vd_price = [];
         for($i=0;$i<$cnt_vd_prices;$i++) {
 
             if($data['product_vd_amount'][$i] == '') {
@@ -326,6 +330,7 @@ function se_prepareProductData($data, $id = null) {
     }
 
     // build SQL string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
+    $inputs = [];
     foreach($cols as $k => $v) {
         if($k == 'id') {continue;}
         if (!array_key_exists($k, $assigned_vars) && array_key_exists($k, $stored_product)) {

@@ -5,7 +5,11 @@ use Medoo\Medoo;
 
 const SE_SECTION = "backend";
 
-if($_SESSION['user_class'] !== "administrator"){
+/**
+ * @var string $se_environment config.php
+ */
+
+if(($_SESSION['user_class'] ?? '') !== "administrator"){
     header("location:../../index.php");
     die("PERMISSION DENIED!");
 }
@@ -23,10 +27,7 @@ if ($se_environment === 'd') {
 }
 
 /**
- * connect the database
- * @var string $db_content
- * @var string $db_user
- * @var string $db_posts
+ * connect the database: $db_content, $db_user, $db_posts
  */
 
 require SE_ROOT.'/app/database.php';
@@ -61,6 +62,7 @@ $se_editor_addons = se_bootstrap_editor_plugins($all_plugins);
 
 $se_get_preferences = se_get_preferences();
 
+$se_settings = [];
 foreach ($se_get_preferences as $k => $v) {
     $key = $se_get_preferences[$k]['option_key'];
     $value = $se_get_preferences[$k]['option_value'];
@@ -86,6 +88,7 @@ if ($se_settings['cms_ssl_domain'] != '') {
 
 /* set language */
 
+$languagePack = 'en'; // fallback, replaced by the session/default language below
 $all_langs = get_all_languages();
 
 if (!isset($_SESSION['lang'])) {
@@ -124,6 +127,7 @@ if (isset($se_settings['deactivated_languages']) AND $se_settings['deactivated_l
     $arr_lang_deactivated = json_decode($se_settings['deactivated_languages']);
 }
 
+$langs = [];
 foreach ($all_langs as $l) {
     if (isset($arr_lang_deactivated) && (in_array($l['lang_folder'], $arr_lang_deactivated))) {
         continue;

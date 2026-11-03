@@ -9,13 +9,13 @@
  * @var object $twig
  */
 
+$decode_filter = static fn(string $json): array => (array) (json_decode($json, true) ?? []);
+
 foreach(['global_filter_label', 'global_filter_languages', 'global_filter_status'] as $filter) {
     if(!isset($_SESSION[$filter])) {
         $_SESSION[$filter] = '';
     }
 }
-
-$decode_filter = static fn(string $json): array => (array) (json_decode($json, true) ?? []);
 
 echo $twig->render('layout/nav-top-filter.twig', [
     'filter_status' => $decode_filter($_SESSION['global_filter_status']),

@@ -3,6 +3,8 @@
 /**
  * @var array $lang
  * @var array $icon
+ * @var object $twig core/twig.php
+ * @var array|null $se_2fa_bypass config.php
  */
 
 $reader_uri = '/admin-xhr/dashboard/read/';
