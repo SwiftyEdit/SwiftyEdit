@@ -167,8 +167,6 @@ if($upload_type == 'images') {
                 exit;
             }
 
-            // without a thumbnail, e.g. stored unchanged
-            $store_tmb_name = '';
             if(($_POST['unchanged'] ?? '') == 'yes' OR $suffix == 'svg') {
                 @move_uploaded_file($tmp_name, $target);
             } else {
@@ -176,9 +174,16 @@ if($upload_type == 'images') {
                     http_response_code(422);
                     exit;
                 }
+            }
+
+            // thumbnail also for unchanged uploads - it is a separate file and
+            // leaves the original untouched; none for svg or types GD can't read
+            $store_tmb_name = '';
+            if($suffix != 'svg') {
                 $tmb_name = md5(substr($target, 3,strlen($target))).'.jpg';
-                $store_tmb_name = $tmb_destination.'/'.$tmb_name;
-                se_create_tmb($target,$tmb_name,$max_w_tmb,$max_h_tmb,80);
+                if(se_create_tmb($target,$tmb_name,$max_w_tmb,$max_h_tmb,80)) {
+                    $store_tmb_name = $tmb_destination.'/'.$tmb_name;
+                }
             }
 
             $filetype = mime_content_type(realpath($target));
@@ -503,11 +508,19 @@ function se_upload_image_loader(int $image_type): string {
     };
 }
 
-function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_quality) {
+/**
+ * create a jpg thumbnail in $tmb_destination
+ *
+ * @return bool true if the thumbnail file was written
+ */
+function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_quality): bool {
 
     global $tmb_destination;
 
-    $arr_image_details	= GetImageSize("$img_src");
+    $arr_image_details	= @getimagesize("$img_src");
+    if($arr_image_details === false || $arr_image_details[0] < 1 || $arr_image_details[1] < 1) {
+        return false;
+    }
     $original_width		= $arr_image_details[0];
     $original_height	= $arr_image_details[1];
     $a = $tmb_width / $tmb_height;
@@ -528,14 +541,20 @@ function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_qualit
     }
 
     $imgcreatefrom = se_upload_image_loader($arr_image_details[2]);
-    if($imgcreatefrom !== '') {
-        $old_image	= $imgcreatefrom("$img_src");
-        $new_image	= imagecreatetruecolor($new_width, $new_height);
-        imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
-        imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
-        imagedestroy($new_image);
+    if($imgcreatefrom === '') {
+        return false;
     }
 
+    $old_image	= $imgcreatefrom("$img_src");
+    if($old_image === false) {
+        return false;
+    }
+    $new_image	= imagecreatetruecolor($new_width, $new_height);
+    imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
+    $written = imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
+    imagedestroy($new_image);
+
+    return $written;
 }
 
 function se_create_gallery_thumbs($updir, $img, $name, $thumbnail_width, $thumbnail_height, $quality){
