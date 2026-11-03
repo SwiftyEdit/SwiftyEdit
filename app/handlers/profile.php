@@ -2,10 +2,16 @@
 /**
  * Profile Management Handler
  * SwiftyEdit CMS
+ *
+ * @var array $lang global project variable
+ * @var string $languagePack global project variable
+ * @var array $page_contents data of the current page
+ * @var object $smarty Smarty template engine
+ * @var string $cache_id Smarty cache id
  */
 
 // Check if user is logged in
-if($_SESSION['user_nick'] == "") {
+if(($_SESSION['user_nick'] ?? '') == '') {
     $text = se_get_snippet("no_access",$languagePack,'all');
     $smarty->assign('page_content', $text, true);
     return;
@@ -43,7 +49,7 @@ if($page_contents['page_permalink'] != '') {
 }
 
 // Assign all user data to template
-foreach ($get_my_userdata as $key => $value) {
+foreach (is_array($get_my_userdata) ? $get_my_userdata : [] as $key => $value) {
     $smarty->assign($key, $value ?? '', true);
 }
 
