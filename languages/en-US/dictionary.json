@@ -3,6 +3,8 @@
   "edit": "Edit",
   "save": "Save",
   "duplicate": "Duplicate",
+  "copy": "Copy to clipboard",
+  "copied": "Copied",
   "update": "Update",
   "preview": "Preview",
   "delete": "Delete",

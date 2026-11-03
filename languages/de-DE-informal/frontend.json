@@ -202,6 +202,7 @@
   "comment_msg_auth1": "Du musst dich einloggen, um Kommentare zu schreiben.",
   "comment_msg_auth2": "Du musst deinen Namen und deine E-Mail-Adresse eingeben.",
   "comments_title": "Kommentare ({cnt_comments})",
+  "comments_closed": "Kommentare sind geschlossen.",
   "label_guestlist": "Gästliste",
   "guestlist_description": "Am Event teilnehmen.",
   "guestlist_description_for_members": "Nur registrierte Benutzer können die Gästeliste unterschreiben.",
