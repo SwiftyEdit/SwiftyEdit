@@ -123,7 +123,7 @@ function show_menu($current_page_id) {
 	global $se_nav, $se_defs;
 
 	if (!$current_page_id) {
-		return;
+		return [];
 	}
 
 	$index = se_index_pages_by_parent($se_nav);

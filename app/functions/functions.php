@@ -366,7 +366,7 @@ function se_build_thread_array(&$array, $data) {
             "childs" => []
         ];
 
-        return $array;
+        return;
     }
     foreach($array as &$e) {
         if ($e["id"] == $data["comment_parent_id"]) {
@@ -492,7 +492,7 @@ function se_comments_autoclosed(int $reference_time): bool {
 
 /**
  * store a comment
- * @var array $data 'input_name' 'input_mail' 'input_comment'
+ * @param array $data 'input_name' 'input_mail' 'input_comment'
  * @return mixed id of the inserted comment
  */
 

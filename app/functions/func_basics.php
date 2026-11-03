@@ -236,7 +236,7 @@ function text_parser($text) {
 	global $shortcodes, $languagePack;
 
 	if(!is_string($text)) {
-		return;
+		return '';
 	}
 
     /* remove <p> tag from shortcodes */
@@ -244,7 +244,7 @@ function text_parser($text) {
 	$text = str_replace(']</p>', ']', $text);
 
 	if($text == '') {
-		return;
+		return '';
 	}
 
     /* don't replace within <pre> tags */

@@ -19,6 +19,8 @@ parameters:
     dynamicConstantNames:
         - SE_INCLUDE_PATH
         - DB_PREFIX
+        # "frontend" or "backend" - shared files run in both sections
+        - SE_SECTION
     paths:
         - config.php
         - acp

@@ -1196,7 +1196,7 @@ function se_get_labels() {
  * we use input type checkbox
  *
  * @param array $images
- * @param array $seleced_img
+ * @param array $selected_img
  * @param string $prefix
  * @param integer $id
  * @return string
@@ -1207,7 +1207,7 @@ function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
     global $lang;
     $path = '../public/assets';
 
-    if(!array($selected_img)) {
+    if(!is_array($selected_img)) {
         $cnt_selected_img = 0;
     } else {
         $selected_img = array_filter($selected_img);

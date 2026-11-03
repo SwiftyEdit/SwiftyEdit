@@ -620,9 +620,9 @@ function se_posts_calc_price($price,$tax,$amount=1) {
 	
 	$price = str_replace('.', '', $price);
 	$price = str_replace(',', '.', $price);
-    $price = number_format($price, 8, '.', '');
+    $price = number_format((float) $price, 8, '.', '');
 
-    $price_single_net = round($price,8);
+    $price_single_net = round((float) $price,8);
     $price_sum_net = $price_single_net*$amount;
 
     if($tax != '0') {
