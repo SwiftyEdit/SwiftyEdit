@@ -6,6 +6,8 @@
  * @var array $se_settings
  * @var string $themes_path
  * @var string $cache_id
+ * @var array $page_contents data of the page matched by routing (replaced on 404)
+ * @var string $swifty_slug
  */
 
 http_response_code($error_code);

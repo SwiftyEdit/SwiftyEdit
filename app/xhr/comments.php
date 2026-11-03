@@ -67,6 +67,7 @@ if(($_REQUEST['form'] ?? '') == 'comments') {
         $smarty->assign("product_id",$product_id);
     }
 
+    $parent_id = 0;
     if(isset($_GET['parent_id'])) {
         $parent_id = (int) $_GET['parent_id'];
         $smarty->assign("parent_id",$parent_id);

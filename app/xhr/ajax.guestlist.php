@@ -4,6 +4,9 @@
  * ajax guestlist confirmation
  * called via route.php, which already includes bootstrap.php
  * ($db_content, session, csrf validation, functions.posts.php)
+ *
+ * @var object $db_content
+ * @var object $db_posts
  */
 
 // Read-only w.r.t. $_SESSION (only read below, never assigned) - safe to

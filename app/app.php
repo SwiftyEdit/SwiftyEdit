@@ -16,7 +16,9 @@
  * @var string $query query string
  * @var string $swifty_slug swifty slug
  * @var string $languagePack
+ * @var string $lang_sign from languages/{lang}/index.php
  * @var array $lang
+ * @var bool $page_psw_locked from template-setup.php
  * @var array $a_allowed_p
  * @var object $smarty Smarty template engine
  * @var int|null $error_code
@@ -165,7 +167,7 @@ if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comm
         $comments_filter = ['type' => 'p', 'relation_id' => (int) $page_contents['page_id']];
     }
     $cnt_comments = count(se_get_comments(0, 100, $comments_filter));
-    $smarty->assign('comments_title', str_replace('{cnt_comments}', $cnt_comments, $lang['comments_title']));
+    $smarty->assign('comments_title', str_replace('{cnt_comments}', (string) $cnt_comments, $lang['comments_title']));
 }
 
 // if we have no page id and the slug is not a valid page type, show 404
@@ -221,7 +223,7 @@ se_do_frontend_hook('page.display.after', [
     'product_data' => $product_data ?? null,
     'post_data' => $post_data ?? null,
     'event_data' => $event_data ?? null,
-    'query' => $swifty_slug ?? null,
+    'query' => $swifty_slug,
     'session' => array_filter($_SESSION ?? [], function($key) {
         return !in_array($key, ['token', 'token_time','se_admin_helpers']);  // Exclude
     }, ARRAY_FILTER_USE_KEY)

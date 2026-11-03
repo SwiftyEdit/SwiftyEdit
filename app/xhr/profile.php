@@ -6,6 +6,7 @@
  * @var object $db_user
  * @var object $db_content
  * @var string $se_base_url
+ * @var array $se_settings
  */
 
 $get_my_userdata = get_my_userdata();
