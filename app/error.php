@@ -22,14 +22,33 @@ $error = $error_messages[$error_code] ?? ['title' => 'Fehler', 'text' => 'Unbeka
 
 if($error_code == 404) {
     list($page_contents,$se_nav) = se_get_content('404','type_of_use');
-}
 
+    // smarty.php and template-setup.php already selected the theme and layout
+    // of the page matched by routing - the error page has to use its own.
+    // Without a 404 page or on use_standard this is the site-wide theme/layout.
+    $error_page_theme = se_resolve_page_theme($page_contents, $se_settings, $themes_path);
 
-if($page_contents['page_template'] != 'use_standard') {
     $smart_template_dirs = [];
-    $smart_template_dirs[] = $themes_path.'/'.$page_contents['page_template'].'/templates/';
+    $smart_template_dirs[] = $themes_path.'/'.$error_page_theme['template'].'/templates/';
     $smart_template_dirs[] = $themes_path.'/default/templates/';
     $smarty->setTemplateDir($smart_template_dirs);
+
+    // a layout file that no longer exists must not end in a fatal error,
+    // the default theme always has layout_default.tpl
+    $error_page_layout = $error_page_theme['layout'];
+    if(!$smarty->templateExists($error_page_layout)) {
+        $error_page_layout = 'layout_default.tpl';
+    }
+
+    $smarty->assign('se_template_layout', $error_page_layout);
+    $smarty->assign('body_template', $error_page_layout);
+
+    // CSS and JS in head.tpl must come from the theme of the error page, too.
+    // The stylesheet is always assigned: an empty value has to replace the
+    // stylesheet of the page matched by routing.
+    $smarty->assign('se_template', $error_page_theme['template']);
+    $smarty->assign('se_template_stylesheet', $error_page_theme['stylesheet']);
+    $smarty->assign('se_assets_version', se_get_theme_assets_version($themes_path, $error_page_theme['template']));
 }
 
 // this file can be include()'d mid-request from inside a handler
@@ -39,7 +58,7 @@ if($page_contents['page_template'] != 'use_standard') {
 // already assigned to Smarty for THAT page above and need to be redone
 // here for the real error page, or the visitor gets a 404 status with the
 // previous page's content still on screen
-if($page_contents['page_permalink'] != '') {
+if(($page_contents['page_permalink'] ?? '') != '') {
     $smarty->assign('page_title', html_entity_decode($page_contents['page_title'] ?: $error['title']));
     $smarty->assign('page_meta_description', html_entity_decode($page_contents['page_meta_description'] ?? ''));
     $smarty->assign('page_meta_keywords', html_entity_decode($page_contents['page_meta_keywords'] ?? ''));

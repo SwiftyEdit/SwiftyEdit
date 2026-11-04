@@ -84,48 +84,10 @@ if($se_settings['usertemplate'] == 'on' OR $se_settings['usertemplate'] == 'over
 
 }
 
-// default template
-$se_template = $se_settings['template'] ?: 'default';
-$se_template_layout = $se_settings['template_layout'] ?: 'layout_default.tpl';
-$se_template_stylesheet = '';
-if(isset($se_settings['template_stylesheet'])) {
-    $se_template_stylesheet = $se_settings['template_stylesheet'];
-}
-
-if($page_contents['page_template'] == "use_standard") {
-    $se_template = $se_settings['template'] ?: 'default';
-}
-
-if($page_contents['page_template_layout'] == "use_standard") {
-    $se_template_layout = $se_settings['template_layout'] ?: 'layout_default.tpl';
-}
-
-/* page has its own theme/template */
-if(is_dir($themes_path.'/'.$page_contents['page_template'].'/templates/')) {
-    $se_template = $page_contents['page_template'];
-    $se_template_layout = $page_contents['page_template_layout'];
-
-    // Only override the site-wide stylesheet when the page actually pins its
-    // own (there's no page-editor UI for this yet - see docs/v2/*/09-01-00-themes.md
-    // - so this is normally empty). Otherwise a page that merely pins its own
-    // theme/layout would always lose the site-wide stylesheet selection.
-    if($page_contents['page_template_stylesheet'] != '') {
-        $se_template_stylesheet = $page_contents['page_template_stylesheet'];
-    }
-
-    if($se_settings['usertemplate'] == 'overwrite') {
-        /* the user theme has the same tpl file, so we can overwrite */
-        if(($_SESSION['prefs_template'] ?? '') != '' && is_file($themes_path.'/'.$_SESSION['prefs_template'].'/templates/'.$page_contents['page_template_layout'])) {
-            $se_template = $_SESSION['prefs_template'];
-            $se_template_layout = $page_contents['page_template_layout'];
-            //$se_template_stylesheet = $se_template_stylesheet;
-        }
-    }
-}
-
-$se_template = basename($se_template);
-$se_template_layout = basename($se_template_layout);
-$se_template_stylesheet = basename($se_template_stylesheet);
+$se_page_theme = se_resolve_page_theme($page_contents, $se_settings, $themes_path);
+$se_template = $se_page_theme['template'];
+$se_template_layout = $se_page_theme['layout'];
+$se_template_stylesheet = $se_page_theme['stylesheet'];
 
 $smarty->assign('hidden_csrf_token', "$hidden_csrf_token", true);
 
@@ -136,18 +98,7 @@ if($se_template_stylesheet != '') {
     $smarty->assign('se_template_stylesheet', $se_template_stylesheet);
 }
 
-// cache busting for theme assets: newest mtime of the built files in dist/,
-// so every theme build reaches clients immediately (used as ?v= in head.tpl)
-$se_assets_version = 0;
-$theme_dist_files = array_merge(
-    glob($themes_path.'/'.$se_template.'/dist/*.css') ?: [],
-    glob($themes_path.'/'.$se_template.'/dist/*.js') ?: [],
-    glob($themes_path.'/'.$se_template.'/dist/skins/*.css') ?: []
-);
-foreach($theme_dist_files as $dist_file) {
-    $se_assets_version = max($se_assets_version, (int) filemtime($dist_file));
-}
-$smarty->assign('se_assets_version', $se_assets_version);
+$smarty->assign('se_assets_version', se_get_theme_assets_version($themes_path, $se_template));
 
 if(is_file($themes_path."/$se_template/php/index.php")) {
     include $themes_path.'/'.$se_template.'/php/index.php';

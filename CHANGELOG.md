@@ -14,6 +14,10 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 - Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
   need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
   in their own `vendor/`
+- Fix a fatal error (status 404 with an empty page) for unknown URLs below a
+  page with a blog or product list, if the 404 page uses another theme that
+  does not have the layout of that page. The 404 page now always uses its own
+  layout and loads the CSS and JS of its own theme
 
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 
