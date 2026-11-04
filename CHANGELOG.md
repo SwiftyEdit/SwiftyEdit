@@ -8,12 +8,20 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## 2.3.0 - 2026-11-02 (Build 26-0231)
+## 2.3.0 - 2026-11-04 (Build 26-0232)
 
 - Migrate the Backend from inline PHP to Twig templates
 - Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
   need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
   in their own `vendor/`
+- Remove the bundled PayPal plugin `se_paypal-pay` and the PayPal SDK
+  (`paypal/paypal-server-sdk` with its `apimatic` packages) from the core.
+  PayPal is now available as the plugin `paypal-pay` in the plugin catalog,
+  which ships its own SDK. To switch: install `paypal-pay`, click
+  "Take over data & switch" in its settings, then delete `se_paypal-pay`.
+  Settings and existing orders are taken over. Until the old folder is
+  deleted, the core ignores `se_paypal-pay` (PayPal is then not offered at
+  checkout)
 - Fix a fatal error (status 404 with an empty page) for unknown URLs below a
   page with a blog or product list, if the 404 page uses another theme that
   does not have the layout of that page. The 404 page now always uses its own
