@@ -38,7 +38,7 @@ See [CHANGELOG.md](CHANGELOG.md) for all changes.
 ## Upcoming
 ### Version 2.3
 - [x] Remove the unused Guzzle package from the core
-- [ ] Move the PayPal plugin from the core to the plugin catalog (it ships its own PayPal SDK then; cash and invoice payment stay bundled)
+- [x] Move the PayPal plugin from the core to the plugin catalog (it ships its own PayPal SDK then; cash and invoice payment stay bundled)
 
 ### Later
 - [ ] Add write access (create/update) for pages, posts and products to the REST API

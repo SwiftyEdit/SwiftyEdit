@@ -520,7 +520,32 @@ function se_get_active_mods() {
         $active_addons = json_decode(file_get_contents($cache_file_active_addons), true);
     }
 
-	return is_array($active_addons) ? $active_addons : [];
+    if(!is_array($active_addons)) {
+        return [];
+    }
+
+    // retired bundled plugins may still be listed as active after an update
+    return array_values(array_filter($active_addons, function($mod) {
+        return !se_is_retired_addon((string) ($mod['page_modul'] ?? ''));
+    }));
+}
+
+/**
+ * Plugins that were bundled with the core in earlier versions and can no
+ * longer run with the current core. The updater never deletes plugins, so
+ * their folders may still sit in /plugins/ (and even be activated) until the
+ * admin removes them - the core skips them instead of loading their code.
+ *
+ * se_paypal-pay: bundled up to 2.2, relied on the PayPal SDK from the core's
+ * vendor directory, which was removed in 2.3. Replaced by paypal-pay from the
+ * plugin catalog, which ships its own SDK and takes over the settings.
+ *
+ * @param string $addon plugin folder name
+ * @return bool
+ */
+function se_is_retired_addon(string $addon): bool {
+    $retired_addons = ['se_paypal-pay'];
+    return in_array($addon, $retired_addons, true);
 }
 
 function se_get_activated_addons() {

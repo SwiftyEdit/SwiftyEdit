@@ -91,7 +91,7 @@ Located in `plugins/<name>/`. Each has:
 - Activated plugins come from `se_get_activated_addons()`.
 
 Bundled plugins that ship with releases (see `build_prepare.sh`):
-- Payment: `se_cash-pay`, `se_invoice-pay`, `se_paypal-pay`.
+- Payment: `se_cash-pay`, `se_invoice-pay`. PayPal (`paypal-pay`) lives in the plugin catalog since 2.3.
 - Editors: `tinymce-editor`, `ace-editor`. Editor browser assets are served from
   `public/assets/editors`. Multiple editors are supported with a default fallback.
 

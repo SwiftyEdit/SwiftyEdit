@@ -1626,6 +1626,10 @@ function se_get_payment_methods(): array {
     if(count($active_payment_addons) > 0) {
         foreach ($active_payment_addons as $payment_addon) {
 
+            if(se_is_retired_addon($payment_addon)) {
+                continue;
+            }
+
             $key = clean_filename($payment_addon);
             $addon_data = se_get_payment_method_data($payment_addon);
 
@@ -1808,7 +1812,7 @@ function se_send_order($data) {
  * fire the 'order.paid' backend hook
  *
  * used both by the manual ACP "mark as paid" action and by payment
- * plugins (e.g. se_paypal-pay) confirming a payment automatically
+ * plugins (e.g. paypal-pay) confirming a payment automatically
  *
  * @param int    $order_id     se_orders.id
  * @param int    $status       1 = open, 2 = paid

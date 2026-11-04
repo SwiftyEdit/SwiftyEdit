@@ -119,7 +119,7 @@ if(isset($_GET['id'])) {
 
         $payment_plugin = basename($get_order['order_payment_type']);
         $payment_plugin_file = SE_ROOT.'plugins/'.$payment_plugin.'/aftersale_listing.php';
-        if(is_file($payment_plugin_file)) {
+        if(is_file($payment_plugin_file) && !se_is_retired_addon($payment_plugin)) {
             include $payment_plugin_file;
         }
         $get_order['payment_plugin_str'] = $pm_plugin_str;

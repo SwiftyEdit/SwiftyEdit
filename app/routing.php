@@ -145,7 +145,7 @@ if(!empty($clean_mods)) {
 
     // Load global hook handlers (fire on both frontend and backend triggers)
     // for all active plugins. This must happen before a plugin's
-    // global/index.php runs below, since some plugins (e.g. se_paypal-pay)
+    // global/index.php runs below, since some plugins (e.g. paypal-pay)
     // fire global hooks synchronously during their own bootstrap.
     require_once SE_ROOT . 'app/hooks/hooks-global.php';
 

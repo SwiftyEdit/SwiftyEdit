@@ -90,7 +90,7 @@ Technisch lädt ein Update das gewählte Release als ZIP-Datei herunter, entpack
 die Dateien direkt in Deine laufende Installation, anschließend werden nötige
 Datenbank-Migrationen (neue Tabellen/Spalten) ausgeführt. Dein `data/`-Verzeichnis sowie
 installierte Plugins und Themes bleiben dabei unangetastet - mit Ausnahme der mitgelieferten
-Plugins (der Zahlungs-Plugins `se_cash-pay`, `se_invoice-pay`, `se_paypal-pay` sowie der
+Plugins (der Zahlungs-Plugins `se_cash-pay` und `se_invoice-pay` sowie der
 Editor-Plugins `tinymce-editor`, `ace-editor`), die immer auf den ausgelieferten Stand
 aktualisiert werden. Ein automatisches Backup oder einen Rollback-Schritt gibt es nicht.
 

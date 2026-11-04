@@ -38,7 +38,6 @@ parameters:
         - plugins/ace-editor
         - plugins/se_cash-pay
         - plugins/se_invoice-pay
-        - plugins/se_paypal-pay
         - plugins/tinymce-editor
     excludePaths:
         - */node_modules/*

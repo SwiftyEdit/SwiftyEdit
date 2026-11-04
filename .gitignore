@@ -47,8 +47,6 @@ config_database.php
 /plugins/se_cash-pay/pm_config.php
 !/plugins/se_invoice-pay/*
 /plugins/se_invoice-pay/pm_config.php
-!/plugins/se_paypal-pay/*
-/plugins/se_paypal-pay/pm_config.php
 !/plugins/tinymce-editor/*
 /plugins/tinymce-editor/node_modules
 !/plugins/ace-editor/*

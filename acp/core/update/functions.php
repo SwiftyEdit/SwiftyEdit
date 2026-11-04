@@ -136,7 +136,6 @@ function move_new_files(string $source): bool {
     // are actually part of the release have to be re-copied explicitly here
     copy_recursive($sources_path.$sources_dir."/plugins/se_invoice-pay","../plugins/se_invoice-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/se_cash-pay","../plugins/se_cash-pay");
-    copy_recursive($sources_path.$sources_dir."/plugins/se_paypal-pay","../plugins/se_paypal-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/tinymce-editor","../plugins/tinymce-editor");
     copy_recursive($sources_path.$sources_dir."/plugins/ace-editor","../plugins/ace-editor");
 

@@ -154,7 +154,7 @@ return [
         // ----- Orders -----
 
         // An order has been marked as paid, either manually by an admin in the
-        // ACP or automatically by a payment plugin (e.g. se_paypal-pay).
+        // ACP or automatically by a payment plugin (e.g. paypal-pay).
         'order.paid' => [
             'type'    => 'action',
             'context' => ['order_id', 'order', 'triggered_by'],

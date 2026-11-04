@@ -86,7 +86,7 @@ if($send_order == true) {
 
         // include after sale script from payment addon
         $aftersale_script = SE_ROOT.'/plugins/'.basename($payment_addon).'/aftersale.php';
-        if(is_file($aftersale_script)) {
+        if(is_file($aftersale_script) && !se_is_retired_addon(basename($payment_addon))) {
             include $aftersale_script;
         }
         $smarty->assign("cart_alert_success",$cart_alert,true);

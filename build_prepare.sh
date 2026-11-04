@@ -34,10 +34,9 @@ fi
 rm -f dist/$BUILD/composer.json dist/$BUILD/composer.lock
 
 # Plugins
-mkdir -p dist/$BUILD/plugins/se_cash-pay dist/$BUILD/plugins/se_invoice-pay dist/$BUILD/plugins/se_paypal-pay
+mkdir -p dist/$BUILD/plugins/se_cash-pay dist/$BUILD/plugins/se_invoice-pay
 rsync -a plugins/se_cash-pay/ dist/$BUILD/plugins/se_cash-pay/
 rsync -a plugins/se_invoice-pay/ dist/$BUILD/plugins/se_invoice-pay/
-rsync -a plugins/se_paypal-pay/ dist/$BUILD/plugins/se_paypal-pay/
 
 # Editor plugins (bundled and always available, like the payment plugins).
 # Ship only the runtime files; the build tooling stays out of the release.
