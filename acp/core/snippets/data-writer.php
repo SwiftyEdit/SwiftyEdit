@@ -80,13 +80,14 @@ if(isset($_POST['items_per_page'])) {
 // delete snippet
 if(isset($_POST['delete_snippet'])) {
     $delete_id = (int) $_POST['delete_snippet'];
+    $deleted_snippet = $db_content->get("se_snippets", ["snippet_name", "snippet_title"], ["snippet_id" => $delete_id]);
     $cnt_changes=$db_content->delete("se_snippets",[
         "snippet_id" => $delete_id
     ]);
 
     if(($cnt_changes->rowCount()) > 0) {
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted snippet id: $delete_id",10);
+        se_log_content('delete', 'snippet', $delete_id, (string) ($deleted_snippet['snippet_title'] ?? ''), (string) ($deleted_snippet['snippet_name'] ?? ''));
         header( "HX-Redirect: /admin/snippets/");
     }
 }
@@ -175,6 +176,7 @@ if(isset($_POST['save_snippet'])) {
     if($_POST['save_snippet'] == 'new') {
         $data = $db_content->insert("se_snippets", $insert_data);
         $new_id = $db_content->id();
+        se_log_content('create', 'snippet', (int) $new_id, $snippet_title, $snippet_name);
         show_toast($lang['msg_success_new_record'],'success');
         header( 'HX-REDIRECT: /admin/snippets/edit/'.$new_id.'/');
     }
@@ -185,6 +187,7 @@ if(isset($_POST['save_snippet'])) {
         $data = $db_content->update("se_snippets", $insert_data,[
             "snippet_id" => $snippet_id
         ]);
+        se_log_content('update', 'snippet', $snippet_id, $snippet_title, $snippet_name);
         show_toast($lang['msg_success_db_changed'],'success');
     }
 }

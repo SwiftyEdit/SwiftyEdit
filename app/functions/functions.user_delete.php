@@ -279,6 +279,21 @@ function se_delete_user(int $user_id, bool $delete_comments = false, string $del
         ], ["comment_author_id" => $user_id]);
     }
 
+    // the log must not keep the name. Older entries also have it in the text,
+    // only these exact wordings are replaced - a short nick would otherwise
+    // match inside other words
+    $anonymous = 'deleted-'.$user_id;
+    $db_content->update("se_logs", ["source" => $anonymous], ["source" => $nick]);
+    $old_log_entries = [
+        "new user $nick" => "new user $anonymous",
+        "new user <i>$nick</i>" => "new user $anonymous",
+        "updated user <i>$nick</i>" => "updated user $anonymous",
+        "user activated via mail - $nick" => "user activated via mail"
+    ];
+    foreach($old_log_entries as $old_entry => $new_entry) {
+        $db_content->update("se_logs", ["entry" => $new_entry], ["entry" => $old_entry]);
+    }
+
     record_log($deleted_by === 'self' ? 'user' : $deleted_by, "deleted user id: $user_id", 10);
 
     // global hook: accounts are deleted in the ACP and by the user in the frontend profile

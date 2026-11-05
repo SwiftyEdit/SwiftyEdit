@@ -190,6 +190,8 @@ if($upload_type == 'images') {
             $filesize = filesize(realpath($target));
             if(($_POST['file_mode'] ?? '') !== 'overwrite') {
                 se_write_media_data_name($target,$store_tmb_name,$filesize,$time,$filetype);
+            } else {
+                se_log_media_overwrite($target);
             }
 
             $data = ['url' => $target, 'message' => 'The file ' . $target . ' has been uploaded.'];
@@ -226,6 +228,8 @@ if($upload_type == 'files') {
             $filesize = filesize(realpath($target));
             if(($_POST['file_mode'] ?? '') != 'overwrite') {
                 se_write_media_data_name($target,'',$filesize,$time,$filetype);
+            } else {
+                se_log_media_overwrite($target);
             }
         }
 
@@ -488,6 +492,15 @@ function se_write_media_data_name($filename,$store_tmb_name,$filesize,$time,$med
     ];
 
     $cnt_changes = $db_content->insert("se_media", $columns);
+    se_log_content('create', 'media', null, basename($filename), $filename);
+}
+
+/**
+ * An existing file was replaced - its row in se_media stays as it is
+ */
+function se_log_media_overwrite($filename) {
+    $filename = str_replace("assets/","../",$filename);
+    se_log_content('update', 'media', null, basename($filename), $filename);
 }
 
 

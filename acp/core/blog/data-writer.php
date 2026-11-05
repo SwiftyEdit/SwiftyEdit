@@ -131,7 +131,7 @@ if(isset($_POST['delete_post'])) {
         ]);
         se_generate_xml_sitemap('posts');
         show_toast($lang['msg_success_entry_delete'],'success');
-        record_log($_SESSION['user_nick'],"delete post id: $del_id",8);
+        se_log_content('delete', 'post', $del_id, (string) ($this_post_data['post_title'] ?? ''));
     }
     header("HX-Trigger: update_posts_list");
     exit;
@@ -308,7 +308,7 @@ if(isset($_POST['save_post'])) {
             ]);
         }
 
-        record_log($_SESSION['user_nick'],"new post id: $post_id",6);
+        se_log_content('create', 'post', $post_id, (string) $values['post_title']);
         show_toast($lang['msg_success_new_record'],'success');
         header( "HX-Redirect: /admin/blog/edit/$post_id/");
     }
@@ -317,7 +317,7 @@ if(isset($_POST['save_post'])) {
         $db_posts->update("se_posts", $inputs, [
             "post_id" => $post_id
         ]);
-        record_log($_SESSION['user_nick'],"updated post id: $post_id",3);
+        se_log_content('update', 'post', $post_id, (string) $values['post_title']);
         show_toast($lang['msg_success_db_changed'],'success');
     }
 

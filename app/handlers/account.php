@@ -27,7 +27,7 @@ if(isset($_GET['user']) && isset($_GET['al'])) {
     if ($cnt_changes > 0) {
         $account_msg = se_get_snippet("account_confirm", $languagePack, 'content');
         $account_msg = str_replace("{USERNAME}", "$user", $account_msg);
-        record_log("$user", "user activated via mail - $user", 5);
+        record_log("$user", "user activated via mail", 5);
     } else {
         $account_msg = "";
     }
@@ -67,7 +67,7 @@ if(isset($_GET['change_mail']) && ($_GET['change_mail'] !== '')) {
 
         if($change_mail->rowCount() == 1) {
             $account_msg = $lang['msg_update_profile_mail_success'];
-            record_log("$user_nick", "user changed mail - $user_new_mail", 5);
+            record_log("$user_nick", "user changed mail", 5);
         } else {
             $account_msg = "";
         }

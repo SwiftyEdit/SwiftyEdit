@@ -1377,6 +1377,82 @@ function record_log($log_trigger, $log_entry, $log_priority = 0) {
 }
 
 /**
+ * Create a structured log entry. A failing log entry must never stop the
+ * action it describes: after a manual update the new columns are missing until
+ * /install/ has run, and MySQL in strict mode refuses values that are too long.
+ *
+ * @param string $action create, update, delete, csrf, login_failed, login_locked ...
+ * @param string $entry readable text, plain text - it is escaped on output
+ * @param int $priority 0-10
+ * @param string $source user name, empty = the logged-in user or "system"
+ * @param array{type?: string, id?: int|null, key?: string, label?: string} $object the affected object
+ */
+function se_log_event(string $action, string $entry, int $priority = 5, string $source = '', array $object = []): void {
+
+    global $db_content;
+
+    if($source === '') {
+        $source = (string) ($_SESSION['user_nick'] ?? 'system');
+    }
+
+    $entry = mb_substr($entry, 0, 255);
+
+    try {
+        $db_content->insert("se_logs", [
+            "time" => (string) time(),
+            "source" => $source,
+            "entry" => $entry,
+            "priority" => $priority,
+            "action" => $action,
+            "object_type" => $object['type'] ?? null,
+            "object_id" => $object['id'] ?? null,
+            "object_key" => $object['key'] ?? null,
+            "object_label" => $object['label'] ?? null
+        ]);
+    } catch (\Throwable $e) {
+        try {
+            record_log($source, $entry, $priority);
+        } catch (\Throwable $e) {
+            error_log('SwiftyEdit log entry failed: '.$e->getMessage());
+        }
+    }
+}
+
+/**
+ * Log the change of a content item (page, snippet, post, product, event, media).
+ * The dashboard counts these per day and item, so every save writes one entry.
+ *
+ * @param string $action create, update or delete
+ * @param string $type page, snippet, post, product, event or media
+ * @param int|null $id null for media, those are identified by $key
+ * @param string $label title at this moment, html entities are decoded (many
+ * title columns are stored encoded) - se_logs and the content tables are in
+ * separate databases, so the title can't be joined later
+ * @param string $key snippet name or media file
+ */
+function se_log_content(string $action, string $type, ?int $id, string $label, string $key = ''): void {
+
+    $label = mb_substr(html_entity_decode($label, ENT_QUOTES, 'UTF-8'), 0, 255);
+
+    $entry = $action.' '.$type;
+    if($id !== null) {
+        $entry .= ' #'.$id;
+    }
+    if($label !== '') {
+        $entry .= ': '.$label;
+    } elseif($key !== '') {
+        $entry .= ': '.$key;
+    }
+
+    se_log_event($action, $entry, $action === 'delete' ? 8 : 3, '', [
+        'type' => $type,
+        'id' => $id,
+        'key' => $key !== '' ? $key : null,
+        'label' => $label
+    ]);
+}
+
+/**
  * sort arrays like SQL Results
  * example:
  * $s = se_array_multisort($pages, 'lang', SORT_ASC, 'page_sort', SORT_ASC, SORT_NATURAL);

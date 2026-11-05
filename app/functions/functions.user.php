@@ -199,6 +199,7 @@ function se_user_login(string $user, string $psw, $acp=NULL) {
         // like the account lock, attempts while throttled are not counted again
         if(!$is_throttled) {
             se_rate_limit_add('login', 900);
+            se_log_failed_login(is_array($user_data) ? $user_nick : '', $is_locked, $acp == TRUE);
         }
 
         if(is_numeric($se_failed_logins_limit) && !$is_locked && !$is_throttled && $user_nick !== '') {
@@ -260,6 +261,34 @@ function se_finish_login(array $result, $acp): void {
     }
 }
 
+/**
+ * Log a failed login. Limited per hour like the CSRF entries, known accounts
+ * have their own limit so a bot guessing names can't use up their entries.
+ * A name that matches no account is not stored - it could be a password typed
+ * into the wrong field.
+ *
+ * @param string $nick the account, empty if there is none
+ * @param bool $is_locked the account was locked, the password wasn't checked
+ * @param bool $is_backend ACP login, otherwise frontend
+ */
+function se_log_failed_login(string $nick, bool $is_locked, bool $is_backend): void {
+
+    $log_bucket = $nick !== '' ? 'login_log_known' : 'login_log_unknown';
+    if(se_rate_limit_exceeded($log_bucket, 20, 3600, false)) {
+        return;
+    }
+    se_rate_limit_add($log_bucket, 3600, false);
+
+    $entry = 'failed login ('.($is_backend ? 'backend' : 'frontend').')';
+    if($nick === '') {
+        $entry .= ', unknown account';
+    } elseif($is_locked) {
+        $entry .= ', account is locked';
+    }
+
+    se_log_event('login_failed', $entry, 5, $nick !== '' ? $nick : 'system');
+}
+
 function se_handle_failed_logins($user) {
 
     global $db_user,$se_failed_logins_limit,$lang,$se_base_url,$se_settings;
@@ -317,6 +346,8 @@ function se_handle_failed_logins($user) {
 
         // only mail the account owner when this attempt actually triggered the lock
         if($update->rowCount() > 0) {
+            se_log_event('login_locked', 'account locked after '.$failed_logins.' failed logins', 5, (string) $user);
+
             // the ACP login (acp/login.php) neither sets $se_base_url nor loads
             // the frontend language file - build both the same way as the frontend
             if(empty($se_base_url)) {

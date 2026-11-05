@@ -101,13 +101,22 @@ if(isset($_POST['sorting_products_dir'])) {
     exit;
 }
 
+// a variant is logged with its own title, see the product list in data-reader.php
+$log_product = static function(string $action, int $id, array $product): void {
+    $title = (string) ($product['product_variant_title'] ?? '');
+    if($title === '') {
+        $title = (string) ($product['title'] ?? '');
+    }
+    se_log_content($action, 'product', $id, $title);
+};
+
 // delete product
 // if there are variants, delete them, too
 if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
     $delete_id = (int) $_POST['delete_product'];
 
-    // remember id and language of the product and its variants for the cache cleanup
-    $deleted_products = $db_posts->select("se_products", ["id", "product_lang"], [
+    // remember the product and its variants for the cache cleanup and the log
+    $deleted_products = $db_posts->select("se_products", ["id", "product_lang", "title", "product_variant_title"], [
         "OR" => [
             "id" => $delete_id,
             "parent_id" => $delete_id
@@ -137,7 +146,9 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
         ]);
 
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted product id: $delete_id",10);
+        foreach($deleted_products as $deleted_product) {
+            $log_product('delete', (int) $deleted_product['id'], $deleted_product);
+        }
         header( "HX-Redirect: /admin/shop/");
         $modus = 'new';
     }
@@ -158,7 +169,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         ]);
         $form_header_message = $lang['msg_success_db_changed'];
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"updated product id: $id",6);
+        $log_product('update', $id, $prepared_data);
     } else if(is_numeric($_POST['save_variant'])) {
         $prepared_data = se_prepareProductData($_POST);
         $db_posts->insert("se_products", $prepared_data);
@@ -166,7 +177,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"new product variant id: $id",6);
+        $log_product('create', (int) $id, $prepared_data);
 
     } else {
         $prepared_data = se_prepareProductData($_POST);
@@ -175,7 +186,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"new product id: $id",6);
+        $log_product('create', (int) $id, $prepared_data);
         // redirect to edit form
         header( "HX-Redirect: /admin/shop/edit/$id/");
     }

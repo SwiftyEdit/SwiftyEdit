@@ -423,8 +423,34 @@ function show_toast($text,$color='') {
 
 
 /**
+ * Delete log entries that are older than $days.
+ *
+ * Runs on every dashboard load, so the oldest entry is checked first: that
+ * only reads one row through the primary key, the delete has to scan the
+ * table. There is no cron in the core yet (see TODO.md section 12).
+ */
+
+function se_cleanup_logs(int $days = 90): void {
+
+	global $db_content;
+
+	$cutoff = time() - ($days * 86400);
+
+	$oldest = $db_content->get("se_logs", "time", [
+		"ORDER" => ["id" => "ASC"]
+	]);
+
+	if($oldest === null || (int) $oldest >= $cutoff) {
+		return;
+	}
+
+	$db_content->delete("se_logs", [
+		"time[<]" => $cutoff
+	]);
+}
+
+/**
  * show log entries
- * delete records that are older than 30 days
  */
 
 function se_show_log($limit=10) {
@@ -432,33 +458,6 @@ function se_show_log($limit=10) {
 	global $db_content;
 	global $lang;
 	$logs = '';
-
-	// Cheap gatekeeper: only attempt a cleanup once se_logs has grown past
-	// 1000 rows. Peeking at the id of the 1000th-newest row uses the
-	// primary key index (O(1000)), unlike COUNT(*) - SQLite keeps no
-	// running row count, so COUNT(*) would scan the whole table on every
-	// single dashboard load, which is exactly the cost we're avoiding here.
-	// Medoo's get() always forces its own LIMIT 1 (it's meant to fetch a
-	// single row), silently ignoring any offset - select() is needed here
-	// to actually respect the LIMIT/OFFSET pair.
-	$row_at_1000 = $db_content->select("se_logs", "id", [
-		"ORDER" => ["id" => "DESC"],
-		"LIMIT" => [999, 1]
-	]);
-
-	if (!empty($row_at_1000)) {
-		$interval = time() - (30 * 86400); // 30 days
-
-		$del = $db_content->delete("se_logs", [
-			"time[<]" => $interval
-		]);
-
-		$count = $del->rowCount();
-
-		if($count > 0) {
-			$logs .= '<div class="alert alert-info">Logs removed ('.$count.')</div>';
-		}
-	}
 
 	$result = $db_content->select("se_logs", "*", [
 		"ORDER" => ["id" => "DESC"],
@@ -480,10 +479,17 @@ function se_show_log($limit=10) {
             $date = date("d.m.Y", $result[$i]['time']);
             $log_priority = 'log_priority' . $result[$i]['priority'];
 
+            // entries without an action come from record_log() and may contain
+            // HTML or entities, so reduce them to plain text before escaping
+            $log_entry = (string) $result[$i]['entry'];
+            if(empty($result[$i]['action'])) {
+                $log_entry = html_entity_decode(strip_tags($log_entry), ENT_QUOTES, 'UTF-8');
+            }
+
             $list .= '<div class="list-group-item d-flex align-items-center gap-2 se-privacy-blur">';
             $list .= '<span class="priority-indicator ' . $log_priority . ' flex-shrink-0" title="' . $result[$i]['priority'] . '"></span>';
             $list .= '<span class="dash-min-w-0">';
-            $list .= '<span class="dash-row-title">' . $result[$i]['source'] . ' - ' . $result[$i]['entry'] . '</span>';
+            $list .= '<span class="dash-row-title">' . htmlspecialchars($result[$i]['source'] . ' - ' . $log_entry, ENT_QUOTES, 'UTF-8') . '</span>';
             $list .= '<span class="dash-row-meta">' . $date . ' ' . $time . '</span>';
             $list .= '</span>';
             $list .= '</div>';
@@ -837,8 +843,7 @@ function se_delete_media_data($filename) {
 		]
 	]);
 	
-	$record_msg = 'delete media data: <strong>'.basename($filename).'</strong>';
-	record_log($_SESSION['user_nick'],$record_msg,2);
+	se_log_content('delete', 'media', null, basename($filename), (string) $filename);
 
 }
 
@@ -941,6 +946,7 @@ function se_write_media_data($data) {
 	}
 
 	if($cnt_changes->rowCount() > 0) {
+		se_log_content('update', 'media', null, basename($saved_filename), $saved_filename);
 		return 'success';
 	} else {
 		return 'error';

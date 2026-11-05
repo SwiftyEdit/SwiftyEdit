@@ -74,6 +74,7 @@ if(isset($_POST['priority'])) {
 if(isset($_POST['delete_event'])) {
 
     $del_id = (int) $_POST['delete_event'];
+    $deleted_title = (string) $db_posts->get("se_events", "title", ["id" => $del_id]);
 
     $delete = $db_posts->delete("se_events", [
         "id" => $del_id
@@ -85,7 +86,7 @@ if(isset($_POST['delete_event'])) {
             "content_id" => $del_id
         ]);
         show_toast($lang['msg_success_entry_delete'],'success');
-        record_log($_SESSION['user_nick'],"delete event id: $del_id",8);
+        se_log_content('delete', 'event', $del_id, $deleted_title);
         header( "HX-Trigger: update_events_list");
     }
 }
@@ -240,12 +241,12 @@ if(isset($_POST['save_post'])) {
         $db_posts->update("se_events", $inputs, [
             "id" => $id
         ]);
-        record_log($_SESSION['user_nick'],"updated event id: $id",6);
+        se_log_content('update', 'event', (int) $id, (string) ($inputs['title'] ?? ''));
         show_toast($lang['msg_success_db_changed'],'success');
     } else {
         $db_posts->insert("se_events", $inputs);
         $id = $db_posts->id();
-        record_log($_SESSION['user_nick'],"new event id: $id",6);
+        se_log_content('create', 'event', (int) $id, (string) ($inputs['title'] ?? ''));
         show_toast($lang['msg_success_new_record'],'success');
         // continue on the edit form, a second click on "save" must update instead of insert again
         header( "HX-Redirect: /admin/events/edit/$id/");

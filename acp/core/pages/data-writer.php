@@ -96,6 +96,7 @@ if(isset($_POST['delete_page'])) {
 
     $delete_id = (int) $_POST['delete_page'];
     $comment_id = 'p'.$delete_id;
+    $deleted_title = (string) $db_content->get("se_pages", "page_title", ["page_id" => $delete_id]);
 
     $del_page = $db_content->delete("se_pages", [
         "page_id" => $delete_id
@@ -115,7 +116,7 @@ if(isset($_POST['delete_page'])) {
     ]);
 
     if($del_page->rowCount() > 0) {
-        record_log($_SESSION['user_nick'],"deleted page id: $delete_id",10);
+        se_log_content('delete', 'page', $delete_id, $deleted_title);
         se_generate_xml_sitemap('pages');
         se_build_navigation_cache();
         show_toast($lang['msg_success_page_deleted'],'success');

@@ -379,6 +379,7 @@ if ($_REQUEST['action'] === 'list_opcache') {
  */
 
 if($_REQUEST['action'] == 'list_logfile') {
+    se_cleanup_logs();
     $show_log = se_show_log(10);
     se_html_response($show_log);
 }

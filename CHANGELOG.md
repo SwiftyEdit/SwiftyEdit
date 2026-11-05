@@ -8,6 +8,19 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
+## Unreleased
+
+- Log content changes in a structured way: `se_logs` gets the columns
+  `action`, `object_type`, `object_id`, `object_key` and `object_label`.
+  Pages, snippets, posts, products, events and media are logged with the new
+  function `se_log_content()`, including snippet saves, uploads and media
+  edits. `record_log()` stays unchanged for plugins, `se_log_event()` is new
+- Log failed logins and account locks
+- Keep log entries for 90 days instead of 30, independent of the number of
+  entries. The dashboard card escapes log entries on output
+- Log entries no longer contain changed mail addresses, deleting a user removes
+  the name from the log
+
 ## 2.3.0 - 2026-11-04 (Build 26-0232)
 
 - Migrate the Backend from inline PHP to Twig templates

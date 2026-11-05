@@ -201,6 +201,7 @@ if(!empty($_POST['send_registerform'])) {
             "sa_city" => $form['sa_city'],
             "sa_country" => $form['sa_country']
         ]);
+        $new_user_id = (int) $db_user->id();
 
         // Generate confirmation email
         $email_msg = se_get_snippet("account_confirm_mail","$languagePack",'content');
@@ -227,7 +228,7 @@ if(!empty($_POST['send_registerform'])) {
         $smarty->assign("register_message",$lang['msg_register_success'],true);
 
         // Log registration
-        record_log("user_register","new user {$form['username']}",6);
+        record_log("user_register","new user id: $new_user_id",6);
 
         // Send notification to admin
         $admin_mail = [];

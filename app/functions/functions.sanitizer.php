@@ -598,17 +598,21 @@ function se_validate_token($token): void {
  * message and a log entry. The most common cause is harmless - the session
  * expired while the form was open - so the message asks to reload the page.
  * Runs before the language files are loaded in the frontend, so the text is
- * English. Log entries are limited to 20 per hour (bots posting forms).
+ * English. Log entries are limited to 20 per hour (bots posting forms). Cases
+ * with a logged-in user have their own limit: only those can be a real attack
+ * on an account, bots must not be able to use up their log entries.
  */
 function se_csrf_failed(): never {
 
     global $db_content;
 
-    if(isset($db_content) && function_exists('se_rate_limit_exceeded') && !se_rate_limit_exceeded('csrf_log', 20, 3600, false)) {
-        se_rate_limit_add('csrf_log', 3600, false);
+    $nick = (string) ($_SESSION['user_nick'] ?? '');
+    $log_bucket = $nick !== '' ? 'csrf_log_user' : 'csrf_log';
+
+    if(isset($db_content) && function_exists('se_rate_limit_exceeded') && !se_rate_limit_exceeded($log_bucket, 20, 3600, false)) {
+        se_rate_limit_add($log_bucket, 3600, false);
         $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
-        $nick = (string) ($_SESSION['user_nick'] ?? '');
-        record_log($nick !== '' ? $nick : 'system', 'CSRF token missing or invalid: '.htmlspecialchars(substr($path, 0, 200), ENT_QUOTES),5);
+        se_log_event('csrf', 'CSRF token missing or invalid: '.substr($path, 0, 200), 5, $nick !== '' ? $nick : 'system');
     }
 
     $message = 'The form has expired or was sent from another page. Please reload the page and try again.';
