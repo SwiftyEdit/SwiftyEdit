@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## Unreleased
+## 2.3.0 - 2026-11-06 (Build 26-0233)
 
 - New backend dashboard: a 30-day activity grid per area with a history of the
   edited items, including changes to users by an administrator, plugins,
@@ -29,9 +29,6 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   entries. Log entries are escaped on output
 - Log entries no longer contain changed mail addresses, deleting a user removes
   the name from the log
-
-## 2.3.0 - 2026-11-04 (Build 26-0232)
-
 - Migrate the Backend from inline PHP to Twig templates
 - Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
   need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
