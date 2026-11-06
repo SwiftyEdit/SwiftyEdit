@@ -1,6 +1,4 @@
-<p style="text-align: center;">
-<img src="public/assets/themes/administration/images/swiftyedit_logo.svg" width="350" alt="SwiftyEdit Logo">
-</p>
+![SwiftyEdit backend dashboard](.github/screenshots/swiftyedit-dashboard.webp)
 
 # SwiftyEdit CMS
 

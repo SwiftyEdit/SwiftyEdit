@@ -3,3 +3,4 @@
 *.js linguist-detectable=false
 *.css linguist-detectable=false
 *.php linguist-detectable=true
+.github/screenshots export-ignore
