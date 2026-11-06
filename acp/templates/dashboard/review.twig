@@ -1,0 +1,53 @@
+{#
+ # "To review" card, rendered by the dashboard data-reader (action=list_alerts)
+ #}
+{% set has_security = security and (security.csrf_users is not empty or security.csrf_paths is not empty or security.locks is not empty or security.logins) %}
+{% if not_writable is empty and missing_types is empty and not has_security %}
+    <div class="dash-empty-hint">{{ lang.msg_no_entries_found }}</div>
+{% else %}
+    <div class="dash-review">
+
+        {% if not_writable is not empty %}
+            <div class="dash-review-item">
+                <span class="dash-review-dot is-danger"></span>
+                <div class="dash-min-w-0">
+                    {{ lang.msg_error_not_writable }}
+                    <div class="dash-code-list">{% for name in not_writable %}<code class="dash-row-tag">{{ name }}</code>{% endfor %}</div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if missing_types is not empty %}
+            <div class="dash-review-item">
+                <span class="dash-review-dot"></span>
+                <div class="dash-min-w-0">
+                    {{ lang.dashboard_review_types|replace({'{n}': missing_types|length}) }}
+                    <div class="dash-code-list">{% for name in missing_types %}<code class="dash-row-tag">{{ name }}</code>{% endfor %}</div>
+                    <a href="/admin/pages/new/">{{ lang.btn_new }}</a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if has_security %}
+            <div class="dash-review-item">
+                <span class="dash-review-dot{{ security.csrf_users is not empty or security.locks is not empty ? ' is-danger' : '' }}"></span>
+                <div class="dash-min-w-0 d-flex flex-column gap-2 se-privacy-blur">
+                    {% for case in security.csrf_users %}
+                        <div>{{ lang.dashboard_review_csrf|replace({'{date}': case.date, '{time}': case.time, '{n}': case.n}) }}</div>
+                    {% endfor %}
+                    {% for lock in security.locks %}
+                        <div>{{ lang.dashboard_review_lock|replace({'{nick}': lock.nick, '{n}': lock.n}) }}</div>
+                    {% endfor %}
+                    {% for case in security.csrf_paths %}
+                        <div>{{ lang.dashboard_review_csrf_path|replace({'{n}': case.n, '{path}': case.path}) }}</div>
+                    {% endfor %}
+                    {% if security.logins %}
+                        <div>{{ lang.dashboard_review_logins|replace({'{n}': security.logins.total, '{known}': security.logins.known, '{unknown}': security.logins.unknown}) }}</div>
+                    {% endif %}
+                    <a href="/admin/dashboard/log/?filter=security">{{ lang.dashboard_label_activity }}</a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endif %}

@@ -294,7 +294,12 @@ function se_delete_user(int $user_id, bool $delete_comments = false, string $del
         $db_content->update("se_logs", ["entry" => $new_entry], ["entry" => $old_entry]);
     }
 
-    record_log($deleted_by === 'self' ? 'user' : $deleted_by, "deleted user id: $user_id", 10);
+    if($deleted_by === 'self') {
+        record_log('user', "deleted user id: $user_id", 10);
+    } else {
+        // shows up in the activity of the dashboard, like the changes by an administrator
+        se_log_content('delete', 'user', $user_id, '');
+    }
 
     // global hook: accounts are deleted in the ACP and by the user in the frontend profile
     if(function_exists('se_do_global_hook')) {

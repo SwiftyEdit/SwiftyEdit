@@ -10,18 +10,31 @@ priority: 100
 
 Here you can find all the information about your website at a glance.
 
-The latest entries are listed on the left-hand side.
-You can click directly on the individual entries to edit them.
-You can also create new entries directly.
+At the top you can see what has happened in the last 30 days. The grid has one row per area
+(pages, snippets, blog, products, events, uploads, orders and users), but only if there was activity.
+Saving the same item several times on one day counts once. For users, new accounts and changes by an administrator count. Each row is measured by its busiest day.
+Click a day to see the totals of that day, click an area to open the history.
 
-On the right-hand side you will find a log, current warnings and information on the software used.
+The history lists every item per day with its title, type, number of saves and the latest time.
+Click a row to open the item. Deleted items are shown without a link.
+
+Below you will find your plugins, under “Alerts” everything that needs your attention
+(for example missing pages for types of use),
+the newest users as well as caches, system information and OPcache.
+
+With the right for sensitive files, “Alerts” also shows notes from the log: CSRF errors of logged-in users and account locks
+always, CSRF errors without a login from 3 hits on the same path in 7 days (this can point to a broken form) and failed logins
+from 10 in 7 days. The log only takes a limited number of these entries per hour, so the numbers are minimum values.
+
+Open the full log with the “Activity” link in the “System” card. This requires the right for sensitive files.
+Entries are deleted after 90 days.
 
 Tip: If you are working on a theme or similar and have not activated the “Smarty Compile Check” option,
 you can also clear the Smarty cache here.
 
 ### Cache {#cache}
 
-The "Cache" card on the dashboard lists every cache SwiftyEdit maintains, with its current
+The "System" card on the dashboard lists every cache SwiftyEdit maintains, with its current
 size and a button to clear (and, for some, rebuild) it. Most of these are kept up to date
 automatically whenever you make changes through the ACP - the manual buttons here are mainly
 a troubleshooting/recovery tool, needed after direct database edits, bulk imports, or to

@@ -77,6 +77,8 @@ $color-mode-type: data;
   // Darkened _lm variants here (see _variables.scss) - the sidebar's own
   // bright originals stay as-is since its background is dark in both themes.
   --section-color-contents: #{$section_color_contents_lm};
+  --section-color-snippets: #{$section_color_snippets_lm};
+  --section-color-orders: #{$section_color_orders_lm};
   --section-color-blog: #{$section_color_blog_lm};
   --section-color-shop: #{$section_color_shop_lm};
   --section-color-events: #{$section_color_events_lm};
@@ -140,6 +142,8 @@ $color-mode-type: data;
     // variants instead, see the :root block above) - these already have good
     // contrast against this theme's dark card surface.
     --section-color-contents: #{$section_color_contents};
+    --section-color-snippets: #{$section_color_snippets};
+    --section-color-orders: #{$section_color_orders};
     --section-color-blog: #{$section_color_blog};
     --section-color-shop: #{$section_color_shop};
     --section-color-events: #{$section_color_events};
@@ -233,6 +237,9 @@ a#dashboard {
   padding-left: 20px;
   padding-right: 20px;
   height: 57px;
+  // .main-scrollable is a flex column: on long pages the header would shrink
+  // and no longer line up with the logo area of the sidebar
+  flex-shrink: 0;
 }
 
 [data-bs-theme="dark"] {
@@ -279,7 +286,7 @@ a#dashboard {
 }
 
 .ph-snippets {
-  border-bottom: 1px solid rgba($section_color_contents,.5);
+  border-bottom: 1px solid rgba($section_color_snippets,.5);
 }
 
 .ph-blog {
@@ -328,7 +335,7 @@ a#dashboard {
   }
 
   h3 {
-    color: $headings-color;
+    color: var(--bs-heading-color);
     font-size: 18px;
     margin-bottom: 0;
     font-weight: 300;
@@ -614,8 +621,14 @@ textarea#textEditor2,
 .list-group-item {
   // Minimally darker than the surrounding widget surface (card/card-body) rather than an
   // identical match, so items still read as distinct from their container at a glance.
-  background-color: color-mix(in srgb, var(--bs-widget-bg) 93%, black);
+  // Only a small step in the light theme, darker tones read as dirty there.
+  --se-list-item-tint: 3%;
+  background-color: color-mix(in srgb, var(--bs-widget-bg), black var(--se-list-item-tint));
   border-color: var(--bs-input-border-color);
+}
+
+[data-bs-theme="dark"] .list-group-item {
+  --se-list-item-tint: 7%;
 }
 
 

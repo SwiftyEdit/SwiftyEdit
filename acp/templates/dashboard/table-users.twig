@@ -1,10 +1,34 @@
-<div class="list-group list-group-flush">
-    {% for user in get_user %}
-        <button type="submit" form="usersEditForm" class="list-group-item list-group-item-action" name="user_id" value="{{ user.user_id }}">
-            <span class="dash-row-title">{{ user.user_nick }}</span>
-            <span class="dash-row-meta">{{ user.user_registerdate_formatted }}</span>
-        </button>
-    {% endfor %}
+{#
+ # New users, rendered by the dashboard data-reader (action=list_user).
+ # The edit page only opens by POST, all rows share one hidden form.
+ #}
+<div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+        <thead>
+            <tr>
+                <th scope="col">{{ lang.label_name }}</th>
+                <th scope="col">{{ lang.label_mail }}</th>
+                <th scope="col" class="text-end">{{ lang.label_time_registerdate }}</th>
+            </tr>
+        </thead>
+        <tbody class="se-privacy-blur">
+            {% for user in get_user %}
+                <tr>
+                    <td>
+                        <button type="submit" form="usersEditForm" name="user_id" value="{{ user.user_id }}" class="dash-user">
+                            <span class="dash-user-mono" aria-hidden="true">{{ user.initials }}</span>
+                            <span class="dash-min-w-0">
+                                <span class="dash-row-title">{{ user.display_name ?: user.user_nick }}</span>
+                                {% if user.display_name %}<span class="dash-row-meta">{{ user.user_nick }}</span>{% endif %}
+                            </span>
+                        </button>
+                    </td>
+                    <td class="dash-user-mail">{% if user.user_mail %}<a href="mailto:{{ user.user_mail }}">{{ user.user_mail }}</a>{% endif %}</td>
+                    <td class="text-end text-nowrap">{{ user.user_registerdate_formatted }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 <form id="usersEditForm" action="/admin/users/edit/" method="post" class="d-none">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

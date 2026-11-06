@@ -1,30 +1,21 @@
-<table class="table table-sm">
-    <tr>
-        <td>Domain</td>
-        <td>{{ se_settings.cms_domain }}</td>
-    </tr>
-    <tr>
-        <td>SSL</td>
-        <td>{{ se_settings.cms_ssl_domain }}</td>
-    </tr>
-    <tr>
-        <td>Mail</td>
-        <td>{{ se_settings.mailer_adr }}</td>
-    </tr>
-    <tr>
-        <td>Mail Name</td>
-        <td>{{ se_settings.mailer_name }}</td>
-    </tr>
-    <tr>
-        <td>Server</td>
-        <td> {{ global.server_name }}</td>
-    </tr>
-    <tr>
-        <td>PHP</td>
-        <td>{{ php_version }}</td>
-    </tr>
-    <tr>
-        <td>Database</td>
-        <td>{{ database }}</td>
-    </tr>
-</table>
+{#
+ # System information, rendered by the dashboard data-reader (action=list_infos)
+ #}
+<dl class="dash-info-list se-privacy-blur">
+    <dt>Domain</dt>
+    <dd>{{ se_settings.cms_domain }}</dd>
+    <dt>SSL</dt>
+    <dd>{{ se_settings.cms_ssl_domain ?: lang.status_inactive }}</dd>
+    <dt>{{ lang.label_settings_mailer_name }}</dt>
+    <dd>{{ se_settings.mailer_name }}</dd>
+    <dt>{{ lang.label_settings_mailer_mail }}</dt>
+    <dd>{{ se_settings.mailer_adr }}</dd>
+    <dt>{{ lang.label_language }}</dt>
+    <dd>{{ languages }}</dd>
+    <dt>Server</dt>
+    <dd>{{ global.server_name }}</dd>
+    <dt>PHP</dt>
+    <dd>{{ php_version }}</dd>
+    <dt>{{ lang.nav_btn_database }}</dt>
+    <dd>{{ database }}</dd>
+</dl>

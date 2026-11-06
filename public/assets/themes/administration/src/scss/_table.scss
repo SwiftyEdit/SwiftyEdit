@@ -24,3 +24,14 @@
 .table-list tr:hover {
 	background-color: var(--bs-widget-bg-600);
 }
+
+// Bootstrap lightens hovered rows with the emphasis color, in dark mode they get darker instead
+[data-bs-theme="dark"] {
+	.table {
+		--bs-table-hover-bg: rgba(0, 0, 0, .25);
+	}
+
+	.list-group {
+		--bs-list-group-action-hover-bg: rgba(0, 0, 0, .25);
+	}
+}

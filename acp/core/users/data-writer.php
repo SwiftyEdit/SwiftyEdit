@@ -104,7 +104,7 @@ if(isset($_POST['save_user'])) {
 
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
-            record_log($_SESSION['user_nick'],"updated user id: $edit_user_id",5);
+            se_log_content('update', 'user', $edit_user_id, '');
 
             se_do_backend_hook('user.updated', [
                 'user_id' => $edit_user_id,

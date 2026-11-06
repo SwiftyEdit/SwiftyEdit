@@ -37,5 +37,6 @@ if (is_array($se_2fa_bypass) && strtotime((string) ($se_2fa_bypass['until'] ?? '
 // server's bytecode cache is just as server-wide/sensitive)
 echo $twig->render('dashboard/cards.twig', [
     'reader_uri' => $reader_uri,
-    'show_opcache' => se_hasPermission('drm_acp_sensitive_files')
+    'show_opcache' => se_hasPermission('drm_acp_sensitive_files'),
+    'can_view_log' => se_hasPermission('drm_acp_sensitive_files')
 ]);

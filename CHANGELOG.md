@@ -10,6 +10,15 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ## Unreleased
 
+- New backend dashboard: a 30-day activity grid per area with a history of the
+  edited items, including changes to users by an administrator, plugins,
+  "Alerts" (missing pages, CSRF errors, account locks, failed logins), new
+  users, system information with update check, caches and OPcache. The lists
+  of recent items are replaced by the history. The full log is available at
+  `/admin/dashboard/log/` (right: sensitive files)
+- New section colors in the backend, snippets get their own color. Headings use
+  a neutral color instead of the primary color. Hovered rows in tables and
+  lists get darker in dark mode instead of lighter
 - Log content changes in a structured way: `se_logs` gets the columns
   `action`, `object_type`, `object_id`, `object_key` and `object_label`.
   Pages, snippets, posts, products, events and media are logged with the new
@@ -17,7 +26,7 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   edits. `record_log()` stays unchanged for plugins, `se_log_event()` is new
 - Log failed logins and account locks
 - Keep log entries for 90 days instead of 30, independent of the number of
-  entries. The dashboard card escapes log entries on output
+  entries. Log entries are escaped on output
 - Log entries no longer contain changed mail addresses, deleting a user removes
   the name from the log
 

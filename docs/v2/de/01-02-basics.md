@@ -10,18 +10,33 @@ priority: 100
 
 Hier findest du auf einen Blick sämtliche Informationen zu deiner Internetseite.
 
-Auf der Linken Seite werden die neuesten Einträge aufgelistet.
-Du kannst direkt auf die einzelnen Einträge klicken, um diese zu bearbeiten.
-Außerdem kannst du direkt neue Einträge erstellen.
+Oben siehst du, was in den letzten 30 Tagen passiert ist. Das Raster hat eine Zeile je Bereich
+(Seiten, Snippets, Blog, Produkte, Veranstaltungen, Uploads, Bestellungen und Benutzer), aber nur,
+wenn es dort Aktivität gab. Mehrfaches Speichern desselben Inhalts an einem Tag zählt einmal.
+Bei den Benutzern zählen neue Konten und Änderungen durch einen Admin. Jede Zeile wird an ihrem stärksten Tag gemessen. Ein Klick auf einen Tag zeigt die Summen dieses Tages,
+ein Klick auf einen Bereich öffnet den Verlauf.
 
-Auf der rechten Seite findest Du ein Protokoll, aktuelle Warnungen und Informationen zur verwendeten Software.
+Der Verlauf listet jeden Inhalt pro Tag mit Titel, Typ, Anzahl der Speichervorgänge und letzter Uhrzeit.
+Ein Klick auf eine Zeile öffnet den Inhalt. Gelöschte Inhalte erscheinen ohne Link.
+
+Darunter findest du deine Plugins, unter „Meldungen“ alles, was deine Aufmerksamkeit braucht
+(zum Beispiel fehlende Seiten für Verwendungstypen),
+die neuesten Benutzer sowie Caches, Systeminformationen und OPcache.
+
+Mit dem Recht für sensible Dateien zeigt „Meldungen“ auch Hinweise aus dem Protokoll: CSRF-Fehler angemeldeter Benutzer und
+Kontosperren immer, CSRF-Fehler ohne Anmeldung ab 3 Treffern auf demselben Pfad in 7 Tagen (das kann auf ein fehlerhaftes
+Formular hindeuten) und falsche Logins ab 10 in 7 Tagen. Das Protokoll nimmt nur eine begrenzte Zahl solcher Einträge pro Stunde auf,
+die Zahlen sind deshalb Mindestwerte.
+
+Das vollständige Protokoll öffnest du über den Link „Aktivität“ in der Karte „System“. Dafür brauchst du
+das Recht für sensible Dateien. Einträge werden nach 90 Tagen gelöscht.
 
 Tipp: Falls du an einem Theme o.ä. arbeitest und die Option "Smarty Compile Check" nicht aktiviert hast,
 kannst du hier auch den Smarty Cache leeren.
 
 ### Cache {#cache}
 
-Die Karte „Cache“ im Dashboard listet alle Caches auf, die SwiftyEdit pflegt, mit ihrer
+Die Karte „System“ im Dashboard listet alle Caches auf, die SwiftyEdit pflegt, mit ihrer
 aktuellen Größe und einem Button zum Leeren (und bei manchen zusätzlich zum Neuaufbauen).
 Die meisten davon werden automatisch aktuell gehalten, sobald du Änderungen über die ACP
 vornimmst - die manuellen Buttons hier sind vor allem ein Werkzeug zur Fehlerbehebung bzw.

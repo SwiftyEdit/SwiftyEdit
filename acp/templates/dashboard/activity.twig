@@ -1,0 +1,196 @@
+{#
+ # Activity grid and history, rendered by the dashboard data-reader (action=activity).
+ # Tabs and filters are server state: every click reloads this fragment into
+ # #dashActivity with tab, day and type in the url (hx-target comes from there).
+ #}
+
+{% macro url(reader_uri, tab, day, type) %}{{ reader_uri }}?action=activity&tab={{ tab }}&day={{ day }}&type={{ type }}{% endmacro %}
+
+{% macro swatch(type) %}<span class="dash-swatch dash-type-{{ type }}" aria-hidden="true"></span>{% endmacro %}
+
+{% import _self as m %}
+
+{% set edits_text = (total_edits == 1 ? lang.dashboard_activity_edits_one : lang.dashboard_activity_edits)|e|replace({'{n}': '<span class="dash-hero-number">' ~ total_edits ~ '</span>'}) %}
+{% set orders_text = (total_orders == 1 ? lang.dashboard_activity_orders_one : lang.dashboard_activity_orders)|e|replace({'{n}': '<span class="dash-hero-number">' ~ total_orders ~ '</span>'}) %}
+
+<div class="dash-hero-layout">
+
+<div class="dash-hero-main">
+
+<div class="card-header">
+    <h2 class="dash-hero-title">
+        {% if total_orders > 0 %}
+            {{ lang.dashboard_activity_headline_orders|e|replace({'{edits}': edits_text, '{orders}': orders_text})|raw }}
+        {% else %}
+            {{ lang.dashboard_activity_headline|e|replace({'{edits}': edits_text})|raw }}
+        {% endif %}
+    </h2>
+    <ul class="nav nav-underline" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button id="dashTabOverview" class="nav-link{{ tab == 'overview' ? ' active' : '' }}" role="tab" aria-selected="{{ tab == 'overview' ? 'true' : 'false' }}"
+                    hx-get="{{ m.url(reader_uri, 'overview', day, type) }}">{{ lang.overview }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button id="dashTabHistory" class="nav-link{{ tab == 'history' ? ' active' : '' }}" role="tab" aria-selected="{{ tab == 'history' ? 'true' : 'false' }}"
+                    hx-get="{{ m.url(reader_uri, 'history', day, type) }}">{{ lang.dashboard_label_activity }}
+            </button>
+        </li>
+    </ul>
+</div>
+
+<div class="card-body" role="tabpanel" aria-labelledby="{{ tab == 'overview' ? 'dashTabOverview' : 'dashTabHistory' }}">
+
+{% if tab == 'overview' %}
+
+        <div>
+            {% if rows is empty %}
+                <p class="dash-empty-hint">{{ lang.msg_no_entries_found }}</p>
+            {% else %}
+                <div class="dash-grid-scroll">
+                    <div class="dash-grid">
+                        <div class="dash-grid-row dash-grid-head" aria-hidden="true">
+                            <span></span>
+                            {% for d in days %}
+                                <span class="{{ d.weekend ? 'is-weekend' : '' }}{{ d.key == day ? ' is-selected' : '' }}">
+                                    {% if d.month %}<span class="dash-grid-month">{{ d.month }}</span>{% endif %}{{ d.num }}
+                                </span>
+                            {% endfor %}
+                            <span class="text-end">{{ lang.total }}</span>
+                        </div>
+                        {% set events_started = false %}
+                        {% for row in rows %}
+                            {% set first_event = row.group == 'event' and not events_started and not loop.first %}
+                            {% if row.group == 'event' %}{% set events_started = true %}{% endif %}
+                            <div class="dash-grid-row dash-type-{{ row.type }}{{ first_event ? ' dash-grid-row-gap' : '' }}" role="group" aria-label="{{ row.label }}">
+                                <button class="dash-grid-label" title="{{ row.label }}"
+                                        hx-get="{{ m.url(reader_uri, 'history', day, row.type) }}">
+                                    {{ m.swatch(row.type) }}<span class="dash-grid-label-text">{{ row.label }}</span>
+                                </button>
+                                {% for cell in row.cells %}
+                                    <button id="dashCell-{{ row.type }}-{{ cell.day }}"
+                                            class="dash-cell dash-level-{{ cell.level }}{{ cell.day == day ? ' is-selected' : (day ? ' is-dimmed' : '') }}"
+                                            title="{{ cell.label }}" aria-label="{{ cell.label }}" aria-pressed="{{ cell.day == day ? 'true' : 'false' }}"
+                                            hx-get="{{ m.url(reader_uri, 'overview', cell.day == day ? '' : cell.day, type) }}"></button>
+                                {% endfor %}
+                                <span class="dash-grid-sum">{{ row.sum|number_format(0, ',', '.') }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="dash-grid-note">
+                    <span>{{ lang.dashboard_activity_note }}</span>
+                    <span class="dash-grid-scale" aria-hidden="true">
+                        {% for level in 0..4 %}<span class="dash-cell dash-scale dash-level-{{ level }}"></span>{% endfor %}
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+
+
+{% else %}
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+        <div class="d-flex flex-wrap gap-2" role="group" aria-label="{{ lang.dashboard_label_activity }}">
+            <button class="chip{{ type == 'all' ? ' active' : '' }}" aria-pressed="{{ type == 'all' ? 'true' : 'false' }}"
+                    hx-get="{{ m.url(reader_uri, 'history', day, 'all') }}">{{ lang.btn_all }}</button>
+            {% for row in rows %}
+                <button class="chip{{ type == row.type ? ' active' : '' }}" aria-pressed="{{ type == row.type ? 'true' : 'false' }}"
+                        hx-get="{{ m.url(reader_uri, 'history', day, row.type) }}">{{ m.swatch(row.type) }}{{ row.label }}</button>
+            {% endfor %}
+            {% if day %}
+                <button class="chip active" aria-label="{{ day_label }}"
+                        hx-get="{{ m.url(reader_uri, 'history', '', type) }}">{{ day_label }} {{ icon.x|raw }}</button>
+            {% endif %}
+        </div>
+        {% if open_all_url %}
+            <a href="{{ open_all_url }}" class="btn btn-default btn-sm">{{ lang.overview }} {{ icon.arrow_right|raw }}</a>
+        {% endif %}
+    </div>
+
+    <div class="dash-history">
+        {% if groups is empty %}
+            <p class="dash-empty-hint">{{ lang.msg_no_entries_found }}</p>
+        {% endif %}
+        {% for group in groups %}
+            <h3 class="dash-history-day">{{ group.label }}</h3>
+            <div class="list-group list-group-flush">
+                {% for item in group.items %}
+                    {% set row %}
+                        <span class="dash-history-time">{{ item.time }}</span>
+                        <span class="dash-history-type">{{ m.swatch(item.type) }}{{ item.type_label }}</span>
+                        <span class="dash-history-source">{{ item.source }}</span>
+                        <span class="dash-history-title dash-min-w-0">
+                            {% if item.key %}<code class="dash-row-tag">{{ item.key }}</code>{% endif %}
+                            <span class="dash-row-title">{{ item.title }}</span>
+                        </span>
+                        {% if item.note %}<span class="dash-history-note">{{ item.note }}</span>{% endif %}
+                    {% endset %}
+                    {% if item.link %}
+                        <a href="{{ item.link }}" class="list-group-item list-group-item-action dash-history-row se-privacy-blur">{{ row }}</a>
+                    {% elseif item.post_user %}
+                        <button type="submit" form="dashEditUser" name="user_id" value="{{ item.post_user }}" class="list-group-item list-group-item-action dash-history-row se-privacy-blur">{{ row }}</button>
+                    {% elseif item.post_file %}
+                        <button type="submit" form="dashEditMedia" name="file" value="{{ item.post_file }}" class="list-group-item list-group-item-action dash-history-row se-privacy-blur">{{ row }}</button>
+                    {% else %}
+                        <div class="list-group-item dash-history-row se-privacy-blur">{{ row }}</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% if limited %}
+            <p class="dash-row-meta mt-2">{{ lang.dashboard_activity_limited|replace({'{n}': limit}) }}</p>
+        {% endif %}
+    </div>
+
+    {# users and media files only open by POST, see se_dashboard_item_link() #}
+    <form id="dashEditUser" action="/admin/users/edit/" method="post" class="d-none"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"></form>
+    <form id="dashEditMedia" action="/admin/uploads/edit/" method="post" class="d-none"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"></form>
+
+{% endif %}
+
+</div>
+
+</div>
+
+        <aside class="dash-activity-detail">
+            <h3 class="h6">{{ day ? day_label : lang.dashboard_activity_last_30_days }}</h3>
+            {% if day %}
+                <div class="d-flex gap-2 mb-3">
+                    {% if tab == 'overview' %}<button class="btn btn-default btn-sm" hx-get="{{ m.url(reader_uri, 'history', day, 'all') }}">{{ lang.dashboard_label_activity }}</button>{% endif %}
+                    <button class="btn btn-default btn-sm text-capitalize" hx-get="{{ m.url(reader_uri, tab, '', type) }}">{{ lang.button_back }}</button>
+                </div>
+            {% endif %}
+            <div class="dash-detail-summary">
+                <span class="dash-detail-total">{{ detail_total|number_format(0, ',', '.') }}</span>
+                <span class="dash-detail-unit">{{ lang.dashboard_activity_edited_items }}</span>
+            </div>
+
+            {% if detail_total > 0 %}
+                <div class="dash-detail-bar" aria-hidden="true">
+                    {% for row in detail %}
+                        {% if row.group == 'content' %}
+                            <span class="dash-type-{{ row.type }}" style="flex: {{ row.n }} 1 0"></span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <ul class="dash-detail-list">
+                {% set events_started = false %}
+                {% for row in detail %}
+                    {% set first_event = row.group == 'event' and not events_started and not loop.first %}
+                    {% if row.group == 'event' %}{% set events_started = true %}{% endif %}
+                    <li class="{{ first_event ? 'dash-detail-gap' : '' }}">
+                        {{ m.swatch(row.type) }}
+                        <a href="{{ row.url }}" class="dash-detail-label">{{ row.label }}</a>
+                        <span class="dash-detail-n">{{ row.n|number_format(0, ',', '.') }}</span>
+                        <span class="dash-detail-percent">{% if row.percent is not null %}{{ row.percent }} %{% endif %}</span>
+                        <span class="dash-detail-action">
+                            {% if row.new_url %}<a href="{{ row.new_url }}" class="btn btn-default btn-sm" title="{{ row.new_text }}" aria-label="{{ row.label }}: {{ row.new_text }}">{{ attribute(icon, row.new_icon)|raw }}</a>{% endif %}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+</div>

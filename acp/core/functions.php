@@ -450,65 +450,6 @@ function se_cleanup_logs(int $days = 90): void {
 }
 
 /**
- * show log entries
- */
-
-function se_show_log($limit=10) {
-
-	global $db_content;
-	global $lang;
-	$logs = '';
-
-	$result = $db_content->select("se_logs", "*", [
-		"ORDER" => ["id" => "DESC"],
-        "LIMIT" => $limit
-	]);
-
-	$cnt_result = count($result);
-
-    if($cnt_result > 0) {
-
-        // Same row shape as the dashboard's other cards (title line, meta
-        // line below) instead of the old 3-column table, so the Activity
-        // card reads consistently with the rest of the grid.
-        $list = '<div class="list-group list-group-flush">';
-
-        for ($i = 0; $i < $cnt_result; $i++) {
-
-            $time = date("H:i:s", $result[$i]['time']);
-            $date = date("d.m.Y", $result[$i]['time']);
-            $log_priority = 'log_priority' . $result[$i]['priority'];
-
-            // entries without an action come from record_log() and may contain
-            // HTML or entities, so reduce them to plain text before escaping
-            $log_entry = (string) $result[$i]['entry'];
-            if(empty($result[$i]['action'])) {
-                $log_entry = html_entity_decode(strip_tags($log_entry), ENT_QUOTES, 'UTF-8');
-            }
-
-            $list .= '<div class="list-group-item d-flex align-items-center gap-2 se-privacy-blur">';
-            $list .= '<span class="priority-indicator ' . $log_priority . ' flex-shrink-0" title="' . $result[$i]['priority'] . '"></span>';
-            $list .= '<span class="dash-min-w-0">';
-            $list .= '<span class="dash-row-title">' . htmlspecialchars($result[$i]['source'] . ' - ' . $log_entry, ENT_QUOTES, 'UTF-8') . '</span>';
-            $list .= '<span class="dash-row-meta">' . $date . ' ' . $time . '</span>';
-            $list .= '</span>';
-            $list .= '</div>';
-
-        }
-
-        $list .= '</div>';
-
-        $logs .= $list;
-
-    } else {
-        $logs .= '<div class="dash-empty-hint">'.$lang['msg_info_no_data_so_far'].'</div>';
-	}
-
-    return $logs;
-}
-
-
-/**
  * add new item to the feeds table
  */
 

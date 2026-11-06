@@ -1,0 +1,47 @@
+{#
+ # List of the log page, rendered by the dashboard data-reader (action=log)
+ #}
+<div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="{{ lang.dashboard_label_activity }}" hx-target="#dashLogList" hx-swap="innerHTML">
+    {% for key, label in {'all': lang.btn_all, 'content': lang.label_content, 'security': lang.dashboard_log_filter_security} %}
+        <button class="chip{{ filter == key ? ' active' : '' }}" aria-pressed="{{ filter == key ? 'true' : 'false' }}"
+                hx-get="{{ reader_uri }}?action=log&filter={{ key }}">{{ label }}</button>
+    {% endfor %}
+</div>
+
+{% if entries is empty %}
+    <div class="dash-empty-hint">{{ lang.msg_no_entries_found }}</div>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th scope="col" class="dash-log-priority"></th>
+                    <th scope="col">{{ lang.label_date }}</th>
+                    <th scope="col">{{ lang.label_user }}</th>
+                    <th scope="col">{{ lang.label_content }}</th>
+                </tr>
+            </thead>
+            <tbody class="se-privacy-blur">
+                {% for entry in entries %}
+                    <tr>
+                        <td><span class="priority-indicator log_priority{{ entry.priority }}" title="{{ entry.priority }}"></span></td>
+                        <td class="text-nowrap">{{ entry.time }}</td>
+                        <td>{{ entry.source }}</td>
+                        <td>{{ entry.text }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+{% if page > 0 or has_next %}
+    <div class="d-flex gap-2" hx-target="#dashLogList" hx-swap="innerHTML">
+        {% if page > 0 %}
+            <button class="btn btn-default btn-sm" hx-get="{{ reader_uri }}?action=log&filter={{ filter }}&p={{ page - 1 }}">&laquo;</button>
+        {% endif %}
+        {% if has_next %}
+            <button class="btn btn-default btn-sm" hx-get="{{ reader_uri }}?action=log&filter={{ filter }}&p={{ page + 1 }}">&raquo;</button>
+        {% endif %}
+    </div>
+{% endif %}
