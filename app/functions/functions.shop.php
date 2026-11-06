@@ -2104,6 +2104,63 @@ function se_order_contains_product($order, $product_id) {
 }
 
 /**
+ * validate a submitted item position (1-based) against the given order row.
+ * Only digits are accepted, so the result is safe to use in a file name.
+ *
+ * @param array $order an order row (must contain order_products JSON)
+ * @param mixed $pos the submitted position
+ * @return int|null the position, or null if this order has no such item
+ */
+function se_get_order_item_position($order, $pos) {
+
+	if(!is_string($pos) || !ctype_digit($pos)) {
+		return null;
+	}
+
+	$items = json_decode($order['order_products'] ?? '', true);
+	$pos = (int) $pos;
+	if(!is_array($items) || $pos < 1 || $pos > count($items)) {
+		return null;
+	}
+
+	return $pos;
+}
+
+/**
+ * check a customer's upload for an order item: the upload itself, the file
+ * extension and the actual file content. Only real JPEG and PNG images pass.
+ *
+ * @param mixed $file the entry from $_FILES
+ * @param array $allowed_extensions $se_upload_frontend_types from config.php
+ * @return string|null the lowercase file extension, or null if the upload is rejected
+ */
+function se_get_order_upload_extension($file, array $allowed_extensions) {
+
+	$image_types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png'];
+
+	// a nested name like upload_file[] delivers an array here and fails this check
+	if(!is_array($file) || ($file['error'] ?? null) !== UPLOAD_ERR_OK) {
+		return null;
+	}
+
+	$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+	if(!in_array($extension, $allowed_extensions, true) || !isset($image_types[$extension])) {
+		return null;
+	}
+
+	$finfo = new finfo(FILEINFO_MIME_TYPE);
+	if($finfo->file($file['tmp_name']) !== $image_types[$extension]) {
+		return null;
+	}
+
+	if(getimagesize($file['tmp_name']) === false) {
+		return null;
+	}
+
+	return $extension;
+}
+
+/**
  * @param array $data
  * @param string $prefix
  * @return bool

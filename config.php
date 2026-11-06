@@ -20,7 +20,7 @@ $se_upload_img_types = array('gif','jpg','jpe','jpeg','png','ico','webp');
 /* allowed file uploads at the backend */
 $se_upload_file_types = array('pdf','doc','docx','ppt','pptx','xls','xlsx','mp3','mp4','m4a','wav','mpg','mov','avi','epub','ogg');
 
-/* allowed uploads at the frontend */
+/* allowed uploads at the frontend - only jpg, jpeg and png, other types are rejected by a content check */
 $se_upload_frontend_types = array('jpg','jpeg','png');
 
 /* page types */

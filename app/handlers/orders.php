@@ -78,14 +78,22 @@ if(isset($_POST['dl_p_file']) OR isset($_POST['dl_p_file_ext'])) {
 if(isset($_POST['download_user_file'])) {
 
     // authorize: the customer must own this order
-    if(se_get_owned_order($_POST['order'] ?? '', (int) ($_SESSION['user_id'] ?? 0)) === null) {
+    $this_order = se_get_owned_order($_POST['order'] ?? '', (int) ($_SESSION['user_id'] ?? 0));
+    if($this_order === null) {
         http_response_code(403);
         exit;
     }
 
+    // the position must exist in this order, paths are built from checked values only
+    $this_pos = se_get_order_item_position($this_order, $_POST['pos'] ?? '');
+    if($this_pos === null) {
+        http_response_code(400);
+        exit;
+    }
+
     $target_dir = SE_CONTENT.'/uploads/';
-    // confine the lookup prefix to the uploads directory (no traversal via order/pos)
-    $check_prefix = se_resolve_within($target_dir, $_POST['order'].'-'.$_POST['pos'].'-');
+    // confine the lookup prefix to the uploads directory
+    $check_prefix = se_resolve_within($target_dir, $this_order['order_nbr'].'-'.$this_pos.'-');
     if($check_prefix === false) {
         http_response_code(400);
         exit;
@@ -97,7 +105,7 @@ if(isset($_POST['download_user_file'])) {
         $path_parts = pathinfo($download_file);
         $extension = strtolower($path_parts['extension']);
 
-        $set_filename = $_POST['order'].'-'.$_POST['pos'].'.'.$extension;
+        $set_filename = $this_order['order_nbr'].'-'.$this_pos.'.'.$extension;
         if(is_file($download_file)) {
             header('Content-Description: File Transfer');
             header('Content-Type: ' . mime_content_type($download_file));
@@ -118,8 +126,16 @@ if(isset($_POST['download_user_file'])) {
 if(isset($_POST['startUpload'])) {
 
     // authorize: the customer must own this order
-    if(se_get_owned_order($_POST['order'] ?? '', (int) ($_SESSION['user_id'] ?? 0)) === null) {
+    $this_order = se_get_owned_order($_POST['order'] ?? '', (int) ($_SESSION['user_id'] ?? 0));
+    if($this_order === null) {
         http_response_code(403);
+        exit;
+    }
+
+    // the position must exist in this order, paths are built from checked values only
+    $this_pos = se_get_order_item_position($this_order, $_POST['pos'] ?? '');
+    if($this_pos === null) {
+        http_response_code(400);
         exit;
     }
 
@@ -127,11 +143,8 @@ if(isset($_POST['startUpload'])) {
     $upload_status = '';
     $target_dir = SE_CONTENT.'/uploads/';
 
-    $get_name = $_FILES["upload_file"]["name"];
-    $path_parts = pathinfo($get_name);
-    $extension = strtolower($path_parts['extension']);
-
-    if(!in_array("$extension",$se_upload_frontend_types)) {
+    $extension = se_get_order_upload_extension($_FILES['upload_file'] ?? null, $se_upload_frontend_types);
+    if($extension === null) {
         $start_upload = false;
     }
 
@@ -140,27 +153,28 @@ if(isset($_POST['startUpload'])) {
      * filename is order number + item position + time + extension
      */
 
-    // confine the lookup prefix to the uploads directory (no traversal via order/pos)
-    $check_prefix = se_resolve_within($target_dir, $_POST['order'].'-'.$_POST['pos'].'-');
-    if($check_prefix === false) {
-        $start_upload = false;
-    } else {
-        $checkfile = glob($check_prefix.'*');
-        if(is_array($checkfile) && !empty($checkfile) && $checkfile[0] != '') {
-            // there is already an upload for this, delete it first
-            unlink($checkfile[0]);
-        }
-    }
-
-    $filename = $_POST['order'].'-'.$_POST['pos'].'-'.time().'.'.$extension;
-    // confine the upload target so order/pos cannot write outside the uploads dir
+    // confine the lookup prefix to the uploads directory
+    $check_prefix = se_resolve_within($target_dir, $this_order['order_nbr'].'-'.$this_pos.'-');
+    $filename = $this_order['order_nbr'].'-'.$this_pos.'-'.time().'.'.$extension;
+    // confine the upload target as well
     $target_file = se_resolve_within($target_dir, $filename);
-    if($target_file === false) {
+    if($check_prefix === false || $target_file === false) {
         $start_upload = false;
     }
     if($start_upload == true) {
+        if(!is_dir($target_dir)) {
+            mkdir($target_dir, SE_DIR_PERMISSIONS, true);
+        }
+        // find a previous upload before the new file arrives, but keep it until the new one is stored
+        $previous_uploads = glob($check_prefix.'*');
         if (move_uploaded_file($_FILES["upload_file"]["tmp_name"], $target_file)) {
             $upload_status = 'success';
+            foreach((is_array($previous_uploads) ? $previous_uploads : []) as $previous_upload) {
+                // a second upload within the same second has replaced the file already
+                if($previous_upload !== $target_file) {
+                    unlink($previous_upload);
+                }
+            }
         } else {
             $upload_status = 'failed';
         }
