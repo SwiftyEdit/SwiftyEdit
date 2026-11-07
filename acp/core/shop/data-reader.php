@@ -599,7 +599,9 @@ if(isset($_REQUEST['show_order'])) {
     $get_order = se_get_order_details((int) $_REQUEST['show_order']) ?? [];
 
     $products = [];
+    $items_gross = 0.0;
     foreach(json_decode((string) ($get_order['order_products'] ?? ''), true) ?: [] as $order_product) {
+        $items_gross += (float) ($order_product['price_gross_raw'] ?? 0);
         $products[] = [
             'amount' => $order_product['amount'] ?? '',
             'title' => $decode($order_product['title'] ?? ''),
@@ -612,13 +614,28 @@ if(isset($_REQUEST['show_order'])) {
         ];
     }
 
+    /**
+     * only the net shipping costs are stored, the tax on them is split across
+     * the tax rates of the items at checkout and only ends up in the total
+     * (see app/handlers/checkout.php) - so the gross costs are what remains of
+     * the total. Payment costs are added to the total without tax.
+     */
+    $order_total = (float) ($get_order['order_price_total'] ?? 0);
+    $payment_costs = (float) se_reformat_payment_costs((string) ($get_order['order_payment_costs'] ?? ''));
+    $shipping_net = (float) ($get_order['order_shipping_costs'] ?? 0);
+    $shipping_gross = max($shipping_net, round($order_total - $items_gross - $payment_costs, 2));
+    if($shipping_net <= 0) {
+        $shipping_gross = 0.0;
+    }
+
     echo $twig->render('shop/order-details.twig', [
         'order' => [
             'nbr' => $get_order['order_nbr'] ?? '',
             'time' => date('d.m.Y H:i', (int) ($get_order['order_time'] ?? 0)),
             'currency' => $get_order['order_currency'] ?? '',
             'price_total' => se_post_print_currency($get_order['order_price_total'] ?? 0),
-            'shipping_costs' => se_post_print_currency($get_order['order_shipping_costs'] ?? 0),
+            'shipping_costs' => se_post_print_currency($shipping_gross),
+            'payment_costs' => $payment_costs > 0 ? se_post_print_currency($payment_costs) : '',
             'payment_status' => (string) ($get_order['order_status_payment'] ?? ''),
             'address' => $order_address_lines((string) ($get_order['order_invoice_address'] ?? '')),
             'products' => $products

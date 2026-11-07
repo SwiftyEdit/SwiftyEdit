@@ -48,7 +48,7 @@
                             {% endif %}
                         </ul>
                     </div>
-                    <button hx-get="/admin-xhr/shop/read/?show_order={{ order.id }}" hx-target="#order-modal" data-bs-toggle="modal" data-bs-target="#order-modal" class="btn btn-default">{{ icon.info_circle|raw }}</button>
+                    <button hx-get="/admin-xhr/shop/read/?show_order={{ order.id }}" hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" class="btn btn-default">{{ icon.info_circle|raw }}</button>
                 </div>
             </td>
         </tr>

@@ -50,6 +50,12 @@
                         <td colspan="4">{{ lang.label_shipping }}</td>
                         <td class="text-end">{{ order.shipping_costs|raw }}</td>
                     </tr>
+                    {% if order.payment_costs %}
+                        <tr>
+                            <td colspan="4">{{ lang.label_payment }}</td>
+                            <td class="text-end">{{ order.payment_costs|raw }}</td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td colspan="4">{{ lang.price_total }}</td>
                         <td class="text-end">{{ order.price_total|raw }}</td>
