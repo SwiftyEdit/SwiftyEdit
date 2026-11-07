@@ -62,6 +62,14 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   wird einer vergessen. Gilt für Frontend und Backend, zusätzlich zur Bremse pro IP-Adresse
   (10 Fehlversuche in 15 Minuten). Anderer Wert in `data/config.php`, z. B.
   `$se_failed_logins_limit = 10;`, abschalten mit `$se_failed_logins_limit = null;`.
+* __Passwort-Regeln__ (`$se_password_min_length` in `config.php`) - neue Passwörter brauchen
+  mindestens 10 Zeichen (Standard) und höchstens 72 Byte, dürfen nicht auf einer kurzen Liste
+  häufiger Passwörter stehen oder aus weniger als 4 verschiedenen Zeichen bestehen und nicht dem
+  Benutzernamen oder der E-Mail-Adresse entsprechen. Regeln für Ziffern oder Sonderzeichen gibt
+  es bewusst nicht. `se_password_check()` prüft das überall, wo ein Passwort gesetzt wird
+  (Registrierung, Reset, Profil, Backend, Installer), aber nie beim Login - bestehende Passwörter
+  funktionieren also weiter. Andere Länge in `data/config.php`, z. B.
+  `$se_password_min_length = 12;`.
 * __Sitzungsdauer__ (`$se_session_max_lifetime` in `config.php`) - jede Anmeldung endet nach
   dieser Anzahl Sekunden, unabhängig von Aktivität (Standard 12 Stunden, `0` = keine Grenze).
   Unabhängig davon beenden ein neues Passwort, entzogene Rechte oder ein deaktiviertes Konto alle

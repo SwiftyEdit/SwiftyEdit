@@ -60,6 +60,13 @@ A few more small things worth knowing:
   frontend and backend, in addition to the limit per IP address (10 failed attempts in 15
   minutes). Set another value in `data/config.php`, e.g. `$se_failed_logins_limit = 10;`, or
   switch it off with `$se_failed_logins_limit = null;`.
+* __Password rules__ (`$se_password_min_length` in `config.php`) - new passwords need at least
+  10 characters (default) and at most 72 bytes, must not be on a short list of common passwords
+  or use fewer than 4 different characters, and must not equal the username or e-mail address.
+  There are no rules for digits or special characters on purpose. `se_password_check()` applies
+  them wherever a password is set (registration, reset, profile, backend, installer), never at
+  login, so existing passwords keep working. Set another length in `data/config.php`, e.g.
+  `$se_password_min_length = 12;`.
 * __Session lifetime__ (`$se_session_max_lifetime` in `config.php`) - every login ends after
   this many seconds, regardless of activity (default 12 hours, `0` = no limit). Independently,
   a new password, withdrawn rights or a deactivated account end all other sessions of that

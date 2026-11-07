@@ -16,8 +16,19 @@
         <div class="card-body">
             <div class="mb-3">
                 <label for="newPsw">{$label_psw}</label>
-                <input type="password" class="form-control" name="new_psw" id="newPsw" autocomplete="new-password" required>
+                <input type="password"
+                       class="form-control"
+                       name="new_psw"
+                       id="newPsw"
+                       autocomplete="new-password"
+                       hx-post="/xhr/se/checks/?check=psw_rules"
+                       hx-params="new_psw,csrf_token"
+                       hx-trigger="keyup changed delay:500ms"
+                       hx-target="#response-new-psw"
+                       required>
+                <div class="form-text">{$psw_requirements}</div>
             </div>
+            <div id="response-new-psw"></div>
             <div class="mb-3">
                 <label for="newPswRepeat">{$label_psw_repeat}</label>
                 <input type="password" class="form-control" name="new_psw_repeat" id="newPswRepeat" autocomplete="new-password" required>

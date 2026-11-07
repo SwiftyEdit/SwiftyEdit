@@ -618,6 +618,7 @@
   "msg.error.not_writable": "The File/Directory is not writable",
   "msg.error.missing_setting": "A system setting is missing: {setting}",
   "msg.error.psw_not_match": "The passwords do not match",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "The password has been changed",
   "msg.error.mandatory": "Not all mandatory information has been provided",
   "msg.error.deleting_sub_pages": "You cannot delete pages with subpages. To do this, you must first delete all subpages contained.",

@@ -46,6 +46,7 @@ if (!is_array($theme_values)) {
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
 }
+$smarty->assign('psw_requirements', se_password_requirements_text($lang));
 
 foreach($se_settings as $key => $val) {
     $smarty->assign("prefs_$key", $val);

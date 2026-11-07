@@ -300,6 +300,7 @@ $input_password_new = [
     "input_name" => "user_psw_new",
     "input_value" => '',
     "label" => $lang['label_psw'],
+    "form_text" => se_password_requirements_text($lang),
     "type" => "password"
 ];
 

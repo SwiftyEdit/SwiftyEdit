@@ -61,7 +61,12 @@ if(isset($_POST['save_user'])) {
     $user_psw_reconfirmation = is_string($_POST['user_psw_reconfirmation'] ?? null) ? $_POST['user_psw_reconfirmation'] : '';
 
     if($user_psw_new != "") {
-        if($user_psw_new === $user_psw_reconfirmation) {
+        $psw_errors = se_password_check($user_psw_new, [$columns['user_nick'], $columns['user_mail']]);
+        if($user_psw_new !== $user_psw_reconfirmation) {
+            echo '<div class="alert alert-warning">'.$lang['msg_error_psw_not_saved'].' '.$lang['msg_error_psw_not_match'].'</div>';
+        } elseif($psw_errors !== []) {
+            echo '<div class="alert alert-warning">'.$lang['msg_error_psw_not_saved'].'<br>'.se_password_error_text($psw_errors, $lang).'</div>';
+        } else {
             $user_psw = password_hash($user_psw_new, PASSWORD_DEFAULT);
             $columns["user_psw_hash"] = $user_psw;
             $set_psw = 'true';

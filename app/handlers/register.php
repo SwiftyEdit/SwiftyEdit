@@ -90,6 +90,12 @@ if(!empty($_POST['send_registerform'])) {
         $form[$field] = is_string($value) ? strip_tags(substr($value, 0, 200)) : '';
     }
 
+    // passwords stay exactly as entered - they are only hashed, never printed,
+    // and stripping them would store a different password than the login expects
+    foreach(['psw', 'psw_repeat'] as $field) {
+        $form[$field] = is_string($_POST[$field] ?? null) ? $_POST[$field] : '';
+    }
+
     // check required fields from settings
     if($se_settings['required_fields_registration'] != '') {
         $required_fields = (array) json_decode($se_settings['required_fields_registration']);
@@ -126,9 +132,18 @@ if(!empty($_POST['send_registerform'])) {
     }
 
     // Validation: Password and password repeat
-    if($form['psw'] != $form['psw_repeat']) {
+    if($form['psw'] !== $form['psw_repeat']) {
         $send_data = 'false';
         $register_message .= $lang['msg_register_pswrepeat_error'].'<br>';
+    }
+
+    // Validation: Password rules (an empty password is already reported above)
+    if($form['psw'] !== '') {
+        $psw_errors = se_password_check($form['psw'], [$form['username'], $form['mail']]);
+        if($psw_errors !== []) {
+            $send_data = 'false';
+            $register_message .= se_password_error_text($psw_errors, $lang).'<br>';
+        }
     }
 
     // Validation: Username format (no special chars)

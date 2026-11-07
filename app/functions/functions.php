@@ -15,6 +15,7 @@ include_once 'functions.sanitizer.php';
 include_once 'functions.posts.php';
 include_once 'functions.shop.php';
 include_once 'functions.wishlist.php';
+include_once 'functions.password.php';
 include_once 'functions.user.php';
 include_once 'functions.user_delete.php';
 include_once 'functions.twofactor.php';

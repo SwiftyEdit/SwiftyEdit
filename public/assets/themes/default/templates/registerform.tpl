@@ -93,8 +93,20 @@
 
 	<div class="mb-3">
 		<label for="inputPass1">{$lang_label_psw}</label>
-		<input type="password" class="form-control" name="psw" id="inputPass1" required>
-	</div>	
+		<input type="password"
+               class="form-control"
+               name="psw"
+               id="inputPass1"
+               autocomplete="new-password"
+               hx-post="/xhr/se/checks/?check=psw_rules"
+               hx-params="psw,username,mail,csrf_token"
+               hx-trigger="keyup changed delay:500ms"
+               hx-target="#response-psw"
+               required>
+		<div class="form-text">{$psw_requirements}</div>
+	</div>
+
+    <div id="response-psw"></div>
 
 	<div class="mb-3">
 		<label for="inputPass2">{$lang_label_psw_repeat}</label>

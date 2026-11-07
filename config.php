@@ -35,6 +35,13 @@ $se_page_types = array('normal', 'register', 'profile', 'search', 'password', '4
  */
 $se_failed_logins_limit = 5;
 
+/* Minimum number of characters for new passwords. Existing passwords are not
+ * affected, they are only checked when a password is set. To change it, add
+ * to SE_CONTENT/config.php e.g.:
+ * $se_password_min_length = 12;
+ */
+$se_password_min_length = 10;
+
 /* define Folder structure */
 const SE_ROOT = __DIR__ . DIRECTORY_SEPARATOR;
 const SE_CONTENT = SE_ROOT . "data";

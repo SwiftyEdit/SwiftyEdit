@@ -43,11 +43,14 @@ if($token !== '') {
 		$new_psw = is_string($_POST['new_psw'] ?? null) ? $_POST['new_psw'] : '';
 		$new_psw_repeat = is_string($_POST['new_psw_repeat'] ?? null) ? $_POST['new_psw_repeat'] : '';
 
-		if(trim($new_psw) === '' || $new_psw !== $new_psw_repeat) {
+		$psw_errors = se_password_check($new_psw, [$userdata_array['user_nick'] ?? '', $userdata_array['user_mail'] ?? '']);
+
+		if($new_psw !== $new_psw_repeat || $psw_errors !== []) {
 
 			// show the form again
 			$reset_token = $token;
-			$smarty->assign("alert_text", $lang['msg_register_pswrepeat_error']);
+			$alert_text = $new_psw !== $new_psw_repeat ? $lang['msg_register_pswrepeat_error'] : se_password_error_text($psw_errors, $lang);
+			$smarty->assign("alert_text", $alert_text);
 			$alert_reset = $smarty->fetch('alert/alert-danger.tpl');
 
 		} else {

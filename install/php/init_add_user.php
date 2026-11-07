@@ -9,6 +9,16 @@ if(!defined('INSTALLER')) {
 	die("PERMISSION DENIED!");
 }
 
+include_once SE_ROOT.'app/functions/functions.password.php';
+
+// the password messages live in frontend.json, which the installer doesn't
+// load otherwise - English is the fallback until they are translated
+$psw_lang = array_merge(
+	(array) json_decode((string) file_get_contents(SE_ROOT.'languages/en/frontend.json'), true),
+	(array) json_decode((string) file_get_contents(SE_ROOT.'languages/'.basename($_SESSION['lang'] ?? 'en').'/frontend.json'), true)
+);
+$psw_error_text = '';
+
 $checked_user_data = array();
 
 if(!isset($_SESSION['temp_username'])) {
@@ -33,10 +43,13 @@ if(isset($_POST['check_user_data'])) {
 	} else {
 		$checked_user_data[] = 'error';
 	}
-	if(strlen((string) ($_POST['psw'] ?? '')) >= 8) {
-		$_SESSION['temp_userpsw'] = $_POST['psw'];
+	$new_psw = is_string($_POST['psw'] ?? null) ? $_POST['psw'] : '';
+	$psw_errors = se_password_check($new_psw, [$_SESSION['temp_username'], $_SESSION['temp_usermail']]);
+	if($psw_errors === []) {
+		$_SESSION['temp_userpsw'] = $new_psw;
 	} else {
 		$checked_user_data[] = 'error';
+		$psw_error_text = se_password_error_text($psw_errors, $psw_lang);
 	}
 	
 }
@@ -61,7 +74,10 @@ echo '</div>';
 echo '<div class="mb-2">';
 echo '<label class="form-label">'.$lang['password'].'</label>';
 echo '<input type="password" class="form-control" name="psw" value="'.htmlspecialchars($_SESSION['temp_userpsw'], ENT_QUOTES).'">';
-echo '<div class="form-text">'.$lang['password_help_text'].'</div>';
+echo '<div class="form-text">'.se_password_requirements_text($psw_lang).'</div>';
+if($psw_error_text !== '') {
+	echo '<div class="alert alert-danger mt-2">'.$psw_error_text.'</div>';
+}
 echo '</div>';
 
 echo '</div>';
