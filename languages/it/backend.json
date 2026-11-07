@@ -556,6 +556,7 @@
   "msg.error.not_writable": "Il file/directory non è scrivibile",
   "msg.error.missing_setting": "Manca un'impostazione di sistema: {setting}",
   "msg.error.psw_not_match": "Le password non corrispondono",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "La password è stata cambiata",
   "msg.error.mandatory": "Non tutte le informazioni obbligatorie sono state fornite",
   "msg.error.deleting_sub_pages": "Non puoi eliminare pagine con sotto-pagine. Per fare questo, devi prima eliminare tutte le sotto-pagine contenute.",
