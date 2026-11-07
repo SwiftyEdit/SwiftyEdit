@@ -556,6 +556,7 @@
   "msg.error.not_writable": "Το Αρχείο/Κατάλογος δεν είναι εγγράψιμο",
   "msg.error.missing_setting": "A system setting is missing: {setting}",
   "msg.error.psw_not_match": "Οι κωδικοί πρόσβασης δεν ταιριάζουν",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "Ο κωδικός πρόσβασης έχει αλλάξει",
   "msg.error.mandatory": "Δεν έχουν παρασχεθεί όλες οι υποχρεωτικές πληροφορίες",
   "msg.error.deleting_sub_pages": "Δεν μπορείτε να διαγράψετε σελίδες με υποσελίδες. Για να γίνει αυτό, πρέπει πρώτα να διαγράψετε όλες τις υποσελίδες που περιέχονται.",

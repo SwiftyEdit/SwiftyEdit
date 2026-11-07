@@ -556,6 +556,7 @@
   "msg.error.not_writable": "Datei/Verzeichnis ist nicht beschreibbar",
   "msg.error.missing_setting": "Eine Systemeinstellung fehlt: {setting}",
   "msg.error.psw_not_match": "Passwörter stimmen nicht überein",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "Das Passwort wurde geändert",
   "msg.error.mandatory": "Nicht alle obligatorischen Informationen wurden angegeben",
   "msg.error.deleting_sub_pages": "Du kannst keine Seiten mit Unterseiten löschen. Um dies zu tun, musst du zuerst alle Unterseiten löschen.",

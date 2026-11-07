@@ -23,7 +23,6 @@
   "username": "Nume",
   "email": "E-mail",
   "password": "Parolă",
-  "password_help_text": "Parola trebuie să conțină cel puțin 8 caractere",
   "msg_form": "Pentru a porni instalarea, SwiftyEdit are nevoie de un utilizator şi de o parolă pentru un administrator.<br><strong>Acordați atenția</strong> corectitudinii intrărilor<br>Notă: Toate informațiile pot fi completate sau modificate.",
   "start_install": "Pornește instalarea",
   "installed": "Instalarea a fost reușită",
