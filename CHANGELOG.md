@@ -29,6 +29,13 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   entries. Log entries are escaped on output
 - Log entries no longer contain changed mail addresses, deleting a user removes
   the name from the log
+- Password rules for new passwords (registration, password reset, profile,
+  backend and installer): at least 10 characters (`$se_password_min_length`
+  in `data/config.php`), at most 72 bytes, not on a list of common passwords,
+  at least 4 different characters and not the same as the username or e-mail
+  address. The forms show the requirements and check them while typing.
+  Existing passwords are not affected, the login does not check the rules.
+  New function `se_password_check()`
 - Migrate the Backend from inline PHP to Twig templates
 - Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
   need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
@@ -45,6 +52,8 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   page with a blog or product list, if the 404 page uses another theme that
   does not have the layout of that page. The 404 page now always uses its own
   layout and loads the CSS and JS of its own theme
+- Show why a password was not changed in the profile and in the backend
+  instead of a general error or no message at all
 
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 
