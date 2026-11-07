@@ -792,10 +792,13 @@ function se_send_order_status($recipient,$order,$reason): int|string {
 
     $products_str = se_build_mail_products($order_products, 'order-products', $this_order['order_currency']);
 
-    $included_taxes = $this_order['order_price_total']-($all_items_subtotal_net+$this_order['order_shipping_costs']);
+    // payment costs are part of the total but carry no tax (see app/handlers/checkout.php)
+    $payment_costs = (float) se_reformat_payment_costs((string) ($this_order['order_payment_costs'] ?? ''));
+    $included_taxes = $this_order['order_price_total']-($all_items_subtotal_net+$this_order['order_shipping_costs']+$payment_costs);
 
     $build_html_mail = str_replace("{price_subtotal}",se_post_print_currency($all_items_subtotal_net),$build_html_mail);
     $build_html_mail = str_replace("{price_shipping}",se_post_print_currency($this_order['order_shipping_costs']),$build_html_mail);
+    $build_html_mail = str_replace("{price_payment}",se_post_print_currency($payment_costs),$build_html_mail);
     $build_html_mail = str_replace("{included_tax}",se_post_print_currency($included_taxes),$build_html_mail);
     $build_html_mail = str_replace("{currency}",$this_order['order_currency'],$build_html_mail);
     $build_html_mail = str_replace("{order_user_comment}",$this_order['order_user_comment'],$build_html_mail);

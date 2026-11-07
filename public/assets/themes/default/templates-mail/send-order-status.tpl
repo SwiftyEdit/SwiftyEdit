@@ -50,6 +50,10 @@
                     <td align="right">{price_shipping} {currency}</td>
                 </tr>
                 <tr>
+                    <td>+ {lang_label_payment}</td>
+                    <td align="right">{price_payment} {currency}</td>
+                </tr>
+                <tr>
                     <td>+ {lang_label_tax}</td>
                     <td align="right">{included_tax} {currency}</td>
                 </tr>
