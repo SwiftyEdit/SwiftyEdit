@@ -2127,8 +2127,11 @@ function se_get_order_item_position($order, $pos) {
 }
 
 /**
- * check a customer's upload for an order item: the upload itself, the file
- * extension and the actual file content. Only real JPEG and PNG images pass.
+ * check a customer's upload for an order item: the upload itself and the file
+ * extension. JPEG and PNG must also be real images. Other types only pass if
+ * they were added on purpose in $se_upload_frontend_types (data/config.php),
+ * their content can't be checked here. Uploads are stored outside the web root
+ * and only delivered as a download.
  *
  * @param mixed $file the entry from $_FILES
  * @param array $allowed_extensions $se_upload_frontend_types from config.php
@@ -2144,8 +2147,12 @@ function se_get_order_upload_extension($file, array $allowed_extensions) {
 	}
 
 	$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-	if(!in_array($extension, $allowed_extensions, true) || !isset($image_types[$extension])) {
+	if($extension === '' || !in_array($extension, $allowed_extensions, true)) {
 		return null;
+	}
+
+	if(!isset($image_types[$extension])) {
+		return $extension;
 	}
 
 	$finfo = new finfo(FILEINFO_MIME_TYPE);

@@ -19,6 +19,7 @@ composer.phar
 /data/site_secret.php
 /data/includes/*
 /data/backups/
+/data/uploads/
 /dist/
 
 # Local notes, may contain confidential details (e.g. unreleased security fixes) #
