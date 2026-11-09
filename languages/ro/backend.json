@@ -556,6 +556,7 @@
   "msg.error.not_writable": "Fișierul/Directorul nu poate fi scris",
   "msg.error.missing_setting": "O setare de sistem lipsește: {setting}",
   "msg.error.psw_not_match": "Parolele nu se potrivesc",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "Parola a fost schimbată",
   "msg.error.mandatory": "Nu toate informațiile obligatorii au fost furnizate",
   "msg.error.deleting_sub_pages": "Nu puteți șterge pagini cu subpagini. Pentru a face acest lucru, trebuie mai întâi să ștergeți toate subpaginile conținute.",

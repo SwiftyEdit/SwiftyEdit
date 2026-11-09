@@ -556,6 +556,7 @@
   "msg.error.not_writable": "Le fichier/répertoire n'est pas accessible en écriture",
   "msg.error.missing_setting": "Un paramètre système est manquant : {setting}",
   "msg.error.psw_not_match": "Les mots de passe ne correspondent pas",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "Le mot de passe a été modifié",
   "msg.error.mandatory": "Toutes les informations obligatoires n'ont pas été fournies",
   "msg.error.deleting_sub_pages": "Vous ne pouvez pas supprimer des pages avec des sous-pages. Pour ce faire, vous devez d'abord supprimer toutes les sous-pages contenues.",

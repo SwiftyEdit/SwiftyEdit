@@ -556,6 +556,7 @@
   "msg.error.not_writable": "El archivo/directorio no tiene permisos de escritura",
   "msg.error.missing_setting": "Falta una configuración del sistema: {setting}",
   "msg.error.psw_not_match": "Las contraseñas no coinciden",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "La contraseña ha sido cambiada",
   "msg.error.mandatory": "No se ha proporcionado toda la información obligatoria",
   "msg.error.deleting_sub_pages": "No puede eliminar páginas con subpáginas. Para hacer esto, primero debe eliminar todas las subpáginas contenidas.",

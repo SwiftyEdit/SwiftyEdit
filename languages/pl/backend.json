@@ -556,6 +556,7 @@
   "msg.error.not_writable": "Nie można zapisać pliku/katalogu",
   "msg.error.missing_setting": "Brakuje ustawienia systemowego: {setting}",
   "msg.error.psw_not_match": "Hasła nie pasują",
+  "msg.error.psw_not_saved": "The password was not changed.",
   "msg.success.psw_changed": "Hasło zostało zmienione",
   "msg.error.mandatory": "Nie podano wszystkich obowiązkowych informacji",
   "msg.error.deleting_sub_pages": "Nie możesz usunąć stron zawierających podstrony. Aby to zrobić, musisz najpierw usunąć wszystkie zawarte w nich podstrony.",
