@@ -14,6 +14,13 @@ use Twig\Environment;
  * @var Environment $twig
  */
 
+// keepalive of the session clock in the top navigation - header.php has
+// already counted this request as activity (se_acp_guard())
+if (isset($_GET['session_keepalive'])) {
+    http_response_code(204);
+    exit;
+}
+
 // search filters are stored sanitized (sanitizeUserInputs), Twig escapes on output
 $decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 

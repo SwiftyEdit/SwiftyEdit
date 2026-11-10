@@ -110,8 +110,18 @@ can register anymore.
 User names that may not be registered, separated by commas. Upper and lower case don't matter.
 
 ### Backend session {#user-session}
-How long (in seconds) an administrator stays logged in to the backend without any activity. If
-the PHP setting `session.gc_maxlifetime` of the server is longer, it is used instead.
+How long (in seconds) an administrator stays logged in to the backend without any activity.
+Every backend request counts as activity. The clock at the top next to the user name shows the
+remaining time: it turns from green to red, hovering it shows the time left and a click resets the
+timer. Several open backend tabs share the timer. Allowed are 300 to 43200 seconds (5 minutes to 12 hours), other values are set
+to these limits when saving. New installations start with 1800 seconds (30 minutes). Older
+installations often still have 86400 stored, which works like 43200.
+
+For a backend that several people or shared computers have access to, 1800 seconds or less is
+recommended. Independently, every login ends after the session lifetime
+`$se_session_max_lifetime` at the latest (default 12 hours). If the server's
+`session.gc_maxlifetime` is shorter than the value set here, PHP may remove an idle session
+earlier.
 
 ### Comments {#user-comments}
 Whether comments have to be approved by an administrator, appear immediately or are switched off

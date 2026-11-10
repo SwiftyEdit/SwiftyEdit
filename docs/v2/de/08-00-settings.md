@@ -114,8 +114,19 @@ Benutzernamen, die nicht registriert werden dürfen, durch Kommas getrennt. Gro�
 Kleinschreibung spielt keine Rolle.
 
 ### Backend-Session {#user-session}
-Wie lange (in Sekunden) ein Administrator ohne Aktivität im Backend angemeldet bleibt. Ist die
-PHP-Einstellung `session.gc_maxlifetime` des Servers länger, gilt diese.
+Wie lange (in Sekunden) ein Administrator ohne Aktivität im Backend angemeldet bleibt. Jeder
+Aufruf im Backend zählt als Aktivität. Die Uhr oben neben dem Benutzernamen zeigt die verbleibende
+Zeit: Sie färbt sich von grün nach rot, beim Darüberfahren erscheint die Restzeit, ein Klick setzt
+den Timer zurück. Mehrere offene Backend-Tabs teilen sich den Timer.
+Erlaubt sind 300 bis 43200 Sekunden (5 Minuten bis 12 Stunden), andere Werte werden beim
+Speichern auf diese Grenzen gesetzt. Neue Installationen starten mit 1800 Sekunden (30 Minuten).
+Ältere Installationen haben oft noch 86400 gespeichert, das wirkt wie 43200.
+
+Für ein Backend, auf das mehrere Personen oder fremde Rechner Zugriff haben, empfehlen sich
+höchstens 1800 Sekunden. Unabhängig davon endet jede Anmeldung spätestens nach der
+Sitzungsdauer `$se_session_max_lifetime` (Standard 12 Stunden). Ist `session.gc_maxlifetime`
+des Servers kürzer als der hier eingestellte Wert, kann PHP eine ruhende Sitzung schon vorher
+entfernen.
 
 ### Kommentare {#user-comments}
 Ob Kommentare von einem Administrator freigegeben werden müssen, sofort erscheinen oder ganz

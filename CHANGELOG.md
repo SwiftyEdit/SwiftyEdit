@@ -59,6 +59,11 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   longer falls back to `session.gc_maxlifetime`. New installations use 1800
   seconds (was 86400). Existing values above 43200 count as 43200 - lower the
   setting to log out idle backend sessions sooner
+- A clock next to the user name in the backend shows the remaining idle time
+  (green to red, the time left in a popover), a click keeps the session alive.
+  Every backend request resets the timer, open backend tabs share it. Fixes
+  the automatic logout of admins who only worked with requests that did not
+  reload the page
 - The TinyMCE image and link lists and the backend image widget check the
   session lifetime, the idle timeout and the account like all other backend
   requests
@@ -66,6 +71,8 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   earlier access
 - The shop only returns to a saved filter URL on the same site
 - Update `symfony/yaml` to 7.4.23
+- The backend and default theme builds write `dist/THIRD-PARTY-LICENSES.txt`
+  with the license texts of all bundled npm packages
 
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 

@@ -438,9 +438,6 @@ foreach ([IMAGES_FOLDER => $lang['images'], FILES_FOLDER => $lang['files']] as $
     $upload_folders[] = ['label' => $upload_label, 'folders' => $folders];
 }
 
-/* the countdown to the automatic logout */
-$maxlifetime = se_acp_idle_lifetime();
-
 echo $twig->render('layout/page.twig', [
     'lang_code' => $languagePack,
     'title_pagename' => $se_title_pagename,
@@ -456,6 +453,5 @@ echo $twig->render('layout/page.twig', [
     'footer_langs' => array_values($active_lang),
     'build' => $se_version['build'],
     'upload_folders' => $upload_folders,
-    'default_editor' => $se_default_editor,
-    'maxlifetime' => $maxlifetime
+    'default_editor' => $se_default_editor
 ]);

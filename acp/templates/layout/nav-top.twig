@@ -50,6 +50,14 @@
             </ul>
         </div>
 
+        {# idle timeout of the backend session - colored from green to red by
+           src/js/components/session-clock.js, a click resets the timer (keepalive request) #}
+        <button class="btn btn-default me-1" type="button" id="sessionClock"
+                data-lifetime="{{ idle_lifetime }}"
+                data-text="{{ lang.session_clock_text }}"
+                aria-label="{{ lang.session_clock_text|replace({'%s': ''}) }}"
+                hx-get="/admin-xhr/widgets/read/?session_keepalive" hx-swap="none">{{ icon.clock|raw }}</button>
+
         {# user menu - the caret shows that the avatar opens a menu (profile, settings, logout),
            Bootstrap's own .dropdown-toggle caret would point left here (dropstart) #}
         <div class="dropstart me-1">

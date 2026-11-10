@@ -28,5 +28,6 @@ echo $twig->render('layout/nav-top.twig', [
     'current_lang_flag' => $active_lang[$_SESSION['lang']]['flag'],
     'languages' => $languages,
     'avatar_src' => $avatar_src,
-    'user_nick' => $_SESSION['user_nick']
+    'user_nick' => $_SESSION['user_nick'],
+    'idle_lifetime' => se_acp_idle_lifetime()
 ]);

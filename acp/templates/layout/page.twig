@@ -176,15 +176,12 @@
 {# the footer init of every installed editor plugin (registers window.seEditors) #}
 {{ editor_inits|raw }}
 
-{# values for the script below - the session lifetime is enforced on the server
-   (se_acp_session_expired()), the countdown always runs #}
+{# values for the script below and src/js/components/session-clock.js #}
 <script type="text/javascript">
     var seBackend = {
         defaultEditor: {{ default_editor|json_encode|raw }},
         csrfToken: {{ csrf_token|json_encode|raw }}
     };
-    var auto_logout = true;
-    var maxlifetime = {{ maxlifetime|json_encode|raw }};
 </script>
 <script type="text/javascript">
 {% verbatim %}
@@ -374,44 +371,6 @@
             }
         });
     })();
-
-    var countdown = {
-        startInterval: function () {
-            var currentId = setInterval(function () {
-                $('#currentSeconds').html(maxlifetime);
-
-                if (maxlifetime == 60) {
-                    $('#expireDiv').removeClass('expire-hidden');
-                    $('#expireDiv').addClass('expire-start');
-                }
-                if (maxlifetime == 30) {
-                    $('#expireDiv').addClass('expire-soon');
-                }
-                if (maxlifetime == 15) {
-                    $('#expireDiv').addClass('expire-danger');
-                }
-                if (maxlifetime < 0) {
-                    // logout only per POST with the CSRF token (see app/routing.php)
-                    clearInterval(countdown.intervalId);
-                    var logoutForm = document.createElement('form');
-                    logoutForm.method = 'post';
-                    logoutForm.action = '/logout';
-                    var logoutToken = document.createElement('input');
-                    logoutToken.type = 'hidden';
-                    logoutToken.name = 'csrf_token';
-                    logoutToken.value = seBackend.csrfToken;
-                    logoutForm.appendChild(logoutToken);
-                    document.body.appendChild(logoutForm);
-                    logoutForm.submit();
-                }
-                --maxlifetime;
-            }, 1000);
-            countdown.intervalId = currentId;
-        }
-    };
-    if (auto_logout !== false) {
-        countdown.startInterval();
-    }
 
 {% endverbatim %}
 </script>
