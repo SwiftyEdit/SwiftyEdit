@@ -472,6 +472,7 @@
   "label.settings.show_login": "Arată formularul de autentificare",
   "label.settings.new_user_unlock_by_admin": "Utilizatorii noi trebuie să fie activați de un administrator",
   "label.settings.acp_session_lifetime": "Durata de viață a sesiunii ACP (secunde)",
+  "session.clock.text": "Automatic logout in %s. Click to stay logged in.",
   "label.settings.comments_mode": "Comentarii - mod",
   "label.settings.comments_auth": "Comentarii - autorizaţii",
   "label.settings.comments_mode.1": "Toate comentariile trebuie aprobate de un administrator",
