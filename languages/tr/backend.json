@@ -472,6 +472,7 @@
   "label.settings.show_login": "Show login form",
   "label.settings.new_user_unlock_by_admin": "New users must be activated by an administrator",
   "label.settings.acp_session_lifetime": "ACP Session lifetime (seconds)",
+  "session.clock.text": "Automatic logout in %s. Click to stay logged in.",
   "label.settings.comments_mode": "Comments - mode",
   "label.settings.comments_auth": "Comments - authorizations",
   "label.settings.comments_mode.1": "All comments must be approved by an admin",
