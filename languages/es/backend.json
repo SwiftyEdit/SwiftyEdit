@@ -472,6 +472,7 @@
   "label.settings.show_login": "Mostrar formulario de acceso",
   "label.settings.new_user_unlock_by_admin": "Los nuevos usuarios deben ser activados por un administrador",
   "label.settings.acp_session_lifetime": "Duración de la sesión ACP (segundos)",
+  "session.clock.text": "Automatic logout in %s. Click to stay logged in.",
   "label.settings.comments_mode": "Comentarios - modo",
   "label.settings.comments_auth": "Comentarios - autorizaciones",
   "label.settings.comments_mode.1": "Todos los comentarios deben ser aprobados por un administrador",
