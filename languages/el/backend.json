@@ -472,6 +472,7 @@
   "label.settings.show_login": "Εμφάνιση φόρμας σύνδεσης",
   "label.settings.new_user_unlock_by_admin": "Οι νέοι χρήστες πρέπει να ενεργοποιηθούν από το διαχειριστή",
   "label.settings.acp_session_lifetime": "Διάρκεια ζωής συνόδου ΑΚΕ (δευτερόλεπτα)",
+  "session.clock.text": "Automatic logout in %s. Click to stay logged in.",
   "label.settings.comments_mode": "Σχόλια - λειτουργία",
   "label.settings.comments_auth": "Σχόλια - εγκρίσεις",
   "label.settings.comments_mode.1": "Όλα τα σχόλια πρέπει να εγκριθούν από έναν διαχειριστή",
