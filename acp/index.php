@@ -439,7 +439,7 @@ foreach ([IMAGES_FOLDER => $lang['images'], FILES_FOLDER => $lang['files']] as $
 }
 
 /* the countdown to the automatic logout */
-$maxlifetime = max((int) $se_settings['acp_session_lifetime'], (int) ini_get("session.gc_maxlifetime"));
+$maxlifetime = se_acp_idle_lifetime();
 
 echo $twig->render('layout/page.twig', [
     'lang_code' => $languagePack,

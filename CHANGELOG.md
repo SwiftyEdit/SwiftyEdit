@@ -54,6 +54,18 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   layout and loads the CSS and JS of its own theme
 - Show why a password was not changed in the profile and in the backend
   instead of a general error or no message at all
+- The backend idle timeout (Settings > Users, "ACP Session lifetime") is now
+  taken from the setting alone and kept between 300 and 43200 seconds, it no
+  longer falls back to `session.gc_maxlifetime`. New installations use 1800
+  seconds (was 86400). Existing values above 43200 count as 43200 - lower the
+  setting to log out idle backend sessions sooner
+- The TinyMCE image and link lists and the backend image widget check the
+  session lifetime, the idle timeout and the account like all other backend
+  requests
+- The maintenance access code is compared strictly, changing the code ends
+  earlier access
+- The shop only returns to a saved filter URL on the same site
+- Update `symfony/yaml` to 7.4.23
 
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 

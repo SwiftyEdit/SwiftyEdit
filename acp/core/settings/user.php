@@ -58,7 +58,10 @@ $inputs['acp_session_lifetime'] = se_print_form_input([
     "input_name" => "prefs_acp_session_lifetime",
     "input_value" => $setting('acp_session_lifetime'),
     "label" => $lang['label_settings_acp_session_lifetime'],
-    "type" => "number"
+    "type" => "number",
+    "min" => SE_ACP_IDLE_MIN,
+    "max" => SE_ACP_IDLE_MAX,
+    "form_text" => SE_ACP_IDLE_MIN.' - '.SE_ACP_IDLE_MAX
 ]);
 
 /* comments and votings */

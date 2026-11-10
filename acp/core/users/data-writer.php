@@ -178,7 +178,7 @@ if(isset($_POST['save_user_group'])) {
         $data = $db_user->update("se_groups",$columns,["group_id" => $group_id]);
         if($data->rowCount()) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
-            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>",5);
+            record_log($_SESSION['user_nick'],"new user group $group_name",5);
             header( "HX-Trigger: update_groups_list");
         }
 
@@ -187,7 +187,7 @@ if(isset($_POST['save_user_group'])) {
         $editgroup = $db_user->id();
         if($editgroup > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
-            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>",5);
+            record_log($_SESSION['user_nick'],"new user group $group_name",5);
             header( "HX-Trigger: update_groups_list");
         }
     }

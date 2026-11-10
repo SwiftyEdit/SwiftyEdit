@@ -395,7 +395,6 @@ function se_start_user_session($ud) {
     $_SESSION['user_nick'] = $ud['user_nick'];
     $_SESSION['user_mail'] = $ud['user_mail'];
     $_SESSION['user_class'] = $ud['user_class'];
-    $_SESSION['user_psw'] = $ud['user_psw'];
     $_SESSION['user_firstname'] = $ud['user_firstname'];
     $_SESSION['user_lastname'] = $ud['user_lastname'];
     $_SESSION['user_hash'] = md5($ud['user_nick']);
@@ -748,18 +747,30 @@ function se_rate_limit_purge(string $dir): void {
     }
 }
 
+/** bounds and default of the ACP idle timeout in seconds (setting acp_session_lifetime) */
+const SE_ACP_IDLE_MIN = 300;
+const SE_ACP_IDLE_MAX = 43200;
+const SE_ACP_IDLE_DEFAULT = 1800;
+
 /**
- * Server-side idle timeout for the ACP - the countdown in acp/index.php is
- * only JavaScript, the session itself stayed valid as long as PHP's garbage
- * collector didn't happen to remove it.
- *
- * Uses the same lifetime as the countdown: the larger of the
- * acp_session_lifetime setting and session.gc_maxlifetime (seconds).
- * Every ACP request (page or XHR) counts as activity.
- *
- * @return bool true if the session has expired and was ended
+ * Keep an ACP idle timeout within SE_ACP_IDLE_MIN..SE_ACP_IDLE_MAX seconds,
+ * an empty or invalid value falls back to SE_ACP_IDLE_DEFAULT.
  */
-function se_acp_session_expired(): bool {
+function se_acp_idle_clamp(mixed $seconds): int {
+
+    $seconds = (int) $seconds;
+    if ($seconds <= 0) {
+        return SE_ACP_IDLE_DEFAULT;
+    }
+    return min(SE_ACP_IDLE_MAX, max(SE_ACP_IDLE_MIN, $seconds));
+}
+
+/**
+ * ACP idle timeout in seconds, taken from the acp_session_lifetime setting
+ * only (see se_acp_idle_clamp()). Used by the server check
+ * (se_acp_session_expired()) and the countdown in acp/index.php.
+ */
+function se_acp_idle_lifetime(): int {
 
     global $se_settings;
 
@@ -774,10 +785,25 @@ function se_acp_session_expired(): bool {
         }
     }
 
-    $lifetime = max((int) $lifetime_setting, (int) ini_get('session.gc_maxlifetime'));
+    return se_acp_idle_clamp($lifetime_setting);
+}
+
+/**
+ * Server-side idle timeout for the ACP - the countdown in acp/index.php is
+ * only JavaScript, the session itself stayed valid as long as PHP's garbage
+ * collector didn't happen to remove it.
+ *
+ * Uses the same lifetime as the countdown (se_acp_idle_lifetime()).
+ * Every ACP request (page or XHR) counts as activity.
+ *
+ * @return bool true if the session has expired and was ended
+ */
+function se_acp_session_expired(): bool {
+
+    $lifetime = se_acp_idle_lifetime();
     $last_activity = (int) ($_SESSION['acp_last_activity'] ?? time());
 
-    if ($lifetime > 0 && time() - $last_activity > $lifetime) {
+    if (time() - $last_activity > $lifetime) {
         $_SESSION = [];
         session_destroy();
         return true;

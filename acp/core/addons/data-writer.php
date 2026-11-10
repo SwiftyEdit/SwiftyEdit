@@ -80,7 +80,7 @@ if(isset($_POST['save_default_layout'])) {
         "prefs_template_layout" => $layout,
         "prefs_template_stylesheet" => $stylesheet
     ], 'se');
-    record_log($_SESSION['user_nick'], "edit system design <b>$theme</b>", 6);
+    record_log($_SESSION['user_nick'], "edit system design $theme", 6);
     se_delete_smarty_cache();
     show_toast($lang['msg_success_db_changed'], 'success');
     header("HX-Trigger: update_themes_list");

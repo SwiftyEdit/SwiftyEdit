@@ -7,7 +7,7 @@
     <label for="{{ inputid|raw }}" class="form-label">{{ label|raw }}</label>
     {% if group_start_text is not empty or group_end_text is not empty %}<div class="input-group">{% endif %}
     {% if group_start_text is not empty %}<span class="input-group-text">{{ group_start_text|raw }}</span>{% endif %}
-    <input type="{{ type|raw }}"{% if type == 'password' %} autocomplete="new-password"{% endif %} class="{{ input_classes|raw }}" id="{{ inputid|raw }}" name="{{ input_name|raw }}" value="{{ input_value|raw }}">
+    <input type="{{ type|raw }}"{% if type == 'password' %} autocomplete="new-password"{% endif %} class="{{ input_classes|raw }}" id="{{ inputid|raw }}" name="{{ input_name|raw }}" value="{{ input_value|raw }}"{% if min is not null %} min="{{ min }}"{% endif %}{% if max is not null %} max="{{ max }}"{% endif %}>
     {% if group_end_text is not empty %}<span class="input-group-text">{{ group_end_text|raw }}</span>{% endif %}
     {% if group_start_text is not empty or group_end_text is not empty %}</div>{% endif %}
     {% if form_text is not empty %}<div class="form-text">{{ form_text|raw }}</div>{% endif %}

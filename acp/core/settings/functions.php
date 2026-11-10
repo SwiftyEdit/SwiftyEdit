@@ -196,7 +196,7 @@ function se_settings_sections(): array {
             'prefs_blacklist_usernames' => 'text'
         ],
         'user-session' => [
-            'prefs_acp_session_lifetime' => 'int'
+            'prefs_acp_session_lifetime' => 'idle'
         ],
         'user-comments' => [
             'prefs_comments_mode' => 'option',
@@ -300,6 +300,9 @@ function se_settings_section_values(string $section, array $post): ?array {
             $data[$key] = htmlentities(trim(is_string($value) ? $value : ''), ENT_QUOTES, 'UTF-8');
         } else if($type == 'int') {
             $data[$key] = (int) $value;
+        } else if($type == 'idle') {
+            // ACP idle timeout in seconds, kept within its bounds
+            $data[$key] = se_acp_idle_clamp($value);
         } else if($type == 'days') {
             $data[$key] = max(0, (int) $value) * 86400;
         } else if($type == 'hours') {

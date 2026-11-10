@@ -157,9 +157,11 @@ if ($current_query_string !== '') {
     $_SESSION['last_shop_url'] = $_SERVER['REQUEST_URI'];
 } else {
     // User came without filters - check if we have a saved URL
-    if (isset($_SESSION['last_shop_url']) && $_SESSION['last_shop_url'] !== $_SERVER['REQUEST_URI']) {
+    // only a path on this site - "//host/..." would leave the site
+    $last_shop_url = (string) ($_SESSION['last_shop_url'] ?? '');
+    if (preg_match('#^/(?![/\\\\])#', $last_shop_url) && $last_shop_url !== $_SERVER['REQUEST_URI']) {
         // Redirect to last filter state
-        header("Location: " . $_SESSION['last_shop_url']);
+        header("Location: " . $last_shop_url);
         exit;
     }
 }

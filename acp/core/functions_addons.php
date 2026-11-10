@@ -66,7 +66,7 @@ function se_get_all_themes(): array {
  */
 function se_parse_theme_info_xml(string $file): ?array {
 
-    $xml = @simplexml_load_file($file);
+    $xml = @simplexml_load_file($file, null, LIBXML_NONET);
     if($xml === false) {
         return null;
     }

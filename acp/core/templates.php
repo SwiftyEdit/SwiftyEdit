@@ -73,7 +73,9 @@ function tpl_form_input_text(array $data) {
         'input_classes' => ($data['input_classes'] ?? '') == '' ? 'form-control' : $data['input_classes'],
         'group_start_text' => $data['input_group_start_text'] ?? '',
         'group_end_text' => $data['input_group_end_text'] ?? '',
-        'form_text' => $data['form_text'] ?? ''
+        'form_text' => $data['form_text'] ?? '',
+        'min' => $data['min'] ?? null,
+        'max' => $data['max'] ?? null
     ]);
 }
 
@@ -101,8 +103,8 @@ function tpl_content_format_switch(array $options, string $current, $page_id): s
     $select .= '</select>';
     $select .= '</div>';
     $select .= '<script>document.currentScript.previousElementSibling.querySelector("select[name=content_format_switch]").addEventListener("change", function(e){';
-    $select .= 'var current='.json_encode($current).';';
-    $select .= 'var pageId='.json_encode((string) $page_id).';';
+    $select .= 'var current='.json_encode($current, JSON_HEX_TAG | JSON_HEX_AMP).';';
+    $select .= 'var pageId='.json_encode((string) $page_id, JSON_HEX_TAG | JSON_HEX_AMP).';';
     /*
      * Switching TO "legacy" is not destructive - page_content already holds
      * the last-saved rendered HTML at all times (se_freeze_editor_content()
@@ -111,8 +113,8 @@ function tpl_content_format_switch(array $options, string $current, $page_id): s
      * still starts an empty tree/string (formats aren't auto-converted into
      * each other), so that case keeps the discard warning.
      */
-    $select .= 'var discardMsg='.json_encode($lang['label_content_format_confirm_switch'] ?? 'Switching the format discards the current content. Continue?').';';
-    $select .= 'var convertMsg='.json_encode($lang['label_content_format_confirm_convert'] ?? 'The current content will be converted to static HTML and can no longer be edited with its current editor afterwards. Continue?').';';
+    $select .= 'var discardMsg='.json_encode($lang['label_content_format_confirm_switch'] ?? 'Switching the format discards the current content. Continue?', JSON_HEX_TAG | JSON_HEX_AMP).';';
+    $select .= 'var convertMsg='.json_encode($lang['label_content_format_confirm_convert'] ?? 'The current content will be converted to static HTML and can no longer be edited with its current editor afterwards. Continue?', JSON_HEX_TAG | JSON_HEX_AMP).';';
     $select .= 'var isConvertToLegacy=(e.target.value==="legacy"&&current!=="legacy");';
     $select .= 'if(confirm(isConvertToLegacy?convertMsg:discardMsg)){';
     /*

@@ -196,10 +196,14 @@ if(is_array($page_json_ld)) {
 
 // Display the template
 if($se_settings['maintenance_code'] != '') {
-    if($_POST['maintenance-access-code'] == $se_settings['maintenance_code']) {
-        $_SESSION['access_to_maintenance'] = 'permitted';
+    // the session stores a hash of the code, so changing the code locks out
+    // everybody who unlocked the site with the old one
+    $maintenance_code_hash = hash('sha256', (string) $se_settings['maintenance_code']);
+    if(is_string($_POST['maintenance-access-code'] ?? null)
+        && hash_equals((string) $se_settings['maintenance_code'], $_POST['maintenance-access-code'])) {
+        $_SESSION['access_to_maintenance'] = $maintenance_code_hash;
     }
-    if($_SESSION['access_to_maintenance'] == 'permitted') {
+    if(hash_equals($maintenance_code_hash, (string) ($_SESSION['access_to_maintenance'] ?? ''))) {
         $smarty->display('index.tpl',$cache_id);
     } else {
         header('HTTP/1.1 503 Service Unavailable');
