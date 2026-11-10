@@ -472,6 +472,7 @@
   "label.settings.show_login": "Mostra modulo di accesso",
   "label.settings.new_user_unlock_by_admin": "I nuovi utenti devono essere attivati da un amministratore",
   "label.settings.acp_session_lifetime": "Durata sessione ACP (secondi)",
+  "session.clock.text": "Automatic logout in %s. Click to stay logged in.",
   "label.settings.comments_mode": "Commenti - modalità",
   "label.settings.comments_auth": "Commenti - autorizzazioni",
   "label.settings.comments_mode.1": "Tutti i commenti devono essere approvati da un amministratore",
