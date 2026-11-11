@@ -16,6 +16,9 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   users, system information with update check, caches and OPcache. The lists
   of recent items are replaced by the history. The full log is available at
   `/admin/dashboard/log/` (right: sensitive files)
+- Favorite plugins: a star on the addons page marks a plugin as a personal
+  favorite of the logged-in user. Favorites are listed first, the plugin list
+  on the dashboard gets a "Favorites" filter
 - New section colors in the backend, snippets get their own color. Headings use
   a neutral color instead of the primary color. Hovered rows in tables and
   lists get darker in dark mode instead of lighter
@@ -36,6 +39,15 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   address. The forms show the requirements and check them while typing.
   Existing passwords are not affected, the login does not check the rules.
   New function `se_password_check()`
+- Structured data: every page gets schema.org data as JSON-LD (`WebSite`,
+  the organization, `WebPage` or the page type chosen in the page editor,
+  `Product`, `BlogPosting` and `Event`). Settings > General has a new section
+  "Organization" (type, name, country, profiles). Themes print `$json_ld` in
+  the head of `index.tpl`, plugins can change the data with the filter
+  `structured_data.graph`. Themes that set `$page_json_ld` themselves replace
+  the core data completely
+- New hook `user.deleted` with a snapshot of the account data before the
+  deletion (without password and 2FA secrets)
 - Migrate the Backend from inline PHP to Twig templates
 - Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
   need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
