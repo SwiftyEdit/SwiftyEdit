@@ -129,7 +129,11 @@ if ($_REQUEST['action'] === 'list_user') {
     $get_user = $db_user->select("se_user", [
         "user_id", "user_nick", "user_firstname", "user_lastname", "user_mail", "user_registerdate"
     ], [
-        "user_class[!]" => "deleted",
+        // "!= deleted" alone drops rows where user_class is NULL (most regular users)
+        "OR #class" => [
+            "user_class[!]" => "deleted",
+            "user_class" => null
+        ],
         "ORDER" => ["user_id" => "DESC"],
         "LIMIT" => 5
     ]);

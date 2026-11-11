@@ -152,8 +152,12 @@ if (strlen($q) >= 2) {
     // users - users-edit.php only reads the id from $_POST, there is no GET route
     if (se_hasPermission('drm_acp_user')) {
         $users = $db_user->select("se_user", ["user_id", "user_nick", "user_mail", "user_firstname", "user_lastname"], [
-            "user_class[!]" => "deleted",
-            "OR" => [
+            // "!= deleted" alone drops rows where user_class is NULL (most regular users)
+            "OR #class" => [
+                "user_class[!]" => "deleted",
+                "user_class" => null
+            ],
+            "OR #search" => [
                 "user_nick[~]" => $like,
                 "user_mail[~]" => $like,
                 "user_firstname[~]" => $like,

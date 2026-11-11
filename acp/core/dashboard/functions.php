@@ -104,7 +104,11 @@ function se_dashboard_activity_entries(int $since): array {
     // user_registerdate is a VARCHAR holding a timestamp, deleted accounts have it emptied
     $users = $db_user->select("se_user", ["user_id", "user_nick", "user_registerdate"], [
         "user_registerdate[>=]" => (string) $since,
-        "user_class[!]" => "deleted"
+        // "!= deleted" alone drops rows where user_class is NULL (most regular users)
+        "OR #class" => [
+            "user_class[!]" => "deleted",
+            "user_class" => null
+        ]
     ]);
     foreach ($users as $user) {
         if (!is_numeric($user['user_registerdate'])) {
