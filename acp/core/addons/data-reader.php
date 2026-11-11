@@ -51,6 +51,8 @@ if($action == 'list_plugins') {
     $activated = array_column(se_get_addons('plugin'), 'addon_dir');
     $default_image = 'data:image/png;base64,'.base64_encode((string) file_get_contents(SE_PUBLIC.'/assets/themes/administration/images/poster-addons.png'));
 
+    $favorites = se_get_my_favorite_plugins();
+
     $plugins = [];
     foreach(se_get_all_addons() as $dir => $info) {
 
@@ -94,12 +96,17 @@ if($action == 'list_plugins') {
             'image' => $image,
             'category' => $category,
             'activated' => in_array($dir, $activated),
+            'favorite' => in_array($dir, $favorites, true),
             // only offer activation if the plugin ships something that depends on it
             'needs_activation' => se_plugin_needs_activation($dir, $info),
             'navigation' => $navigation,
             'help_link' => $help_link
         ];
     }
+
+    // favorites of the current user first, otherwise keep the directory order
+    // (stable sort, so the order within both groups stays unchanged)
+    usort($plugins, static fn($a, $b) => $b['favorite'] <=> $a['favorite']);
 
     echo $twig->render('addons/plugins-list.twig', [
         'plugins' => $plugins,

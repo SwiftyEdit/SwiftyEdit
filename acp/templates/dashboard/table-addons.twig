@@ -6,9 +6,13 @@
             hx-get="{{ reader_uri }}?action=list_addons&filter=usable">{{ lang.api_keys_active }} <span class="chip-count">{{ count_usable }}</span></button>
     <button class="chip{{ filter == 'all' ? ' active' : '' }}" aria-pressed="{{ filter == 'all' ? 'true' : 'false' }}"
             hx-get="{{ reader_uri }}?action=list_addons&filter=all">{{ lang.btn_all }} <span class="chip-count">{{ count_all }}</span></button>
+    <button class="chip{{ filter == 'favorites' ? ' active' : '' }}" aria-pressed="{{ filter == 'favorites' ? 'true' : 'false' }}"
+            hx-get="{{ reader_uri }}?action=list_addons&filter=favorites">{{ icon.star|raw }} {{ lang.addons_label_favorites }} <span class="chip-count">{{ count_favorites }}</span></button>
 </div>
 
-{% if addons is empty %}
+{% if addons is empty and filter == 'favorites' %}
+    <div class="dash-empty-hint">{{ lang.addons_msg_no_favorites }} <a href="/admin/addons/">{{ lang.overview }}</a></div>
+{% elseif addons is empty %}
     <div class="dash-empty-hint">{{ lang.msg_no_entries_found }}</div>
 {% else %}
     <div class="dash-plugin-grid">

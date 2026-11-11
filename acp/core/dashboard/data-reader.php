@@ -52,8 +52,10 @@ if ($_REQUEST['action'] === 'activity') {
 
 if ($_REQUEST['action'] === 'list_addons') {
 
-    $filter = ($_GET['filter'] ?? '') === 'all' ? 'all' : 'usable';
+    $filter = in_array($_GET['filter'] ?? '', ['all', 'favorites'], true) ? $_GET['filter'] : 'usable';
     $activated = array_column(se_get_addons('plugin'), 'addon_dir');
+    $favorites = se_get_my_favorite_plugins();
+    $count_favorites = 0;
 
     $addons = [];
     $count_usable = 0;
@@ -65,6 +67,11 @@ if ($_REQUEST['action'] === 'list_addons') {
 
         if (!$is_inactive) {
             $count_usable++;
+        }
+
+        $is_favorite = in_array($dir, $favorites, true);
+        if ($is_favorite) {
+            $count_favorites++;
         }
 
         // same categories as the filter buttons on the addons page
@@ -90,6 +97,7 @@ if ($_REQUEST['action'] === 'list_addons') {
             'version' => $info['addon']['version'] ?? '',
             'category' => $category,
             'state' => $is_activated ? 'active' : ($is_inactive ? 'inactive' : 'none'),
+            'favorite' => $is_favorite,
             'link' => ($nav_file && !$is_inactive) ? '/admin/addons/plugin/'.$dir.'/'.$nav_file.'/' : '/admin/addons/'
         ];
     }
@@ -97,12 +105,15 @@ if ($_REQUEST['action'] === 'list_addons') {
     $count_all = count($addons);
     if ($filter === 'usable') {
         $addons = array_values(array_filter($addons, static fn($addon) => $addon['state'] !== 'inactive'));
+    } elseif ($filter === 'favorites') {
+        $addons = array_values(array_filter($addons, static fn($addon) => $addon['favorite']));
     }
     usort($addons, static fn($a, $b) => strcasecmp($a['name'], $b['name']));
 
     $html = $twig->render('dashboard/table-addons.twig', [
         'addons' => $addons,
         'filter' => $filter,
+        'count_favorites' => $count_favorites,
         'count_usable' => $count_usable,
         'count_all' => $count_all,
         'reader_uri' => $reader_uri

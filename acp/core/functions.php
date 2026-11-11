@@ -1431,6 +1431,20 @@ function se_get_my_presets() {
 }
 
 /**
+ * Plugin directories the logged-in user has marked as favorites
+ * (stored per user in user_acp_settings, toggled in users/settings-writer.php).
+ *
+ * @return list<string>
+ */
+function se_get_my_favorite_plugins(): array {
+    $favorites = se_get_my_presets()['fav_plugins'] ?? [];
+    if(!is_array($favorites)) {
+        return [];
+    }
+    return array_values(array_filter($favorites, 'is_string'));
+}
+
+/**
  * Read the current OPcache state into a flat array for display (Dashboard
  * "OPcache" card, see acp/core/dashboard/data-reader.php). Tolerates OPcache
  * being off entirely, or opcache_get_status()/opcache_get_configuration()

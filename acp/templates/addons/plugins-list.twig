@@ -7,7 +7,17 @@
 {% for plugin in plugins %}
     <div class="card mb-3 border-bottom" data-addon-category="{{ plugin.category }}">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <div>{{ plugin.name }} <span class="badge badge-se">{{ plugin.version }}</span></div>
+            <div class="d-flex align-items-center gap-1">
+                {# personal favorite of the logged-in user, favorites are listed first #}
+                {% set fav_label = plugin.favorite ? lang.addons_btn_favorite_remove : lang.addons_btn_favorite_add %}
+                <button type="button" class="btn btn-sm btn-link p-0 me-1{{ plugin.favorite ? ' text-warning' : ' text-muted' }}"
+                        name="toggle_fav_plugin" value="{{ plugin.id }}"
+                        hx-post="/admin-xhr/users/settings/write/" hx-include="[name='csrf_token']" hx-swap="none"
+                        title="{{ fav_label }}" aria-label="{{ fav_label }}" aria-pressed="{{ plugin.favorite ? 'true' : 'false' }}">
+                    {{ (plugin.favorite ? icon.star : icon.star_outline)|raw }}
+                </button>
+                {{ plugin.name }} <span class="badge badge-se">{{ plugin.version }}</span>
+            </div>
             <div class="d-flex align-items-center gap-1">
                 {# activation state next to the update status - plugins that don't
                    need activation (and aren't activated) get no badge at all #}
