@@ -263,17 +263,22 @@ function se_prepareProductData($data, $id = null) {
         $product_canonical_url = $se_base_url . $main_catalog_slug . $slug;
     }
 
-    // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
-    $meta_title = se_return_clean_value($meta_title);
-    // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
-    $meta_description = se_return_clean_value($meta_description);
-    $product_variant_color = se_return_clean_value($data['product_variant_color']);
+    // encode form input only - rows from the database (cache context) are
+    // already encoded, encoding them again stored "&amp;uuml;" in the cache
+    if (($data['context'] ?? '') !== 'cache') {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
+        $meta_title = se_return_clean_value($meta_title);
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
+        $meta_description = se_return_clean_value($meta_description);
+        $product_variant_color = se_return_clean_value($data['product_variant_color']);
+    }
 
     // variants title and description
     if($data['product_variant_title'] == '') {
         $product_variant_title = $data['title'];
     }
     if($data['product_variant_description'] == '') {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
         $product_variant_description = $meta_description;
     }
 
