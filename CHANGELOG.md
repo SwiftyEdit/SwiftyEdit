@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## 2.3.0 - 2026-11-10 (Build 26-0234)
+## 2.3.0 - 2026-11-10 (Build 26-0235)
 
 - New backend dashboard: a 30-day activity grid per area with a history of the
   edited items, including changes to users by an administrator, plugins,
@@ -82,7 +82,13 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 - The maintenance access code is compared strictly, changing the code ends
   earlier access
 - The shop only returns to a saved filter URL on the same site
+- Fix double-encoded umlauts and special characters (e.g. `&uuml;`) in the
+  meta title and description of products after rebuilding the product cache
+  in the dashboard. They showed up in the page title, meta description and
+  structured data of product pages. Rebuild the product cache once after
+  the update
 - Update `symfony/yaml` to 7.4.23
+- Update `phpstan/phpstan` to 2.3.5 (development only)
 - The backend and default theme builds write `dist/THIRD-PARTY-LICENSES.txt`
   with the license texts of all bundled npm packages
 
