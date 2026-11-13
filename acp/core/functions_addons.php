@@ -509,31 +509,36 @@ function se_load_addon_info(string $url): array {
     ];
 }
 
+/**
+ * check the addon's update_url for a newer compatible build
+ * status: update_available, up_to_date, no_source (no update_url/build in info.json)
+ * or check_failed (url rejected, not reachable, invalid response, no compatible version)
+ */
 function se_check_addon_update(array $addon_info): array {
 
-    // Return unknown if update_url or build is not defined
+    // no update source (e.g. not installed from the catalog) - nothing to check
     if(!isset($addon_info['addon']['update_url']) || !isset($addon_info['addon']['build'])) {
-        return ['status' => 'unknown'];
+        return ['status' => 'no_source'];
     }
 
     // update_url comes straight from the addon's own (self-declared) info.json,
     // not from a form the "https only" checks elsewhere validate - see
     // se_is_safe_remote_url()
     if (!se_is_safe_remote_url($addon_info['addon']['update_url'])) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     // Load remote info.json
     $json = se_fetch_remote_url($addon_info['addon']['update_url'], 5, 1048576);
 
     if($json === false) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     $remote = json_decode($json, true);
 
     if(!$remote || !isset($remote['versions'])) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     // Load SwiftyEdit build number
@@ -551,7 +556,7 @@ function se_check_addon_update(array $addon_info): array {
     }
 
     if($compatible_version === null) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     // Compare build numbers

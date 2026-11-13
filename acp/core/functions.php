@@ -1322,7 +1322,7 @@ function se_print_docs_link(string $file, ?string $text = null, ?string $anchor 
                 hx-vals=\'' . $hx_vals . '\'
                 hx-target="#helpModal"
                 hx-trigger="click"
-                class="' . $class . '" title="' . $title . '">' . $text . '</button>';
+                class="' . $class . '" title="' . $title . '" aria-label="' . $title . '">' . $text . '</button>';
 }
 
 /**

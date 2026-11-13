@@ -1,6 +1,8 @@
 {#
  # update status of a plugin or theme, loaded into its card header by the addons data-reader
- # status: update_available, update_disabled (upload of addons switched off), up_to_date or unknown
+ # status: update_available, update_disabled (upload of addons switched off), up_to_date,
+ #   check_failed or no_source (no update_url in info.json - renders nothing on purpose,
+ #   a missing update source is the normal case for addons not installed from the catalog)
  # update: {plugin_id, addon_type, download_url, target} for the update button
  #}
 {% if status == 'update_disabled' %}
@@ -14,6 +16,6 @@
             hx-target="#{{ update.target }}">{{ lang.update }} {{ icon.arrow_clockwise|raw }}</button>
 {% elseif status == 'up_to_date' %}
     <span class="badge text-bg-success" title="{{ lang.update_msg_no_update_available }}">{{ icon.check_circle|raw }}</span>
-{% else %}
-    <span class="badge badge-se">{{ icon.question_circle|raw }}</span>
+{% elseif status == 'check_failed' %}
+    <span class="badge text-bg-warning" title="{{ lang.update_msg_check_failed }}" aria-label="{{ lang.update_msg_check_failed }}">{{ icon.exclamation_triangle|raw }}</span>
 {% endif %}
