@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## 2.3.0 - 2026-11-10 (Build 26-0235)
+## 2.3.0 - 2026-11-13 (Build 26-0236)
 
 - New backend dashboard: a 30-day activity grid per area with a history of the
   edited items, including changes to users by an administrator, plugins,
@@ -87,6 +87,10 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   in the dashboard. They showed up in the page title, meta description and
   structured data of product pages. Rebuild the product cache once after
   the update
+- The addon list no longer shows a question mark in the header of plugins and
+  themes without an update source (e.g. not installed from the catalog), so
+  it can't be confused with the help button. If the update check fails, a
+  warning sign with an explanation is shown instead
 - Update `symfony/yaml` to 7.4.23
 - Update `phpstan/phpstan` to 2.3.5 (development only)
 - The backend and default theme builds write `dist/THIRD-PARTY-LICENSES.txt`
