@@ -596,6 +596,7 @@
   "update.msg.stable": "Une mise à jour est disponible en téléchargement",
   "update.msg.update_available": "Une mise à jour est disponible en téléchargement",
   "update.msg.no_update_available": "La version installée est à jour",
+  "update.msg.check_failed": "The update check failed - the update source could not be reached or returned no compatible version",
   "update.msg.modus_activated": "<b>Le mode de mise à jour est actif</b> Le frontend ne peut pas être appelé pour le moment.",
   "update.msg.post_install": "Veuillez aller à la page {url} pour vérifier si la base de données a été correctement mise à jour",
   "update.msg.filter_updated": "Les filtres ont été mis à jour",
