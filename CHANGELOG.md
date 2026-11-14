@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## 2.3.0 - 2026-11-13 (Build 26-0236)
+## 2.3.0 - 2026-11-14 (Build 26-0237)
 
 - New backend dashboard: a 30-day activity grid per area with a history of the
   edited items, including changes to users by an administrator, plugins,
