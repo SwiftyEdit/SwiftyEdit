@@ -39,10 +39,30 @@ See [CHANGELOG.md](CHANGELOG.md) for all changes.
 ### Version 2.3
 - [x] Remove the unused Guzzle package from the core
 - [x] Move the PayPal plugin from the core to the plugin catalog (it ships its own PayPal SDK then; cash and invoice payment stay bundled)
+- [x] New backend dashboard with activity history and security alerts (failed logins, account locks, CSRF errors)
 
 ### Later
-- [ ] Add write access (create/update) for pages, posts and products to the REST API
+Items marked with 🤝 are well suited for contributors.
+
+**Core & architecture**
 - [ ] Database overhaul (merging the SQLite files, add MariaDB support)
+- [ ] Consistent data storage: store plain text raw and escape on output, migrated table by table
+- [ ] Twig themes in the frontend alongside Smarty (Smarty becomes deprecated and is removed in v3)
+- [ ] Scheduler (cron) infrastructure with `cron.hourly` / `cron.daily` hooks for core and plugins
+
+**API & extensibility**
+- [ ] 🤝 Add write access (create/update) for pages, posts and products to the REST API
+- [ ] 🤝 Review the core for missing action and filter hooks (e.g. content rendering, image output, registering custom Smarty functions)
+
+**Features**
+- [ ] Responsive images (srcset) for images inserted via the content editor
+- [ ] Automatic database backups (based on the scheduler)
+- [ ] Reminder e-mails for events and for open invoice payments (based on the scheduler)
+
+**Quality**
+- [ ] 🤝 PHPUnit tests for core functions, running in CI next to PHPStan
+- [ ] 🤝 Tests for every REST API endpoint, including the forbidden cases
+- [ ] 🤝 Search: keyboard navigation (arrow keys / Enter) in the result list
 
 
 ## How to Contribute
