@@ -84,8 +84,8 @@ available, and install it with a single click.
 Technically, an update downloads the chosen release as a zip file, extracts it, and copies the
 files directly onto your live installation, then runs any necessary database migrations (new
 tables/columns). Your `data/` directory and your installed plugins and themes are left
-untouched - with the exception of the bundled plugins (the payment plugins `se_cash-pay`,
-`se_invoice-pay`, `se_paypal-pay`, and the editor plugins `tinymce-editor`, `ace-editor`), which
+untouched - with the exception of the bundled plugins (the payment plugins `se_cash-pay`
+and `se_invoice-pay`, and the editor plugins `tinymce-editor`, `ace-editor`), which
 are always refreshed to the shipped version. There is no automatic backup or rollback step.
 
 __Before updating a live site, test the update on a staging copy first__ - this matters

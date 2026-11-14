@@ -50,7 +50,8 @@ sie führen Code aus, verändern aber keinen Wert.
 ### Frontend-Hooks
 
 Die Frontend-Hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
-`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`)
+`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`,
+`structured_data.graph`)
 sind zusammen mit den Template-Variablen und Rendering-Konventionen, die sie betreffen,
 dokumentiert - siehe [Hooks](09-01-00-themes.md#hooks) im Themes-Kapitel.
 
@@ -63,7 +64,8 @@ Frontend-Hooks.
 
 | Hook         | Context                                | Feuert, wenn...                                    |
 |--------------|-----------------------------------------|-----------------------------------------------------|
-| `order.paid` | `order_id`, `order`, `triggered_by`     | Eine Bestellung als bezahlt markiert wurde - manuell im ACP (`triggered_by` = `admin`) oder automatisch durch ein Zahlungsplugin (`triggered_by` = z.B. `se_paypal-pay`). |
+| `order.paid` | `order_id`, `order`, `triggered_by`     | Eine Bestellung als bezahlt markiert wurde - manuell im ACP (`triggered_by` = `admin`) oder automatisch durch ein Zahlungsplugin (`triggered_by` = z.B. `paypal-pay`). |
+| `user.deleted` | `user_id`, `user`, `deleted_by`       | Ein Benutzerkonto gelöscht wurde - durch einen Admin im ACP (`deleted_by` = Nick des Admins) oder vom Benutzer selbst im Frontend-Profil (`deleted_by` = `self`). Das Konto ist zu diesem Zeitpunkt schon geleert; `user` enthält die Daten von vor dem Löschen (z. B. `user_mail`, `user_nick`, Adressen), ohne Passwörter, 2FA-Geheimnisse sowie Sperr- und Reset-Codes. |
 
 ## Beispiel Backend-Hook
 

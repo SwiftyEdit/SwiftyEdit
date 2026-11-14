@@ -38,16 +38,6 @@ function se_get_content($page, $mode = 'p') {
 		]);		
 	
 	
-	} elseif ($mode == 'preview') {
-	
-		$page_contents = $db_content->get("se_pages_cache", "*", [
-				"AND" => [
-				"page_id_original" => "$page",
-				"page_language" => "$languagePack"
-			],
-				"ORDER" => ["page_id" => "DESC"]
-			]);			
-	
 	} else {
 		
 	
@@ -126,6 +116,82 @@ function se_get_content($page, $mode = 'p') {
 	$contents = array($page_contents,$se_nav);
 
 	return $contents;
+}
+
+/**
+ * get the theme, layout and stylesheet a page is rendered with
+ * used by smarty.php (page matched by routing) and error.php (the error page)
+ *
+ * A page without an existing theme of its own (use_standard, empty, no page at
+ * all or a theme that was removed) uses the site-wide theme and layout.
+ *
+ * @param array $page_contents from se_get_content()
+ * @param array $se_settings
+ * @param string $themes_path
+ * @return array{template: string, layout: string, stylesheet: string}
+ */
+function se_resolve_page_theme(array $page_contents, array $se_settings, string $themes_path): array {
+
+	// default template
+	$se_template = $se_settings['template'] ?: 'default';
+	$se_template_layout = $se_settings['template_layout'] ?: 'layout_default.tpl';
+	$se_template_stylesheet = $se_settings['template_stylesheet'] ?? '';
+
+	/* page has its own theme/template */
+	if(is_dir($themes_path.'/'.$page_contents['page_template'].'/templates/')) {
+		$se_template = $page_contents['page_template'];
+
+		// without a layout of its own the page keeps the site-wide layout,
+		// otherwise Smarty would look for a file named "use_standard"
+		if(!in_array($page_contents['page_template_layout'], ['', 'use_standard'], true)) {
+			$se_template_layout = $page_contents['page_template_layout'];
+		}
+
+		// Only override the site-wide stylesheet when the page actually pins its
+		// own (there's no page-editor UI for this yet - see docs/v2/*/09-01-00-themes.md
+		// - so this is normally empty). Otherwise a page that merely pins its own
+		// theme/layout would always lose the site-wide stylesheet selection.
+		if($page_contents['page_template_stylesheet'] != '') {
+			$se_template_stylesheet = $page_contents['page_template_stylesheet'];
+		}
+
+		if($se_settings['usertemplate'] == 'overwrite') {
+			/* the user theme has the same tpl file, so we can overwrite */
+			if(($_SESSION['prefs_template'] ?? '') != '' && is_file($themes_path.'/'.$_SESSION['prefs_template'].'/templates/'.$page_contents['page_template_layout'])) {
+				$se_template = $_SESSION['prefs_template'];
+				$se_template_layout = $page_contents['page_template_layout'];
+			}
+		}
+	}
+
+	return [
+		'template' => basename($se_template),
+		'layout' => basename($se_template_layout),
+		'stylesheet' => basename($se_template_stylesheet)
+	];
+}
+
+/**
+ * cache busting for theme assets: newest mtime of the built files in dist/,
+ * so every theme build reaches clients immediately (used as ?v= in head.tpl)
+ *
+ * @param string $themes_path
+ * @param string $template theme directory name
+ * @return int
+ */
+function se_get_theme_assets_version(string $themes_path, string $template): int {
+
+	$assets_version = 0;
+	$theme_dist_files = array_merge(
+		glob($themes_path.'/'.$template.'/dist/*.css') ?: [],
+		glob($themes_path.'/'.$template.'/dist/*.js') ?: [],
+		glob($themes_path.'/'.$template.'/dist/skins/*.css') ?: []
+	);
+	foreach($theme_dist_files as $dist_file) {
+		$assets_version = max($assets_version, (int) filemtime($dist_file));
+	}
+
+	return $assets_version;
 }
 
 /**

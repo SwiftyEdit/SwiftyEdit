@@ -1,0 +1,10 @@
+{# overview of the events in /admin/events/, rendered by events-list.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getEvents" hx-get="{{ reader_uri }}?action=list_events" hx-trigger="load, {{ list_triggers }}"></div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'events/past-events-toggle.twig' %}
+{% endblock %}

@@ -20,126 +20,251 @@ Die Einstellungen sind in folgende Unterkategorien unterteilt
 * Labels
 * API-Keys
 
-## Allgemein
+## Allgemein {#general}
 
-Die Seite Allgemein ist in drei Tabs unterteilt:
+Die Seite Allgemein ist in drei Tabs unterteilt: <kbd>Allgemein</kbd>, <kbd>System</kbd> und
+<kbd>E-Mail</kbd>. Jeder Abschnitt wird mit seinem eigenen Button gespeichert.
 
-* <kbd>Allgemein</kbd> Die Standard-Metadaten (Seitenname, Titel, Untertitel, Beschreibung, Autor),
-  der RSS-Zeitversatz, die Anzahl gespeicherter Seitenversionen sowie die Bild-Einstellungen
-  (Bild-Präfix, Logo/Vorschaubild/Favicon, maximale Bild- und Vorschaubildgrößen, maximale
-  Upload-Dateigröße). Sämtliche Metadaten können später von einzelnen Seiten oder Produkten usw.
-  überschrieben werden.
-* <kbd>System</kbd> Domain, SSL-Domain, Basis-Pfad und Login-Slug sowie Datums-/Zeitformat und
-  Zeitzone, Themes & Templates, der Wartungs-Code, der Smarty Compile Check, die
-  Standardsprache und die Möglichkeit, einzelne Sprachen auszublenden.
-* <kbd>E-Mail</kbd> Die Mailer-Konfiguration (Absendername und -adresse, Mail-Typ / SMTP,
-  Benachrichtigungsadresse) sowie eine Test-Mail-Funktion.
+Die Texte der folgenden Abschnitte werden im Backend auch direkt neben den Einstellungen angezeigt.
 
-### RSS Time offset
-Hier kannst Du einen Zeitversatz festlegen. Dies verhindert, dass Beiträge direkt nach dem Speichern
-im RSS Feed landen.
+### Website {#general-website}
+Name, Titel, Untertitel und Beschreibung Deiner Website. Themes zeigen sie z.B. im Kopfbereich an
+und nutzen sie für die Meta-Tags aller Seiten, die keine eigenen Werte haben.
 
-### Seitenversionen
-Jedes mal, wenn Du eine Seite aktualisierst, speichert SwiftyEdit die überschriebene Version.
-Damit kannst Du, falls Du mal einen Fehler gemacht hast, wieder zu einer älteren Version zurückwechseln.
-Hier legst Du fest, wie viele Versionen einer Seite gespeichert bleiben sollen.
+### Organisation (strukturierte Daten) {#general-organization}
+Wer diese Website betreibt. SwiftyEdit gibt diese Angaben als strukturierte Daten nach schema.org
+(JSON-LD) auf jeder Seite aus, Suchmaschinen nutzen sie z.B. für das Knowledge Panel.
+Organization ist der allgemeine Typ für Projekte, Vereine und alles, was nicht besser passt.
+Corporation ist ein Unternehmen, NGO eine gemeinnützige Organisation, EducationalOrganization
+eine Schule oder andere Bildungseinrichtung. OnlineStore verkauft nur online, Store hat ein
+Ladengeschäft und LocalBusiness ist jedes andere Geschäft mit Standort. Person steht für eine
+einzelne Person. Ohne Namen wird der Seitenname verwendet.
+Unter Profile trägst Du die URLs Deiner Social-Media- oder anderen Profile ein, eine pro Zeile.
+Das Logo kommt aus "Logo und Icons".
 
-## User
-Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion:
+### Logo und Icons {#general-branding}
+Logo, Vorschaubild und Favicon werden direkt beim Hochladen gespeichert. Aus dem Favicon (PNG, JPG
+oder WebP, mindestens 512×512 px) erzeugt SwiftyEdit alle Icon-Größen inklusive Apple Touch Icon
+und das Web-Manifest.
 
-* Ob sich Besucher selbst registrieren dürfen, ob das Login-Formular angezeigt wird
-  und ob neue Benutzer von einem Administrator freigeschaltet werden müssen. Ohne Login-Formular
-  ist die Anmeldung im Frontend ganz abgeschaltet (die Backend-Anmeldung unter `/admin/` ist
-  nicht betroffen, "Passwort vergessen" funktioniert weiterhin).
-* Die Session-Lebensdauer des Backends und eine Blacklist von Benutzernamen, die nicht
-  registriert werden dürfen.
-* Welche Felder bei der Registrierung Pflichtfelder sind.
-* Kommentare: der Modus, die Autorisierung, die Auto-Close-Zeit, die maximale Anzahl an
-  Einträgen und die maximale Verschachtelungstiefe.
-* Votings und Reaktionen (aus, nur für registrierte Benutzer oder global). Gegen doppelte
-  Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse
-  gespeichert; nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
+### Bildgrößen {#general-images}
+Hochgeladene Bilder werden auf die maximale Breite und Höhe verkleinert, Vorschaubilder auf die
+Thumbnail-Größe. Alle Angaben in Pixel.
 
-## Posts
+### Uploads {#general-uploads}
+Die maximale Dateigröße von Uploads in KB. Bleiben Uploads unverändert, werden Bilder so
+gespeichert, wie sie hochgeladen wurden - ohne Verkleinerung und ohne Vorschaubild.
+
+### Seitenversionen {#general-page-versions}
+Jedes Mal, wenn Du eine Seite aktualisierst, speichert SwiftyEdit die überschriebene Version.
+Damit kannst Du, falls Du mal einen Fehler gemacht hast, wieder zu einer älteren Version
+zurückwechseln. Gibt es mehr Versionen als hier angegeben, werden beim Speichern der Seite die
+ältesten gelöscht.
+
+### Domain {#general-domain}
+Domain und SSL-Domain (inklusive `http://` bzw. `https://`) und der Basis-Pfad ergeben die Adresse
+Deiner Website - ist eine SSL-Domain eingetragen, wird sie verwendet. SwiftyEdit braucht die
+Adresse für absolute Links, z.B. Canonical URLs, Sitemaps, Feeds und E-Mails.
+
+Mit einem Login-Slug ist die Anmeldung zum Backend nur noch unter `/admin/{slug}` erreichbar,
+`/admin/` führt dann zur Startseite.
+
+### Datum und Uhrzeit {#general-datetime}
+Die Zeitzone und die Formate von Datum und Uhrzeit, im Frontend und im Backend.
+
+### Themes und Templates {#general-themes}
+Solange ein Wartungs-Code eingetragen ist, sehen Besucher nur die Wartungsseite. Wer dort den Code
+eingibt, sieht die Website wie gewohnt (z.B. um sie vor dem Livegang zu prüfen).
+
+Außerdem legst Du fest, ob Besucher selbst ein Theme wählen dürfen. Der Smarty Compile Check
+übersetzt geänderte Templates bei jedem Aufruf neu - praktisch, während Du ein Theme entwickelst,
+ansonsten bleibt er aus.
+
+### Sprache {#general-language}
+Die Standardsprache Deiner Website. Ausgeblendete Sprachen werden im Backend nicht mehr angeboten,
+z.B. in der Sprachauswahl von Seiten und Beiträgen.
+
+### E-Mail {#general-mail}
+Absendername und -adresse aller E-Mails Deiner Website. Sie werden mit PHP `mail()` oder per SMTP
+verschickt - die SMTP-Zugangsdaten stehen in `data/config_smtp.php`. Die Benachrichtigungs-Adresse
+erhält eine Kopie der Bestell-E-Mails und Bestellanfragen sowie die Widerrufe von Bestellungen.
+
+### Test-E-Mail {#general-mail-test}
+Schickt eine E-Mail mit den gespeicherten Einstellungen an die Benachrichtigungs-Adresse, oder an
+die Absenderadresse, falls keine eingetragen ist. Speichere Deine Änderungen also vorher.
+
+## User {#user}
+Diese Einstellungen steuern alles rund um Benutzerkonten und Interaktion.
+
+### Registrierung und Login {#user-registration}
+Ob sich Besucher selbst registrieren dürfen und ob das Login-Formular angezeigt wird. Ohne
+Login-Formular ist die Anmeldung im Frontend ganz abgeschaltet (die Backend-Anmeldung unter
+`/admin/` ist nicht betroffen, "Passwort vergessen" funktioniert weiterhin).
+
+Müssen neue Benutzer von einem Administrator freigeschaltet werden, können sie sich zwar anmelden,
+im Shop aber erst bestellen, wenn sie in der Benutzerverwaltung freigeschaltet wurden.
+
+### Pflichtfelder {#user-required-fields}
+Felder des Registrierungsformulars, die zusätzlich zu Benutzername, E-Mail und Passwort ausgefüllt
+werden müssen. Wähle nur Felder aus, die das Registrierungsformular Deines Themes auch enthält -
+sonst kann sich niemand mehr registrieren.
+
+### Gesperrte Benutzernamen {#user-blacklist}
+Benutzernamen, die nicht registriert werden dürfen, durch Kommas getrennt. Groß- und
+Kleinschreibung spielt keine Rolle.
+
+### Backend-Session {#user-session}
+Wie lange (in Sekunden) ein Administrator ohne Aktivität im Backend angemeldet bleibt. Jeder
+Aufruf im Backend zählt als Aktivität. Die Uhr oben neben dem Benutzernamen zeigt die verbleibende
+Zeit: Sie färbt sich von grün nach rot, beim Darüberfahren erscheint die Restzeit, ein Klick setzt
+den Timer zurück. Mehrere offene Backend-Tabs teilen sich den Timer.
+Erlaubt sind 300 bis 43200 Sekunden (5 Minuten bis 12 Stunden), andere Werte werden beim
+Speichern auf diese Grenzen gesetzt. Neue Installationen starten mit 1800 Sekunden (30 Minuten).
+Ältere Installationen haben oft noch 86400 gespeichert, das wirkt wie 43200.
+
+Für ein Backend, auf das mehrere Personen oder fremde Rechner Zugriff haben, empfehlen sich
+höchstens 1800 Sekunden. Unabhängig davon endet jede Anmeldung spätestens nach der
+Sitzungsdauer `$se_session_max_lifetime` (Standard 12 Stunden). Ist `session.gc_maxlifetime`
+des Servers kürzer als der hier eingestellte Wert, kann PHP eine ruhende Sitzung schon vorher
+entfernen.
+
+### Kommentare {#user-comments}
+Ob Kommentare von einem Administrator freigegeben werden müssen, sofort erscheinen oder ganz
+abgeschaltet sind. Zusätzlich werden Kommentare bei jeder Seite, jedem Beitrag und jedem Produkt
+einzeln ein- oder ausgeschaltet. Wer kommentiert, gibt immer einen Namen und eine E-Mail-Adresse an.
+
+Mit „Die Kommentarfunktion schließen nach *n* Tagen“ kannst Du Kommentare automatisch beenden: Bei
+Beiträgen und Produkten zählen die Tage ab dem Veröffentlichungsdatum, bei Seiten ab der letzten
+Änderung - jedes Speichern einer Seite öffnet die Kommentare also wieder. Danach bleiben die
+vorhandenen Kommentare sichtbar, neue Kommentare und Antworten sind aber nicht mehr möglich.
+0 oder ein leeres Feld bedeutet: nie schließen.
+
+### Votings und Reaktionen {#user-votings}
+Die Voreinstellung für neue Beiträge, Produkte und Veranstaltungen - bei jedem Eintrag kannst Du
+sie einzeln ändern: aus, nur für registrierte Benutzer oder für alle Besucher. Gegen doppelte
+Stimmen werden anonyme Votings und Gästelisten-Zusagen mit einem Hash der IP-Adresse gespeichert;
+nach 90 Tagen wird der Hash entfernt - die Stimme zählt weiter.
+
+## Posts {#posts}
 Diese Einstellungen betreffen die Posts (Blog).
 
-## Shop
-Die Shop-Seite ist in vier Tabs unterteilt:
+### Einträge pro Seite {#posts-entries}
+Wie viele Beiträge eine Blog-Liste pro Seite zeigt, weitere Beiträge sind über die Seitennavigation
+erreichbar. Ist kein Wert oder 0 eingetragen, sind es 10 Einträge. Die Veranstaltungen haben eine
+eigene Einstellung - ist dort nichts eingetragen, gilt diese Anzahl auch für sie.
 
-* <kbd>Allgemein</kbd> Einträge pro Seite und die Standard-Sortierung für die Produktliste, ob der
-  Cache für die Produktliste aktiviert ist, der Warenkorb-Modus, der Bestell-Modus und Gastbestellungen,
-  ein maximaler Bestellwert, die Widerrufsfrist, bis zu drei Steuersätze, die Standardwährung sowie wie
-  und für wen Preise angezeigt werden.
-* <kbd>Zahlung & Versand</kbd> Der Versand-Modus und die Versandkosten sowie Aktivierungsschalter für
-  installierte Zahlungs- und Versand-Plugins.
-* <kbd>Liefergebiete</kbd> Länder, in die Du lieferst, hinzufügen, bearbeiten oder entfernen.
-* <kbd>Geschäftsangaben</kbd> Deine Geschäftsadresse und Steuernummer.
+## Shop {#shop}
+Die Shop-Seite ist in vier Tabs unterteilt: <kbd>Allgemein</kbd>, <kbd>Zahlung & Versand</kbd>,
+<kbd>Liefergebiete</kbd> und <kbd>Geschäftsangaben</kbd>. Jeder Abschnitt wird mit seinem eigenen
+Button gespeichert.
 
-### Warenkorb und Bestellungen
+### Produktliste {#shop-list}
+Wie viele Produkte eine Produktliste pro Seite zeigt (ohne Wert oder mit 0 sind es 10) und wie sie
+standardmäßig sortiert ist - Besucher können die Sortierung in der Liste selbst ändern. Ist der Cache
+eingeschaltet, werden die Daten der Produkte zwischengespeichert, statt sie bei jedem Aufruf aus der
+Datenbank zu lesen.
+
+### Warenkorb und Bestellungen {#shop-cart}
 Der Warenkorb-Modus schaltet den Warenkorb komplett aus, beschränkt ihn auf registrierte Benutzer oder
 öffnet ihn für alle. Der Bestell-Modus legt fest, ob Produkte direkt bestellt werden können, ob
-Besucher stattdessen nur eine Bestellanfrage senden können (statt zu bezahlen), oder beides. Wenn Du
-einen maximalen Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die
-Anfrage-Funktion zurück, auch wenn die Direktbestellung aktiviert ist.
+Besucher stattdessen nur eine Bestellanfrage senden können, oder beides. Wenn Du einen maximalen
+Bestellwert festlegst, fällt der Warenkorb bei Überschreitung automatisch auf die Anfrage-Funktion
+zurück, auch wenn die Direktbestellung aktiviert ist.
 
-### Listen {#listen}
+### Listen {#shop-lists}
 Aktiviere Listen, damit angemeldete Kunden Produkte über die Produktkarte oder Produktseite in eine
 oder mehrere persönliche Listen speichern können. Eine Liste kann optional über einen öffentlichen Link
 geteilt werden - wer diesen Link öffnet, kann die Liste ansehen und die enthaltenen Produkte ohne
 eigenes Konto in den eigenen Warenkorb legen.
 
-### Gastbestellungen
+### Gastbestellungen {#shop-guest-orders}
 Aktiviere Gastbestellungen, damit Kunden den Checkout abschließen können, ohne ein Konto anzulegen.
 Gastbestellungen werden per E-Mail bestätigt, die eingegebene Lieferadresse wird nur für die aktuelle
 Sitzung gespeichert.
 
-### Widerrufsfrist
-Das Feld "Widerrufsbutton sichtbar für (Tage)" legt fest, wie viele Tage lang der Button "Bestellung
-widerrufen" bei einer Bestellung auf der Seite "Meine Bestellungen" angezeigt wird. Standardmäßig sind
-das 14 Tage (die gesetzliche EU-Widerrufsfrist); mit `0` wird der Button unabhängig vom Bestellalter
-immer angezeigt. Das betrifft nur die Sichtbarkeit des Buttons - die Seite "Bestellung widerrufen"
-selbst ist weiterhin jederzeit direkt erreichbar.
+### Widerrufsfrist {#shop-withdrawal}
+Wie viele Tage lang der Button "Bestellung widerrufen" bei einer Bestellung auf der Seite "Meine
+Bestellungen" angezeigt wird. Ohne Wert sind es 14 Tage (die gesetzliche EU-Widerrufsfrist); mit `0`
+wird der Button unabhängig vom Bestellalter immer angezeigt. Das betrifft nur die Sichtbarkeit des
+Buttons - die Seite "Bestellung widerrufen" selbst ist weiterhin jederzeit direkt erreichbar.
 
-### Steuersätze und Währung
+### Steuersätze und Währung {#shop-taxes}
 Du kannst bis zu drei feste Steuersätze festlegen (Steuer #1-#3); jedes Produkt wählt dann individuell
 einen davon aus - eine separate Verwaltung von Steuerklassen gibt es nicht. Die Standardwährung ist ein
-Freitextfeld (z. B. `EUR`). Außerdem kannst Du festlegen, ob Preise brutto, netto oder beides angezeigt
+Freitextfeld (z. B. `EUR`). Außerdem legst Du fest, ob Preise brutto, netto oder beides angezeigt
 werden, und ob sie für alle Besucher oder nur für registrierte Benutzer sichtbar sind.
 
-### Versandkosten
+### Versandkosten {#shop-shipping}
 Lege fest, ob der Versand mit einer Pauschale berechnet wird oder anhand von Versandkategorien, wobei
 die teuerste im Warenkorb vorhandene Kategorie die Versandkosten bestimmt. Du kannst sowohl die
 Pauschale als auch bis zu drei kategorie-basierte Versandkosten definieren.
 
-### Zahlungs- und Versand-Plugins
-Zahlungsarten (z. B. Barzahlung, Rechnung, PayPal) und Versandoptionen werden über Plugins
-bereitgestellt. Jedes installierte Zahlungs- oder Versand-Plugin erscheint in einer eigenen Liste im
-Tab Zahlung & Versand, wo Du es für den Shop aktivieren kannst.
+### Versand-Plugins {#shop-delivery-plugins}
+Versandoptionen werden über Plugins bereitgestellt (Ordnername endet auf `-delivery`). Jedes
+installierte Versand-Plugin erscheint hier und kann für den Shop aktiviert werden.
 
-### Liefergebiete
-Füge über die Länderauswahl die Länder hinzu, in die Du lieferst. Jedes Liefergebiet kann auf
-öffentlich oder Entwurf gesetzt werden, außerdem kannst Du festlegen, ob für Bestellungen in dieses
-Land Steuer hinzugerechnet werden soll.
+### Zahlungs-Plugins {#shop-payment-plugins}
+Zahlungsarten wie Barzahlung, Rechnung oder PayPal werden über Plugins bereitgestellt (Ordnername
+endet auf `-pay`). Jedes installierte Zahlungs-Plugin erscheint hier, aktivierte Plugins werden im
+Checkout als Zahlungsart angeboten.
 
-### Geschäftsangaben
-Deine Geschäftsadresse und Steuernummer werden hier hinterlegt und für Bestellungen und Rechnungen
-verwendet.
+### Liefergebiete {#shop-delivery-areas}
+Füge über die Länderauswahl die Länder hinzu, in die Du lieferst - jedes Land gibt es nur einmal,
+erneutes Hinzufügen ändert den vorhandenen Eintrag. Jedes Liefergebiet kann auf öffentlich oder
+Entwurf gesetzt werden, außerdem legst Du fest, ob für Bestellungen in dieses Land Steuer
+hinzugerechnet wird.
 
-## Veranstaltungen / Events
-Hier findest Du die Voreinstellungen für das Event-Modul. Du kannst z.B. festlegen ob die Gästelisten
-aktiviert werden sollen.
+### Geschäftsangaben {#shop-business}
+Deine Geschäftsadresse und Steuernummer. SwiftyEdit selbst verwendet sie derzeit nicht, Plugins
+können sie aber auslesen (`$se_settings['business_address']` und
+`$se_settings['business_taxnumber']`).
+
+## Veranstaltungen / Events {#events}
+Die Voreinstellungen für das Event-Modul.
+
+### Einträge {#events-list}
+Wie viele Veranstaltungen eine Liste pro Seite zeigt. Ist kein Wert eingetragen, gilt die Anzahl aus
+den Posts-Einstellungen, fehlt auch die, sind es 10.
+
+Der Zeitversatz legt fest, wie viele Stunden eine Veranstaltung nach ihrem Ende noch angezeigt wird -
+im Frontend und über die API. Im Backend gilt er, wenn vergangene Veranstaltungen ausgeblendet sind.
+
+### Gästeliste {#events-guestlist}
+Die Voreinstellung der Gästeliste für neue Veranstaltungen - bei jeder Veranstaltung kannst Du sie
+einzeln ändern: aus, nur für registrierte Benutzer oder für alle Besucher. In die Gästeliste tragen
+Besucher ihre Teilnahme ein.
 
 ## Labels {#labels}
 Sämtliche Einträge und Daten im Backend können mit Labels versehen werden.
 Wenn Du viele Daten und Einträge verwaltest, helfen diese Labels den Überblick zu behalten.
+
+### Labels bearbeiten {#labels-list}
+Farbe, Titel und Beschreibung jedes Labels änderst Du direkt in der Liste und speicherst sie mit dem
+Button daneben. Die Beschreibung erscheint als Tooltip, wenn Du in einer Liste mit der Maus über das
+Label fährst. Wird ein Label gelöscht, behalten die Einträge zwar seine Nummer, das Label wird aber
+nicht mehr angezeigt.
+
+### Neues Label {#labels-new}
+Ein neues Label braucht einen Titel, Farbe und Beschreibung sind optional. Danach steht es bei allen
+Einträgen zur Auswahl und im globalen Filter zur Verfügung.
 
 ## API-Keys {#api-keys}
 API-Keys geben anderen Anwendungen Zugriff auf die öffentliche API - zum Beispiel einer zweiten
 Website, die Deine Produkte anzeigt. Wie die API benutzt wird, erfahren Entwickler im Kapitel
 [API](09-04-api.md).
 
+### Neuer API-Key {#api-keys-new}
 Zum Anlegen eines Keys vergibst Du einen Namen (z.B. den Namen der Anwendung, die ihn nutzt) und
-wählst die Berechtigungen aus:
+wählst die Berechtigungen aus - was sie im Einzelnen bedeuten, steht im Abschnitt Berechtigungen
+der Dokumentation.
+
+{alert:warning}
+__Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn
+sicher auf - SwiftyEdit speichert nur einen Fingerabdruck (Hash) des Keys und kann ihn später
+nicht mehr anzeigen. Ist ein Key verloren gegangen, legst Du einfach einen neuen an.
+{/alert}
+
+### Berechtigungen {#api-keys-scopes}
 
 | Berechtigung | Bedeutung |
 |--------------|-----------|
@@ -150,12 +275,7 @@ wählst die Berechtigungen aus:
 | Seiten lesen | Der Key kann öffentliche Seiten abrufen. Passwortgeschützte Seiten und Seiten für Benutzergruppen bleiben verborgen. |
 | Kategorien lesen | Der Key kann die Kategorien von Produkten, Beiträgen und Veranstaltungen abrufen. |
 
-{alert:warning}
-__Der Key wird nur einmal angezeigt__, direkt nach dem Anlegen. Kopiere ihn und bewahre ihn
-sicher auf - SwiftyEdit speichert nur einen Fingerabdruck (Hash) des Keys und kann ihn später
-nicht mehr anzeigen. Ist ein Key verloren gegangen, legst Du einfach einen neuen an.
-{/alert}
-
+### Keys verwalten {#api-keys-list}
 In der Liste siehst Du den Anfang jedes Keys, damit Du sie auseinanderhalten kannst, außerdem
 wann der Key zuletzt benutzt wurde und wie viele Anfragen damit gestellt wurden.
 
@@ -164,10 +284,11 @@ wann der Key zuletzt benutzt wurde und wie viele Anfragen damit gestellt wurden.
 * __Löschen__ lassen sich nur gesperrte Keys.
 
 ## Database {#database}
-Dieser Tab erscheint nur, wenn die Seite mit SQLite betrieben wird (bei MySQL-Installationen
-wird er ausgeblendet, da dort nicht relevant).
+Diese Seite erscheint nur, wenn die Website mit SQLite betrieben wird (bei MySQL-Installationen
+wird sie ausgeblendet, da dort nicht relevant).
 
-**Enable WAL mode** schaltet den Journal-Modus von SQLite vom Standard `DELETE` auf `WAL`
+### WAL-Modus {#database-wal}
+**WAL-Modus aktivieren** schaltet den Journal-Modus von SQLite vom Standard `DELETE` auf `WAL`
 (Write-Ahead Logging) um. Im `DELETE`-Modus sperrt ein Schreibvorgang die gesamte
 Datenbankdatei, sodass gleichzeitige Lesezugriffe warten müssen, bis der Schreibvorgang
 abgeschlossen ist. Im `WAL`-Modus können Lesezugriffe weiterlaufen, während geschrieben
@@ -189,7 +310,8 @@ Zwei Dinge solltest Du vor dem Aktivieren wissen:
   Backup die `-wal`/`-shm`-Dateien mit einschließt, oder führe vor dem Kopieren einen
   Checkpoint aus (`PRAGMA wal_checkpoint(TRUNCATE)`).
 
-**Compact database** zeigt für jede der drei Datenbankdateien die Größe und den freien
+### Datenbank komprimieren {#database-vacuum}
+Die Tabelle zeigt für jede der drei Datenbankdateien die Größe und den freien
 Platz darin. Gelöschte Daten hinterlassen freien Platz in der Datei, den SQLite für neue
 Daten wiederverwendet - kleiner wird die Datei dadurch aber nicht. Der Button komprimiert
 die Dateien (`VACUUM`) und gibt diesen Platz an die Festplatte zurück. Dabei wird jede

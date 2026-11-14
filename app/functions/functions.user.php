@@ -52,36 +52,6 @@ function se_get_userdata_by_id($id) {
     return $user_data;
 }
 
-/**
- * @param integer $user
- * @param integer $group
- * @return void
- */
-function se_add_user_to_group(int $user, int $group): void {
-
-    global $db_user;
-
-    // get data from group
-    $group_user = $db_user->get("se_groups", "group_user", [
-        "group_id" => $group
-    ]);
-    if($group_user === null) {
-        return;
-    }
-
-    $users = array_filter(explode(" ", (string) $group_user), 'strlen');
-    if(in_array((string) $user, $users, true)) {
-        return;
-    }
-
-    $users[] = (string) $user;
-    sort($users);
-    $db_user->update("se_groups",[
-        "group_user" => implode(" ", $users)
-    ],[
-        "group_id" => $group
-    ]);
-}
 
 /**
  * make the user a member of exactly the given groups - adds the missing
@@ -99,7 +69,7 @@ function se_set_user_groups(int $user, array $group_ids): void {
     $groups = $db_user->select("se_groups", ["group_id", "group_user"]);
 
     foreach($groups as $group) {
-        $users = array_filter(explode(" ", (string) $group['group_user']), 'strlen');
+        $users = array_filter(explode(" ", (string) $group['group_user']), fn($v) => $v !== '');
         $is_member = in_array((string) $user, $users, true);
         $should_be_member = in_array((int) $group['group_id'], $group_ids, true);
 
@@ -229,6 +199,7 @@ function se_user_login(string $user, string $psw, $acp=NULL) {
         // like the account lock, attempts while throttled are not counted again
         if(!$is_throttled) {
             se_rate_limit_add('login', 900);
+            se_log_failed_login(is_array($user_data) ? $user_nick : '', $is_locked, $acp == TRUE);
         }
 
         if(is_numeric($se_failed_logins_limit) && !$is_locked && !$is_throttled && $user_nick !== '') {
@@ -290,6 +261,34 @@ function se_finish_login(array $result, $acp): void {
     }
 }
 
+/**
+ * Log a failed login. Limited per hour like the CSRF entries, known accounts
+ * have their own limit so a bot guessing names can't use up their entries.
+ * A name that matches no account is not stored - it could be a password typed
+ * into the wrong field.
+ *
+ * @param string $nick the account, empty if there is none
+ * @param bool $is_locked the account was locked, the password wasn't checked
+ * @param bool $is_backend ACP login, otherwise frontend
+ */
+function se_log_failed_login(string $nick, bool $is_locked, bool $is_backend): void {
+
+    $log_bucket = $nick !== '' ? 'login_log_known' : 'login_log_unknown';
+    if(se_rate_limit_exceeded($log_bucket, 20, 3600, false)) {
+        return;
+    }
+    se_rate_limit_add($log_bucket, 3600, false);
+
+    $entry = 'failed login ('.($is_backend ? 'backend' : 'frontend').')';
+    if($nick === '') {
+        $entry .= ', unknown account';
+    } elseif($is_locked) {
+        $entry .= ', account is locked';
+    }
+
+    se_log_event('login_failed', $entry, 5, $nick !== '' ? $nick : 'system');
+}
+
 function se_handle_failed_logins($user) {
 
     global $db_user,$se_failed_logins_limit,$lang,$se_base_url,$se_settings;
@@ -347,6 +346,8 @@ function se_handle_failed_logins($user) {
 
         // only mail the account owner when this attempt actually triggered the lock
         if($update->rowCount() > 0) {
+            se_log_event('login_locked', 'account locked after '.$failed_logins.' failed logins', 5, (string) $user);
+
             // the ACP login (acp/login.php) neither sets $se_base_url nor loads
             // the frontend language file - build both the same way as the frontend
             if(empty($se_base_url)) {
@@ -394,7 +395,6 @@ function se_start_user_session($ud) {
     $_SESSION['user_nick'] = $ud['user_nick'];
     $_SESSION['user_mail'] = $ud['user_mail'];
     $_SESSION['user_class'] = $ud['user_class'];
-    $_SESSION['user_psw'] = $ud['user_psw'];
     $_SESSION['user_firstname'] = $ud['user_firstname'];
     $_SESSION['user_lastname'] = $ud['user_lastname'];
     $_SESSION['user_hash'] = md5($ud['user_nick']);
@@ -450,21 +450,6 @@ function se_hasPermission(string $permission): bool {
 }
 
 
-/**
- * @param integer $length
- * @return string
- */
-function randpsw(int $length=8): string {
-
-    $chars = '123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
-
-    $random_s = '';
-    $cnt_chars = strlen($chars);
-    for($i=0;$i<$length;$i++) {
-        $random_s .= $chars[random_int(0, $cnt_chars - 1)];
-    }
-    return $random_s;
-}
 
 /**
  * @param $token
@@ -627,45 +612,6 @@ function se_username_exists($username): bool
     return se_deleted_nick_reserved($username);
 }
 
-function show_identicon(string $email, int $size = 80): string {
-    $hash = md5(strtolower(trim($email)));
-
-    // Farbe aus den ersten Hash-Bytes ableiten
-    $hue = hexdec(substr($hash, 0, 2)) * 1.41; // 0–360°
-    $color = "hsl($hue, 55%, 45%)";
-    $bg    = "hsl($hue, 55%, 92%)";
-
-    // 5×5 Grid berechnen (nur linke 3 Spalten, dann spiegeln)
-    $cells = [];
-    for ($row = 0; $row < 5; $row++) {
-        for ($col = 0; $col < 3; $col++) {
-            $byte = hexdec($hash[($row * 3 + $col) + 4]);
-            $cells[$row][$col] = $byte % 2;
-        }
-        // Spiegeln: Spalte 3 = Spalte 1, Spalte 4 = Spalte 0
-        $cells[$row][3] = $cells[$row][1];
-        $cells[$row][4] = $cells[$row][0];
-    }
-
-    // SVG zusammenbauen
-    $cell = $size / 5;
-    $svg  = "<svg xmlns='http://www.w3.org/2000/svg' width='$size' height='$size'>";
-    $svg .= "<rect width='$size' height='$size' fill='$bg'/>";
-
-    for ($row = 0; $row < 5; $row++) {
-        for ($col = 0; $col < 5; $col++) {
-            if ($cells[$row][$col]) {
-                $x = $col * $cell;
-                $y = $row * $cell;
-                $svg .= "<rect x='$x' y='$y' width='$cell' height='$cell' fill='$color'/>";
-            }
-        }
-    }
-
-    $svg .= "</svg>";
-    return $svg;
-}
-
 
 /**
  * @param string $email
@@ -725,14 +671,6 @@ function get_all_usermail() {
     return $user_mails;
 }
 
-/**
- * @return mixed
- */
-function get_all_usernames() {
-    global $db_user;
-    $user_nicks = $db_user->select("se_user", ["user_nick"]);
-    return $user_nicks;
-}
 
 /**
  * Simple per-client rate limit (login, password reset), stored as small JSON
@@ -809,18 +747,30 @@ function se_rate_limit_purge(string $dir): void {
     }
 }
 
+/** bounds and default of the ACP idle timeout in seconds (setting acp_session_lifetime) */
+const SE_ACP_IDLE_MIN = 300;
+const SE_ACP_IDLE_MAX = 43200;
+const SE_ACP_IDLE_DEFAULT = 1800;
+
 /**
- * Server-side idle timeout for the ACP - the countdown in acp/index.php is
- * only JavaScript, the session itself stayed valid as long as PHP's garbage
- * collector didn't happen to remove it.
- *
- * Uses the same lifetime as the countdown: the larger of the
- * acp_session_lifetime setting and session.gc_maxlifetime (seconds).
- * Every ACP request (page or XHR) counts as activity.
- *
- * @return bool true if the session has expired and was ended
+ * Keep an ACP idle timeout within SE_ACP_IDLE_MIN..SE_ACP_IDLE_MAX seconds,
+ * an empty or invalid value falls back to SE_ACP_IDLE_DEFAULT.
  */
-function se_acp_session_expired(): bool {
+function se_acp_idle_clamp(mixed $seconds): int {
+
+    $seconds = (int) $seconds;
+    if ($seconds <= 0) {
+        return SE_ACP_IDLE_DEFAULT;
+    }
+    return min(SE_ACP_IDLE_MAX, max(SE_ACP_IDLE_MIN, $seconds));
+}
+
+/**
+ * ACP idle timeout in seconds, taken from the acp_session_lifetime setting
+ * only (see se_acp_idle_clamp()). Used by the server check
+ * (se_acp_session_expired()) and the countdown in acp/index.php.
+ */
+function se_acp_idle_lifetime(): int {
 
     global $se_settings;
 
@@ -835,10 +785,25 @@ function se_acp_session_expired(): bool {
         }
     }
 
-    $lifetime = max((int) $lifetime_setting, (int) ini_get('session.gc_maxlifetime'));
+    return se_acp_idle_clamp($lifetime_setting);
+}
+
+/**
+ * Server-side idle timeout for the ACP - the countdown in acp/index.php is
+ * only JavaScript, the session itself stayed valid as long as PHP's garbage
+ * collector didn't happen to remove it.
+ *
+ * Uses the same lifetime as the countdown (se_acp_idle_lifetime()).
+ * Every ACP request (page or XHR) counts as activity.
+ *
+ * @return bool true if the session has expired and was ended
+ */
+function se_acp_session_expired(): bool {
+
+    $lifetime = se_acp_idle_lifetime();
     $last_activity = (int) ($_SESSION['acp_last_activity'] ?? time());
 
-    if ($lifetime > 0 && time() - $last_activity > $lifetime) {
+    if (time() - $last_activity > $lifetime) {
         $_SESSION = [];
         session_destroy();
         return true;

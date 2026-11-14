@@ -1,15 +1,5 @@
 <?php
 
-function show_sort_arrow() {
-    global $icon,$lang;
-    if($_SESSION['sort_direction'] == 'ASC') {
-        $ic = '<span title="'.$lang['ascending'].'"><i class="bi bi-caret-up-fill"></i></span>';
-    } else {
-        $ic = '<span title="'.$lang['descending'].'"><i class="bi bi-caret-down-fill"></i></span>';
-    }
-    return $ic;
-}
-
 /**
  * Normalize a folder of the media library (relative to public/) and confine it
  * to the media roots ($img_path / $files_path, i.e. assets/images and
@@ -43,7 +33,27 @@ function se_media_folder(string $dir, bool $allow_root = true): string|false {
     return false;
 }
 
-function delete_folder($dir) {
+/**
+ * the folder selected in the media library, the images root by default
+ *
+ * @return string e.g. "assets/images" or "assets/files/manuals"
+ */
+function se_media_current_folder(): string {
+
+    global $img_path;
+
+    $folder = se_media_folder((string) ($_SESSION['disk'] ?? ''));
+    return ($folder !== false) ? $folder : $img_path;
+}
+
+/**
+ * Delete a subfolder of the media library with its content
+ * and the database entries of the deleted files
+ *
+ * @param string $dir e.g. "assets/images/gallery"
+ * @return bool
+ */
+function delete_folder(string $dir): bool {
 
     // only subfolders of the media roots, never the roots themselves
     $dir = se_media_folder(se_filter_filepath($dir), false);
@@ -61,7 +71,7 @@ function delete_folder($dir) {
         return false;
     }
 
-    $files = array_diff(scandir($delete_folder), array('.','..'));
+    $files = array_diff(scandir($delete_folder) ?: [],array('.','..'));
     foreach ($files as $file) {
         $path = $delete_folder.'/'.$file;
         if(is_dir($path) && !is_link($path)) {

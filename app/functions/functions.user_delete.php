@@ -146,6 +146,34 @@ function se_user_delete_blocker(int $user_id, string $context): string {
 }
 
 /**
+ * the account data as it was before the deletion, for the 'user.deleted' hook -
+ * plugins need e.g. the mail address to remove the contact from external services.
+ * passwords, 2FA secrets, lock/reset codes and backend settings are left out
+ *
+ * @param array $user row of se_user
+ * @return array
+ */
+function se_user_deleted_snapshot(array $user): array {
+
+    $skip_prefixes = ['user_psw', 'user_2fa_', 'user_unlock_', 'user_reset_psw', 'user_failed_login'];
+    $skip_columns = ['user_activationkey', 'user_locked_until', 'user_acp_settings', 'user_deleted_at', 'user_deleted_nick'];
+
+    $snapshot = [];
+    foreach($user as $column => $value) {
+        if(in_array($column, $skip_columns, true)) {
+            continue;
+        }
+        foreach($skip_prefixes as $prefix) {
+            if(str_starts_with($column, $prefix)) {
+                continue 2;
+            }
+        }
+        $snapshot[$column] = $value;
+    }
+    return $snapshot;
+}
+
+/**
  * delete an account - the checks of se_user_delete_blocker() must be done before
  *
  * @param int $user_id
@@ -251,11 +279,33 @@ function se_delete_user(int $user_id, bool $delete_comments = false, string $del
         ], ["comment_author_id" => $user_id]);
     }
 
-    record_log($deleted_by === 'self' ? 'user' : $deleted_by, "deleted user id: $user_id", "10");
+    // the log must not keep the name. Older entries also have it in the text,
+    // only these exact wordings are replaced - a short nick would otherwise
+    // match inside other words
+    $anonymous = 'deleted-'.$user_id;
+    $db_content->update("se_logs", ["source" => $anonymous], ["source" => $nick]);
+    $old_log_entries = [
+        "new user $nick" => "new user $anonymous",
+        "new user <i>$nick</i>" => "new user $anonymous",
+        "updated user <i>$nick</i>" => "updated user $anonymous",
+        "user activated via mail - $nick" => "user activated via mail"
+    ];
+    foreach($old_log_entries as $old_entry => $new_entry) {
+        $db_content->update("se_logs", ["entry" => $new_entry], ["entry" => $old_entry]);
+    }
 
-    if(function_exists('se_do_hook')) {
-        se_do_hook('backend', 'user.deleted', [
+    if($deleted_by === 'self') {
+        record_log('user', "deleted user id: $user_id", 10);
+    } else {
+        // shows up in the activity of the dashboard, like the changes by an administrator
+        se_log_content('delete', 'user', $user_id, '');
+    }
+
+    // global hook: accounts are deleted in the ACP and by the user in the frontend profile
+    if(function_exists('se_do_global_hook')) {
+        se_do_global_hook('user.deleted', [
             'user_id' => $user_id,
+            'user' => se_user_deleted_snapshot($user),
             'deleted_by' => $deleted_by
         ]);
     }

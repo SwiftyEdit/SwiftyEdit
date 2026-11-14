@@ -1,0 +1,92 @@
+{#
+ # snippet form in /admin/snippets/edit/, /new/ and /duplicate/, rendered by snippets-edit.php
+ # inputs: fields built by se_print_form_input()
+ # snippet_id: id of the edited snippet, null for new and duplicated snippets
+ #}
+{% import 'components/form/macros.twig' as form %}
+
+<div class="subHeader d-flex align-items-center">
+    {{ icon.card_heading|raw }} {{ lang.nav_btn_snippets }}
+    <a href="/admin/snippets/" class="btn btn-default ms-auto">{{ icon.arrow_left_short|raw }} {{ lang.nav_btn_overview }}</a>
+</div>
+
+<div id="formResponse"></div>
+
+<form>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" href="#content" data-bs-toggle="tab">{{ lang.label_content }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#images" data-bs-toggle="tab">{{ lang.images }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#link" data-bs-toggle="tab">{{ lang.label_url }}</a></li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="content">
+                            <div class="row">
+                                <div class="col-md-4">{{ inputs.name|raw }}</div>
+                                <div class="col-md-8">{{ inputs.title|raw }}</div>
+                            </div>
+                            {{ inputs.content|raw }}
+                            <div class="row">
+                                <div class="col-md-4">{{ inputs.keywords|raw }}</div>
+                                <div class="col-md-4">{{ inputs.label|raw }}</div>
+                                <div class="col-md-4">{{ inputs.classes|raw }}</div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="images">
+                            {{ form.images(images) }}
+                        </div>
+                        <div class="tab-pane fade" id="link">
+                            {{ inputs.link|raw }}
+                            {{ inputs.link_name|raw }}
+                            {{ inputs.link_title|raw }}
+                            {{ inputs.link_classes|raw }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">{{ lang.label_settings }}</div>
+                <div class="card-body">
+                    {{ inputs.language|raw }}
+                    {{ inputs.priority|raw }}
+
+                    <div class="mb-3">
+                        <label class="form-label" for="select_template">{{ lang.label_template }}</label>
+                        {# value: theme<|-|>template file, split again by the data-writer #}
+                        <select id="select_template" name="select_template" class="custom-select form-control">
+                            <option value="use_standard<|-|>use_standard"{% if template_standard %} selected{% endif %}>{{ lang.label_use_default }}</option>
+                            {% for theme in themes %}
+                                <optgroup label="{{ theme.name }}">
+                                    {% for template in theme.templates %}
+                                        <option value="{{ theme.name }}<|-|>{{ template.file }}"{% if template.selected %} selected{% endif %}>{{ theme.name }} » {{ template.file }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="d-block">{{ lang.labels }}</label>
+                        {{ form.labels('snippet_labels[]', labels) }}
+                    </div>
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="d-flex">
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_snippet" value="{{ snippet_id ?? 'new' }}">{{ submit_label }}</button>
+                        {% if snippet_id %}
+                            <button type="submit" hx-post="{{ writer_uri }}" hx-confirm="{{ lang.msg_confirm_delete }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-danger ms-1" name="delete_snippet" value="{{ snippet_id }}">{{ lang.btn_delete }}</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

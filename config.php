@@ -20,7 +20,7 @@ $se_upload_img_types = array('gif','jpg','jpe','jpeg','png','ico','webp');
 /* allowed file uploads at the backend */
 $se_upload_file_types = array('pdf','doc','docx','ppt','pptx','xls','xlsx','mp3','mp4','m4a','wav','mpg','mov','avi','epub','ogg');
 
-/* allowed uploads at the frontend */
+/* allowed uploads at the frontend - extend in data/config.php if needed. jpg, jpeg and png must be real images, the content of other types is not checked */
 $se_upload_frontend_types = array('jpg','jpeg','png');
 
 /* page types */
@@ -34,6 +34,13 @@ $se_page_types = array('normal', 'register', 'profile', 'search', 'password', '4
  * $se_failed_logins_limit = 10;   or   $se_failed_logins_limit = null;
  */
 $se_failed_logins_limit = 5;
+
+/* Minimum number of characters for new passwords. Existing passwords are not
+ * affected, they are only checked when a password is set. To change it, add
+ * to SE_CONTENT/config.php e.g.:
+ * $se_password_min_length = 12;
+ */
+$se_password_min_length = 10;
 
 /* define Folder structure */
 const SE_ROOT = __DIR__ . DIRECTORY_SEPARATOR;

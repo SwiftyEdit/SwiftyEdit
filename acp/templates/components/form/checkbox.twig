@@ -1,0 +1,5 @@
+{# single checkbox, rendered by tpl_form_checkbox() - label and value raw, see input-text.twig #}
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" name="{{ input_name|raw }}" value="{{ input_value|raw }}" id="{{ inputid }}"{% if checked %} checked{% endif %}>
+    <label class="form-check-label" for="{{ inputid }}">{{ label|raw }}</label>
+</div>

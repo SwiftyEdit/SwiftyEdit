@@ -1,19 +1,28 @@
 <?php
 	
+/**
+ * @var array $lang install/index.php
+ */
+
 if(!defined('INSTALLER')) {
     header("location:../");
     exit;
 }
 
-foreach($_POST as $key => $val) {
-	$$key = strip_tags($val); 
-}
+// MySQL form fields - only this fixed list, looping over all of $_POST
+// let a visitor set any variable here (e.g. the SQLite database paths)
+$prefs_database_host = strip_tags((string) ($_POST['prefs_database_host'] ?? ''));
+$prefs_database_port = strip_tags((string) ($_POST['prefs_database_port'] ?? ''));
+$prefs_database_name = strip_tags((string) ($_POST['prefs_database_name'] ?? ''));
+$prefs_database_username = strip_tags((string) ($_POST['prefs_database_username'] ?? ''));
+$prefs_database_psw = strip_tags((string) ($_POST['prefs_database_psw'] ?? ''));
+$prefs_database_prefix = strip_tags((string) ($_POST['prefs_database_prefix'] ?? ''));
 
-if(!isset($prefs_database_host) OR $prefs_database_host == '') {
+if($prefs_database_host == '') {
 	$prefs_database_host = 'localhost';
 }
 
-if(!isset($prefs_database_port) OR $prefs_database_port == '') {
+if($prefs_database_port == '') {
 	$prefs_database_port = '3306';
 }
 

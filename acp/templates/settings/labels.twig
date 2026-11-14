@@ -1,0 +1,34 @@
+{# labels in /admin/settings/labels/, rendered by acp/core/settings/labels.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block content %}
+    {% embed 'components/settings/section.twig' with {help: help['labels-list'], title: lang.labels} %}
+        {% block fields %}
+            <div id="getLabels" hx-get="{{ reader_uri }}?load_labels=1" hx-trigger="load, updated_labels from:body">
+                <span class="sr-only">Loading...</span>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/settings/section.twig' with {help: help['labels-new'], title: lang.new} %}
+        {% block fields %}
+            <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend" hx-on--after-request="if(event.detail.successful) this.reset()">
+                <div class="row g-2">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <input type="color" class="form-control form-control-color flex-grow-0" style="width: 3rem;" name="label_color" value="#3366cc" title="{{ lang.label_color|default('Color') }}">
+                            <input class="form-control" type="text" name="label_title" value="" placeholder="{{ lang.label_title }}" required>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="text" name="label_description" value="" placeholder="{{ lang.label_description }}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" name="post_label" value="new" class="btn btn-primary">{{ lang.save }}</button>
+                    </div>
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            </form>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

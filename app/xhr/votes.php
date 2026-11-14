@@ -14,9 +14,11 @@ session_write_close();
 
 $allowed_section = ['p', 'b', 'e', 's'];
 $section = '';
-if(in_array($_GET['section'], $allowed_section)) {
+if(in_array($_GET['section'] ?? '', $allowed_section, true)) {
     $section = $_GET['section'];
 }
+
+$votes = '';
 
 if(isset($_REQUEST['upv'])) {
     $id = (int) $_REQUEST['upv'];

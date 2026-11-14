@@ -11,13 +11,19 @@
  * @var string $cache_id
  * @var object $smarty
  * @var string $se_base_url
+ * @var string $mod_slug routing.php
+ * @var string $display_mode products.php
+ * @var bool $status_404 products.php
+ * @var string $page_title template-setup.php
+ * @var string $page_meta_keywords template-setup.php
+ * @var string $page_meta_description template-setup.php
  */
 
 
 /* defaults */
 $products_start = 0;
 $products_limit = (int) $se_settings['products_per_page'];
-if($products_limit == '' || $products_limit < 1) {
+if($products_limit < 1) {
     $products_limit = 10;
 }
 $canonical_url = '';
@@ -138,7 +144,7 @@ $active_filter_tags = se_get_active_filter_tags($parsed_filters['active_filters'
 
 // Set canonical URL if there are active filters
 $canonical_url = '';
-if(is_array($active_filter_tags) && count($active_filter_tags) > 0) {
+if(count($active_filter_tags) > 0) {
     $canonical_url = rtrim($se_base_url,"/").$filter_base_url;
     $smarty->assign('page_canonical_url', $canonical_url);
     $smarty->assign('page_meta_robots', "noindex, follow");
@@ -151,9 +157,11 @@ if ($current_query_string !== '') {
     $_SESSION['last_shop_url'] = $_SERVER['REQUEST_URI'];
 } else {
     // User came without filters - check if we have a saved URL
-    if (isset($_SESSION['last_shop_url']) && $_SESSION['last_shop_url'] !== $_SERVER['REQUEST_URI']) {
+    // only a path on this site - "//host/..." would leave the site
+    $last_shop_url = (string) ($_SESSION['last_shop_url'] ?? '');
+    if (preg_match('#^/(?![/\\\\])#', $last_shop_url) && $last_shop_url !== $_SERVER['REQUEST_URI']) {
         // Redirect to last filter state
-        header("Location: " . $_SESSION['last_shop_url']);
+        header("Location: " . $last_shop_url);
         exit;
     }
 }
@@ -216,14 +224,11 @@ $smarty->assign('sort_urls', $sort_urls);
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
 
-if(!isset($array_mod_slug[0])) {
-    $array_mod_slug[0] = '';
-    $status_404 = false;
-}
 if(!isset($array_mod_slug[1])) {
     $array_mod_slug[1] = '';
     $status_404 = false;
 }
+$array_mod_slug[2] = $array_mod_slug[2] ?? '';
 
 $this_page_categories = explode(',',$page_contents['page_posts_categories']);
 if($this_page_categories[0] == 'all') {
@@ -257,7 +262,7 @@ if(is_array($all_categories)) {
         "cat_href" => $page_contents['page_permalink'],
         "cat_title" => $page_contents['page_title'],
         "cat_name" => $lang['btn_all'],
-        "cat_class" => (($array_mod_slug[0] ?? '') === '') ? 'active' : '',
+        "cat_class" => ($array_mod_slug[0] === '') ? 'active' : '',
         "cat_hash" => null
     );
 }
@@ -270,7 +275,8 @@ foreach($all_categories as $cats) {
         }
     }
 
-    $show_category_title = $cats['cat_title'];
+    // the name if the category has no title of its own
+    $show_category_title = ($cats['cat_title'] != '') ? $cats['cat_title'] : $cats['cat_name'];
     $show_category_description = $cats['cat_description'];
     $show_category_name = $cats['cat_name'];
     $show_category_text = $cats['cat_text'];
@@ -292,8 +298,13 @@ foreach($all_categories as $cats) {
         // replace contents and metas with category it's data
         $page_content = text_parser(stripslashes($show_category_text));
         $page_title = $show_category_title;
-        $page_meta_description = $show_category_description;
-        $page_meta_keywords = $show_category_keywords;
+        // without own meta data the ones of the page stay
+        if($show_category_description != '') {
+            $page_meta_description = $show_category_description;
+        }
+        if($show_category_keywords != '') {
+            $page_meta_keywords = $show_category_keywords;
+        }
 
         // get the theme name for the category it's theme values
         $this_page_theme = $page_contents['page_template'];
@@ -301,7 +312,7 @@ foreach($all_categories as $cats) {
             $this_page_theme = $se_settings['template'];
         }
 
-        if(($cats['cat_template'] == $this_page_theme) && ($cat_class == 'active')) {
+        if($cats['cat_template'] == $this_page_theme) {
             $category_template_data = json_decode($cats['cat_template_values'],true);
         }
 
@@ -325,11 +336,12 @@ foreach($all_categories as $cats) {
 
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
-                $products_start = $array_mod_slug[2];
+                $products_start = (int) $array_mod_slug[2];
             } else {
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: /$swifty_slug");
                 header("Connection: close");
+                exit;
             }
         }
     }
@@ -343,9 +355,9 @@ if($array_mod_slug[0] == 'p' OR $array_mod_slug[1] == 'p' OR isset($_GET['page']
     if(isset($_GET['page'])) {
         $products_start = (int) $_GET['page'];
     } else if(is_numeric($array_mod_slug[1])) {
-        $products_start = $array_mod_slug[1];
+        $products_start = (int) $array_mod_slug[1];
     } else if(is_numeric($array_mod_slug[2])) {
-        $products_start = $array_mod_slug[2];
+        $products_start = (int) $array_mod_slug[2];
     } else {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");
@@ -389,6 +401,9 @@ if($cnt_filter_products < 1) {
 $nextPage = $products_start + $products_limit;
 $prevPage = $products_start - $products_limit;
 $cnt_pages = ceil($cnt_filter_products / $products_limit);
+$current_page = 1;
+$disable_prev_link = false;
+$disable_next_link = false;
 
 if ($cnt_pages > 1) {
     $show_pagination = true;
@@ -464,7 +479,7 @@ if ($show_end > $cnt_filter_products) {
 // Shopping cart check
 if($se_settings['posts_products_cart'] == 2 OR $se_settings['posts_products_cart'] == 3) {
     $show_shopping_cart = true;
-    if($se_settings['posts_products_cart'] == 2 && $_SESSION['user_nick'] == '') {
+    if($se_settings['posts_products_cart'] == 2 && ($_SESSION['user_nick'] ?? '') == '') {
         $show_shopping_cart = false;
     }
 } else {
@@ -549,20 +564,21 @@ foreach ($get_products as $k => $post) {
         $get_products[$k]['show_voting'] = true;
         $voter_data = false;
         $voting_type = array("upv", "dnv");
+        $user_nick = (string) ($_SESSION['user_nick'] ?? '');
         if ($get_products[$k]['votings'] == 2) {
-            if ($_SESSION['user_nick'] == '') {
+            if ($user_nick == '') {
                 $voter_data = false;
             } else {
-                $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $_SESSION['user_nick'], $voting_type);
+                $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $user_nick, $voting_type);
             }
         }
 
         if ($get_products[$k]['votings'] == 3) {
-            if (!isset($_SESSION['user_nick']) OR $_SESSION['user_nick'] == '') {
+            if ($user_nick == '') {
                 $voter_name = se_generate_anonymous_voter();
                 $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $voter_name, $voting_type);
             } else {
-                $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $_SESSION['user_nick'], $voting_type);
+                $voter_data = se_check_user_legitimacy($get_products[$k]['id'], $user_nick, $voting_type);
             }
         }
 

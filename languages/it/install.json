@@ -23,7 +23,6 @@
   "username": "Username",
   "email": "E-Mail",
   "password": "Password",
-  "password_help_text": "La password deve contenere almeno 8 caratteri",
   "msg_form": "Per avviare l'installazione SwiftyEdit ha bisogno di un nome utente e di una password per un amministratore.<br><strong>Prestare attenzione</strong> alla correttezza delle voci<br>Nota: Tutte le informazioni possono essere successivamente integrate o modificate.",
   "start_install": "Avvia Installazione",
   "installed": "Installazione avvenuta con successo",

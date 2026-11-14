@@ -1,0 +1,10 @@
+{# blog settings in /admin/settings/posts/, rendered by acp/core/settings/posts.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block content %}
+    {% embed 'components/settings/section.twig' with {help: help['posts-entries'], title: lang.label_entries, section: 'posts-entries'} %}
+        {% block fields %}
+            {{ inputs.entries_per_page|raw }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

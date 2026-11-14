@@ -184,3 +184,63 @@
 		  }
 	}	
 }
+// Text that is copied on click (copy_text macro in
+// acp/templates/components/list/macros.twig): all buttons have the same
+// width, a long text is cut with "..." (.text-truncate), the icon stays visible
+.copy-text {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .25rem;
+	width: 16rem;
+	max-width: 100%;
+	text-align: left;
+}
+
+// popover of the copy buttons: wide enough for a shortcode on one line
+.popover-copy {
+	--bs-popover-max-width: 32rem;
+
+	.popover-body {
+		font-family: var(--bs-font-monospace);
+		white-space: nowrap;
+	}
+}
+
+// Rounded filter button, usually several in a row. .active marks the current
+// filter, .chip-count is an optional number next to the label.
+.chip {
+	--chip-bg: transparent;
+	--chip-hover-bg: var(--bs-widget-bg-300);
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 12px;
+	font-size: .85rem;
+	font-weight: 600;
+	color: var(--bs-body-color);
+	background: var(--chip-bg);
+	border: 1px solid var(--bs-border-color);
+	border-radius: 100px;
+
+	&:hover {
+		background: var(--chip-hover-bg);
+	}
+
+	&.active {
+		color: var(--bs-body-bg);
+		background: var(--bs-body-color);
+		border-color: var(--bs-body-color);
+	}
+}
+
+[data-bs-theme="dark"] .chip {
+	--chip-bg: rgba(0, 0, 0, .25);
+	--chip-hover-bg: rgba(0, 0, 0, .4);
+}
+
+.chip-count {
+	font-size: .75rem;
+	opacity: .7;
+	font-variant-numeric: tabular-nums;
+}

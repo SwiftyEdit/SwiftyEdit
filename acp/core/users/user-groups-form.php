@@ -1,9 +1,22 @@
 <?php
 
+/**
+ * @var \Medoo\Medoo $db_user
+ * @var array $lang
+ * @var array $icon
+ */
+
 $writer_uri = '/admin-xhr/users/write/';
-include_once '../acp/core/templates.php';
+include_once __DIR__.'/../templates.php';
 
 echo '<div id="formResponse"></div>';
+
+// defaults for new groups - for existing groups, the fields are set
+// from the database row below (empty values are skipped there)
+$get_group_id = null;
+$group_name = $group_description = $group_type = '';
+$array_group_user = [];
+$btn_reset = $btn_delete = '';
 
 
 if(isset($_POST['open_user_group']) && is_numeric($_POST['open_user_group'])) {

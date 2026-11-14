@@ -1,0 +1,8 @@
+{# bootstrap row, rendered by se_print_row() - cols: list of {class, content}, content is html #}
+<div class="row">
+    {% for col in cols %}
+        <div class="{{ col.class }}">
+            {{ col.content|raw }}
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,17 @@
+{#
+ # filter of the reactions by entry, loaded by the inbox data-reader (action reactions_filter)
+ # groups: list of {label, entries: [{value (type:id), title, count, selected}]}
+ #}
+<form hx-post="{{ writer_uri }}" hx-trigger="change" hx-swap="none">
+    <select name="reactions_filter" class="form-select" aria-label="{{ lang.label_filter }}">
+        <option value="">{{ lang.label_show_all_data }}</option>
+        {% for group in groups %}
+            <optgroup label="{{ group.label }}">
+                {% for entry in group.entries %}
+                    <option value="{{ entry.value }}"{% if entry.selected %} selected{% endif %}>{{ entry.title|default('#' ~ entry.value) }} ({{ entry.count }})</option>
+                {% endfor %}
+            </optgroup>
+        {% endfor %}
+    </select>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</form>

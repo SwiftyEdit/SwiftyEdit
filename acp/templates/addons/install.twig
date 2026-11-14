@@ -1,0 +1,22 @@
+{# install a plugin or theme from the url of its info.json in /admin/addons/install/, rendered by acp/core/addons/install.php #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.plugin|raw }} <a href="/admin/addons/">{{ lang.nav_btn_addons }}</a>
+    <span class="ms-1">{{ lang.addons_install_title }}</span>
+</div>
+
+<div class="card p-3">
+    {% if not enabled %}
+        {{ lang.catalog_disabled }}
+    {% else %}
+        <form hx-post="{{ writer_uri }}" hx-target="#get-addon-response">
+            <label class="form-label" for="addon_info_url">{{ lang.addons_label_info_url }}</label>
+            <div class="input-group">
+                <input type="url" class="form-control" id="addon_info_url" name="get_addon_info_from_url" placeholder="https://" required>
+                <button type="submit" class="btn btn-primary">{{ lang.btn_addon_get_info }}</button>
+            </div>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        </form>
+        {# the confirm step and the result of the installation (install-confirm.twig) #}
+        <div id="get-addon-response"></div>
+    {% endif %}
+</div>

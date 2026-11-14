@@ -1,204 +1,281 @@
 <?php
 
-// list text filters for comments
-if($_REQUEST['action'] == 'list_active_searches_comments') {
-    if(isset($_SESSION['comments_text_filter']) AND $_SESSION['comments_text_filter'] != "") {
-        unset($all_filter);
-        $all_filter_orders = explode(" ", $_SESSION['comments_text_filter']);
+/**
+ * SwiftyEdit /admin-xhr/inbox/read/
+ * comments: active search keywords, the list (acp/templates/inbox/comments-items.twig)
+ * and the edit form in the modal - reactions: the list of votes and the filter
+ * - mails: the log of a sent message
+ *
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $db_content
+ * @var object $db_posts
+ * @var object $twig
+ */
 
-        foreach($all_filter_orders as $f) {
-            if($_REQUEST['rm_keyword'] == "$f") { continue; }
-            if($f == "") { continue; }
-            $btn_remove_keyword .= '<button class="btn btn-sm btn-default m-1" name="rmkey_comments" value="'.$f.'" hx-post="/admin-xhr/inbox/write/" hx-trigger="click" hx-swap="none" hx-include="[name=\'csrf_token\']">'.$icon['x'].' '.$f.'</button>';
-        }
-        if(isset($btn_remove_keyword)) {
-            echo '<div class="d-inline">'.$btn_remove_keyword.'</div>';
-        }
-    }
+$list_writer_uri = '/admin-xhr/inbox/write/';
+
+// text fields are stored html-encoded (sanitizeUserInputs), Twig escapes on output
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+
+$action = $_REQUEST['action'] ?? '';
+
+// comments of pages (p), posts (b) and products (c) - votes and guest list
+// confirmations are stored in the same table, but they are no comments
+$comment_types = ['p', 'b', 'c'];
+
+// list active keywords from search input
+if($action == 'list_active_searches_comments') {
+    $keywords = array_filter(explode(" ", $_SESSION['comments_text_filter'] ?? ''));
+    echo $twig->render('components/list/active-searches.twig', [
+        'keywords' => array_map($decode, array_values($keywords)),
+        'remove_name' => 'rmkey_comments',
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }
 
 // list the comments
-if($_REQUEST['action'] == 'list_comments') {
+if($action == 'list_comments') {
 
-    // defaults
-    $order_by = 'comment_time';
-    $order_direction = 'DESC';
-    $limit_start = $_SESSION['pagination_comments'] ?? 0;
     $nbr_show_items = 25;
-
-    $match_str = $_SESSION['comments_text_filter'] ?? '';
-    $order_key = $_SESSION['sorting_comments'] ?? $order_by;
-    $order_direction = $_SESSION['sorting_comments_direction'] ?? $order_direction;
-
-    if($limit_start > 0) {
-        $limit_start = ($limit_start*$nbr_show_items);
-    }
-
-    $filter_base = [
-        "AND" => [
-            "comment_id[>]" => 0
-        ]
-    ];
-
-    $filter_by_str = array();
-    if($match_str != '') {
-        $this_filter = explode(" ",$match_str);
-        foreach($this_filter as $f) {
-            if($f == "") { continue; }
-            $filter_by_str = [
-                "OR" => [
-                    "comment_author[~]" => "%$f%",
-                    "comment_author_mail[~]" => "%$f%",
-                    "comment_text[~]" => "%$f%"
-                ]
-            ];
-        }
-    }
+    $active_page = (int) ($_SESSION['pagination_comments'] ?? 0);
 
     $db_where = [
-        "AND" => $filter_base+$filter_by_str
+        "comment_type" => $comment_types
     ];
 
-    $db_order = [
-        "ORDER" => [
-            "$order_key" => "$order_direction"
-        ]
-    ];
-
-    $db_limit = [
-        "LIMIT" => [$limit_start, $nbr_show_items]
-    ];
-
-    $comments_data_cnt = $db_content->count("se_comments", $db_where);
-
-
-    $comments_data = $db_content->select("se_comments","*",
-        $db_where+$db_order+$db_limit
-    );
-
-    $nbr_pages = ceil($comments_data_cnt/$nbr_show_items);
-
-    echo '<div class="card p-3">';
-    echo se_print_pagination('/admin-xhr/inbox/write/',$nbr_pages,$_SESSION['pagination_comments'],'10','','pagination_comments');
-
-    foreach($comments_data as $comment) {
-
-        $comment_time = se_format_datetime($comment['comment_time']);
-        $comment_id = $comment['comment_id'];
-        $comment_relation_id = $comment['comment_relation_id'];
-        $comment_status = $comment['comment_status'];
-
-        $btn_status_class = 'text-success';
-        $status_icon = $icon['check'];
-        if($comment_status == 1) {
-            $btn_status_class = '';
-            $status_icon = $icon['clock'];
-        }
-
-        echo '<div class="card mb-1" id="comid'.$comment_id.'">';
-        echo '<div class="card-title">';
-        echo '<span class="badge">#'.$comment_id.'</span> <small>'.$comment_time.'</small> '.$comment['comment_author'].' ['.$comment['comment_author_mail'].']';
-        echo '</div>';
-        echo '<div class="card-body">';
-        echo $comment['comment_text'];
-
-        echo '<div class="row">';
-        echo '<div class="col-md-9">';
-        if($comment['comment_type'] == 'p') {
-            echo '<div hx-get="/admin-xhr/inbox/read/?get_page_title='.$comment_relation_id.'" hx-trigger="load">Loading page data ...</div>';
-        }
-
-        if($comment['comment_type'] == 'b') {
-            echo '<div hx-get="/admin-xhr/inbox/read/?get_post_title='.$comment_relation_id.'" hx-trigger="load">Loading post data ...</div>';
-        }
-
-        if($comment['comment_type'] == 'c') {
-            echo '<div hx-get="/admin-xhr/inbox/read/?get_product_title='.$comment_relation_id.'" hx-trigger="load">Loading product data ...</div>';
-        }
-
-        echo '</div>';
-        echo '<div class="col-md-3 text-end">';
-
-        echo '<div class="btn-group me-2">';
-        echo '<button hx-get="/admin-xhr/inbox/read/?open_comment='.$comment_id.'" hx-target="#comment-modal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#comment-modal" class="btn btn-sm btn-default">'.$icon['edit'].'</button>';
-        echo '<button hx-post="/admin-xhr/inbox/write/" hx-trigger="click" hx-trigger="click" name="change_status" value="'.$comment_id.'" hx-swap="none" class="btn btn-sm btn-default '.$btn_status_class.'">'.$status_icon.'</button>';
-        echo '</div>';
-        echo '<button hx-post="/admin-xhr/inbox/write/" hx-trigger="click" hx-trigger="click" name="delete_comment" value="'.$comment_id.'" hx-target="#inbox-response" class="btn btn-sm btn-default text-danger">'.$icon['trash_alt'].'</button>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '</div>';
-        echo '</div>';
-
+    // search: every keyword has to be part of the author, the mail or the text
+    $search = array_values(array_filter(explode(" ", $_SESSION['comments_text_filter'] ?? '')));
+    foreach($search as $i => $keyword) {
+        $db_where["OR #search$i"] = [
+            "comment_author[~]" => "%$keyword%",
+            "comment_author_mail[~]" => "%$keyword%",
+            "comment_text[~]" => "%$keyword%"
+        ];
     }
 
-    echo '<div id="comment-modal" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">';
-    echo '<div class="modal-dialog modal-lg modal-dialog-centered" role="document"><div class="modal-content"></div></div>';
-    echo '</div>';
+    $comments_data_cnt = $db_content->count("se_comments", ["AND" => $db_where]);
+    $comments_data = $db_content->select("se_comments", "*", [
+        "AND" => $db_where,
+        "ORDER" => ["comment_time" => "DESC"],
+        "LIMIT" => [$active_page * $nbr_show_items, $nbr_show_items]
+    ]);
 
-    echo '</div>';
+    // titles of the pages, posts and products, one query per type
+    $relation_ids = ['p' => [], 'b' => [], 'c' => []];
+    foreach($comments_data as $comment) {
+        $relation_ids[$comment['comment_type']][] = (int) $comment['comment_relation_id'];
+    }
+    $titles = [
+        'p' => $relation_ids['p'] ? $db_content->select("se_pages", ["page_id", "page_title"], ["page_id" => $relation_ids['p']]) : [],
+        'b' => $relation_ids['b'] ? $db_posts->select("se_posts", ["post_id", "post_title"], ["post_id" => $relation_ids['b']]) : [],
+        'c' => $relation_ids['c'] ? $db_posts->select("se_products", ["id", "title"], ["id" => $relation_ids['c']]) : []
+    ];
+    $titles = [
+        'p' => array_column($titles['p'], 'page_title', 'page_id'),
+        'b' => array_column($titles['b'], 'post_title', 'post_id'),
+        'c' => array_column($titles['c'], 'title', 'id')
+    ];
+    $relation_labels = ['p' => $lang['nav_btn_pages'], 'b' => $lang['nav_btn_blog'], 'c' => $lang['nav_btn_shop']];
+
+    $comments = [];
+    foreach($comments_data as $comment) {
+        $type = $comment['comment_type'];
+        $comments[] = [
+            'id' => (int) $comment['comment_id'],
+            'time' => se_format_datetime($comment['comment_time']),
+            'author' => $decode($comment['comment_author']),
+            'mail' => $decode($comment['comment_author_mail']),
+            'text' => $decode($comment['comment_text']),
+            // 1 = waiting for an administrator, 2 = shown
+            'approved' => ((int) $comment['comment_status'] !== 1),
+            'parent_id' => (int) $comment['comment_parent_id'],
+            'relation' => [
+                'type' => $relation_labels[$type],
+                'title' => $decode($titles[$type][(int) $comment['comment_relation_id']] ?? '')
+            ]
+        ];
+    }
+
+    echo $twig->render('inbox/comments-items.twig', [
+        'comments' => $comments,
+        'pagination' => se_print_pagination($list_writer_uri, (int) ceil($comments_data_cnt / $nbr_show_items), $active_page, 10, '', 'pagination_comments'),
+        'reader_uri' => '/admin-xhr/inbox/read/',
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
 }
 
-// open comment in modal
+/**
+ * titles of the entries votes belong to, one query per type
+ * relation types of votes: p page, b post, e event, s product (see app/xhr/ajax.votings.php)
+ *
+ * @param array $relations list of [type, id]
+ * @return array "type:id" => decoded title
+ */
+$vote_relation_titles = static function(array $relations) use ($db_content, $db_posts, $decode): array {
+    $ids = ['p' => [], 'b' => [], 'e' => [], 's' => []];
+    foreach($relations as [$type, $id]) {
+        if(isset($ids[$type])) {
+            $ids[$type][] = (int) $id;
+        }
+    }
+    $sources = [
+        'p' => [$db_content, 'se_pages', 'page_id', 'page_title'],
+        'b' => [$db_posts, 'se_posts', 'post_id', 'post_title'],
+        'e' => [$db_posts, 'se_events', 'id', 'title'],
+        's' => [$db_posts, 'se_products', 'id', 'title']
+    ];
+    $titles = [];
+    foreach($sources as $type => [$db, $table, $id_column, $title_column]) {
+        if(!$ids[$type]) {
+            continue;
+        }
+        foreach($db->select($table, [$id_column, $title_column], [$id_column => array_unique($ids[$type])]) as $row) {
+            $titles[$type.':'.$row[$id_column]] = $decode($row[$title_column]);
+        }
+    }
+    return $titles;
+};
+$vote_relation_labels = [
+    'p' => $lang['nav_btn_pages'],
+    'b' => $lang['nav_btn_blog'],
+    'e' => $lang['nav_btn_events'],
+    's' => $lang['nav_btn_shop']
+];
+
+// the votes, all or of the entry selected in the filter (session "type:id")
+if($action == 'list_reactions') {
+
+    $db_where = ["comment_type" => ["upv", "dnv"]];
+    $filter = explode(':', $_SESSION['reactions_filter'] ?? '');
+    if(count($filter) == 2) {
+        $db_where["comment_relation_type"] = $filter[0];
+        $db_where["comment_relation_id"] = (int) $filter[1];
+    }
+
+    $votes_data = $db_content->select("se_comments", "*", [
+        "AND" => $db_where,
+        "ORDER" => ["comment_time" => "DESC"]
+    ]);
+
+    $titles = $vote_relation_titles(array_map(
+        static fn($vote) => [$vote['comment_relation_type'], $vote['comment_relation_id']],
+        $votes_data
+    ));
+
+    $votes = [];
+    $counts = ['all' => 0, 'up' => 0, 'down' => 0];
+    foreach($votes_data as $vote) {
+        $up = ($vote['comment_type'] == 'upv');
+        $author = (string) $vote['comment_author'];
+        $type = (string) $vote['comment_relation_type'];
+        $votes[] = [
+            'id' => (int) $vote['comment_id'],
+            'time' => se_format_datetime($vote['comment_time']),
+            'up' => $up,
+            // anonymous votes are stored with a hash of the ip address
+            'voter' => (strlen($author) == 32 && ctype_xdigit($author)) ? '' : $decode($author),
+            'relation' => [
+                'type' => $vote_relation_labels[$type] ?? $type,
+                'title' => $titles[$type.':'.$vote['comment_relation_id']] ?? ''
+            ]
+        ];
+        $counts['all']++;
+        $counts[$up ? 'up' : 'down']++;
+    }
+
+    echo $twig->render('inbox/reactions-items.twig', [
+        'votes' => $votes,
+        'counts' => $counts,
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
+}
+
+// filter of the reactions: the entries that have votes, grouped by type
+if($action == 'reactions_filter') {
+
+    $entries = $db_content->select("se_comments", [
+        "comment_relation_type",
+        "comment_relation_id",
+        "count" => \Medoo\Medoo::raw("COUNT(*)")
+    ], [
+        "comment_type" => ["upv", "dnv"],
+        "GROUP" => ["comment_relation_type", "comment_relation_id"]
+    ]);
+
+    $titles = $vote_relation_titles(array_map(
+        static fn($entry) => [$entry['comment_relation_type'], $entry['comment_relation_id']],
+        $entries
+    ));
+
+    $groups = [];
+    foreach($entries as $entry) {
+        $type = (string) $entry['comment_relation_type'];
+        $value = $type.':'.(int) $entry['comment_relation_id'];
+        $groups[$type]['label'] = $vote_relation_labels[$type] ?? $type;
+        $groups[$type]['entries'][] = [
+            'value' => $value,
+            'title' => $titles[$value] ?? '',
+            'count' => (int) $entry['count'],
+            'selected' => ($value == ($_SESSION['reactions_filter'] ?? ''))
+        ];
+    }
+
+    echo $twig->render('inbox/reactions-filter.twig', [
+        'groups' => array_values($groups),
+        'writer_uri' => $list_writer_uri
+    ]);
+    exit;
+}
+
+// log of a sent message in the modal
+if(isset($_GET['mail_log'])) {
+    require_once __DIR__.'/../functions_inbox.php';
+
+    $message = se_inbox_get_message((int) $_GET['mail_log']);
+    if($message === null) {
+        exit;
+    }
+
+    $log = json_decode((string) $message['log'], true);
+    $entries = [];
+    foreach(is_array($log) ? $log : [] as $entry) {
+        $entries[] = [
+            'sent' => (($entry['status'] ?? '') == 'sent'),
+            'time' => se_format_datetime((int) ($entry['time'] ?? 0)),
+            'recipient' => (string) ($entry['recipient'] ?? '')
+        ];
+    }
+    echo $twig->render('inbox/mail-log.twig', [
+        'subject' => $decode($message['subject']),
+        'entries' => $entries
+    ]);
+    exit;
+}
+
+// edit form of a comment in the modal
 if(isset($_REQUEST['open_comment'])) {
 
-    $comment_id = (int) $_REQUEST['open_comment'];
-    $get_comment = $db_content->get("se_comments","*",["comment_id" => $comment_id]);
+    $get_comment = $db_content->get("se_comments", "*", [
+        "comment_id" => (int) $_REQUEST['open_comment'],
+        "comment_type" => $comment_types
+    ]);
+    if(!is_array($get_comment)) {
+        exit;
+    }
 
-
-    echo '<div class="modal-dialog modal-xl modal-dialog-centered">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Edit: #'.$comment_id.'</h5>
-    </div>
-    <div class="modal-body">';
-
-    echo '<div id="response"></div>';
-
-    echo '<form hx-post="/admin-xhr/inbox/write/" hx-target="#response" method="POST">';
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['label_name'].'</label>';
-    echo '<input type="text" class="form-control" name="comment_author" value="'.$get_comment['comment_author'].'">';
-    echo '</div>';
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['label_mail'].'</label>';
-    echo '<input type="text" class="form-control" name="comment_author_mail" value="'.$get_comment['comment_author_mail'].'">';
-    echo '</div>';
-    echo '<div class="form-group">';
-    echo '<label>'.$lang['label_comment'].'</label>';
-    echo '<textarea class="form-control" name="comment_text" rows="10">'.$get_comment['comment_text'].'</textarea>';
-    echo '</div>';
-    echo '<button type="submit" class="btn btn-sm btn-primary" name="update_comment" value="'.$comment_id.'">'.$lang['update'].'</button>';
-    echo '<input  type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-    echo '</form>';
-
-    echo '</div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="htmx.trigger(\'body\', \'update_comments_list\')">'.$lang['close'].'</button>
-    </div>
-  </div>
-</div>';
-
-}
-
-if(isset($_GET['get_page_title'])) {
-    $page_id = (int) $_GET['get_page_title'];
-    $page_title = $db_content->get("se_pages","page_title",['page_id'=>$page_id]);
-    echo '<p class="my-0"><span class="text-muted">Page: '.$page_title.'</span></p>';
-    exit;
-}
-
-if(isset($_GET['get_post_title'])) {
-    $post_id = (int) $_GET['get_post_title'];
-    $page_title = $db_posts->get("se_posts","post_title",['post_id'=>$post_id]);
-    echo 'Post: '.$page_title;
-    exit;
-}
-
-if(isset($_GET['get_product_title'])) {
-    $product_id = (int) $_GET['get_product_title'];
-    $product_title = $db_posts->get("se_products","title",['id'=>$product_id]);
-    echo '<p class="my-0"><span class="text-muted">Product: '.$product_title.'</span></p>';
+    echo $twig->render('inbox/comment-modal.twig', [
+        'comment' => [
+            'id' => (int) $get_comment['comment_id'],
+            'author' => $decode($get_comment['comment_author']),
+            'mail' => $decode($get_comment['comment_author_mail']),
+            'text' => $decode($get_comment['comment_text'])
+        ],
+        'writer_uri' => $list_writer_uri
+    ]);
     exit;
 }

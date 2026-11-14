@@ -1,0 +1,85 @@
+{#
+ # grid of the catalog in /admin/addons/catalog/, rendered by the addons data-reader
+ # notice: {type, text} instead of the grid (no access, disabled, unavailable, empty)
+ # stale: the registry could not be reached, the entries come from the cache
+ # entries: list of {slug, name, description, author, repo_url, type, tags, tags_attr, poster,
+ #   screenshots, modal_id, meta, installed, info_json_url}
+ # the registry data is third-party content, Twig escapes it
+ #}
+{% set fallback_poster = '/assets/themes/administration/images/poster-addons.png' %}
+
+{% if notice %}
+    <div class="card p-3 text-muted">{{ notice }}</div>
+{% else %}
+    {% if stale %}
+        <div class="alert alert-warning">{{ lang.catalog_stale }}</div>
+    {% endif %}
+
+    <div class="row">
+        {% for entry in entries %}
+            {# bootstrap modals are position:fixed overlays and shouldn't sit inside a card #}
+            {% if entry.screenshots %}
+                {% embed 'components/modal.twig' with {id: entry.modal_id, title: entry.name ~ ' - ' ~ lang.catalog_screenshots} %}
+                    {% block body %}
+                        {% for shot in entry.screenshots %}
+                            <img src="{{ shot }}" class="img-fluid mb-2 rounded" alt="">
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
+            {% endif %}
+
+            <div class="col-md-4 mb-3" data-catalog-type="{{ entry.type }}" data-catalog-tags="{{ entry.tags_attr }}">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            {# square thumbnail, addon icons are square - not every addon has one, so it falls back client-side #}
+                            <img src="{{ entry.poster }}" class="rounded flex-shrink-0" width="48" height="48" style="object-fit: cover;" alt="" onerror="this.onerror=null;this.src='{{ fallback_poster }}';">
+                            <div style="min-width: 0;">
+                                {% if entry.type == 'theme' %}
+                                    <div class="small text-info">{{ icon.palette|raw }} Theme</div>
+                                {% else %}
+                                    <div class="small text-muted">{{ icon.plugin|raw }} Plugin</div>
+                                {% endif %}
+                                <div class="fw-semibold text-truncate">{{ entry.name }}</div>
+                                <div class="small text-muted">{{ lang.catalog_by }} <a href="{{ entry.repo_url }}" target="_blank" rel="noopener">{{ entry.author }}</a></div>
+                            </div>
+                        </div>
+
+                        {# clamped to three lines so long descriptions don't stretch the whole grid row #}
+                        <div class="flex-grow-1">
+                            <p class="card-text small mb-2" title="{{ entry.description }}" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{{ entry.description }}</p>
+                        </div>
+
+                        {% if entry.tags %}
+                            <div class="small text-muted">{{ entry.tags|join(' · ') }}</div>
+                        {% endif %}
+                        {% if entry.screenshots %}
+                            <div class="small mt-1">
+                                <button type="button" class="btn btn-sm btn-link p-0" data-bs-toggle="modal" data-bs-target="#{{ entry.modal_id }}">{{ icon.images|raw }} {{ lang.catalog_screenshots }} ({{ entry.screenshots|length }})</button>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# the footer keeps the action aligned across a grid row regardless of description length #}
+                    <div class="card-footer d-flex justify-content-between align-items-center gap-2">
+                        <span class="small text-muted">{{ entry.meta|join(' · ') }}</span>
+                        {% if entry.installed %}
+                            <span class="small text-success text-nowrap">{{ icon.check|raw }} {{ lang.catalog_installed }}</span>
+                        {% elseif entry.info_json_url %}
+                            {# the confirm step is loaded into the shared install modal of catalog.twig #}
+                            <button class="btn btn-sm btn-primary"
+                                    hx-post="{{ writer_uri }}"
+                                    hx-vals="{{ {get_addon_info_from_url: entry.info_json_url, target_id: 'catalogInstallModalBody'}|json_encode }}"
+                                    hx-include="[name='csrf_token']"
+                                    hx-target="#catalogInstallModalBody"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#catalogInstallModal">{{ lang.btn_install }}</button>
+                        {% else %}
+                            <span class="small text-danger">{{ lang.catalog_invalid_repo }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * SwiftyEdit /admin-xhr/counter/... (routed in acp/data_reader.php)
+ * numbers for the badges of the dashboard and the global filter
+ *
+ * global variables
+ * @var object $db_content
+ * @var object $db_posts
+ * @var object $db_user
+ * @var array $lang
+ */
+
 // Read-only w.r.t. $_SESSION (only compared below, never assigned) - safe to
 // release the session lock immediately. These counter badges fire alongside
 // the dashboard's other hx-trigger="load" widgets, all sharing one
@@ -58,17 +69,17 @@ if($_REQUEST['count'] == 'addons') {
 if($_REQUEST['count'] == 'count_global_filters') {
 
     $cnt_global_filters = 0;
-    if($_SESSION['global_filter_label'] != '') {
+    if(($_SESSION['global_filter_label'] ?? '') != '') {
         $cnt_global_filters++;
     }
 
-    if($_SESSION['global_filter_languages'] != '') {
+    if(($_SESSION['global_filter_languages'] ?? '') != '') {
         $cnt_global_filters++;
     }
 
-    if($_SESSION['global_filter_status'] != '') {
+    if(($_SESSION['global_filter_status'] ?? '') != '') {
         $cnt_global_filters++;
     }
 
-    se_plain_response($cnt_global_filters);
+    se_plain_response((string) $cnt_global_filters);
 }

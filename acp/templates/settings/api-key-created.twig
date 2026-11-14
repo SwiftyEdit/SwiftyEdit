@@ -1,0 +1,8 @@
+{# the plaintext key right after creating it - the only time it is ever shown (settings data-writer) #}
+<div class="alert alert-warning">
+    <p class="mb-2"><strong>{{ lang.api_keys_msg_created }}</strong></p>
+    <div class="input-group">
+        <input type="text" class="form-control font-monospace" id="apiKeyPlain" value="{{ api_key }}" readonly onclick="this.select()">
+        <button type="button" class="btn btn-default" onclick="navigator.clipboard.writeText(document.getElementById('apiKeyPlain').value)" title="{{ lang.api_keys_btn_copy }}">{{ icon.clipboard|raw }}</button>
+    </div>
+</div>

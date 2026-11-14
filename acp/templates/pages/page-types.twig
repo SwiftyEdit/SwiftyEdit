@@ -1,0 +1,13 @@
+{#
+ # page types (page_type_of_use) in the sidebar of /admin/pages/, a click adds or removes
+ # the type from the list filter - loaded by the pages data-reader (action list_page_types)
+ # types: list of {value, label, count, active}
+ #}
+<div class="list-group list-group-flush scroll-container">
+    {% for type in types %}
+        <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-start{% if type.active %} active{% endif %}" name="filter_type" value="{{ type.value }}" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']">
+            <div class="me-auto">{{ type.label }}</div>
+            <span class="badge {{ type.count > 0 ? 'text-bg-secondary' : 'text-bg-danger' }}">{{ type.count }}</span>
+        </button>
+    {% endfor %}
+</div>

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var string $plugin_root acp/core/addons/data-writer.php
+ */
+
 $pm_prefs_file = $plugin_root.'/pm_config.php';
 
 if(isset($_POST['save_cash_prefs'])) {

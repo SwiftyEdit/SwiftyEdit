@@ -1,0 +1,45 @@
+{#
+ # product option form in /admin/shop/options/edit/ and /new/, rendered by options-edit.php
+ # inputs: fields built by se_print_form_input()
+ # option_id: id of the edited option, null for a new option
+ # values: the stored values, sortable - the empty field above adds a value
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
+    <a href="/admin/shop/options/new/" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
+</div>
+
+<div id="formResponse"></div>
+
+<form>
+    <div class="card">
+        <div class="card-header">{{ option_id ? lang.edit : lang.new }}</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">{{ inputs.title|raw }}</div>
+                <div class="col-md-2">{{ inputs.priority|raw }}</div>
+                <div class="col-md-2">{{ inputs.language|raw }}</div>
+            </div>
+            {{ inputs.new_value|raw }}
+            {% if values %}
+                <div class="sortableListGroup list-group mt-1">
+                    {% for value in values %}
+                        <div class="list-group-item">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-arrows-move" aria-hidden="true"></i></span>
+                                <input type="text" name="option_text[]" value="{{ value }}" class="form-control">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" hx-include="[name='csrf_token']" name="save_option" value="{{ option_id ?? 'new' }}" class="btn btn-success">{{ option_id ? lang.btn_update : lang.btn_save }}</button>
+            {% if option_id %}
+                <button hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" hx-include="[name='csrf_token']" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_option" value="{{ option_id }}" class="btn btn-danger ms-1">{{ icon.trash_alt|raw }}</button>
+            {% endif %}
+        </div>
+    </div>
+</form>

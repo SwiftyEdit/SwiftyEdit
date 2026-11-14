@@ -11,12 +11,14 @@
  * @var string $languagePack global project variable
  * @var object $db_content database
  * @var object $smarty Smarty template engine
- * @var int $cache_id Smarty cache id
+ * @var string $cache_id Smarty cache id
+ * @var string $se_base_url the base url
  */
 
 $price_all_net = 0; // reset price net
 $price_all_gross = 0; // reset price gross
 $shipping_costs = 0; // reset shipping costs
+$shipping_type = ''; // stored with the order
 $shipping_products = 0; // number of products which will be shipped
 $store_shipping_cat = 0; // reset shipping category
 $all_items_subtotal_net = 0;
@@ -24,6 +26,10 @@ $all_items_subtotal = 0;
 $checkout_error = '';
 $tax_grouped = [];
 $tax_sum = [];
+$cart_item = [];
+$max_order_value_msg = '';
+$cart_error_delivery_zone = '';
+$checkout_error_msg = '';
 
 if(isset($_POST['remove_from_cart'])) {
 	$id = (int) $_POST['remove_from_cart'];
@@ -43,7 +49,7 @@ $cnt_cart_items = count($get_cart_items);
 $payment_methods = se_get_payment_methods();
 $payment_costs = '0.00';
 
-if($_SESSION['set_payment'] == '') {
+if(($_SESSION['set_payment'] ?? '') == '') {
 	$_SESSION['set_payment'] = array_key_first($payment_methods);
 }
 
@@ -65,10 +71,6 @@ $check_pm_radio = 'checked_'.$_SESSION['set_payment'];
 $smarty->assign("$check_pm_radio", 'checked');
 
 $get_cd = get_my_userdata();
-$client_data = '';
-if($get_cd['ba_company'] != '') {
-	$client_data .= $get_cd['ba_company'].'<br>';
-}
 
 /**
  * check if we have all mandatory information
@@ -245,7 +247,7 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 
     // we collect net prices; grouped by tax,
     // to calculate taxes on delivery costs
-    $tax_grouped[$tax] = $tax_grouped[$tax]+round($item_prices['net_raw'],2);
+    $tax_grouped[$tax] = ($tax_grouped[$tax] ?? 0)+round($item_prices['net_raw'],2);
 
 }
 
@@ -273,8 +275,9 @@ if($shipping_products > 0) {
 	}
 
     // check for delivery plugins and maybe overwrite $shipping_costs
-    $active_delivery_addons = json_decode($se_settings['delivery_addons'],true);
-    foreach($active_delivery_addons as $delivery_addon) {
+    // stored as json, empty if no delivery plugin is active
+    $active_delivery_addons = json_decode(html_entity_decode((string) ($se_settings['delivery_addons'] ?? '')), true);
+    foreach(is_array($active_delivery_addons) ? $active_delivery_addons : [] as $delivery_addon) {
         $addon_root = SE_ROOT.'/plugins/'.basename($delivery_addon);
         if(file_exists("$addon_root/global/index.php")) {
             include "$addon_root/global/index.php";
@@ -284,10 +287,11 @@ if($shipping_products > 0) {
 
 $shipping_tax_split = [];
 $total_shipping_tax = 0;
-$shipping_costs_net = $shipping_costs;
+$shipping_costs_net = (float) $shipping_costs;
 
 foreach ($tax_grouped as $tax_rate => $net_value) {
-    $part = $net_value / $all_items_subtotal_net;
+    // a cart with free items only would divide by zero
+    $part = ($all_items_subtotal_net > 0) ? $net_value / $all_items_subtotal_net : 0;
     $part_net = $part * $shipping_costs_net;
     $tax = $part_net * ($tax_rate / 100);
 
@@ -381,7 +385,7 @@ if($se_settings['posts_order_mode'] == 1 OR $se_settings['posts_order_mode'] == 
  * reset shopping cart if data is sent / $cnt_cart_items = 0
  */
 
-if($_POST['send_request'] == 'send') {
+if(($_POST['send_request'] ?? '') == 'send') {
     include __DIR__.'/checkout-send-request.php';
 }
 
@@ -391,7 +395,7 @@ if($_POST['send_request'] == 'send') {
  * reset shopping cart if data is saved
  */
 
-if($_POST['order'] == 'send') {
+if(($_POST['order'] ?? '') == 'send') {
     include __DIR__.'/checkout-send-order.php';
 }
 
@@ -407,7 +411,7 @@ if($checkout_error == 'missing_approval') {
 // forms inline in the cart instead when their billing/shipping data is incomplete.
 // e-mail is confirmed first, address forms only appear once that step is done.
 $guest_checkout_eligible = ($checkout_error == 'missing_mandatory_informations'
-    && !is_numeric($_SESSION['user_id'])
+    && !is_numeric($_SESSION['user_id'] ?? '')
     && $se_settings['posts_guest_order_enable'] == 1);
 
 $show_guest_mail_form = ($guest_checkout_eligible && empty($_SESSION['guest_order_data']['ba_mail'])) ? 1 : 0;

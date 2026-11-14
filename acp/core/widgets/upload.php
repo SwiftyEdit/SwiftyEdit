@@ -1,10 +1,24 @@
 <?php
+
+/**
+ * SwiftyEdit /admin-xhr/upload/ - uploads of the dropzones (Uppy, see backend.js):
+ * branding files, images and files of the media library, gallery images.
+ * A bare endpoint without acp/header.php, the responses are JSON or a preview fragment.
+ *
+ * global variables (config.php)
+ * @var string $se_environment
+ * @var string $img_tmb_path
+ * @var string $se_branding_path
+ * @var array $se_upload_img_types
+ * @var array $se_upload_file_types
+ */
+
 require_once __DIR__.'/../../../app/session.php';
 se_session_start();
 // production: don't show errors, but log serious ones (fatal, parse, exceptions)
 error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', '0');
-require '../vendor/autoload.php';
+require __DIR__.'/../../../vendor/autoload.php';
 use Medoo\Medoo;
 
 if($_SESSION['user_class'] != "administrator"){
@@ -12,10 +26,8 @@ if($_SESSION['user_class'] != "administrator"){
     die("PERMISSION DENIED!");
 }
 
-require '../config.php';
-if(is_file('../'.SE_CONTENT.'/config.php')) {
-    include '../'.SE_CONTENT.'/config.php';
-}
+// config.php includes SE_CONTENT/config.php itself
+require __DIR__.'/../../../config.php';
 
 // only show errors when explicitly running in development mode
 if ($se_environment === 'd') {
@@ -48,7 +60,7 @@ if (in_array($branding_target, ['logo', 'thumbnail', 'favicon'], true)) {
         http_response_code(403);
         exit;
     }
-    require_once '../acp/core/settings/branding-widget.php';
+    require_once __DIR__.'/../settings/branding-widget.php';
 
     $result = se_handle_branding_upload(
         $branding_target,
@@ -97,6 +109,8 @@ if($max_h_tmb < 1) {
 // only checks that the substring appears anywhere, it does not stop "../" traversal
 // (se_filter_filepath() deliberately keeps ".." for callers that need it, see its docblock)
 $upload_destination = $_POST['upload_destination'] ?? '';
+$destination = '';
+$upload_type = '';
 $resolved_destination = se_resolve_within(SE_PUBLIC, $upload_destination);
 
 if ($resolved_destination !== false && str_starts_with($resolved_destination . '/', SE_PUBLIC . '/assets/images/')) {
@@ -153,19 +167,31 @@ if($upload_type == 'images') {
                 exit;
             }
 
-            if($_POST['unchanged'] == 'yes' OR $suffix == 'svg') {
+            if(($_POST['unchanged'] ?? '') == 'yes' OR $suffix == 'svg') {
                 @move_uploaded_file($tmp_name, $target);
             } else {
-                resize_image($tmp_name,$target,$max_w,$max_h,100);
+                if(resize_image($tmp_name,$target,$max_w,$max_h,100) === false) {
+                    http_response_code(422);
+                    exit;
+                }
+            }
+
+            // thumbnail also for unchanged uploads - it is a separate file and
+            // leaves the original untouched; none for svg or types GD can't read
+            $store_tmb_name = '';
+            if($suffix != 'svg') {
                 $tmb_name = md5(substr($target, 3,strlen($target))).'.jpg';
-                $store_tmb_name = $tmb_destination.'/'.$tmb_name;
-                se_create_tmb($target,$tmb_name,$max_w_tmb,$max_h_tmb,80);
+                if(se_create_tmb($target,$tmb_name,$max_w_tmb,$max_h_tmb,80)) {
+                    $store_tmb_name = $tmb_destination.'/'.$tmb_name;
+                }
             }
 
             $filetype = mime_content_type(realpath($target));
             $filesize = filesize(realpath($target));
-            if($_POST['file_mode'] !== 'overwrite') {
+            if(($_POST['file_mode'] ?? '') !== 'overwrite') {
                 se_write_media_data_name($target,$store_tmb_name,$filesize,$time,$filetype);
+            } else {
+                se_log_media_overwrite($target);
             }
 
             $data = ['url' => $target, 'message' => 'The file ' . $target . ' has been uploaded.'];
@@ -200,8 +226,10 @@ if($upload_type == 'files') {
             @move_uploaded_file($tmp_name, $target);
             $filetype = mime_content_type(realpath($target));
             $filesize = filesize(realpath($target));
-            if($_POST['file_mode'] != 'overwrite') {
+            if(($_POST['file_mode'] ?? '') != 'overwrite') {
                 se_write_media_data_name($target,'',$filesize,$time,$filetype);
+            } else {
+                se_log_media_overwrite($target);
             }
         }
 
@@ -308,7 +336,17 @@ function se_sanitize_svg(string $path): bool {
     return file_put_contents($path, $clean) !== false;
 }
 
-function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality){
+/**
+ * store an uploaded image, scaled down to the maximum size
+ *
+ * @param string $img uploaded file
+ * @param string $name target
+ * @param int $thumbnail_width max width
+ * @param int $thumbnail_height max height
+ * @param int $quality jpeg/webp quality
+ * @return bool false if the image could not be stored
+ */
+function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality): bool {
 
     // never decode an invalid or oversized image (see se_upload_image_is_valid())
     if (!se_upload_image_is_valid($img)) {
@@ -318,6 +356,11 @@ function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality
     $arr_image_details	= GetImageSize("$img");
     $original_width		= $arr_image_details[0];
     $original_height	= $arr_image_details[1];
+
+    // stored as they are: gif (GD would lose the animation) and types GD can't write (e.g. ico)
+    if(!in_array($arr_image_details[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) {
+        return copy($img, $name);
+    }
 
     $a = $thumbnail_width / $thumbnail_height;
     $b = $original_width / $original_height;
@@ -338,21 +381,16 @@ function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality
 
 
 
-    if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-    if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-    if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-    if($arr_image_details[2]==18) { $imgt = "imagewebp"; $imgcreatefrom = "imagecreatefromwebp";  }
-
-    if($imgt == 'imagejpeg') {
-        $old_image	= $imgcreatefrom("$img");
+    if($arr_image_details[2] == IMAGETYPE_JPEG) {
+        $old_image	= imagecreatefromjpeg("$img");
         $new_image	= imagecreatetruecolor($new_width, $new_height);
         imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
         imagejpeg($new_image,"$name",$quality);
         imagedestroy($new_image);
     }
 
-    if($imgt == 'imagewebp') {
-        $old_image	= $imgcreatefrom("$img");
+    if($arr_image_details[2] == IMAGETYPE_WEBP) {
+        $old_image	= imagecreatefromwebp("$img");
         $new_image	= imagecreatetruecolor($new_width, $new_height);
         imagealphablending($new_image, false);
         imagesavealpha($new_image, true);
@@ -361,8 +399,8 @@ function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality
         imagedestroy($new_image);
     }
 
-    if($imgt == 'imagepng') {
-        $old_image	= $imgcreatefrom("$img");
+    if($arr_image_details[2] == IMAGETYPE_PNG) {
+        $old_image	= imagecreatefrompng("$img");
         $new_image	= imagecreatetruecolor($new_width, $new_height);
         imagealphablending($new_image, false);
         imagesavealpha($new_image, true);
@@ -370,12 +408,10 @@ function resize_image($img, $name, $thumbnail_width, $thumbnail_height, $quality
         imagefilledrectangle($new_image, 0, 0, $new_width, $new_height, $transparency);
         imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
         imagepng($new_image,"$name",0);
+        imagedestroy($new_image);
     }
 
-    if($imgt == 'imagegif') {
-        return $name;
-    }
-
+    return is_file($name);
 }
 
 
@@ -420,7 +456,7 @@ function generate_filename($prefix,$suffix) {
 
     $target = "$destination/$prefix.$suffix";
 
-    if((is_file($target) && $_POST['file_mode'] != 'overwrite')) {
+    if((is_file($target) && ($_POST['file_mode'] ?? '') != 'overwrite')) {
         $prefix = $prefix . '_' . increment_prefix('0',"$target");
     }
 
@@ -456,15 +492,48 @@ function se_write_media_data_name($filename,$store_tmb_name,$filesize,$time,$med
     ];
 
     $cnt_changes = $db_content->insert("se_media", $columns);
+    se_log_content('create', 'media', null, basename($filename), $filename);
+}
+
+/**
+ * An existing file was replaced - its row in se_media stays as it is
+ */
+function se_log_media_overwrite($filename) {
+    $filename = str_replace("assets/","../",$filename);
+    se_log_content('update', 'media', null, basename($filename), $filename);
 }
 
 
 
-function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_quality) {
+/**
+ * GD function that reads an image type of getimagesize()
+ *
+ * @param int $image_type IMAGETYPE_* constant
+ * @return string e.g. imagecreatefromjpeg, empty for types GD can't read
+ */
+function se_upload_image_loader(int $image_type): string {
+    return match ($image_type) {
+        IMAGETYPE_GIF => 'imagecreatefromgif',
+        IMAGETYPE_JPEG => 'imagecreatefromjpeg',
+        IMAGETYPE_PNG => 'imagecreatefrompng',
+        IMAGETYPE_WEBP => 'imagecreatefromwebp',
+        default => ''
+    };
+}
+
+/**
+ * create a jpg thumbnail in $tmb_destination
+ *
+ * @return bool true if the thumbnail file was written
+ */
+function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_quality): bool {
 
     global $tmb_destination;
 
-    $arr_image_details	= GetImageSize("$img_src");
+    $arr_image_details	= @getimagesize("$img_src");
+    if($arr_image_details === false || $arr_image_details[0] < 1 || $arr_image_details[1] < 1) {
+        return false;
+    }
     $original_width		= $arr_image_details[0];
     $original_height	= $arr_image_details[1];
     $a = $tmb_width / $tmb_height;
@@ -484,20 +553,21 @@ function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_qualit
         $new_height = $original_height;
     }
 
-    if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-    if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-    if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-    if($arr_image_details[2]==18) { $imgt = "imagewebp"; $imgcreatefrom = "imagecreatefromwebp";  }
-
-
-    if($imgt) {
-        $old_image	= $imgcreatefrom("$img_src");
-        $new_image	= imagecreatetruecolor($new_width, $new_height);
-        imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
-        imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
-        imagedestroy($new_image);
+    $imgcreatefrom = se_upload_image_loader($arr_image_details[2]);
+    if($imgcreatefrom === '') {
+        return false;
     }
 
+    $old_image	= $imgcreatefrom("$img_src");
+    if($old_image === false) {
+        return false;
+    }
+    $new_image	= imagecreatetruecolor($new_width, $new_height);
+    imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
+    $written = imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
+    imagedestroy($new_image);
+
+    return $written;
 }
 
 function se_create_gallery_thumbs($updir, $img, $name, $thumbnail_width, $thumbnail_height, $quality){
@@ -520,10 +590,8 @@ function se_create_gallery_thumbs($updir, $img, $name, $thumbnail_width, $thumbn
         $new_width = $original_width;
         $new_height = $original_height;
     }
-    if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-    if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-    if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-    if($imgt) {
+    $imgcreatefrom = se_upload_image_loader($arr_image_details[2]);
+    if($imgcreatefrom !== '') {
         $old_image	= $imgcreatefrom("$updir/$img");
         $new_image	= imagecreatetruecolor($new_width, $new_height);
         imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);

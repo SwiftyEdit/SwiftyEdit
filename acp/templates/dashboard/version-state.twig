@@ -1,0 +1,15 @@
+{#
+ # Installed version and available update, rendered by the dashboard data-reader (action=version_state)
+ #}
+<div class="dash-version">
+    <span class="dash-review-dot {{ available_build ? 'is-danger' : 'is-ok' }}"></span>
+    <span class="dash-min-w-0">
+        {{ lang.label_version }}: <strong class="text-nowrap">Build {{ installed_build }}</strong>
+        {% if can_update %}
+            <small class="d-block {{ available_build ? 'text-danger' : 'text-success' }}">{{ available_build ? lang.update_msg_update_available : lang.update_msg_no_update_available }}</small>
+        {% endif %}
+    </span>
+</div>
+{% if available_build %}
+    <a href="/admin/update/">{{ lang.nav_btn_update }}: Build {{ available_build }}</a>
+{% endif %}

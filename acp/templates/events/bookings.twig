@@ -1,0 +1,11 @@
+{# guestlist confirmations of the events in /admin/events/bookings/, rendered by bookings.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    {# data-keep-open: opened events stay open when the list is reloaded (src/js/components/keep-open.js) #}
+    <div id="getBookings" hx-get="{{ reader_uri }}?action=list_bookings" hx-trigger="load, {{ list_triggers }}" data-keep-open></div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'events/past-events-toggle.twig' %}
+{% endblock %}

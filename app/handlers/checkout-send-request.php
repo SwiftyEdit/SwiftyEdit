@@ -4,6 +4,7 @@
  * send order request
  * @var object $smarty
  * @var array $lang
+ * @var string $languagePack
  * @var array $se_settings
  * @var array $cart_item
  * @var int $cnt_cart_items
@@ -38,7 +39,7 @@ if(isset($_POST['buyer_delivery_address']) && $_POST['buyer_delivery_address'] !
 }
 
 $subject = $lang['mail_subject_order_request'].' / '.$se_settings['pagename'];
-$salutation = se_get_snippet("mail_salutation_order_request","$lang","content");
+$salutation = se_get_snippet("mail_salutation_order_request",$languagePack,"content");
 
 $mail_data['salutation'] = $subject;
 if($salutation != "") {

@@ -15,7 +15,17 @@
             <div class="row mb-1">
                 <div class="col-6">
                     <label for="psw">{$lang_label_psw}</label>
-                    <input type="password" class="form-control" id="psw" value="" name="s_psw">
+                    <input type="password"
+                           class="form-control"
+                           id="psw"
+                           value=""
+                           name="s_psw"
+                           autocomplete="new-password"
+                           hx-post="/xhr/se/checks/?check=psw_rules"
+                           hx-params="s_psw,csrf_token"
+                           hx-trigger="keyup changed delay:500ms"
+                           hx-target="#response-s-psw">
+                    <div class="form-text">{$psw_requirements}</div>
                 </div>
 
                 <div class="col-6">
@@ -24,6 +34,7 @@
                     <p class="help-block">{$msg_edit_psw}</p>
                 </div>
             </div>
+            <div id="response-s-psw"></div>
 
         <button class="btn btn-primary" type="button" name="change_password"
                 hx-post="/xhr/se/profile/"

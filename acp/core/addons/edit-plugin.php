@@ -1,67 +1,67 @@
 <?php
 
+/**
+ * backend pages of a plugin in /admin/addons/plugin/<plugin>/<page>/, markup in acp/templates/addons/plugin-page.twig
+ * the page itself is the plugin's backend/<page>.php, listed in the navigation of its info.json
+ *
+ * global variables
+ * @var string $query - the current url
+ * @var array $icon
+ * @var object $twig
+ */
+
 $path = explode('/', $query);
 
-$addon = basename($path[2]);
-$include_file = basename($path[3]);
-$this_addon_root_url = '/admin/addons/plugin/'.$addon;
-$this_addon_root = SE_ROOT."/plugins/".$addon;
+$addon = preg_replace('/[^a-zA-Z0-9_-]/', '', $path[2] ?? '');
+$include_file = preg_replace('/[^a-zA-Z0-9_-]/', '', $path[3] ?? '');
+$addon_info_file = SE_PLUGINS.'/'.$addon.'/info.json';
 
+if($addon === '' || !is_file($addon_info_file)) {
+    echo $twig->render('addons/plugin-page.twig', ['plugin' => null]);
+    return;
+}
+
+// used by the pages of the plugins
+$this_addon_root_url = '/admin/addons/plugin/'.$addon;
+$this_addon_root = SE_PLUGINS.'/'.$addon;
+
+$addon_info = json_decode((string) file_get_contents($addon_info_file), true);
+$addon_info = is_array($addon_info) ? $addon_info : [];
 $addon_lang = se_return_addon_translations($addon);
 
-$addon_info_file = SE_ROOT.'/plugins/'.$addon.'/info.json';
-$addon_include_file = SE_ROOT.'/plugins/'.$addon.'/backend/'.$include_file.'.php';
+$navigation = [];
+foreach($addon_info['navigation'] ?? [] as $nav) {
+    $navigation[] = [
+        'url' => $this_addon_root_url.'/'.$nav['file'].'/',
+        'text' => $addon_lang[$nav['text']] ?? $nav['text'],
+        'active' => ($include_file == $nav['file'])
+    ];
+}
 
-$info_json = file_get_contents("$addon_info_file");
-$addon_info = json_decode($info_json, true);
-
-// se_docs_context_files() for the help button
-require_once __DIR__.'/../docs/functions.php';
-
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['plugin'].' <a href="/admin/addons/">'.$lang['nav_btn_addons'].'</a>';
-
-// plugin name (links to the plugin's first page) and help button,
 // the help opens the first doc (docs/{lang}/*.md by priority, else readme.md)
-$addon_start_url = $this_addon_root_url.'/'.($addon_info['navigation'][0]['file'] ?? 'start').'/';
-echo '<div class="ms-auto">';
-echo '<span class="badge bg-primary-subtle px-2 align-items-center rounded-pill">';
-echo '<a href="'.htmlspecialchars($addon_start_url, ENT_QUOTES).'" class="mx-2">'.htmlspecialchars($addon_info['addon']['name'] ?? $addon).'</a>';
+require_once __DIR__.'/../docs/functions.php';
+$help_link = '';
 $help_files = se_docs_context_files('plugin', $addon);
 if(!empty($help_files)) {
-    echo se_print_plugin_docs_link($addon, basename($help_files[0]['path']), '<i class="bi bi-question m-0"></i>', null, 'btn btn-sm btn-default rounded-circle');
+    $help_link = se_print_plugin_docs_link($addon, basename($help_files[0]['path']), $icon['question'], null, 'btn btn-sm btn-default rounded-circle');
 }
-echo '</span>';
-echo '</div>';
 
-echo '</div>';
-
-echo '<div class="card">';
-echo '<div class="card-header">';
-echo '<ul class="nav nav-tabs card-header-tabs">';
-foreach($addon_info['navigation'] as $nav) {
-
-    $nav_text = $nav['text'];
-    if(array_key_exists($nav['text'],$addon_lang)) {
-        $nav_text = $addon_lang[$nav['text']];
-    }
-
-    $active = '';
-    if($include_file == $nav['file']) {
-        $active = 'active';
-    }
-    echo '<li class="nav-item">';
-    echo '<a href="'.$this_addon_root_url.'/'.$nav['file'].'/" class="nav-link '.$active.'">'.$nav_text.'</a>';
-    echo '</li>';
-}
-echo '</ul>';
-
-echo '</div>';
-echo '<div class="card-body">';
-
-if(is_file($addon_include_file)) {
+// the page of the plugin prints its own markup, it becomes the content of the card
+$content = '';
+$addon_include_file = $this_addon_root.'/backend/'.$include_file.'.php';
+if($include_file !== '' && is_file($addon_include_file)) {
+    ob_start();
     include $addon_include_file;
+    $content = (string) ob_get_clean();
 }
 
-echo '</div>';
-echo '</div>';
+echo $twig->render('addons/plugin-page.twig', [
+    'plugin' => [
+        'name' => $addon_info['addon']['name'] ?? $addon,
+        // the name links to the first page of the plugin
+        'start_url' => $this_addon_root_url.'/'.($addon_info['navigation'][0]['file'] ?? 'start').'/',
+        'help_link' => $help_link
+    ],
+    'navigation' => $navigation,
+    'content' => $content
+]);

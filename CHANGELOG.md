@@ -8,6 +8,94 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
+## 2.3.0 - 2026-11-14 (Build 26-0237)
+
+- New backend dashboard: a 30-day activity grid per area with a history of the
+  edited items, including changes to users by an administrator, plugins,
+  "Alerts" (missing pages, CSRF errors, account locks, failed logins), new
+  users, system information with update check, caches and OPcache. The lists
+  of recent items are replaced by the history. The full log is available at
+  `/admin/dashboard/log/` (right: sensitive files)
+- Favorite plugins: a star on the addons page marks a plugin as a personal
+  favorite of the logged-in user. Favorites are listed first, the plugin list
+  on the dashboard gets a "Favorites" filter
+- New section colors in the backend, snippets get their own color. Headings use
+  a neutral color instead of the primary color. Hovered rows in tables and
+  lists get darker in dark mode instead of lighter
+- Log content changes in a structured way: `se_logs` gets the columns
+  `action`, `object_type`, `object_id`, `object_key` and `object_label`.
+  Pages, snippets, posts, products, events and media are logged with the new
+  function `se_log_content()`, including snippet saves, uploads and media
+  edits. `record_log()` stays unchanged for plugins, `se_log_event()` is new
+- Log failed logins and account locks
+- Keep log entries for 90 days instead of 30, independent of the number of
+  entries. Log entries are escaped on output
+- Log entries no longer contain changed mail addresses, deleting a user removes
+  the name from the log
+- Password rules for new passwords (registration, password reset, profile,
+  backend and installer): at least 10 characters (`$se_password_min_length`
+  in `data/config.php`), at most 72 bytes, not on a list of common passwords,
+  at least 4 different characters and not the same as the username or e-mail
+  address. The forms show the requirements and check them while typing.
+  Existing passwords are not affected, the login does not check the rules.
+  New function `se_password_check()`
+- Structured data: every page gets schema.org data as JSON-LD (`WebSite`,
+  the organization, `WebPage` or the page type chosen in the page editor,
+  `Product`, `BlogPosting` and `Event`). Settings > General has a new section
+  "Organization" (type, name, country, profiles). Themes print `$json_ld` in
+  the head of `index.tpl`, plugins can change the data with the filter
+  `structured_data.graph`. Themes that set `$page_json_ld` themselves replace
+  the core data completely
+- New hook `user.deleted` with a snapshot of the account data before the
+  deletion (without password and 2FA secrets)
+- Migrate the Backend from inline PHP to Twig templates
+- Remove the unused package `guzzlehttp/guzzle` from the core. Plugins that
+  need an HTTP client (or PSR-7/PSR-17/PSR-18 implementations) must ship it
+  in their own `vendor/`
+- Remove the bundled PayPal plugin `se_paypal-pay` and the PayPal SDK
+  (`paypal/paypal-server-sdk` with its `apimatic` packages) from the core.
+  PayPal is now available as the plugin `paypal-pay` in the plugin catalog,
+  which ships its own SDK. To switch: install `paypal-pay`, click
+  "Take over data & switch" in its settings, then delete `se_paypal-pay`.
+  Settings and existing orders are taken over. Until the old folder is
+  deleted, the core ignores `se_paypal-pay` (PayPal is then not offered at
+  checkout)
+- Fix a fatal error (status 404 with an empty page) for unknown URLs below a
+  page with a blog or product list, if the 404 page uses another theme that
+  does not have the layout of that page. The 404 page now always uses its own
+  layout and loads the CSS and JS of its own theme
+- Show why a password was not changed in the profile and in the backend
+  instead of a general error or no message at all
+- The backend idle timeout (Settings > Users, "ACP Session lifetime") is now
+  taken from the setting alone and kept between 300 and 43200 seconds, it no
+  longer falls back to `session.gc_maxlifetime`. New installations use 1800
+  seconds (was 86400). Existing values above 43200 count as 43200 - lower the
+  setting to log out idle backend sessions sooner
+- A clock next to the user name in the backend shows the remaining idle time
+  (green to red, the time left in a popover), a click keeps the session alive.
+  Every backend request resets the timer, open backend tabs share it. Fixes
+  the automatic logout of admins who only worked with requests that did not
+  reload the page
+- The TinyMCE image and link lists and the backend image widget check the
+  session lifetime, the idle timeout and the account like all other backend
+  requests
+- The maintenance access code is compared strictly, changing the code ends
+  earlier access
+- The shop only returns to a saved filter URL on the same site
+- Fix double-encoded umlauts and special characters (e.g. `&uuml;`) in the
+  meta title and description of products after rebuilding the product cache
+  in the dashboard. They showed up in the page title, meta description and
+  structured data of product pages. Rebuild the product cache once after
+  the update
+- The addon list no longer shows a question mark in the header of plugins and
+  themes without an update source (e.g. not installed from the catalog), so
+  it can't be confused with the help button. If the update check fails, a
+  warning sign with an explanation is shown instead
+- Update `symfony/yaml` to 7.4.23
+- Update `phpstan/phpstan` to 2.3.5 (development only)
+- The backend and default theme builds write `dist/THIRD-PARTY-LICENSES.txt`
+  with the license texts of all bundled npm packages
+
 ## 2.2.1 - 2026-10-27 (Build 26-0229)
 
 ### Fixed

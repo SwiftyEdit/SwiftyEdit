@@ -1,109 +1,93 @@
 <?php
 
 /**
- * global
+ * SwiftyEdit /admin-xhr/settings/read/
+ * delivery areas of the shop settings (list and form), the API keys and the labels
+ *
+ * global variables
  * @var array $icon
  * @var array $lang
  * @var object $db_content
  * @var array $se_settings
+ * @var object $twig
  */
 
+$action = $_REQUEST['action'] ?? '';
+$settings_reader_uri = '/admin-xhr/settings/read/';
+$settings_writer_uri = '/admin-xhr/settings/general/write/';
 
-if($_REQUEST['action'] == 'deliveryCountries') {
+// delivery areas, status and tax: 1 = yes, 2 = no
+if($action == 'deliveryCountries') {
 
-    $get_countries = $db_content->select("se_delivery_areas", "*");
-
-    echo '<table class="table">';
-    echo '<tr>';
-    echo '<td>Code</td>';
-    echo '<td>'.$lang['label_country'].'</td>';
-    echo '<td>'.$lang['label_status'].'</td>';
-    echo '<td>'.$lang['label_plus_tax'].'</td>';
-    echo '<td></td>';
-    echo '</tr>';
-    foreach($get_countries as $country) {
-
-        $status = '<span class="badge text-danger">'.$icon['circle'].'</span>';
-        if($country['status'] == '1') {
-            $status = '<span class="badge text-success">'.$icon['check_circle'].'</span>';
-        }
-
-        $tax = '<span class="badge text-danger">'.$icon['circle'].'</span>';
-        if($country['tax'] == '1') {
-            $tax = '<span class="badge text-success">'.$icon['check_circle'].'</span>';
-        }
-
-        echo '<tr>';
-        echo '<td><code>'.$country['code'].'</code></td>';
-        echo '<td>'.$country['name'].'</td>';
-        echo '<td>'.$status.'</td>';
-        echo '<td>'.$tax.'</td>';
-        echo '<td>';
-        echo '<button class="btn btn-sm btn-default text-success" hx-get="/admin-xhr/settings/read/?edit_delivery_country='.$country['id'].'" hx-target="#deliveryCountriesForm">'.$icon['edit'].'</button>';
-        echo '<button class="btn btn-sm btn-default text-danger" hx-post="/admin-xhr/settings/general/write/" hx-swap="none" hx-include="[name=\'csrf_token\']" name="delete_delivery_country" value="'.$country['id'].'">'.$icon['trash'].'</button>';
-        echo '</td>';
-        echo '</tr>';
+    $countries = [];
+    foreach($db_content->select("se_delivery_areas", "*", ["ORDER" => ["name" => "ASC"]]) as $country) {
+        $countries[] = [
+            'id' => (int) $country['id'],
+            'code' => $country['code'],
+            'name' => $country['name'],
+            'public' => ($country['status'] == '1'),
+            'tax' => ($country['tax'] == '1')
+        ];
     }
-    echo '</table>';
+    echo $twig->render('settings/delivery-areas.twig', [
+        'countries' => $countries,
+        'reader_uri' => $settings_reader_uri,
+        'writer_uri' => $settings_writer_uri
+    ]);
     exit;
 }
 
-if($_REQUEST['show'] == 'deliveryCountriesForm' OR $_REQUEST['edit_delivery_country']) {
+// form of a new or an edited delivery area
+if(($_REQUEST['show'] ?? '') == 'deliveryCountriesForm' || isset($_REQUEST['edit_delivery_country'])) {
 
-    $all_countries = se_get_countries();
-
-    $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="save">'.$lang['btn_save'].'</button>';
-
-    if(isset($_REQUEST['edit_delivery_country'])) {
-        $edit_country = (int) $_REQUEST['edit_delivery_country'];
-        $get_country = $db_content->get("se_delivery_areas", "*", ["id" => $edit_country]);
-        $submit_btn = '<button type="submit" class="btn btn-primary" name="send_delivery_country" value="'.$edit_country.'">'.$lang['btn_update'].'</button>';
+    $edit_id = (int) ($_REQUEST['edit_delivery_country'] ?? 0);
+    $get_country = [];
+    if($edit_id > 0) {
+        $get_country = $db_content->get("se_delivery_areas", "*", ["id" => $edit_id]) ?: [];
     }
 
     $country_options = [
         $lang['label_please_select'] => ''
     ];
-
-    foreach($all_countries as $country) {
+    foreach(se_get_countries() as $country) {
         $country_options[$country['name']] = $country['alpha2'];
     }
 
-    $input_delivery_country = [
-        "input_name" => "delivery_country",
-        "input_value" => $get_country['code'] ?? '',
-        "label" => $lang['label_shop_add_delivery_area'],
-        "options" => $country_options,
-        "type" => "select"
-    ];
-
-    $input_delivery_country_status = [
-        "input_name" => "delivery_country_status",
-        "input_value" => $get_country['status'] ?? '1',
-        "label" => $lang['label_status'],
-        "options" => [
-            $lang['status_public'] => 1,
-            $lang['status_draft'] => 2
-        ],
-        "type" => "select"
-    ];
-
-    $input_delivery_country_tax = [
-        "input_name" => "delivery_country_tax",
-        "input_value" => $get_country['tax'] ?? '2',
-        "label" => $lang['label_tax'],
-        "options" => [
-            $lang['yes'] => 1,
-            $lang['no'] => 2
-        ],
-        "type" => "select"
-    ];
-
-    echo '<form id="deliveryCountriesForm" hx-post="/admin-xhr/settings/shop/write/" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-    echo se_print_form_input($input_delivery_country);
-    echo se_print_form_input($input_delivery_country_status);
-    echo se_print_form_input($input_delivery_country_tax);
-    echo $submit_btn;
-    echo '</form>';
+    echo $twig->render('settings/delivery-area-form.twig', [
+        'edit_id' => $get_country ? $edit_id : 0,
+        'reader_uri' => $settings_reader_uri,
+        'writer_uri' => $settings_writer_uri,
+        'inputs' => [
+            'country' => se_print_form_input([
+                "input_name" => "delivery_country",
+                "input_value" => $get_country['code'] ?? '',
+                "label" => $lang['label_shop_add_delivery_area'],
+                "options" => $country_options,
+                "type" => "select"
+            ]),
+            'status' => se_print_form_input([
+                "input_name" => "delivery_country_status",
+                "input_value" => $get_country['status'] ?? '1',
+                "label" => $lang['label_status'],
+                "options" => [
+                    $lang['status_public'] => '1',
+                    $lang['status_draft'] => '2'
+                ],
+                "type" => "select"
+            ]),
+            'tax' => se_print_form_input([
+                "input_name" => "delivery_country_tax",
+                "input_value" => $get_country['tax'] ?? '2',
+                "label" => $lang['label_tax'],
+                "options" => [
+                    $lang['yes'] => '1',
+                    $lang['no'] => '2'
+                ],
+                "type" => "select"
+            ])
+        ]
+    ]);
+    exit;
 }
 
 // API keys (Settings > API keys)
@@ -114,107 +98,45 @@ if(isset($_GET['load_api_keys'])) {
         exit;
     }
 
-    $writer_uri = '/admin-xhr/settings/api-keys/write/';
-    $api_keys = se_api_get_keys();
-
-    if(count($api_keys) < 1) {
-        echo '<p class="mb-0 text-muted">'.$lang['api_keys_none'].'</p>';
-        exit;
+    $keys = [];
+    foreach(se_api_get_keys() as $api_key) {
+        $keys[] = [
+            'id' => (int) $api_key['id'],
+            // stored html-encoded (sanitizeUserInputs), Twig escapes on output
+            'label' => html_entity_decode((string) $api_key['label'], ENT_QUOTES, 'UTF-8'),
+            'prefix' => (string) $api_key['key_prefix'],
+            'scopes' => array_values(array_filter(explode(',', (string) $api_key['scopes']))),
+            'created' => se_format_datetime($api_key['created_at']),
+            'last_used' => ((int) $api_key['last_used_at'] > 0) ? se_format_datetime($api_key['last_used_at']) : '-',
+            'requests' => (int) $api_key['request_count'],
+            'active' => ((int) $api_key['is_active'] === 1)
+        ];
     }
-
-    echo '<table class="table table-sm align-middle mb-0">';
-    echo '<thead><tr>';
-    echo '<th>'.$lang['api_keys_label'].'</th>';
-    echo '<th>'.$lang['api_keys_key'].'</th>';
-    echo '<th>'.$lang['api_keys_scopes'].'</th>';
-    echo '<th>'.$lang['api_keys_created'].'</th>';
-    echo '<th>'.$lang['api_keys_last_used'].'</th>';
-    echo '<th class="text-end">'.$lang['api_keys_requests'].'</th>';
-    echo '<th>'.$lang['api_keys_status'].'</th>';
-    echo '<th></th>';
-    echo '</tr></thead>';
-    echo '<tbody>';
-
-    foreach($api_keys as $api_key) {
-
-        $key_id = (int) $api_key['id'];
-        $is_active = ((int) $api_key['is_active'] === 1);
-        $last_used = ((int) $api_key['last_used_at'] > 0) ? se_format_datetime($api_key['last_used_at']) : '-';
-        $scopes = array_filter(explode(',', (string) $api_key['scopes']));
-
-        echo '<tr class="'.($is_active ? '' : 'text-muted').'">';
-        echo '<td>'.htmlspecialchars($api_key['label'], ENT_QUOTES).'</td>';
-        echo '<td><code>'.htmlspecialchars($api_key['key_prefix'], ENT_QUOTES).'…</code></td>';
-        echo '<td>';
-        foreach($scopes as $scope) {
-            echo '<code class="me-1">'.htmlspecialchars($scope, ENT_QUOTES).'</code>';
-        }
-        echo '</td>';
-        echo '<td>'.se_format_datetime($api_key['created_at']).'</td>';
-        echo '<td>'.$last_used.'</td>';
-        echo '<td class="text-end">'.(int) $api_key['request_count'].'</td>';
-        echo '<td>'.($is_active ? '<span class="badge text-bg-success">'.$lang['api_keys_active'].'</span>' : '<span class="badge text-bg-secondary">'.$lang['api_keys_revoked'].'</span>').'</td>';
-        echo '<td class="text-end">';
-        echo '<form class="d-inline">';
-        echo '<input type="hidden" name="api_key_id" value="'.$key_id.'">';
-        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-        // revoking is final - a revoked key can only be deleted, not reactivated
-        if($is_active) {
-            echo '<button hx-post="'.$writer_uri.'" hx-confirm="'.htmlspecialchars($lang['api_keys_confirm_revoke'], ENT_QUOTES).'" hx-target="#apiKeyCreated" name="revoke_api_key" value="'.$key_id.'" class="btn btn-sm btn-default text-danger" title="'.$lang['api_keys_btn_revoke'].'">'.$icon['ban'].' '.$lang['api_keys_btn_revoke'].'</button>';
-        } else {
-            echo '<button hx-post="'.$writer_uri.'" hx-confirm="'.htmlspecialchars($lang['msg_confirm_delete'], ENT_QUOTES).'" hx-target="#apiKeyCreated" name="delete_api_key" value="'.$key_id.'" class="btn btn-sm btn-default text-danger" title="'.$lang['btn_delete'].'">'.$icon['trash_alt'].'</button>';
-        }
-        echo '</form>';
-        echo '</td>';
-        echo '</tr>';
-    }
-
-    echo '</tbody>';
-    echo '</table>';
+    echo $twig->render('settings/api-keys-list.twig', [
+        'keys' => $keys,
+        'writer_uri' => '/admin-xhr/settings/api-keys/write/'
+    ]);
     exit;
 }
 
+// labels, one form per label (settings/labels-list.twig)
 if(isset($_GET['load_labels'])) {
 
+    // stored html-encoded, Twig escapes on output
+    $decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
-    $writer_uri = '/admin-xhr/settings/labels/write/';
-    $se_labels = se_get_labels();
-    $cnt_labels = count($se_labels);
-
-    for($i=0;$i<$cnt_labels;$i++) {
-        echo '<form>';
-        echo '<div class="row mb-1" id="row_'.$i.'">';
-        echo '<div class="col-2">';
-        echo '<div class="input-group">';
-        echo '<span class="input-group-text" id="basic-addon1">#</span>';
-        echo '<input class="form-control" type="text" name="label_id" value="'.$se_labels[$i]['label_id'].'" readonly>';
-        echo '</div>';
-        echo '</div>';
-        echo '<div class="col-2">';
-
-        echo '<div class="input-group">';
-        echo '<input type="color" class="form-control form-control-color" style="max-width:45px;" name="label_color" value="'.$se_labels[$i]['label_color'].'" title="Choose your color">';
-        echo '<input class="form-control" type="text" name="label_title" value="'.$se_labels[$i]['label_title'].'">';
-        echo '</div>';
-
-        echo '</div>';
-        echo '<div class="col">';
-        echo '<input class="form-control" type="text" name="label_description" value="'.$se_labels[$i]['label_description'].'">';
-        echo '<div class="update-response-'.$i.'"></div>';
-        echo '</div>';
-        echo '<div class="col-2">';
-        echo '<input type="hidden" name="label_id" value="'.$se_labels[$i]['label_id'].'">';
-        echo '<div class="btn-group d-flex" role="group">';
-        echo '<button hx-post="'.$writer_uri.'" hx-target="#page-content" hx-swap="afterbegin" name="update_label" class="btn btn-default w-100 text-success">'.$icon['sync_alt'].'</button>';
-        echo '<button hx-post="'.$writer_uri.'" hx-delete="'.$se_labels[$i]['label_id'].'" hx-target="#row_'.$i.'" hx-swap="outerHTML swap:0.1s" name="delete_label" class="btn btn-default w-100 text-danger">' .$icon['trash_alt'].'</button>';
-        echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-
-        echo '</div>';
-        echo '</div>';
-
-        echo '</div>';
-        echo '</form>';
-
+    $labels = [];
+    foreach(se_get_labels() as $label) {
+        $labels[] = [
+            'id' => (int) $label['label_id'],
+            'color' => $label['label_color'],
+            'title' => $decode($label['label_title']),
+            'description' => $decode($label['label_description'])
+        ];
     }
+    echo $twig->render('settings/labels-list.twig', [
+        'labels' => $labels,
+        'writer_uri' => '/admin-xhr/settings/labels/write/'
+    ]);
     exit;
 }

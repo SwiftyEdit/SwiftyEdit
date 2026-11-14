@@ -90,6 +90,10 @@ select.form-select,
 	border-color: var(--bs-input-border-color);
 }
 
+[data-bs-theme="light"] .input-group-text {
+	background-color: darken($widget_background, 8%);
+}
+
 
 select.custom-select,
 select.form-control {

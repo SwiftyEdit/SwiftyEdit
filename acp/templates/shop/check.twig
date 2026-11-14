@@ -1,0 +1,15 @@
+{#
+ # one check in the sidebar of the products (missing SKU, double slugs),
+ # loaded by the shop data-reader (actions check_missing_sku, check_double_slugs)
+ # id: id of the collapse, title, count
+ # groups: list of {name (optional), products: list of {id, title}}
+ #}
+<a href="#{{ id }}" data-bs-toggle="collapse" class="list-group-item list-group-item-action"><span class="badge text-bg-secondary">{{ count }}</span> {{ title }}</a>
+<div class="collapse card-body" id="{{ id }}">
+    {% for group in groups %}
+        {% if group.name is defined %}<div class="small text-muted mt-1">{{ group.name }}</div>{% endif %}
+        {% for product in group.products %}
+            <a href="/admin/shop/edit/{{ product.id }}/" title="{{ product.title }}" class="btn btn-default btn-sm me-1 mb-1">#{{ product.id }}</a>
+        {% endfor %}
+    {% endfor %}
+</div>

@@ -1,0 +1,35 @@
+{# overview of the tags in /admin/tags/, rendered by tags-list.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    {# data-keep-open: opened usage lists stay open when the list is reloaded (src/js/components/keep-open.js) #}
+    <div id="getTags" hx-get="{{ reader_uri }}?action=list" hx-trigger="load, {{ list_triggers }}" data-keep-open></div>
+{% endblock %}
+
+{% block sidebar %}
+    <div class="card mb-2">
+        <div class="card-header">{{ lang.sorting }}</div>
+        <div class="card-body">
+            <div class="btn-group w-100" role="group">
+                {% for value, label in {name: lang.label_name, usage: lang.tags_usage} %}
+                    <input type="radio" class="btn-check" name="tags_sort" id="tagsSort-{{ value }}" value="{{ value }}" autocomplete="off"{% if sort == value %} checked{% endif %}
+                           hx-post="{{ writer_uri }}" hx-trigger="change" hx-swap="none" hx-include="[name='csrf_token']">
+                    <label class="btn btn-sm btn-default" for="tagsSort-{{ value }}">{{ label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-2">
+        <div class="card-header">{{ lang.tags_usage }}</div>
+        <div class="card-body">
+            {# the writer toggles the setting, hx-vals because an unchecked checkbox would not send its name #}
+            <input type="checkbox" class="btn-check" id="tagsUnusedOnly"{% if unused_only %} checked{% endif %} autocomplete="off"
+                   hx-post="{{ writer_uri }}" hx-trigger="change" hx-swap="none" hx-vals='{"tags_unused_only": "1"}' hx-include="[name='csrf_token']">
+            <label class="btn btn-sm btn-default w-100" for="tagsUnusedOnly">{{ lang.tags_only_unused }}</label>
+            <hr>
+            <button type="button" class="btn btn-sm btn-default text-danger w-100" name="delete_unused" value="1"
+                    hx-post="{{ writer_uri }}" hx-confirm="{{ lang.tags_msg_confirm_delete_unused }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']">{{ icon.trash_alt|raw }} {{ lang.tags_btn_delete_unused }}</button>
+        </div>
+    </div>
+{% endblock %}

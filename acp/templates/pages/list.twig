@@ -1,0 +1,64 @@
+{# overview of the pages in /admin/pages/, rendered by pages-list.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    {# list_type: 1 = sorted (page tree), 2 = single pages #}
+    <div id="getPages" hx-get="{{ reader_uri }}?action=list_pages&type={{ list_type }}" hx-trigger="load, {{ list_triggers }}">
+        <div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% import 'components/form/macros.twig' as form %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="btn-group w-100">
+                <a href="/admin/pages/?set_type=sorted" class="btn btn-default{% if show_page_type == 'sorted' %} active{% endif %}">{{ lang.nav_btn_structured_pages }}</a>
+                <a href="/admin/pages/?set_type=single" class="btn btn-default{% if show_page_type == 'single' %} active{% endif %}">{{ lang.nav_btn_single_pages }}</a>
+            </div>
+
+            {% if show_page_type == 'single' %}
+                {# the buttons send the selected column with the direction #}
+                <form hx-post="{{ writer_uri }}" hx-swap="none" method="POST" class="mt-2">
+                    <div class="row">
+                        <div class="col-8">
+                            <label class="form-label" for="sorting_single_pages">{{ lang.sorting }}</label>
+                            {{ form.select('sorting_single_pages', sorting_options, 'sorting_single_pages') }}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="btn-group d-flex">
+                                <button name="sorting_single_pages_asc" value="asc" title="{{ lang.btn_sort_asc }}" class="btn btn-default w-100">{{ icon.arrow_up|raw }}</button>
+                                <button name="sorting_single_pages_desc" value="desc" title="{{ lang.btn_sort_desc }}" class="btn btn-default w-100">{{ icon.arrow_down|raw }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="accordion mb-2" id="accordionSidebar">
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKeys" aria-expanded="false" aria-controls="collapseKeys">{{ lang.label_keywords }}</button>
+            </div>
+            <div id="collapseKeys" class="accordion-collapse collapse" data-bs-parent="#accordionSidebar">
+                <div class="accordion-body">
+                    <div hx-get="{{ reader_uri }}?action=list_keyword_btn" hx-trigger="load, {{ list_triggers }}"></div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTypes" aria-expanded="false" aria-controls="collapseTypes">{{ lang.label_type }}</button>
+            </div>
+            <div id="collapseTypes" class="accordion-collapse collapse" data-bs-parent="#accordionSidebar">
+                <div class="accordion-body p-0">
+                    <div hx-get="{{ reader_uri }}?action=list_page_types" hx-trigger="load, {{ list_triggers }}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

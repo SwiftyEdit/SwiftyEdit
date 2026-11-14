@@ -1,0 +1,30 @@
+{#
+ # labels in /admin/settings/labels/, loaded by the settings data-reader (?load_labels)
+ # labels: list of {id, color, title, description} - every label is its own form
+ #}
+{% for label in labels %}
+    <form class="row g-2 mb-2 align-items-center" hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
+        <div class="col-auto">
+            <span class="badge text-bg-secondary font-monospace">#{{ label.id }}</span>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="color" class="form-control form-control-color flex-grow-0" style="width: 3rem;" name="label_color" value="{{ label.color }}" title="{{ lang.label_color|default('Color') }}">
+                <input class="form-control" type="text" name="label_title" value="{{ label.title }}" placeholder="{{ lang.label_title }}" required>
+            </div>
+        </div>
+        <div class="col">
+            <input class="form-control" type="text" name="label_description" value="{{ label.description }}" placeholder="{{ lang.label_description }}">
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group">
+                <button type="submit" name="update_label" value="{{ label.id }}" class="btn btn-default text-success" title="{{ lang.btn_update }}">{{ icon.sync_alt|raw }}</button>
+                {# own request, so it can ask first - only the id and the token are sent #}
+                <button type="button" name="delete_label" value="{{ label.id }}" class="btn btn-default text-danger" hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend" hx-include="[name='csrf_token']" hx-confirm="{{ lang.msg_confirm_delete }}" title="{{ lang.btn_delete }}">{{ icon.trash_alt|raw }}</button>
+            </div>
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+{% else %}
+    <p class="text-muted">{{ lang.msg_no_entries_found }}</p>
+{% endfor %}

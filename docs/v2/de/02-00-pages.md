@@ -152,6 +152,13 @@ verwalten hier ihre persönlichen Listen; eine einzelne öffentliche Liste wird 
 angezeigt, wenn sie über ihren Freigabe-Link geöffnet wird. Diese Nutzungsart ist nur
 relevant, wenn Listen unter Einstellungen → Shop aktiviert sind.
 
+### Seitentyp (strukturierte Daten) {#page-schema-type}
+
+Im Tab Meta wählst Du, um welche Art von Seite es sich für Suchmaschinen handelt, z.B. eine
+Über-uns-, Kontakt- oder FAQ-Seite. SwiftyEdit gibt sie als schema.org-Typ der Seite in den
+strukturierten Daten (JSON-LD) aus. Ohne Auswahl ist die Seite eine normale `WebPage`. Produkte,
+Beiträge und Events bekommen automatisch ihre eigenen Typen (`Product`, `BlogPosting`, `Event`).
+
 ---
 
 ## Sortierung der Suchergebnisse

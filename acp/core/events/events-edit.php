@@ -1,341 +1,197 @@
 <?php
 
+/**
+ * @var array $lang
+ * @var string $languagePack
+ * @var array $se_settings
+ * @var array $lang_codes
+ * @var object $db_content
+ * @var object $twig
+ * @var string $se_base_url
+ * @var string $query - the current url
+ */
+
 $writer_uri = '/admin-xhr/events/write/';
 $reader_uri = '/admin-xhr/events/read/';
 
-if(is_numeric($_POST['id'])) {
+$post_data = [];
+$mode = 'new';
+$id = null;
+
+// the id comes from the url (/admin/events/edit/5/, e.g. after saving a new event)
+// or from the edit button in the list (POST)
+$path = parse_url($query, PHP_URL_PATH);
+$segments = explode('/', rtrim($path, '/'));
+$lastSegment = end($segments);
+if(is_numeric($lastSegment)) {
+    $id = (int) $lastSegment;
+}
+if(is_numeric($_POST['id'] ?? null)) {
     $id = (int) $_POST['id'];
-    $mode = 'update';
-    $post_data = se_get_event_data($id);
-} else {
-    $mode = 'new';
 }
 
+if(isset($id)) {
+    $mode = 'update';
+    $post_data = se_get_event_data($id) ?? [];
+}
 
-$input_post_teaser = [
-    "input_name" => "teaser",
-    "input_value" => $post_data['teaser'],
-    "label" => ' ',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-];
+// text fields are stored html-encoded (events data-writer), Twig escapes on output
+$decode = static fn($value) => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
-$input_post_text = [
-    "input_name" => "text",
-    "input_value" => $post_data['text'],
-    "label" => ' ',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-];
+// the form helpers get the stored (html-encoded) values, like before
+$inputs = [];
 
-$input_event_price_note = [
-    "input_name" => "event_price_note",
-    "input_value" => $post_data['event_price_note'],
-    "label" => ' ',
-    "type" => "textarea",
-    "mode" => "wysiwyg"
-];
+foreach(['teaser' => 'teaser', 'text' => 'text', 'price_note' => 'event_price_note'] as $key => $field) {
+    $inputs[$key] = se_print_form_input([
+        "input_name" => $field,
+        "input_value" => $post_data[$field] ?? null,
+        "label" => ' ',
+        "type" => "textarea",
+        "mode" => "wysiwyg"
+    ]);
+}
 
 // select language
-$get_all_languages = get_all_languages();
-foreach($get_all_languages as $langs) {
+$lang_options = [];
+foreach(get_all_languages() as $langs) {
     if(!in_array($langs['lang_folder'],$lang_codes)) {
         continue;
     }
     $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
 }
 
-$post_lang = $post_data['post_lang'] ?? $languagePack;
-
-$input_select_language = [
+$inputs['language'] = se_print_form_input([
     "input_name" => "event_lang",
-    "input_value" => $post_lang,
+    "input_value" => $post_data['event_lang'] ?? $languagePack,
     "label" => $lang['label_language'],
     "options" => $lang_options,
     "type" => "select"
-];
+]);
 
 // main category page: any page that accepts event content (page_posts_types
 // contains "e"), same pattern as the blog's "Hauptkategorie-Seite" selector.
 $all_event_pages = $db_content->select("se_pages", "page_permalink", [
     "page_posts_types[~]" => "e"
 ]);
-
 array_unshift($all_event_pages, "default");
 
-$event_main_cat_slug = $post_data['main_category_slug'] ?? '';
-
-$select_main_cat_page = '<select name="main_category_slug" class="custom-select form-control">';
+$main_category_options = [];
 foreach($all_event_pages as $permalink) {
-    $label = $permalink;
-    if($permalink == 'default') {
-        $label = $lang['label_use_default'];
-    }
-    $select_main_cat_page .= "<option value='$permalink'".($event_main_cat_slug == "$permalink" ? 'selected="selected"' :'').">$label</option>";
-}
-$select_main_cat_page .= '</select>';
-
-// checkboxes for categories
-$get_categories = se_get_categories();
-
-$array_categories = array();
-if($post_data['categories'] != '') {
-    $array_categories = explode("<->", $post_data['categories']);
+    $main_category_options[] = [
+        'value' => $decode($permalink),
+        'label' => ($permalink == 'default') ? $lang['label_use_default'] : $decode($permalink),
+        'selected' => (($post_data['main_category_slug'] ?? '') == "$permalink")
+    ];
 }
 
-$checkboxes_cat = '<div class="list-group">';
-foreach($get_categories as $cat) {
-
-    $checked = '';
-    if(in_array($cat['cat_hash'], $array_categories)) {
-        $checked = "checked";
-    }
-
-    $category = $cat['cat_name'];
-    $lang_flag = '<img src="'.return_language_flag_src($cat['cat_lang']).'" width="16">';
-    $description = trim(first_words($cat['cat_description'] ?? '', 10)) ?: '...';
-    $cat_id = (int)$cat['cat_id'];
-
-    $checkboxes_cat .= '<label class="list-group-item d-flex gap-3">';
-    $checkboxes_cat .= '<input class="form-check-input flex-shrink-0" type="checkbox" id="cat'.$cat_id.'" name="categories[]" value="'.$cat['cat_hash'].'" '.$checked.'>';
-    $checkboxes_cat .= '<span class="pt-1 form-checked-content">';
-    $checkboxes_cat .= '<strong>#'.$cat_id.' '.$category.'</strong><small class="d-block opacity-75">'.$lang_flag.' '.$description.'</small>';
-    $checkboxes_cat .= '</span>';
-    $checkboxes_cat .= '</label>';
-}
-$checkboxes_cat .= '</div>';
-
-// checkbox for fixed posts
-if($post_data['fixed'] == '1') {
-    $checked_fixed = 'checked';
-}
-$checkbox_fixed  = '<div class="form-check">';
-$checkbox_fixed .= '<input class="form-check-input" id="fix" type="checkbox" name="fixed" value="fixed" '.$checked_fixed.'>';
-$checkbox_fixed .= '<label class="form-check-label" for="fix">'.$lang['label_fixed'].'</label>';
-$checkbox_fixed .= '</div>';
-
-// select post status
-$status_types = [
-    $lang['status_public'] => '1',
-    $lang['status_draft'] => '2'
-];
-
-$post_status = $post_data['status'] ?? '2';
-
-$input_select_status = [
+$inputs['status'] = se_print_form_input([
     "input_name" => "status",
-    "input_value" => $post_status,
+    "input_value" => $post_data['status'] ?? '2',
     "label" => $lang['label_status'],
-    "options" => $status_types,
+    "options" => [
+        $lang['status_public'] => '1',
+        $lang['status_draft'] => '2'
+    ],
     "type" => "select"
-];
+]);
 
-// select for comments
-$comment_types = [
-    $lang['yes'] => '1',
-    $lang['no'] => '2'
-];
-
-$post_comments = $post_data['comments'] ?? '2';
-
-$input_select_comments = [
+$inputs['comments'] = se_print_form_input([
     "input_name" => "comments",
-    "input_value" => $post_comments,
+    "input_value" => $post_data['comments'] ?? '2',
     "label" => $lang['label_comments'],
-    "options" => $comment_types,
+    "options" => [
+        $lang['yes'] => '1',
+        $lang['no'] => '2'
+    ],
     "type" => "select"
-];
+]);
 
-// select for reactions/votings
-$reaction_types = [
-    $lang['label_votings_status_off'] => '1',
-    $lang['label_votings_status_registered'] => '2',
-    $lang['label_votings_status_global'] => '3'
-];
-
-$post_reactions = $post_data['post_votings'] ?? $se_settings['posts_default_votings'];
-
-$select_reactions = [
+$inputs['votings'] = se_print_form_input([
     "input_name" => "votings",
-    "input_value" => $post_reactions,
+    "input_value" => $post_data['votings'] ?? $se_settings['posts_default_votings'],
     "label" => $lang['label_votings'],
-    "options" => $reaction_types,
+    "options" => [
+        $lang['label_votings_status_off'] => '1',
+        $lang['label_votings_status_registered'] => '2',
+        $lang['label_votings_status_global'] => '3'
+    ],
     "type" => "select"
-];
+]);
 
-// checkboxes for labels
-$arr_checked_labels = array();
-if($post_data['labels'] != '') {
-    $arr_checked_labels = explode(",", $post_data['labels']);
-}
-
-foreach($se_labels as $label) {
-    $label_title = $label['label_title'];
-    $label_id = $label['label_id'];
-    $label_color = $label['label_color'];
-    if(in_array("$label_id", $arr_checked_labels)) {
-        $checked_label = "checked";
-    } else {
-        $checked_label = "";
-    }
-    $checkbox_set_labels .= '<div class="form-check form-check-inline" style="border-bottom: 1px solid '.$label_color.'">';
-    $checkbox_set_labels .= '<input class="form-check-input" id="label'.$label_id.'" type="checkbox" '.$checked_label.' name="labels[]" value="'.$label_id.'">';
-    $checkbox_set_labels .= '<label class="form-check-label" for="label'.$label_id.'">'.$label_title.'</label>';
-    $checkbox_set_labels .= '</div>';
-}
-
-// select for RSS
-$rss_options = [
-    $lang['yes'] => 'on',
-    $lang['no'] => 'off'
-];
-
-$post_rss = $post_data['rss'] ?? 'off';
-
-$select_rss = [
+$inputs['rss'] = se_print_form_input([
     "input_name" => "rss",
-    "input_value" => $post_rss,
+    "input_value" => $post_data['rss'] ?? 'off',
     "label" => $lang['label_rss'],
-    "options" => $rss_options,
+    "options" => [
+        $lang['yes'] => 'on',
+        $lang['no'] => 'off'
+    ],
     "type" => "select"
-];
+]);
 
-// select guestlist mode
-$gl_options = [
-    $lang['label_guestlist_status_off'] => '1',
-    $lang['label_guestlist_status_registered'] => '2',
-    $lang['label_guestlist_status_global'] => '3'
-];
-
-if($post_data['event_guestlist'] == '') {
-    $post_data['event_guestlist'] = $se_settings['posts_default_guestlist'];
+// guestlist mode
+$guestlist = $post_data['event_guestlist'] ?? '';
+if($guestlist == '') {
+    $guestlist = $se_settings['posts_default_guestlist'];
 }
+
+$inputs['guestlist'] = se_print_form_input([
+    "input_name" => "event_guestlist",
+    "input_value" => $guestlist,
+    "label" => '',
+    "options" => [
+        $lang['label_guestlist_status_off'] => '1',
+        $lang['label_guestlist_status_registered'] => '2',
+        $lang['label_guestlist_status_global'] => '3'
+    ],
+    "type" => "select"
+]);
 
 // event_guestlist_public_nbr -> 1 = hide, 2 = show
-if($post_data['event_guestlist_public_nbr'] == '') {
-    $post_data['event_guestlist_public_nbr'] = 1;
+$guestlist_public_nbr = (int) ($post_data['event_guestlist_public_nbr'] ?? 0);
+if($guestlist_public_nbr == 0) {
+    $guestlist_public_nbr = 1;
 }
 
-$select_guestlist_mode = [
-    "input_name" => "event_guestlist",
-    "input_value" => $post_data['event_guestlist'],
-    "label" => '',
-    "options" => $gl_options,
-    "type" => "select"
-];
-
-$input_teaser = se_print_form_input($input_post_teaser);
-$input_text = se_print_form_input($input_post_text);
-$input_price_note = se_print_form_input($input_event_price_note);
-$input_select_lang = se_print_form_input($input_select_language);
-$input_select_status = se_print_form_input($input_select_status);
-$input_select_comments = se_print_form_input($input_select_comments);
-$input_select_reactions = se_print_form_input($select_reactions);
-$input_select_guestlist = se_print_form_input($select_guestlist_mode);
-$input_select_rss = se_print_form_input($select_rss);
-
-if($mode == 'new') {
-    $submit_btn = '<button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="save">'.$lang['save'].'</button';
-} else {
-    $submit_btn = '<button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="update">'.$lang['update'].'</button';
+// categories and labels
+$checked_categories = [];
+if(($post_data['categories'] ?? '') != '') {
+    $checked_categories = explode("<->", $post_data['categories']);
+}
+$checked_labels = [];
+if(($post_data['labels'] ?? '') != '') {
+    $checked_labels = explode(",", $post_data['labels']);
 }
 
 /* image widget */
-$images = se_get_all_media_data('image');
-$images = se_unique_multi_array($images,'media_file');
-$array_images = explode("<->", $post_data['images']);
-$draggable = '';
-if(is_array($array_images)) {
-    $array_images = array_filter($array_images);
-    foreach($array_images as $image) {
-        $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
-        $image_src = str_replace('../images/','/images/',$image_src);
-        $draggable .= '<div class="list-group-item draggable" data-id="'.$image.'">';
-        $draggable .= '<div class="d-flex flex-row gap-2">';
-        $draggable .= '<div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url('.$image_src.');background-size:cover;"></div>';
-        $draggable .= '<div class="text-muted small">'.basename($image).'</div>';
-        $draggable .= '</div>';
-        $draggable .= '</div>';
-    }
+$images = [];
+foreach(array_filter(explode("<->", $post_data['images'] ?? '')) as $image) {
+    $image_src = str_replace('../content/','/',$image); // old path from SwiftyEdit 1.x
+    $image_src = str_replace('../images/','/images/',$image_src);
+    $images[] = [
+        'path' => $image,
+        'src' => $image_src,
+        'name' => basename($image)
+    ];
 }
 
-$choose_images = '<div id="imgdropper" class="sortable_target list-group mb-3">'.$draggable.'</div>';
-$choose_images .= '<div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name=\'csrf_token\']" hx-trigger="load, update_image_widget from:body">';
-$choose_images .= 'Loading Images ...</div>';
-
-
-/* release date */
-if($post_data['releasedate'] > 0) {
-    $releasedate = date('Y-m-d H:i', $post_data['releasedate']);
-} else {
-    $releasedate = date('Y-m-d H:i', time());
-}
-
-/* event dates */
-if($post_data['event_startdate'] > 0) {
-    $event_startdate = date('Y-m-d H:i', $post_data['event_startdate']);
-} else {
-    $event_startdate = date('Y-m-d H:i', time());
-}
-
-if($post_data['event_enddate'] > 0) {
-    $event_enddate = date('Y-m-d H:i', $post_data['event_enddate']);
-} else {
-    $event_enddate = date('Y-m-d H:i', time());
-}
-
-
-$form_tpl = file_get_contents('../acp/templates/post_event.tpl');
-
-// replace all entries from $lang
-foreach($lang as $k => $v) {
-    $form_tpl = str_replace('{'.$k.'}', $lang[$k], $form_tpl);
-}
-
-// replace form data
-$form_tpl = str_replace('{title}', $post_data['title'], $form_tpl);
-$form_tpl = str_replace('{input_teaser}', $input_teaser, $form_tpl);
-$form_tpl = str_replace('{input_text}', $input_text, $form_tpl);
-$form_tpl = str_replace('{input_price_note}', $input_price_note, $form_tpl);
-$form_tpl = str_replace('{event_street}', $post_data['event_street'], $form_tpl);
-$form_tpl = str_replace('{event_street_nbr}', $post_data['event_street_nbr'], $form_tpl);
-$form_tpl = str_replace('{event_zip}', $post_data['event_zip'], $form_tpl);
-$form_tpl = str_replace('{event_city}', $post_data['event_city'], $form_tpl);
-$form_tpl = str_replace('{releasedate}', $releasedate, $form_tpl);
-$form_tpl = str_replace('{event_guestlist_limit}', $post_data['event_guestlist_limit'], $form_tpl);
-$form_tpl = str_replace('{checked_gl_public_nbr_1}', ($post_data['event_guestlist_public_nbr'] == 1 ? 'checked' : ''), $form_tpl);
-$form_tpl = str_replace('{checked_gl_public_nbr_2}', ($post_data['event_guestlist_public_nbr'] == 2 ? 'checked' : ''), $form_tpl);
-$form_tpl = str_replace('{event_start}', $event_startdate, $form_tpl);
-$form_tpl = str_replace('{event_end}', $event_enddate, $form_tpl);
-$form_tpl = str_replace('{select_language}', $input_select_lang, $form_tpl);
-$form_tpl = str_replace('{author}', $post_data['author'], $form_tpl);
-$form_tpl = str_replace('{slug}', $post_data['slug'], $form_tpl);
-$form_tpl = str_replace('{se_base_url}', $se_base_url, $form_tpl);
-$form_tpl = str_replace('{select_main_cat_page}', $select_main_cat_page, $form_tpl);
-// note: placeholder is {keywords}, not {tags} - the latter collides with the
-// "tags" language key (used for the site-wide content tags feature) and would
-// get overwritten by the earlier `foreach($lang as $k => $v)` replacement loop
-$form_tpl = str_replace('{keywords}', $post_data['tags'], $form_tpl);
-$form_tpl = str_replace('{content_tags}', se_tags_csv_for_content('event', (int)($id ?? 0)), $form_tpl);
-$form_tpl = str_replace('{rss_url}', $post_data['rss_url'], $form_tpl);
-$form_tpl = str_replace('{meta_title}', $post_data['meta_title'], $form_tpl);
-$form_tpl = str_replace('{meta_description}', $post_data['meta_description'], $form_tpl);
-$form_tpl = str_replace('{canonical_url}', $post_data['canonical_url'] ?? '', $form_tpl);
-$form_tpl = str_replace('{canonical_url_tooltip}', se_print_docs_link("06-00-events.md", null, "canonical-url"), $form_tpl);
-$form_tpl = str_replace('{priority}', $post_data['priority'], $form_tpl);
-$form_tpl = str_replace('{checkbox_categories}', $checkboxes_cat, $form_tpl);
-$form_tpl = str_replace('{checkbox_fixed}', $checkbox_fixed, $form_tpl);
-$form_tpl = str_replace('{select_status}', $input_select_status, $form_tpl);
-$form_tpl = str_replace('{select_comments}', $input_select_comments, $form_tpl);
-$form_tpl = str_replace('{select_votings}', $input_select_reactions, $form_tpl);
-$form_tpl = str_replace('{select_rss}', $input_select_rss, $form_tpl);
-$form_tpl = str_replace('{select_guestlist}', $input_select_guestlist, $form_tpl);
-$form_tpl = str_replace('{post_labels}', $checkbox_set_labels, $form_tpl);
-$form_tpl = str_replace('{widget_images}', $choose_images, $form_tpl);
-$form_tpl = str_replace('{token}', $_SESSION['token'], $form_tpl);
-$form_tpl = str_replace('{submit_button}', $submit_btn, $form_tpl);
-$form_tpl = str_replace('{id}', $id, $form_tpl);
-$form_tpl = str_replace('{date}', $post_data['date'], $form_tpl);
+// release date and event dates, now if not set
+$format_date = static fn($timestamp) => date('Y-m-d H:i', ($timestamp > 0) ? $timestamp : time());
 
 echo '<div id="formResponse"></div>';
-echo $form_tpl;
+echo $twig->render('events/event-form.twig', [
+    'event' => array_map($decode, $post_data),
+    'mode' => $mode,
+    'inputs' => $inputs,
+    'images' => $images,
+    'categories' => se_get_category_checklist($checked_categories),
+    'labels' => se_get_label_checklist($checked_labels),
+    'content_tags' => $decode(se_tags_csv_for_content('event', (int) ($id ?? 0))),
+    'releasedate' => $format_date($post_data['releasedate'] ?? 0),
+    'event_start' => $format_date($post_data['event_startdate'] ?? 0),
+    'event_end' => $format_date($post_data['event_enddate'] ?? 0),
+    'guestlist_public_nbr' => $guestlist_public_nbr,
+    'main_category_options' => $main_category_options,
+    'se_base_url' => $se_base_url,
+    'canonical_docs_link' => se_print_docs_link("06-00-events.md", null, "canonical-url")
+]);

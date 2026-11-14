@@ -1,7 +1,8 @@
 <?php
 
 /**
- * SwiftyEdit frontend
+ * SwiftyEdit frontend - blog pages: the list (posts-list.php) or a single post (posts-display.php),
+ * the redirect of external links (?goto=) and the downloads of post attachments
  *
  * variables
  * @var array $page_contents
@@ -17,6 +18,7 @@
 $time_string_now = time();
 $display_mode = 'list_posts';
 $status_404 = true;
+$get_post_id = 0;
 
 // 1. Get the post ID from URL (.html format)
 if(str_ends_with("$mod_slug", '.html')) {
@@ -27,7 +29,7 @@ if(str_ends_with("$mod_slug", '.html')) {
 
 
 
-if($page_contents['page_type_of_use'] == 'display_post' AND $get_post_id == '') {
+if($page_contents['page_type_of_use'] == 'display_post' AND $get_post_id < 1) {
 	/* we are on the post display page but we have no post id
 	 * get a blog page and redirect
 	 */
@@ -43,6 +45,7 @@ if($page_contents['page_type_of_use'] == 'display_post' AND $get_post_id == '') 
 	header("HTTP/1.1 301 Moved Permanently");
 	header("Location: /$target_page");
 	header("Connection: close");
+	exit;
 }
 
 /* redirect to external link */
@@ -77,36 +80,45 @@ if(isset($_GET['goto'])) {
 /* start post_attachment download */
 if(isset($_POST['post_attachment'])) {
 	
-	if($_POST['post_attachment_external'] != '') {
+	if(($_POST['post_attachment_external'] ?? '') != '') {
 		
-		// external downloads
+		// external downloads - only to the url of a post, never to any posted url
 		
 		$target_file = $db_posts->get("se_posts", "*", [
-			"post_file_attachment_external" => $_POST['post_attachment_external']
+			"post_file_attachment_external" => (string) $_POST['post_attachment_external']
 		]);
+		if(!is_array($target_file)) {
+			$error_code = 404;
+			include __DIR__.'/../error.php';
+			exit;
+		}
 		
 		$counter = ((int) $target_file['post_file_attachment_hits'])+1;
 
 		$update_file = $db_posts->update("se_posts", [
 			"post_file_attachment_hits" => $counter
 		],[
-			"post_file_attachment_external" => $_POST['post_attachment_external']
+			"post_id" => $target_file['post_id']
 		]);
 		
-		$redirect = $_POST['post_attachment_external'];		
-		header("Location: $redirect");
+		header("Location: ".$target_file['post_file_attachment_external']);
 		exit;
 		
 	} else {
 		
 		// file downloads fron /content/files/
 		
-		$post_attachment = basename($_POST['post_attachment']);
+		$post_attachment = basename((string) $_POST['post_attachment']);
 		$get_target_file = '/'.$post_attachment;
 		
 		$target_file = $db_posts->get("se_posts", "*", [
 			"post_file_attachment" => $get_target_file
 		]);
+		if(!is_array($target_file)) {
+			$error_code = 404;
+			include __DIR__.'/../error.php';
+			exit;
+		}
 
 		
 		$counter = ((int) $target_file['post_file_attachment_hits'])+1;

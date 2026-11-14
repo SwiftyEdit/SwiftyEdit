@@ -4,6 +4,10 @@
  * order withdrawal form
  * prefill order number / e-mail when opened from "my orders"
  * the actual submit + validation happens via xhr/order-withdrawal.php
+ *
+ * @var array $lang global project variable
+ * @var string $languagePack global project variable
+ * @var object $smarty Smarty template engine
  */
 
 $prefill_order_nbr = sanitizeUserInputs($_GET['order_nbr'] ?? '');

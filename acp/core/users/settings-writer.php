@@ -47,6 +47,36 @@ if(isset($_POST['hide_2fa_notice'])) {
     exit;
 }
 
+// mark or unmark a plugin as favorite (star in /admin/addons/) - personal,
+// so it needs no addon rights; only installed plugins are accepted
+if(isset($_POST['toggle_fav_plugin'])) {
+
+    $plugin = (string) $_POST['toggle_fav_plugin'];
+    if(!array_key_exists($plugin, se_get_all_addons())) {
+        exit;
+    }
+
+    $favorites = se_get_my_favorite_plugins();
+    if(in_array($plugin, $favorites, true)) {
+        $favorites = array_values(array_diff($favorites, [$plugin]));
+    } else {
+        $favorites[] = $plugin;
+    }
+
+    $save_presets = se_get_my_presets() ?? [];
+    $save_presets['fav_plugins'] = $favorites;
+
+    $db_user->update("se_user",[
+        "user_acp_settings" => json_encode($save_presets)
+    ],[
+        "user_id" => $my_user_id
+    ]);
+
+    // reloads the plugin list, favorites move to the top
+    header("HX-Trigger: update_plugins_list");
+    exit;
+}
+
 /**
  * two-factor authentication - every action answers with the whole card
  */

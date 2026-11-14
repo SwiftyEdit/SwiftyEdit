@@ -1,0 +1,10 @@
+{#
+ # products with a filter value, loaded into the value form by the shop data-reader (show=products_by_filter)
+ # products: list of {id, title}
+ #}
+{% for product in products %}
+    <div class="d-flex justify-content-start border-end mb-1">
+        <div class="flex-shrink-0 p-1">#{{ product.id }}</div>
+        <div class="w-100 p-1">{{ product.title }}</div>
+    </div>
+{% endfor %}

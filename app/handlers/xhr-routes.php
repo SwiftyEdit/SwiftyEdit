@@ -2,6 +2,10 @@
 /**
  * XHR Routes Handler (public API: see api-routes.php)
  * SwiftyEdit CMS
+ *
+ * @var string $languagePack global project variable
+ * @var array $requestPathParts routing.php
+ * @var array $active_plugins routing.php
  */
 
 // xhr routes for core /xhr/se/

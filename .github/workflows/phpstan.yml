@@ -1,0 +1,26 @@
+name: PHPStan
+
+# Level 5 is clean - new findings fail this check (see phpstan.neon)
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Composer
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Analyse
+        run: composer analyse -- --no-progress --error-format=github

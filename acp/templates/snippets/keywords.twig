@@ -1,0 +1,6 @@
+{# keyword filter buttons of the snippets, active keywords are highlighted #}
+<div class="scroll-container">
+    {% for keyword in keywords %}
+        <button name="{{ keyword.active ? 'remove_keyword' : 'add_keyword' }}" value="{{ keyword.name }}" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']" class="btn btn-default{% if keyword.active %} active{% endif %} btn-xs mb-1">{{ keyword.name }} <span class="badge bg-secondary">{{ keyword.count }}</span></button>
+    {% endfor %}
+</div>

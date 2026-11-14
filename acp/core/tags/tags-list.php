@@ -1,18 +1,22 @@
 <?php
 
 /**
+ * overview of the tags, markup in acp/templates/tags/list.twig
+ * the list is loaded by the data-reader (action list)
+ *
  * global variables
  * @var array $icon
  * @var array $lang
+ * @var object $twig
  */
 
-$reader_uri = '/admin-xhr/tags/read/';
-
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['tags'].' '.$lang['tags'];
-echo '</div>';
-
-echo '<div class="card p-3">';
-echo '<div id="getTags" hx-get="'.$reader_uri.'?action=list" hx-trigger="load, changed, updated_tags from:body">';
-echo '</div>';
-echo '</div>';
+echo $twig->render('tags/list.twig', [
+    'title' => $lang['tags'],
+    'title_icon' => $icon['tags'],
+    'reader_uri' => '/admin-xhr/tags/read/',
+    'writer_uri' => '/admin-xhr/tags/write/',
+    'search_name' => 'tags_text_filter',
+    'list_triggers' => 'updated_tags from:body',
+    'sort' => $_SESSION['tags_sort'] ?? 'name',
+    'unused_only' => (($_SESSION['tags_unused_only'] ?? '') == 'true')
+]);

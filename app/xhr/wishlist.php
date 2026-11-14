@@ -10,6 +10,7 @@
  * @var object $smarty
  * @var array $lang
  * @var array $se_settings
+ * @var string $cache_id
  */
 
 // Read-only w.r.t. $_SESSION (only read below, and by se_add_to_cart() -

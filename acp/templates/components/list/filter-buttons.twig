@@ -1,0 +1,14 @@
+{#
+ # toggle buttons for a list filter in the sidebar (e.g. post types, categories),
+ # every click posts name=value to the writer, which adds or removes the value
+ # name: POST name, writer_uri
+ # items: list of {value, label, active, flag (optional, src of the language flag)}
+ #}
+<div class="list-group list-group-flush">
+    {% for item in items %}
+        <button hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']" name="{{ name }}" value="{{ item.value }}" class="list-group-item list-group-item-action{% if item.active %} active{% endif %}">
+            {{ item.label }}
+            {% if item.flag is defined and item.flag %}<span class="float-end"><img src="{{ item.flag }}" width="15" alt=""></span>{% endif %}
+        </button>
+    {% endfor %}
+</div>

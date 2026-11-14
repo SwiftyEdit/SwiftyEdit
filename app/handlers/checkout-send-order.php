@@ -1,8 +1,29 @@
 <?php
 
-$send_order = true;
+/**
+ * SwiftyEdit frontend
+ * - store the order, clear the cart, send the order confirmation
+ * - included by checkout.php
+ *
+ * @var array $lang global project variable
+ * @var string $languagePack global project variable
+ * @var object $smarty Smarty template engine
+ * @var array $cart_item checkout.php
+ * @var array $get_cd checkout.php - data of the current user
+ * @var string $client_data checkout.php - invoice address
+ * @var string $client_shipping_address checkout.php
+ * @var float $cart_price_total checkout.php
+ * @var float $cart_included_taxes checkout.php
+ * @var string $shipping_type checkout.php
+ * @var float|string $shipping_costs checkout.php
+ * @var string $payment_addon checkout.php
+ * @var string $payment_costs checkout.php
+ */
 
-if($_POST['check_cart_terms'] != 'check') {
+$send_order = true;
+$cart_items = [];
+
+if(($_POST['check_cart_terms'] ?? '') != 'check') {
     $send_order = false;
     $smarty->assign("cart_alert_error",$lang['msg_accept_terms'],true);
 }
@@ -18,6 +39,7 @@ if($send_order == true) {
 
     $cart_items_str = json_encode($cart_items, JSON_FORCE_OBJECT);
 
+    $order_data = [];
     $order_data['user_id'] = $get_cd['user_id'];
     $order_data['user_mail'] = $get_cd['user_mail'];
     $order_data['order_invoice_address'] = $client_data;
@@ -29,7 +51,7 @@ if($send_order == true) {
     $order_data['order_shipping_costs'] = $shipping_costs;
     $order_data['order_payment_type'] = $payment_addon;
     $order_data['order_payment_costs'] = $payment_costs;
-    $order_data['order_comment'] = $_POST['cart_comment'];
+    $order_data['order_comment'] = $_POST['cart_comment'] ?? '';
     $order_data['order_nbr'] = ($order_data['user_id'] ?? 'guest').'-'.uniqid();
 
     $order_id = se_send_order($order_data);
@@ -46,10 +68,11 @@ if($send_order == true) {
 
 
         /* remove items from se_carts */
-        $clear_cart_identifier = is_numeric($_SESSION['user_id']) ? $_SESSION['user_id'] : $_SESSION['token'];
+        $clear_cart_identifier = is_numeric($_SESSION['user_id'] ?? '') ? $_SESSION['user_id'] : ($_SESSION['token'] ?? '');
         se_clear_cart($clear_cart_identifier);
         $cnt_cart_items = 0;
 
+        $recipient = [];
         $recipient['name'] = $get_cd['user_firstname'].' '.$get_cd['user_lastname'];
         $recipient['mail'] = $get_cd['user_mail'];
         $recipient['type'] = 'client';
@@ -63,7 +86,7 @@ if($send_order == true) {
 
         // include after sale script from payment addon
         $aftersale_script = SE_ROOT.'/plugins/'.basename($payment_addon).'/aftersale.php';
-        if(is_file($aftersale_script)) {
+        if(is_file($aftersale_script) && !se_is_retired_addon(basename($payment_addon))) {
             include $aftersale_script;
         }
         $smarty->assign("cart_alert_success",$cart_alert,true);

@@ -6,6 +6,7 @@
  * @var object $db_user
  * @var object $db_content
  * @var string $se_base_url
+ * @var array $se_settings
  */
 
 $get_my_userdata = get_my_userdata();
@@ -18,6 +19,7 @@ $mail_change_blocked = is_array($get_my_userdata) && ($get_my_userdata['user_cla
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
 }
+$smarty->assign('psw_requirements', se_password_requirements_text($lang));
 
 // Assign all user data to template
 if (is_array($get_my_userdata)) {
@@ -77,6 +79,7 @@ if(isset($_POST['change_password'])) {
 
     $user_psw_hash = (string) ($get_my_userdata['user_psw_hash'] ?? '');
     $new_user_psw_hash = '';
+    $psw_error = $lang['msg_update_profile_error'];
 
     // the current password is required - a hijacked session alone must not
     // be enough to take over the account. Throttled like the login.
@@ -88,13 +91,16 @@ if(isset($_POST['change_password'])) {
         exit;
     }
 
-    if (is_string($_POST['s_psw'] ?? null) && trim($_POST['s_psw']) !== '') {
+    $password = is_string($_POST['s_psw'] ?? null) ? $_POST['s_psw'] : '';
+    $passwordRepeat = is_string($_POST['s_psw_repeat'] ?? null) ? $_POST['s_psw_repeat'] : '';
+    $psw_errors = se_password_check($password, [$get_my_userdata['user_nick'] ?? '', $get_my_userdata['user_mail'] ?? '']);
 
-        $password = $_POST['s_psw'];
-        $passwordRepeat = $_POST['s_psw_repeat'];
-        if ($password == $passwordRepeat) {
-            $new_user_psw_hash = password_hash($password, PASSWORD_DEFAULT);
-        }
+    if ($password !== $passwordRepeat) {
+        $psw_error = $lang['msg_register_pswrepeat_error'];
+    } elseif ($psw_errors !== []) {
+        $psw_error = se_password_error_text($psw_errors, $lang);
+    } else {
+        $new_user_psw_hash = password_hash($password, PASSWORD_DEFAULT);
     }
 
     if($new_user_psw_hash !== '') {
@@ -115,7 +121,7 @@ if(isset($_POST['change_password'])) {
         }
 
     } else {
-        $smarty->assign("alert_text",$lang['msg_update_profile_error']);
+        $smarty->assign("alert_text",$psw_error);
         $smarty->display('alert/alert-danger.tpl');
     }
 }

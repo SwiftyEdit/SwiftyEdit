@@ -1,0 +1,10 @@
+{#
+ # keywords in the sidebar of a list, a click adds (add_keyword) or removes (remove_keyword)
+ # the keyword from the list filter - loaded by the data-reader of the module (action list_keyword_btn)
+ # keywords: list of {name, count, active}
+ #}
+<div class="scroll-container">
+    {% for keyword in keywords %}
+        <button name="{{ keyword.active ? 'remove_keyword' : 'add_keyword' }}" value="{{ keyword.name }}" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']" class="btn btn-default btn-xs mb-1{% if keyword.active %} active{% endif %}">{{ keyword.name }} <span class="badge bg-secondary">{{ keyword.count }}</span></button>
+    {% endfor %}
+</div>

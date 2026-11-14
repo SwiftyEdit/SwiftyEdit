@@ -7,34 +7,6 @@ if(basename(__FILE__) == basename($_SERVER['PHP_SELF'])){
 }
 
 
-/**
- * update order
- * $id (int) id of the order
- * $data (array) order data
- * returns the number of rows affected 1 = success
- */
-
-function se_update_order($data) {
-	
-	global $db_content;
-	
-	$id = (int) $data['open_order'];
-	
-	$status_order = (int) $data['status_order'];
-	$status_payment = (int) $data['status_payment'];
-	$status_shipping = (int) $data['status_shipping'];
-	
-	$update = $db_content->update("se_orders", [
-		"order_status" => $status_order,
-		"order_status_shipping" => $status_shipping,
-		"order_status_payment" => $status_payment
-	],[
-		"id" => $id
-	]);
-
-
-	return $update->rowCount();
-}
 
 /**
  * get all products
@@ -63,6 +35,8 @@ function se_prepareProductData($data, $id = null) {
     // all columns of se_products ($cols) - only these keys of $data become
     // variables (read again by name below), so a key can't overwrite any
     // other variable in this function (e.g. the globals $db_posts, $se_base_url)
+    /** @var array<string, string> $cols replaced by install/contents/se_products.php */
+    $cols = [];
     require SE_ROOT.'install/contents/se_products.php';
 
     if (!empty($data['context']) && $data['context'] === 'cache') {
@@ -141,7 +115,8 @@ function se_prepareProductData($data, $id = null) {
 
         // translation url
         $translation_urls = '';
-        if(is_array($data['translation_url'])) {
+        if(is_array($data['translation_url'] ?? null)) {
+            $t_urls = [];
             foreach($data['translation_url'] as $k => $v) {
                 $t_urls[$k] = se_clean_permalink($v);
             }
@@ -224,7 +199,7 @@ function se_prepareProductData($data, $id = null) {
         }
     }
 
-    if($date == '') {
+    if(($date ?? '') == '') {
         $date = time();
     }
 
@@ -266,6 +241,7 @@ function se_prepareProductData($data, $id = null) {
     }
 
     if(is_numeric($id)) {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
         $filename = str_replace("/", "", $slug) . '-' . $id . '.html';
         // rss url
         if ($data['rss_url'] == "") {
@@ -283,24 +259,33 @@ function se_prepareProductData($data, $id = null) {
     // canonical url on the frontend, same as before.
     $product_canonical_url = trim($product_canonical_url ?? '');
     if ($product_canonical_url === '') {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
         $product_canonical_url = $se_base_url . $main_catalog_slug . $slug;
     }
 
-    $meta_title = se_return_clean_value($meta_title);
-    $meta_description = se_return_clean_value($meta_description);
-    $product_variant_color = se_return_clean_value($data['product_variant_color']);
+    // encode form input only - rows from the database (cache context) are
+    // already encoded, encoding them again stored "&amp;uuml;" in the cache
+    if (($data['context'] ?? '') !== 'cache') {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
+        $meta_title = se_return_clean_value($meta_title);
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
+        $meta_description = se_return_clean_value($meta_description);
+        $product_variant_color = se_return_clean_value($data['product_variant_color']);
+    }
 
     // variants title and description
     if($data['product_variant_title'] == '') {
         $product_variant_title = $data['title'];
     }
     if($data['product_variant_description'] == '') {
+        // @phpstan-ignore variable.undefined (set from $data by the $$key loop above)
         $product_variant_description = $meta_description;
     }
 
     // volume discounts
     if(isset($data['product_vd_amount'])) {
         $cnt_vd_prices = count($data['product_vd_amount']);
+        $vd_price = [];
         for($i=0;$i<$cnt_vd_prices;$i++) {
 
             if($data['product_vd_amount'][$i] == '') {
@@ -326,6 +311,7 @@ function se_prepareProductData($data, $id = null) {
     }
 
     // build SQL string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
+    $inputs = [];
     foreach($cols as $k => $v) {
         if($k == 'id') {continue;}
         if (!array_key_exists($k, $assigned_vars) && array_key_exists($k, $stored_product)) {

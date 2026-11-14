@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * SwiftyEdit /admin-xhr/events/write/
+ * list actions (pagination, search, pin, priority, delete) and saving events
+ *
+ * global variables
+ * @var array $lang
+ * @var object $db_posts
+ * @var object $db_content
+ * @var string $se_base_url
+ * @var array $cols columns of se_events, from install/contents/se_events.php (save_post)
+ */
+
 // pagination
 if(isset($_POST['pagination'])) {
     $_SESSION['pagination_events_page'] = (int) $_POST['pagination'];
@@ -25,13 +37,25 @@ if(isset($_POST['events_text_filter'])) {
 
 // remove keyword from filter list
 if(isset($_POST['rmkey'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey']);
     $all_filter = explode(" ", $_SESSION['events_text_filter']);
     $_SESSION['events_text_filter'] = '';
     foreach($all_filter as $f) {
-        if($_POST['rmkey'] == "$f") { continue; }
+        if($remove_keyword == "$f") { continue; }
         if($f == "") { continue; }
         $_SESSION['events_text_filter'] .= "$f ";
     }
+    header( "HX-Trigger: update_events_list");
+}
+
+// pin (sfixed) or unpin (rfixed) an event, the star in the list
+if(isset($_POST['sfixed']) || isset($_POST['rfixed'])) {
+    $db_posts->update("se_events", [
+        "fixed" => isset($_POST['sfixed']) ? 1 : 2
+    ],[
+        "id" => (int) ($_POST['sfixed'] ?? $_POST['rfixed'])
+    ]);
     header( "HX-Trigger: update_events_list");
 }
 
@@ -50,6 +74,7 @@ if(isset($_POST['priority'])) {
 if(isset($_POST['delete_event'])) {
 
     $del_id = (int) $_POST['delete_event'];
+    $deleted_title = (string) $db_posts->get("se_events", "title", ["id" => $del_id]);
 
     $delete = $db_posts->delete("se_events", [
         "id" => $del_id
@@ -61,106 +86,120 @@ if(isset($_POST['delete_event'])) {
             "content_id" => $del_id
         ]);
         show_toast($lang['msg_success_entry_delete'],'success');
-        record_log($_SESSION['user_nick'],"delete event id: $del_id","8");
+        se_log_content('delete', 'event', $del_id, $deleted_title);
         header( "HX-Trigger: update_events_list");
     }
 }
 
 
+// delete a guestlist confirmation (/admin/events/bookings/) - only confirmations,
+// never another comment type with the same id
+if(isset($_POST['delete_booking'])) {
+
+    $booking_id = (int) $_POST['delete_booking'];
+
+    $delete = $db_content->delete("se_comments", [
+        "comment_id" => $booking_id,
+        "comment_type" => "evc"
+    ]);
+
+    if($delete->rowCount() > 0) {
+        show_toast($lang['msg_success_entry_delete'],'success');
+        record_log($_SESSION['user_nick'],"delete guestlist confirmation id: $booking_id",5);
+        header( "HX-Trigger: update_bookings_list");
+    }
+}
+
 if(isset($_POST['save_post'])) {
 
-    // all columns of se_events ($cols) - only these POST fields become
-    // variables (read again by name below), so a POST field can't overwrite
-    // any other variable in this scope (e.g. $db_posts, $lang)
+    // all columns of se_events ($cols) - only these POST fields are taken
+    // into $values, everything else in the request is ignored
     require SE_ROOT.'install/contents/se_events.php';
 
+    $values = [];
     foreach($_POST as $key => $val) {
         if(is_string($val) && array_key_exists($key, $cols)) {
-            $$key = @htmlspecialchars($val, ENT_QUOTES);
+            $values[$key] = @htmlspecialchars($val, ENT_QUOTES);
         }
     }
 
-    $releasedate = time();
-    $lastedit = time();
-    $lastedit_from = $_SESSION['user_nick'];
-    $priority = (int) $_POST['priority'];
+    // "id" is empty for new events
+    $id = $values['id'] ?? '';
+    unset($values['id']);
+
+    $values['releasedate'] = time();
+    $values['lastedit'] = time();
+    $values['lastedit_from'] = $_SESSION['user_nick'];
+    $values['priority'] = (int) $_POST['priority'];
 
     if($_POST['date'] == "") {
-        $date = time();
+        $values['date'] = time();
     }
 
     if($_POST['releasedate'] != "") {
-        $releasedate = strtotime($_POST['releasedate']);
+        $values['releasedate'] = strtotime($_POST['releasedate']);
     }
 
-    $event_startdate = strtotime($_POST['event_start']);
-    $event_enddate = strtotime($_POST['event_end']);
+    $values['event_startdate'] = strtotime($_POST['event_start']);
+    $values['event_enddate'] = strtotime($_POST['event_end']);
 
-    if($event_enddate < $event_startdate) {
-        $event_enddate = $event_startdate;
+    if($values['event_enddate'] < $values['event_startdate']) {
+        $values['event_enddate'] = $values['event_startdate'];
     }
 
     $clean_title = clean_filename($_POST['title']);
 
     if($_POST['slug'] == "") {
-        $slug = $clean_title.'/';
+        $values['slug'] = $clean_title.'/';
     } else {
-        $slug = se_clean_permalink($_POST['slug']);
+        $values['slug'] = se_clean_permalink($_POST['slug']);
     }
 
     if($_POST['main_category_slug'] == "default") {
         // find a page that accepts event content, same pattern as the
         // blog's "Hauptkategorie-Seite" resolution.
-        $main_category_slug = $db_content->get("se_pages", "page_permalink", [
+        $values['main_category_slug'] = $db_content->get("se_pages", "page_permalink", [
             "AND" => [
                 "page_posts_types[~]" => "e",
-                "page_language" => $event_lang
+                "page_language" => $values['event_lang'] ?? ''
             ]
         ]);
     } else {
-        $main_category_slug = se_clean_permalink($_POST['main_category_slug']);
+        $values['main_category_slug'] = se_clean_permalink($_POST['main_category_slug']);
     }
 
     if(is_numeric($id)) {
-        $filename = str_replace("/", "", $slug) . '-' . $id . '.html';
+        $filename = str_replace("/", "", $values['slug']) . '-' . $id . '.html';
 
         // canonical url: keep an explicit value if one was set on the form,
         // otherwise build it from the main category page + slug, same
         // pattern as product and post canonical urls.
         if ($_POST['canonical_url'] == "") {
-            $canonical_url = $se_base_url . $main_category_slug . $filename;
+            $values['canonical_url'] = $se_base_url . $values['main_category_slug'] . $filename;
         }
     }
 
-    $categories = '';
-    if(is_array($_POST['categories'])) {
-        $categories = implode("<->", $_POST['categories']);
+    $values['categories'] = '';
+    if(is_array($_POST['categories'] ?? null)) {
+        $values['categories'] = implode("<->", $_POST['categories']);
     }
 
-    $images = '';
-    if(is_array($_POST['picker_0'])) {
-        $event_images_string = implode("<->", $_POST['picker_0']);
-        $event_images_string = "<->$event_images_string<->";
-        $images = $event_images_string;
+    $values['images'] = '';
+    if(is_array($_POST['picker_0'] ?? null)) {
+        $values['images'] = "<->".implode("<->", $_POST['picker_0'])."<->";
     }
 
-    /* labels */
-    $labels = '';
-    if(is_array($_POST['labels'])) {
-        $labels = implode(",", $_POST['labels']);
+    $values['labels'] = '';
+    if(is_array($_POST['labels'] ?? null)) {
+        $values['labels'] = implode(",", $_POST['labels']);
     }
 
-    $status = (int) $_POST['status'];
+    $values['status'] = (int) $_POST['status'];
 
-    /* fix on top */
+    // fix on top
+    $values['fixed'] = (($_POST['fixed'] ?? '') == 'fixed') ? 1 : 2;
 
-    if($_POST['fixed'] == 'fixed') {
-        $fixed = 1;
-    } else {
-        $fixed = 2;
-    }
-
-    /* metas */
+    // metas
     if($_POST['meta_title'] == '') {
         $meta_title = $_POST['title'];
     } else {
@@ -172,8 +211,8 @@ if(isset($_POST['save_post'])) {
         $meta_description = $_POST['meta_description'];
     }
 
-    $meta_title = se_return_clean_value($meta_title);
-    $meta_description = se_return_clean_value($meta_description);
+    $values['meta_title'] = se_return_clean_value($meta_title);
+    $values['meta_description'] = se_return_clean_value($meta_description);
 
     // uuid is not part of the form, so new events never got one. Keep the
     // existing one on update (or generate one if it is missing), generate a
@@ -186,12 +225,15 @@ if(isset($_POST['save_post'])) {
     if($uuid === '') {
         $uuid = se_generate_uuid();
     }
+    $values['uuid'] = $uuid;
 
-    // build sql string from all $cols (loaded above) -> f.e. "releasedate" => $releasedate,
-    foreach($cols as $k => $v) {
-        if ($k === 'id') continue;
-        if (!isset($$k)) continue;
-        $value = $$k;
+    // the columns to store - a column without a value (e.g. "hits") is left
+    // untouched, null counts as "no value"
+    $inputs = [];
+    foreach($values as $k => $value) {
+        if($value === null) {
+            continue;
+        }
         $inputs[$k] = "$value";
     }
 
@@ -199,13 +241,15 @@ if(isset($_POST['save_post'])) {
         $db_posts->update("se_events", $inputs, [
             "id" => $id
         ]);
-        record_log($_SESSION['user_nick'],"updated event id: $id","6");
+        se_log_content('update', 'event', (int) $id, (string) ($inputs['title'] ?? ''));
         show_toast($lang['msg_success_db_changed'],'success');
     } else {
         $db_posts->insert("se_events", $inputs);
         $id = $db_posts->id();
-        record_log($_SESSION['user_nick'],"new event id: $id","6");
+        se_log_content('create', 'event', (int) $id, (string) ($inputs['title'] ?? ''));
         show_toast($lang['msg_success_new_record'],'success');
+        // continue on the edit form, a second click on "save" must update instead of insert again
+        header( "HX-Redirect: /admin/events/edit/$id/");
     }
 
     se_set_content_tags('event', $id, explode(',', $_POST['content_tags'] ?? ''));

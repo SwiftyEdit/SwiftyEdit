@@ -70,7 +70,7 @@ $alert-border-scale:            -70% !default; // Deprecated in v5.2.0, to be re
 $alert-color-scale:             40% !default; // Deprecated in v5.2.0, to be removed in v6
 
 $page_header_bg: desaturate($lighten,5);
-$widget_background: #eaeaea;
+$widget_background: #f5f5f6;
 $widget_border_color: darken($widget_background,15);
 
 $widget-bg-100: mix($lighten,$widget_background,40%);
@@ -101,11 +101,11 @@ $body-tertiary-bg:             $widget-bg-700 !default;
 $body-emphasis-color:          $black !default;
 $border-color: $widget_border_color !default;
 $border-color-translucent:     rgba($black, .15) !default;
-// Was darken($primary,10%) - read as too dark/muddy for things like the
-// dashboard card titles ("Addons", "Bestellungen"). Plain $primary keeps
-// headings distinguishable from $link-color (darken($primary,5%) below)
-// while landing noticeably lighter.
-$headings-color: $primary;
+// Neutral and one step stronger than $body-color, the dark theme has its own
+// value. Bootstrap would compile this into the popover header for both themes,
+// so that one follows the custom property of the current theme instead.
+$headings-color: #111;
+$popover-header-color: var(--bs-heading-color);
 $link-color:                   darken($primary, 5%) !default;
 $link-hover-color:             lighten($link-color, 10%) !default;
 $code-color: rgb(193, 64, 216);
@@ -122,15 +122,17 @@ $sidebar_help_color: #ccc;
 
 $subHeader_bg: rgba(255,255,255,.35);
 
-$section_color_contents: $secondary;
+$section_color_contents: #22b5eb;
+$section_color_snippets: #f0428f;
 $section_color_dashboard: #aaaaaa;
-$section_color_blog: #85d7f5;
-$section_color_shop: #b6e08b;
-$section_color_events: #f3be5b;
+$section_color_blog: #ffd23f;
+$section_color_shop: #e8e8ec;
+$section_color_orders: #95efcc;
+$section_color_events: #ff8a3d;
 $section_color_addons: #95efcc;
 $section_color_reactions: #bede97;
-$section_color_uploads: #c9b2f5;
-$section_color_user: #e3b981;
+$section_color_uploads: #a78bfa;
+$section_color_user: #fda4af;
 $section_color_settings: $spot;
 
 // These are tuned bright/pastel for the sidebar icons (_sidebar.scss), whose
@@ -140,18 +142,22 @@ $section_color_settings: $spot;
 // reads as barely-there low-contrast icons. Darkened variants, used only for
 // the light-mode --section-color-* custom properties below, fix that without
 // touching the sidebar or dark mode (which already has good contrast there).
-$section_color_contents_lm: darken($section_color_contents, 20%);
+//
+// Set by hand where darken() would only dim the color: the near-white of the
+// shop has to become a gray, the yellow of the blog would turn olive.
+$section_color_contents_lm: #0e8fc0;
+$section_color_snippets_lm: #d61f72;
 $section_color_dashboard_lm: darken($section_color_dashboard, 20%);
-// Blog's cyan, shop's green and addons' mint stay lighter than the rest at
-// the same 20% (their pastels start from higher lightness), so they get a
-// bit more here.
-$section_color_blog_lm: darken($section_color_blog, 28%);
-$section_color_shop_lm: darken($section_color_shop, 34%);
-$section_color_events_lm: darken($section_color_events, 20%);
+$section_color_blog_lm: #b88a00;
+$section_color_shop_lm: #5f6470;
+$section_color_orders_lm: #1f9d74;
+$section_color_events_lm: #d9621a;
 $section_color_addons_lm: darken($section_color_addons, 34%);
 $section_color_reactions_lm: darken($section_color_reactions, 20%);
-$section_color_uploads_lm: darken($section_color_uploads, 20%);
-$section_color_user_lm: darken($section_color_user, 20%);
+$section_color_uploads_lm: #7c5ce0;
+$section_color_user_lm: #e0566a;
+
+$card-border-radius: 1rem;
 
 $table-bg: transparent;
 

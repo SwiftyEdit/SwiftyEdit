@@ -44,7 +44,7 @@ function buffer_script(string $script, ?string $parameters=NULL) {
     $plugin_file = SE_ROOT.'plugins/'.basename($script).'/index.php';
 
 	if($parameters !== NULL) {
-		$parameter = parse_str(html_entity_decode($parameters),$output);
+		parse_str(html_entity_decode($parameters),$output);
         foreach($output as $plugin_key => $plugin_value) {
             // the query is exposed to the plugin as local variables - only plain
             // names, and never one of this function's own variables (e.g. a
@@ -158,7 +158,7 @@ function se_get_images_data($image,$parameters=NULL) {
 /**
  * @param string $file filename
  * @param mixed $parameters
- * @return array|false|string|string[]
+ * @return string
  */
 
 function se_get_files_data($file,$parameters=NULL) {
@@ -209,7 +209,7 @@ function se_global_mod_snippets(string $mod, mixed $params=NULL): mixed {
     $mod_str = '';
 
 	if($params !== NULL) {
-		$parameter = parse_str(html_entity_decode($params),$output);
+		parse_str(html_entity_decode($params),$output);
 	}
 	
     // $mod comes from content ([mod=name]) - a plain folder name only
@@ -236,7 +236,7 @@ function text_parser($text) {
 	global $shortcodes, $languagePack;
 
 	if(!is_string($text)) {
-		return;
+		return '';
 	}
 
     /* remove <p> tag from shortcodes */
@@ -244,7 +244,7 @@ function text_parser($text) {
 	$text = str_replace(']</p>', ']', $text);
 
 	if($text == '') {
-		return;
+		return '';
 	}
 
     /* don't replace within <pre> tags */
@@ -506,95 +506,6 @@ function random_text( $type = 'alnum', $length = 8 ) {
 }
 
 
-/**
- * get avatar via email address
- *
- * @param $user_mail
- * @return string
- */
-
-function get_avatar($user_mail) {
-
-	global $se_include_path;
-	global $se_template;
-
-	$mail_hash = md5($user_mail);
-	$avatar_str = "$se_include_path/styles/$se_template/images/user_icon.jpg";
-
-	if(file_exists("content/avatars/$mail_hash".".png")) {
-		$avatar_str = "$se_include_path/content/avatars/$mail_hash".".png";
-	}
-
-	return $avatar_str;
-}
-
-
-/**
- * get user avatar via md5(user_name)
- *
- * @param $user_name
- * @return string
- */
-
-function get_avatar_by_username($user_name) {
-
-	global $se_include_path;
-	global $se_template;
-
-	$avatar_hash = md5($user_name);
-	$avatar_str = "$se_include_path/styles/$se_template/images/user_icon.jpg";
-
-	if(file_exists("content/avatars/$avatar_hash".".png")) {
-		$avatar_str = "$se_include_path/content/avatars/$avatar_hash".".png";
-	}
-
-	return $avatar_str;
-}
-
-
-
-/**
- * send a notification to admin
- */
-
-function mailto_admin($subject,$message) {
-
-	global $prefs_mailer_adr;
-	global $prefs_mailer_name;
-	
-	$subject = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $subject );
-	$message = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $message );
-
-	require_once("lib/Swift/lib/swift_required.php");
-	$transport = Swift_MailTransport::newInstance();
-	$mailer = Swift_Mailer::newInstance($transport);
-	$msg = Swift_Message::newInstance()
-		->setSubject("SwiftyEdit Notification - $subject")
-  		->setFrom(array("$prefs_mailer_adr" => "SwiftyEdit Notification"))
-  		->setTo(array("$prefs_mailer_adr" => "$prefs_mailer_name"))
-  		->setBody("$message", 'text/html')
-  	;
-  	$result = $mailer->send($msg);
-
-	if(!$result) {
-		echo"<hr>ERROR<hr>";
-	}
-}
-
-
-
-
-/**
- * returns the part of the $string
- * before the first occurrence of $separator
- */
-
-function get_left_string($string,$separator) {
-  $string = explode("$separator", $string);
-  return $string[0];
-}
-
-
 
 /**
  * get all active mods
@@ -603,12 +514,38 @@ function get_left_string($string,$separator) {
 
 function se_get_active_mods() {
 
+    $active_addons = [];
     $cache_file_active_addons = SE_CONTENT . '/cache/active_addons.json';
     if(file_exists($cache_file_active_addons)) {
         $active_addons = json_decode(file_get_contents($cache_file_active_addons), true);
     }
-	
-	return $active_addons;
+
+    if(!is_array($active_addons)) {
+        return [];
+    }
+
+    // retired bundled plugins may still be listed as active after an update
+    return array_values(array_filter($active_addons, function($mod) {
+        return !se_is_retired_addon((string) ($mod['page_modul'] ?? ''));
+    }));
+}
+
+/**
+ * Plugins that were bundled with the core in earlier versions and can no
+ * longer run with the current core. The updater never deletes plugins, so
+ * their folders may still sit in /plugins/ (and even be activated) until the
+ * admin removes them - the core skips them instead of loading their code.
+ *
+ * se_paypal-pay: bundled up to 2.2, relied on the PayPal SDK from the core's
+ * vendor directory, which was removed in 2.3. Replaced by paypal-pay from the
+ * plugin catalog, which ships its own SDK and takes over the settings.
+ *
+ * @param string $addon plugin folder name
+ * @return bool
+ */
+function se_is_retired_addon(string $addon): bool {
+    $retired_addons = ['se_paypal-pay'];
+    return in_array($addon, $retired_addons, true);
 }
 
 function se_get_activated_addons() {
@@ -960,106 +897,6 @@ function se_search_events($str, $lang, $currentPage = 1, $itemsPerPage = 25) {
         "totalResults" => $totalResults,
         "events"       => $events
     ];
-}
-
-
-
-/**
- * @param $query
- * @param $currentPage
- * @param $itemsPerPage
- * @return array|false
- */
-
-function se_search($query, $currentPage=1, $itemsPerPage=10) {
-	
-	global $db_content, $db_posts, $languagePack;
-
-	
-	$query = str_replace('-', ' ', $query);
-
-    /*
-     * find pages
-     * filter: status public and ghost
-     * filter: language
-     * */
-
-    $pages_sql = "SELECT * FROM se_pages
-        WHERE (page_language LIKE ? AND (page_status = ? OR page_status = ?)) AND (
-            page_content LIKE ? OR page_title LIKE ? OR page_meta_description LIKE ? OR page_meta_keywords LIKE ?)
-        ORDER BY 
-            page_permalink LIKE ? DESC,
-            page_meta_keywords = ? DESC,
-            page_meta_keywords LIKE ? DESC,
-            page_meta_keywords LIKE ? DESC,
-            page_content LIKE ? DESC,
-            page_priority DESC
-        LIMIT ?
-        OFFSET ?
-        ";
-
-    $pages_params = [
-        $languagePack, "public", "ghost", "%$query%","%$query%","%$query%","%$query%",
-        "%$query%", "%$query%","$query","$query%","%$query%",20,0
-    ];
-
-    $sth = $db_content->pdo->prepare($pages_sql);
-    $sth->execute($pages_params);
-
-    $find_pages = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-
-    $find_products = $db_posts->select("se_products", "*", [
-        "OR" => [
-            "title[~]" => "$query",
-            "teaser[~]" => "$query",
-            "text[~]" => "$query",
-            "text_additional1[~]" => "$query"
-        ],
-        "AND" => [
-            "status" => 1,
-            "product_lang" => $languagePack
-        ]
-    ]);
-
-    $find_posts = $db_posts->select("se_posts", "*", [
-        "OR" => [
-            "post_title[~]" => "$query",
-            "post_teaser[~]" => "$query",
-            "post_text[~]" => "$query",
-            "post_meta_description" => "$query",
-            "post_tags" => "$query"
-        ],
-        "AND" => [
-            "post_status" => 1,
-            "post_lang" => $languagePack
-        ]
-    ]);
-
-    $find_events = $db_posts->select("se_events", "*", [
-        "OR" => [
-            "title[~]" => "$query",
-            "teaser[~]" => "$query",
-            "text[~]" => "$query",
-            "meta_description" => "$query",
-            "tags" => "$query"
-        ],
-        "AND" => [
-            "status" => 1,
-            "event_lang" => $languagePack
-        ]
-    ]);
-
-    //$results = array_merge($find_pages, $find_products,$find_posts);
-
-    $results = [
-      "pages" => $find_pages,
-      "products" => $find_products,
-      "posts" => $find_posts,
-      "events" => $find_events
-    ];
-
-	return $results;
 }
 
 

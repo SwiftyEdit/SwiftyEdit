@@ -13,8 +13,17 @@ if(($_SESSION['user_class'] ?? '') !== 'administrator'){
     die();
 }
 
-require '../../../../../config.php';
-require '../../../../../acp/core/functions.php';
+require __DIR__.'/../../../../../vendor/autoload.php';
+require __DIR__.'/../../../../../config.php';
+
+// same database setup as acp/header.php - the session checks below need $db_user
+const SE_SECTION = "backend";
+require SE_ROOT.'/app/database.php';
+require SE_ROOT.'/acp/core/functions.php';
+
+// absolute lifetime, account fingerprint and ACP idle timeout - this file
+// is reached directly, without acp/header.php
+se_acp_guard();
 
 $path = "../../../images";
 $images = [];

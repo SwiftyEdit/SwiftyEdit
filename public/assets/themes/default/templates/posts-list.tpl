@@ -63,7 +63,11 @@
         {if $value.post_type == "g"}
 
             <span class="post-author">{$value.post_author}</span> <span class="post-releasedate">{$value.post_releasedate_str}</span>
-            <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {if $value.post_href != false}
+                <a class="post-headline-link" href="{$value.post_href}"><h3>{$value.post_title}</h3></a>
+            {else}
+                <h3>{$value.post_title}</h3>
+            {/if}
             {$value.post_teaser}
 
             <div class="post-thumbnails clearfix border-1">

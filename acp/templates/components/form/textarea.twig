@@ -1,0 +1,20 @@
+{#
+ # textarea, optionally with the editor switch (mode "wysiwyg"), rendered by tpl_form_input_textarea()
+ # editors: installed editor plugins {id, label}, null without the switch
+ # format_switch: content format select from tpl_content_format_switch() (html with script)
+ # label and value are printed as passed (raw), see input-text.twig
+ #}
+<div class="{{ container_class|raw }}">
+    {{ format_switch|raw }}
+    {% if editors is not null %}
+        <div class="btn-group float-end pb-1" role="group">
+            {% for editor in editors %}
+                <label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="{{ editor.id }}">{{ editor.label }}</label>
+            {% endfor %}
+            {# built-in plain-text option #}
+            <label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="plain">Text</label>
+        </div>
+    {% endif %}
+    <label for="{{ inputid|raw }}" class="form-label">{{ label|raw }}</label>
+    <textarea class="form-control {{ editor_classes|raw }}" id="{{ inputid|raw }}" name="{{ input_name|raw }}" rows="3">{{ input_value|raw }}</textarea>
+</div>

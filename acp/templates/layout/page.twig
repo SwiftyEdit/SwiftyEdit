@@ -1,0 +1,379 @@
+{#
+ # page frame of the backend, rendered by acp/index.php
+ # the parts printed by PHP includes are passed as html: editor_heads and editor_inits
+ # (backend/head.php and backend/init.js.php of the editor plugins), nav_sidebar, nav_top
+ # and content (the module of the current section)
+ #
+ # upload_folders: list of {label, folders: list of {value, label}} for the upload modal
+ # footer_langs: list of {sign, name, flag}
+ #}
+<!DOCTYPE html>
+<html lang="{{ lang_code }}" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title_pagename }} ~ {{ section }}</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/themes/administration/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/themes/administration/images/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="/themes/administration/images/favicon.ico"/>
+
+    <link rel="stylesheet" href="{{ css_url }}" type="text/css" media="screen, projection">
+
+    <script type="text/javascript">
+        const languagePack = {{ lang_code|json_encode|raw }};
+        let ace_theme;
+        let tinymce_skin;
+        ace_theme = 'chrome';
+        tinymce_skin = 'oxide';
+
+        const storedTheme = localStorage.getItem('backendTheme');
+
+        if (storedTheme === 'dark') {
+            ace_theme = 'twilight';
+            tinymce_skin = 'oxide-dark';
+        }
+    </script>
+
+    <script src="{{ js_url }}"></script>
+    {# the <head> assets of every installed editor plugin #}
+    {{ editor_heads|raw }}
+</head>
+<body>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas">
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        {{ nav_sidebar|raw }}
+    </div>
+</div>
+
+{% if maintenance %}
+    <div class="alert alert-danger rounded-0 m-0">{{ lang.update_msg_modus_activated|raw }}</div>
+{% endif %}
+
+<div class="d-flex" id="page-content">
+
+    <nav id="sidebar" class="d-none d-lg-block">
+        {{ nav_sidebar|raw }}
+    </nav>
+
+    <div class="flex-grow-1 main-scrollable">
+
+        <header class="ph-{{ section }} page-header">
+            {{ nav_top|raw }}
+        </header>
+
+        {# #container fills the rest of the scroll area, so the footer sits at the bottom of short pages #}
+        <div class="container-fluid py-3" id="container">
+            <div class="page-main">
+                {{ content|raw }}
+            </div>
+
+            <div id="footer">
+                <p class="text-center">
+                    {% for footer_lang in footer_langs %}
+                        <a class="btn btn-sm btn-default" href="?set_lang={{ footer_lang.sign|url_encode }}"><img src="{{ footer_lang.flag }}" style="vertical-align: baseline; width:18px; height:auto;" alt=""> {{ footer_lang.name }}</a>
+                    {% endfor %}
+                </p>
+                <hr>
+                <p><img src="/themes/administration/images/swiftyedit_icon.svg" alt="se-logo" width="60px"><br>
+                    <b>SwiftyEdit</b><br>copyright © {{ "now"|date("Y") }}, <a href="https://swiftyedit.dev/" target="_blank">SwiftyEdit.dev</a><br>
+                    <small class="text-muted se-privacy-blur">Build {{ build }}</small></p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div class="bottom-bar">
+    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">{{ icon.upload|raw }} {{ lang.btn_upload }}</button>
+</div>
+
+{# the dropzone of the upload modal is set up by backend.js (Uppy), the files go to /admin-xhr/widgets/upload/ #}
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ icon.upload|raw }} {{ lang.btn_upload }}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.close }}"></button>
+            </div>
+            <div class="modal-body">
+                <form id="dropper" class="dropper-form" action="/admin/upload/" method="POST">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label" for="uploadDestination">{{ lang.upload_destination }}</label>
+                            <select name="upload_destination" id="uploadDestination" class="form-control custom-select">
+                                {% for group in upload_folders %}
+                                    <optgroup label="{{ group.label }}">
+                                        {% for folder in group.folders %}
+                                            <option value="{{ folder.value }}">{{ folder.label }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="file_mode" value="overwrite" id="overwrite">
+                                <label class="form-check-label" for="overwrite">{{ lang.upload_overwrite_existing_files }}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# limits of the settings (/admin/settings/general/) #}
+                    <input type="hidden" name="w" value="{{ se_settings.maximagewidth }}">
+                    <input type="hidden" name="w_tmb" value="{{ se_settings.maxtmbwidth }}">
+                    <input type="hidden" name="h" value="{{ se_settings.maximageheight }}">
+                    <input type="hidden" name="h_tmb" value="{{ se_settings.maxtmbheight }}">
+                    <input type="hidden" name="fz" value="{{ se_settings.maxfilesize }}">
+                    <input type="hidden" name="unchanged" value="{{ se_settings.uploads_remain_unchanged }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{ lang.close }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal for documentation -->
+<div id="helpModal" class="modal fade"
+     style="display: none"
+     aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+<!-- modal for page infos -->
+<div id="infoModal" class="modal fade"
+     style="display: none"
+     aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+<!-- fullscreen modal for content-format editors (blocks_v1, markdown_v1, ...) -
+     see acp/templates/components/form/content-editor.twig's fullscreen button and
+     the content-editor JS glue below, which moves a .content-editor-mount into
+     .content-editor-fullscreen-slot on show and moves it back on hide -->
+<div class="modal fade" id="contentEditorFullscreenModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.close }}"></button>
+            </div>
+            <div class="modal-body content-editor-fullscreen-slot"></div>
+        </div>
+    </div>
+</div>
+
+{# the footer init of every installed editor plugin (registers window.seEditors) #}
+{{ editor_inits|raw }}
+
+{# values for the script below and src/js/components/session-clock.js #}
+<script type="text/javascript">
+    var seBackend = {
+        defaultEditor: {{ default_editor|json_encode|raw }},
+        csrfToken: {{ csrf_token|json_encode|raw }}
+    };
+</script>
+<script type="text/javascript">
+{% verbatim %}
+    window.seEditors = window.seEditors || {};
+
+    /*
+     * Content editor switch. Each editor plugin registers itself in
+     * window.seEditors keyed by its editor id (e.g. "tinymce", "ace"). The
+     * switch value "plain" is the built-in plain-text mode and has no
+     * registered editor object.
+     */
+    var seDefaultEditor = seBackend.defaultEditor;
+
+    function seCurrentEditorMode() {
+        var editor_mode = localStorage.getItem('editor_mode');
+        /* fall back to the default if the stored editor is no longer installed */
+        if (editor_mode && editor_mode !== 'plain' && !window.seEditors[editor_mode]) {
+            editor_mode = null;
+        }
+        if (!editor_mode) {
+            editor_mode = seDefaultEditor;
+        }
+        return editor_mode;
+    }
+
+    function switchEditorMode(mode) {
+
+        var textEditor = $('textarea[class*=switchEditor]');
+
+        /* tear down whichever editor is currently attached */
+        Object.keys(window.seEditors).forEach(function (id) {
+            try {
+                window.seEditors[id].detach(textEditor);
+            } catch (e) {}
+        });
+
+        textEditor.removeClass();
+        textEditor.removeAttr('style');
+
+        var editor = window.seEditors[mode];
+        if (editor) {
+            textEditor.addClass((editor.cls || '') + ' form-control switchEditor');
+            textEditor.css("display", "flex");
+            editor.attach(textEditor);
+        } else {
+            /* plain textarea */
+            textEditor.addClass('plain form-control switchEditor');
+            textEditor.css("visibility", "visible");
+            textEditor.css("display", "flex");
+        }
+
+        $("input[value=" + mode + "]").prop('checked', true);
+        $("input[name='optEditor']").parent().removeClass('active');
+        $("input[value=" + mode + "]").parent().addClass('active');
+
+    }
+
+    $(function () {
+
+        var editor_mode = seCurrentEditorMode();
+        localStorage.setItem("editor_mode", editor_mode);
+
+        /*
+         * Delegated binding (on document, not the specific radio elements) so
+         * this keeps working after an HTMX swap replaces #pageContentField -
+         * and its optEditor radios - with fresh DOM (e.g. switching the
+         * content format back to "Legacy (HTML)", see
+         * tpl_content_format_switch() in acp/core/templates.php). A direct
+         * .on("change", fn) binding would only ever reach the radios present
+         * at page-load time.
+         */
+        $(document).on("change", 'input[name="optEditor"]', function () {
+            var button = $("input[name='optEditor']:checked").val();
+            localStorage.setItem("editor_mode", button);
+            switchEditorMode(button);
+        });
+
+        switchEditorMode(editor_mode);
+
+    });
+
+    /*
+     * Content-format editors (blocks_v1, markdown_v1, ...). Each editor plugin
+     * registers itself in window.seContentEditors keyed by its editor id, with
+     * mount(el, content) / serialize(el) methods. Mount points are
+     * .content-editor-mount divs (see acp/templates/components/form/content-editor.twig);
+     * the paired hidden textarea.content-editor-value (looked up via
+     * data-value-field, not DOM adjacency - the mount can be moved into the
+     * fullscreen modal below) carries the serialized value into the (HTMX)
+     * form submit.
+     */
+    window.seContentEditors = window.seContentEditors || {};
+
+    function seMountContentEditors(scope) {
+        (scope || document).querySelectorAll('.content-editor-mount').forEach(function (el) {
+            if (el.dataset.mounted === '1') {
+                return;
+            }
+            var editor = window.seContentEditors[el.dataset.editor];
+            if (!editor) {
+                el.innerHTML = '<div class="alert alert-warning">Editor "' + el.dataset.editor + '" not installed.</div>';
+                return;
+            }
+            var content = null;
+            try {
+                content = JSON.parse(el.dataset.content || 'null');
+            } catch (e) {}
+            editor.mount(el, content);
+            el.dataset.mounted = '1';
+        });
+    }
+
+    $(function () {
+        seMountContentEditors(document);
+    });
+
+    document.body.addEventListener('htmx:configRequest', function (evt) {
+        document.querySelectorAll('.content-editor-mount').forEach(function (el) {
+            var editor = window.seContentEditors[el.dataset.editor];
+            var valueField = document.getElementById(el.dataset.valueField);
+            if (!editor || !valueField) {
+                return;
+            }
+            /*
+             * The plugin's serialize() only returns its own inner "content"
+             * value (a markdown string, a block tree, ...) - Core owns the
+             * {"editor":...,"content":...} envelope on both the PHP side
+             * (se_decode_editor_content()) and here, so plugins never need to
+             * know the wrapper shape.
+             */
+            evt.detail.parameters[valueField.name] = JSON.stringify({
+                editor: el.dataset.editor,
+                content: editor.serialize(el)
+            });
+        });
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function (evt) {
+        /*
+         * Deliberately not scoped to evt.detail.target: for an outerHTML
+         * swap (used by the content-format switch, see
+         * tpl_content_format_switch() in acp/core/templates.php), htmx
+         * removes the original target element from the DOM and inserts the
+         * new content in its place, but evt.detail.target still points at
+         * that now-detached original element - scoping to it silently finds
+         * nothing in the (correct) new content. Both functions below already
+         * tolerate a document-wide scan (seMountContentEditors() is guarded
+         * by data-mounted, switchEditorMode() already queries
+         * document-wide internally), so scan the whole document instead.
+         */
+        seMountContentEditors(document);
+        if (document.querySelector('textarea[class*=switchEditor]')) {
+            switchEditorMode(seCurrentEditorMode());
+        }
+    });
+
+    /*
+     * Fullscreen toggle (see the .content-editor-fullscreen-btn in
+     * components/form/content-editor.twig and #contentEditorFullscreenModal
+     * above): moves the .content-editor-mount into the modal on open, moves
+     * it back to its original spot in the form on close. The mount keeps its
+     * SortableJS instances etc. intact across the move - only its position in
+     * the DOM tree changes, nothing is re-mounted.
+     */
+    (function () {
+        var modalEl = document.getElementById('contentEditorFullscreenModal');
+        if (!modalEl) {
+            return;
+        }
+        var slotEl = modalEl.querySelector('.content-editor-fullscreen-slot');
+        var origin = null;
+
+        modalEl.addEventListener('show.bs.modal', function (evt) {
+            var trigger = evt.relatedTarget;
+            var mountEl = trigger ? document.getElementById(trigger.dataset.editorTarget) : null;
+            if (!mountEl) {
+                return;
+            }
+            origin = { el: mountEl, parent: mountEl.parentNode, nextSibling: mountEl.nextSibling };
+            slotEl.appendChild(mountEl);
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            if (origin) {
+                origin.parent.insertBefore(origin.el, origin.nextSibling);
+                origin = null;
+            }
+        });
+    })();
+
+{% endverbatim %}
+</script>
+
+</body>
+</html>

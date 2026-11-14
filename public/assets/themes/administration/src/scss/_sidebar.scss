@@ -114,6 +114,10 @@
 		color: $section_color_contents;
 	}
 
+	.color-snippets > i {
+		color: $section_color_snippets;
+	}
+
 	.color-blog > i {
 		color: $section_color_blog;
 	}
@@ -159,6 +163,9 @@
 	height: 100vh;
 	overflow-y: auto;
 	overflow-x: hidden;
+	// header + #container in a column - #container takes the remaining height
+	display: flex;
+	flex-direction: column;
 }
 
 /* hidden sidebar */

@@ -10,6 +10,9 @@
  * @var string $mod_slug from routing.php
  * @var array $se_settings
  * @var array $lang
+ * @var string $languagePack
+ * @var object $smarty Smarty template engine
+ * @var string $cache_id Smarty cache id
  */
 
 if(($se_settings['wishlist_enabled'] ?? 0) != 1) {
@@ -20,7 +23,7 @@ if(($se_settings['wishlist_enabled'] ?? 0) != 1) {
 
 /* get permalink for the wishlist page (for cross-links from other templates) */
 $wishlist_page = se_get_type_of_use_pages('wishlist');
-if($wishlist_page['page_permalink'] == '') {
+if(($wishlist_page['page_permalink'] ?? '') == '') {
     $wishlist_page_uri = '/wishlist/';
 } else {
     $wishlist_page_uri = '/'.$wishlist_page['page_permalink'];

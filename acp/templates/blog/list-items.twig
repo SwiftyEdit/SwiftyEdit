@@ -1,0 +1,53 @@
+{#
+ # list of the posts, loaded into #getPosts by the blog data-reader
+ # posts: see blog/data-reader.php (action list_posts)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{{ pagination|raw }}
+
+<table class="table table-sm table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class="text-center">{{ icon.star|raw }}</th>
+            <th>{{ lang.label_priority }}</th>
+            <th>{{ lang.type }}</th>
+            <th></th>
+            <th>{{ lang.label_title }}</th>
+            <th></th>
+        </tr>
+    </thead>
+    {% for post in posts %}
+        <tr{% if post.is_draft %} class="item_is_draft"{% endif %}>
+            <td>{{ post.id }}</td>
+            <td>{{ list.fixed_toggle(post.id, post.fixed, writer_uri) }}</td>
+            <td>{{ list.priority(post.id, post.priority, writer_uri) }}</td>
+            <td><span class="label-type label-{{ post.type }}">{{ post.type_label }}</span></td>
+            <td>{{ list.thumb(post.thumb) }}</td>
+            <td>
+                {% if post.downloads is not null %}
+                    <div class="float-end small">{{ icon.download|raw }} {{ post.downloads }}</div>
+                {% endif %}
+                {% if post.redirects is not null %}
+                    <div class="float-end small">{{ icon.link|raw }} {{ post.redirects }}</div>
+                {% endif %}
+                <h5 class="mb-0"><img src="{{ post.lang_flag }}" width="15" title="{{ post.lang }}" alt="{{ post.lang }}"> {{ post.title }}</h5>
+                <small>{{ post.teaser }}{% if post.teaser_trimmed %} <small><i>(...)</i></small>{% endif %}</small><br>
+                <span class="text-muted small">
+                    <span title="{{ lang.label_data_submited }}">{{ icon.save|raw }}: {{ post.date }}</span> |
+                    {% if post.lastedit %}<span title="{{ lang.label_data_lastedit }}">{{ icon.edit|raw }}: {{ post.lastedit }}</span>{% endif %} |
+                    <span title="{{ lang.label_data_releasedate }}">{{ icon.calendar_check|raw }}: {{ post.releasedate }}</span>
+                </span><br>
+                {{ list.categories(post.categories) }}<br>
+                {{ list.labels(post.labels) }}
+            </td>
+            <td style="min-width: 150px;">
+                <nav class="nav justify-content-end">
+                    <a href="/admin/blog/edit/{{ post.id }}/" class="btn btn-default btn-sm text-success me-1">{{ icon.edit|raw }}</a>
+                    {{ list.delete_button('delete_post', post.id, writer_uri) }}
+                </nav>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,43 @@
+# PHPStan configuration for SwiftyEdit
+# Run with: composer analyse
+#
+# Level 5 is clean: the baseline (phpstan-baseline.neon) only holds
+# defensive checks that are kept on purpose (is_array/isset/?? on values
+# whose DocBlock types are narrower than reality). Fix new findings instead
+# of adding them; refresh with composer analyse:baseline only after cleanups.
+
+includes:
+    - phpstan-baseline-loader.php
+
+parameters:
+    level: 5
+    phpVersion: 80300
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    # Medoo's class docblock has IDE-only @method overloads (e.g. select()
+    # with 4 required parameters); its own stub replaces them for PHPStan
+    stubFiles:
+        - vendor/catfan/medoo/phpstan/Medoo.stub
+    dynamicConstantNames:
+        - SE_INCLUDE_PATH
+        - DB_PREFIX
+        # "frontend" or "backend" - shared files run in both sections
+        - SE_SECTION
+    paths:
+        - config.php
+        - acp
+        - app
+        - install
+        - public/admin.php
+        - public/admin_xhr.php
+        - public/dispatch.php
+        - public/index.php
+        - public/install.php
+        - public/rss.php
+        - public/assets/themes/default/php
+        - plugins/ace-editor
+        - plugins/se_cash-pay
+        - plugins/se_invoice-pay
+        - plugins/tinymce-editor
+    excludePaths:
+        - */node_modules/*

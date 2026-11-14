@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * SwiftyEdit backend
+ * switch file for section inbox
+ *
+ * global variables
+ * @var string $query - the current url
+ */
+
 $subinc = match (true) {
     str_starts_with($query, 'inbox/mail/edit') => 'mail-edit',
     str_starts_with($query, 'inbox/mail/new') => 'mail-edit',

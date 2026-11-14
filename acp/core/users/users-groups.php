@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @var array $lang
+ * @var array $icon
+ */
+
 $reader_uri = '/admin-xhr/users/read/';
 
 echo '<div class="subHeader d-flex align-items-center">';

@@ -1,0 +1,128 @@
+{#
+ # Dashboard, rendered by acp/core/dashboard/index.php. Activity on top, plugins
+ # below, then the things to review, new users and the system cards. The
+ # contents are loaded via htmx from the dashboard data-reader.
+ #}
+
+{% macro loading() %}
+    <div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
+{% endmacro %}
+
+{% import _self as m %}
+
+{# hx-target and hx-swap are inherited by the tabs and buttons inside #}
+<section id="dashActivity" class="card dash-hero module-overview-list mb-3"
+         hx-get="{{ reader_uri }}?action=activity" hx-trigger="load"
+         hx-target="#dashActivity" hx-swap="innerHTML">
+    <div class="card-body">{{ m.loading() }}</div>
+</section>
+
+<section class="card mb-3" style="--card-color: var(--section-color-addons)">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+        <span class="dash-card-icon">{{ icon.plugin|raw }}</span>
+        <h2 class="h6 mb-0 flex-grow-1">{{ lang.nav_btn_addons }}</h2>
+        <a href="/admin/addons/catalog/" class="small fw-semibold ms-2">{{ lang.btn_install }}</a>
+        <a href="/admin/addons/" class="small fw-semibold ms-2">{{ lang.overview }}</a>
+    </div>
+    <div class="card-body">
+        <div id="getAddons" hx-get="{{ reader_uri }}?action=list_addons" hx-trigger="load">
+            {{ m.loading() }}
+        </div>
+    </div>
+</section>
+
+<div class="row g-3 mb-3">
+
+    <div class="col-12 col-lg-4">
+        <section class="card h-100" style="--card-color: var(--section-color-system)">
+            <div class="card-header d-flex align-items-center gap-2">
+                <span class="dash-card-icon">{{ icon.exclamation_triangle|raw }}</span>
+                <h2 class="h6 mb-0">{{ lang.dashboard_label_alerts }}</h2>
+            </div>
+            <div class="card-body">
+                <div id="getAlerts" hx-get="{{ reader_uri }}?action=list_alerts" hx-trigger="load">
+                    {{ m.loading() }}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <section class="card h-100" style="--card-color: var(--section-color-user)">
+            <div class="card-header d-flex align-items-center gap-2">
+                <span class="dash-card-icon">{{ icon.people|raw }}</span>
+                <h2 class="h6 mb-0 flex-grow-1">{{ lang.nav_btn_user }}</h2>
+                <a href="/admin/users/" class="small fw-semibold ms-2">{{ lang.btn_all }} <span id="countUser" hx-get="/admin-xhr/counter/read/?count=users" hx-trigger="load"></span></a>
+            </div>
+            <div class="card-body">
+                <div id="getUser" hx-get="{{ reader_uri }}?action=list_user" hx-trigger="load">
+                    {{ m.loading() }}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 {{ show_opcache ? 'col-lg-8' : '' }}">
+        <section class="card h-100" style="--card-color: var(--section-color-system)">
+            <div class="card-header d-flex align-items-center gap-2">
+                <span class="dash-card-icon">{{ icon.gear|raw }}</span>
+                <h2 class="h6 mb-0 flex-grow-1">{{ lang.nav_btn_system }}</h2>
+                {% if can_view_log %}
+                    <a href="/admin/dashboard/log/" class="small fw-semibold ms-2">{{ lang.dashboard_label_activity }}</a>
+                {% endif %}
+                <a href="/admin/settings/" class="small fw-semibold ms-2">{{ lang.nav_btn_settings }}</a>
+            </div>
+            <div class="card-body">
+                <div class="dash-system-layout">
+                    <div>
+                        <h3 class="dash-subheading">{{ lang.nav_btn_cache }}</h3>
+                        <div id="getCache" class="dash-cache-grid" hx-get="{{ reader_uri }}?action=list_cache" hx-trigger="load, cache_rebuilt from:body">
+                            {{ m.loading() }}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-3">
+                            {# outside the swapped list, so the button survives the "cache_rebuilt" refresh #}
+                            <button hx-post="/admin-xhr/dashboard/write/"
+                                    hx-vals='{"cache_target":"all","csrf_token":"{{ csrf_token }}"}'
+                                    hx-target="#cacheStatus_all" hx-swap="innerHTML" hx-indicator=".htmx-indicator"
+                                    class="btn btn-default btn-sm">{{ icon.arrow_clockwise|raw }} {{ lang.cache_btn_rebuild_all }}</button>
+                            <span id="cacheStatus_all"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="dash-subheading">{{ lang.nav_btn_settings }}</h3>
+                        <div id="getInfos" hx-get="{{ reader_uri }}?action=list_infos" hx-trigger="load">
+                            {{ m.loading() }}
+                        </div>
+                        <div hx-get="{{ reader_uri }}?action=version_state" hx-trigger="load"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {# OPcache status + manual reset, see dashboard data-reader/data-writer #}
+    {% if show_opcache %}
+    <div class="col-12 col-lg-4">
+        <section class="card h-100" style="--card-color: var(--section-color-system)">
+            <div class="card-header d-flex align-items-center gap-2">
+                <span class="dash-card-icon">{{ icon.cpu|raw }}</span>
+                <h2 class="h6 mb-0 flex-grow-1">{{ lang.opcache_title }}</h2>
+                <span id="opcachePill"></span>
+            </div>
+            <div class="card-body">
+                <div id="getOpcache" hx-get="{{ reader_uri }}?action=list_opcache" hx-trigger="load, opcache_reset from:body">
+                    {{ m.loading() }}
+                </div>
+            </div>
+            <div class="card-footer d-flex align-items-center gap-2">
+                <button hx-post="/admin-xhr/dashboard/write/"
+                        hx-vals='{"opcache_reset":1,"csrf_token":"{{ csrf_token }}"}'
+                        hx-target="#opcacheStatus" hx-swap="innerHTML" hx-indicator=".htmx-indicator"
+                        class="btn btn-default btn-sm">{{ icon.trash|raw }} {{ lang.btn_delete_cache }}</button>
+                <span id="opcacheStatus" class="align-self-center"></span>
+            </div>
+        </section>
+    </div>
+    {% endif %}
+
+</div>

@@ -70,6 +70,20 @@ if(isset($_GET['check']) && $_GET['check'] == "email_repeat") {
     exit;
 }
 
+// check a new password against the password rules - the forms send it as
+// psw (registration), new_psw (reset) or s_psw (profile), via POST only
+if(isset($_GET['check']) && $_GET['check'] == "psw_rules") {
+    $check_psw = $_POST['psw'] ?? $_POST['new_psw'] ?? $_POST['s_psw'] ?? '';
+    if(is_string($check_psw) && $check_psw !== '') {
+        $psw_errors = se_password_check($check_psw, [$_POST['username'] ?? '', $_POST['mail'] ?? '']);
+        if($psw_errors !== []) {
+            $smarty->assign("alert_text",se_password_error_text($psw_errors, $lang));
+            $smarty->display('alert/alert-danger.tpl');
+        }
+    }
+    exit;
+}
+
 // check if password repeat is equal to password - passwords via POST only,
 // so they never end up in URLs and access logs
 if(isset($_GET['check']) && $_GET['check'] == "psw_repeat") {

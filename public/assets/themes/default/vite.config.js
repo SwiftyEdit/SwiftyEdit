@@ -65,6 +65,58 @@ function copyAssets() {
     };
 }
 
+/**
+ * Write dist/THIRD-PARTY-LICENSES.txt with the license texts of all npm
+ * packages in the build. Terser and cssnano drop the license comments,
+ * MIT and similar licenses require the copyright notice to ship with the code.
+ * Packages: everything bundled into the JS chunks plus the "dependencies" of
+ * package.json (covers packages only used in SCSS or copied by copyAssets()).
+ */
+function thirdPartyLicenses() {
+    const packageDir = (id) => {
+        const match = id.replace(/\\/g, '/').match(/^(.*\/node_modules\/(?:@[^/]+\/)?[^/]+)\//);
+        return match ? match[1] : null;
+    };
+    return {
+        name: 'third-party-licenses',
+        generateBundle(options, bundle) {
+            const dirs = new Set();
+            for (const chunk of Object.values(bundle)) {
+                for (const id of chunk.moduleIds ?? []) {
+                    const dir = packageDir(id);
+                    if (dir) dirs.add(dir);
+                }
+            }
+            const own = fs.readJsonSync('package.json');
+            for (const name of Object.keys(own.dependencies ?? {})) {
+                dirs.add(fs.realpathSync(`node_modules/${name}`));
+            }
+
+            const entries = [];
+            for (const dir of dirs) {
+                const pkgFile = `${dir}/package.json`;
+                if (!fs.existsSync(pkgFile)) continue;
+                const pkg = fs.readJsonSync(pkgFile);
+                const licenseFile = fs.readdirSync(dir).find((f) => /^(licen[cs]e|copying)(\.|$)/i.test(f));
+                // packages without a license file: author, license and source from package.json
+                const author = typeof pkg.author === 'object' ? pkg.author?.name : pkg.author;
+                const source = pkg.homepage ?? pkg.repository?.url ?? pkg.repository ?? '';
+                const text = licenseFile
+                    ? fs.readFileSync(`${dir}/${licenseFile}`, 'utf8').trim()
+                    : `Copyright (c) ${author ?? 'the authors'}\nLicense: ${pkg.license ?? 'unknown'}\nSource: ${source}`;
+                entries.push(`${pkg.name} ${pkg.version} - ${pkg.license ?? 'see below'}\n\n${text}`);
+            }
+            entries.sort();
+
+            this.emitFile({
+                type: 'asset',
+                fileName: 'THIRD-PARTY-LICENSES.txt',
+                source: 'Third-party packages included in this build\n\n'
+                    + entries.join('\n\n' + '-'.repeat(72) + '\n\n') + '\n',
+            });
+        }
+    };
+}
 
 export default defineConfig({
     build: {
@@ -105,5 +157,6 @@ export default defineConfig({
     },
     plugins: [
         copyAssets(),
+        thirdPartyLicenses(),
     ],
 });

@@ -5,7 +5,7 @@
  *
  * @var object $db_content
  * @var array $se_settings
- * @var array $se_db_user
+ * @var object $db_user
  * @var array $page_contents
  * @var array $lang
  * @var string $cache_id
@@ -64,7 +64,7 @@ $smarty->assign('other_countries_options', $other_countries_options);
 
 
 // Process registration form if submitted
-if($_POST['send_registerform']) {
+if(!empty($_POST['send_registerform'])) {
 
     if($se_settings['userregistration'] != 'yes') {
         die("unauthorized access");
@@ -84,16 +84,23 @@ if($_POST['send_registerform']) {
         'sa_company', 'sa_firstname', 'sa_lastname', 'sa_street', 'sa_street_nbr', 'sa_zip',
         'sa_city', 'sa_country'
     ];
+    $form = [];
     foreach($register_fields as $field) {
         $value = $_POST[$field] ?? '';
-        $$field = is_string($value) ? strip_tags(substr($value, 0, 200)) : '';
+        $form[$field] = is_string($value) ? strip_tags(substr($value, 0, 200)) : '';
+    }
+
+    // passwords stay exactly as entered - they are only hashed, never printed,
+    // and stripping them would store a different password than the login expects
+    foreach(['psw', 'psw_repeat'] as $field) {
+        $form[$field] = is_string($_POST[$field] ?? null) ? $_POST[$field] : '';
     }
 
     // check required fields from settings
     if($se_settings['required_fields_registration'] != '') {
-        $required_fields = json_decode($se_settings['required_fields_registration']);
+        $required_fields = (array) json_decode($se_settings['required_fields_registration']);
         foreach($required_fields as $field) {
-            if($_POST[$field] == '') {
+            if(($_POST[$field] ?? '') == '') {
                 $send_data = "false";
                 $register_message .= $lang['msg_register_requiredfields'].' ('.$field.')<br>';
             }
@@ -101,49 +108,58 @@ if($_POST['send_registerform']) {
     }
 
     // Validation: Accept terms
-    if($accept_terms == '') {
+    if($form['accept_terms'] == '') {
         $send_data = 'false';
-        $register_message = $lang['msg_register_accept'].'<br>';
+        $register_message .= $lang['msg_register_accept'].'<br>';
     }
 
     // Validation: Required fields
-    if( ($username == "") || ($psw == "") || ($mail == "")  ){
+    if( ($form['username'] == "") || ($form['psw'] == "") || ($form['mail'] == "")  ){
         $send_data = "false";
         $register_message .= $lang['msg_register_requiredfields'].'<br>';
     }
 
     // Validation: Mail and mail repeat
-    if($mail != $mailrepeat) {
+    if($form['mail'] != $form['mailrepeat']) {
         $send_data = 'false';
         $register_message .= $lang['msg_register_mailrepeat_error'].'<br>';
     }
 
     // Validation: Email format
-    if(!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+    if(!filter_var($form['mail'], FILTER_VALIDATE_EMAIL)) {
         $send_data = 'false';
         $register_message .= $lang['msg_invalid_mail_format'].'<br>';
     }
 
     // Validation: Password and password repeat
-    if($psw != $psw_repeat) {
+    if($form['psw'] !== $form['psw_repeat']) {
         $send_data = 'false';
         $register_message .= $lang['msg_register_pswrepeat_error'].'<br>';
     }
 
+    // Validation: Password rules (an empty password is already reported above)
+    if($form['psw'] !== '') {
+        $psw_errors = se_password_check($form['psw'], [$form['username'], $form['mail']]);
+        if($psw_errors !== []) {
+            $send_data = 'false';
+            $register_message .= se_password_error_text($psw_errors, $lang).'<br>';
+        }
+    }
+
     // Validation: Username format (no special chars)
-    if(!preg_match("/^[a-zA-Z0-9-_]{2,20}$/",$username)) {
+    if(!preg_match("/^[a-zA-Z0-9-_]{2,20}$/",$form['username'])) {
         $send_data = "false";
         $register_message .= $lang['msg_register_userchars'].'<br>';
     }
 
     // Check for existing usernames
-    if(se_username_exists($username) === true) {
+    if(se_username_exists($form['username']) === true) {
         $send_data = "false";
         $register_message .= $lang['msg_register_existinguser'].'<br>';
     }
 
     // Check for existing email addresses
-    if(se_email_exists($mail) === true) {
+    if(se_email_exists($form['mail']) === true) {
         $send_data = "false";
         $register_message .= $lang['msg_register_existingusermail'].'<br>';
     }
@@ -156,65 +172,67 @@ if($_POST['send_registerform']) {
         $user_verified = 'waiting';
         $user_verified_by_admin = 'no';
         $drm_string = '';
-        $user_psw_hash = password_hash($psw, PASSWORD_DEFAULT);
+        $user_psw_hash = password_hash($form['psw'], PASSWORD_DEFAULT);
         $user_activationkey = random_text('alnum',32);
-        $activation_url = $se_base_url."account/?user=$username&al=$user_activationkey";
+        $activation_url = $se_base_url."account/?user={$form['username']}&al=$user_activationkey";
         $user_activationlink = '<a href="'.$activation_url.'">'.$activation_url.'</a>';
 
         // Insert new user into database
         $db_user->insert("se_user", [
             "user_uuid" => se_generate_uuid(),
-            "user_nick" => "$username",
+            "user_nick" => $form['username'],
             "user_registerdate" => "$user_registerdate",
             "user_verified" => "$user_verified",
             "user_verified_by_admin" => "$user_verified_by_admin",
             "user_groups" => "$user_groups",
             "user_drm" => "$drm_string",
-            "user_firstname" => "$firstname",
-            "user_lastname" => "$name",
-            "user_company" => "$user_company",
-            "user_street" => "$street",
-            "user_street_nbr" => "$nr",
-            "user_zip" => "$zip",
-            "user_city" => "$city",
-            "user_public_profile" => "$about_you",
-            "user_mail" => "$mail",
+            "user_firstname" => $form['firstname'],
+            "user_lastname" => $form['name'],
+            "user_company" => $form['user_company'],
+            "user_street" => $form['street'],
+            "user_street_nbr" => $form['nr'],
+            "user_zip" => $form['zip'],
+            "user_city" => $form['city'],
+            "user_public_profile" => $form['about_you'],
+            "user_mail" => $form['mail'],
             "user_psw_hash" => "$user_psw_hash",
             "user_activationkey" => "$user_activationkey",
-            "ba_company" => "$ba_company",
-            "ba_firstname" => "$ba_firstname",
-            "ba_lastname" => "$ba_lastname",
-            "ba_street" => "$ba_street",
-            "ba_street_nbr" => "$ba_street_nbr",
-            "ba_zip" => "$ba_zip",
-            "ba_city" => "$ba_city",
-            "ba_country" => "$ba_country",
-            "ba_tax_number" => "$ba_tax_number",
-            "ba_tax_id_number" => "$ba_tax_id_number",
-            "sa_company" => "$sa_company",
-            "sa_firstname" => "$sa_firstname",
-            "sa_lastname" => "$sa_lastname",
-            "sa_street" => "$sa_street",
-            "sa_street_nbr" => "$sa_street_nbr",
-            "sa_zip" => "$sa_zip",
-            "sa_city" => "$sa_city",
-            "sa_country" => "$sa_country"
+            "ba_company" => $form['ba_company'],
+            "ba_firstname" => $form['ba_firstname'],
+            "ba_lastname" => $form['ba_lastname'],
+            "ba_street" => $form['ba_street'],
+            "ba_street_nbr" => $form['ba_street_nbr'],
+            "ba_zip" => $form['ba_zip'],
+            "ba_city" => $form['ba_city'],
+            "ba_country" => $form['ba_country'],
+            "ba_tax_number" => $form['ba_tax_number'],
+            "ba_tax_id_number" => $form['ba_tax_id_number'],
+            "sa_company" => $form['sa_company'],
+            "sa_firstname" => $form['sa_firstname'],
+            "sa_lastname" => $form['sa_lastname'],
+            "sa_street" => $form['sa_street'],
+            "sa_street_nbr" => $form['sa_street_nbr'],
+            "sa_zip" => $form['sa_zip'],
+            "sa_city" => $form['sa_city'],
+            "sa_country" => $form['sa_country']
         ]);
+        $new_user_id = (int) $db_user->id();
 
         // Generate confirmation email
         $email_msg = se_get_snippet("account_confirm_mail","$languagePack",'content');
-        $email_msg = str_replace("{USERNAME}","$username",$email_msg);
-        $email_msg = str_replace("{SITENAME}","$prefs_pagetitle",$email_msg);
+        $email_msg = str_replace("{USERNAME}",$form['username'],$email_msg);
+        $email_msg = str_replace("{SITENAME}",$se_settings['pagetitle'],$email_msg);
         $email_msg = str_replace("{ACTIVATIONLINK}","$user_activationlink",$email_msg);
 
-        $recipient = array('name' => $username, 'mail' => $mail);
+        $recipient = array('name' => $form['username'], 'mail' => $form['mail']);
 
         // Build mail content
+        $mail_data = [];
         $mail_data['tpl'] = 'mail.tpl';
         $mail_data['subject'] = "Account | ".$se_settings['pagetitle'];
-        $mail_data['preheader'] = "Welcome | $username $mail";
-        $mail_data['title'] = "Welcome | $username $mail";
-        $mail_data['salutation'] = "Welcome $username";
+        $mail_data['preheader'] = "Welcome | {$form['username']} {$form['mail']}";
+        $mail_data['title'] = "Welcome | {$form['username']} {$form['mail']}";
+        $mail_data['salutation'] = "Welcome {$form['username']}";
         $mail_data['body'] = "$email_msg";
 
         $build_html_mail = se_build_html_file($mail_data);
@@ -225,16 +243,17 @@ if($_POST['send_registerform']) {
         $smarty->assign("register_message",$lang['msg_register_success'],true);
 
         // Log registration
-        record_log("user_register","new user $username","6");
+        record_log("user_register","new user id: $new_user_id",6);
 
         // Send notification to admin
+        $admin_mail = [];
         $admin_mail['name'] = $se_settings['mailer_name'];
         $admin_mail['mail'] = $se_settings['mailer_adr'];
 
         $admin_notification_text  = $lang['msg_register_admin_notification_text'].'<hr>';
-        $admin_notification_text .= 'Username: <b>'.$username.'</b><br>';
-        $admin_notification_text .= 'E-Mail: '.$mail.'<br>';
-        $admin_notification_text .= 'Server: '.$prefs_pagetitle.'<br>';
+        $admin_notification_text .= 'Username: <b>'.$form['username'].'</b><br>';
+        $admin_notification_text .= 'E-Mail: '.$form['mail'].'<br>';
+        $admin_notification_text .= 'Server: '.$se_settings['pagetitle'].'<br>';
         $copymail = se_send_mail($admin_mail,$lang['msg_register_admin_notification_subject'],$admin_notification_text);
 
     } else {
@@ -243,17 +262,17 @@ if($_POST['send_registerform']) {
         $smarty->assign("register_message",'<p><strong>'.$lang['msg_register_error'].'</strong></p><p>'.$register_message.'</p>',true);
 
         // Preserve form entries
-        $smarty->assign("send_username",$username,true);
-        $smarty->assign("send_mail",$mail,true);
-        $smarty->assign("send_mailrepeat",$mailrepeat,true);
+        $smarty->assign("send_username",$form['username'],true);
+        $smarty->assign("send_mail",$form['mail'],true);
+        $smarty->assign("send_mailrepeat",$form['mailrepeat'],true);
         // passwords are never sent back into the form
-        $smarty->assign("send_firstname",$firstname,true);
-        $smarty->assign("send_name",$name,true);
-        $smarty->assign("send_zip",$zip,true);
-        $smarty->assign("send_city",$city,true);
-        $smarty->assign("send_street",$street,true);
-        $smarty->assign("send_nr",$nr,true);
-        $smarty->assign("about_you",$about_you,true);
+        $smarty->assign("send_firstname",$form['firstname'],true);
+        $smarty->assign("send_name",$form['name'],true);
+        $smarty->assign("send_zip",$form['zip'],true);
+        $smarty->assign("send_city",$form['city'],true);
+        $smarty->assign("send_street",$form['street'],true);
+        $smarty->assign("send_nr",$form['nr'],true);
+        $smarty->assign("about_you",$form['about_you'],true);
     }
 }
 

@@ -1,495 +1,330 @@
 <?php
 
 /**
+ * general settings in /admin/settings/, markup in acp/templates/settings/general.twig
+ * the sections are saved by the settings data-writer (save_settings=<section>)
+ *
+ * global variables
  * @var array $se_settings
  * @var array $icon
  * @var array $lang
  * @var string $se_branding_path
+ * @var object $twig
  */
 
 require_once __DIR__ . '/branding-widget.php';
-
-error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
-echo '<div class="subHeader d-flex align-items-center">'.$icon['gear'].' '.$lang['nav_btn_settings'].'</div>';
-
+require_once __DIR__ . '/functions.php';
 
 $writer_uri = '/admin-xhr/settings/general/write/';
-$reader_uri = '/admin-xhr/settings/general/read/';
 $branding_upload_uri = '/admin-xhr/settings/general/upload/';
 
-$input_page_name = [
+// the settings are stored html-encoded, the form helpers print them as they are
+$setting = static fn(string $key): string => (string) ($se_settings[$key] ?? '');
+
+$inputs = [];
+
+/* website */
+
+$inputs['page_name'] = se_print_form_input([
     "input_name" => "prefs_pagename",
-    "input_value" => $se_settings['pagename'],
+    "input_value" => $setting('pagename'),
     "label" => $lang['label_settings_page_name'],
     "type" => "text"
-];
-
-
-$input_page_title = [
+]);
+$inputs['page_title'] = se_print_form_input([
     "input_name" => "prefs_pagetitle",
-    "input_value" => $se_settings['pagetitle'],
+    "input_value" => $setting('pagetitle'),
     "label" => $lang['label_settings_page_title'],
     "type" => "text"
-];
-
-
-$input_page_subtitle = [
+]);
+$inputs['page_subtitle'] = se_print_form_input([
     "input_name" => "prefs_pagesubtitle",
-    "input_value" => $se_settings['pagesubtitle'],
+    "input_value" => $setting('pagesubtitle'),
     "label" => $lang['label_settings_page_subtitle'],
     "type" => "text"
-];
-
-$input_page_description = [
+]);
+$inputs['page_description'] = se_print_form_input([
     "input_name" => "prefs_pagedescription",
-    "input_value" => $se_settings['pagedescription'],
+    "input_value" => $setting('pagedescription'),
     "label" => $lang['label_settings_page_description'],
     "type" => "textarea"
-];
+]);
 
-$input_page_author = [
-    "input_name" => "prefs_default_publisher",
-    "input_value" => $se_settings['default_publisher'],
-    "label" => $lang['label_author'],
-    "type" => "text"
-];
+/* organization (structured data) */
 
-$input_page_author_mode = [
-    "input_name" => "prefs_publisher_mode",
-    "input_value" => $se_settings['publisher_mode'],
-    "label" => $lang['label_settings_publisher_mode'],
-    "type" => "checkbox",
-    "status" => $se_settings['publisher_mode'] == "overwrite" ? 'checked' :''
-];
+$settings_options = se_settings_options();
 
-$input_rss_offset = [
-    "input_name" => "prefs_rss_time_offset",
-    "input_value" => $se_settings['rss_time_offset'],
-    "label" => $lang['label_settings_rss_time_offset'],
-    "type" => "text"
-];
+$inputs['org_type'] = se_print_form_input([
+    "input_name" => "prefs_org_type",
+    "input_value" => $setting('org_type') ?: 'Organization',
+    "label" => $lang['label_type'],
+    "options" => array_combine($settings_options['prefs_org_type'], $settings_options['prefs_org_type']),
+    "type" => "select"
+]);
+foreach([
+    'org_name' => $lang['label_name'],
+    'org_street' => $lang['label_street'],
+    'org_street_nbr' => $lang['label_nr'],
+    'org_zip' => $lang['label_zip'],
+    'org_city' => $lang['label_town'],
+    'org_phone' => $lang['label_tel'],
+    'org_email' => $lang['label_mail']
+] as $key => $label) {
+    $inputs[$key] = se_print_form_input([
+        "input_name" => "prefs_$key",
+        "input_value" => $setting($key),
+        "label" => $label,
+        "type" => "text"
+    ]);
+}
+$inputs['org_country'] = se_print_form_input([
+    "input_name" => "prefs_org_country",
+    "input_value" => $setting('org_country'),
+    "label" => $lang['label_country'],
+    "options" => ['–' => ''] + array_flip(se_get_countries_options()),
+    "type" => "select"
+]);
+$inputs['org_sameas'] = se_print_form_input([
+    "input_name" => "prefs_org_sameas",
+    "input_value" => $setting('org_sameas'),
+    "label" => $lang['label_settings_org_sameas'],
+    "type" => "textarea"
+]);
 
-$input_nbr_page_versions = [
+/* page versions */
+
+$inputs['nbr_page_versions'] = se_print_form_input([
     "input_name" => "prefs_nbr_page_versions",
-    "input_value" => $se_settings['nbr_page_versions'],
+    "input_value" => $setting('nbr_page_versions'),
     "label" => $lang['label_settings_nbr_page_versions'],
-    "type" => "text"
+    "type" => "number"
+]);
+
+/* logo and icons, uploaded and deleted right away */
+
+$branding_field = static function(string $target, string $label, string $value, int $max_width, int $max_height, array $extra = [], string $hint = '', string $unchanged = '') use ($se_branding_path, $branding_upload_uri, $writer_uri, $lang): string {
+    return se_render_branding_field(
+        $target,
+        $label,
+        $value,
+        $se_branding_path,
+        $branding_upload_uri,
+        $writer_uri,
+        $_SESSION['token'],
+        $lang['btn_delete'],
+        $lang['msg_confirm_delete_file'],
+        $max_width,
+        $max_height,
+        $extra,
+        $hint,
+        $unchanged
+    );
+};
+
+$branding_fields = [
+    $branding_field('logo', 'Page Logo', $setting('pagelogo'), (int) $setting('maximagewidth'), (int) $setting('maximageheight'), [], '', $setting('uploads_remain_unchanged')),
+    $branding_field('thumbnail', $lang['label_pages_thumbnail'], $setting('pagethumbnail'), (int) $setting('maximagewidth'), (int) $setting('maximageheight'), [], '', $setting('uploads_remain_unchanged')),
+    $branding_field('favicon', 'Favicon', $setting('pagefavicon'), 0, 0, [
+        'manifest_name' => $setting('pagetitle'),
+        'manifest_short_name' => $setting('pagename')
+    ], 'PNG, JPG or WebP, at least 512×512px. A full icon set (incl. Apple Touch Icon) is generated automatically.')
 ];
 
-$input_pagesort_minlength = [
-    "input_name" => "prefs_pagesort_minlength",
-    "input_value" => $se_settings['pagesort_minlength'],
-    "label" => $lang['label_settings_page_sort_min_length'],
-    "type" => "text"
-];
+/* image sizes and uploads */
 
+foreach([
+    'max_img_width' => ['maximagewidth', 'Max Image Width'],
+    'max_img_height' => ['maximageheight', 'Max Image Height'],
+    'max_tmb_width' => ['maxtmbwidth', 'Max Thumbnail Width'],
+    'max_tmb_height' => ['maxtmbheight', 'Max Thumbnail Height']
+] as $name => [$key, $label]) {
+    $inputs[$name] = se_print_form_input([
+        "input_name" => "prefs_$key",
+        "input_value" => $setting($key),
+        "label" => $label,
+        "input_group_end_text" => "px",
+        "type" => "number"
+    ]);
+}
 
-$input_max_img_width = [
-    "input_name" => "prefs_maximagewidth",
-    "input_value" => $se_settings['maximagewidth'],
-    "label" => 'Max Image Width',
-    "type" => "text"
-];
-
-$input_max_img_height = [
-    "input_name" => "prefs_maximageheight",
-    "input_value" => $se_settings['maximageheight'],
-    "label" => 'Max Image Height',
-    "type" => "text"
-];
-
-$input_max_tmb_width = [
-    "input_name" => "prefs_maxtmbwidth",
-    "input_value" => $se_settings['maxtmbwidth'],
-    "label" => 'Max Thumbnail Width',
-    "type" => "text"
-];
-
-$input_max_tmb_height = [
-    "input_name" => "prefs_maxtmbheight",
-    "input_value" => $se_settings['maxtmbheight'],
-    "label" => 'Max Thumbnail Width',
-    "type" => "text"
-];
-
-$input_max_upload_filesize = [
+$inputs['max_filesize'] = se_print_form_input([
     "input_name" => "prefs_maxfilesize",
-    "input_value" => $se_settings['maxfilesize'],
+    "input_value" => $setting('maxfilesize'),
     "label" => $lang['label_settings_max_filesize'],
-    "type" => "text"
-];
-
-$input_uploads_unchanged = [
+    "type" => "number"
+]);
+$inputs['uploads_unchanged'] = se_print_form_input([
     "input_name" => "prefs_uploads_remain_unchanged",
-    "input_value" => $se_settings['uploads_remain_unchanged'],
+    "input_value" => "yes",
     "label" => $lang['label_settings_uploads_remain_unchanged'],
     "type" => "checkbox",
-    "status" => $se_settings['uploads_remain_unchanged'] == "yes" ? 'checked' :''
-];
+    "status" => $setting('uploads_remain_unchanged') == "yes" ? 'checked' : ''
+]);
 
+/* domain */
 
-$input_cms_domain = [
+$inputs['cms_domain'] = se_print_form_input([
     "input_name" => "prefs_cms_domain",
-    "input_value" => $se_settings['cms_domain'],
+    "input_value" => $setting('cms_domain'),
     "label" => $lang['label_settings_cms_domain'],
     "type" => "text"
-];
-
-$input_cms_ssl_domain = [
+]);
+$inputs['cms_ssl_domain'] = se_print_form_input([
     "input_name" => "prefs_cms_ssl_domain",
-    "input_value" => $se_settings['cms_ssl_domain'],
+    "input_value" => $setting('cms_ssl_domain'),
     "label" => $lang['label_settings_cms_domain_ssl'],
     "type" => "text"
-];
-
-$input_cms_base = [
+]);
+$inputs['cms_base'] = se_print_form_input([
     "input_name" => "prefs_cms_base",
-    "input_value" => $se_settings['cms_base'],
+    "input_value" => $setting('cms_base'),
     "label" => $lang['label_settings_cms_base'],
     "type" => "text"
-];
-
-$input_login_slug = [
+]);
+$inputs['login_slug'] = se_print_form_input([
     "input_name" => "prefs_login_slug",
-    "input_value" => $se_settings['login_slug'],
+    "input_value" => $setting('login_slug'),
     "label" => $lang['label_settings_login_slug'],
     "input_group_start_text" => "/admin/",
     "type" => "text"
-];
+]);
 
-$input_mail_name = [
-    "input_name" => "prefs_mailer_name",
-    "input_value" => $se_settings['mailer_name'],
-    "label" => $lang['label_settings_mailer_name'],
-    "type" => "text"
-];
+/* date and time, the options are checked again by the writer (se_settings_options()) */
 
-$input_mail_address = [
-    "input_name" => "prefs_mailer_adr",
-    "input_value" => $se_settings['mailer_adr'],
-    "label" => $lang['label_settings_mailer_mail'],
-    "type" => "text"
-];
 
-$input_mail_type = [
-    "input_name" => "prefs_mailer_type",
-    "input_value" => $se_settings['mailer_type'],
-    "radios" => [
-        "label_settings_use_mail" => "mail",
-        "label_settings_use_smtp" => "smtp"
-    ],
-    "type" => "radios"
-];
-
-$input_notify_mail_address = [
-    "input_name" => "prefs_notify_mail",
-    "input_value" => $se_settings['notify_mail'],
-    "label" => $lang['label_settings_notify_mail'],
-    "type" => "text"
-];
-
-$date_formats = array("Y-m-d","d.m.Y","d/m/Y","m/d/Y");
-foreach($date_formats as $dates) {
-    $example = date("$dates",time());
-    $select_dates["$dates ($example)"] = $dates;
-}
-
-$input_select_date_format = [
-    "input_name" => "prefs_mailer_type",
-    "input_value" => $se_settings['dateformat'],
-    "label" => $lang['label_settings_date_format'],
-    "options" => $select_dates,
-    "type" => "select"
-];
-
-$time_formats = array("H:i","g:i a","g:i A");
-foreach($time_formats as $times) {
-    $example = date("$times",time());
-    $select_times["$times ($example)"] = $times;
-}
-
-$input_select_time_format = [
-    "input_name" => "prefs_timeformat",
-    "input_value" => $se_settings['timeformat'],
-    "label" => $lang['label_settings_time_format'],
-    "options" => $select_times,
-    "type" => "select"
-];
-
-$timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
-foreach ($timezones as $timezone) {
-    $tz[$timezone] = $timezone;
-}
-
-$input_select_timezone = [
+$inputs['timezone'] = se_print_form_input([
     "input_name" => "prefs_timezone",
-    "input_value" => $se_settings['timezone'],
+    "input_value" => $setting('timezone'),
     "label" => $lang['label_settings_timezone'],
-    "options" => $tz,
+    "options" => array_combine($settings_options['prefs_timezone'], $settings_options['prefs_timezone']),
     "type" => "select"
-];
+]);
 
-$input_maintenance = [
+$date_options = [];
+foreach($settings_options['prefs_dateformat'] as $format) {
+    $date_options[$format.' ('.date($format).')'] = $format;
+}
+$inputs['date_format'] = se_print_form_input([
+    "input_name" => "prefs_dateformat",
+    "input_value" => $setting('dateformat'),
+    "label" => $lang['label_settings_date_format'],
+    "options" => $date_options,
+    "type" => "select"
+]);
+
+$time_options = [];
+foreach($settings_options['prefs_timeformat'] as $format) {
+    $time_options[$format.' ('.date($format).')'] = $format;
+}
+$inputs['time_format'] = se_print_form_input([
+    "input_name" => "prefs_timeformat",
+    "input_value" => $setting('timeformat'),
+    "label" => $lang['label_settings_time_format'],
+    "options" => $time_options,
+    "type" => "select"
+]);
+
+/* themes */
+
+$inputs['maintenance_code'] = se_print_form_input([
     "input_name" => "prefs_maintenance_code",
-    "input_value" => $se_settings['maintenance_code'],
+    "input_value" => $setting('maintenance_code'),
     "label" => $lang['label_settings_maintenance_code'],
     "type" => "text"
-];
-
-$input_usertemplates = [
+]);
+$inputs['usertemplate'] = se_print_form_input([
     "input_name" => "prefs_usertemplate",
-    "input_value" => $se_settings['usertemplate'],
+    "input_value" => $setting('usertemplate'),
     "radios" => [
         "label_settings_themes_userstyles_off" => "off",
         "label_settings_themes_userstyles_on" => "on",
         "label_settings_themes_userstyles_overwrite" => "overwrite"
     ],
     "type" => "radios"
-];
-
-$input_smarty_compile_check = [
+]);
+$inputs['smarty_compile_check'] = se_print_form_input([
     "input_name" => "prefs_smarty_compile_check",
-    "input_value" => $se_settings['smarty_compile_check'],
+    "input_value" => "1",
     "label" => 'Smarty Compile Check',
     "type" => "checkbox",
-    "status" => $se_settings['smarty_compile_check'] == "1" ? 'checked' :''
-];
+    "status" => $setting('smarty_compile_check') == "1" ? 'checked' : ''
+]);
 
-$get_all_languages = get_all_languages();
-foreach($get_all_languages as $langs) {
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
+/* language */
+
+$all_languages = get_all_languages();
+$lang_options = [];
+foreach($all_languages as $language) {
+    $lang_options[$language['lang_desc']] = $language['lang_folder'];
 }
-
-$input_select_language = [
+$inputs['default_language'] = se_print_form_input([
     "input_name" => "prefs_default_language",
-    "input_value" => $se_settings['default_language'],
+    "input_value" => $setting('default_language'),
     "label" => $lang['label_settings_default_language'],
     "options" => $lang_options,
     "type" => "select"
-];
+]);
 
-
-
-
-echo '<div class="card">';
-echo '<div class="card-header">';
-echo '<ul class="nav nav-tabs card-header-tabs">';
-echo '<li class="nav-item"><button class="nav-link active" id="general" data-bs-toggle="tab" data-bs-target="#general-settings-tab">'.$lang['nav_btn_general'].'</button></li>';
-echo '<li class="nav-item"><button class="nav-link" id="system" data-bs-toggle="tab" data-bs-target="#system-tab">'.$lang['nav_btn_system'].'</button></li>';
-echo '<li class="nav-item"><button class="nav-link" id="email" data-bs-toggle="tab" data-bs-target="#email-tab">E-Mail</button></li>';
-echo '</ul>';
-echo '</div>';
-echo '<div class="card-body">';
-echo '<div class="tab-content" id="myTabContent">';
-echo '<div class="tab-pane fade show active" id="general-settings-tab" role="tabpanel" tabindex="0">';
-
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-
-$input_group = [
-    se_print_form_input($input_page_name),
-    se_print_form_input($input_page_title),
-    se_print_form_input($input_page_subtitle)
-];
-
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
-
-echo se_print_form_input($input_page_description);
-echo se_print_form_input($input_page_author);
-echo se_print_form_input($input_page_author_mode);
-
-echo '<hr>';
-
-$input_group = [
-    se_print_form_input($input_rss_offset),
-    se_print_form_input($input_nbr_page_versions),
-    se_print_form_input($input_pagesort_minlength)
-];
-
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
-
-
-echo '<h5 class="heading-line">'.$lang['images'].'</h5>';
-
-$input_group = [
-    se_render_branding_field(
-        'logo',
-        'Page Logo',
-        $se_settings['pagelogo'],
-        $se_branding_path,
-        $branding_upload_uri,
-        $writer_uri,
-        $_SESSION['token'],
-        $lang['btn_delete'],
-        $lang['msg_confirm_delete_file'],
-        (int) $se_settings['maximagewidth'],
-        (int) $se_settings['maximageheight'],
-        [],
-        '',
-        $se_settings['uploads_remain_unchanged']
-    ),
-    se_render_branding_field(
-        'thumbnail',
-        $lang['label_pages_thumbnail'],
-        $se_settings['pagethumbnail'],
-        $se_branding_path,
-        $branding_upload_uri,
-        $writer_uri,
-        $_SESSION['token'],
-        $lang['btn_delete'],
-        $lang['msg_confirm_delete_file'],
-        (int) $se_settings['maximagewidth'],
-        (int) $se_settings['maximageheight'],
-        [],
-        '',
-        $se_settings['uploads_remain_unchanged']
-    ),
-    se_render_branding_field(
-        'favicon',
-        'Favicon',
-        $se_settings['pagefavicon'],
-        $se_branding_path,
-        $branding_upload_uri,
-        $writer_uri,
-        $_SESSION['token'],
-        $lang['btn_delete'],
-        $lang['msg_confirm_delete_file'],
-        0,
-        0,
-        [
-            'manifest_name' => $se_settings['pagetitle'],
-            'manifest_short_name' => $se_settings['pagename']
-        ],
-        'PNG, JPG or WebP, at least 512×512px. A full icon set (incl. Apple Touch Icon) is generated automatically.'
-    )
-];
-
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
-
-$input_group = [
-    se_print_form_input($input_max_img_width),
-    se_print_form_input($input_max_img_height),
-    se_print_form_input($input_max_tmb_width),
-    se_print_form_input($input_max_tmb_height)
-];
-
-echo str_replace(['{col1}','{col2}','{col3}','{col4}'],$input_group,$bs_row_col4);
-
-
-echo se_print_form_input($input_max_upload_filesize);
-echo se_print_form_input($input_uploads_unchanged);
-
-echo '<hr>';
-echo '<button type="submit" class="btn btn-primary" name="update_general" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-
-echo '</div>'; // tab
-echo '<div class="tab-pane fade" id="system-tab" role="tabpanel" tabindex="0">';
-
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-
-echo se_print_form_input($input_cms_domain);
-echo se_print_form_input($input_cms_ssl_domain);
-echo se_print_form_input($input_cms_base);
-echo se_print_form_input($input_login_slug);
-
-
-echo '<button type="submit" class="btn btn-primary" name="update_general_system" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-echo '<h5 class="heading-line">'.$lang['label_settings_datetime'].'</h5>';
-
-$input_group = [
-    se_print_form_input($input_select_timezone),
-    se_print_form_input($input_select_date_format),
-    se_print_form_input($input_select_time_format)
-];
-
-echo str_replace(['{col1}','{col2}','{col3}'],$input_group,$bs_row_col3);
-
-echo '<button type="submit" class="btn btn-primary" name="update_datetime" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-
-echo '<h5 class="heading-line">'.$lang['label_settings_themes'].'</h5>';
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-
-echo se_print_form_input($input_maintenance);
-echo se_print_form_input($input_usertemplates);
-
-echo se_print_form_input($input_smarty_compile_check);
-
-
-echo '<hr>';
-echo '<button type="submit" class="btn btn-primary" name="update_themes" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-
-echo '<h5 class="heading-line">'.$lang['label_language'].'</h5>';
-
-echo '<div class="row">';
-echo '<div class="col-md-6">';
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-echo se_print_form_input($input_select_language);
-echo '<button type="submit" class="btn btn-primary" name="update_language" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-echo '</div>';
-echo '<div class="col-md-6">';
-echo $lang['label_settings_hide_languages'];
-$hidden_langs = [];
-if($se_settings['deactivated_languages'] != '') {
-    $hidden_langs = json_decode($se_settings['deactivated_languages']);
+$hidden_languages = (array) (json_decode(html_entity_decode($setting('deactivated_languages')), true) ?? []);
+$languages = [];
+foreach($all_languages as $language) {
+    $languages[] = [
+        'folder' => $language['lang_folder'],
+        'sign' => $language['lang_sign'],
+        'desc' => $language['lang_desc'],
+        'hidden' => in_array($language['lang_folder'], $hidden_languages)
+    ];
 }
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-echo '<table class="table table-sm table-hover">';
-foreach($get_all_languages as $langs) {
-    $check = '';
-    if (in_array($langs['lang_folder'], $hidden_langs)) {
-        $check = 'checked';
-    }
 
-    echo '<tr>';
-    echo '<td>';
-    echo '<input type="checkbox" id="' . $langs['lang_folder'] . '" class="form-check-input" name="hide_langs[]" value="' . $langs['lang_folder'] . '" ' . $check . '>';
-    echo '</td>';
-    echo '<td><label for="' . $langs['lang_folder'] . '" class="d-block">' . $langs['lang_sign'] . '</label></td>';
-    echo '<td><label for="' . $langs['lang_folder'] . '" class="d-block">' . $langs['lang_desc'] . '</label></td>';
-    echo '<td><label for="' . $langs['lang_folder'] . '" class="d-block">' . $langs['lang_folder'] . '</label></td>';
-    echo '</tr>';
-}
-echo '</table>';
-echo '<button type="submit" class="btn btn-primary" name="update_hide_languages" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-echo '</div>';
-echo '</div>';
+/* e-mail */
 
-echo '</div>'; // tab
-echo '<div class="tab-pane fade" id="email-tab" role="tabpanel" tabindex="0">';
+$inputs['mailer_name'] = se_print_form_input([
+    "input_name" => "prefs_mailer_name",
+    "input_value" => $setting('mailer_name'),
+    "label" => $lang['label_settings_mailer_name'],
+    "type" => "text"
+]);
+$inputs['mailer_address'] = se_print_form_input([
+    "input_name" => "prefs_mailer_adr",
+    "input_value" => $setting('mailer_adr'),
+    "label" => $lang['label_settings_mailer_mail'],
+    "type" => "text"
+]);
+$inputs['mailer_type'] = se_print_form_input([
+    "input_name" => "prefs_mailer_type",
+    "input_value" => $setting('mailer_type'),
+    "radios" => [
+        "label_settings_use_mail" => "mail",
+        "label_settings_use_smtp" => "smtp"
+    ],
+    "type" => "radios"
+]);
+$inputs['notify_mail'] = se_print_form_input([
+    "input_name" => "prefs_notify_mail",
+    "input_value" => $setting('notify_mail'),
+    "label" => $lang['label_settings_notify_mail'],
+    "type" => "text"
+]);
 
-echo '<form hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="body" hx-swap="beforeend">';
-echo '<div class="row">';
-echo '<div class="col-md-6">';
-echo se_print_form_input($input_mail_name);
-echo se_print_form_input($input_mail_address);
-echo se_print_form_input($input_mail_type);
-echo '</div>';
-echo '<div class="col-md-6">';
-echo se_print_form_input($input_notify_mail_address);
-echo '</div>';
-echo '</div>';
-
-echo '<hr>';
-echo '<button type="submit" class="btn btn-primary" name="update_email" value="update">'.$lang['btn_update'].'</button>';
-echo '</form>'; // hx-post
-
-echo '<div id="sendmail_test" class="my-3"></div>';
-
-echo '<button class="btn btn-default" hx-post="'.$writer_uri.'" hx-include="[name=\'csrf_token\']" hx-target="#sendmail_test" name="sendmail_test">';
-echo $lang['label_settings_mailer_send_test'].' '.$se_settings['notify_mail'];
-echo '</button>';
-
-echo '</div>'; // tab
-
-echo '</div>';
-echo '</div>';
-echo '</div>';
-
-
+echo $twig->render('settings/general.twig', [
+    'title' => $lang['nav_btn_settings'].' / '.$lang['nav_btn_general'],
+    'title_icon' => $icon['gear'],
+    'settings_nav' => se_settings_nav('general'),
+    'tabs' => [
+        ['id' => 'general', 'label' => $lang['nav_btn_general']],
+        ['id' => 'system', 'label' => $lang['nav_btn_system']],
+        ['id' => 'email', 'label' => 'E-Mail']
+    ],
+    'writer_uri' => $writer_uri,
+    // titles and help texts of the sections come from the docs
+    'help' => se_docs_sections('08-00-settings.md', [
+        'general-website', 'general-organization', 'general-branding', 'general-images', 'general-uploads', 'general-page-versions',
+        'general-domain', 'general-datetime', 'general-themes', 'general-language',
+        'general-mail', 'general-mail-test'
+    ]),
+    'inputs' => $inputs,
+    'branding_fields' => $branding_fields,
+    'languages' => $languages,
+    // the test mail goes to the notify e-mail, or to the sender
+    'test_recipient' => html_entity_decode($setting('notify_mail') ?: $setting('mailer_adr'), ENT_QUOTES, 'UTF-8')
+]);

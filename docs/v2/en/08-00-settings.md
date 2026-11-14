@@ -20,117 +20,236 @@ The settings are divided into the following sub-categories
 * Labels
 * API keys
 
-## General
+## General {#general}
 
-The General page is divided into three tabs:
+The General page is divided into three tabs: <kbd>General</kbd>, <kbd>System</kbd> and
+<kbd>E-Mail</kbd>. Each section is saved with its own button.
 
-* <kbd>General</kbd> The standard metadata (page name, title, subtitle, description, author),
-  the RSS time offset, the number of saved page versions, and image settings (image prefix,
-  logo/thumbnail/favicon, maximum image and thumbnail sizes, maximum upload file size).
-  All metadata can be overwritten later by individual pages or products etc.
-* <kbd>System</kbd> Domain, SSL domain, base path and the login slug, as well as date/time
-  format and timezone, themes & templates, the maintenance code, the Smarty compile check,
-  the default language and the option to hide individual languages.
-* <kbd>E-Mail</kbd> The mailer configuration (sender name and address, mail type / SMTP,
-  notification address) and a test-mail function.
+The texts of the following sections are also shown next to the settings in the backend.
 
-### RSS Time offset
-You can set a time offset here. This prevents posts from ending up in the RSS feed immediately.
+### Website {#general-website}
+Name, title, subtitle and description of your website. Themes show them in the header, for
+example, and use them for the meta tags of all pages that don't have their own values.
 
-### Number of page versions
-Every time you update a page, SwiftyEdit saves the overwritten version.
-This allows you to switch back to an older version if you have made a mistake.
-Here you can specify how many versions of a page should be saved.
+### Organization (structured data) {#general-organization}
+Who runs this website. SwiftyEdit adds these details as schema.org structured data (JSON-LD) to
+every page, search engines use them e.g. for the knowledge panel. Organization is the general
+type for projects, clubs and everything that doesn't fit better. Corporation is a company,
+NGO a non-profit organization, EducationalOrganization a school or other educational
+institution. OnlineStore sells only online, Store has a shop you can visit and LocalBusiness is
+any other business with a location. Person stands for a single person. Without a name, the page name is used. Under profiles, enter the URLs of your
+social media or other profiles, one per line. The logo comes from "Logo and icons".
 
-## User
-These settings control everything around user accounts and interaction:
+### Logo and icons {#general-branding}
+The logo, thumbnail and favicon are stored right away when you upload them. From the favicon
+(PNG, JPG or WebP, at least 512×512 px) SwiftyEdit creates all icon sizes, including the
+Apple Touch Icon, and the web manifest.
 
-* Whether visitors may register themselves, whether the login form is shown,
-  and whether new users have to be unlocked by an administrator. Without the login form, the
-  frontend login is switched off completely (the backend login at `/admin/` is not affected,
-  and "forgot password" keeps working).
-* The session lifetime of the backend and a blacklist of user names that may not be registered.
-* Which fields are required on registration.
-* Comments: the mode, the authorization, the auto-close time, the maximum number of entries
-  and the maximum nesting level.
-* Votings and reactions (off, for registered users only, or globally). To prevent double votes,
-  anonymous votes and guest list confirmations are stored with a hash of the visitor's IP
-  address; after 90 days the hash is removed - the vote keeps counting.
+### Image sizes {#general-images}
+Uploaded images are scaled down to the maximum width and height, thumbnails to the thumbnail
+size. All values in pixels.
 
-## Posts
+### Uploads {#general-uploads}
+The maximum file size of uploads in KB. If uploads remain unchanged, images are stored as they
+were uploaded - without scaling and without a thumbnail.
+
+### Page versions {#general-page-versions}
+Every time you update a page, SwiftyEdit saves the overwritten version. This allows you to
+switch back to an older version if you have made a mistake. If there are more versions than
+the number set here, the oldest ones are deleted when the page is saved.
+
+### Domain {#general-domain}
+Domain and SSL domain (including `http://` or `https://`) and the base path make up the
+address of your website - if an SSL domain is set, it is used. SwiftyEdit needs the address
+for absolute links, e.g. canonical URLs, sitemaps, feeds and e-mails.
+
+With a login slug, the backend login is only available at `/admin/{slug}`, `/admin/` leads to
+the start page.
+
+### Date and time {#general-datetime}
+The timezone and the formats of dates and times, used in the frontend and in the backend.
+
+### Themes and templates {#general-themes}
+As long as a maintenance code is set, visitors only see the maintenance page. Whoever enters
+the code there sees the website as usual (e.g. to check it before going live).
+
+You can also decide whether visitors may choose a theme themselves. The Smarty compile check
+recompiles changed templates on every request - useful while you develop a theme, otherwise
+leave it off.
+
+### Language {#general-language}
+The default language of your website. Hidden languages are no longer offered in the backend,
+e.g. in the language selection of pages and posts.
+
+### E-mail {#general-mail}
+The sender name and address of all e-mails of your website. They are sent with PHP `mail()`
+or via SMTP - the SMTP access data are stored in `data/config_smtp.php`. The notification
+address receives a copy of the order e-mails and order requests, as well as order withdrawals.
+
+### Test e-mail {#general-mail-test}
+Sends an e-mail with the saved settings to the notification address, or to the sender address
+if there is none. Save your changes first.
+
+## User {#user}
+These settings control everything around user accounts and interaction.
+
+### Registration and login {#user-registration}
+Whether visitors may register themselves and whether the login form is shown. Without the login
+form, the frontend login is switched off completely (the backend login at `/admin/` is not
+affected, and "forgot password" keeps working).
+
+If new users have to be unlocked by an administrator, they can log in, but can only order in the
+shop after they have been unlocked in the user management.
+
+### Required fields {#user-required-fields}
+Fields of the registration form that have to be filled in, in addition to user name, e-mail and
+password. Only select fields that the registration form of your theme contains - otherwise nobody
+can register anymore.
+
+### Blocked user names {#user-blacklist}
+User names that may not be registered, separated by commas. Upper and lower case don't matter.
+
+### Backend session {#user-session}
+How long (in seconds) an administrator stays logged in to the backend without any activity.
+Every backend request counts as activity. The clock at the top next to the user name shows the
+remaining time: it turns from green to red, hovering it shows the time left and a click resets the
+timer. Several open backend tabs share the timer. Allowed are 300 to 43200 seconds (5 minutes to 12 hours), other values are set
+to these limits when saving. New installations start with 1800 seconds (30 minutes). Older
+installations often still have 86400 stored, which works like 43200.
+
+For a backend that several people or shared computers have access to, 1800 seconds or less is
+recommended. Independently, every login ends after the session lifetime
+`$se_session_max_lifetime` at the latest (default 12 hours). If the server's
+`session.gc_maxlifetime` is shorter than the value set here, PHP may remove an idle session
+earlier.
+
+### Comments {#user-comments}
+Whether comments have to be approved by an administrator, appear immediately or are switched off
+completely. In addition, comments are switched on or off for each page, post and product. Whoever
+writes a comment always enters a name and an e-mail address.
+
+"Close the comment function after *n* days" ends comments automatically: for posts and products
+the days count from the release date, for pages from the last edit - so saving a page opens its
+comments again. After that, existing comments stay visible, but new comments and answers are no
+longer possible. 0 or an empty field means: never close.
+
+### Votings and reactions {#user-votings}
+The default for new posts, products and events - you can change it for each entry: off, only for
+registered users, or for all visitors. To prevent double votes, anonymous votes and guest list
+confirmations are stored with a hash of the visitor's IP address; after 90 days the hash is
+removed - the vote keeps counting.
+
+## Posts {#posts}
 These settings affect the posts (blog).
 
-## Shop
-The Shop page is divided into four tabs:
+### Entries per page {#posts-entries}
+How many posts a blog list shows per page, further posts can be reached via the pagination. If no
+value or 0 is set, there are 10 entries. Events have a setting of their own - if nothing is set
+there, this number is used for them as well.
 
-* <kbd>General</kbd> Products per page and the default sorting for the product listing, whether the
-  product listing cache is enabled, the shopping cart mode, the order mode and guest checkout, a
-  maximum order value, the order withdrawal period, up to three tax rates, the default currency, and
-  how prices are displayed and to whom.
-* <kbd>Payment & Shipping</kbd> The shipping mode and shipping costs, plus activation switches for
-  any installed payment and delivery plugins.
-* <kbd>Delivery areas</kbd> Add, edit or remove the countries you deliver to.
-* <kbd>Business details</kbd> Your business address and tax number.
+## Shop {#shop}
+The Shop page is divided into four tabs: <kbd>General</kbd>, <kbd>Payment & Shipping</kbd>,
+<kbd>Delivery areas</kbd> and <kbd>Business details</kbd>. Each section is saved with its own button.
 
-### Shopping carts and orders
-The shopping carts setting turns the cart off entirely, or restricts it to registered users, or opens
-it to everyone. The orders setting controls whether products can be ordered directly, whether visitors
-can only send an order request instead of checking out, or both. If you set a maximum order value,
-carts that exceed it automatically fall back to the request form, even if direct ordering is enabled.
+### Product list {#shop-list}
+How many products a product list shows per page (no value or 0 means 10) and how it is sorted by
+default - visitors can change the sorting in the list themselves. If the cache is switched on, the
+data of the products is cached instead of being read from the database on every request.
 
-### Lists {#lists}
+### Shopping carts and orders {#shop-cart}
+The shopping carts setting turns the cart off entirely, restricts it to registered users, or opens it
+to everyone. The orders setting controls whether products can be ordered directly, whether visitors
+can only send an order request instead, or both. If you set a maximum order value, carts that exceed
+it automatically fall back to the request form, even if direct ordering is enabled.
+
+### Lists {#shop-lists}
 Enable lists to let logged-in customers save products to one or more personal lists from the product
 card or product page. A list can optionally be shared via a public link — visitors who open that link
 can view the list and add its products to their own cart without needing an account.
 
-### Guest orders
+### Guest orders {#shop-guest-orders}
 Enable guest orders to let customers complete checkout without creating an account. Guest orders are
 confirmed by e-mail, and the delivery address entered is only kept for the current session.
 
-### Order withdrawal period
-The "order withdrawal button visible for" setting controls how many days the "withdraw order" button
-stays visible next to an order on the "My orders" page. It defaults to 14 days (the EU-mandated
-withdrawal period); enter `0` to always show the button regardless of order age. This only affects the
-button's visibility, not the "Order Withdrawal" page itself, which is always reachable directly.
+### Order withdrawal period {#shop-withdrawal}
+How many days the "withdraw order" button stays visible next to an order on the "My orders" page.
+Without a value it is 14 days (the EU-mandated withdrawal period); enter `0` to always show the button
+regardless of order age. This only affects the button's visibility, not the "Order Withdrawal" page
+itself, which is always reachable directly.
 
-### Tax rates and currency
+### Tax rates and currency {#shop-taxes}
 You can define up to three flat tax rates (tax #1-#3); each product then picks one of them
 individually — there is no separate tax-class management. The default currency is a free-text field
-(e.g. `EUR`). You can also choose whether prices are shown gross, net, or both, and whether they are
+(e.g. `EUR`). You also choose whether prices are shown gross, net, or both, and whether they are
 visible to all visitors or only to registered users.
 
-### Shipping costs
+### Shipping costs {#shop-shipping}
 Choose whether shipping is charged as a flat rate, or based on shipping categories, where the most
 expensive category present in the shopping cart determines the shipping cost. You can define the flat
 rate as well as up to three category-based shipping rates.
 
-### Payment and delivery plugins
-Payment methods (e.g. cash, invoice, PayPal) and delivery options are provided by plugins. Any
-installed payment or delivery plugin shows up in its own list on the Payment & Shipping tab, where you
-can activate it for the shop.
+### Delivery plugins {#shop-delivery-plugins}
+Delivery options are provided by plugins (folder name ending in `-delivery`). Every installed delivery
+plugin shows up here and can be activated for the shop.
 
-### Delivery areas
-Add the countries you deliver to from the country dropdown. Each delivery area can be set to public
-or draft, and you can specify whether tax should be added for orders shipped there.
+### Payment plugins {#shop-payment-plugins}
+Payment methods such as cash, invoice or PayPal are provided by plugins (folder name ending in
+`-pay`). Every installed payment plugin shows up here, activated plugins are offered as payment
+methods in the checkout.
 
-### Business details
-Your business address and tax number are stored here for use on orders and invoices.
+### Delivery areas {#shop-delivery-areas}
+Add the countries you deliver to from the country dropdown - each country is listed once, adding it
+again changes the existing entry. Each delivery area can be set to public or draft, and you can
+specify whether tax is added for orders shipped there.
 
-## Events
-Here you will find the default settings for the event module. For example, you can specify whether the guest lists
-should be activated.
+### Business details {#shop-business}
+Your business address and tax number. SwiftyEdit itself doesn't use them at the moment, but plugins
+can read them (`$se_settings['business_address']` and `$se_settings['business_taxnumber']`).
+
+## Events {#events}
+The default settings of the event module.
+
+### Entries {#events-list}
+How many events a list shows per page. If no value is set, the number from the posts settings is
+used, without that one it is 10.
+
+The time offset sets how many hours an event is still shown after its end - in the frontend and via
+the API. In the backend it applies when past events are hidden.
+
+### Guest list {#events-guestlist}
+The default guest list setting for new events - you can change it for each event: off, only for
+registered users, or for all visitors. Visitors sign the guest list to confirm that they take part.
 
 ## Labels {#labels}
 Most entries and data in the Backend can be provided with labels.
 If you manage a lot of data and entries, these labels help you to keep an overview.
+
+### Edit labels {#labels-list}
+You change the color, title and description of each label right in the list and save them with the
+button next to it. The description shows up as a tooltip when you hover over the label in a list. If
+a label is deleted, the entries keep its number, but the label is no longer shown.
+
+### New label {#labels-new}
+A new label needs a title, color and description are optional. It is then available for all entries
+and in the global filter.
 
 ## API keys {#api-keys}
 API keys give other applications access to the public API - for example a second website that
 displays your products. Developers can find out how to use the API in the [API](09-04-api.md)
 chapter.
 
+### New API key {#api-keys-new}
 To create a key, enter a name (e.g. the name of the application using it) and select the
-permissions:
+permissions - what each of them means is described in the section Permissions of the
+documentation.
+
+{alert:warning}
+__The key is shown only once__, right after creating it. Copy it and store it in a safe place -
+SwiftyEdit only stores a fingerprint (hash) of the key and can't show it again later. If a key
+gets lost, simply create a new one.
+{/alert}
+
+### Permissions {#api-keys-scopes}
 
 | Permission | Meaning |
 |------------|---------|
@@ -141,12 +260,7 @@ permissions:
 | Read pages | The key can fetch public pages. Password protected pages and pages for user groups stay hidden. |
 | Read categories | The key can fetch the categories of products, posts and events. |
 
-{alert:warning}
-__The key is shown only once__, right after creating it. Copy it and store it in a safe place -
-SwiftyEdit only stores a fingerprint (hash) of the key and can't show it again later. If a key
-gets lost, simply create a new one.
-{/alert}
-
+### Manage keys {#api-keys-list}
 The list shows the beginning of each key so you can tell them apart, as well as when the key was
 last used and how many requests it made.
 
@@ -155,9 +269,10 @@ last used and how many requests it made.
 * Only revoked keys can be __deleted__.
 
 ## Database {#database}
-This tab only appears when the site runs on SQLite (it is hidden on MySQL installations,
+This page only appears when the site runs on SQLite (it is hidden on MySQL installations,
 where it does not apply).
 
+### WAL mode {#database-wal}
 **Enable WAL mode** switches SQLite's journal mode from the default `DELETE` mode to
 `WAL` (Write-Ahead Logging). In `DELETE` mode, a write locks the entire database file, so
 concurrent reads have to wait until the write is finished. `WAL` mode lets reads continue
@@ -177,7 +292,8 @@ Two things to know before enabling it:
   haven't been checkpointed yet. Make sure your backup includes the `-wal`/`-shm` files, or
   runs a checkpoint (`PRAGMA wal_checkpoint(TRUNCATE)`) before copying.
 
-**Compact database** shows the size and the free space inside each of the three database
+### Compact database {#database-vacuum}
+The table shows the size and the free space inside each of the three database
 files. Deleted data leaves free space in the file that SQLite reuses for new data - but the
 file doesn't get smaller by that. The button compacts the files (`VACUUM`) and gives this
 space back to the disk. Each file is rewritten: nothing can be saved while it runs, and it

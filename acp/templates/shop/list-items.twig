@@ -1,0 +1,87 @@
+{#
+ # list of the products, loaded into #getProducts by the shop data-reader
+ # products: see shop/data-reader.php (action list_products)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{# edit link and duplicate button of a product or a variant #}
+{% macro actions(id) %}
+    <a href="/admin/shop/edit/{{ id }}/" class="btn btn-default btn-sm text-success">{{ icon.edit|raw }}</a>
+    <form action="/admin/shop/duplicate/" method="post" class="d-inline">
+        <button class="btn btn-default btn-sm" name="duplicate_id" value="{{ id }}">{{ icon.copy|raw }}</button>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+{% endmacro %}
+{% import _self as m %}
+
+{{ pagination|raw }}
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th class="text-center">{{ icon.star|raw }}</th>
+                <th>{{ lang.label_priority }}</th>
+                <th>{{ lang.label_image }}</th>
+                <th class="w-auto">{{ lang.label_description }}</th>
+                <th>{{ lang.label_price }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for product in products %}
+            <tr{% if product.status_class %} class="{{ product.status_class }}"{% endif %}>
+                <td>{{ list.fixed_toggle(product.id, product.fixed, writer_uri) }}</td>
+                <td>{{ list.priority(product.id, product.priority, writer_uri) }}</td>
+                <td>{{ list.thumb(product.thumb) }}</td>
+                <td>
+                    <h6>
+                        <img src="{{ product.lang_flag }}" width="15" title="{{ product.lang }}" alt="{{ product.lang }}">
+                        {{ product.title }} <span class="text-muted small fw-normal">#{{ product.id }}</span>
+                        {% if product.status_label %}<span class="badge badge-se">{{ product.status_label }}</span>{% endif %}
+                    </h6>
+                    <small>{{ product.teaser }}{% if product.teaser_trimmed %} <small><i>(...)</i></small>{% endif %}</small><br>
+                    <span class="text-muted small">
+                        <span title="{{ lang.label_data_submited }}">{{ icon.save|raw }}: {{ product.date }}</span> |
+                        {% if product.lastedit %}<span title="{{ lang.label_data_lastedit }}">{{ icon.edit|raw }}: {{ product.lastedit }}</span>{% endif %} |
+                        <span title="{{ lang.label_data_releasedate }}">{{ icon.calendar_check|raw }}: {{ product.releasedate }}</span>
+                    </span>
+                    <p class="mb-0"><small>{{ icon.link|raw }} <span class="text-success">{{ product.main_catalog_slug }}{{ product.slug }}</span></small></p>
+                    {% if product.labels %}<p class="mb-0">{{ list.labels(product.labels) }}</p>{% endif %}
+                    {% if product.categories %}<p class="mb-0">{{ list.categories(product.categories) }}</p>{% endif %}
+                </td>
+                <td style="width:150px;">
+                    <div class="card p-2 text-nowrap">
+                        {# price_net / price_gross: markup of se_post_print_currency() #}
+                        <span class="small">{{ product.currency }} {{ product.price_net|raw }}</span>
+                        <span class="small"> + {{ product.tax }}%</span>
+                        <span class="text-success">{{ product.currency }} {{ product.price_gross|raw }}</span>
+                    </div>
+                </td>
+                <td class="text-nowrap text-end">{{ m.actions(product.id) }}</td>
+            </tr>
+            {% if product.variants %}
+                <tr{% if product.status_class %} class="{{ product.status_class }}"{% endif %}>
+                    <td colspan="6">
+                        <div class="text-center" style="margin-top:-25px;">
+                            <a class="btn btn-default btn-sm" data-bs-toggle="collapse" href="#collapseVariants{{ product.id }}" role="button" aria-expanded="false" aria-controls="collapseVariants{{ product.id }}">
+                                {{ lang.label_product_variants }} ({{ product.variants|length }}) <span class="toggle">{{ icon.caret_down|raw }}</span>
+                            </a>
+                        </div>
+                        <div class="collapse" id="collapseVariants{{ product.id }}">
+                            <table class="table table-sm mt-1">
+                                {% for variant in product.variants %}
+                                    <tr>
+                                        <td>#{{ variant.id }}</td>
+                                        <td>{{ variant.title }}</td>
+                                        <td>{{ variant.description }}{% if variant.description_trimmed %} <small><i>(...)</i></small>{% endif %}</td>
+                                        <td class="text-end text-nowrap">{{ m.actions(variant.id) }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+</div>

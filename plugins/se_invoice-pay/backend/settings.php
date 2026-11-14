@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @var string $this_addon_root acp/core/addons/edit-plugin.php
+ * @var string $hidden_csrf_token acp/core/access.php
+ */
+
+// defaults until the settings were saved once (pm_config.php is written from pm_config.tpl)
+$addon_payment_prefs = ['addon_additional_costs' => '', 'addon_snippet_cart' => ''];
 $pm_prefs_file = $this_addon_root.'/pm_config.php';
 
 if(is_file($pm_prefs_file)) {

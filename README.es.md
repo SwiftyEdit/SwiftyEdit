@@ -1,3 +1,9 @@
+> [!NOTE]
+> Esta traducción está desactualizada. Consulta la [versión en inglés](README.md) para obtener la información más reciente.
+> ¿Quieres ayudar a actualizarla? Abre un [issue de traducción](https://github.com/SwiftyEdit/SwiftyEdit/issues/new/choose).
+>
+> *This translation is outdated. Please see the [English version](README.md) for the latest information.*
+
 <p style="text-align: center;">
 <img src="public/assets/themes/administration/images/swiftyedit_logo.svg" width="350" alt="Logotipo de SwiftyEdit">
 </p>

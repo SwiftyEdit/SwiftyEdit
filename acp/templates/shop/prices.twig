@@ -1,0 +1,23 @@
+{#
+ # price groups in /admin/shop/prices/, rendered by prices.php
+ # the list (shop/price-groups-items.twig) and the form (shop/price-group-form.twig)
+ # are loaded by the shop data-reader
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.shop|raw }} {{ lang.nav_btn_price_groups }}
+</div>
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3 module-overview-list">
+            <div id="getPriceGroups" hx-post="{{ reader_uri }}?action=list_price_groups" hx-trigger="load, update_price_groups from:body" hx-include="[name='csrf_token']"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <div id="PriceGroupForm" hx-get="{{ reader_uri }}?action=show_price_groups_form" hx-trigger="load, show_price_groups_form from:body"></div>
+        </div>
+    </div>
+</div>

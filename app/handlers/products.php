@@ -17,6 +17,7 @@
 $time_string_now = time();
 $display_mode = 'list_products';
 $status_404 = true;
+$get_product_id = 0;
 
 // 1. Get the product ID from URL (.html format)
 if(substr("$mod_slug", -5) == '.html') {
@@ -48,10 +49,7 @@ if($mod_slug != '' && $display_mode == 'list_products') {
     if (is_array($get_data_from_slug)) {
         $get_product_id = (int)$get_data_from_slug['id'];
         $product_data = $get_data_from_slug;
-
-        if (is_array($product_data)) {
-            $status_404 = false;
-        }
+        $status_404 = false;
         $display_mode = 'show_product';
     } elseif (se_product_slug_exists($get_last_slug)) {
         // a product exists at this slug but isn't visible to this visitor
@@ -69,7 +67,7 @@ if($display_mode == 'show_product' && !is_array($product_data)) {
 }
 
 // Handle redirect if on display_product page but no product ID
-if($page_contents['page_type_of_use'] == 'display_product' AND $get_product_id == '') {
+if($page_contents['page_type_of_use'] == 'display_product' AND $get_product_id < 1) {
 
     $target_page = $db_content->get("se_pages", "page_permalink", [
         "AND" => [

@@ -1,5 +1,14 @@
 <?php
-	
+
+/**
+ * @var array $lang install/index.php
+ * @var string $prefs_database_host inc.install.php
+ * @var string $prefs_database_port inc.install.php
+ * @var string $prefs_database_name inc.install.php
+ * @var string $prefs_database_username inc.install.php
+ * @var string $prefs_database_psw inc.install.php
+ */
+
 if(!defined('INSTALLER')) {
 	header("location:login.php");
 	die("PERMISSION DENIED!");
@@ -38,6 +47,10 @@ echo '<div class="card" id="mysql">';
 echo '<h5 class="card-header">MySQL</h5>';
 
 echo '<div class="card-body">';
+/** @var bool $conn set by check_connection.php */
+$conn = false;
+$success_msg = '';
+$fail_msg = '';
 if(isset($_POST['check_connection'])) {
 	include __DIR__.'/check_connection.php';
 

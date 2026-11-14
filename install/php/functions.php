@@ -23,6 +23,7 @@ function get_columns($database, $table_name) {
 	global $db_type;
 	global $database_name;
 
+	$data = [];
 	if($db_type == "mysql") {
 		$query = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$database_name' AND TABLE_NAME = '$table_name'";
 	} else {
@@ -42,8 +43,11 @@ function get_columns($database, $table_name) {
 	
 	$meta = array();
 	foreach ($data as $row) {
-		$meta[$row['COLUMN_NAME']] = $row['DATA_TYPE']; /* mysql schema */
-		$meta[$row['name']] = $row['type']; /* sqlite schema */
+		if($db_type == "mysql") {
+			$meta[$row['COLUMN_NAME']] = $row['DATA_TYPE']; /* mysql schema */
+		} else {
+			$meta[$row['name']] = $row['type']; /* sqlite schema */
+		}
 	}
 
 
@@ -63,6 +67,7 @@ function table_exists($database,$table_name) {
 	global $database_name;
 	global $db_type;
 	
+	$cnt_tables = [0];
 	if($db_type == "mysql") {
 		$query = "SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '$database_name') AND (TABLE_NAME = '$table_name')";
 	} else {
@@ -98,6 +103,13 @@ function table_exists($database,$table_name) {
 
 function se_generate_sql_query($file,$db_type='sqlite') {
 	
+	// set by the template file
+	/** @var array<string, string> $cols */
+	$cols = [];
+	/** @var string $table_name */
+	$table_name = '';
+	/** @var string $table_type */
+	$table_type = '';
 	include __DIR__."/../contents/$file";
 	$string = '';
 	
@@ -204,6 +216,9 @@ function add_table($database,$table_name,$cols) {
 	global $db_type;
 	global $database_name;
 
+
+	$string = '';
+	$cols_string = '';
 
 	if($db_type == 'sqlite') {
 

@@ -1,0 +1,65 @@
+{#
+ # options and readme of a theme in /admin/addons/theme/<theme>/, rendered by acp/core/addons/edit-theme.php
+ # theme is null if there is no such theme
+ # fields: list of {name, label, type (text, checkbox, select), value, options: list of {value, label, selected}}
+ # readme: html of the theme's readme.md
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.plugin|raw }} <a href="/admin/addons/">{{ lang.nav_btn_addons }}</a>
+    {% if theme %}<span class="ms-1">{{ theme }}</span>{% endif %}
+</div>
+
+{% if not theme %}
+    <div class="card p-3 text-muted">{{ lang.msg_no_entries_found }}</div>
+{% else %}
+<div class="row">
+    <div class="col-md-6">
+        <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
+            <div class="card mb-3">
+                <div class="card-header">{{ lang.btn_options }}</div>
+                <div class="card-body">
+                    {% for field in fields %}
+                        {% if field.type == 'checkbox' %}
+                            <div class="form-check my-3">
+                                <input class="form-check-input" type="checkbox" id="{{ field.name }}" name="{{ field.name }}" value="1"{% if field.value == '1' %} checked{% endif %}>
+                                <label class="form-check-label" for="{{ field.name }}">{{ field.label }}</label>
+                            </div>
+                        {% elseif field.type == 'select' %}
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ field.name }}">{{ field.label }}</label>
+                                <select class="form-select" id="{{ field.name }}" name="{{ field.name }}">
+                                    {% for option in field.options %}
+                                        <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ field.name }}">{{ field.label }}</label>
+                                <input type="text" class="form-control" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted m-0">{{ lang.addons_msg_no_options }}</p>
+                    {% endfor %}
+                </div>
+                {% if fields %}
+                    <div class="card-footer">
+                        <button type="submit" name="save_theme_options" value="1" class="btn btn-success">{{ lang.save }}</button>
+                    </div>
+                {% endif %}
+            </div>
+            <input type="hidden" name="theme" value="{{ theme }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        </form>
+    </div>
+    <div class="col-md-6">
+        {% if readme %}
+            <div class="card mb-3">
+                <div class="card-header">readme</div>
+                <div class="card-body">{{ readme|raw }}</div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

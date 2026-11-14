@@ -49,7 +49,8 @@ run code but don't transform a value.
 ### Frontend hooks
 
 The frontend hooks (`product.display.before`, `product.display.actions`, `product.display.after`,
-`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`)
+`product.display.content`, `product.list.item`, `search.results.external`, `page.display.after`,
+`structured_data.graph`)
 are documented together with the template variables and rendering conventions they affect - see
 [Hooks](09-01-00-themes.md#hooks) in the Themes chapter.
 
@@ -61,7 +62,8 @@ callback always runs whenever the hook fires, just like frontend hooks.
 
 | Hook         | Context                                | Fires when...                                        |
 |--------------|------------------------------------------|-------------------------------------------------------|
-| `order.paid` | `order_id`, `order`, `triggered_by`     | An order has been marked as paid - manually in the ACP (`triggered_by` = `admin`) or automatically by a payment plugin (`triggered_by` = e.g. `se_paypal-pay`). |
+| `order.paid` | `order_id`, `order`, `triggered_by`     | An order has been marked as paid - manually in the ACP (`triggered_by` = `admin`) or automatically by a payment plugin (`triggered_by` = e.g. `paypal-pay`). |
+| `user.deleted` | `user_id`, `user`, `deleted_by`       | A user account has been deleted - by an admin in the ACP (`deleted_by` = the admin's nick) or by the user in the frontend profile (`deleted_by` = `self`). The account is already emptied at that point; `user` holds its data from before the deletion (e.g. `user_mail`, `user_nick`, addresses), without passwords, 2FA secrets and lock or reset codes. |
 
 ## Example backend hook
 

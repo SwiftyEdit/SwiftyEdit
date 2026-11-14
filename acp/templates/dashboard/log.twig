@@ -1,0 +1,19 @@
+{#
+ # The full log, rendered by acp/core/dashboard/log.php
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.activity|raw }} {{ lang.dashboard_label_activity }}
+    <span class="ms-auto">
+        <a href="/admin/dashboard/" class="btn btn-default btn-sm">{{ lang.nav_btn_dashboard }}</a>
+    </span>
+</div>
+
+{% if can_view_log %}
+    <div class="card">
+        <div class="card-body" id="dashLogList" hx-get="{{ reader_uri }}?action=log&filter={{ filter }}" hx-trigger="load">
+            <div class="d-flex align-items-center htmx-indicator"><div class="spinner-border spinner-border-sm me-2" role="status"></div><span class="sr-only">Loading...</span></div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">{{ lang.rm_no_access }}</div>
+{% endif %}

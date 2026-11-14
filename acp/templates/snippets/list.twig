@@ -1,0 +1,15 @@
+{# overview of the snippets in /admin/snippets/, rendered by snippets-list.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getSnippets" hx-get="{{ reader_uri }}?action=list_snippets" hx-trigger="load, {{ list_triggers }}"></div>
+{% endblock %}
+
+{% block sidebar %}
+    <div class="card">
+        <div class="card-header">{{ lang.label_keywords }}</div>
+        <div class="card-body">
+            <div id="keyList" hx-post="{{ reader_uri }}?action=list_keywords" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{# comments in /admin/inbox/comments/, rendered by acp/core/inbox/comments.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getComments" hx-get="{{ reader_uri }}?action=list_comments" hx-trigger="load, {{ list_triggers }}"></div>
+    {# the edit form of a comment is loaded into the global #infoModal (acp/index.php) #}
+{% endblock %}

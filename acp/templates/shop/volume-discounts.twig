@@ -1,0 +1,32 @@
+{#
+ # collapsible volume discount (scaling prices) inputs
+ # discounts: list of {amount, price}, already padded with empty rows
+ # cols: column classes for amount, net price and gross price
+ #}
+
+<div class="card my-2">
+    <div class="card-header">
+        <span>{{ lang.label_product_scaling_prices }}</span>
+        <button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseVDP">+</button>
+    </div>
+    <div class="card-body collapse" id="collapseVDP">
+        {% for discount in discounts %}
+            <div class="calculate_price">
+                <div class="row">
+                    <div class="{{ cols[0] }}">
+                        <label>{{ lang.label_product_amount }}</label>
+                        <input class="form-control" name="product_vd_amount[]" type="number" value="{{ discount.amount }}">
+                    </div>
+                    <div class="{{ cols[1] }}">
+                        <label>{{ lang.label_product_price }} {{ lang.label_product_net }}</label>
+                        <input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="{{ discount.price }}">
+                    </div>
+                    <div class="{{ cols[2] }}">
+                        <label>{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
+                        <input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

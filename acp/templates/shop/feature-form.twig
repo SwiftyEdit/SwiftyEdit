@@ -1,0 +1,32 @@
+{#
+ # product feature form in /admin/shop/features/edit/ and /new/, rendered by features-edit.php
+ # inputs: fields built by se_print_form_input()
+ # feature_id: id of the edited feature, null for a new feature
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
+    <a href="/admin/shop/features/new/" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
+</div>
+
+<div id="formResponse"></div>
+
+<form>
+    <div class="card">
+        <div class="card-header">{{ feature_id ? lang.edit : lang.new }}</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">{{ inputs.title|raw }}</div>
+                <div class="col-md-2">{{ inputs.priority|raw }}</div>
+                <div class="col-md-2">{{ inputs.language|raw }}</div>
+            </div>
+            {{ inputs.text|raw }}
+        </div>
+        <div class="card-footer">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" hx-include="[name='csrf_token']" name="save_feature" value="{{ feature_id ?? 'new' }}" class="btn btn-success">{{ feature_id ? lang.btn_update : lang.btn_save }}</button>
+            {% if feature_id %}
+                <button hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" hx-include="[name='csrf_token']" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_feature" value="{{ feature_id }}" class="btn btn-danger ms-1">{{ icon.trash_alt|raw }}</button>
+            {% endif %}
+        </div>
+    </div>
+</form>

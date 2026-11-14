@@ -1,136 +1,94 @@
 <?php
 
-function compare_versions() {
+/**
+ * update channels of versions.json compared with the installed build,
+ * rendered by acp/templates/update/channels.twig
+ *
+ * @param array $remote_versions decoded versions.json, see get_remote_versions()
+ * @return array|null list of {name, title, build, date, file, available, installed, reloadable},
+ *   null if swiftyedit.net was not reachable or the file is invalid
+ */
+function se_update_channels(array $remote_versions): ?array {
 
-    global $lang, $icon, $se_environment, $remote_versions_array, $se_base_url;
+    global $se_environment;
 
-    $hx_writer_url = '/admin-xhr/update/write/';
-    $hx_vals = ['csrf_token' => $_SESSION['token']];
-
-    // read version.json
-    $version_file = file_get_contents(SE_ROOT.'version.json');
-    $se_version = json_decode($version_file, true);
-
-    // channel => badge color, warning text color
-    $channels = [
-        'stable' => ['badge' => 'bg-success', 'text' => ''],
-        'beta' => ['badge' => 'bg-warning text-dark', 'text' => 'text-warning'],
-        'alpha' => ['badge' => 'bg-danger', 'text' => 'text-danger']
-    ];
-
-    $update_stable = '';
-
-    // swiftyedit.net not reachable or versions.json invalid (see get_remote_versions())
-    if (!is_array($remote_versions_array['version'] ?? null)) {
-        echo '<div class="alert alert-warning">'.$lang['update_msg_server_unreachable'].'</div>';
-        return;
+    if (!is_array($remote_versions['version'] ?? null)) {
+        return null;
     }
 
-    echo '<ul class="list-group list-group-flush mb-1">';
-    foreach($channels as $channel => $colors) {
+    $se_version = json_decode((string) file_get_contents(SE_ROOT.'version.json'), true);
+    $installed_build = (string) ($se_version['build'] ?? '');
 
-        $remote = $remote_versions_array['version'][$channel];
-        $filename = basename($remote['file']);
-        $hx_vals_channel = $hx_vals + ["file" => "$filename"];
-        $select_button = '<button class="btn btn-default btn-sm text-nowrap" hx-post="'.$hx_writer_url.'" hx-vals=\''.json_encode($hx_vals_channel).'\' hx-target="#updateResponse" hx-indicator="#updateIndicator" hx-swap="innerHTML" name="load_update_data" value="'.$channel.'">';
-        $update_available = ($se_version['build'] < $remote['build']);
-
-        echo '<li class="list-group-item d-flex justify-content-between align-items-center gap-3">';
-
-        echo '<div>';
-        echo '<span class="badge '.$colors['badge'].' me-2">'.ucfirst($channel).'</span>';
-        echo '<strong>'.htmlspecialchars($remote['title']).'</strong>';
-        echo '<div class="small text-muted mt-1">Build '.htmlspecialchars($remote['build']).' · '.htmlspecialchars($remote['date']).'</div>';
-        // beta/alpha: show the "not for production" warning right at the entry
-        if($update_available && $channel != 'stable') {
-            echo '<div class="small '.$colors['text'].' mt-1">'.$icon['info_circle'].' '.$lang['update_msg_not_for_production'].'</div>';
+    $channels = [];
+    foreach (['stable', 'beta', 'alpha'] as $channel) {
+        $remote = $remote_versions['version'][$channel] ?? null;
+        if (!is_array($remote)) {
+            continue;
         }
-        echo '</div>';
-
-        echo '<div class="flex-shrink-0 d-flex flex-column align-items-end gap-1">';
-        if($update_available) {
-            echo $select_button.$lang['btn_choose_this_update'].'</button>';
-            if($channel == 'stable') {
-                $update_stable = $lang['update_msg_stable'];
-            }
-        } else if($se_version['build'] == $remote['build']) {
-            echo '<span class="badge bg-secondary">'.$icon['check_circle'].' '.$lang['update_label_installed'].'</span>';
-        }
-        // in development mode, alpha can always be reloaded
-        if($channel == 'alpha' && $se_environment == 'd') {
-            echo $select_button.$lang['btn_choose_this_update'].' '.$icon['arrow_clockwise'].'</button>';
-        }
-        echo '</div>';
-
-        echo '</li>';
+        $remote_build = (string) ($remote['build'] ?? '');
+        $channels[] = [
+            'name' => $channel,
+            'title' => (string) ($remote['title'] ?? ''),
+            'build' => $remote_build,
+            'date' => (string) ($remote['date'] ?? ''),
+            'file' => basename((string) ($remote['file'] ?? '')),
+            // builds are compared as strings, e.g. 26-0229 < 26-0230
+            'available' => ($installed_build < $remote_build),
+            'installed' => ($installed_build === $remote_build),
+            // in development mode, alpha can always be reloaded
+            'reloadable' => ($channel === 'alpha' && $se_environment == 'd')
+        ];
     }
-    echo '</ul>';
-
-    if($update_stable == '') {
-        echo '<div class="alert alert-success">';
-        echo $icon['check_circle'].' '.$lang['update_msg_no_update_available'];
-        echo '</div>';
-    } else {
-        echo '<div class="alert alert-success">';
-        echo $icon['info_circle'].' '.$lang['update_msg_update_available'];
-        echo '</div>';
-    }
-
+    return $channels;
 }
 
 /**
  * Notices from swiftyedit.net ("notices" in versions.json), e.g. to announce
  * changes before an update. Shown on the update page, newest first as in the
- * file. Everything is printed as plain text - no HTML from the remote file
- * reaches the backend, links are only shown for https:// URLs.
+ * file, rendered by acp/templates/update/notices.twig as plain text - no HTML
+ * from the remote file reaches the backend, links only for https:// URLs.
  *
  * Format of one notice (title and text required, build and link optional;
  * build = the build from which the notice applies):
  * {"build": "26-0230", "title": "...", "text": "...", "link": "https://..."}
  *
- * @param array|null $remote_versions decoded versions.json
- * @return string HTML for the notices area of the update page, empty without notices
+ * @param array $remote_versions decoded versions.json
+ * @return array list of {title, text, build, link}
  */
-function se_render_update_notices(?array $remote_versions): string {
-
-    global $lang, $icon;
+function se_update_notices(array $remote_versions): array {
 
     $notices = $remote_versions['notices'] ?? [];
-    if (!is_array($notices) || $notices === []) {
-        return '';
+    if (!is_array($notices)) {
+        return [];
     }
 
-    $html = '<div class="card mb-2">';
-    $html .= '<div class="card-header">'.$icon['info_circle'].' '.$lang['update_notices_title'].'</div>';
-    $html .= '<div class="card-body p-0">';
-    $html .= '<div class="scroll-container p-3">'; // grows up to its max-height, then scrolls
-
+    $valid_notices = [];
     foreach ($notices as $notice) {
         if (!is_array($notice) || !is_string($notice['title'] ?? null) || !is_string($notice['text'] ?? null)) {
             continue;
         }
-
-        $heading = htmlspecialchars($notice['title'], ENT_QUOTES);
-        if (is_string($notice['build'] ?? null) && $notice['build'] !== '') {
-            $heading = 'From build '.htmlspecialchars($notice['build'], ENT_QUOTES).' · '.$heading;
-        }
-
-        $html .= '<div class="mb-3">';
-        $html .= '<h6 class="mb-1">'.$heading.'</h6>';
-        $html .= '<p class="mb-1">'.nl2br(htmlspecialchars($notice['text'], ENT_QUOTES)).'</p>';
-
         $link = $notice['link'] ?? '';
-        if (is_string($link) && str_starts_with($link, 'https://') && filter_var($link, FILTER_VALIDATE_URL)) {
-            $html .= '<a href="'.htmlspecialchars($link, ENT_QUOTES).'" target="_blank" rel="noopener noreferrer">'.$lang['update_notices_read_more'].'</a>';
-        }
-        $html .= '</div>';
+        $valid_notices[] = [
+            'title' => $notice['title'],
+            'text' => $notice['text'],
+            'build' => is_string($notice['build'] ?? null) ? $notice['build'] : '',
+            'link' => (is_string($link) && str_starts_with($link, 'https://') && filter_var($link, FILTER_VALIDATE_URL)) ? $link : ''
+        ];
     }
+    return $valid_notices;
+}
 
-    $html .= '</div>';
-    $html .= '</div>';
-    $html .= '</div>';
-
-    return $html;
+/**
+ * message of the update writer - the writer keeps printing plain HTML instead of
+ * Twig templates: during an update it runs as the old version, a template loaded
+ * after move_new_files() would already be the one of the new version
+ *
+ * @param string $type bootstrap alert type (info, warning, danger, success)
+ * @param string $text plain text, escaped here
+ * @return string
+ */
+function se_update_alert(string $type, string $text): string {
+    return '<div class="alert alert-'.$type.'">'.htmlspecialchars($text, ENT_QUOTES).'</div>';
 }
 
 /**
@@ -147,23 +105,23 @@ function get_remote_versions(): array {
 /**
  * get the files from the extracted zip file
  * and copy them to their destination
- * @return void
+ *
+ * @param string $source directory of the extracted release in download/extract/
+ * @return bool false if the release is missing - nothing has been changed then
  */
-function move_new_files($source) {
+function move_new_files(string $source): bool {
 
-    global $remote_file;
-    $cnt_errors = 0;
+    // copy_recursive() counts the errors
+    $_SESSION['errors_cnt'] = 0;
 
     $sources_path = '../acp/core/update/download/extract/';
     $sources_dir = basename($source);
 
-
-    if(is_dir($sources_path.$sources_dir))	{
-        $new_files = scandir_recursive($sources_path.$sources_dir);
-    } else {
-        echo '<div class="alert alert-danger">No Source found: '. $sources_path.htmlspecialchars($sources_dir, ENT_QUOTES) .'</div>';
+    // without a complete release, /install/ must not be removed below
+    if($sources_dir === '' || !is_dir($sources_path.$sources_dir.'/install')) {
+        return false;
     }
-
+    $new_files = scandir_recursive($sources_path.$sources_dir);
 
     // at first, the /install/ directory
     rmdir_recursive('../install');
@@ -178,13 +136,8 @@ function move_new_files($source) {
     // are actually part of the release have to be re-copied explicitly here
     copy_recursive($sources_path.$sources_dir."/plugins/se_invoice-pay","../plugins/se_invoice-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/se_cash-pay","../plugins/se_cash-pay");
-    copy_recursive($sources_path.$sources_dir."/plugins/se_paypal-pay","../plugins/se_paypal-pay");
     copy_recursive($sources_path.$sources_dir."/plugins/tinymce-editor","../plugins/tinymce-editor");
     copy_recursive($sources_path.$sources_dir."/plugins/ace-editor","../plugins/ace-editor");
-
-    if(!is_array($new_files)) {
-        $_SESSION['protocol'] .= "ERROR can not scan target files<|>";
-    }
 
     // now copy the other files and directories
     foreach($new_files as $value) {
@@ -208,7 +161,7 @@ function move_new_files($source) {
     // (the copy loop above only ever adds/overwrites files)
     remove_obsolete_files($sources_path.$sources_dir);
 
-    $_SESSION['errors_cnt'] = $cnt_errors;
+    return true;
 }
 
 /**
@@ -249,13 +202,7 @@ function remove_obsolete_files($extracted_source_dir) {
             continue;
         }
 
-        $existing_files = scandir_recursive($dir);
-
-        if (!is_array($existing_files)) {
-            continue;
-        }
-
-        foreach ($existing_files as $path) {
+        foreach (scandir_recursive($dir) as $path) {
             if (is_dir($path)) {
                 continue;
             }
@@ -303,36 +250,34 @@ function remove_empty_dirs_recursive($dir) {
 }
 
 /**
- * returns all files and directories
- * return array()
+ * all files and directories of a directory (recursive)
+ *
+ * @param string $dir
+ * @return array paths, e.g. "$dir/sub/file.php"
  */
-
-function scandir_recursive($dir) {
-    $root = scandir($dir);
-    foreach($root as $value) {
+function scandir_recursive(string $dir): array {
+    $result = [];
+    foreach(scandir($dir) ?: [] as $value) {
         if($value === '.' || $value === '..') {continue;}
-        $result[]="$dir/$value";
+        $result[] = "$dir/$value";
         if(is_dir("$dir/$value")) {
-            foreach(scandir_recursive("$dir/$value") as $value) {
-                $result[]=$value;
+            foreach(scandir_recursive("$dir/$value") as $sub_value) {
+                $result[] = $sub_value;
             }
         }
     }
-    if(is_array($result)) {
-        $result = array_filter($result);
-    }
-
     return $result;
 }
 
 
 /**
- * copy/move directory with its including contents
- * @param $source
- * @param $target
- * @return mixed|string|void
+ * copy a file or a directory with its contents, the result is written to the protocol
+ *
+ * @param string $source
+ * @param string $target
+ * @return void
  */
-function copy_recursive($source, $target) {
+function copy_recursive(string $source, string $target): void {
 
     if(is_dir($source)) {
         if(!is_dir("$target")) {
@@ -350,7 +295,8 @@ function copy_recursive($source, $target) {
             if(is_dir($sub)) {
                 chmod("$sub", 0755);
                 copy_recursive($sub, $target . '/' . $entry);
-                //continue;
+                // copy() of a directory would only fail with a warning
+                continue;
             }
             copy($sub, $target . '/' . $entry);
         }
@@ -365,10 +311,9 @@ function copy_recursive($source, $target) {
         if(copy($source, $target)) {
             $_SESSION['protocol'] .= '<b>copied:</b> '.htmlspecialchars($target, ENT_QUOTES).'<|>';
         } else {
-            $errors = error_get_last();
-            $_SESSION['protocol'] .= '<b class="text-danger">ERROR:</b> '.htmlspecialchars($errors['type'], ENT_QUOTES). '</b> ' . htmlspecialchars($errors['message'], ENT_QUOTES).'<|>';
-            $_SESSION['errors_cnt']++;
-            return $errors['message'];
+            $error = error_get_last();
+            $_SESSION['protocol'] .= '<b class="text-danger">ERROR:</b> '.htmlspecialchars($target, ENT_QUOTES).' '.htmlspecialchars($error['message'] ?? '', ENT_QUOTES).'<|>';
+            $_SESSION['errors_cnt'] = ($_SESSION['errors_cnt'] ?? 0) + 1;
         }
     }
 }
@@ -395,15 +340,17 @@ function rmdir_recursive($dir) {
 }
 
 /**
- * create directory (recursive)
+ * create a directory and its missing parents, written to the protocol
+ *
+ * @param string $dir
+ * @param int $chmod
+ * @return void
  */
-
-function mkdir_recursive($dir, $chmod=0755){
-    $dirs = explode('/', $dir);
-    $directory='';
-    foreach ($dirs as $part) {
+function mkdir_recursive(string $dir, int $chmod = 0755): void {
+    $directory = '';
+    foreach (explode('/', $dir) as $part) {
         $directory .= $part.'/';
-        if(!is_dir($directory) && strlen($directory)>0) {
+        if(!is_dir($directory)) {
             mkdir($directory, $chmod);
             chmod("$directory", $chmod);
             $_SESSION['protocol'] .= "created: ".htmlspecialchars($directory, ENT_QUOTES)." <|>";
@@ -419,13 +366,21 @@ function mkdir_recursive($dir, $chmod=0755){
  */
 function update_database() {
 
-    $all_tables = glob("../install/contents/*.php");
+    // every table file sets $database, $table_name and $cols - loaded in its own
+    // scope, so no values from the previous table file are carried over
+    $load_table = static function(string $file): array {
+        include $file;
+        $table = get_defined_vars();
+        return [
+            (string) ($table['database'] ?? ''),
+            (string) ($table['table_name'] ?? ''),
+            is_array($table['cols'] ?? null) ? $table['cols'] : []
+        ];
+    };
 
-    for($i=0;$i<count($all_tables);$i++) {
+    foreach(glob(__DIR__."/../../../install/contents/*.php") ?: [] as $table_file) {
 
-        unset($db_path,$table_name,$database,$table_type);
-
-        include $all_tables[$i]; // returns $cols and $table_name
+        [$database, $table_name, $cols] = $load_table($table_file);
 
         $is_table = table_exists("$database","$table_name");
 
@@ -447,11 +402,7 @@ function update_database() {
                 $_SESSION['protocol'] .= '<b class="text-success">new column:</b> '.htmlspecialchars($k, ENT_QUOTES).' in table '.htmlspecialchars($table_name, ENT_QUOTES).'<|>';
             }
 
-        } // eo foreach
-
-        /* updates are done, check all columns again */
-        $existing_cols = get_columns("$database","$table_name");
-
+        }
     }
 }
 

@@ -5,7 +5,8 @@
  * or show order details
  *
  * @var object $smarty
- *
+ * @var object $db_content
+ * @var array $lang
  */
 
 // Read-only w.r.t. $_SESSION (only read below, never assigned) - safe to
@@ -83,7 +84,7 @@ if(isset($_GET['id'])) {
             $products[$x]['need_upload'] = $order_products[$x]['need_upload'];
             /* filename for this upload order number + pos + time() */
             $check_dir = SE_CONTENT.'/uploads/';
-            $check_filename = $check_dir.$order_item[$i]['nbr'].'-'.$products[$x]['pos'].'-';
+            $check_filename = $check_dir.$get_order['order_nbr'].'-'.$products[$x]['pos'].'-';
             $checkfile = glob("$check_filename*");
 
             $products[$x]['user_upload'] = '';
@@ -118,7 +119,7 @@ if(isset($_GET['id'])) {
 
         $payment_plugin = basename($get_order['order_payment_type']);
         $payment_plugin_file = SE_ROOT.'plugins/'.$payment_plugin.'/aftersale_listing.php';
-        if(is_file($payment_plugin_file)) {
+        if(is_file($payment_plugin_file) && !se_is_retired_addon($payment_plugin)) {
             include $payment_plugin_file;
         }
         $get_order['payment_plugin_str'] = $pm_plugin_str;
@@ -197,6 +198,7 @@ $items_start = (int) $items_limit*($currentPage-1);
 
 $get_orders = se_get_orders($user_id,$order_filter,$order_sort,$items_start,$items_limit);
 $cnt_orders = count($get_orders);
+$order_item = [];
 
 for($i=0;$i<$cnt_orders;$i++) {
 

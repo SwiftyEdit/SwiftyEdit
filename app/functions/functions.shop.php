@@ -800,7 +800,7 @@ function se_getProductCachePath($id, $lang) {
     $baseDir = SE_CONTENT . '/cache/products';
     $range   = floor($id / 1000) * 1000; // 1542 → 1000
 
-    $dir = $baseDir . '/' . str_pad($range, 3, '0', STR_PAD_LEFT);
+    $dir = $baseDir . '/' . str_pad((string) $range, 3, '0', STR_PAD_LEFT);
 
     if (!is_dir($dir)) {
         mkdir($dir, SE_DIR_PERMISSIONS, true);
@@ -1031,7 +1031,7 @@ function se_get_product_variants($id) {
  * check variants, volume discounts, and price groups
  *
  * @param integer $id
- * @return string|void
+ * @return string|null lowest net price with decimal comma, null without prices
  */
 function se_get_product_lowest_price(int $id) {
     global $db_posts;
@@ -1103,7 +1103,7 @@ function se_get_product_lowest_price(int $id) {
     }
 
     $lowestPrice = min($allPrices);
-    return str_replace('.', ',', $lowestPrice);
+    return str_replace('.', ',', (string) $lowestPrice);
 }
 
 /**
@@ -1173,39 +1173,6 @@ function se_get_product_price_tag(array $product): array {
     ];
 }
 
-/**
- * @param $id
- * @return int|mixed
- */
-function se_delete_product($id) {
-    global $db_posts;
-    $del_id = (int) $id;
-    $cnt_delete = 0;
-
-    $delete = $db_posts->delete("se_products", ["id" => $del_id]);
-    $cnt_delete = $delete->rowCount();
-
-    /* get product it's variants and delete them also */
-    $variants = se_get_product_variants($del_id);
-    $cnt_variants = count($variants);
-    if($cnt_variants > 0) {
-        foreach($variants as $variant) {
-            $delete_variant_id = $variant['id'];
-            $delete_variant = $db_posts->delete("se_products", ["id" => $delete_variant_id]);
-            $cnt_delete_variant = $delete_variant->rowCount();
-            $cnt_delete += $cnt_delete_variant;
-        }
-    }
-
-
-    if($cnt_delete > 0) {
-        return $cnt_delete;
-    }
-    return 0;
-}
-
-
-
 
 /**
  * increase the downloads counter
@@ -1259,8 +1226,57 @@ function se_increase_product_hits($product_id) {
 
 
 /**
+ * build the stored option string (<span>..</span> per option) from posted option values.
+ * only values that belong to an option assigned to the product are kept - themes post
+ * "{title}: {value}" (or just "{value}") - and every kept value is escaped for HTML output.
+ *
+ * @param string|null $product_options_json product_options of the product (JSON list of snippet ids)
+ * @param mixed $posted_options posted option values
+ * @return string
+ */
+
+function se_build_cart_option_string($product_options_json, $posted_options): string {
+
+    if(!is_array($posted_options)) {
+        return '';
+    }
+
+    $assigned_options = json_decode($product_options_json ?? '', true);
+    if(!is_array($assigned_options) || count($assigned_options) < 1) {
+        return '';
+    }
+
+    /* collect the values the product actually offers */
+    $allowed_values = [];
+    foreach(se_get_posts_options(array_values($assigned_options)) as $option) {
+        $values = json_decode($option['snippet_content'] ?? '', true);
+        if(!is_array($values)) {
+            continue;
+        }
+        foreach($values as $value) {
+            $value = (string) $value;
+            $title = (string) $option['snippet_title'];
+            // compare decoded, because the browser posts the decoded attribute text
+            $allowed_values[] = html_entity_decode($title.': '.$value, ENT_QUOTES, 'UTF-8');
+            $allowed_values[] = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
+        }
+    }
+
+    $option_string = '';
+    foreach($posted_options as $option) {
+        if(!is_string($option) || !in_array($option, $allowed_values, true)) {
+            continue;
+        }
+        $option_string .= '<span>'.htmlspecialchars($option, ENT_QUOTES, 'UTF-8').'</span>';
+    }
+
+    return $option_string;
+}
+
+
+/**
  * add a product to cart
- * 
+ *
  */
 
 function se_add_to_cart() {
@@ -1281,13 +1297,6 @@ function se_add_to_cart() {
 		$cart_user_hash = $_SESSION['token'];
 	}
 
-    $option_string = '';
-    if(is_array($_POST['product_options'])) {
-        foreach($_POST['product_options'] as $option) {
-            $option_string .= '<span>'.$option.'</span>';
-        }
-    }
-
     $cart_product_options_comment = clean_visitors_input($_POST['customer_options_comment']);
 
 	
@@ -1304,6 +1313,9 @@ function se_add_to_cart() {
 	if(($this_item['product_addon_only'] ?? '2') == 1) {
 		return 0;
 	}
+
+    /* validated and escaped options */
+    $option_string = se_build_cart_option_string($this_item['product_options'] ?? '', $_POST['product_options'] ?? null);
 
 	$cart_product_price_net = $this_item['product_price_net'];
 	$cart_product_title = $this_item['title'];
@@ -1365,12 +1377,7 @@ function se_add_to_cart() {
             }
 
             // options chosen for this addon (e.g. size/color), same format as the main product's
-            $addon_option_string = '';
-            if(isset($_POST['addon_options'][$addon_id]) && is_array($_POST['addon_options'][$addon_id])) {
-                foreach($_POST['addon_options'][$addon_id] as $addon_option) {
-                    $addon_option_string .= '<span>'.$addon_option.'</span>';
-                }
-            }
+            $addon_option_string = se_build_cart_option_string($addon_item['product_options'] ?? '', $_POST['addon_options'][$addon_id] ?? null);
 
             // free-text comment for this addon's own product_options_comment_label field
             $addon_option_comment = clean_visitors_input($_POST['addon_options_comment'][$addon_id] ?? '');
@@ -1619,6 +1626,10 @@ function se_get_payment_methods(): array {
     if(count($active_payment_addons) > 0) {
         foreach ($active_payment_addons as $payment_addon) {
 
+            if(se_is_retired_addon($payment_addon)) {
+                continue;
+            }
+
             $key = clean_filename($payment_addon);
             $addon_data = se_get_payment_method_data($payment_addon);
 
@@ -1801,7 +1812,7 @@ function se_send_order($data) {
  * fire the 'order.paid' backend hook
  *
  * used both by the manual ACP "mark as paid" action and by payment
- * plugins (e.g. se_paypal-pay) confirming a payment automatically
+ * plugins (e.g. paypal-pay) confirming a payment automatically
  *
  * @param int    $order_id     se_orders.id
  * @param int    $status       1 = open, 2 = paid
@@ -1888,7 +1899,7 @@ function se_recalculate_stock_sales($items) {
  * @param array $sort key and direction
  * @param integer $start start for pagination
  * @param integer $limit number of entries
- * @return void
+ * @return array
  */
 
 function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
@@ -1965,9 +1976,9 @@ function se_get_orders($user, $filter, $sort, $start=0, $limit=10) {
         $orders[0]['cnt_matching_orders'] = $orders_cnt;
 
 	} else {
-		return;
+		return [];
 	}
-		
+
 	return $orders;
 }
 
@@ -2093,6 +2104,70 @@ function se_order_contains_product($order, $product_id) {
 }
 
 /**
+ * validate a submitted item position (1-based) against the given order row.
+ * Only digits are accepted, so the result is safe to use in a file name.
+ *
+ * @param array $order an order row (must contain order_products JSON)
+ * @param mixed $pos the submitted position
+ * @return int|null the position, or null if this order has no such item
+ */
+function se_get_order_item_position($order, $pos) {
+
+	if(!is_string($pos) || !ctype_digit($pos)) {
+		return null;
+	}
+
+	$items = json_decode($order['order_products'] ?? '', true);
+	$pos = (int) $pos;
+	if(!is_array($items) || $pos < 1 || $pos > count($items)) {
+		return null;
+	}
+
+	return $pos;
+}
+
+/**
+ * check a customer's upload for an order item: the upload itself and the file
+ * extension. JPEG and PNG must also be real images. Other types only pass if
+ * they were added on purpose in $se_upload_frontend_types (data/config.php),
+ * their content can't be checked here. Uploads are stored outside the web root
+ * and only delivered as a download.
+ *
+ * @param mixed $file the entry from $_FILES
+ * @param array $allowed_extensions $se_upload_frontend_types from config.php
+ * @return string|null the lowercase file extension, or null if the upload is rejected
+ */
+function se_get_order_upload_extension($file, array $allowed_extensions) {
+
+	$image_types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png'];
+
+	// a nested name like upload_file[] delivers an array here and fails this check
+	if(!is_array($file) || ($file['error'] ?? null) !== UPLOAD_ERR_OK) {
+		return null;
+	}
+
+	$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+	if($extension === '' || !in_array($extension, $allowed_extensions, true)) {
+		return null;
+	}
+
+	if(!isset($image_types[$extension])) {
+		return $extension;
+	}
+
+	$finfo = new finfo(FILEINFO_MIME_TYPE);
+	if($finfo->file($file['tmp_name']) !== $image_types[$extension]) {
+		return null;
+	}
+
+	if(getimagesize($file['tmp_name']) === false) {
+		return null;
+	}
+
+	return $extension;
+}
+
+/**
  * @param array $data
  * @param string $prefix
  * @return bool
@@ -2107,7 +2182,6 @@ function se_checkout_address_complete(array $data, string $prefix): bool {
 
 
 /**
- * @param int $type 1 or 2
  * @param string $lang en, de ...
  * @return array
  */
@@ -2247,6 +2321,7 @@ function se_get_products_keywords() {
     ]);
 
     $get_keywords = array_filter( $get_keywords );
+    $keys_string = '';
     foreach($get_keywords as $keys) {
         $keys_string .= trim($keys).',';
     }

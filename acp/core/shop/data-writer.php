@@ -1,83 +1,94 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/shop/write/
+ * list actions of products and orders, saving products, price groups,
+ * features, options and filters, order status
+ *
  * global variables
  * @var object $db_posts
  * @var object $db_content
  * @var array $lang
+ * @var array $icon
  */
 
 // pagination
 if(isset($_POST['pagination'])) {
     $_SESSION['pagination_products_page'] = (int) $_POST['pagination'];
     header( "HX-Trigger: update_products_list");
+    exit;
 }
 
 // pagination orders
 if(isset($_POST['pagination_orders'])) {
     $_SESSION['pagination_orders'] = (int) $_POST['pagination_orders'];
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
 // text search in products
 if(isset($_POST['products_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['products_text_filter']);
+    $text_filter = $_SESSION['products_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['products_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
     $_SESSION['pagination_products_page'] = 0;
-    $_SESSION['products_text_filter'] = $_SESSION['products_text_filter'] . ' ' . sanitizeUserInputs($_POST['products_text_filter']);
-    header( "HX-Trigger: update_products_list");
+    header("HX-Trigger: update_products_list");
+    exit;
 }
 
 // text search in orders
 if(isset($_POST['orders_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['orders_text_filter']);
+    $text_filter = $_SESSION['orders_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['orders_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
     $_SESSION['pagination_orders'] = 0;
-    $_SESSION['orders_text_filter'] = $_SESSION['orders_text_filter'] . ' ' . sanitizeUserInputs($_POST['orders_text_filter']);
-    header( "HX-Trigger: update_orders_list");
+    header("HX-Trigger: update_orders_list");
+    exit;
 }
 
 // remove keyword from products filter list
 if(isset($_POST['rmkey'])) {
-    $all_filter = explode(" ", $_SESSION['products_text_filter']);
-    $_SESSION['products_text_filter'] = '';
-    foreach($all_filter as $f) {
-        if($_POST['rmkey'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $_SESSION['products_text_filter'] .= "$f ";
-    }
-    header( "HX-Trigger: update_products_list");
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey']);
+    $keywords = explode(' ', $_SESSION['products_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['products_text_filter'] = implode(' ', $keywords);
+    $_SESSION['pagination_products_page'] = 0;
+    header("HX-Trigger: update_products_list");
+    exit;
 }
 
 // remove keyword from orders filter list
 if(isset($_POST['rmkey_orders'])) {
-    $all_filter = explode(" ", $_SESSION['orders_text_filter']);
-    $_SESSION['orders_text_filter'] = '';
-    foreach($all_filter as $f) {
-        if($_POST['rmkey_orders'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $_SESSION['orders_text_filter'] .= "$f ";
-    }
-    header( "HX-Trigger: update_orders_list");
-}
-
-// search by keyword
-if(isset($_POST['add_keyword'])) {
-    $_SESSION['products_keyword_filter'] = $_SESSION['products_keyword_filter'] . ',' . sanitizeUserInputs($_POST['add_keyword']);
-    header( "HX-Trigger: update_products_list");
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey_orders']);
+    $keywords = explode(' ', $_SESSION['orders_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['orders_text_filter'] = implode(' ', $keywords);
+    $_SESSION['pagination_orders'] = 0;
+    header("HX-Trigger: update_orders_list");
     exit;
 }
 
-// remove keyword from filter
-if(isset($_POST['remove_keyword'])) {
-    $all_keywords_filter = explode(",", $_SESSION['products_keyword_filter']);
-    $_SESSION['products_keyword_filter'] = '';
-    foreach($all_keywords_filter as $f) {
-        if($_POST['remove_keyword'] == "$f") { continue; }
-        if($f == "") { continue; }
-        $_SESSION['products_keyword_filter'] .= $f.',';
+// keywords of the sidebar, add or remove one
+if(isset($_POST['add_keyword']) || isset($_POST['remove_keyword'])) {
+    // the buttons send the plain keyword, the tags are stored sanitized
+    $keyword = trim(sanitizeUserInputs($_POST['add_keyword'] ?? $_POST['remove_keyword']));
+    $keywords = array_filter(explode(",", $_SESSION['products_keyword_filter'] ?? ''), static fn($k) => $k != '' && $k != $keyword);
+    if(isset($_POST['add_keyword']) && $keyword != '') {
+        $keywords[] = $keyword;
     }
-    header( "HX-Trigger: update_products_list");
+    $_SESSION['products_keyword_filter'] = implode(",", $keywords);
+    $_SESSION['pagination_products_page'] = 0;
+    header("HX-Trigger: update_products_list");
     exit;
 }
 
-// sorting
+// sorting, the column is checked again by the data-reader
 if(isset($_POST['sorting_products'])) {
     $_SESSION['sorting_products'] = sanitizeUserInputs($_POST['sorting_products']);
     header( "HX-Trigger: update_products_list");
@@ -85,18 +96,27 @@ if(isset($_POST['sorting_products'])) {
 }
 
 if(isset($_POST['sorting_products_dir'])) {
-    $_SESSION['sorting_products_direction'] = sanitizeUserInputs($_POST['sorting_products_dir']);
+    $_SESSION['sorting_products_direction'] = ($_POST['sorting_products_dir'] == 'ASC') ? 'ASC' : 'DESC';
     header( "HX-Trigger: update_products_list");
     exit;
 }
+
+// a variant is logged with its own title, see the product list in data-reader.php
+$log_product = static function(string $action, int $id, array $product): void {
+    $title = (string) ($product['product_variant_title'] ?? '');
+    if($title === '') {
+        $title = (string) ($product['title'] ?? '');
+    }
+    se_log_content($action, 'product', $id, $title);
+};
 
 // delete product
 // if there are variants, delete them, too
 if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
     $delete_id = (int) $_POST['delete_product'];
 
-    // remember id and language of the product and its variants for the cache cleanup
-    $deleted_products = $db_posts->select("se_products", ["id", "product_lang"], [
+    // remember the product and its variants for the cache cleanup and the log
+    $deleted_products = $db_posts->select("se_products", ["id", "product_lang", "title", "product_variant_title"], [
         "OR" => [
             "id" => $delete_id,
             "parent_id" => $delete_id
@@ -126,7 +146,9 @@ if(isset($_POST['delete_product']) && is_numeric($_POST['delete_product'])) {
         ]);
 
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted product id: $delete_id","10");
+        foreach($deleted_products as $deleted_product) {
+            $log_product('delete', (int) $deleted_product['id'], $deleted_product);
+        }
         header( "HX-Redirect: /admin/shop/");
         $modus = 'new';
     }
@@ -147,7 +169,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         ]);
         $form_header_message = $lang['msg_success_db_changed'];
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"updated product id: $id","6");
+        $log_product('update', $id, $prepared_data);
     } else if(is_numeric($_POST['save_variant'])) {
         $prepared_data = se_prepareProductData($_POST);
         $db_posts->insert("se_products", $prepared_data);
@@ -155,7 +177,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"new product variant id: $id","6");
+        $log_product('create', (int) $id, $prepared_data);
 
     } else {
         $prepared_data = se_prepareProductData($_POST);
@@ -164,7 +186,7 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
         $modus = 'update';
         $submit_btn = '<button type="submit" class="btn btn-success w-100" name="save_product" value="'.$id.'">'.$lang['update'].'</button>';
         show_toast($lang['msg_success_db_changed'],'success');
-        record_log($_SESSION['user_nick'],"new product id: $id","6");
+        $log_product('create', (int) $id, $prepared_data);
         // redirect to edit form
         header( "HX-Redirect: /admin/shop/edit/$id/");
     }
@@ -196,69 +218,58 @@ if(isset($_POST['save_product']) OR isset($_POST['save_variant'])) {
 
 // save or update price groups
 if(isset($_POST['save_price'])) {
-    $group_title = sanitizeUserInputs($_POST['title']);
-    $unit = sanitizeUserInputs($_POST['unit']);
-    $unit_content = sanitizeUserInputs($_POST['unit_content']);
-    $price_net = sanitizeUserInputs($_POST['price_net']);
-    $price_net = str_replace('.', '', $price_net);
+    $group_title = sanitizeUserInputs($_POST['title'] ?? '');
+    $unit = sanitizeUserInputs($_POST['unit'] ?? '');
+    $unit_content = sanitizeUserInputs($_POST['unit_content'] ?? '');
+    // prices are stored with a decimal comma and without thousands separator,
+    // like the products (1.234,56 and 1234.56 -> 1234,56)
+    $price_net = (string) se_sanitize_price($_POST['price_net'] ?? '');
 
-    $amount = (int) $_POST['amount'];
-    $tax = (int) $_POST['tax'];
-    $hash = md5(time());
+    $amount = (int) ($_POST['amount'] ?? 0);
+    $tax = (int) ($_POST['tax'] ?? 1);
 
-    $product_price_volume_discount = '';
-    if(isset($_POST['product_vd_amount'])) {
-        $cnt_vd_prices = count($_POST['product_vd_amount']);
-        for($i=0;$i<$cnt_vd_prices;$i++) {
-
-            if($_POST['product_vd_amount'][$i] == '') {
-                continue;
-            }
-
-            $vd_amount = (int) $_POST['product_vd_amount'][$i];
-            $vd_price_single = sanitizeUserInputs($_POST['product_vd_price'][$i]);
-            $vd_price_single = str_replace('.', '', $vd_price_single);
-
-            $vd_price[] = [
-                'amount' => $vd_amount,
-                'price' => $vd_price_single
-            ];
-
+    // volume discounts, rows without an amount are skipped
+    $vd_price = [];
+    foreach($_POST['product_vd_amount'] ?? [] as $i => $vd_amount) {
+        if($vd_amount == '') {
+            continue;
         }
-        $product_price_volume_discount = json_encode($vd_price,JSON_FORCE_OBJECT);
+        $vd_price[] = [
+            'amount' => (int) $vd_amount,
+            'price' => (string) se_sanitize_price($_POST['product_vd_price'][$i] ?? '')
+        ];
     }
-    // new data
-    if($_POST['id'] == 'new') {
-        $data = $db_posts->insert("se_prices", [
-            "title" => $group_title,
-            "hash" => $hash,
-            "amount" => $amount,
-            "unit" => $unit,
-            "unit_content" => $unit_content,
-            "tax" => $tax,
-            "price_net" => $price_net,
-            "price_volume_discount" => $product_price_volume_discount
-        ]);
-        $edit_id = $db_posts->id();
-        record_log($_SESSION['user_nick'], "create new price group", "1");
-        header( "HX-Trigger: update_price_groups");
+    $product_price_volume_discount = $vd_price ? json_encode($vd_price, JSON_FORCE_OBJECT) : '';
+
+    $group_data = [
+        "title" => $group_title,
+        "amount" => $amount,
+        "unit" => $unit,
+        "unit_content" => $unit_content,
+        "tax" => $tax,
+        "price_net" => $price_net,
+        "price_volume_discount" => $product_price_volume_discount
+    ];
+
+    // new price group - products reference it by the hash
+    if(($_POST['id'] ?? '') == 'new') {
+        $group_data['hash'] = md5(uniqid('', true));
+        $db_posts->insert("se_prices", $group_data);
+        record_log($_SESSION['user_nick'], "create new price group id: ".$db_posts->id(), 1);
+        show_toast($lang['msg_success_new_record'],'success');
+        // reload the form empty, a second click must not create the group again
+        header( "HX-Trigger: update_price_groups, show_price_groups_form");
         exit;
     }
-    // update data
-    if(is_numeric($_POST['id'])) {
+
+    // update price group
+    if(is_numeric($_POST['id'] ?? '')) {
         $id = (int) $_POST['id'];
-        $data = $db_posts->update("se_prices", [
-            "title" => $group_title,
-            "amount" => $amount,
-            "unit" => $unit,
-            "unit_content" => $unit_content,
-            "tax" => $tax,
-            "price_net" => $price_net,
-            "price_volume_discount" => $product_price_volume_discount
-        ],[
+        $db_posts->update("se_prices", $group_data, [
             "id" => $id
         ]);
-        $edit_id = $id;
+        record_log($_SESSION['user_nick'], "updated price group id: $id", 3);
+        show_toast($lang['msg_success_db_changed'],'success');
         header( "HX-Trigger: update_price_groups");
         exit;
     }
@@ -290,13 +301,14 @@ if(isset($_POST['delete_price_group']) && is_numeric($_POST['delete_price_group'
         "id" => $delete_id
     ]);
     show_toast($lang['msg_info_data_deleted'],'success');
-    record_log($_SESSION['user_nick'],"deleted price group id: $delete_id","10");
+    record_log($_SESSION['user_nick'],"deleted price group id: $delete_id",10);
     header( "HX-Trigger: update_price_groups, show_price_groups_form");
     exit;
 }
 
-// change priority
-if(isset($_POST['priority'])) {
+// change priority, the input in the list
+// (the product form posts "priority" too, but without prio_id)
+if(isset($_POST['priority'], $_POST['prio_id'])) {
     $change_id = (int) $_POST['prio_id'];
     $db_posts->update("se_products", [
         "priority" => (int) $_POST['priority']
@@ -307,92 +319,86 @@ if(isset($_POST['priority'])) {
     exit;
 }
 
-// remove fixed status
-if(isset($_POST['rfixed'])) {
-    $change_id = (int) $_POST['rfixed'];
+// pin (sfixed) or unpin (rfixed) a product, the star in the list
+if(isset($_POST['sfixed']) || isset($_POST['rfixed'])) {
     $db_posts->update("se_products", [
-        "fixed" => "2"
+        "fixed" => isset($_POST['sfixed']) ? "1" : "2"
     ],[
-        "id" => $change_id
+        "id" => (int) ($_POST['sfixed'] ?? $_POST['rfixed'])
     ]);
     header( "HX-Trigger: update_products_list");
     exit;
 }
 
-// set fixed status
-if(isset($_POST['sfixed'])) {
-    $change_id = (int) $_POST['sfixed'];
-    $db_posts->update("se_products", [
-        "fixed" => "1"
-    ],[
-        "id" => $change_id
-    ]);
-    header( "HX-Trigger: update_products_list");
-    exit;
-}
-
+// filter by category, a click adds or removes the category (products and filters)
 if(isset($_POST['set_filter_cat'])) {
-
     $set_filter_cat = sanitizeUserInputs($_POST['set_filter_cat']);
-
-    $filter_prod_categories = explode(" ", $_SESSION['filter_prod_categories']);
-    $filter_prod_categories = array_unique($filter_prod_categories);
-
+    $filter_prod_categories = array_filter(explode(" ", $_SESSION['filter_prod_categories'] ?? ''));
     if(in_array($set_filter_cat, $filter_prod_categories)) {
-        // remove this category
-        $filter_prod_categories = array_diff($filter_prod_categories, array($set_filter_cat));
+        $filter_prod_categories = array_diff($filter_prod_categories, [$set_filter_cat]);
     } else {
-        // add this category
         $filter_prod_categories[] = $set_filter_cat;
     }
-
-    $_SESSION['filter_prod_categories'] = implode(" ", $filter_prod_categories);
-
+    $_SESSION['filter_prod_categories'] = implode(" ", array_unique($filter_prod_categories));
+    $_SESSION['pagination_products_page'] = 0;
     header( "HX-Trigger: update_products_list, update_filter_list");
+    exit;
+}
+
+// text search in features
+if(isset($_POST['features_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['features_text_filter']);
+    $text_filter = $_SESSION['features_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['features_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
+    header("HX-Trigger: update_feature_list");
+    exit;
+}
+
+// remove keyword from features search
+if(isset($_POST['rmkey_features'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey_features']);
+    $keywords = explode(' ', $_SESSION['features_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['features_text_filter'] = implode(' ', $keywords);
+    header("HX-Trigger: update_feature_list");
     exit;
 }
 
 // save features
 if(isset($_POST['save_feature'])) {
 
-    $lastedit = time();
-    $feature_title = se_return_clean_value($_POST['feature_title']);
-    $feature_text = $_POST['feature_text'];
-    $feature_priority = (int) $_POST['feature_priority'];
-    $feature_lang = $_POST['feature_lang'];
+    $feature_data = [
+        "snippet_title" => se_return_clean_value($_POST['feature_title'] ?? ''),
+        // html of the editor, shown in the product page
+        "snippet_content" => se_purify_html($_POST['feature_text'] ?? ''),
+        "snippet_priority" => (int) ($_POST['feature_priority'] ?? 0),
+        "snippet_lastedit" => time(),
+        "snippet_lang" => se_sanitize_lang_input($_POST['feature_lang'] ?? ''),
+        "snippet_type" => 'post_feature'
+    ];
 
     if(is_numeric($_POST['save_feature'])) {
         $id = (int) $_POST['save_feature'];
-        $db_content->update("se_snippets", [
-            "snippet_title" => $feature_title,
-            "snippet_content" => $feature_text,
-            "snippet_priority" => $feature_priority,
-            "snippet_lastedit" => $lastedit,
-            "snippet_lang" => $feature_lang,
-            "snippet_type" => 'post_feature'
-        ],[
+        $db_content->update("se_snippets", $feature_data, [
             "snippet_id" => $id
         ]);
+        record_log($_SESSION['user_nick'], "updated feature id: $id", 3);
         show_toast($lang['msg_success_db_changed'],'success');
+        header( "HX-Trigger: update_feature_list");
     } else {
-        $db_content->insert("se_snippets", [
-            "snippet_title" => $feature_title,
-            "snippet_content" => $feature_text,
-            "snippet_priority" => $feature_priority,
-            "snippet_lastedit" => $lastedit,
-            "snippet_lang" => $feature_lang,
-            "snippet_type" => 'post_feature'
-        ]);
+        $db_content->insert("se_snippets", $feature_data);
         $new_id = $db_content->id();
-
+        record_log($_SESSION['user_nick'], "new feature id: $new_id", 1);
         show_toast($lang['msg_success_new_record'],'success');
         // switch the form into edit mode for the new feature, so an
         // unintended second click on "save" updates it instead of
         // creating another one
         header( "HX-Redirect: /admin/shop/features/edit/$new_id/");
     }
-
-    header( "HX-Trigger: update_feature_list");
+    exit;
 }
 
 // delete feature
@@ -405,54 +411,74 @@ if(isset($_POST['delete_feature']) && is_numeric($_POST['delete_feature'])) {
         ]
     ]);
 
-    if(($cnt_changes->rowCount()) > 0) {
+    if($cnt_changes !== null && $cnt_changes->rowCount() > 0) {
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted feature id: $delete_id","10");
+        record_log($_SESSION['user_nick'],"deleted feature id: $delete_id",10);
         header( "HX-Redirect: /admin/shop/features/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
+    exit;
+}
+
+// text search in options
+if(isset($_POST['options_text_filter'])) {
+    $add_text_filter = sanitizeUserInputs($_POST['options_text_filter']);
+    $text_filter = $_SESSION['options_text_filter'] ?? '';
+    if($add_text_filter != '' && !in_array($add_text_filter, explode(' ', $text_filter))) {
+        $_SESSION['options_text_filter'] = trim($text_filter.' '.$add_text_filter);
+    }
+    header("HX-Trigger: update_options_list");
+    exit;
+}
+
+// remove keyword from options search
+if(isset($_POST['rmkey_options'])) {
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey_options']);
+    $keywords = explode(' ', $_SESSION['options_text_filter'] ?? '');
+    $keywords = array_filter($keywords, static fn($keyword) => $keyword != '' && $keyword != $remove_keyword);
+    $_SESSION['options_text_filter'] = implode(' ', $keywords);
+    header("HX-Trigger: update_options_list");
+    exit;
 }
 
 // save options
 if(isset($_POST['save_option'])) {
-    $option_title = se_return_clean_value($_POST['option_title']);
-    $option_priority = (int) $_POST['option_priority'];
-    $option_lang = $_POST['option_lang'];
-    $option_text = array_filter($_POST['option_text']);
-    $option_text = json_encode($option_text,JSON_FORCE_OBJECT);
+
+    // the values in the order of the form, empty fields are skipped
+    $option_values = array_values(array_filter(
+        array_map(static fn($value) => trim((string) $value), (array) ($_POST['option_text'] ?? [])),
+        static fn($value) => $value !== ''
+    ));
 
     $insert_data = [
         "snippet_lastedit" =>  time(),
-        "snippet_priority" => $option_priority,
-        "snippet_title" =>  $option_title,
-        "snippet_content" =>  $option_text,
-        "snippet_lang" =>  $option_lang,
+        "snippet_priority" => (int) ($_POST['option_priority'] ?? 0),
+        "snippet_title" =>  se_return_clean_value($_POST['option_title'] ?? ''),
+        "snippet_content" =>  json_encode($option_values, JSON_FORCE_OBJECT),
+        "snippet_lang" =>  se_sanitize_lang_input($_POST['option_lang'] ?? ''),
         "snippet_type" => 'post_option'
     ];
 
     if(is_numeric($_POST['save_option'])) {
-        $id = (int)$_POST['save_option'];
+        $id = (int) $_POST['save_option'];
         $db_content->update("se_snippets", $insert_data, [
             "snippet_id" => $id
         ]);
+        record_log($_SESSION['user_nick'], "updated option id: $id", 3);
         show_toast($lang['msg_success_db_changed'],'success');
-        // reload the edit form so the value list (and the empty "add value"
-        // field) reflect what was just saved - otherwise a newly added value
-        // only becomes visible/addable-to after leaving and reopening the form
-        header( "HX-Redirect: /admin/shop/options/edit/$id/");
     } else {
         $db_content->insert("se_snippets", $insert_data);
-        $new_id = $db_content->id();
-
+        $id = $db_content->id();
+        record_log($_SESSION['user_nick'], "new option id: $id", 1);
         show_toast($lang['msg_success_new_record'],'success');
-        // switch the form into edit mode for the new option, so an
-        // unintended second click on "save" updates it instead of
-        // creating another one
-        header( "HX-Redirect: /admin/shop/options/edit/$new_id/");
     }
-
-    header( "HX-Trigger: update_options_list");
+    // reload the edit form: the value list and the empty "add value" field show
+    // what was just saved, and a new option is in edit mode (a second click on
+    // "save" updates it instead of creating another one)
+    header( "HX-Redirect: /admin/shop/options/edit/$id/");
+    exit;
 }
 
 // delete option
@@ -465,158 +491,181 @@ if(isset($_POST['delete_option']) && is_numeric($_POST['delete_option'])) {
         ]
     ]);
 
-    if(($cnt_changes->rowCount()) > 0) {
+    if($cnt_changes !== null && $cnt_changes->rowCount() > 0) {
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted option id: $delete_id","10");
+        record_log($_SESSION['user_nick'],"deleted option id: $delete_id",10);
         header( "HX-Redirect: /admin/shop/options/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
+    exit;
 }
 
 // save filter group
+// groups: filter_type 1 and no filter_parent_id (the frontend loads the groups by that)
 if(isset($_POST['save_filter_group'])) {
 
-    $filter_type = 1;
-    $filter_priority = (int) $_POST['filter_priority'];
-    $filter_input_type = (int) $_POST['filter_input_type'];
-    $filter_title = se_return_clean_value($_POST['filter_title']);
-    $filter_description = $_POST['filter_description'];
-    $filter_lang = $_POST['filter_lang'];
-    $filter_slug = se_generate_slug($filter_title);
+    $filter_title = se_return_clean_value($_POST['filter_title'] ?? '');
 
-    if(is_array($_POST['filter_cats'])) {
-        $filter_cats = implode(",", $_POST['filter_cats']);
-    } else {
-        $filter_cats = '';
-    }
+    // "all" and/or category hashes
+    $filter_cats = array_map(static fn($cat) => preg_replace('/[^a-z0-9]/i', '', (string) $cat), (array) ($_POST['filter_cats'] ?? []));
 
     $insert_data = [
-        "filter_type" =>  $filter_type,
-        "filter_input_type" =>  $filter_input_type,
-        "filter_priority" => $filter_priority,
-        "filter_title" =>  $filter_title,
-        "filter_slug" =>  $filter_slug,
-        "filter_description" =>  $filter_description,
-        "filter_lang" =>  $filter_lang,
-        "filter_categories" => $filter_cats
+        "filter_type" => 1,
+        "filter_input_type" => (int) ($_POST['filter_input_type'] ?? 1),
+        "filter_priority" => (int) ($_POST['filter_priority'] ?? 0),
+        "filter_title" => $filter_title,
+        // the frontend builds the filter urls from the slug
+        "filter_slug" => se_generate_slug($filter_title),
+        "filter_description" => se_purify_html($_POST['filter_description'] ?? ''),
+        "filter_lang" => se_sanitize_lang_input($_POST['filter_lang'] ?? ''),
+        "filter_categories" => implode(",", array_filter($filter_cats))
     ];
 
     if(is_numeric($_POST['save_filter_group'])) {
-        // update
         $id = (int) $_POST['save_filter_group'];
         $data = $db_content->update("se_filter", $insert_data, [
             "filter_id" => $id
         ]);
+        if($data !== null && $data->rowCount() > 0) {
+            record_log($_SESSION['user_nick'], "updated filter group id: $id", 3);
+            show_toast($lang['msg_success_db_changed'],'success');
+        } else {
+            show_toast($lang['msg_error_db_changed'],'error');
+        }
     } else {
-        // new
-        $data = $db_content->insert("se_filter", $insert_data);
+        $db_content->insert("se_filter", $insert_data);
+        $new_id = $db_content->id();
+        record_log($_SESSION['user_nick'], "new filter group id: $new_id", 1);
+        show_toast($lang['msg_success_new_record'],'success');
+        // open the new group, a second click on "save" must not create it again
+        header("HX-Redirect: /admin/shop/filters/edit/group/$new_id/");
     }
-    if($data->rowCount() > 0) {
-        show_toast($lang['msg_success_db_changed'],'success');
-    } else {
-        show_toast($lang['msg_error_db_changed'],'error');
-    }
+    exit;
 }
 
 // save filter value
+// values: filter_type 2, filter_parent_id = the group, products reference them by filter_id
 if(isset($_POST['save_filter_value'])) {
 
-    $filter_type = 2;
-    $filter_priority = (int) $_POST['filter_priority'];
-    $filter_title = se_return_clean_value($_POST['filter_title']);
-    $filter_description = $_POST['filter_description'];
-    $filter_parent_id = $_POST['filter_parent_id'];
-    $filter_hash = $_POST['filter_hash'];
-    $filter_slug = se_generate_slug($_POST['filter_title']);
+    // the hash is created by the form, values of older versions get one on their next save
+    $filter_hash = preg_replace('/[^a-z0-9]/i', '', (string) ($_POST['filter_hash'] ?? ''));
+    if($filter_hash == '') {
+        $filter_hash = uniqid();
+    }
 
     $insert_data = [
-        "filter_type" =>  $filter_type,
-        "filter_priority" => $filter_priority,
-        "filter_title" =>  $filter_title,
-        "filter_slug" =>  $filter_slug,
-        "filter_description" =>  $filter_description,
-        "filter_parent_id" => $filter_parent_id,
+        "filter_type" => 2,
+        "filter_priority" => (int) ($_POST['filter_priority'] ?? 0),
+        "filter_title" => se_return_clean_value($_POST['filter_title'] ?? ''),
+        // the frontend builds the filter urls from the slug
+        "filter_slug" => se_generate_slug($_POST['filter_title'] ?? ''),
+        "filter_description" => se_purify_html($_POST['filter_description'] ?? ''),
+        "filter_parent_id" => (int) ($_POST['filter_parent_id'] ?? 0),
         "filter_hash" => $filter_hash
     ];
 
     if(is_numeric($_POST['save_filter_value'])) {
-        // update
         $id = (int) $_POST['save_filter_value'];
         $data = $db_content->update("se_filter", $insert_data, [
             "filter_id" => $id
         ]);
+        if($data !== null && $data->rowCount() > 0) {
+            record_log($_SESSION['user_nick'], "updated filter value id: $id", 3);
+            show_toast($lang['msg_success_db_changed'],'success');
+        } else {
+            show_toast($lang['msg_error_db_changed'],'error');
+        }
     } else {
-        // new
-        $data = $db_content->insert("se_filter", $insert_data);
+        $db_content->insert("se_filter", $insert_data);
+        $new_id = $db_content->id();
+        record_log($_SESSION['user_nick'], "new filter value id: $new_id", 1);
+        show_toast($lang['msg_success_new_record'],'success');
+        // open the new value, a second click on "save" must not create it again
+        header("HX-Redirect: /admin/shop/filters/edit/value/$new_id/");
     }
-    if($data->rowCount() > 0) {
-        show_toast($lang['msg_success_db_changed'],'success');
-    } else {
-        show_toast($lang['msg_error_db_changed'],'error');
-    }
+    exit;
 }
 
 // delete filter value
 if(isset($_POST['delete_filter_value'])) {
     $id = (int) $_POST['delete_filter_value'];
     $data = $db_content->delete("se_filter", [
-        "filter_id" => $id
+        "AND" => [
+            "filter_id" => $id,
+            "filter_type" => 2
+        ]
     ]);
-    if($data->rowCount() > 0) {
+    if($data !== null && $data->rowCount() > 0) {
+        record_log($_SESSION['user_nick'], "deleted filter value id: $id", 10);
         show_toast($lang['msg_success_db_changed'],'success');
+        header("HX-Redirect: /admin/shop/filters/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
-    header( "HX-Redirect: /admin/shop/filters/");
+    exit;
 }
 
-// delete filter group
-// delete all values from this group
+// delete filter group and all its values
 if(isset($_POST['delete_filter_group'])) {
     $id = (int) $_POST['delete_filter_group'];
     $data = $db_content->delete("se_filter", [
         "OR" => [
-            "filter_id" => $id,
+            "AND #group" => [
+                "filter_id" => $id,
+                "filter_type" => 1
+            ],
             "filter_parent_id" => $id
         ]
     ]);
-    if($data->rowCount() > 0) {
+    if($data !== null && $data->rowCount() > 0) {
+        record_log($_SESSION['user_nick'], "deleted filter group id: $id", 10);
         show_toast($lang['msg_success_db_changed'],'success');
+        header("HX-Redirect: /admin/shop/filters/");
     } else {
         show_toast($lang['msg_error_db_changed'],'error');
     }
+    exit;
 }
 
-// change payment status
+// change payment status: 1 open, 2 paid
 if(isset($_POST['set_payment'])) {
     $set_payment = (int) $_POST['set_payment'];
-    $order_id = (int) $_POST['order_id'];
-    se_update_order_payment_status($order_id, $set_payment, 'admin');
+    if(in_array($set_payment, [1, 2])) {
+        $order_id = (int) ($_POST['order_id'] ?? 0);
+        se_update_order_payment_status($order_id, $set_payment, 'admin');
+        record_log($_SESSION['user_nick'], "order id: $order_id payment status: $set_payment", 3);
+    }
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
-// change order status
+// change order status: 1 received, 2 completed, 3 canceled
 if(isset($_POST['set_order_status'])) {
     $set_status = (int) $_POST['set_order_status'];
-    $order_id = (int) $_POST['order_id'];
-    $update = $db_content->update("se_orders", [
-        "order_status" => $set_status
-    ],[
-        "id" => $order_id
-    ]);
+    if(in_array($set_status, [1, 2, 3])) {
+        $order_id = (int) ($_POST['order_id'] ?? 0);
+        $db_content->update("se_orders", [
+            "order_status" => $set_status
+        ],[
+            "id" => $order_id
+        ]);
+        record_log($_SESSION['user_nick'], "order id: $order_id status: $set_status", 3);
+    }
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
 // acknowledge / clear a customer's withdrawal request
 if(isset($_POST['clear_order_withdrawal_requested'])) {
-    $order_id = (int) $_POST['order_id'];
-    $update = $db_content->update("se_orders", [
+    $order_id = (int) ($_POST['order_id'] ?? 0);
+    $db_content->update("se_orders", [
         "order_withdrawal_requested" => null
     ],[
         "id" => $order_id
     ]);
     header( "HX-Trigger: update_orders_list");
+    exit;
 }
 
 if(isset($_POST['products_cache'])) {

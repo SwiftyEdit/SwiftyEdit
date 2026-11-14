@@ -1,4 +1,16 @@
 <?php
+
+/**
+ * backend login, included by public/admin.php for everyone who is not logged in as administrator -
+ * password form and two-factor authentication, markup in acp/templates/login.twig
+ *
+ * global variables (config.php, languages/index.php)
+ * @var string $se_environment
+ * @var array $lang
+ * @var array $icon
+ * @var object $twig
+ */
+
 require_once __DIR__.'/../app/session.php';
 se_session_start();
 //error_reporting(E_ALL ^E_NOTICE ^E_WARNING ^E_DEPRECATED);
@@ -29,6 +41,7 @@ require '../languages/index.php';
 require_once SE_ROOT.'/app/functions/functions.helpers.php';
 $login = '';
 
+$se_settings = [];
 $se_get_settings = se_get_preferences();
 
 foreach ($se_get_settings as $k => $v) {
@@ -61,8 +74,6 @@ if($se_settings['login_slug'] != '') {
 if(empty($_SESSION['token'])) {
     se_generate_token();
 }
-
-$hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
 
 /* stop all $_POST actions if csrf token is empty or invalid */
 if(!empty($_POST)) {
@@ -220,182 +231,54 @@ if(isset($_SESSION['2fa_pending'])) {
         }
     }
 }
-?>
 
-<!DOCTYPE html>
-<html data-bs-theme="dark" class="h-100">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login <?php echo $_SERVER['SERVER_NAME']; ?></title>
-    <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="<?php echo se_acp_asset_url('backend.css'); ?>" type="text/css" media="screen, projection">
-    <style>
-        .form-center {
-            max-width: 475px;
-            padding: 25px;
-            background: var(--bs-widget-bg-300);
-        }
-        .icon {
-            text-align: left;
-            margin-top: -65px;
-        }
-        .icon img {
-            width: 64px;
-            height: auto;
-            margin: 0 auto;
-            filter: drop-shadow(1px 1px 5px rgb(0,0,0,.4));
-        }
-    </style>
-</head>
-<body class="d-flex h-100">
-<div class="form-center w-100 m-auto border-info border-2 rounded shadow">
-    <div class="icon">
-        <img src="/themes/administration/images/swiftyedit_icon.svg" class="img-fluid">
-    </div>
+/*
+ * values of the 2FA step for acp/templates/login.twig
+ */
+$twofa = ['view' => $twofa_view];
 
-    <?php
-    if($login == 'failed') {
-        echo '<div class="alert alert-danger">';
-        echo $lang['msg_login_false'];
-        echo '</div>';
-    }
-    foreach($twofa_alerts as [$alert_type, $alert_text]) {
-        echo '<div class="alert alert-'.$alert_type.'">'.htmlspecialchars($alert_text, ENT_QUOTES).'</div>';
-    }
-    ?>
+if($twofa_view === 'recovery') {
+    $twofa['recovery_codes'] = $_SESSION['2fa_pending']['recovery_codes'];
+    $twofa['recovery_mail_hint'] = ((se_2fa_pending_user()['user_2fa_method'] ?? '') === 'mail');
 
-    <?php if($twofa_view === 'recovery') { ?>
+} elseif($twofa_view !== '') {
+    $twofa_app = $twofa_view === 'setup_app' || ($twofa_view === 'verify' && $twofa_user['user_2fa_method'] === 'totp');
+    // mail setup: the code field only appears once a code has been sent
+    $twofa_code_sent = (int) $twofa_user['user_2fa_mail_expires'] > time();
+    // after a password reset by e-mail only a recovery code is accepted (see se_2fa_mail_blocked())
+    $twofa_blocked = $twofa_view === 'verify' && se_2fa_mail_blocked($twofa_user);
 
-    <h5><?php echo $lang['login_2fa_recovery_title']; ?></h5>
-    <p><?php echo $lang['login_2fa_recovery_intro']; ?></p>
-    <?php if((se_2fa_pending_user()['user_2fa_method'] ?? '') === 'mail') { ?>
-    <p><strong><?php echo $lang['login_2fa_recovery_mail_hint']; ?></strong></p>
-    <?php } ?>
-    <pre class="border rounded p-3 text-center fs-5"><?php
-        echo htmlspecialchars(implode("\n", $_SESSION['2fa_pending']['recovery_codes']), ENT_QUOTES);
-    ?></pre>
-    <form action="<?php echo $form_path; ?>" method="post">
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="2fa_trust" value="1" id="twofaTrust">
-            <label class="form-check-label" for="twofaTrust"><?php echo $lang['login_2fa_trust_device']; ?></label>
-        </div>
-        <input type="submit" class="btn btn-primary w-100" name="2fa_recovery_saved" value="<?php echo htmlspecialchars($lang['login_2fa_btn_recovery_saved'], ENT_QUOTES); ?>">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
-    </form>
-
-    <?php } elseif($twofa_view !== '') {
-        $twofa_mail = htmlspecialchars(se_2fa_mask_mail($twofa_user['user_mail']), ENT_QUOTES);
-        $twofa_app = $twofa_view === 'setup_app' || ($twofa_view === 'verify' && $twofa_user['user_2fa_method'] === 'totp');
-        // mail setup: the code field only appears once a code has been sent
-        $twofa_code_sent = (int) $twofa_user['user_2fa_mail_expires'] > time();
-        $twofa_show_code = $twofa_view === 'verify' || $twofa_view === 'setup_app' || ($twofa_view === 'setup' && $twofa_code_sent);
-        // after a password reset by e-mail only a recovery code is accepted (see se_2fa_mail_blocked())
-        $twofa_blocked = $twofa_view === 'verify' && se_2fa_mail_blocked($twofa_user);
-    ?>
-
-    <h5><?php echo $lang['login_2fa_title']; ?></h5>
-
-    <?php if($twofa_view === 'choose') { ?>
-
-    <p><?php echo $lang['login_2fa_choose_method']; ?></p>
-    <form action="<?php echo $form_path; ?>" method="post">
-        <button type="submit" class="btn btn-default w-100 text-start mb-2" name="2fa_choose" value="mail">
-            <strong><?php echo $lang['login_2fa_method_mail']; ?></strong><br>
-            <small class="text-muted"><?php echo str_replace('{MAIL}', $twofa_mail, htmlspecialchars($lang['login_2fa_method_mail_help'], ENT_QUOTES)); ?></small>
-        </button>
-        <button type="submit" class="btn btn-default w-100 text-start mb-3" name="2fa_choose" value="totp">
-            <strong><?php echo $lang['login_2fa_method_app']; ?></strong><br>
-            <small class="text-muted"><?php echo $lang['login_2fa_method_app_help']; ?></small>
-        </button>
-        <input type="submit" class="btn btn-default w-100" name="2fa_cancel" value="<?php echo htmlspecialchars($lang['login_2fa_btn_cancel'], ENT_QUOTES); ?>">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
-    </form>
-
-    <?php } else { ?>
-
-    <p>
-        <?php
-        $twofa_intro = match (true) {
+    $twofa += [
+        'mail' => se_2fa_mask_mail($twofa_user['user_mail']),
+        'app' => $twofa_app,
+        'code_sent' => $twofa_code_sent,
+        'show_code' => $twofa_view === 'verify' || $twofa_view === 'setup_app' || ($twofa_view === 'setup' && $twofa_code_sent),
+        'blocked' => $twofa_blocked,
+        'intro' => match (true) {
             $twofa_view === 'setup' => $lang['login_2fa_intro_setup'],
             $twofa_view === 'setup_app' => $lang['login_2fa_app_setup_intro'],
             $twofa_blocked => $lang['login_2fa_intro_verify_blocked'],
             $twofa_app => $lang['login_2fa_intro_verify_app'],
             default => $lang['login_2fa_intro_verify']
-        };
-        echo str_replace('{MAIL}', '<strong>'.$twofa_mail.'</strong>', htmlspecialchars($twofa_intro, ENT_QUOTES));
-        ?>
-    </p>
+        }
+    ];
 
-    <?php if($twofa_view === 'setup_app') {
+    if($twofa_view === 'setup_app') {
         $twofa_secret = $_SESSION['2fa_pending']['totp_secret'];
-        $twofa_uri = se_2fa_otpauth_uri($twofa_secret, $twofa_user['user_nick']);
-    ?>
-    <div class="bg-white p-2 rounded mx-auto mb-2" style="max-width:220px" data-otpauth="<?php echo htmlspecialchars($twofa_uri, ENT_QUOTES); ?>"></div>
-    <p class="text-center small"><?php echo $lang['login_2fa_app_key']; ?>: <code class="user-select-all"><?php echo trim(chunk_split($twofa_secret, 4, ' ')); ?></code></p>
-    <script type="module" src="<?php echo se_acp_asset_url('twofa.js'); ?>"></script>
-    <?php } ?>
+        $twofa['otpauth_uri'] = se_2fa_otpauth_uri($twofa_secret, $twofa_user['user_nick']);
+        // grouped in fours for typing it into the app
+        $twofa['secret'] = trim(chunk_split($twofa_secret, 4, ' '));
+    }
+}
 
-    <?php if($twofa_show_code) { ?>
-    <form action="<?php echo $form_path; ?>" method="post" class="mb-3">
-        <label class="form-label" for="twofaCode"><?php echo $lang['login_2fa_label_code']; ?></label>
-        <input type="text" class="form-control mb-2" name="2fa_code" id="twofaCode" inputmode="<?php echo $twofa_blocked ? 'text' : 'numeric'; ?>" autocomplete="<?php echo $twofa_blocked ? 'off' : 'one-time-code'; ?>" autofocus="autofocus" required>
-        <?php if($twofa_view === 'verify' && !$twofa_blocked) { ?>
-            <div class="form-text mb-2"><?php echo $twofa_app ? $lang['login_2fa_help_recovery_app'] : $lang['login_2fa_help_recovery']; ?></div>
-        <?php } ?>
-        <?php if($twofa_view === 'verify') { ?>
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="2fa_trust" value="1" id="twofaTrust">
-            <label class="form-check-label" for="twofaTrust"><?php echo $lang['login_2fa_trust_device']; ?></label>
-        </div>
-        <?php } ?>
-        <input type="submit" class="btn btn-primary w-100" name="2fa_verify" value="<?php echo htmlspecialchars($lang['login_2fa_btn_verify'], ENT_QUOTES); ?>">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
-    </form>
-    <?php } ?>
+require SE_ROOT.'/acp/core/icons.php';
+require SE_ROOT.'/acp/core/twig.php';
 
-    <form action="<?php echo $form_path; ?>" method="post" class="d-flex gap-2">
-        <?php if(!$twofa_app && !$twofa_blocked) {
-            $twofa_send_label = ($twofa_view === 'verify' || $twofa_code_sent) ? $lang['login_2fa_btn_resend'] : $lang['login_2fa_btn_send']; ?>
-            <input type="submit" class="btn btn-<?php echo ($twofa_view === 'setup' && !$twofa_code_sent) ? 'primary' : 'default'; ?> flex-fill" name="2fa_send" value="<?php echo htmlspecialchars($twofa_send_label, ENT_QUOTES); ?>">
-        <?php } ?>
-        <?php if($twofa_view === 'setup_app') { ?>
-            <input type="submit" class="btn btn-default" name="2fa_back" value="<?php echo htmlspecialchars($lang['login_2fa_btn_back'], ENT_QUOTES); ?>">
-        <?php } ?>
-        <input type="submit" class="btn btn-default<?php echo ($twofa_app || $twofa_blocked) ? ' flex-fill' : ''; ?>" name="2fa_cancel" value="<?php echo htmlspecialchars($lang['login_2fa_btn_cancel'], ENT_QUOTES); ?>">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
-    </form>
-
-    <?php } ?>
-
-    <?php } else { ?>
-
-    <form action="<?php echo $form_path; ?>" method="post" class="">
-        <div class="row mb-2">
-            <label class="col-sm-3 col-form-label"><?php echo $lang['label_username']; ?></label>
-            <div class="col-sm-9">
-                <input type="text" class="form-control" name="login_name" autofocus="autofocus">
-            </div>
-        </div>
-        <div class="row mb-2">
-            <label class="col-sm-3 col-form-label"><?php echo $lang['label_password']; ?></label>
-            <div class="col-sm-9">
-                <input type="password" class="form-control" name="login_psw">
-            </div>
-        </div>
-        <?php
-        // no "remember me" here anymore: the backend session lifetime is enforced
-        // on the server - with 2FA, "trust this device" skips the second factor
-        ?>
-        <div class="row">
-            <div class="offset-sm-3 col-sm-9">
-                <input type="submit" class="btn btn-primary w-100" name="check" value="Login">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['token']; ?>">
-            </div>
-        </div>
-    </form>
-
-    <?php } ?>
-</div>
-</body>
-</html>
+echo $twig->render('login.twig', [
+    'form_path' => $form_path,
+    'css_url' => se_acp_asset_url('backend.css'),
+    'twofa_js_url' => se_acp_asset_url('twofa.js'),
+    'login_failed' => ($login == 'failed'),
+    'alerts' => array_map(static fn($alert) => ['type' => $alert[0], 'text' => $alert[1]], $twofa_alerts),
+    'twofa' => $twofa
+]);

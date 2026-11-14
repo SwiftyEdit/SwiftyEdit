@@ -40,7 +40,17 @@ if($comment_target === null || !se_comments_allowed($comment_target['type'], $co
     exit;
 }
 
+// closed by comments_autoclose: list stays visible, form and answer buttons are hidden
+$comments_closed = !se_comments_allowed($comment_target['type'], $comment_target['relation_id'], true);
+$smarty->assign('comments_closed', $comments_closed);
+
 if(($_REQUEST['form'] ?? '') == 'comments') {
+
+    if($comments_closed) {
+        $smarty->assign("comments_closed_msg", $lang['comments_closed']);
+        $smarty->display('comment_form.tpl', $cache_id);
+        exit;
+    }
 
     if(isset($_GET['page_id'])) {
         $page_id = (int) $_GET['page_id'];
@@ -57,6 +67,7 @@ if(($_REQUEST['form'] ?? '') == 'comments') {
         $smarty->assign("product_id",$product_id);
     }
 
+    $parent_id = 0;
     if(isset($_GET['parent_id'])) {
         $parent_id = (int) $_GET['parent_id'];
         $smarty->assign("parent_id",$parent_id);

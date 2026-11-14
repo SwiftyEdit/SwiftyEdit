@@ -3,6 +3,17 @@
 /**
  * install SwiftyEdit
  * create the database
+ *
+ * @var array $lang install/index.php
+ * @var string $prefs_database_host inc.install.php
+ * @var string $prefs_database_port inc.install.php
+ * @var string $prefs_database_name inc.install.php
+ * @var string $prefs_database_username inc.install.php
+ * @var string $prefs_database_psw inc.install.php
+ * @var string $prefs_database_prefix inc.install.php
+ * @var string $se_db_content config.php
+ * @var string $se_db_user config.php
+ * @var string $se_db_posts config.php
  */
 
 if(!defined('INSTALLER')) {
@@ -299,7 +310,7 @@ $initSettings = [
     "prefs_cms_base" => "$prefs_cms_base",
     "prefs_default_language" => $_SESSION['lang'],
     "prefs_nbr_page_versions" => 25,
-    "prefs_acp_session_lifetime" => 86400,
+    "prefs_acp_session_lifetime" => 1800,
     "prefs_posts_entries_per_page" => 10,
     "prefs_products_per_page" => 10,
     "prefs_posts_event_time_offset" => 86400,

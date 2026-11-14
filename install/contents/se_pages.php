@@ -49,6 +49,7 @@ $cols = array(
 	"page_lastedit" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_lastedit_from" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_meta_author" => "VARCHAR(50) NOT NULL DEFAULT ''",
+	"page_schema_type" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_meta_date" => "VARCHAR(50) NOT NULL DEFAULT ''",
 	"page_meta_keywords" => "VARCHAR(255) NOT NULL DEFAULT ''",
 	"page_meta_description" => "VARCHAR(500) NOT NULL DEFAULT ''",

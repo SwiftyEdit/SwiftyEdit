@@ -1,23 +1,23 @@
 <?php
 
-
-/**
- * CLEAN VARS // URL PARAMETERS
- */
-
-function clean_vars($var) {
-	$chars = array('<', '>', '\\', '/', '=','..'); 
-	$var = str_replace($chars, "", $var);
-	$var = strip_tags($var);
-	return $var;
-}
-
 function clean_filename($str) {
 	$str = trim($str);
-	$str = strtolower($str);
-	$a = array('ä','ö','ü','ß',' - ',' + ',' / ','/'); 
+	// mb_strtolower: strtolower() leaves Ä, Ö, Ü as they are, they would not be
+	// replaced below and then removed as "not a-z" (Über -> ber)
+	$str = mb_strtolower($str, 'UTF-8');
+	$a = array('ä','ö','ü','ß',' - ',' + ',' / ','/');
 	$b = array('ae','oe','ue','ss','-','-','-','-');
 	$str = str_replace($a, $b, $str);
+	// other accents to plain letters (café -> cafe), like se_generate_slug() -
+	// iconv may add marks like ' or ? on some systems, the filter below removes them.
+	// Characters without an ASCII form (e.g. emoji, non-latin scripts) would make
+	// iconv fail for the whole string, they are removed first (the filter below
+	// would remove them anyway)
+	$str = preg_replace('/[^\p{Latin}\p{N}\s_\-]/u', '', $str) ?? $str; // null: invalid UTF-8
+	$transliterated = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+	if($transliterated !== false) {
+		$str = $transliterated;
+	}
 	$str = preg_replace('/\s/s', '_', $str);  // replace blanks -> '_'
 	$str = preg_replace('/[^a-z0-9_-]/isU', '', $str); // only a-z 0-9
 	$str = trim($str); 
@@ -358,6 +358,7 @@ function se_sanitize_page_inputs($data) {
         // translation urls
         if($key == 'translation_url') {
             if(is_array($val)) {
+                $urls = [];
                 foreach($val as $k => $v) {
                     $urls[$k] = se_clean_permalink($v);
                 }
@@ -426,6 +427,11 @@ function se_sanitize_page_inputs($data) {
             }
         }
 
+        // schema.org type of the page, '' = WebPage
+        if($key == 'page_schema_type') {
+            $sanitized[$key] = in_array($val, se_structured_data_page_types(), true) ? $val : '';
+        }
+
         // page meta robots
         if($key == 'page_meta_robots') {
             if(is_array($val)) {
@@ -472,6 +478,7 @@ function se_sanitize_page_inputs($data) {
         // theme values
         if($key == 'theme_values') {
             if(is_array($val)) {
+                $theme_values = [];
                 foreach($val as $k => $v) {
                     $theme_values[$k] = htmlentities(stripslashes($v), ENT_QUOTES);
                 }
@@ -591,17 +598,21 @@ function se_validate_token($token): void {
  * message and a log entry. The most common cause is harmless - the session
  * expired while the form was open - so the message asks to reload the page.
  * Runs before the language files are loaded in the frontend, so the text is
- * English. Log entries are limited to 20 per hour (bots posting forms).
+ * English. Log entries are limited to 20 per hour (bots posting forms). Cases
+ * with a logged-in user have their own limit: only those can be a real attack
+ * on an account, bots must not be able to use up their log entries.
  */
 function se_csrf_failed(): never {
 
     global $db_content;
 
-    if(isset($db_content) && function_exists('se_rate_limit_exceeded') && !se_rate_limit_exceeded('csrf_log', 20, 3600, false)) {
-        se_rate_limit_add('csrf_log', 3600, false);
+    $nick = (string) ($_SESSION['user_nick'] ?? '');
+    $log_bucket = $nick !== '' ? 'csrf_log_user' : 'csrf_log';
+
+    if(isset($db_content) && function_exists('se_rate_limit_exceeded') && !se_rate_limit_exceeded($log_bucket, 20, 3600, false)) {
+        se_rate_limit_add($log_bucket, 3600, false);
         $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
-        $nick = (string) ($_SESSION['user_nick'] ?? '');
-        record_log($nick !== '' ? $nick : 'system', 'CSRF token missing or invalid: '.htmlspecialchars(substr($path, 0, 200), ENT_QUOTES), '5');
+        se_log_event('csrf', 'CSRF token missing or invalid: '.substr($path, 0, 200), 5, $nick !== '' ? $nick : 'system');
     }
 
     $message = 'The form has expired or was sent from another page. Please reload the page and try again.';

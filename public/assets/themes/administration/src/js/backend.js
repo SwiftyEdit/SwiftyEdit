@@ -8,7 +8,10 @@ window.$ = $;
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './components/color-mode.js';
 import './components/privacy-blur.js';
-import ClipboardJS from "clipboard";
+import './components/global-search.js';
+import './components/copy-to-clipboard.js';
+import './components/keep-open.js';
+import './components/session-clock.js';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;

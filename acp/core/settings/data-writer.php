@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/settings/.../write/
+ * sections of the settings pages (save_settings), branding images, delivery areas,
+ * labels, API keys, database and the test mail
+ *
  * global variables
  * @var array $lang
  * @var object $db_content
@@ -10,8 +14,22 @@
  * @var array $icon
  * @var array $se_settings
  * @var string $se_branding_path
+ * @var object $twig
  */
 
+
+// save a section of a settings page, only the fields of the section are stored
+// (see se_settings_sections() in acp/core/settings/functions.php)
+if (isset($_POST['save_settings'])) {
+    require_once __DIR__ . '/functions.php';
+
+    $data = se_settings_section_values((string) $_POST['save_settings'], $_POST);
+    if ($data !== null) {
+        se_write_option($data, 'se');
+        show_toast($lang['msg_success_db_changed'], 'success');
+    }
+    exit;
+}
 
 // remove a branding image (page logo / page thumbnail / favicon set)
 if (isset($_POST['delete_branding'])) {
@@ -46,154 +64,54 @@ if (isset($_POST['delete_branding'])) {
 }
 
 // write event settings
-if (isset($_POST['update_events'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write blog settings
-if (isset($_POST['update_posts'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write shop settings
-if (isset($_POST['update_shop_settings'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-
-    $data['prefs_posts_guest_order_enable'] = 0;
-    if(isset($_POST['prefs_posts_guest_order_enable'])) {
-        $data['prefs_posts_guest_order_enable'] = 1;
-    }
-
-    $data['prefs_wishlist_enabled'] = 0;
-    if(isset($_POST['prefs_wishlist_enabled'])) {
-        $data['prefs_wishlist_enabled'] = 1;
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write payment plugins
-if (isset($_POST['update_payment_plugins'])) {
-    $data['prefs_payment_addons'] = '';
-    if(isset($_POST['payment_addons'])) {
-        $pm_addon_str = json_encode($_POST['payment_addons'],JSON_FORCE_OBJECT);
-        $data['prefs_payment_addons'] = $pm_addon_str;
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write shipping plugins
-if (isset($_POST['update_shipping_plugins'])) {
-    $data['prefs_delivery_addons'] = '';
-    if(isset($_POST['delivery_addons'])) {
-        $sh_addon_str = json_encode($_POST['delivery_addons'],JSON_FORCE_OBJECT);
-        $data['prefs_delivery_addons'] = $sh_addon_str;
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-if(isset($_POST['update_language'])) {
-    $data['prefs_default_language'] = htmlentities($_POST['prefs_default_language']);
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-if(isset($_POST['update_hide_languages'])) {
-    $data['prefs_deactivated_languages'] = json_encode($_POST['hide_langs']);
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// save delivery area
+// save a delivery area (send_delivery_country = save or the id of the area)
 if (isset($_POST['send_delivery_country'])) {
 
-    if($_POST['delivery_country'] == '') {
-        header( "HX-Trigger: update_deliveryCountries_list");
-        exit;
-    }
-
-    $country_code = sanitizeUserInputs($_POST['delivery_country']);
-    $status = (int) $_POST['delivery_country_status'];
-    $tax = (int) $_POST['delivery_country_tax'];
-
-    $countries = se_get_countries();
-    foreach ($countries as $country) {
-        if ($country['alpha2'] == $country_code) {
+    // the code has to be an ISO 3166 country, status and tax are 1 (yes) or 2 (no)
+    $country_code = (string) ($_POST['delivery_country'] ?? '');
+    $country_name = '';
+    foreach (se_get_countries() as $country) {
+        if ($country['alpha2'] === $country_code) {
             $country_name = $country['name'];
         }
     }
+    if ($country_name === '') {
+        show_toast($lang['label_please_select'], 'danger');
+        exit;
+    }
 
-    if($_POST['send_delivery_country'] == 'save') {
-        $db_content->insert("se_delivery_areas", [
-            "code" => $country_code,
-            "name" => $country_name,
-            "status" => $status,
-            "tax" => $tax
-        ]);
+    $values = [
+        "code" => $country_code,
+        "name" => $country_name,
+        "status" => ($_POST['delivery_country_status'] ?? '') == '2' ? '2' : '1',
+        "tax" => ($_POST['delivery_country_tax'] ?? '') == '1' ? '1' : '2'
+    ];
+
+    // a country is listed once, adding it again updates it
+    $area_id = (int) $_POST['send_delivery_country'];
+    if ($area_id < 1) {
+        $area_id = (int) $db_content->get("se_delivery_areas", "id", ["code" => $country_code]);
+    }
+
+    if ($area_id > 0) {
+        $db_content->update("se_delivery_areas", $values, ["id" => $area_id]);
     } else {
-        $db_content->update("se_delivery_areas", [
-            "code" => $country_code,
-            "name" => $country_name,
-            "status" => $status,
-            "tax" => $tax
-        ],[
-            "id" => (int) $_POST['send_delivery_country']
-        ]);
+        $db_content->insert("se_delivery_areas", $values);
     }
 
-
-    header( "HX-Trigger: update_deliveryCountries_list");
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: update_deliveryCountries_list");
+    exit;
 }
 
-// delete delivery country
+// delete a delivery area
 if (isset($_POST['delete_delivery_country'])) {
-    $delete_id = (int) $_POST['delete_delivery_country'];
-
     $db_content->delete("se_delivery_areas", [
-        "id" => $delete_id
+        "id" => (int) $_POST['delete_delivery_country']
     ]);
-    header( "HX-Trigger: update_deliveryCountries_list");
-}
-
-if (isset($_POST['update_email'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write general settings
-if (isset($_POST['update_general'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-
-    $data['prefs_publisher_mode'] = '';
-    if(isset($_POST['prefs_publisher_mode'])) {
-        $data['prefs_publisher_mode'] = 'overwrite';
-    }
-
-    $data['prefs_uploads_remain_unchanged'] = '';
-    if(isset($_POST['prefs_uploads_remain_unchanged'])) {
-        $data['prefs_uploads_remain_unchanged'] = 'yes';
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: update_deliveryCountries_list");
+    exit;
 }
 
 // write database (SQLite WAL mode) settings
@@ -270,138 +188,53 @@ if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
     }
 }
 
-// write domain and server settings
-if (isset($_POST['update_general_system'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write date and time settings
-if (isset($_POST['update_datetime'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write themes settings
-if (isset($_POST['update_themes'])) {
-
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-
-    $data['prefs_smarty_compile_check'] = 0;
-    if(isset($_POST['prefs_smarty_compile_check'])) {
-        $data['prefs_smarty_compile_check'] = 1;
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write mail settings
-if (isset($_POST['update_email'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write user settings
-if (isset($_POST['update_user'])) {
-    foreach($_POST as $key => $val) {
-        if(is_string($val)) {
-            $data[htmlentities($key)] = htmlentities($val);
-        }
-    }
-
-    $data['prefs_required_fields_registration'] = json_encode($_POST['required_fields']);
-
-    $data['prefs_showloginform'] = 'no';
-    if(isset($_POST['prefs_showloginform'])) {
-        $data['prefs_showloginform'] = 'yes';
-    }
-
-    $data['prefs_user_unlock_by_admin'] = 'no';
-    if(isset($_POST['prefs_user_unlock_by_admin'])) {
-        $data['prefs_user_unlock_by_admin'] = 'yes';
-    }
-
-    $data['prefs_userregistration'] = 'no';
-    if(isset($_POST['prefs_userregistration'])) {
-        $data['prefs_userregistration'] = 'yes';
-    }
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
-// write comments and reactions settings
-if (isset($_POST['update_reactions'])) {
-    foreach($_POST as $key => $val) {
-        $data[htmlentities($key)] = htmlentities($val);
-    }
-    //print_r($_POST);
-
-    se_write_option($data,'se');
-    show_toast($lang['msg_success_db_changed'],'success');
-}
-
 // labels
-if (isset($_POST['post_label'])) {
+// create (post_label) or update (update_label = id) a label
+if (isset($_POST['post_label']) || isset($_POST['update_label'])) {
 
-    $label_color = sanitizeUserInputs($_POST['label_color']);
-    $label_title = sanitizeUserInputs($_POST['label_title']);
-    $label_description = sanitizeUserInputs($_POST['label_description']);
+    $label_title = sanitizeUserInputs((string) ($_POST['label_title'] ?? ''));
+    if ($label_title === '') {
+        show_toast($lang['msg_error_no_title'], 'danger');
+        exit;
+    }
 
-    $label_custom_id = clean_filename($label_title);
+    // a color of the color input (#rrggbb), anything else becomes grey
+    $label_color = (string) ($_POST['label_color'] ?? '');
+    if (!preg_match('/^#[0-9a-f]{6}$/i', $label_color)) {
+        $label_color = '#999999';
+    }
 
-    $data = $db_content->insert("se_labels", [
-        "label_custom_id" => $label_custom_id,
+    $values = [
+        "label_custom_id" => clean_filename(html_entity_decode($label_title, ENT_QUOTES, 'UTF-8')),
         "label_color" => $label_color,
         "label_title" => $label_title,
-        "label_description" => $label_description
-    ]);
+        "label_description" => sanitizeUserInputs((string) ($_POST['label_description'] ?? ''))
+    ];
 
-    show_toast($lang['msg_success_db_changed'],'success');
-    record_log($_SESSION['user_nick'],"create new label","1");
-    header( "HX-Trigger: updated_labels");
+    if (isset($_POST['post_label'])) {
+        $db_content->insert("se_labels", $values);
+        record_log($_SESSION['user_nick'], "create new label", 1);
+    } else {
+        $db_content->update("se_labels", $values, [
+            "label_id" => (int) $_POST['update_label']
+        ]);
+    }
+
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: updated_labels");
+    exit;
 }
 
-if(isset($_POST['update_label'])) {
+if (isset($_POST['delete_label'])) {
 
-    $label_color = sanitizeUserInputs($_POST['label_color']);
-    $label_title = sanitizeUserInputs($_POST['label_title']);
-    $label_description = sanitizeUserInputs($_POST['label_description']);
-
-    $data = $db_content->update("se_labels", [
-        "label_custom_id" => $label_custom_id,
-        "label_color" => $label_color,
-        "label_title" => $label_title,
-        "label_description" => $label_description
-    ],[
-        "label_id" => (int) $_POST['label_id']
+    // entries keep the id, a missing label is just not shown anymore
+    $db_content->delete("se_labels", [
+        "label_id" => (int) $_POST['delete_label']
     ]);
-
-    show_toast("Label updated successfully","success");
-    header( "HX-Trigger: updated_labels");
-}
-
-if(isset($_POST['delete_label'])) {
-
-    $label_id = (int) $_POST['label_id'];
-
-    $data = $db_content->delete("se_labels", [
-        "label_id" => $label_id
-    ]);
-    show_toast($lang['msg_success_db_changed'],'success');
-    record_log($_SESSION['user_nick'],"deleted label","5");
+    show_toast($lang['msg_success_db_changed'], 'success');
+    record_log($_SESSION['user_nick'], "deleted label", 5);
+    header("HX-Trigger: updated_labels");
+    exit;
 }
 
 // API keys (Settings > API keys)
@@ -414,7 +247,7 @@ if(isset($_POST['create_api_key']) || isset($_POST['revoke_api_key']) || isset($
 
 if(isset($_POST['create_api_key'])) {
 
-    $api_key_label = trim(sanitizeUserInputs($_POST['api_key_label']));
+    $api_key_label = trim(sanitizeUserInputs((string) ($_POST['api_key_label'] ?? '')));
     $api_key_scopes = se_api_filter_scopes((array) ($_POST['api_key_scopes'] ?? []));
 
     if($api_key_label === '' || count($api_key_scopes) < 1) {
@@ -424,19 +257,13 @@ if(isset($_POST['create_api_key'])) {
 
     $new_api_key = se_api_create_key($api_key_label, $api_key_scopes, (int) $_SESSION['user_id']);
 
-    record_log($_SESSION['user_nick'], "created API key: $api_key_label", "5");
+    record_log($_SESSION['user_nick'], "created API key: $api_key_label", 5);
     // api-key-created resets the form - only on success, so a failed
     // attempt keeps the entered name and scopes
     header("HX-Trigger: updated_api_keys, api-key-created");
 
     // the only time the plaintext key is ever shown
-    echo '<div class="alert alert-warning">';
-    echo '<p class="mb-2"><strong>'.$lang['api_keys_msg_created'].'</strong></p>';
-    echo '<div class="input-group">';
-    echo '<input type="text" class="form-control font-monospace" id="apiKeyPlain" value="'.htmlspecialchars($new_api_key, ENT_QUOTES).'" readonly onclick="this.select()">';
-    echo '<button type="button" class="btn btn-default" onclick="navigator.clipboard.writeText(document.getElementById(\'apiKeyPlain\').value)" title="'.$lang['api_keys_btn_copy'].'">'.$icon['clipboard'].'</button>';
-    echo '</div>';
-    echo '</div>';
+    echo $twig->render('settings/api-key-created.twig', ['api_key' => $new_api_key]);
     exit;
 }
 
@@ -448,7 +275,7 @@ if(isset($_POST['revoke_api_key'])) {
         "id" => (int) $_POST['revoke_api_key']
     ]);
 
-    record_log($_SESSION['user_nick'], "revoked API key #".(int) $_POST['revoke_api_key'], "5");
+    record_log($_SESSION['user_nick'], "revoked API key #".(int) $_POST['revoke_api_key'], 5);
     header("HX-Trigger: updated_api_keys");
     show_toast($lang['msg_success_db_changed'], 'success');
     exit;
@@ -462,7 +289,7 @@ if(isset($_POST['delete_api_key'])) {
         "is_active" => 0
     ]);
 
-    record_log($_SESSION['user_nick'], "deleted API key #".(int) $_POST['delete_api_key'], "5");
+    record_log($_SESSION['user_nick'], "deleted API key #".(int) $_POST['delete_api_key'], 5);
     header("HX-Trigger: updated_api_keys");
     show_toast($lang['msg_success_db_changed'], 'success');
     exit;
@@ -482,7 +309,7 @@ if(isset($_POST['sendmail_test'])) {
     if($testmail == 1) {
         echo '<p class="alert alert-success mt-3">'.$icon['check'].' '.$lang['msg_success_mailer_sent_test'].'</p>';
     } else {
-        echo '<div class="alert alert-danger mt-3">'.print_r($testmail).'</div>';;
+        echo '<div class="alert alert-danger mt-3">'.htmlspecialchars(print_r($testmail, true), ENT_QUOTES, 'UTF-8').'</div>';
     }
 }
 

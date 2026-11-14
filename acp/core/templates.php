@@ -3,29 +3,8 @@
 /**
  * SwiftyEdit form templates
  * print text input, textarea, checkbox, radio, radios ...
- * from arrays
+ * from arrays, the markup lives in acp/templates/components/form/*.twig
  */
-//error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
-$tpl_dir = '../acp/templates/';
-
-$bs_form_checkbox = file_get_contents($tpl_dir.'/bs-form-checkbox.tpl');
-$bs_form_radio = file_get_contents($tpl_dir.'/bs-form-radio.tpl');
-$bs_form_select = file_get_contents($tpl_dir.'/bs-form-select.tpl');
-$bs_form_input_text = file_get_contents($tpl_dir.'bs-form-input-text.tpl');
-$bs_form_input_textarea = file_get_contents($tpl_dir.'/bs-form-input-textarea.tpl');
-$bs_form_input_content_editor = file_get_contents($tpl_dir.'/bs-form-input-content-editor.tpl');
-$bs_form_control_group = file_get_contents($tpl_dir.'/bs-form-control-group.tpl');
-
-$bs_row_col2 = file_get_contents($tpl_dir.'/bs-row-col2.tpl');
-$bs_row_col3 = file_get_contents($tpl_dir.'/bs-row-col3.tpl');
-$bs_row_col4 = file_get_contents($tpl_dir.'/bs-row-col4.tpl');
-
-$bs_row_2_cols = file_get_contents($tpl_dir.'/bs-row-2-cols.tpl');
-$bs_row_3_cols = file_get_contents($tpl_dir.'/bs-row-3-cols.tpl');
-$bs_row_4_cols = file_get_contents($tpl_dir.'/bs-row-4-cols.tpl');
-
-$bs_modal = file_get_contents($tpl_dir.'/bs-modal.tpl');
-
 
 /**
  * @param array $input
@@ -37,7 +16,7 @@ function se_print_form_input(array $input): string {
 
     if($input['type'] === 'text') {
         $block = tpl_form_input_text($input);
-    } else if($input['type'] === 'password') {
+    } else if($input['type'] === 'password' || $input['type'] === 'number') {
         $block = tpl_form_input_text($input);
     } else if($input['type'] === 'textarea') {
         $block = tpl_form_input_textarea($input);
@@ -63,7 +42,7 @@ function se_print_form_input(array $input): string {
  */
 function tpl_form_input_text(array $data) {
 
-    global $bs_form_input_text;
+    global $twig;
 
     if((!isset($data['container_class'])) OR $data['container_class'] == '') {
         $data['container_class'] = 'mb-3';
@@ -77,62 +56,27 @@ function tpl_form_input_text(array $data) {
         $data['type'] = 'text';
     }
 
-    if($data['input_value'] === NULL) {
-        $data['input_value'] = '';
-    }
-
-    if($data['label'] == '') {
+    if(($data['label'] ?? '') == '') {
         $data['label'] = '&nbsp;';
     }
 
-    $tpl = str_replace('{container_class}', $data['container_class'], $bs_form_input_text);
-    $tpl = str_replace('{inputid}', $data['inputid'], $tpl);
-    $tpl = str_replace('{label}', $data['label'], $tpl);
-    $tpl = str_replace('{input_name}', $data['input_name'], $tpl);
-    $tpl = str_replace('{input_value}', $data['input_value'], $tpl);
-    $tpl = str_replace('{type}', $data['type'], $tpl);
-
-    // keep password managers from filling in the login of the current
-    // administrator (e.g. new password of another user, SMTP password)
-    if($data['type'] === 'password') {
-        $tpl = str_replace('type="password"', 'type="password" autocomplete="new-password"', $tpl);
-    }
-
-    if($data['input_classes'] == '') {
-        $tpl = str_replace('{input_classes}', 'form-control', $tpl);
-    } else {
-        $tpl = str_replace('{input_classes}', $data['input_classes'], $tpl);
-    }
-
-    if($data['input_group_start_text'] != '') {
-        $tpl = str_replace('{input_group_start_text}', '<span class="input-group-text">'.$data['input_group_start_text'].'</span>', $tpl);
-    } else {
-        $tpl = str_replace('{input_group_start_text}', '', $tpl);
-    }
-    if($data['input_group_end_text'] != '') {
-        $tpl = str_replace('{input_group_end_text}', '<span class="input-group-text">'.$data['input_group_end_text'].'</span>', $tpl);
-    } else {
-        $tpl = str_replace('{input_group_end_text}', '', $tpl);
-    }
-
-    if($data['input_group_start_text'] != '' OR $data['input_group_end_text'] != '') {
-        $tpl = str_replace('{input_group_start}', '<div class="input-group">', $tpl);
-        $tpl = str_replace('{input_group_end}', '</div>', $tpl);
-    } else {
-        $tpl = str_replace('{input_group_start}', '', $tpl);
-        $tpl = str_replace('{input_group_start_text}', '', $tpl);
-        $tpl = str_replace('{input_group_end}', '', $tpl);
-        $tpl = str_replace('{input_group_end_text}', '', $tpl);
-    }
-
-    if((!isset($data['form_text'])) OR $data['form_text'] == '') {
-        $tpl = str_replace('{form_text}', '', $tpl);
-    } else {
-        $form_text = '<div class="form-text">'.$data['form_text'].'</div>';
-        $tpl = str_replace('{form_text}', $form_text, $tpl);
-    }
-
-    return $tpl;
+    // password inputs get autocomplete="new-password" in the template to keep
+    // password managers from filling in the login of the current administrator
+    // (e.g. new password of another user, SMTP password)
+    return $twig->render('components/form/input-text.twig', [
+        'container_class' => $data['container_class'],
+        'inputid' => $data['inputid'],
+        'label' => $data['label'],
+        'type' => $data['type'],
+        'input_name' => $data['input_name'],
+        'input_value' => $data['input_value'] ?? '',
+        'input_classes' => ($data['input_classes'] ?? '') == '' ? 'form-control' : $data['input_classes'],
+        'group_start_text' => $data['input_group_start_text'] ?? '',
+        'group_end_text' => $data['input_group_end_text'] ?? '',
+        'form_text' => $data['form_text'] ?? '',
+        'min' => $data['min'] ?? null,
+        'max' => $data['max'] ?? null
+    ]);
 }
 
 /**
@@ -159,8 +103,8 @@ function tpl_content_format_switch(array $options, string $current, $page_id): s
     $select .= '</select>';
     $select .= '</div>';
     $select .= '<script>document.currentScript.previousElementSibling.querySelector("select[name=content_format_switch]").addEventListener("change", function(e){';
-    $select .= 'var current='.json_encode($current).';';
-    $select .= 'var pageId='.json_encode((string) $page_id).';';
+    $select .= 'var current='.json_encode($current, JSON_HEX_TAG | JSON_HEX_AMP).';';
+    $select .= 'var pageId='.json_encode((string) $page_id, JSON_HEX_TAG | JSON_HEX_AMP).';';
     /*
      * Switching TO "legacy" is not destructive - page_content already holds
      * the last-saved rendered HTML at all times (se_freeze_editor_content()
@@ -169,8 +113,8 @@ function tpl_content_format_switch(array $options, string $current, $page_id): s
      * still starts an empty tree/string (formats aren't auto-converted into
      * each other), so that case keeps the discard warning.
      */
-    $select .= 'var discardMsg='.json_encode($lang['label_content_format_confirm_switch'] ?? 'Switching the format discards the current content. Continue?').';';
-    $select .= 'var convertMsg='.json_encode($lang['label_content_format_confirm_convert'] ?? 'The current content will be converted to static HTML and can no longer be edited with its current editor afterwards. Continue?').';';
+    $select .= 'var discardMsg='.json_encode($lang['label_content_format_confirm_switch'] ?? 'Switching the format discards the current content. Continue?', JSON_HEX_TAG | JSON_HEX_AMP).';';
+    $select .= 'var convertMsg='.json_encode($lang['label_content_format_confirm_convert'] ?? 'The current content will be converted to static HTML and can no longer be edited with its current editor afterwards. Continue?', JSON_HEX_TAG | JSON_HEX_AMP).';';
     $select .= 'var isConvertToLegacy=(e.target.value==="legacy"&&current!=="legacy");';
     $select .= 'if(confirm(isConvertToLegacy?convertMsg:discardMsg)){';
     /*
@@ -189,6 +133,8 @@ function tpl_content_format_switch(array $options, string $current, $page_id): s
 
 function tpl_form_input_textarea(array $data) {
 
+    global $twig;
+
     if((!isset($data['container_class'])) OR $data['container_class'] == '') {
         $data['container_class'] = 'mb-3';
     }
@@ -197,21 +143,13 @@ function tpl_form_input_textarea(array $data) {
         $data['inputid'] = uniqid();
     }
 
-    if((!isset($data['type'])) OR $data['type'] == '') {
-        $data['type'] = 'text';
-    }
-
-    if($data['input_value'] === NULL) {
-        $data['input_value'] = '';
-    }
-
-    if($data['label'] == '') {
+    if(($data['label'] ?? '') == '') {
         $data['label'] = '&nbsp;';
     }
 
-    $editor_switch = '';
+    $editors = null;
     $editor_classes = '';
-    if($data['mode'] == 'wysiwyg') {
+    if(($data['mode'] ?? '') == 'wysiwyg') {
 
         global $se_editor_addons;
 
@@ -223,7 +161,7 @@ function tpl_form_input_textarea(array $data) {
          * editors (mode "format") are a separate concept (see content_format_options
          * below) and are excluded here.
          */
-        $editor_switch = '<div class="btn-group float-end pb-1" role="group">';
+        $editors = [];
         if(!empty($se_editor_addons) && is_array($se_editor_addons)) {
             foreach($se_editor_addons as $editor_addon) {
                 if(($editor_addon['mode'] ?? '') === 'format') {
@@ -233,39 +171,35 @@ function tpl_form_input_textarea(array $data) {
                 if($id === '') {
                     continue;
                 }
-                $label = $editor_addon['label'] ?? $id;
-                $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="'.htmlspecialchars($id).'">'.htmlspecialchars($label).'</label>';
+                $editors[] = [
+                    'id' => $id,
+                    'label' => $editor_addon['label'] ?? $id
+                ];
             }
         }
-        // built-in plain-text option
-        $editor_switch .= '<label class="btn btn-sm btn-default"><input type="radio" class="btn-check" name="optEditor" value="plain">Text</label>';
-        $editor_switch .= '</div>';
 
         $editor_classes = 'textEditor switchEditor';
     }
 
+    $format_switch = '';
     if(!empty($data['content_format_options'])) {
-        $editor_switch = tpl_content_format_switch($data['content_format_options'], $data['content_format_value'] ?? 'legacy', $data['page_id'] ?? 'new') . $editor_switch;
+        $format_switch = tpl_content_format_switch($data['content_format_options'], $data['content_format_value'] ?? 'legacy', $data['page_id'] ?? 'new');
     }
 
-
-    if($data['input_classes'] != '') {
+    if(($data['input_classes'] ?? '') != '') {
         $editor_classes .= ' '.$data['input_classes'];
     }
 
-    global $bs_form_input_textarea;
-
-
-    $tpl = str_replace('{container_classes}', $data['container_class'], $bs_form_input_textarea);
-    $tpl = str_replace('{inputid}', $data['inputid'], $tpl);
-    $tpl = str_replace('{editor_switch}', $editor_switch, $tpl);
-    $tpl = str_replace('{editor_classes}', $editor_classes, $tpl);
-    $tpl = str_replace('{label}', $data['label'], $tpl);
-    $tpl = str_replace('{input_name}', $data['input_name'], $tpl);
-    $tpl = str_replace('{input_value}', $data['input_value'], $tpl);
-    $tpl = str_replace('{type}', $data['type'], $tpl);
-
-    return $tpl;
+    return $twig->render('components/form/textarea.twig', [
+        'container_class' => $data['container_class'],
+        'inputid' => $data['inputid'],
+        'label' => $data['label'],
+        'input_name' => $data['input_name'],
+        'input_value' => $data['input_value'] ?? '',
+        'editors' => $editors,
+        'editor_classes' => $editor_classes,
+        'format_switch' => $format_switch
+    ]);
 }
 
 /**
@@ -277,6 +211,8 @@ function tpl_form_input_textarea(array $data) {
  */
 function tpl_form_input_content_editor(array $data): string {
 
+    global $twig;
+
     if((!isset($data['container_class'])) OR $data['container_class'] == '') {
         $data['container_class'] = 'mb-3';
     }
@@ -285,25 +221,21 @@ function tpl_form_input_content_editor(array $data): string {
         $data['inputid'] = uniqid();
     }
 
-    global $lang;
     $label = $data['label'] ?? '';
     if($label == '') {
         $label = '&nbsp;';
     }
 
-    $format_switch = tpl_content_format_switch($data['content_format_options'] ?? [], $data['content_format_value'] ?? '', $data['page_id'] ?? 'new');
-
-    global $bs_form_input_content_editor;
-
-    $tpl = str_replace('{container_classes}', $data['container_class'], $bs_form_input_content_editor);
-    $tpl = str_replace('{inputid}', $data['inputid'], $tpl);
-    $tpl = str_replace('{format_switch}', $format_switch, $tpl);
-    $tpl = str_replace('{label}', $label, $tpl);
-    $tpl = str_replace('{input_name}', $data['input_name'], $tpl);
-    $tpl = str_replace('{editor}', htmlspecialchars($data['editor'] ?? '', ENT_QUOTES, 'UTF-8'), $tpl);
-    $tpl = str_replace('{content_json}', htmlspecialchars(json_encode($data['backend_payload'] ?? null), ENT_QUOTES, 'UTF-8'), $tpl);
-
-    return $tpl;
+    return $twig->render('components/form/content-editor.twig', [
+        'container_class' => $data['container_class'],
+        'inputid' => $data['inputid'],
+        'label' => $label,
+        'input_name' => $data['input_name'],
+        'format_switch' => tpl_content_format_switch($data['content_format_options'] ?? [], $data['content_format_value'] ?? '', $data['page_id'] ?? 'new'),
+        // escaped by Twig, the editor reads it back with JSON.parse()
+        'editor' => $data['editor'] ?? '',
+        'content_json' => json_encode($data['backend_payload'] ?? null)
+    ]);
 }
 
 
@@ -313,22 +245,15 @@ function tpl_form_input_content_editor(array $data): string {
  */
 function tpl_form_checkbox(array $data): string {
 
-    global $bs_form_checkbox;
-    $checkbox_id = uniqid();
+    global $twig;
 
-    $tpl = str_replace('{checkbox_name}', $data['input_name'], $bs_form_checkbox);
-    $tpl = str_replace('{checkbox_value}', $data['input_value'], $tpl);
-    $tpl = str_replace('{checkbox_id}', $checkbox_id, $tpl);
-    $tpl = str_replace('{checkbox_label}', $data['label'], $tpl);
-
-    /* checked or not checked */
-    if($data['status'] == '') {
-        $tpl = str_replace('{checked}', '', $tpl);
-    } else {
-        $tpl = str_replace('{checked}', 'checked', $tpl);
-    }
-
-    return $tpl;
+    return $twig->render('components/form/checkbox.twig', [
+        'inputid' => uniqid(),
+        'input_name' => $data['input_name'],
+        'input_value' => $data['input_value'],
+        'label' => $data['label'],
+        'checked' => (($data['status'] ?? '') != '')
+    ]);
 }
 
 /**
@@ -337,116 +262,70 @@ function tpl_form_checkbox(array $data): string {
  */
 function tpl_form_radios(array $data): string {
 
-    global $bs_form_radio,$lang;
-    $tpl_radio = $bs_form_radio;
+    global $twig, $lang;
 
+    $radios = [];
     foreach($data['radios'] as $k => $v) {
-        $radio_id = uniqid();
-
-        if(array_key_exists($k, $lang)) {
-            $radio_label = $lang[$k];
-        } else {
-            $radio_label = $k;
-        }
-
-        $tpl = str_replace('{radio_label}', $radio_label, $tpl_radio);
-        $tpl = str_replace('{radio_value}', $v, $tpl);
-        $tpl = str_replace('{radio_id}', $radio_id, $tpl);
-        $tpl = str_replace('{radio_name}', $data['input_name'], $tpl);
-
-        if($data['input_value'] == $v) {
-            $tpl = str_replace('{checked}', 'checked', $tpl);
-        } else {
-            $tpl = str_replace('{checked}', '', $tpl);
-        }
-
-        $tpl_str .= $tpl;
+        $radios[] = [
+            'id' => uniqid(),
+            'value' => $v,
+            'label' => array_key_exists($k, $lang) ? $lang[$k] : $k,
+            'checked' => ($data['input_value'] == $v)
+        ];
     }
 
-    return $tpl_str;
+    return $twig->render('components/form/radios.twig', [
+        'input_name' => $data['input_name'],
+        'radios' => $radios
+    ]);
 }
 
 
 function tpl_form_select(array $data): string {
 
-    global $bs_form_select,$lang;
-    $select_id = uniqid();
-    $select_options = '';
+    global $twig, $lang;
 
     if((!isset($data['container_class'])) OR $data['container_class'] == '') {
         $data['container_class'] = 'mb-3';
     }
 
-    $tpl = str_replace('{container_classes}', $data['container_class'], $bs_form_select);
-    $tpl = str_replace('{select_id}', $select_id, $tpl);
-    $tpl = str_replace('{label}', $data['label'], $tpl);
-    $tpl = str_replace('{select_name}', $data['input_name'], $tpl);
-
+    $options = [];
     foreach($data['options'] as $k => $v) {
-
-        if(array_key_exists($k, $lang)) {
-            $option_name = $lang[$k];
-        } else {
-            $option_name = $k;
-        }
-
-        $selected = '';
-        if($data['input_value'] == $v) {
-            $selected = 'selected';
-        }
-
-        $select_options .= '<option value="'.$v.'" '.$selected.'>'.$option_name.'</option>';
-
+        $options[] = [
+            'value' => $v,
+            'label' => array_key_exists($k, $lang) ? $lang[$k] : $k,
+            'selected' => ($data['input_value'] == $v)
+        ];
     }
 
-    $tpl = str_replace('{options}', $select_options, $tpl);
-
-
-    return $tpl;
+    return $twig->render('components/form/select-field.twig', [
+        'container_class' => $data['container_class'],
+        'inputid' => uniqid(),
+        'label' => $data['label'],
+        'input_name' => $data['input_name'],
+        'options' => $options
+    ]);
 }
 
+/**
+ * print a bootstrap row
+ *
+ * @param array $cols html of the columns
+ * @param array $classes column classes, default: equal widths (col-md-6, col-md-4, col-md-3 ...)
+ * @return string
+ */
+function se_print_row(array $cols, array $classes = []): string {
 
+    global $twig;
 
-function tpl_form_control_group($labelFor,$labelText,$formControls) {
-	global $bs_form_control_group;
-	$tpl = str_replace('{labelText}', $labelText, $bs_form_control_group);
-	$tpl = str_replace('{labelFor}', $labelText, $tpl);
-	$tpl = str_replace('{formControls}', $formControls, $tpl);
-	return $tpl;
-}
+    $default_class = 'col-md-'.intdiv(12, max(count($cols), 1));
+    $row = [];
+    foreach(array_values($cols) as $i => $content) {
+        $row[] = [
+            'class' => $classes[$i] ?? $default_class,
+            'content' => $content
+        ];
+    }
 
-
-function tpl_checkbox($checkbox_name,$checkbox_value,$checkbox_id,$checkbox_label,$checkbox_checked) {
-	global $bs_form_checkbox;
-	
-	$tpl = str_replace('{checkbox_name}', $checkbox_name, $bs_form_checkbox);
-	$tpl = str_replace('{checkbox_value}', $checkbox_value, $tpl);
-	$tpl = str_replace('{checkbox_id}', $checkbox_id, $tpl);
-	$tpl = str_replace('{checkbox_label}', $checkbox_label, $tpl);
-	
-	if($checkbox_checked == '') {
-		$tpl = str_replace('{checked}', '', $tpl);
-	} else {
-		$tpl = str_replace('{checked}', 'checked', $tpl);
-	}
-	
-	return $tpl;
-}
-
-
-function tpl_radio($radio_name,$radio_value,$radio_id,$radio_label,$radio_checked) {
-	global $bs_form_radio;
-	
-	$tpl = str_replace('{radio_name}', $radio_name, $bs_form_radio);
-	$tpl = str_replace('{radio_value}', $radio_value, $tpl);
-	$tpl = str_replace('{radio_id}', $radio_id, $tpl);
-	$tpl = str_replace('{radio_label}', $radio_label, $tpl);
-	
-	if($radio_checked == '') {
-		$tpl = str_replace('{checked}', '', $tpl);
-	} else {
-		$tpl = str_replace('{checked}', 'checked', $tpl);
-	}
-	
-	return $tpl;
+    return $twig->render('components/form/row.twig', ['cols' => $row]);
 }

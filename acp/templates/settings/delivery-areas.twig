@@ -1,0 +1,31 @@
+{#
+ # delivery areas in /admin/settings/shop/ (tab delivery areas), loaded by the settings data-reader
+ # countries: list of {id, code, name, public, tax}
+ #}
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>{{ lang.label_country }}</th>
+            <th>{{ lang.label_status }}</th>
+            <th>{{ lang.label_plus_tax }}</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for country in countries %}
+            <tr>
+                <td><code>{{ country.code }}</code></td>
+                <td>{{ country.name }}</td>
+                <td>{% if country.public %}<span class="text-success" title="{{ lang.status_public }}">{{ icon.check_circle|raw }}</span>{% else %}<span class="text-danger" title="{{ lang.status_draft }}">{{ icon.circle|raw }}</span>{% endif %}</td>
+                <td>{% if country.tax %}<span class="text-success" title="{{ lang.yes }}">{{ icon.check_circle|raw }}</span>{% else %}<span class="text-danger" title="{{ lang.no }}">{{ icon.circle|raw }}</span>{% endif %}</td>
+                <td class="text-end text-nowrap">
+                    <button class="btn btn-sm btn-default text-success" hx-get="{{ reader_uri }}?edit_delivery_country={{ country.id }}" hx-target="#deliveryCountryForm" title="{{ lang.edit }}">{{ icon.edit|raw }}</button>
+                    <button class="btn btn-sm btn-default text-danger" hx-post="{{ writer_uri }}" hx-swap="none" hx-include="[name='csrf_token']" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_delivery_country" value="{{ country.id }}" title="{{ lang.btn_delete }}">{{ icon.trash|raw }}</button>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5" class="text-muted">{{ lang.msg_no_entries_found }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

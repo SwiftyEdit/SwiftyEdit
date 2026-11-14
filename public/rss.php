@@ -6,9 +6,10 @@ const SE_SECTION = "frontend";
 require '../vendor/autoload.php';
 require '../config.php';
 
+/** @var object $db_content app/database.php */
 require SE_ROOT.'/app/database.php';
 
-switch ($_REQUEST['type']) {
+switch ($_REQUEST['type'] ?? '') {
 	case 'rss':
 		$type = 'rss';
 		break;

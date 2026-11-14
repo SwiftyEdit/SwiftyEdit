@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @var array $lang install/index.php
+ * @var array $icon acp/core/icons.php
+ */
+
 //$goto_install = array();
 
 /**

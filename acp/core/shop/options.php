@@ -1,25 +1,22 @@
 <?php
 
-$reader_uri = '/admin-xhr/shop/read/';
-$writer_uri = '/admin-xhr/shop/write/';
+/**
+ * overview of the product options, markup in acp/templates/shop/options.twig
+ * the list is loaded by the data-reader (action list_options)
+ *
+ * global variables
+ * @var array $icon
+ * @var array $lang
+ * @var object $twig
+ */
 
-
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['shop'].' '.$lang['nav_btn_shop'];
-echo '<a href="/admin/shop/options/new/" class="btn btn-default text-success ms-auto">'.$icon['plus'].' '.$lang['new'].'</a>';
-echo '</div>';
-
-echo '<div class="row">';
-echo '<div class="col-md-9">';
-
-echo '<div id="getOptions" class="" hx-post="'.$reader_uri.'?action=list_options" hx-trigger="load, update_options_list from:body, updated_global_filter from:body" hx-include="[name=\'csrf_token\']">';
-echo '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
-echo '</div>';
-
-echo '</div>';
-echo '<div class="col-md-3">';
-
-// sidebar
-
-echo '</div>';
-echo '</div>';
+echo $twig->render('shop/options.twig', [
+    'title' => $lang['nav_btn_shop'],
+    'title_icon' => $icon['shop'],
+    'new_url' => '/admin/shop/options/new/',
+    'reader_uri' => '/admin-xhr/shop/read/',
+    'writer_uri' => '/admin-xhr/shop/write/',
+    'search_name' => 'options_text_filter',
+    'searches_action' => 'list_active_searches_options',
+    'list_triggers' => 'update_options_list from:body, updated_global_filter from:body'
+]);

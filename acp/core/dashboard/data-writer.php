@@ -98,7 +98,7 @@ if (isset($_POST['opcache_reset'])) {
     }
 
     if (opcache_reset()) {
-        record_log($_SESSION['user_nick'], 'cleared OPcache', '6');
+        record_log($_SESSION['user_nick'], 'cleared OPcache',6);
         header("HX-Trigger: opcache_reset");
         echo '<span class="badge rounded-pill text-bg-success alert-auto-close">'.$icon['check'].' '.$lang['opcache_msg_reset_success'].'</span>';
     } else {

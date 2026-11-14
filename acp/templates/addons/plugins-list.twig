@@ -1,0 +1,69 @@
+{#
+ # installed plugins in /admin/addons/, rendered by the addons data-reader
+ # plugins: list of {id, name, version, description, image, category (filter of list.twig),
+ #   activated, needs_activation, navigation: list of {url, text}, help_link (html)}
+ # the values of info.json are third-party content, Twig escapes them
+ #}
+{% for plugin in plugins %}
+    <div class="card mb-3 border-bottom" data-addon-category="{{ plugin.category }}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-1">
+                {# personal favorite of the logged-in user, favorites are listed first #}
+                {% set fav_label = plugin.favorite ? lang.addons_btn_favorite_remove : lang.addons_btn_favorite_add %}
+                <button type="button" class="btn btn-sm btn-link p-0 me-1{{ plugin.favorite ? ' text-warning' : ' text-muted' }}"
+                        name="toggle_fav_plugin" value="{{ plugin.id }}"
+                        hx-post="/admin-xhr/users/settings/write/" hx-include="[name='csrf_token']" hx-swap="none"
+                        title="{{ fav_label }}" aria-label="{{ fav_label }}" aria-pressed="{{ plugin.favorite ? 'true' : 'false' }}">
+                    {{ (plugin.favorite ? icon.star : icon.star_outline)|raw }}
+                </button>
+                {{ plugin.name }} <span class="badge badge-se">{{ plugin.version }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+                {# activation state next to the update status - plugins that don't
+                   need activation (and aren't activated) get no badge at all #}
+                {% if plugin.activated %}
+                    <span class="badge text-bg-success">{{ lang.status_active|capitalize }}</span>
+                {% elseif plugin.needs_activation %}
+                    <span class="badge badge-se">{{ lang.status_inactive|capitalize }}</span>
+                {% endif %}
+                {% if can_check_updates %}
+                    <div class="d-flex" hx-get="{{ reader_uri }}?check_plugin={{ plugin.id|url_encode }}" hx-trigger="load"></div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-3">
+                {# fixed icon size, so the description doesn't lose width to a growing image #}
+                <img src="{{ plugin.image }}" class="rounded-circle flex-shrink-0" width="48" height="48" alt="">
+                <div class="flex-grow-1" style="min-width: 0">
+                    <div id="update-response-{{ plugin.id }}"></div>
+                    <div class="card-text">{{ plugin.description }}</div>
+                    {# plugin navigation as plain links below the description, so it
+                       wraps freely and isn't mistaken for the actions in the footer #}
+                    {% if plugin.navigation %}
+                        <div class="d-flex flex-wrap column-gap-3 row-gap-1 mt-2 small">
+                            {% for nav in plugin.navigation %}
+                                <a href="{{ nav.url }}">{{ nav.text }}</a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {# actions always at the same position, independent of text and navigation length #}
+        <div class="card-footer d-flex justify-content-end">
+            {{ plugin.help_link|raw }}
+            {% if can_delete %}
+                <button name="delete_plugin" value="{{ plugin.id }}" class="btn btn-sm btn-outline-default text-danger" hx-post="{{ writer_uri }}" hx-confirm="{{ lang.msg_confirm_delete }}" hx-include="[name='csrf_token']" hx-target="body" hx-swap="beforeend">{{ icon.trash_alt|raw }}</button>
+            {% endif %}
+            {# an activated plugin can always be deactivated, even if it no longer needs activation #}
+            {% if plugin.activated %}
+                <button name="deactivate_addon" value="{{ plugin.id }}" class="btn btn-sm btn-outline-default text-danger ms-1" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-swap="none">{{ lang.btn_addon_disable }}</button>
+            {% elseif plugin.needs_activation %}
+                <button name="activate_addon" value="{{ plugin.id }}" class="btn btn-sm btn-outline-default text-success ms-1" hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-swap="none">{{ lang.btn_addon_enable }}</button>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <p class="text-muted">{{ lang.msg_info_no_addons }}</p>
+{% endfor %}

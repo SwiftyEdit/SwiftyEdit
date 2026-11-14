@@ -10,8 +10,6 @@
  * @var array $all_categories
  * @var string $img_path
  * @var string $se_base_url
- * @var string $prefs_dateformat
- * @var string $prefs_timeformat
  *
  * @var array $categories
  * @var array $page_contents
@@ -69,9 +67,10 @@ $nextPage = $events_start + $events_limit;
 $prevPage = $events_start - $events_limit;
 $cnt_pages = ceil($cnt_filter_events / $events_limit);
 
+$pagination = array();
+$current_page = 1;
 if ($cnt_pages > 1) {
     $show_pagination = true;
-    $pagination = array();
 
     for ($i = 0; $i < $cnt_pages; $i++) {
 
@@ -156,13 +155,7 @@ foreach ($get_events as $k => $post) {
     $get_events[$k]['event_href'] = SE_INCLUDE_PATH . "/" . $target_page[0] . "$post_filename-" . $get_events[$k]['id'] . ".html";
 
 
-    $post_releasedate = date($prefs_dateformat, $get_events[$k]['releasedate']);
-    $post_releasedate_year = date('Y', $get_events[$k]['releasedate']);
-    $post_releasedate_month = date('m', $get_events[$k]['releasedate']);
-    $post_releasedate_day = date('d', $get_events[$k]['releasedate']);
-    $post_releasedate_time = date($prefs_timeformat, $get_events[$k]['releasedate']);
-
-    $get_events[$k]['event_releasedate'] = $post_releasedate;
+    $get_events[$k]['event_releasedate'] = date($se_settings['dateformat'], (int) $get_events[$k]['releasedate']);
 
     /* event dates */
 
@@ -206,24 +199,25 @@ foreach ($get_events as $k => $post) {
     $get_events[$k]['content_tags'] = $content_tags;
 
     /* vote up or down this product */
-    if ($get_events[$k]['post_votings'] == 2 || $get_events[$k]['votings'] == 3) {
+    if ($get_events[$k]['votings'] == 2 || $get_events[$k]['votings'] == 3) {
         $get_events[$k]['show_voting'] = true;
         $voter_data = false;
         $voting_type = array("upv", "dnv");
+        $user_nick = (string) ($_SESSION['user_nick'] ?? '');
         if ($get_events[$k]['votings'] == 2) {
-            if ($_SESSION['user_nick'] == '') {
+            if ($user_nick == '') {
                 $voter_data = false;
             } else {
-                $voter_data = se_check_user_legitimacy($get_events[$k]['id'], $_SESSION['user_nick'], $voting_type);
+                $voter_data = se_check_user_legitimacy($get_events[$k]['id'], $user_nick, $voting_type);
             }
         }
 
         if ($get_events[$k]['votings'] == 3) {
-            if ($_SESSION['user_nick'] == '') {
+            if ($user_nick == '') {
                 $voter_name = se_generate_anonymous_voter();
                 $voter_data = se_check_user_legitimacy($get_events[$k]['id'], $voter_name, $voting_type);
             } else {
-                $voter_data = se_check_user_legitimacy($get_events[$k]['id'], $_SESSION['user_nick'], $voting_type);
+                $voter_data = se_check_user_legitimacy($get_events[$k]['id'], $user_nick, $voting_type);
             }
         }
 

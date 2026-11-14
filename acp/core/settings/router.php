@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * SwiftyEdit backend
+ * switch file for section settings
+ *
+ * global variables
+ * @var string $query - the current url
+ * @var array $lang
+ */
+
 $subinc = match (true) {
     str_starts_with($query, 'settings/labels/') => 'labels',
     str_starts_with($query, 'settings/posts/') => 'posts',

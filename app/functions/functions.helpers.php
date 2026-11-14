@@ -47,11 +47,7 @@ function se_covert_big_int(int $number): string {
         return sprintf('%d%s', floor($number / 1000), 'K+');
     }
 
-    if ($number >= 1000000) {
-        return sprintf('%d%s', floor($number / 1000000), 'M+');
-    }
-
-    return $number;
+    return sprintf('%d%s', floor($number / 1000000), 'M+');
 }
 
 /**

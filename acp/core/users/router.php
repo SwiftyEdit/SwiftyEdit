@@ -1,6 +1,11 @@
 <?php
 error_reporting(E_ALL ^E_WARNING ^E_NOTICE ^E_DEPRECATED);
 
+/**
+ * @var string $query
+ * @var array $lang
+ */
+
 $subinc = match (true) {
     str_starts_with($query, 'users/new/') => 'users-edit',
     str_starts_with($query, 'users/edit/') => 'users-edit',

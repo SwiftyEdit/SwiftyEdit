@@ -1,0 +1,56 @@
+{#
+ # list of the orders, loaded into #getOrders by the shop data-reader
+ # orders: see shop/data-reader.php (action list_orders)
+ #}
+
+{# status texts, payment: 1 open, 2 paid - order: 1 received, 2 completed, 3 canceled #}
+{% set payment_status = {
+    '1': '<span class="text-danger">' ~ lang.status_order_payment_open|e ~ '</span>',
+    '2': '<span class="text-success">' ~ lang.status_order_payment_paid|e ~ '</span>'
+} %}
+{% set order_status = {
+    '1': lang.status_order_received|e,
+    '2': '<span class="text-success">' ~ lang.status_order_completed|e ~ '</span>',
+    '3': '<span class="text-danger">' ~ lang.status_order_canceled|e ~ '</span>'
+} %}
+
+{{ pagination|raw }}
+
+<table class="table table-hover">
+    {% for order in orders %}
+        <tr>
+            <td><span class="se-privacy-blur">{{ order.time }}</span></td>
+            <td><span class="se-privacy-blur">{{ order.nbr }}</span></td>
+            <td><span class="se-privacy-blur">{% for line in order.address %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %} {{ order.payment_type }} {{ order.mail }}</span></td>
+            {# price: markup of se_post_print_currency() #}
+            <td><span class="se-privacy-blur">{{ order.price|raw }} ({{ payment_status[order.payment_status]|default('')|raw }})</span></td>
+            <td>
+                <span class="se-privacy-blur">{{ order_status[order.status]|default('')|raw }}
+                    {% if order.withdrawal_requested %} <span class="badge text-bg-warning">{{ lang.status_order_withdrawal_requested }}</span>{% endif %}
+                </span>
+            </td>
+            <td>
+                <div class="btn-group">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">{{ icon.edit|raw }}</button>
+                        <ul class="dropdown-menu">
+                            <li><span class="dropdown-item-text opacity-50">Payment</span></li>
+                            <li><button class="dropdown-item" hx-post="{{ writer_uri }}" name="set_payment" value="1" hx-swap="none" hx-vals='{"order_id": {{ order.id }}}' hx-include="[name='csrf_token']">{{ lang.status_order_payment_open }}</button></li>
+                            <li><button class="dropdown-item" hx-post="{{ writer_uri }}" name="set_payment" value="2" hx-swap="none" hx-vals='{"order_id": {{ order.id }}}' hx-include="[name='csrf_token']">{{ lang.status_order_payment_paid }}</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><span class="dropdown-item-text opacity-50">Order Status</span></li>
+                            <li><button class="dropdown-item" hx-post="{{ writer_uri }}" name="set_order_status" value="1" hx-swap="none" hx-vals='{"order_id": {{ order.id }}}' hx-include="[name='csrf_token']">{{ lang.status_order_received }}</button></li>
+                            <li><button class="dropdown-item" hx-post="{{ writer_uri }}" name="set_order_status" value="2" hx-swap="none" hx-vals='{"order_id": {{ order.id }}}' hx-include="[name='csrf_token']">{{ lang.status_order_completed }}</button></li>
+                            <li><button class="dropdown-item" hx-post="{{ writer_uri }}" name="set_order_status" value="3" hx-swap="none" hx-vals='{"order_id": {{ order.id }}}' hx-include="[name='csrf_token']">{{ lang.status_order_canceled }}</button></li>
+                            {% if order.withdrawal_requested %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button class="dropdown-item" hx-post="{{ writer_uri }}" name="clear_order_withdrawal_requested" value="1" hx-swap="none" hx-vals='{"order_id": {{ order.id }}}' hx-include="[name='csrf_token']">{{ lang.btn_order_withdrawal_mark_handled }}</button></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <button hx-get="/admin-xhr/shop/read/?show_order={{ order.id }}" hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" class="btn btn-default">{{ icon.info_circle|raw }}</button>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

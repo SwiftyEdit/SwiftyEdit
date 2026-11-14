@@ -1,5 +1,22 @@
 <?php
 
+/**
+ * SwiftyEdit frontend - a single post, included by posts.php (display_mode show_post)
+ *
+ * variables of posts.php
+ * @var int $get_post_id
+ *
+ * global variables
+ * @var array $page_contents
+ * @var array $se_settings
+ * @var array $lang
+ * @var string $mod_slug
+ * @var string $swifty_slug
+ * @var string $se_base_url
+ * @var string $cache_id
+ * @var object $smarty
+ */
+
 $post_data = se_get_post_data($get_post_id);
 
 $hits = (int) $post_data['post_hits'];
@@ -11,29 +28,8 @@ $post_text = text_parser(htmlspecialchars_decode($post_data['post_text']));
 $post_images = explode("<->", $post_data['post_images']);
 
 
-$post_releasedate_str = date("$prefs_dateformat $prefs_timeformat",$post_data['post_releasedate']);
-$post_releasedate_year = date('Y',$post_data['post_releasedate']);
-$post_releasedate_month = date('m',$post_data['post_releasedate']);
-$post_releasedate_day = date('d',$post_data['post_releasedate']);
-$post_releasedate_time = date('H:i:s',$post_data['post_releasedate']);
-
-$post_lastedit = date('Y-m-d H:i',$post_data['lastedit']);
-$post_lastedit_from = $post_data['post_lastedit_from'];
-
-/* categories */
-$cat_links_array = explode('<->',$post_data['post_categories']);
-
-foreach($all_categories as $cats) {
-
-	if(in_array($cats['cat_id'],$cat_links_array)) {
-		$post_cats_string .= $cats['cat_name'] .' ';
-		$cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';
-		$link = str_replace('{cat_href}', $cat_href, $link);
-		$link = str_replace('{cat_name}', $cats['cat_name'], $link);
-		$post_cats_btn .= $link;
-		
-	}
-}
+// date and time format of the settings, as in the post list
+$post_releasedate_str = date($se_settings['dateformat'].' '.$se_settings['timeformat'], (int) $post_data['post_releasedate']);
 
 /* tags */
 $tags = se_get_content_tags('post', (int) $get_post_id);
@@ -55,29 +51,22 @@ $entrydate_year = date('Y',$post_data['post_date']);
 
 /* images */
 
-if($post_images[1] != "") {
-    $first_post_image = $post_images[1];
-	$post_image_data = se_get_images_data($first_post_image,'data=array');
-} else {
-	$first_post_image = '';
-}
+// the first image, stored as e.g. /images/example.jpg
+$first_post_image = $post_images[1] ?? '';
 
 
 
 
+$gallery_thumbs = array();
 if($post_data['post_type'] == 'g') {
 
 	$gallery_dir = 'assets/galleries/'.$entrydate_year.'/gallery'.$post_data['post_id'].'/';
 	$fp = $gallery_dir.'*_tmb.jpg';
 	$thumbs_array = glob("$fp");
 	arsort($thumbs_array);
-	$cnt_thumbs_array = count($thumbs_array);
-    $gallery_thumbs = array();
-	if($cnt_thumbs_array > 0) {
+	if(count($thumbs_array) > 0) {
 
-		$x = 0;
 		foreach($thumbs_array as $tmb) {
-			$x++;
 			$tmb_src = '/'.$tmb;
             $img_src = str_replace('_tmb','_img',$tmb_src);
             $gallery_thumbs[] = array(
@@ -88,9 +77,7 @@ if($post_data['post_type'] == 'g') {
 	}
 
 } else if($post_data['post_type'] == 'v') {
-	$vURL = parse_url($post_data['post_video_url']);
-	parse_str($vURL['query'],$video); //$video['v'] -> youtube video id
-    $smarty->assign('video_id', $video['v']);
+    $smarty->assign('video_id', se_get_youtube_video_id((string) $post_data['post_video_url']));
 }
 
 $show_comments = false;
@@ -104,20 +91,21 @@ if($post_data['post_votings'] == 2 || $post_data['post_votings'] == 3) {
     $show_voting = true;
     $voter_data = false;
     $voting_type = array("upv", "dnv");
+    $user_nick = (string) ($_SESSION['user_nick'] ?? '');
     if ($post_data['post_votings'] == 2) {
-        if ($_SESSION['user_nick'] == '') {
+        if ($user_nick == '') {
             $voter_data = false;
         } else {
-            $voter_data = se_check_user_legitimacy($post_data['post_id'], $_SESSION['user_nick'], $voting_type);
+            $voter_data = se_check_user_legitimacy($post_data['post_id'], $user_nick, $voting_type);
         }
     }
 
     if ($post_data['post_votings'] == 3) {
-        if ($_SESSION['user_nick'] == '') {
+        if ($user_nick == '') {
             $voter_name = se_generate_anonymous_voter();
             $voter_data = se_check_user_legitimacy($post_data['post_id'], $voter_name, $voting_type);
         } else {
-            $voter_data = se_check_user_legitimacy($post_data['post_id'], $_SESSION['user_nick'], $voting_type);
+            $voter_data = se_check_user_legitimacy($post_data['post_id'], $user_nick, $voting_type);
         }
     }
 
@@ -166,16 +154,24 @@ $smarty->assign('page_title', html_entity_decode($post_data['post_meta_title']))
 $smarty->assign('page_meta_description', html_entity_decode($post_data['post_meta_description']));
 $smarty->assign('page_meta_keywords', html_entity_decode($post_data['post_tags']));
 
-// without an image, keep the page/global thumbnail set in template-setup.php
+// without an image, keep the page/global thumbnail set in template-setup.php -
+// the stored path keeps the subfolders of the media library
 if($first_post_image != '') {
-	$page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_post_image);
+	$page_contents['page_thumbnail'] = rtrim($se_base_url, '/').'/'.ltrim(str_replace('../', '/', $first_post_image), '/');
 	$smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
 }
 
-// canonical link: stored on the post itself (auto-built from its detail
-// page + slug at save time, see acp/core/blog/data-writer.php), same
+// canonical link: stored on the post itself (auto-built from its main
+// category page + slug at save time, see acp/core/blog/data-writer.php), same
 // pattern as product canonical urls.
 $smarty->assign('page_canonical_url', $post_data['post_canonical_url'] ?? '');
+
+// schema.org BlogPosting, see app/functions/functions.structured-data.php
+$structuredDataContext = [
+    'type' => 'BlogPosting',
+    'data' => $post_data,
+    'image' => $first_post_image != '' ? $page_contents['page_thumbnail'] : ''
+];
 
 $smarty->assign('post_id', $get_post_id);
 $smarty->assign('post_type', $post_data['post_type']);

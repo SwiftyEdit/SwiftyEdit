@@ -2,6 +2,28 @@
 /**
  * Template Setup and Smarty Configuration
  * SwiftyEdit CMS
+ *
+ * global variables
+ * @var array $page_contents app.php
+ * @var string|int $p app.php
+ * @var array $lang global project variable
+ * @var string $languagePack global project variable
+ * @var array $se_settings bootstrap.php
+ * @var object $db_content database.php
+ * @var object $smarty smarty.php
+ * @var string $se_template_layout smarty.php
+ * @var array $se_defs theme php/definitions.php
+ * @var array $se_page_types config.php
+ * @var string $se_branding_path config.php
+ * @var string $se_base_url bootstrap.php
+ * @var string $swifty_slug routing.php
+ * @var string $mod_slug routing.php
+ * @var string $hidden_csrf_token bootstrap.php
+ * @var float $se_start_time bootstrap.php
+ * @var string $prepend_head_code bootstrap.php, filled by plugins
+ * @var string $append_head_code bootstrap.php, filled by plugins
+ * @var string $prepend_body_code bootstrap.php, filled by plugins
+ * @var string $append_body_code bootstrap.php, filled by plugins
  */
 
 $structuredDataContext = [
@@ -24,6 +46,7 @@ if (!is_array($theme_values)) {
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
 }
+$smarty->assign('psw_requirements', se_password_requirements_text($lang));
 
 foreach($se_settings as $key => $val) {
     $smarty->assign("prefs_$key", $val);
@@ -79,7 +102,7 @@ if($page_contents['page_posts_types'] != '' OR $page_contents['page_type_of_use'
 }
 
 $tyo_search = se_get_type_of_use_pages('search');
-$smarty->assign("search_uri", '/'.$tyo_search['page_permalink']);
+$smarty->assign("search_uri", '/'.($tyo_search['page_permalink'] ?? ''));
 
 /* legal pages */
 $legal_pages = se_get_legal_pages();
@@ -141,6 +164,9 @@ if (is_array($page_contents)) {
 } else {
     $show_404 = "true";
 }
+// the $$k loop only sets page_* columns - restate the types for static analysis
+/** @var \Smarty\Smarty $smarty */
+/** @var object $db_content */
 
 // $page_xxx vars above only get set by the $$k loop when the column is
 // non-empty (see "Process page contents" above) - default the rest so
@@ -239,8 +265,9 @@ if(is_array($bcmenu)) {
     }
 }
 
+// no breadcrumbs on 404 pages (footer.tpl checks is_array)
 if($page_contents['page_type_of_use'] == '404') {
-    unset($bcmenu);
+    $bcmenu = null;
 }
 
 $arr_mainmenu = [];
@@ -304,22 +331,24 @@ for($i=0;$i<$cnt_snippets;$i++) {
 
 /* include modul */
 if(isset($page_modul) AND $page_modul != "") {
-    $smarty->assign('modul_head_enhanced', $modul_head_enhanced, true);
+    // $modul_head_enhanced and $mod are optional, set by the plugin's frontend/index.php
+    $smarty->assign('modul_head_enhanced', $modul_head_enhanced ?? '', true);
+    $mod = $mod ?? [];
 
     /* overwrite page's values by module */
-    if($mod['page_title'] != "") {
+    if(($mod['page_title'] ?? '') != "") {
         $page_title = $mod['page_title'];
     }
-    if($mod['page_thumbnail'] != "") {
+    if(($mod['page_thumbnail'] ?? '') != "") {
         $page_thumbnail = $mod['page_thumbnail'];
     }
-    if($mod['page_description'] != "") {
+    if(($mod['page_description'] ?? '') != "") {
         $page_meta_description = $mod['page_description'];
     }
-    if($mod['page_keywords'] != "") {
+    if(($mod['page_keywords'] ?? '') != "") {
         $page_meta_keywords = $mod['page_keywords'];
     }
-    if($mod['page_robots'] != "") {
+    if(($mod['page_robots'] ?? '') != "") {
         $page_meta_robots = $mod['page_robots'];
     }
 }
@@ -362,7 +391,8 @@ if ($page_content_editor !== null) {
  * if post psw, store md5 hash in session
  * unset session via ?reset_page_psw
  */
-if(isset($_POST['page_psw']) && $_POST['page_psw'] != '') {
+// $page_psw comes from the $$k loop above - only set on protected pages
+if(isset($_POST['page_psw'], $page_psw) && $_POST['page_psw'] != '') {
     // legacy page passwords were stored as a plain md5 hash (32 hex chars); pages
     // saved since the password_hash() migration carry its longer, salted format.
     // Existing installs keep working on the md5 path until the password is re-saved.
@@ -500,8 +530,10 @@ if(isset($page_head_enhanced) AND $page_head_enhanced != "") {
 $snippet_footer = text_parser($snippet_footer);
 $smarty->assign("snippet_footer","$snippet_footer");
 
+$session_user_class = $_SESSION['user_class'] ?? '';
+
 /* private pages, for admins only */
-if(($page_status == "private") AND ($_SESSION['user_class'] != "administrator")) {
+if(($page_status == "private") AND ($session_user_class != "administrator")) {
     $text = se_get_snippet("no_access", $languagePack,'content');
     $smarty->assign('page_content', $text);
 }
@@ -513,19 +545,20 @@ if(($page_status == "private") AND ($_SESSION['user_class'] != "administrator"))
  */
 if(isset($page_usergroup) AND $page_usergroup != "") {
     $arr_checked_groups = explode("<|-|>",$page_usergroup);
+    $is_user_in_group = [];
 
     for($i=0;$i<count($arr_checked_groups);$i++) {
-        $is_user_in_group[] = is_user_in_group($_SESSION['user_id'],"$arr_checked_groups[$i]");
+        $is_user_in_group[] = is_user_in_group($_SESSION['user_id'] ?? '',"$arr_checked_groups[$i]");
     }
 
-    if((!in_array("true",$is_user_in_group)) AND ($_SESSION['user_class'] != "administrator")) {
+    if((!in_array("true",$is_user_in_group)) AND ($session_user_class != "administrator")) {
         $text = se_get_snippet("no_access", $languagePack,'content');
         $smarty->assign('page_content', $text);
     }
 }
 
 /* draft pages for administrators only */
-if(($page_status == "draft") AND ($_SESSION['user_class'] != "administrator")){
+if(($page_status == "draft") AND ($session_user_class != "administrator")){
     $text = se_get_snippet("no_access", $languagePack,'content');
     $smarty->assign('page_content', $text);
 }
@@ -575,7 +608,7 @@ $smarty->assign('append_body_code', $append_body_code);
 // Admin helpers
 $store = '';
 if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator") {
-    $store = $_SESSION['se_admin_helpers'];
+    $store = $_SESSION['se_admin_helpers'] ?? [];
 
     if(isset($store['snippet'])) {
         $smarty->assign('admin_helpers_snippets', $store['snippet']);

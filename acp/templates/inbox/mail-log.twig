@@ -1,0 +1,27 @@
+{#
+ # log of a sent message, loaded by the inbox data-reader into the global #infoModal
+ # entries: list of {sent, time, recipient}
+ #}
+<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Log: {{ subject }}</h5>
+        </div>
+        <div class="modal-body">
+            <table class="table table-sm mb-0">
+                {% for entry in entries %}
+                    <tr>
+                        <td>{% if entry.sent %}<span class="text-success">{{ icon.check|raw }}</span>{% else %}<span class="text-danger">{{ icon.x|raw }}</span>{% endif %}</td>
+                        <td class="text-nowrap">{{ entry.time }}</td>
+                        <td>{{ entry.recipient }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td class="text-muted">{{ lang.msg_no_entries_found }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ lang.close }}</button>
+        </div>
+    </div>
+</div>

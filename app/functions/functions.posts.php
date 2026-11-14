@@ -127,6 +127,7 @@ function se_get_post_entries($start,$limit,$filter): array {
 		$sql_cat_filter = '';
 	} else {
 
+		$sql_cat_filter = '';
 		$cats = explode(',', $filter['categories']);
 		foreach($cats as $c) {
 			if($c != '') {
@@ -157,6 +158,7 @@ function se_get_post_entries($start,$limit,$filter): array {
 		$sql_label_filter = '';
 	} else {
 
+		$sql_label_filter = '';
 		$checked_labels_array = explode('-', $filter['labels']);
 
 		for($i=0;$i<count($se_labels);$i++) {
@@ -334,6 +336,7 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql_cat_filter = '';
     } else {
 
+        $sql_cat_filter = '';
         $cats = explode(',', $filter['categories']);
         foreach($cats as $c) {
             if($c != '') {
@@ -349,6 +352,7 @@ function se_get_event_entries($start,$limit,$filter) {
         $sql_label_filter = '';
     } else {
 
+        $sql_label_filter = '';
         $checked_labels_array = explode('-', $filter['labels']);
 
         for($i=0;$i<count($se_labels);$i++) {
@@ -445,32 +449,6 @@ function se_get_event_entries($start,$limit,$filter) {
 }
 
 
-/**
- * count all entries
- */
- 
-function se_cnt_post_entries() {
-	
-	global $db_posts;
-	
-	$sql = "SELECT count(*) AS 'All',
-		(SELECT count(*) FROM se_posts WHERE post_status LIKE '%1%' ) AS 'Public',
-		(SELECT count(*) FROM se_posts WHERE post_status LIKE '%2%' ) AS 'Draft',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%m%' ) AS 'Message',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%l%' ) AS 'Link',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%v%' ) AS 'Video',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%i%' ) AS 'Image',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%e%' ) AS 'Event',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%p%' ) AS 'Product',
-		(SELECT count(*) FROM se_posts WHERE post_type LIKE '%f%' ) AS 'File'
-	FROM se_posts
-	";
-	
-	$stats = $db_posts->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-	return $stats;
-}
-
 
 function se_get_post_data($id) {
 	
@@ -521,6 +499,44 @@ function se_post_is_publicly_visible(array $data): bool {
 }
 
 /**
+ * YouTube video id from the url of a video post (post_video_url).
+ * Supports youtube.com/watch?v=, youtu.be/, /embed/, /shorts/ and /live/ urls.
+ *
+ * @param string $url stored html-encoded (blog data-writer)
+ * @return string the video id, empty if there is none
+ */
+function se_get_youtube_video_id(string $url): string {
+
+    $parts = parse_url(trim(html_entity_decode($url, ENT_QUOTES, 'UTF-8')));
+    if (!is_array($parts)) {
+        return '';
+    }
+
+    $host = preg_replace('/^(www|m)\./', '', strtolower($parts['host'] ?? ''));
+    $path = $parts['path'] ?? '';
+    parse_str($parts['query'] ?? '', $query);
+
+    if (!in_array($host, ['youtube.com', 'youtube-nocookie.com', 'youtu.be'])) {
+        return '';
+    }
+
+    $video_id = '';
+    if (isset($query['v']) && is_string($query['v'])) {
+        $video_id = $query['v'];
+    } else if ($host == 'youtu.be') {
+        $video_id = explode('/', trim($path, '/'))[0];
+    } else if (preg_match('~^/(embed|shorts|live)/([^/]+)~', $path, $matches)) {
+        $video_id = $matches[2];
+    }
+
+    // youtube ids are 11 characters, the id ends up in the embed url
+    if (!preg_match('/^[A-Za-z0-9_-]{11}$/', $video_id)) {
+        return '';
+    }
+    return $video_id;
+}
+
+/**
  * Whether an event is visible to a non-admin frontend visitor - same rules
  * as se_post_is_publicly_visible(). Past events stay visible by URL, only
  * the listing hides them.
@@ -565,7 +581,7 @@ function se_post_print_currency($number) {
 /**
  * calculate product's price
  * return net and gross price, formatted and raw
- * @param float $price price net (stored in the database)
+ * @param float|string $price price net (stored in the database, decimal comma)
  * @param integer $tax
  * @param integer $amount
  * @return array gross, gross_single, gross_raw, net, net_single, net_raw
@@ -578,9 +594,9 @@ function se_posts_calc_price($price,$tax,$amount=1) {
 	
 	$price = str_replace('.', '', $price);
 	$price = str_replace(',', '.', $price);
-    $price = number_format($price, 8, '.', '');
+    $price = number_format((float) $price, 8, '.', '');
 
-    $price_single_net = round($price,8);
+    $price_single_net = round((float) $price,8);
     $price_sum_net = $price_single_net*$amount;
 
     if($tax != '0') {

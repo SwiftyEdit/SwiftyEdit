@@ -1,0 +1,56 @@
+{#
+ # messages in /admin/inbox/mail/, rendered by acp/core/inbox/mail.php
+ # messages: list of {id, created, lastedit, sent (empty if not sent), author, subject, recipients, group}
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.mailbox|raw }} {{ lang.nav_btn_mails }}
+    <a href="/admin/inbox/mail/new/" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
+</div>
+
+<div class="card p-3">
+    {% if messages %}
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ lang.label_mail_subject }}</th>
+                        <th>{{ lang.label_mail_recipients }}</th>
+                        <th>{{ lang.label_author }}</th>
+                        <th>{{ lang.label_time_last_edit }}</th>
+                        <th>{{ lang.label_time_sent }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages %}
+                        <tr id="message{{ message.id }}">
+                            <td>
+                                <a href="/admin/inbox/mail/edit/{{ message.id }}/">{{ message.subject|default('-') }}</a>
+                                <small class="d-block text-muted">{{ lang.label_time_created }}: {{ message.created }}</small>
+                            </td>
+                            <td>{% if message.group %}{{ icon.user_friends|raw }} {% endif %}{{ message.recipients }}</td>
+                            <td>{{ message.author }}</td>
+                            <td class="text-nowrap">{{ message.lastedit }}</td>
+                            <td class="text-nowrap">
+                                {% if message.sent %}
+                                    {# the log of the sending is loaded into the global #infoModal (acp/index.php) #}
+                                    <a href="#" hx-get="{{ reader_uri }}?mail_log={{ message.id }}" hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal">{{ message.sent }}</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a href="/admin/inbox/mail/edit/{{ message.id }}/" class="btn btn-sm btn-default" title="{{ lang.edit }}">{{ icon.edit|raw }}</a>
+                                {# the row is removed after deleting #}
+                                <button hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="closest tr" hx-swap="delete" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_message" value="{{ message.id }}" class="btn btn-sm btn-default text-danger" title="{{ lang.btn_delete }}">{{ icon.trash_alt|raw }}</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted mb-0">{{ lang.msg_no_entries_found }}</p>
+    {% endif %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+</div>

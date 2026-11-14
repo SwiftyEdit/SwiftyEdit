@@ -1,15 +1,23 @@
 <?php
 
 /**
+ * SwiftyEdit /admin-xhr/addons/write/
+ * layout of the frontend, theme options, activation of plugins,
+ * installation, update and deletion of plugins and themes -
+ * requests of activated plugins are handed over to their backend/writer.php
+ *
  * global variables
  * @var array $lang
  * @var object $db_content
  * @var array $se_settings
+ * @var object $twig
  * @var bool $se_upload_addons from config.php
  */
 
+$writer_uri = '/admin-xhr/addons/write/';
+
 // give the plugins the possibility to write via xhr
-$path = explode('/', $_REQUEST['query']);
+$path = explode('/', $_REQUEST['query'] ?? '');
 // strict whitelist instead of basename() - basename() alone still lets a bare
 // ".." through (no "/" for it to strip), which would point $plugin_root one
 // level above plugins/; this also rules out reaching any plugin that hasn't
@@ -20,204 +28,192 @@ if ($plugin !== '' && se_is_plugin_activated($plugin)) {
     $plugin_base = '/admin/addons/plugin/' . $plugin . '/';
     $plugin_root = SE_ROOT.'plugins/'.$plugin.'/';
     $plugin_writer_file = SE_ROOT.'plugins/'.$plugin.'/backend/writer.php';
-    if(is_file("$plugin_writer_file")) {
-        include_once "$plugin_writer_file";
+    if(is_file($plugin_writer_file)) {
+        include_once $plugin_writer_file;
         exit;
     }
 }
 
-// save the default template
+/**
+ * directory name of an installed theme or plugin
+ *
+ * @param mixed $name posted name
+ * @param string $root SE_THEMES or SE_PLUGINS
+ * @return string the name, empty if there is no such directory
+ */
+$installed_addon = static function(mixed $name, string $root): string {
+    $name = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $name);
+    return ($name !== '' && is_dir($root.'/'.$name)) ? $name : '';
+};
+
+/**
+ * response of the installation steps, see acp/templates/addons/install-response.twig
+ */
+$install_response = static function(array $data) use ($twig, $writer_uri): void {
+    $target_id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['target_id'] ?? '') ?: 'get-addon-response';
+    echo $twig->render('addons/install-response.twig', $data + [
+        // the catalog targets its shared install modal, the install page its response div
+        'in_modal' => ($target_id === 'catalogInstallModalBody'),
+        'target_id' => $target_id,
+        'writer_uri' => $writer_uri
+    ]);
+};
+
+// save the theme, its layout and stylesheet for the frontend
 if(isset($_POST['save_default_layout'])) {
 
-    // template
-    $select_template = explode("<|-|>", $_POST['select_template']);
-    $prefs_template = $select_template[0];
-    $prefs_template_layout = $select_template[1];
+    $theme = $installed_addon($_POST['theme'] ?? '', SE_THEMES);
+    $layout = basename((string) ($_POST['template_layout'] ?? ''));
+    $stylesheet = basename((string) ($_POST['template_stylesheet'] ?? ''));
 
-    $select_template_sytlesheet = basename($_POST['select_template_sytlesheet']);
+    if($theme === '' || $theme === 'administration' || !is_file(SE_THEMES.'/'.$theme.'/templates/'.$layout)) {
+        show_toast($lang['msg_error_db_changed'], 'danger');
+        exit;
+    }
+    // the stylesheet is optional, but has to be a color variant of the theme
+    if($stylesheet !== '' && !is_file(SE_THEMES.'/'.$theme.'/dist/skins/'.$stylesheet)) {
+        $stylesheet = '';
+    }
 
-    $data = [
-        "prefs_template" =>  "$prefs_template",
-        "prefs_template_layout" =>  "$prefs_template_layout",
-        "prefs_template_stylesheet" =>  "$select_template_sytlesheet"
-    ];
-
-    se_write_option($data,'se');
-    record_log($_SESSION['user_nick'],"edit system design <b>$prefs_template</b>","6");
+    se_write_option([
+        "prefs_template" => $theme,
+        "prefs_template_layout" => $layout,
+        "prefs_template_stylesheet" => $stylesheet
+    ], 'se');
+    record_log($_SESSION['user_nick'], "edit system design $theme", 6);
     se_delete_smarty_cache();
-    show_toast($lang['msg_success_db_changed'],'success');
-    header( "HX-Trigger: update_themes_list");
+    show_toast($lang['msg_success_db_changed'], 'success');
+    header("HX-Trigger: update_themes_list");
+    exit;
 }
 
 // activate plugin
 if(isset($_POST['activate_addon'])) {
-    $plugin_base = basename($_POST['activate_addon']);
-    $info_file = SE_ROOT.'plugins/'.$plugin_base.'/info.json';
-    if(is_file($info_file)) {
-        $info = json_decode(file_get_contents($info_file), true);
+    $plugin_dir = $installed_addon($_POST['activate_addon'], SE_PLUGINS);
+    $info = ($plugin_dir !== '') ? json_decode((string) file_get_contents(SE_PLUGINS.'/'.$plugin_dir.'/info.json'), true) : null;
+    // a double click must not activate the plugin twice
+    if(is_array($info) && !se_is_plugin_activated($plugin_dir)) {
         $db_content->insert("se_addons", [
             "addon_type" => "plugin",
-            "addon_dir" => $plugin_base,
-            "addon_name" => $info['addon']['name'],
-            "addon_version" => $info['addon']['version']
+            "addon_dir" => $plugin_dir,
+            "addon_name" => $info['addon']['name'] ?? $plugin_dir,
+            "addon_version" => $info['addon']['version'] ?? ''
         ]);
         // editor plugins: publish their browser assets to /assets/editors
-        se_publish_editor_assets($plugin_base);
+        se_publish_editor_assets($plugin_dir);
         mods_check_in();
     }
-    header( "HX-Trigger: update_plugins_list");
+    header("HX-Trigger: update_plugins_list");
+    exit;
 }
 
 // deactivate plugin
 if(isset($_POST['deactivate_addon'])) {
-    $plugin_base = basename($_POST['deactivate_addon']);
+    $plugin_dir = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $_POST['deactivate_addon']);
     $db_content->delete("se_addons", [
-        "AND" => [
-            "addon_dir" => $plugin_base
-        ]
+        "addon_type" => "plugin",
+        "addon_dir" => $plugin_dir
     ]);
     // editor plugins: remove their published browser assets again
-    se_unpublish_editor_assets($plugin_base);
+    se_unpublish_editor_assets($plugin_dir);
     mods_check_in();
-    header( "HX-Trigger: update_plugins_list");
+    header("HX-Trigger: update_plugins_list");
+    exit;
 }
 
+// options of a theme, only the options the theme defines in php/options.php
 if(isset($_POST['save_theme_options'])) {
-    se_write_theme_options($_POST);
-    show_toast($lang['msg_success_db_changed'],'success');
+    $theme = $installed_addon($_POST['theme'] ?? '', SE_THEMES);
+    $theme_options = se_get_theme_option_fields($theme);
+    if($theme === '' || $theme_options === []) {
+        exit;
+    }
+
+    $data = ['theme' => $theme];
+    foreach($theme_options as $key => $option) {
+        $value = $_POST['theme_'.$key] ?? '';
+        // a select only accepts its own options
+        if(($option['type'] ?? '') === 'select' && !array_key_exists($value, $option['options'] ?? [])) {
+            $value = '';
+        }
+        $data['theme_'.$key] = sanitizeUserInputs((string) $value);
+    }
+    se_write_theme_options($data);
+    se_delete_smarty_cache();
+    show_toast($lang['msg_success_db_changed'], 'success');
+    exit;
 }
 
+// the steps below install addon code - reachable directly regardless of whether the
+// install and catalog buttons are shown, so they check the "can upload sensitive files"
+// right and the switch for the addon upload themselves
+if(isset($_POST['get_addon_info_from_url']) || isset($_POST['install_addon_from_url']) || isset($_POST['update_addon_from_url'])) {
 
-// Step 1 – Load and display plugin info
+    if(!se_hasPermission('drm_acp_sensitive_files')) {
+        $install_response(['step' => 'error', 'message' => $lang['rm_no_access']]);
+        exit;
+    }
+    if(!$se_upload_addons) {
+        $install_response(['step' => 'error', 'message' => $lang['msg_info_upload_addons_deactivated']]);
+        exit;
+    }
+}
+
+// Step 1 – load and display the info of a plugin or theme
 if(isset($_POST['get_addon_info_from_url'])) {
 
-    // Reachable directly via /admin-xhr/addons/write/ regardless of whether
-    // the Install/Catalog buttons are shown - the "can upload sensitive
-    // files" right gates install/uninstall of plugins and themes.
-    if(!se_hasPermission('drm_acp_sensitive_files')) {
-        echo 'Error: '.$lang['rm_no_access'];
-        return;
-    }
-
-    if(!$se_upload_addons) {
-        echo 'Error: Plugin installation via URL is disabled.';
-        return;
-    }
-
-    $url = trim($_POST['get_addon_info_from_url']);
-
-    // Response target for the confirm/install step below. Defaults to
-    // install.php's own single #get-addon-response div (unchanged, existing
-    // behaviour) - the catalog browser instead targets its shared install
-    // modal (#catalogInstallModalBody, see catalog.php), so swapping the
-    // confirm step in doesn't grow a card and desync its grid row's height
-    // against its siblings.
-    $target_id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['target_id'] ?? '') ?: 'get-addon-response';
-    $is_modal  = $target_id === 'catalogInstallModalBody';
-
-    // Only allow HTTPS
+    $url = trim((string) $_POST['get_addon_info_from_url']);
     if(!str_starts_with($url, 'https://')) {
-        echo 'Error: Only HTTPS URLs are allowed.';
-        return;
+        $install_response(['step' => 'error', 'message' => $lang['addons_msg_https_only']]);
+        exit;
     }
 
-    // Automatically append info.json if not present
+    // automatically append info.json if not present
     if(!str_ends_with($url, '.json')) {
         $url = rtrim($url, '/').'/info.json';
     }
 
     $info = se_load_addon_info($url);
-
     if(!$info['success']) {
-        echo 'Error: '.$info['message'];
-        return;
+        $install_response(['step' => 'error', 'message' => $info['message']]);
+        exit;
     }
 
-    // Editor plugins (docs/v2/en/09-02-plugins.md: "addon.type must be editor")
-    // install exactly like a regular plugin - same zip, same SE_PLUGINS
-    // extraction. The editor-specific wiring (se_publish_editor_assets())
-    // only happens later, on activation, so no special-casing is needed here.
-    // Themes share the same info.json shape (docs/v2/en/09-01-00-themes.md)
-    // and confirm table - only the actual ZIP target differs, which Step 2
-    // below branches on.
-    if(in_array($info['addon_type'], ['plugin', 'editor', 'theme'], true)) {
-
-        $compatible_version = $info['compatible_version'];
-
-        // Same confirm table for plugins, editors and themes
-        $confirm_table = '<table class="table">'
-            .'<tr><th>Name</th><td>'.$info['addon']['name'].'</td></tr>'
-            .'<tr><th>Author</th><td>'.$info['addon']['author'].'</td></tr>'
-            .'<tr><th>Description</th><td>'.$info['addon']['description'].'</td></tr>'
-            .'<tr><th>Version</th><td>'.$compatible_version['version'].' (Build '.$compatible_version['build'].')</td></tr>'
-            .'<tr><th>Requires SwiftyEdit</th><td>>= '.$compatible_version['requires_build'].'</td></tr>'
-            .'</table>';
-
-        $vals = json_encode([
-            'csrf_token' => $_SESSION['token'],
-            'install_addon_from_url' => 1,
-            'addon_url' => $url,
-            'target_id' => $target_id
-        ]);
-
-        $install_btn = '<button class="btn btn-primary"
-                hx-post="/admin-xhr/addons/write/"
-                hx-vals=\''.$vals.'\'
-                hx-target="#'.$target_id.'">
-                Install</button>';
-
-        if($is_modal) {
-            // Swapped into the modal-content div directly (see catalog.php's
-            // #catalogInstallModal shell) - the standard modal-header/-body/
-            // -footer children reproduce the same chrome that shell would
-            // otherwise ship empty.
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title">'.$info['addon']['name'].'</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">'.$confirm_table.'</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.$lang['close'].'</button>';
-            echo $install_btn;
-            echo '</div>';
-        } else {
-            echo '<div class="card p-3 mt-3">'.$confirm_table.$install_btn.'</div>';
-        }
-
-    } else {
-        echo 'Error: Unknown addon type.';
-        return;
+    // editor plugins install exactly like a regular plugin, the editor specific wiring
+    // happens on activation - themes share the same info.json shape, only the ZIP target differs
+    if(!in_array($info['addon_type'], ['plugin', 'editor', 'theme'], true)) {
+        $install_response(['step' => 'error', 'message' => $lang['addons_msg_unknown_type']]);
+        exit;
     }
+
+    $install_response([
+        'step' => 'confirm',
+        'addon' => [
+            'name' => $info['addon']['name'] ?? $info['plugin_id'],
+            'author' => $info['addon']['author'] ?? '',
+            'description' => $info['addon']['description'] ?? '',
+            'version' => $info['compatible_version']['version'] ?? '',
+            'build' => $info['compatible_version']['build'] ?? '',
+            'requires_build' => $info['compatible_version']['requires_build'] ?? ''
+        ],
+        'addon_url' => $url
+    ]);
+    exit;
 }
 
-// Step 2 – Install plugin
+// Step 2 – install the plugin or theme
 if(isset($_POST['install_addon_from_url'])) {
 
-    if(!se_hasPermission('drm_acp_sensitive_files')) {
-        echo 'Error: '.$lang['rm_no_access'];
-        return;
-    }
-
-    if(!$se_upload_addons) {
-        echo 'Error: Plugin installation via URL is disabled.';
-        return;
-    }
-
-    $url = trim($_POST['addon_url']);
-    $target_id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['target_id'] ?? '') ?: 'get-addon-response';
-    $is_modal  = $target_id === 'catalogInstallModalBody';
-
-    // Only allow HTTPS
+    $url = trim((string) ($_POST['addon_url'] ?? ''));
     if(!str_starts_with($url, 'https://')) {
-        echo 'Error: Only HTTPS URLs are allowed.';
-        return;
+        $install_response(['step' => 'error', 'message' => $lang['addons_msg_https_only']]);
+        exit;
     }
 
     $info = se_load_addon_info($url);
-
     if(!$info['success']) {
-        echo 'Error: '.$info['message'];
-        return;
+        $install_response(['step' => 'error', 'message' => $info['message']]);
+        exit;
     }
 
     if(in_array($info['addon_type'], ['plugin', 'editor'], true)) {
@@ -225,85 +221,82 @@ if(isset($_POST['install_addon_from_url'])) {
     } elseif($info['addon_type'] === 'theme') {
         $result = se_install_theme($info['plugin_id'], $info['compatible_version']['download_url']);
     } else {
-        echo 'Error: Unknown addon type.';
-        return;
+        $install_response(['step' => 'error', 'message' => $lang['addons_msg_unknown_type']]);
+        exit;
     }
 
-    if($is_modal) {
-        // Refresh the catalog grid on close so the just-installed entry
-        // switches from its Install button to the "Installed" badge
-        // (list_catalog in data-reader.php listens for this same event).
-        echo '<div class="modal-body">'.$result['message'].'</div>';
-        echo '<div class="modal-footer">';
-        echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="htmx.trigger(\'body\', \'refresh_catalog\')">'.$lang['close'].'</button>';
-        echo '</div>';
-    } else {
-        echo $result['message'];
-    }
+    $install_response(['step' => 'result', 'success' => $result['success'], 'message' => $result['message']]);
+    exit;
 }
 
-// Handle update request
+// update a plugin or theme, the button of the update status (see update-status.twig)
 if(isset($_POST['update_addon_from_url'])) {
 
-    if(!se_hasPermission('drm_acp_sensitive_files')) {
-        echo 'Error: '.$lang['rm_no_access'];
-        return;
-    }
-
-    // same switch as install and catalog - an update writes addon code too
-    if(!$se_upload_addons) {
-        echo $lang['msg_info_upload_addons_deactivated'];
-        return;
-    }
-
     // strict whitelist - the id becomes the target directory of the ZIP
-    $plugin_id = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['plugin_id'] ?? '');
-    $download_url = trim($_POST['download_url']);
+    $plugin_id = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) ($_POST['plugin_id'] ?? ''));
+    $download_url = trim((string) ($_POST['download_url'] ?? ''));
 
-    if(empty($plugin_id) || empty($download_url)) {
-        echo 'Error: Missing plugin ID or download URL.';
-        return;
+    if($plugin_id === '' || $download_url === '') {
+        $install_response(['step' => 'error', 'message' => $lang['addons_msg_missing_update_data']]);
+        exit;
     }
-
-    // Only allow HTTPS
     if(!str_starts_with($download_url, 'https://')) {
-        echo 'Error: Only HTTPS URLs are allowed.';
-        return;
+        $install_response(['step' => 'error', 'message' => $lang['addons_msg_https_only']]);
+        exit;
     }
 
-    // Update plugin or theme
     if(($_POST['addon_type'] ?? 'plugin') === 'theme') {
         $result = se_install_theme($plugin_id, $download_url);
         se_delete_smarty_cache();
     } else {
         $result = se_install_plugin($plugin_id, $download_url);
     }
-    echo $result['message'];
+    $install_response(['step' => 'result', 'success' => $result['success'], 'message' => $result['message']]);
+    exit;
 }
 
+// delete a plugin - an activated one is deactivated first
 if(isset($_POST['delete_plugin'])) {
 
     if(!se_hasPermission('drm_acp_sensitive_files')) {
-        return;
+        show_toast($lang['rm_no_access'], 'danger');
+        exit;
     }
 
-    se_delete_addon($_POST['delete_plugin'],'plugin');
-    header( "HX-Trigger: update_plugins_list");
+    $plugin_dir = $installed_addon($_POST['delete_plugin'], SE_PLUGINS);
+    if($plugin_dir === '') {
+        exit;
+    }
+
+    if(se_is_plugin_activated($plugin_dir)) {
+        $db_content->delete("se_addons", [
+            "addon_type" => "plugin",
+            "addon_dir" => $plugin_dir
+        ]);
+        se_unpublish_editor_assets($plugin_dir);
+    }
+    se_delete_addon($plugin_dir, 'plugin');
+    mods_check_in();
+    show_toast($lang['msg_success_entry_delete'], 'success');
+    header("HX-Trigger: update_plugins_list");
+    exit;
 }
 
+// delete a theme
 if(isset($_POST['delete_theme'])) {
 
     if(!se_hasPermission('drm_acp_sensitive_files')) {
-        return;
+        show_toast($lang['rm_no_access'], 'danger');
+        exit;
     }
 
-    $theme = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['delete_theme']);
+    $theme = $installed_addon($_POST['delete_theme'], SE_THEMES);
 
     // the default and the backend theme are always required, and the
     // currently active theme would leave the frontend without a template
     if($theme === '' || in_array($theme, ['default', 'administration', $se_settings['template']], true)) {
-        show_toast($lang['msg_error_theme_in_use'],'danger');
-        return;
+        show_toast($lang['msg_error_theme_in_use'], 'danger');
+        exit;
     }
 
     // pages can override the default theme (se_pages.page_template)
@@ -311,11 +304,13 @@ if(isset($_POST['delete_theme'])) {
         "page_template" => $theme
     ]);
     if($cnt_pages > 0) {
-        show_toast($lang['msg_error_theme_in_use'],'danger');
-        return;
+        show_toast($lang['msg_error_theme_in_use'], 'danger');
+        exit;
     }
 
-    se_delete_addon($theme,'theme');
+    se_delete_addon($theme, 'theme');
     se_delete_smarty_cache();
-    header( "HX-Trigger: update_themes_list");
+    show_toast($lang['msg_success_entry_delete'], 'success');
+    header("HX-Trigger: update_themes_list");
+    exit;
 }

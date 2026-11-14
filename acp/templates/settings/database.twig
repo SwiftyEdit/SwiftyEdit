@@ -1,0 +1,50 @@
+{# database settings in /admin/settings/database/, rendered by acp/core/settings/database.php #}
+{% extends 'layout/settings-page.twig' %}
+
+{% block content %}
+    {% if not is_sqlite %}
+        <div class="alert alert-info">{{ lang.label_settings_wal_mode_mysql_hint }}</div>
+    {% else %}
+        {% embed 'components/settings/section.twig' with {help: help['database-wal']} %}
+            {% block fields %}
+                {# own writer action: the journal mode is set on all three database files #}
+                <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
+                    <div class="mb-3">{{ wal_input|raw }}</div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" name="update_database" value="update">{{ lang.btn_update }}</button>
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            {% endblock %}
+        {% endembed %}
+
+        {% embed 'components/settings/section.twig' with {help: help['database-vacuum'], title: lang.label_settings_vacuum} %}
+            {% block fields %}
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>{{ lang.label_settings_vacuum_file }}</th>
+                            <th class="text-end">{{ lang.label_settings_vacuum_size }}</th>
+                            <th class="text-end">{{ lang.label_settings_vacuum_free }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in db_files %}
+                            <tr>
+                                <td><code>{{ file.name }}</code></td>
+                                <td class="text-end">{{ file.size }}</td>
+                                <td class="text-end">{{ file.free }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend" hx-confirm="{{ lang.label_settings_vacuum_confirm }}">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-default" name="vacuum_database" value="vacuum">{{ lang.btn_settings_vacuum }}</button>
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+{% endblock %}

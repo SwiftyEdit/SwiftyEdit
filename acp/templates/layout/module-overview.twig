@@ -1,0 +1,53 @@
+{#
+ # overview page of a module: the list on the left, search and filters on the right
+ # extended by <module>/list.twig, which fills the blocks
+ #   list    - the htmx container that loads the list (rendered inside .module-overview-list)
+ #   sidebar - module specific filters below the search
+ #   header_actions - buttons in the header (optional, default: the "new" button of new_url)
+ #
+ # variables: title, title_icon, docs_link (optional, html), new_url (optional), writer_uri, reader_uri,
+ #   search_name (POST name of the search input, optional - no search card without it),
+ #   searches_action (reader action of the active search keywords, optional - default list_active_searches,
+ #   for modules that share a reader with another list, e.g. shop products and features),
+ #   list_triggers (htmx events that reload the list and the active searches)
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ title_icon|raw }} {{ title }} {{ docs_link|default('')|raw }}
+    {# header_actions: buttons on the right, default the "new" button of new_url #}
+    {% block header_actions %}
+        {% if new_url %}
+            <a href="{{ new_url }}" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
+        {% endif %}
+    {% endblock %}
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        {# module-overview-list: hook for styling the list area of all modules #}
+        <div class="card p-3 module-overview-list">
+            {% block list %}{% endblock %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        {% if search_name is defined and search_name %}
+            <div class="card mb-2">
+                <div class="card-header">{{ lang.filter }}</div>
+                <div class="card-body">
+                    <form hx-post="{{ writer_uri }}" hx-swap="none" hx-on--after-request="this.reset()" method="POST">
+                        <div class="input-group">
+                            <span class="input-group-text">{{ icon.search|raw }}</span>
+                            <input class="form-control" type="text" name="{{ search_name }}" value="" placeholder="{{ lang.search }}">
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+                    {# remove buttons of the active search keywords, see components/list/active-searches.twig #}
+                    <div class="pt-1" hx-post="{{ reader_uri }}?action={{ searches_action|default('list_active_searches') }}" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+                </div>
+            </div>
+        {% else %}
+            {# the htmx actions of the list include this token #}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {% endif %}
+        {% block sidebar %}{% endblock %}
+    </div>
+</div>

@@ -1,0 +1,60 @@
+{#
+ # pieces of the list rows, shared by the module lists
+ # {% import 'components/list/macros.twig' as list %}
+ #}
+
+{# star to pin an entry on top, the writer handles "sfixed" (pin) and "rfixed" (unpin) #}
+{% macro fixed_toggle(id, fixed, writer_uri) %}
+    <form hx-post="{{ writer_uri }}" hx-swap="none">
+        <button type="submit" class="btn btn-link w-100" name="{{ fixed ? 'rfixed' : 'sfixed' }}" value="{{ id }}">{{ (fixed ? icon.star : icon.star_outline)|raw }}</button>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+{% endmacro %}
+
+{# priority input, saved on change - the writer handles "priority" + "prio_id" #}
+{% macro priority(id, value, writer_uri) %}
+    <form hx-post="{{ writer_uri }}" hx-trigger="change, submit" hx-swap="none">
+        <input type="number" name="priority" value="{{ value }}" class="form-control" style="max-width:100px">
+        <input type="hidden" name="prio_id" value="{{ id }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+{% endmacro %}
+
+{# delete button with confirm, the toast of the writer is appended to the body #}
+{% macro delete_button(name, id, writer_uri) %}
+    <button name="{{ name }}" value="{{ id }}" class="btn btn-sm btn-default text-danger" hx-post="{{ writer_uri }}" hx-confirm="{{ lang.msg_confirm_delete }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']">{{ icon.trash_alt|raw }}</button>
+{% endmacro %}
+
+{# thumbnail with the full image as popover, src empty for "no image" #}
+{% macro thumb(src) %}
+    {% if src %}
+        <a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="{{ '<img src="' ~ src|e ~ '">' }}">
+            <div class="show-thumb" style="background-image: url({{ src }});"></div>
+        </a>
+    {% else %}
+        <div class="show-thumb" style="background-image: url(/themes/administration/images/no-image.png);"></div>
+    {% endif %}
+{% endmacro %}
+
+{# button that shows text (e.g. a snippet name) and copies copy_value on click (default: the text),
+   see src/js/components/copy-to-clipboard.js - all buttons have the same width (.copy-text in
+   _buttons.scss), long texts end with "...", the popover shows what is copied #}
+{% macro copy_text(text, copy_value = null) %}
+    {% set copy_value = copy_value ?? text %}
+    <button type="button" class="btn btn-sm btn-default font-monospace copy-btn copy-text" data-clipboard-text="{{ copy_value }}"
+            data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" data-bs-custom-class="popover-copy"
+            data-bs-title="{{ lang.copy }}" data-bs-content="{{ copy_value }}" data-copied-title="{{ lang.copied }}">
+        <span class="text-truncate">{{ text }}</span>
+        <span class="opacity-50">{{ icon.clipboard|raw }}</span>
+    </button>
+{% endmacro %}
+
+{# labels: list of {color, title} #}
+{% macro labels(labels) %}
+    {% for label in labels %}<span class="label-dot" style="background-color:{{ label.color }};" title="{{ label.title }}"></span>{% endfor %}
+{% endmacro %}
+
+{# categories: list of {name, description} #}
+{% macro categories(categories) %}
+    {% for category in categories %}<span class="text-muted small" title="{{ category.description }}">{{ icon.tags|raw }} {{ category.name }}</span> {% endfor %}
+{% endmacro %}

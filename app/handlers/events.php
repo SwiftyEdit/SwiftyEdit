@@ -1,14 +1,30 @@
 <?php
-
+/**
+ * SwiftyEdit frontend - events
+ * list events (events-list.php) or show one event (events-display.php)
+ *
+ * @var array $se_settings
+ * @var array $page_contents
+ * @var string $mod_slug routing.php
+ * @var string $swifty_slug routing.php
+ * @var string $query routing.php
+ * @var object $db_content
+ */
 
 $time_string_now = time();
 $display_mode = 'list_events';
 $status_404 = true;
+$get_event_id = 0;
+$categories = array();
 
 /* defaults */
 $events_start = 0;
-$events_limit = (int) $se_settings['posts_entries_per_page'];
-if($events_limit == '' || $events_limit < 1) {
+// own setting of the events, without it the number of the posts
+$events_limit = (int) ($se_settings['events_entries_per_page'] ?? 0);
+if($events_limit < 1) {
+    $events_limit = (int) ($se_settings['posts_entries_per_page'] ?? 0);
+}
+if($events_limit < 1) {
     $events_limit = 10;
 }
 
@@ -27,17 +43,22 @@ $events_filter['tag'] = clean_filename($_GET['tag'] ?? '');
 
 
 if(substr("$mod_slug", -5) == '.html') {
-    $get_event_id = (int) basename(end(explode("-", $mod_slug)));
+    $file_parts = explode("-", $mod_slug);
+    $get_event_id = (int) basename(end($file_parts));
     $display_mode = 'show_event';
 }
 
 $all_categories = se_get_categories();
 $array_mod_slug = explode("/", $mod_slug);
+$array_mod_slug[1] = $array_mod_slug[1] ?? '';
+$array_mod_slug[2] = $array_mod_slug[2] ?? '';
 
 foreach($all_categories as $cats) {
 
     //$this_nav_cat_item = $tpl_nav_cats_item;
-    $show_category_title = $cats['cat_description'];
+    // the title of the category (tab "info"), the name if it has none -
+    // cat_description is the meta description, it is passed on as such
+    $show_category_title = ($cats['cat_title'] != '') ? $cats['cat_title'] : $cats['cat_name'];
     $show_category_name = $cats['cat_name'];
     $cat_href = '/'.$swifty_slug.$cats['cat_name_clean'].'/';
 
@@ -53,6 +74,7 @@ foreach($all_categories as $cats) {
     $categories[] = array(
         "cat_href" => $cat_href,
         "cat_title" => $show_category_title,
+        "cat_description" => $cats['cat_description'],
         "cat_name" => $show_category_name,
         "cat_class" => $cat_class,
         "cat_hash" => $cats['cat_hash']
@@ -65,17 +87,18 @@ foreach($all_categories as $cats) {
         $display_mode = 'list_posts_category';
 
         // only /<category>/ and /<category>/p/<n>/ are valid category urls
-        if(($array_mod_slug[1] ?? '') == '' || $array_mod_slug[1] == 'p') {
+        if($array_mod_slug[1] == '' || $array_mod_slug[1] == 'p') {
             $status_404 = false;
         }
 
         if($array_mod_slug[1] == 'p') {
             if(is_numeric($array_mod_slug[2])) {
-                $events_start = $array_mod_slug[2];
+                $events_start = (int) $array_mod_slug[2];
             } else {
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: /$swifty_slug");
                 header("Connection: close");
+                exit;
             }
         }
     }
@@ -87,18 +110,19 @@ if($array_mod_slug[0] == 'p') {
     $status_404 = false;
 
     if(is_numeric($array_mod_slug[1])) {
-        $events_start = $array_mod_slug[1];
+        $events_start = (int) $array_mod_slug[1];
     } else {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: /$swifty_slug");
         header("Connection: close");
+        exit;
     }
 }
 
 /* we are on the event display page, but we have no post id
  * get an event page and redirect */
 
-if($page_contents['page_type_of_use'] == 'display_event' AND $get_event_id == '') {
+if($page_contents['page_type_of_use'] == 'display_event' AND $get_event_id < 1) {
 
     $target_page = $db_content->get("se_pages", "page_permalink", [
         "AND" => [
@@ -110,6 +134,7 @@ if($page_contents['page_type_of_use'] == 'display_event' AND $get_event_id == ''
     header("HTTP/1.1 301 Moved Permanently");
     header("Location: /$target_page");
     header("Connection: close");
+    exit;
 }
 
 

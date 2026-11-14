@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @var \Medoo\Medoo $db_user
+ * @var array $lang
+ * @var array $icon
+ */
+
 echo '<div class="subHeader d-flex align-items-center">';
 echo $icon['users'].' / '.$lang['nav_btn_user']. ' / '.$lang['nav_btn_settings']. ' / '.$_SESSION['user_nick'];
 echo '</div>';

@@ -1,26 +1,33 @@
-<div class="input-group my-1">
-    <span class="input-group-text"><i class="bi bi-search"></i></span>
-    <input type="text" class="form-control no-enter"
-           hx-post="/admin-xhr/widgets/read/?change_filter"
-           hx-params="product_widget_text_filter,csrf_token"
-           hx-trigger="keyup changed delay:500ms"
-           hx-swap="none"
-           name="product_widget_text_filter"
-           value="{{ product_widget_text_filter }}">
-</div>
+{#
+ # product picker for related products, accessories and addons (shop/product-form.twig),
+ # rendered by acp/core/widgets/widgets.php - the products are dragged into the drop zones
+ #}
+<div class="card">
+    <div class="card-header">{{ lang.label_products }}</div>
+    <div class="card-body p-0">
+        <div class="input-group my-1">
+            <span class="input-group-text">{{ icon.search|raw }}</span>
+            <input type="text" class="form-control no-enter"
+                   hx-post="/admin-xhr/widgets/read/?change_filter"
+                   hx-params="product_widget_text_filter,csrf_token"
+                   hx-trigger="keyup changed delay:500ms"
+                   hx-swap="none"
+                   name="product_widget_text_filter"
+                   value="{{ product_widget_text_filter }}">
+        </div>
 
-<div class="scroll-container p-0 mb-2">
-    <div class="sortable_source list-group list-group-flush">
-        {% for product in products_data %}
-            <div class="list-group-item draggable" data-id="{{ product.product_id }}">
-                <img src="{{ product.flag_src }}" alt="{{ product.flag_src }}" width="15">
-                <code>#{{ product.product_id }}</code> {{ product.product_number }}
-                {{ product.title }}
+        <div class="scroll-container p-0 mb-2">
+            <div class="sortable_source list-group list-group-flush">
+                {% for product in products_data %}
+                    <div class="list-group-item draggable" data-id="{{ product.product_id }}">
+                        <img src="{{ product.flag_src }}" alt="{{ product.product_lang }}" width="15">
+                        <code>#{{ product.product_id }}</code> {{ product.product_number }}
+                        {{ product.title }}
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+        </div>
+
+        {{ pagination|raw }}
     </div>
-</div>
-
-{{ pagination|raw }}
-
 </div>

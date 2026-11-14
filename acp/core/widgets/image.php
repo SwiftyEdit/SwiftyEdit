@@ -10,6 +10,18 @@ if (($_SESSION['user_class'] ?? null) !== 'administrator') {
     exit;
 }
 
+// reached via admin_xhr.php without acp/header.php - load the database and
+// the se_* functions for the session checks
+require_once __DIR__.'/../../../vendor/autoload.php';
+require_once __DIR__.'/../../../config.php';
+if (!defined('SE_SECTION')) {
+    define('SE_SECTION', 'backend');
+}
+require_once SE_ROOT.'/app/database.php';
+
+// absolute lifetime, account fingerprint and ACP idle timeout
+se_acp_guard();
+
 $src = $_GET['src'] ?? '';
 if ($src === '') {
     http_response_code(400);

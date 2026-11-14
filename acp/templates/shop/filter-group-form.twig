@@ -1,0 +1,62 @@
+{#
+ # filter group form in /admin/shop/filters/edit/group/<id>/ and /new/group/, rendered by filters-edit.php
+ # inputs: fields built by se_print_form_input()
+ # group_id: id of the edited group, null for a new group
+ # all_categories: the group is shown in all categories ("all")
+ # categories: list of {hash, name, lang, checked}
+ #}
+<div class="subHeader d-flex align-items-center">
+    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
+</div>
+
+<form>
+    <div class="card">
+        <div class="card-header"><a href="/admin/shop/">{{ lang.nav_btn_shop }}</a> / <a href="/admin/shop/filters/">{{ lang.filter }}</a></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ inputs.title|raw }}
+                            {{ inputs.description|raw }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ inputs.priority|raw }}
+                            {{ inputs.language|raw }}
+                            {{ inputs.input_type|raw }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="ps-3 border-start">
+                        <div class="card">
+                            <div class="card-header">{{ lang.label_categories }}</div>
+                            <div class="card-body">
+                                <div class="scroll-container">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="filter_cats[]" value="all" id="cat_id_all"{% if all_categories %} checked{% endif %}>
+                                        <label class="form-check-label" for="cat_id_all">{{ lang.label_all_categories }}</label>
+                                    </div>
+                                    <hr>
+                                    {% for category in categories %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="{{ category.hash }}" type="checkbox" name="filter_cats[]" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
+                                            <label class="form-check-label" for="{{ category.hash }}">{{ category.name }} <small>({{ category.lang }})</small></label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex justify-content-between">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button hx-post="{{ writer_uri }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']" name="save_filter_group" value="{{ group_id ?? 'new' }}" class="btn btn-success">{{ group_id ? lang.btn_update : lang.btn_save }}</button>
+                            {% if group_id %}
+                                <button hx-post="{{ writer_uri }}" hx-swap="beforeend" hx-target="body" hx-include="[name='csrf_token']" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_filter_group" value="{{ group_id }}" class="btn btn-danger">{{ icon.trash_alt|raw }}</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

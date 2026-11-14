@@ -89,6 +89,7 @@ function se_html_response($html, int $statusCode = 200) {
  * @param int   $statusCode   Optional HTTP status code (default: 200).
  *
  * @return void
+ * @deprecated not used by the core, will be removed in a later version
  */
 function se_json_response(array $data, int $statusCode = 200) {
     http_response_code($statusCode);
@@ -139,21 +140,6 @@ function return_language_flag_src($lang): string {
 }
 
 
-/**
- * get all preferences
- * return as array
- * @deprecated - this function will be removed in the near future. Use se_get_preferences() from global functions.
- */
- 
-function get_preferences() {
-	global $db_content;
-	
-	$prefs = $db_content->get("se_preferences", "*", [
-		"prefs_id" => 1
-	]);
-	
-	return $prefs;
-}
 
 /**
  * write preferences table se_options
@@ -233,80 +219,6 @@ function get_all_groups() {
 }
 
 
-/**
- * get all admins
- * return as array
- */
-
-function get_all_admins() {
-
-	global $db_user;
-		
-	$admins = $db_user->select("se_user", "*", [
-	"user_class" => "administrator"
-	]);
-	
-	return $admins;
-}
-
-
-
-
-
-/**
- * show all images
- * return array
- */
-
-function get_all_images() {
-
-	global $img_path;
-	$images = array();
-
-	$dir = "../$img_path";
-	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
-	$types = array('jpg','jpeg','png','gif');
-	
-	foreach($scan_dir as $key => $file) {
-		$suffix = substr($file, strrpos($file, '.') + 1);
-			if(in_array($suffix, $types)) {
-			$images[] = basename($file);
-		}
-	}
-	 return $images;
-}
-
-/**
- * show all images from images folder
- * optional filter by prefix
- * return array
- */
-
-function se_get_all_images($prefix='') {
-
-	global $img_path;
-	$images = array();
-
-	$dir = "$img_path";
-	$scan_dir = array_diff(scandir($dir), array('..', '.','.DS_Store'));
-	$types = array('jpg','jpeg','png','gif','webp');
-	
-	foreach($scan_dir as $key => $file) {
-		$suffix = substr($file, strrpos($file, '.') + 1);
-		
-			if(in_array($suffix, $types)) {
-			
-				if($prefix != '') {
-					if(substr(basename($file), 0,strlen($prefix)) !== $prefix) {
-						continue;
-					}
-				}
-			
-				$images[] = basename($file);
-		  }
-	}
-	 return $images;
-}
 
 /**
  * show all images from images folder and it's subfolders
@@ -452,6 +364,8 @@ function se_dir_size($dir) {
 
 /**
  * PRINT SYSTEM MESSAGE
+ * @deprecated not used by the core, will be removed in a later version -
+ *             use show_toast() instead
  */
 
 function print_sysmsg($msg) {
@@ -507,102 +421,33 @@ function show_toast($text,$color='') {
 
 
 
-/**
- * Get Page Impression
- */
-
-function get_page_impression($pid) {
-	
-	global $db_content;
-
-	$counter = $db_content->get("se_pages", "page_hits", [
-		"page_id" => $pid
-	]);
-		
-	return $counter;
-}
-
-
 
 /**
- * show log entries
- * delete records that are older than 30 days
+ * Delete log entries that are older than $days.
+ *
+ * Runs on every dashboard load, so the oldest entry is checked first: that
+ * only reads one row through the primary key, the delete has to scan the
+ * table. There is no cron in the core yet (see TODO.md section 12).
  */
 
-function se_show_log($limit=10) {
+function se_cleanup_logs(int $days = 90): void {
 
 	global $db_content;
-	global $lang;
-	$logs = '';
 
-	// Cheap gatekeeper: only attempt a cleanup once se_logs has grown past
-	// 1000 rows. Peeking at the id of the 1000th-newest row uses the
-	// primary key index (O(1000)), unlike COUNT(*) - SQLite keeps no
-	// running row count, so COUNT(*) would scan the whole table on every
-	// single dashboard load, which is exactly the cost we're avoiding here.
-	// Medoo's get() always forces its own LIMIT 1 (it's meant to fetch a
-	// single row), silently ignoring any offset - select() is needed here
-	// to actually respect the LIMIT/OFFSET pair.
-	$row_at_1000 = $db_content->select("se_logs", "id", [
-		"ORDER" => ["id" => "DESC"],
-		"LIMIT" => [999, 1]
+	$cutoff = time() - ($days * 86400);
+
+	$oldest = $db_content->get("se_logs", "time", [
+		"ORDER" => ["id" => "ASC"]
 	]);
 
-	if (!empty($row_at_1000)) {
-		$interval = time() - (30 * 86400); // 30 days
-
-		$del = $db_content->delete("se_logs", [
-			"time[<]" => $interval
-		]);
-
-		$count = $del->rowCount();
-
-		if($count > 0) {
-			$logs .= '<div class="alert alert-info">Logs removed ('.$count.')</div>';
-		}
+	if($oldest === null || (int) $oldest >= $cutoff) {
+		return;
 	}
 
-	$result = $db_content->select("se_logs", "*", [
-		"ORDER" => ["id" => "DESC"],
-        "LIMIT" => $limit
+	$db_content->delete("se_logs", [
+		"time[<]" => $cutoff
 	]);
-
-	$cnt_result = count($result);
-
-    if($cnt_result > 0) {
-
-        // Same row shape as the dashboard's other cards (title line, meta
-        // line below) instead of the old 3-column table, so the Activity
-        // card reads consistently with the rest of the grid.
-        $list = '<div class="list-group list-group-flush">';
-
-        for ($i = 0; $i < $cnt_result; $i++) {
-
-            $time = date("H:i:s", $result[$i]['time']);
-            $date = date("d.m.Y", $result[$i]['time']);
-            $log_priority = 'log_priority' . $result[$i]['priority'];
-
-            $list .= '<div class="list-group-item d-flex align-items-center gap-2 se-privacy-blur">';
-            $list .= '<span class="priority-indicator ' . $log_priority . ' flex-shrink-0" title="' . $result[$i]['priority'] . '"></span>';
-            $list .= '<span class="dash-min-w-0">';
-            $list .= '<span class="dash-row-title">' . $result[$i]['source'] . ' - ' . $result[$i]['entry'] . '</span>';
-            $list .= '<span class="dash-row-meta">' . $date . ' ' . $time . '</span>';
-            $list .= '</span>';
-            $list .= '</div>';
-
-        }
-
-        $list .= '</div>';
-
-        $logs .= $list;
-
-    } else {
-        $logs .= '<div class="dash-empty-hint">'.$lang['msg_info_no_data_so_far'].'</div>';
-	}
-
-    return $logs;
 }
-
 
 /**
  * add new item to the feeds table
@@ -644,7 +489,7 @@ function add_feed($title, $text, $url, $sub_id, $feed_name, $time = NULL) {
 function se_generate_xml_sitemap($mode): void
 {
 
-    global $se_base_url,$db_content,$db_posts;
+    global $se_base_url,$db_content,$db_posts,$twig;
 
     if($mode == '') { return; }
 
@@ -654,9 +499,6 @@ function se_generate_xml_sitemap($mode): void
     $file_sitemap_pages = SE_PUBLIC . "/sitemap-pages.xml";
     $file_sitemap_products = SE_PUBLIC . "/sitemap-products.xml";
     $file_sitemap_posts = SE_PUBLIC . "/sitemap-posts.xml";
-
-    $tpl_sitemap = file_get_contents('../acp/templates/sitemap.tpl');
-    $tpl_sitemap_urlset = file_get_contents('../acp/templates/sitemap_urlset.tpl');
 
     if ($mode == 'pages') {
 
@@ -670,7 +512,7 @@ function se_generate_xml_sitemap($mode): void
             ]
         ]);
 
-        $url_set_list = '';
+        $entries = [];
         foreach ($pages_data as $page) {
 
             // pages with a redirect must not be listed in the sitemap
@@ -678,15 +520,13 @@ function se_generate_xml_sitemap($mode): void
                 continue;
             }
 
-            $page_lastedit = date("Y-m-d", $page['page_lastedit']);
-            $link = $se_base_url.'/'.$page['page_permalink'];
-
-            $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
-            $url_set = str_replace('{lastmod}', $page_lastedit, $url_set);
-            $url_set_list .= $url_set . "\r\n";
+            $entries[] = [
+                'url' => $se_base_url.'/'.$page['page_permalink'],
+                'lastmod' => date("Y-m-d", $page['page_lastedit'])
+            ];
         }
 
-        se_write_xml_sitemap_file($file_sitemap_pages, $url_set_list, $tpl_sitemap);
+        se_write_xml_sitemap_file($file_sitemap_pages, $entries);
     }
 
     if ($mode == 'products') {
@@ -701,16 +541,15 @@ function se_generate_xml_sitemap($mode): void
             ]
         ]);
 
-        $url_set_list = '';
+        $entries = [];
         foreach ($products_data as $product) {
-            $product_lastedit = date("Y-m-d", $product['lastedit']);
-            $link = $se_base_url.'/'.$product['main_catalog_slug'].$product['slug'];
-            $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
-            $url_set = str_replace('{lastmod}', $product_lastedit, $url_set);
-            $url_set_list .= $url_set . "\r\n";
+            $entries[] = [
+                'url' => $se_base_url.'/'.$product['main_catalog_slug'].$product['slug'],
+                'lastmod' => date("Y-m-d", $product['lastedit'])
+            ];
         }
 
-        se_write_xml_sitemap_file($file_sitemap_products, $url_set_list, $tpl_sitemap);
+        se_write_xml_sitemap_file($file_sitemap_products, $entries);
     }
 
     if ($mode == 'posts') {
@@ -727,7 +566,7 @@ function se_generate_xml_sitemap($mode): void
         // detail page per language - same lookup as acp/core/blog/data-writer.php
         $post_target_pages = [];
 
-        $url_set_list = '';
+        $entries = [];
         foreach ($posts_data as $post) {
 
             if ($post['post_hide_detail_page'] == 1) {
@@ -762,30 +601,29 @@ function se_generate_xml_sitemap($mode): void
                 $link = $se_base_url.'/'.$post_target_pages[$post_lang].$filename;
             }
 
-            $url_set = str_replace('{url}', $link, $tpl_sitemap_urlset);
-            $url_set = str_replace('{lastmod}', $post_lastedit, $url_set);
-            $url_set_list .= $url_set . "\r\n";
+            $entries[] = [
+                'url' => $link,
+                'lastmod' => $post_lastedit
+            ];
         }
-        se_write_xml_sitemap_file($file_sitemap_posts, $url_set_list, $tpl_sitemap);
+        se_write_xml_sitemap_file($file_sitemap_posts, $entries);
 
     }
 
     // create index - only list sitemaps which exist and contain entries
-    $tpl_sitemap_index = file_get_contents('../acp/templates/sitemap-index.tpl');
-    $tpl_sitemap_index_entry = file_get_contents('../acp/templates/sitemap-index_entry.tpl');
-
-    $sitemap_list = '';
+    $index_entries = [];
     foreach ([$file_sitemap_pages, $file_sitemap_products, $file_sitemap_posts] as $file) {
         if (!is_file($file)) {
             continue;
         }
-        $entry = str_replace('{url}', $se_base_url.'/'.basename($file), $tpl_sitemap_index_entry);
-        $entry = str_replace('{lastmod}', date("Y-m-d", filemtime($file)), $entry);
-        $sitemap_list .= $entry . "\r\n";
+        $index_entries[] = [
+            'url' => $se_base_url.'/'.basename($file),
+            'lastmod' => date("Y-m-d", filemtime($file))
+        ];
     }
 
-    $tpl_sitemap_index = str_replace('{sitemap_list}', $sitemap_list, $tpl_sitemap_index);
-    file_put_contents($file_sitemap_index, $tpl_sitemap_index, LOCK_EX);
+    $sitemap_index = $twig->render('sitemap/index.xml.twig', ['entries' => $index_entries]);
+    file_put_contents($file_sitemap_index, $sitemap_index, LOCK_EX);
 }
 
 /**
@@ -794,112 +632,25 @@ function se_generate_xml_sitemap($mode): void
  * so it will not be listed in the sitemap index
  *
  * @param string $file
- * @param string $url_set_list
- * @param string $tpl_sitemap
+ * @param array $entries list of ['url' => ..., 'lastmod' => ...]
  * @return void
  */
-function se_write_xml_sitemap_file(string $file, string $url_set_list, string $tpl_sitemap): void
+function se_write_xml_sitemap_file(string $file, array $entries): void
 {
-    if (trim($url_set_list) === '') {
+    global $twig;
+
+    if (empty($entries)) {
         if (is_file($file)) {
             unlink($file);
         }
         return;
     }
 
-    $sitemap_data = str_replace('{url_set}', $url_set_list, $tpl_sitemap);
+    // Twig's autoescaping turns "&" in urls into "&amp;" as required by XML
+    $sitemap_data = $twig->render('sitemap/urlset.xml.twig', ['entries' => $entries]);
     file_put_contents($file, $sitemap_data, LOCK_EX);
 }
 
-
-
-/**
- * get custom columns from table se_pages
- * return array
- */
-
-function get_custom_fields() {
-	
-	global $db_content;
-
-	$customs_fields = array();
-	
-	$cf = $db_content->get("se_pages", "*");
-	
-	$cf = array_keys($cf);
-	$cnt_cf = count($cf);
-	
-	for($i=0;$i<$cnt_cf;$i++) {
-		if(substr($cf[$i],0,7) == "custom_") {
-			$customs_fields[] = $cf[$i];
-		}
-	}
-	return $customs_fields;
-
-}
-
-
-/**
- * get custom columns from table se_user
- * return array
- */
-
-function get_custom_user_fields() {
-	
-	global $db_user;
-
-	$customs_fields = array();
-	
-	$cf = $db_user->get("se_user", "*");
-
-	$cf = array_keys($cf);
-	$cnt_cf = count($cf);
-	
-	for($i=0;$i<$cnt_cf;$i++) {
-		if(substr($cf[$i],0,7) == "custom_") {
-			$customs_fields[] = $cf[$i];
-		}
-	}
-	
-	return $customs_fields;
-
-}
-
-
-
-/**
- * show editor's switch buttons
- * for plain text, code or wysiwyg
- */
-
-function show_editor_switch($tn,$sub) {
-
-	$btn_wysiwyg_link = "acp.php?tn=$tn&sub=$sub&editor=wysiwyg";
-	$btn_code_link = "acp.php?tn=$tn&sub=$sub&editor=code";
-	$btn_text_link = "acp.php?tn=$tn&sub=$sub&editor=plain";
-	
-	if($_SESSION['editor_class'] == "plain") {
-		$btn_wysiwyg = 'btn btn-light btn-sm';
-		$btn_text = 'btn btn-primary btn-sm disabled';
-		$btn_code = 'btn btn-light btn-sm';
-	} elseif($_SESSION['editor_class'] == "wysiwyg") {
-		$btn_wysiwyg = 'btn btn-primary btn-sm disabled';
-		$btn_text = 'btn btn-light btn-sm';
-		$btn_code = 'btn btn-light btn-sm';
-	} else {
-		$btn_wysiwyg = 'btn btn-light btn-sm';
-		$btn_text = 'btn btn-light btn-sm';
-		$btn_code = 'btn btn-primary btn-sm disabled';
-	}
-	
-	
-	echo '<div class="btn-group btn-group-justified">';
-	echo '<a href="'.$btn_wysiwyg_link.'" class="'.$btn_wysiwyg.'">WYSIWYG</a>';
-	echo '<a href="'.$btn_text_link.'" class="'.$btn_text.'">Text</a>';
-	echo '<a href="'.$btn_code_link.'" class="'.$btn_code.'">Code</a>';
-	echo '</div>';
-	
-}
 
 
 
@@ -1033,8 +784,7 @@ function se_delete_media_data($filename) {
 		]
 	]);
 	
-	$record_msg = 'delete media data: <strong>'.basename($filename).'</strong>';
-	record_log($_SESSION['user_nick'],$record_msg,"2");
+	se_log_content('delete', 'media', null, basename($filename), (string) $filename);
 
 }
 
@@ -1137,6 +887,7 @@ function se_write_media_data($data) {
 	}
 
 	if($cnt_changes->rowCount() > 0) {
+		se_log_content('update', 'media', null, basename($saved_filename), $saved_filename);
 		return 'success';
 	} else {
 		return 'error';
@@ -1155,6 +906,9 @@ function se_write_media_data($data) {
  *
  * https://www.php.net/manual/de/function.array-unique.php#116302
  *
+ * @deprecated not used by the core, will be removed in a later version -
+ *             use array_values(array_column($array, null, $key)) instead
+ *             (keeps the last entry per key instead of the first)
  */
 
 function se_unique_multi_array($array, $key) { 
@@ -1195,129 +949,6 @@ function se_get_labels() {
 	return $labels;
 }
 
-
-/**
- * generate an select image widget
- * we use input type checkbox
- *
- * @param array $images
- * @param array $seleced_img
- * @param string $prefix
- * @param integer $id
- * @return string
- */
-
-function se_select_img_widget($images,$selected_img,$prefix='',$id=1) {
-
-    global $lang;
-    $path = '../public/assets';
-
-    if(!array($selected_img)) {
-        $cnt_selected_img = 0;
-    } else {
-        $selected_img = array_filter($selected_img);
-        $cnt_selected_img = count($selected_img);
-    }
-
-
-    $images_container  = '<div class="scroll-container scroll-container-h500 p-1">';
-
-    /* if we have selected images, show them first */
-    if($cnt_selected_img > 0) {
-        $images_container .= '<h6>'.$lang['label_images_selected'].' ('.$cnt_selected_img.')</h6>';
-        $images_container .= '<div class="sortableListGroup list-group my-1">';
-        foreach($selected_img as $sel_images) {
-            $sel_images_src = str_replace('../',$path.'/',$sel_images);
-            $sel_images_abs = str_replace('../','/',$sel_images);
-
-            if(file_exists("$sel_images_src")) {
-                $images_container .= '<div class="list-group-item p-1">';
-                $images_container .= '<div class="image-checkbox image-checkbox-checked">';
-                $images_container .= '<div class="row">';
-                $images_container .= '<div class="col-3">';
-                $images_container .= '<div class="image-select-preview image-select-preview-sm" style="background-image: url('.htmlspecialchars($sel_images_abs, ENT_QUOTES).')">';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-                $images_container .= '<div class="col-9">';
-                $images_container .= '<span class="input-group-text d-inline-block float-end" id="basic-addon1">';
-                $images_container .= '<i class="bi bi-arrows-move" aria-hidden="true"></i>';
-                $images_container .= '</span>';
-                $images_container .= '<input name="picker'.$id.'_images[]" value="'.htmlspecialchars($sel_images, ENT_QUOTES).'" type="checkbox" checked>';
-                $images_container .= '<div class="small text-muted">'.htmlspecialchars(basename($sel_images), ENT_QUOTES).'</div>';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-                $images_container .= '</div>';
-            }
-        }
-        $images_container .= '</div>';
-    }
-
-    $images_container .= '<input class="filter-images form-control" name="filter-images" placeholder="Filter ..." type="text">';
-    $images_container .= '<div class="row g-1">';
-
-    $cnt_images = count($images);
-
-    for($i=0;$i<$cnt_images;$i++) {
-
-        $img_filename = basename($images[$i]['media_file']);
-        // plain text + flag; markup is added (statically) at output and the
-        // value itself is htmlspecialchars-escaped below (no Twig here)
-        $img_filename_short = se_return_first_chars($img_filename,15,false);
-        $img_filename_truncated = strlen(strip_tags(htmlspecialchars_decode($img_filename))) > 15;
-        $image_name = $images[$i]['media_file'];
-        $image_tmb_name = $images[$i]['media_thumb'];
-        $lastedit = (int) $images[$i]['media_lastedit'];
-        $lastedit_year = date('Y',$lastedit);
-        $filemtime = $lastedit_year;
-
-        if($prefix != '') {
-            if((strpos($image_name, $prefix)) === false) {
-                continue;
-            }
-        }
-
-        if(file_exists($image_tmb_name)) {
-            $preview = $image_tmb_name;
-        } else {
-            $preview = $image_name;
-        }
-
-        $preview = str_replace("../","/",$preview);
-
-        /* new label for each year */
-        $prev_image_ts = (int) $images[$i-1]['media_lastedit'];
-        if(date('Y',$prev_image_ts) != $lastedit_year) {
-            $images_container .= '<div class="col-12 mt-2"><div class="card p-1"><h6 class="m-0">'.$filemtime.'</h6></div></div>';
-        }
-
-        if(!in_array($image_name, $selected_img)) {
-            $images_container .= '<div class="col col-lg-3" title="'.htmlspecialchars($img_filename, ENT_QUOTES).'">';
-            $images_container .= '<div class="image-checkbox h-100">';
-            $images_container .= '<div class="card h-100">';
-            $images_container .= '<div class="card-body p-0">';
-            $images_container .= '<div class="image-select-preview" style="background-image: url('.htmlspecialchars($preview, ENT_QUOTES).')"></div>';
-            $images_container .= '<input name="picker'.$id.'_images[]" value="'.htmlspecialchars($image_name, ENT_QUOTES).'" type="checkbox">';
-            $images_container .= '</div>';
-            $images_container .= '<div class="text-muted small">'.htmlspecialchars($img_filename_short, ENT_QUOTES);
-            if($img_filename_truncated) {
-                $images_container .= ' <small><i>(...)</i></small>';
-            }
-            $images_container .= '</div>';
-
-            $images_container .= '</div>';
-            $images_container .= '</div>';
-            $images_container .= '</div>';
-        }
-
-    }
-
-    $images_container .= '</div>';
-    $images_container .= '</div>';
-
-    return $images_container;
-
-}
 
 
 function se_list_gallery_thumbs($gid) {
@@ -1437,146 +1068,31 @@ function se_reorder_gallery_tmbs($gid, $order) {
 
 
 
+/**
+ * delete the images of a gallery post and its directory
+ * public/assets/galleries/{year of post_date}/gallery{id}/ (see acp/core/widgets/upload.php)
+ *
+ * @param int|string $id post_id of the gallery
+ * @param int|string $dir year of the post_date
+ */
 function se_remove_gallery($id,$dir) {
 
-	$fp = '../content/galleries/'.$dir.'/gallery'.$id.'/';
-	$files = glob("$fp*jpg");
-
-	foreach($files as $file) {
-		unlink($file);
+	$fp = SE_PUBLIC.'/assets/galleries/'.(int) $dir.'/gallery'.(int) $id.'/';
+	if(!is_dir($fp)) {
+		return;
 	}
-	
+
+	// the directory belongs to this gallery only, remove everything in it
+	foreach(glob($fp.'*') ?: [] as $file) {
+		if(is_file($file)) {
+			unlink($file);
+		}
+	}
+
 	rmdir($fp);
-	
-	
 }
 
 
-
-/**
- * please use the new function se_create_thumbnail()
- */
- 
-function se_create_tmb($img_src, $tmb_name, $tmb_width, $tmb_height, $tmb_quality) {
-	
-	global $img_tmb_path;
-	
-	/* thumbnail directories */
-	$tmb_dir = '../'.$img_tmb_path;
-	$tmb_dir_year = $tmb_dir.'/'.date('Y',time());
-	$tmb_destination = $tmb_dir_year.'/'.date('m',time());
-	if(!is_dir($tmb_dir_year)) {
-		mkdir($tmb_dir_year);
-	}
-	if(!is_dir($tmb_destination)) {
-		mkdir($tmb_destination);
-	}
-
-	$arr_image_details	= GetImageSize("$img_src");
-	$original_width		= $arr_image_details[0];
-	$original_height	= $arr_image_details[1];
-	$a = $tmb_width / $tmb_height;
-    $b = $original_width / $original_height;
-	
-	
-	if ($a<$b) {
-     $new_width = $tmb_width;
-     $new_height	= intval($original_height*$new_width/$original_width);
-  } else {
-     $new_height = $tmb_height;
-     $new_width	= intval($original_width*$new_height/$original_height);
-  }
-	
-	if(($original_width <= $tmb_width) AND ($original_height <= $tmb_height)) {
-	  $new_width = $original_width;
-	  $new_height = $original_height;
-  }
-  
-	if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-	if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-	if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-	
-	
-	if($imgt) { 
-		$old_image	= $imgcreatefrom("$img_src");
-		$new_image	= imagecreatetruecolor($new_width, $new_height);
-		imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
-		imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
-		imagedestroy($new_image);
-	}
-	
-}
-
-
-/**
- * @param string $img_src path to original image
- * @param string $tmb_name name of the new thumbnail
- * @param string $tmb_dir directory where the thumb should be saved
- * @param integer $tmb_width size
- * @param integer $tmb_height size
- * @param integer $tmb_quality quality
- * @return void
- */
-
-function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100, $tmb_height=100, $tmb_quality=50) {
-	
-	global $img_tmb_path;
-
-    $arr_image_details	= GetImageSize("$img_src");
-    $original_width		= $arr_image_details[0];
-    $original_height	= $arr_image_details[1];
-
-    if($original_width < 1) {
-        return;
-    }
-
-    $a = $tmb_width / $tmb_height;
-    $b = $original_width / $original_height;
-
-
-		
-	/* thumbnail directories */
-	if($tmb_dir == NULL OR $tmb_dir == '') {
-		$dir = '../'.$img_tmb_path;
-		$dir_year = $tmb_dir.'/'.date('Y',time());
-		$tmb_destination = $tmb_dir_year.'/'.date('m',time());
-	} else {
-		$tmb_destination = $tmb_dir;
-	}
-	
-	if(!is_dir($tmb_destination)) {
-		mkdir($tmb_destination, SE_DIR_PERMISSIONS, true);
-	}
-	
-
-	
-	
-	if ($a<$b) {
-     $new_width = $tmb_width;
-     $new_height	= intval($original_height*$new_width/$original_width);
-  } else {
-     $new_height = $tmb_height;
-     $new_width	= intval($original_width*$new_height/$original_height);
-  }
-	
-	if(($original_width <= $tmb_width) AND ($original_height <= $tmb_height)) {
-	  $new_width = $original_width;
-	  $new_height = $original_height;
-  }
-  
-	if($arr_image_details[2]==1) { $imgt = "imagegif"; $imgcreatefrom = "imagecreatefromgif";  }
-	if($arr_image_details[2]==2) { $imgt = "imagejpeg"; $imgcreatefrom = "imagecreatefromjpeg";  }
-	if($arr_image_details[2]==3) { $imgt = "imagepng"; $imgcreatefrom = "imagecreatefrompng";  }
-	
-	
-	if($imgt) { 
-		$old_image	= $imgcreatefrom("$img_src");
-		$new_image	= imagecreatetruecolor($new_width, $new_height);
-		imagecopyresampled($new_image,$old_image,0,0,0,0,$new_width,$new_height,$original_width,$original_height);
-		imagejpeg($new_image,"$tmb_destination/$tmb_name",$tmb_quality);
-		imagedestroy($new_image);
-	}
-}
 
 
 /**
@@ -1586,6 +1102,11 @@ function se_create_thumbnail($img_src, $tmb_name, $tmb_dir=NULL, $tmb_width=100,
 function se_parse_docs_file($file): array {
 
     global $languagePack,$Parsedown;
+
+    // not every caller sets up the parser (e.g. plugin readers via xhr)
+    if(!$Parsedown instanceof ParsedownExtra) {
+        $Parsedown = new ParsedownExtra();
+    }
 
     if(is_file($file)) {
         $src = file_get_contents($file);
@@ -1698,6 +1219,7 @@ function se_parse_docs_file($file): array {
     } else {
         $parsed_header['title'] = 'FILE NOT FOUND ('.$file.')';
         $parsed_content = 'FILE NOT FOUND ('.$file.')';
+        $filemtime = null;
     }
 
     $parsed['header'] = $parsed_header;
@@ -1707,6 +1229,72 @@ function se_parse_docs_file($file): array {
     $parsed['filename_orig'] = basename($file);
     $parsed['filepath_orig'] = $file;
     return $parsed;
+}
+
+/**
+ * sections of a core docs file (docs/v2/{lang}/), e.g. as help texts next to the settings -
+ * so the text is only written once, in the docs
+ *
+ * a section is a heading with an {#anchor} and everything up to the next heading
+ * of the same or a higher level, rendered like the help modal (se_parse_docs_file())
+ *
+ * @param string $file name of the docs file, e.g. 08-00-settings.md
+ * @param array $anchors the anchors of the sections
+ * @return array anchor => {title, content (html), link (button that opens the docs there)},
+ *   anchors that are not found are missing
+ */
+function se_docs_sections(string $file, array $anchors): array {
+
+    global $languagePack, $languagePackFallback, $Parsedown;
+
+    $docs_root = SE_ROOT.'docs/v2';
+    $doc_filepath = $docs_root.'/'.$languagePack.'/'.basename($file);
+    if(!is_file($doc_filepath)) {
+        $doc_filepath = $docs_root.'/'.($languagePackFallback ?? 'en').'/'.basename($file);
+    }
+    if(!is_file($doc_filepath)) {
+        return [];
+    }
+
+    // se_parse_docs_file() uses the global parser
+    if(!$Parsedown instanceof ParsedownExtra) {
+        $Parsedown = new ParsedownExtra();
+    }
+    $html = se_parse_docs_file($doc_filepath)['content'];
+
+    $dom = new DOMDocument();
+    $previous_errors = libxml_use_internal_errors(true);
+    $dom->loadHTML('<?xml encoding="UTF-8"><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous_errors);
+    $xpath = new DOMXPath($dom);
+
+    $sections = [];
+    foreach($anchors as $anchor) {
+        if(!preg_match('/^[a-z0-9_-]+$/i', $anchor)) {
+            continue;
+        }
+        $heading = $xpath->query('//*[@id="'.$anchor.'"]')->item(0);
+        if(!$heading instanceof DOMElement || !preg_match('/^h([1-6])$/i', $heading->nodeName, $match)) {
+            continue;
+        }
+
+        $content = '';
+        for($node = $heading->nextSibling; $node !== null; $node = $node->nextSibling) {
+            if($node instanceof DOMElement && preg_match('/^h([1-6])$/i', $node->nodeName, $next) && (int) $next[1] <= (int) $match[1]) {
+                break;
+            }
+            $content .= $dom->saveHTML($node);
+        }
+
+        $sections[$anchor] = [
+            'title' => trim($heading->textContent),
+            'content' => trim($content),
+            'link' => se_print_docs_link($file, null, $anchor, 'btn btn-link btn-sm p-0')
+        ];
+    }
+
+    return $sections;
 }
 
 /**
@@ -1734,7 +1322,7 @@ function se_print_docs_link(string $file, ?string $text = null, ?string $anchor 
                 hx-vals=\'' . $hx_vals . '\'
                 hx-target="#helpModal"
                 hx-trigger="click"
-                class="' . $class . '" title="' . $title . '">' . $text . '</button>';
+                class="' . $class . '" title="' . $title . '" aria-label="' . $title . '">' . $text . '</button>';
 }
 
 /**
@@ -1766,173 +1354,6 @@ function se_print_plugin_docs_link(string $plugin, string $file = 'index.md', ?s
     return se_print_docs_link('/plugins/' . basename($plugin) . '/' . basename($file), $text, $anchor, $class);
 }
 
-/**
- * @param string $file
- * @param string|null $trigger_text
- * @return string
- */
-function se_print_docs_tip(string $file, ?string $trigger_text = null) :string {
-    global $icon, $languagePack, $languagePackFallback;
-
-    if ($trigger_text == null or $trigger_text == 'icon') {
-        $trigger_text = $icon['question_circle'];
-    }
-
-    $doc_filepath = '../acp/docs/'.$languagePack.'/tooltips/'.$file;
-    if(!is_file($doc_filepath)) {
-        $doc_filepath = '../acp/docs/'.$languagePackFallback.'/tooltips/'.$file;
-    }
-
-    $show_file = se_parse_docs_file($doc_filepath);
-    $id = uniqid('help-');
-
-    $tooltip = '<span data-help-template="'.$id.'">'.$trigger_text.'</span>';
-    $tooltip .= '<template id="'.$id.'">
-  <div class="tooltip-body">
-    <div class="tooltip-title"><h6>'.$show_file['title'].'</h6></div>
-    <div class="tooltip-content">'.$show_file['content'].'</div>
-    <div class="tooltip-arrow" data-arrow></div>
-  </div>
-</template>';
-
-
-    return $tooltip;
-}
-
-/**
- * @param $key
- * @param string|null $trigger
- * @return string
- */
-
-function se_return_tooltip($key, ?string $trigger = null) :string {
-    global $lang,$languagePackFallback,$icon;
-
-    if ($trigger == null or $trigger == 'icon') {
-        $trigger = $icon['question_circle'];
-    }
-    $tt_text = '';
-    if(isset($lang[$key])) {
-        $tt_text = $lang[$key];
-    }
-
-    $id = uniqid('help-');
-
-    $tooltip = '<span data-help-template="'.$id.'">'.$trigger.'</span>';
-    $tooltip .= '<template id="'.$id.'">
-  <div class="tooltip-body">
-    <div class="tooltip-content">'.$tt_text.'</div>
-    <div class="tooltip-arrow" data-arrow></div>
-  </div>
-</template>';
-
-    return $tooltip;
-
-}
-
-
-/**
- * display pagination
- *
- * @param string $query will be set as href="$query" - {page} will be replaced
- * @param integer $pages_limit how many numbers should be displayed (max)
- * @param integer $align 1 = left, 2 = center, 3 = right
- * @param integer $size 1 = sm, 2 = default, 3 = lg
- * @param integer $items_cnt number of items
- * @param integer $sql_start_nbr start from the sql query
- * @param integer $items_per_page how many items per page
- * @return string
- */
-
-function se_return_pagination(string $query, int $items_cnt, int $sql_start_nbr, int $items_per_page, int $pages_limit=10, int $align=1, int $size=2): string
-{
-
-    $cnt_pages = ceil($items_cnt / $items_per_page);
-    if($cnt_pages < 2) {
-        // no pages, no pagination
-        return '';
-    }
-
-    $nextPage = $sql_start_nbr+$items_per_page;
-    $lastPage = ($cnt_pages*$items_per_page)-$items_per_page;
-    if($nextPage >= $lastPage) {
-        $nextPage = $lastPage;
-    }
-    $prevPage = max(0,$sql_start_nbr-$items_per_page);
-
-    $next_query = str_replace("{page}","$nextPage",$query);
-    $prev_query = str_replace("{page}","$prevPage",$query);
-
-    if($align == 1) {
-        $align_class = '';
-    } else if($align == 2) {
-        $align_class = 'justify-content-center';
-    } else if($align == 3) {
-        $align_class = 'justify-content-end';
-    }
-
-    if($size == 1) {
-        $size_class = 'pagination-sm';
-    } else if($size == 2) {
-        $size_class = '';
-    } else if($size == 3) {
-        $size_class = 'pagination-lg';
-    }
-
-    $pagination = '<nav aria-label="Pagination">';
-    $pagination .= '<ul class="pagination '.$align_class.' '.$size_class.'">';
-    $pagination .= '<li class="page-item">
-                    <a class="page-link" href="'.$prev_query.'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-                  </li>';
-
-    $activePage = ceil(($sql_start_nbr*$items_per_page)/$cnt_pages);
-    $activePage = ceil(($sql_start_nbr/$items_per_page)+1);
-
-    if($activePage < 2) {
-        $activePage = 1;
-    }
-
-    $pagination_start = $activePage-($pages_limit/2);
-    if($pagination_start < 1) {
-        $pagination_start = 1;
-    }
-    $pagination_end = $activePage+($pages_limit/2);
-    if($pagination_end > $cnt_pages) {
-        $pagination_end = $cnt_pages;
-    }
-    
-    for($i=1;$i<=$cnt_pages;$i++) {
-
-        $active_class = '';
-        //$page_nbr = $i+1;
-        $thisPage = ($i*$items_per_page)-$items_per_page;
-
-        if($activePage == $i) {
-            $active_class = 'active';
-        }
-
-        if($i > $pagination_end) {
-            continue;
-        }
-        if($i < $pagination_start) {
-            continue;
-        }
-
-        $href = str_replace("{page}","$thisPage",$query);
-
-        $pagination .= '<li class="page-item '.$active_class.'">
-                        <a class="page-link" href="'.$href.'">'.$i.'</a>
-                    </li>';
-    }
-
-    $pagination .= '<li class="page-item">
-                    <a class="page-link" href="'.$next_query.'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
-                </li>';
-    $pagination .= '</ul>';
-    $pagination .= '</nav>';
-
-    return $pagination;
-}
 
 function se_print_pagination($url, $pages, $active_page,$steps=10,$classes=NULL,$post_name='pagination'): string {
 
@@ -2010,6 +1431,20 @@ function se_get_my_presets() {
 }
 
 /**
+ * Plugin directories the logged-in user has marked as favorites
+ * (stored per user in user_acp_settings, toggled in users/settings-writer.php).
+ *
+ * @return list<string>
+ */
+function se_get_my_favorite_plugins(): array {
+    $favorites = se_get_my_presets()['fav_plugins'] ?? [];
+    if(!is_array($favorites)) {
+        return [];
+    }
+    return array_values(array_filter($favorites, 'is_string'));
+}
+
+/**
  * Read the current OPcache state into a flat array for display (Dashboard
  * "OPcache" card, see acp/core/dashboard/data-reader.php). Tolerates OPcache
  * being off entirely, or opcache_get_status()/opcache_get_configuration()
@@ -2059,4 +1494,115 @@ function se_get_opcache_status(): array {
         'validate_timestamps' => (bool) ($directives['opcache.validate_timestamps'] ?? true),
         'start_time' => $stats['start_time'] ?? null,
     ];
+}
+
+/**
+ * categories for the checkbox list in the edit forms (products, blog, events),
+ * rendered by the categories() macro in components/form/macros.twig
+ *
+ * @param array $checked_hashes cat_hash values of the assigned categories
+ * @return array list of id, hash, name, description, flag, checked
+ */
+function se_get_category_checklist(array $checked_hashes): array {
+
+    $categories = [];
+    foreach(se_get_categories() as $cat) {
+        // stored html-encoded, Twig escapes on output
+        $description = html_entity_decode((string) ($cat['cat_description'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $categories[] = [
+            'id' => (int) $cat['cat_id'],
+            'hash' => $cat['cat_hash'],
+            'name' => html_entity_decode((string) $cat['cat_name'], ENT_QUOTES, 'UTF-8'),
+            'description' => trim(first_words($description, 10)) ?: '...',
+            'flag' => return_language_flag_src($cat['cat_lang']),
+            'checked' => in_array($cat['cat_hash'], $checked_hashes)
+        ];
+    }
+    return $categories;
+}
+
+/**
+ * labels for the checkboxes in the edit forms (products, blog, events),
+ * rendered by the labels() macro in components/form/macros.twig
+ *
+ * @param array $checked_ids label_id values of the assigned labels
+ * @return array list of id, color, title, checked
+ */
+function se_get_label_checklist(array $checked_ids): array {
+
+    global $se_labels;
+
+    // $se_labels is set for full pages (acp/index.php), xhr requests load the labels here
+    $all_labels = $se_labels ?? se_get_labels();
+
+    $labels = [];
+    foreach($all_labels as $label) {
+        $labels[] = [
+            'id' => $label['label_id'],
+            'color' => $label['label_color'],
+            // stored html-encoded, Twig escapes on output
+            'title' => html_entity_decode((string) $label['label_title'], ENT_QUOTES, 'UTF-8'),
+            'checked' => in_array((string) $label['label_id'], $checked_ids)
+        ];
+    }
+    return $labels;
+}
+
+/**
+ * Medoo conditions for the global filter (status, labels, languages) of the
+ * module lists, the filter is set in the offcanvas (layout/nav-top-filter.twig)
+ * and stored as json in the session (acp/core/widgets/data-writer.php)
+ *
+ * the global status values are 1 public, 2 draft, 3 private, 4 ghost, 5 redirect,
+ * $status_map translates them to the stored values of the module - a selected
+ * status that the module does not know matches no entry
+ *
+ * @param string $lang_column column of the language code
+ * @param string $status_column column of the status
+ * @param string $labels_column column of the label ids (comma separated)
+ * @param array $status_map global status => stored status
+ * @return array conditions for the "AND" of a select, empty without filter
+ */
+function se_get_global_filter_where(string $lang_column, string $status_column, string $labels_column, array $status_map): array {
+
+    $decode_filter = static fn(string $key): array => array_values(array_filter(
+        (array) (json_decode($_SESSION[$key] ?? '', true) ?? []),
+        static fn($value) => $value !== '' && $value !== null
+    ));
+
+    $where = [];
+
+    $languages = $decode_filter('global_filter_languages');
+    if($languages) {
+        $where[$lang_column] = $languages;
+    }
+
+    $status = $decode_filter('global_filter_status');
+    if($status) {
+        $stored_status = [];
+        foreach($status as $value) {
+            if(isset($status_map[$value])) {
+                $stored_status[] = (string) $status_map[$value];
+            }
+        }
+        // only unknown status selected: an impossible value, the list stays empty
+        $where[$status_column] = $stored_status ?: ['-1'];
+    }
+
+    // labels are stored as "1,3,12" - match the whole id, label 1 must not match 12
+    $labels = array_map('intval', $decode_filter('global_filter_label'));
+    if($labels) {
+        $patterns = [];
+        foreach($labels as $id) {
+            $patterns[] = "$id,%";
+            $patterns[] = "%,$id";
+            $patterns[] = "%,$id,%";
+        }
+        $where["OR #global_filter_labels"] = [
+            $labels_column => array_map('strval', $labels),
+            $labels_column.'[~]' => $patterns
+        ];
+    }
+
+    return $where;
 }

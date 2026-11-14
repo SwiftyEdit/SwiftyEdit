@@ -1,0 +1,63 @@
+{#
+ # global filter offcanvas (status, labels, languages), rendered by acp/core/nav_top_filter.php
+ # opened by the filter button in layout/nav-top.twig, saved by acp/core/widgets
+ #}
+
+{# toggle button for one filter value #}
+{% macro option(name, value, id, checked, label) %}
+    <input type="checkbox" name="{{ name }}" value="{{ value }}" class="btn-check" id="{{ id }}"{% if checked %} checked{% endif %} autocomplete="off">
+    <label class="btn btn-sm btn-default m-1" for="{{ id }}">{{ label }}</label>
+{% endmacro %}
+{% import _self as m %}
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="globalFilter" aria-labelledby="offcanvasTopLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasTopLabel">Filter</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+
+        <div id="globalFilterResponse"></div>
+
+        {# every click on a filter saves the form, the lists listen to updated_global_filter #}
+        <form hx-post="/admin-xhr/widgets/write/" hx-trigger="change, submit" hx-target="#globalFilterResponse" hx-swap="innerHTML" id="globalFilterForm">
+
+            <div class="card mt-1">
+                <div class="card-header p-1 px-2">{{ lang.label_status }}</div>
+                <div class="card-body">
+                    {% for value, label in {1: lang.status_public, 2: lang.status_draft, 3: lang.status_private, 4: lang.status_ghost, 5: lang.status_redirect} %}
+                        {{ m.option('set_status[]', value, 'status-' ~ value, value in filter_status, label) }}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-1">
+                <div class="card-header">{{ lang.labels }}</div>
+                <div class="card-body">
+                    {% for label in labels %}
+                        <input type="checkbox" name="set_label[]" value="{{ label.id }}" class="btn-check" id="btn-check-{{ loop.index0 }}"{% if label.checked %} checked{% endif %} autocomplete="off">
+                        <label class="btn btn-sm btn-default m-1" for="btn-check-{{ loop.index0 }}"><span class="label-dot" style="background-color: {{ label.color }}"></span> {{ label.title }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mt-1">
+                <div class="card-header p-1 px-2">{{ lang.label_language }}</div>
+                <div class="card-body">
+                    {% for code in lang_codes %}
+                        {{ m.option('set_lang[]', code, 'lang-check-' ~ code, code in filter_languages, code) }}
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# reset: clear all filters and save the empty form #}
+            <div class="mt-3">
+                <button type="button" class="btn btn-default" onclick="this.form.querySelectorAll('.btn-check').forEach(c => c.checked = false); this.form.requestSubmit();">{{ icon.x|raw }} {{ lang.reset }}</button>
+            </div>
+
+            <input type="hidden" name="set_global_filter" value="1">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        </form>
+
+    </div>
+</div>

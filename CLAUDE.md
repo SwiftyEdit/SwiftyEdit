@@ -91,7 +91,7 @@ Located in `plugins/<name>/`. Each has:
 - Activated plugins come from `se_get_activated_addons()`.
 
 Bundled plugins that ship with releases (see `build_prepare.sh`):
-- Payment: `se_cash-pay`, `se_invoice-pay`, `se_paypal-pay`.
+- Payment: `se_cash-pay`, `se_invoice-pay`. PayPal (`paypal-pay`) lives in the plugin catalog since 2.3.
 - Editors: `tinymce-editor`, `ace-editor`. Editor browser assets are served from
   `public/assets/editors`. Multiple editors are supported with a default fallback.
 
@@ -119,6 +119,13 @@ Example: `app.php` fires `page.display.after` after rendering.
   - First run: `npx playwright install`.
 - **Build a release:** `composer build` (runs `build_prepare.sh` → `dist/<build>/`; needs `jq`).
 - **Composer checks:** `composer check` (audit + validate), `composer outdated`.
+- **Static analysis (PHPStan, level 5 — clean):** `composer analyse` must report no errors;
+  the GitHub workflow `.github/workflows/phpstan.yml` runs it on every push to `develop`.
+  The tracked `phpstan-baseline.neon` only holds defensive checks kept on purpose
+  (`is_array`/`isset`/`??` where DocBlock types are narrower than reality) — fix new findings
+  instead of adding them. Deliberate exceptions get an inline
+  `// @phpstan-ignore <identifier> (reason)`. `composer analyse:count` (all findings by type,
+  without baseline), `composer analyse:baseline` (refresh only after cleanups).
 - Version info: `version.json`.
 
 ## Known gotchas

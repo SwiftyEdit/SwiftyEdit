@@ -1,0 +1,84 @@
+{#
+ # category form in /admin/categories/edit/ and /new/, rendered by categories-edit.php
+ # inputs: fields built by se_print_form_input()
+ # category_id: id of the edited category, null for new categories
+ # theme_values: output of the theme's php/category-values.php, null if the theme has none
+ #}
+{% import 'components/form/macros.twig' as form %}
+
+<div class="subHeader d-flex align-items-center">
+    {{ icon.bookmarks_fill|raw }} {{ lang.categories }}
+    <a href="/admin/categories/" class="btn btn-default ms-auto">{{ icon.arrow_left_short|raw }} {{ lang.nav_btn_overview }}</a>
+</div>
+
+<div id="formResponse"></div>
+
+<form>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">{{ lang.nav_btn_info }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">{{ lang.label_content }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#metas" data-bs-toggle="tab">{{ lang.nav_btn_metas }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#theme" data-bs-toggle="tab">Theme</a></li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="info">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ inputs.name|raw }}
+                                    {{ inputs.title|raw }}
+                                    {{ inputs.teaser|raw }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.images(images) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="content">
+                            {{ inputs.text|raw }}
+                        </div>
+                        <div class="tab-pane fade" id="metas">
+                            {{ inputs.description|raw }}
+                            {{ inputs.keywords|raw }}
+                            {{ inputs.slug|raw }}
+                        </div>
+                        <div class="tab-pane fade" id="theme">
+                            {% if theme_values is not null %}
+                                {{ theme_values|raw }}
+                            {% else %}
+                                No injection file found
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">{{ lang.label_settings }}</div>
+                <div class="card-body">
+                    {{ inputs.priority|raw }}
+                    {{ inputs.language|raw }}
+
+                    <div class="mb-3">
+                        <label class="form-label" for="select_template">Theme / {{ lang.label_template }}</label>
+                        <select id="select_template" name="cat_template" class="form-control">
+                            <option value="use_standard"{% if template_standard %} selected{% endif %}>{{ lang.label_use_default }}</option>
+                            {% for theme in themes %}
+                                <option value="{{ theme.name }}"{% if theme.selected %} selected{% endif %}>{{ theme.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_category" value="{{ category_id ?? 'new' }}">{{ submit_label }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

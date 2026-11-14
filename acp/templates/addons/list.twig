@@ -1,0 +1,90 @@
+{#
+ # installed plugins and themes in /admin/addons/, rendered by acp/core/addons/list.php
+ # the lists are loaded by the addons data-reader (plugins-list.twig, themes-list.twig)
+ #}
+{% set loading %}
+    {# placeholder shown until the htmx "load" request replaces the list content #}
+    <div class="d-flex align-items-center text-muted"><div class="spinner-border spinner-border-sm me-2" role="status"></div>{{ lang.loading }}</div>
+{% endset %}
+
+<div class="subHeader d-flex align-items-center">
+    {{ icon.plugin|raw }} {{ lang.nav_btn_addons }}
+    {% if can_install %}
+        <a href="/admin/addons/install/" class="btn btn-sm btn-outline-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.btn_install }}</a>
+        <a href="/admin/addons/catalog/" class="btn btn-sm btn-outline-default text-primary ms-1">{{ icon.shop|raw }} {{ lang.btn_browse_catalog }}</a>
+    {% endif %}
+</div>
+
+{# the actions of both lists include this token #}
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+<div class="app-container">
+    <div class="max-height-container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        {{ lang.catalog_filter_plugins }}
+                        {# client-side only - the list is already fully loaded, a server round-trip
+                           per click would also re-fire every plugin's update check #}
+                        <div class="btn-group ms-auto" data-plugin-filter>
+                            {% for category, label in {'': lang.catalog_filter_all, 'plugin': lang.catalog_filter_plugins, 'payment': lang.catalog_filter_payment, 'editor': lang.catalog_filter_editors} %}
+                                <button type="button" class="btn btn-sm btn-default{% if category == '' %} active{% endif %}" data-filter-category="{{ category }}">{{ label }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="scroll-box">
+                            <div id="listPlugins" hx-get="{{ reader_uri }}?action=list_plugins" hx-trigger="load, update_plugins_list from:body">{{ loading }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">{{ lang.catalog_filter_themes }}</div>
+                    <div class="card-body">
+                        <div class="scroll-box">
+                            <div id="listThemes" hx-get="{{ reader_uri }}?action=list_themes" hx-trigger="load, update_themes_list from:body">{{ loading }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var group = document.querySelector("[data-plugin-filter]");
+    var list = document.getElementById("listPlugins");
+    if (!group || !list) { return; }
+
+    var current = "";
+
+    function applyFilter() {
+        list.querySelectorAll("[data-addon-category]").forEach(function (card) {
+            var show = current === "" || card.getAttribute("data-addon-category") === current;
+            card.style.display = show ? "" : "none";
+        });
+    }
+
+    group.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-filter-category]");
+        if (!btn) { return; }
+
+        group.querySelectorAll("[data-filter-category]").forEach(function (b) {
+            b.classList.toggle("active", b === btn);
+        });
+
+        current = btn.getAttribute("data-filter-category");
+        applyFilter();
+    });
+
+    // keep the selected filter when the list is re-rendered
+    // (e.g. after activating or deleting a plugin, see update_plugins_list)
+    list.addEventListener("htmx:afterSwap", function (e) {
+        if (e.target === list) { applyFilter(); }
+    });
+})();
+</script>

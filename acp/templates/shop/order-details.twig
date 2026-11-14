@@ -1,0 +1,70 @@
+{#
+ # details of an order in the modal of /admin/shop/orders/, rendered by the shop data-reader (show_order)
+ # order: see shop/data-reader.php - address and options are lists of plain text lines
+ # prices: markup of se_post_print_currency()
+ #}
+{% set payment_status = {
+    '1': '<span class="text-danger">' ~ lang.status_order_payment_open|e ~ '</span>',
+    '2': '<span class="text-success">' ~ lang.status_order_payment_paid|e ~ '</span>'
+} %}
+
+<div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">#{{ order.nbr }}</h5>
+            <button class="btn btn-default ms-auto" onclick="printJS('printOrder', 'html')">Print</button>
+        </div>
+        <div class="modal-body" id="printOrder">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>#{{ order.nbr }}</p>
+                    <p>{{ order.time }}</p>
+                    <span class="fs-4 bg-success-subtle text-success-emphasis p-2 ">{{ order.currency }} {{ order.price_total|raw }}</span>
+                    <span class="p-2">{{ payment_status[order.payment_status]|default('')|raw }}</span>
+                </div>
+                <div class="col-md-4">
+                    {% for line in order.address %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+                </div>
+            </div>
+
+            <div class="card p-3">
+                <table class="table table-bordered">
+                    {% for product in order.products %}
+                        <tr>
+                            <td>{{ product.amount }} x</td>
+                            <td>
+                                {{ product.title }}
+                                {% if product.options %}
+                                    <div class="item-options">
+                                        {% for option in product.options %}<span>{{ option }}</span>{% endfor %}<br>
+                                        {{ product.options_comment_label }}:<br>{{ product.options_comment }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">{{ product.price_net|raw }}</td>
+                            <td class="text-end">{{ product.tax }} %</td>
+                            <td class="text-end">{{ product.price_gross|raw }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4">{{ lang.label_shipping }}</td>
+                        <td class="text-end">{{ order.shipping_costs|raw }}</td>
+                    </tr>
+                    {% if order.payment_costs %}
+                        <tr>
+                            <td colspan="4">{{ lang.label_payment }}</td>
+                            <td class="text-end">{{ order.payment_costs|raw }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="4">{{ lang.price_total }}</td>
+                        <td class="text-end">{{ order.price_total|raw }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ lang.close }}</button>
+        </div>
+    </div>
+</div>

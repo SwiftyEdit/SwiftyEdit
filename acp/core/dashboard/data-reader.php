@@ -12,264 +12,128 @@ use Twig\Environment;
  * @var array $se_page_types
  * @var array $se_settings
  * @var array $lang
+ * @var array $lang_codes
  * @var array $icon
+ * @var bool $se_backend_updates
  * @var Environment $twig
  */
 
+require_once __DIR__.'/functions.php';
+
 // This endpoint only reads from $_SESSION (header.php's own writes are
 // already done by this point) and never writes to it. The dashboard fires
-// ~13-15 of these hx-trigger="load" requests at once, all sharing one
+// several of these hx-trigger="load" requests at once, all sharing one
 // PHPSESSID - the default file session handler holds an exclusive lock on
 // the session file for the whole request, so without closing it early here
 // those requests queue up and run one at a time instead of concurrently.
 // Do not add $_SESSION writes below without removing this first.
 session_write_close();
 
+$reader_uri = '/admin-xhr/dashboard/read/';
 
-// pages
-if($_REQUEST['action'] === 'list_pages') {
-    $getPages = $db_content->select("se_pages", [
-        "page_id", "page_linkname", "page_title",
-        "page_meta_description", "page_lastedit",
-        "page_lastedit_from", "page_status"
-    ], [
-        "ORDER" => ["page_lastedit" => "DESC"],
-        "LIMIT" => 10
-    ]);
 
-    foreach ($getPages as &$page) {
-        // page_title / page_meta_description are stored HTML-entity-encoded (se_return_clean_value()).
-        // Decode here so Twig's autoescape encodes them exactly once instead of double-encoding
-        // (which turns umlauts like "&Uuml;" into visible "&amp;Uuml;" in the browser).
-        $page['page_title'] = html_entity_decode($page['page_title'], ENT_QUOTES, 'UTF-8');
-        $page['page_meta_description'] = html_entity_decode($page['page_meta_description'], ENT_QUOTES, 'UTF-8');
-        $page['page_se_format_datetime'] = se_format_datetime($page['page_lastedit']);
-    }
+// activity grid and history
 
-    $html = $twig->render('dashboard/table-pages.twig', [
-        'getPages' => $getPages
-    ]);
+if ($_REQUEST['action'] === 'activity') {
 
-    se_html_response($html);
-}
+    se_cleanup_logs();
 
-// snippets
+    $tab = ($_GET['tab'] ?? '') === 'history' ? 'history' : 'overview';
+    $day = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['day'] ?? '')) ? (string) $_GET['day'] : '';
+    $type = (string) ($_GET['type'] ?? 'all');
 
-if ($_REQUEST['action'] === 'list_snippets') {
-
-    $get_snippets = $db_content->select("se_snippets", [
-        "snippet_id", "snippet_type", "snippet_name",
-        "snippet_title", "snippet_content", "snippet_lastedit"
-    ], [
-        "OR" => [
-            "snippet_type[~]" => ["snippet", "snippet_core"]
-        ],
-        "ORDER" => ["snippet_lastedit" => "DESC"],
-        "LIMIT" => 10
-    ]);
-
-    foreach ($get_snippets as &$snippet) {
-        // date
-        $snippet['snippet_se_format_datetime'] = se_format_datetime($snippet['snippet_lastedit']);
-
-        // Content Preview
-        $snippet_content = strip_tags($snippet['snippet_content']);
-        if (strlen($snippet_content) > 150) {
-            $snippet['snippet_content_preview'] = substr($snippet_content, 0, 100) . ' <small><i>(...)</i></small>';
-        } else {
-            $snippet['snippet_content_preview'] = $snippet_content;
-        }
-    }
-
-    $html = $twig->render('dashboard/table-snippets.twig', [
-        'get_snippets' => $get_snippets
-    ]);
-
-    se_html_response($html);
-}
-
-// posts
-
-if ($_REQUEST['action'] === 'list_posts') {
-
-    $get_posts = $db_posts->select("se_posts", [
-        "post_id", "post_title", "post_teaser", "post_type", "post_lastedit"
-    ], [
-        "OR" => [
-            "post_type[~]" => ["m", "v", "i", "g", "f", "l"]
-        ],
-        "ORDER" => ["post_lastedit" => "DESC"],
-        "LIMIT" => 5
-    ]);
-
-    // no entries
-    if (count($get_posts) < 1) {
-        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
-    }
-
-    foreach ($get_posts as &$post) {
-        $post['post_lastedit_formatted'] = se_format_datetime($post['post_lastedit']);
-        $post['post_teaser_trimmed'] = se_return_first_chars($post['post_teaser'], 100);
-    }
-
-    $html = $twig->render('dashboard/table-posts.twig', [
-        'get_posts' => $get_posts
-    ]);
+    $html = $twig->render('dashboard/activity.twig', ['reader_uri' => $reader_uri] + se_dashboard_activity($tab, $day, $type));
 
     se_html_response($html);
 }
 
 
-// products
-
-if ($_REQUEST['action'] === 'list_products') {
-
-    $get_products = $db_posts->select("se_products", [
-        "id", "title", "teaser", "type", "lastedit"
-    ], [
-        "type[~]" => "p",
-        "ORDER" => ["lastedit" => "DESC"],
-        "LIMIT" => 5
-    ]);
-
-    if (count($get_products) < 1) {
-        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
-    }
-
-    foreach ($get_products as &$product) {
-        $product['lastedit_formatted'] = se_format_datetime($product['lastedit']);
-        $product['teaser_trimmed'] = se_return_first_chars($product['teaser'], 100);
-    }
-
-    $html = $twig->render('dashboard/table-products.twig', [
-        'get_products' => $get_products
-    ]);
-
-    se_html_response($html);
-}
-
-
-// events
-
-if ($_REQUEST['action'] === 'list_events') {
-
-    $get_events = $db_posts->select("se_events", [
-        "id", "title", "teaser", "lastedit"
-    ], [
-        "id[!]" => null,
-        "ORDER" => ["lastedit" => "DESC"],
-        "LIMIT" => 5
-    ]);
-
-    if (count($get_events) < 1) {
-        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
-    }
-
-    foreach ($get_events as &$event) {
-        $event['lastedit_formatted'] = se_format_datetime($event['lastedit']);
-        $event['teaser_trimmed'] = se_return_first_chars($event['teaser'], 100);
-    }
-
-    $html = $twig->render('dashboard/table-events.twig', [
-        'get_events' => $get_events
-    ]);
-
-    se_html_response($html);
-}
-
-
-// activated plugins
+// plugins
 
 if ($_REQUEST['action'] === 'list_addons') {
 
-    $activated = se_get_addons('plugin');
-    $all_addons = se_get_all_addons();
+    $filter = in_array($_GET['filter'] ?? '', ['all', 'favorites'], true) ? $_GET['filter'] : 'usable';
+    $activated = array_column(se_get_addons('plugin'), 'addon_dir');
+    $favorites = se_get_my_favorite_plugins();
+    $count_favorites = 0;
 
     $addons = [];
-    foreach ($activated as $a) {
-        $dir = $a['addon_dir'];
-        // First entry in the addon's own nav (its "overview" tab, by
-        // convention always named 'start') is the closest thing to a
-        // detail page for it - fall back to the addons list if a plugin
-        // happens to ship no navigation at all.
-        $nav_file = $all_addons[$dir]['navigation'][0]['file'] ?? null;
+    $count_usable = 0;
+    foreach (se_get_all_addons() as $dir => $info) {
+
+        $is_activated = in_array($dir, $activated, true);
+        $needs_activation = se_plugin_needs_activation($dir, $info);
+        $is_inactive = !$is_activated && $needs_activation;
+
+        if (!$is_inactive) {
+            $count_usable++;
+        }
+
+        $is_favorite = in_array($dir, $favorites, true);
+        if ($is_favorite) {
+            $count_favorites++;
+        }
+
+        // same categories as the filter buttons on the addons page
+        // "Plugin" and "Editor" are technical terms, not translated
+        $category = 'Plugin';
+        if (($info['addon']['type'] ?? '') === 'editor') {
+            $category = 'Editor';
+        } elseif (str_ends_with($dir, '-pay')) {
+            $category = $lang['label_payment'];
+        }
+
+        $name = (string) ($info['addon']['name'] ?? $dir);
+        $words = preg_split('/[\s_-]+/', $name) ?: [];
+        $initials = mb_substr($words[0] ?? $name, 0, 1).mb_substr($words[1] ?? '', 0, 1);
+
+        // the plugin's own pages only respond once it is activated, see se_is_plugin_activated()
+        $nav_file = $info['navigation'][0]['file'] ?? null;
+
         $addons[] = [
             'dir' => $dir,
-            'name' => $all_addons[$dir]['addon']['name'] ?? $dir,
-            'version' => $all_addons[$dir]['addon']['version'] ?? '',
-            'link' => $nav_file ? '/admin/addons/plugin/'.$dir.'/'.$nav_file.'/' : '/admin/addons/'
+            'name' => $name,
+            'initials' => $initials,
+            'version' => $info['addon']['version'] ?? '',
+            'category' => $category,
+            'state' => $is_activated ? 'active' : ($is_inactive ? 'inactive' : 'none'),
+            'favorite' => $is_favorite,
+            'link' => ($nav_file && !$is_inactive) ? '/admin/addons/plugin/'.$dir.'/'.$nav_file.'/' : '/admin/addons/'
         ];
     }
 
-    if (count($addons) < 1) {
-        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
+    $count_all = count($addons);
+    if ($filter === 'usable') {
+        $addons = array_values(array_filter($addons, static fn($addon) => $addon['state'] !== 'inactive'));
+    } elseif ($filter === 'favorites') {
+        $addons = array_values(array_filter($addons, static fn($addon) => $addon['favorite']));
     }
+    usort($addons, static fn($a, $b) => strcasecmp($a['name'], $b['name']));
 
     $html = $twig->render('dashboard/table-addons.twig', [
-        'addons' => $addons
+        'addons' => $addons,
+        'filter' => $filter,
+        'count_favorites' => $count_favorites,
+        'count_usable' => $count_usable,
+        'count_all' => $count_all,
+        'reader_uri' => $reader_uri
     ]);
 
     se_html_response($html);
 }
 
 
-// orders
-
-if ($_REQUEST['action'] === 'list_orders') {
-
-    $get_orders = $db_content->select("se_orders", [
-        "id", "order_nbr", "order_time", "order_invoice_mail", "order_price_total", "order_status"
-    ], [
-        "ORDER" => ["order_time" => "DESC"],
-        "LIMIT" => 5
-    ]);
-
-    if (count($get_orders) < 1) {
-        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
-    }
-
-    $show_order_status = [
-        "1" => $lang['status_order_received'],
-        "2" => $lang['status_order_completed'],
-        "3" => $lang['status_order_canceled']
-    ];
-
-    // Plain number_format() instead of se_post_print_currency() here - that
-    // helper always wraps the price in <span class="price-predecimal/decimal">
-    // for frontend styling, which would need |raw in the template to render
-    // (it's also used by the frontend cart/checkout, so not worth changing
-    // its contract just for this one plain-text row).
-    foreach ($get_orders as &$order) {
-        $order['order_time_formatted'] = se_format_datetime($order['order_time']);
-        $order['order_price_formatted'] = number_format($order['order_price_total'], 2, ',', '.') . ' ' . $se_settings['posts_products_default_currency'];
-        $order['order_status_label'] = $show_order_status[$order['order_status']] ?? '';
-    }
-
-    $html = $twig->render('dashboard/table-orders.twig', [
-        'get_orders' => $get_orders
-    ]);
-
-    se_html_response($html);
-}
-
-
-// comments
-
-if($_REQUEST['action'] == 'list_comments') {
-    $get_comments = $db_content->select("se_comments", ["comment_id", "comment_author", "comment_type", "comment_text", "comment_time"], [
-        "ORDER" => ["comment_lastedit" => "DESC"],
-        "LIMIT" => 5
-    ]);
-
-    // @todo
-}
-
-// user
+// new users
 
 if ($_REQUEST['action'] === 'list_user') {
     $get_user = $db_user->select("se_user", [
         "user_id", "user_nick", "user_firstname", "user_lastname", "user_mail", "user_registerdate"
     ], [
+        // "!= deleted" alone drops rows where user_class is NULL (most regular users)
+        "OR #class" => [
+            "user_class[!]" => "deleted",
+            "user_class" => null
+        ],
         "ORDER" => ["user_id" => "DESC"],
         "LIMIT" => 5
     ]);
@@ -279,9 +143,13 @@ if ($_REQUEST['action'] === 'list_user') {
     }
 
     foreach ($get_user as &$user) {
-        // Datum formatieren
         $user['user_registerdate_formatted'] = se_format_datetime($user['user_registerdate']);
+        $user['display_name'] = trim($user['user_firstname'].' '.$user['user_lastname']);
+        $source = $user['display_name'] !== '' ? $user['display_name'] : $user['user_nick'];
+        $words = preg_split('/\s+/', $source) ?: [];
+        $user['initials'] = mb_strtoupper(mb_substr($words[0] ?? '', 0, 1).mb_substr($words[1] ?? '', 0, 1));
     }
+    unset($user);
 
     $html = $twig->render('dashboard/table-users.twig', [
         'get_user' => $get_user
@@ -292,7 +160,7 @@ if ($_REQUEST['action'] === 'list_user') {
 
 
 /**
- * central cache management ("Cache" tab)
+ * central cache management
  * lists every cache the application writes, with its current size and
  * either a single "rebuild" action or (products, smarty) their existing
  * dedicated actions
@@ -301,55 +169,24 @@ if ($_REQUEST['action'] === 'list_user') {
 if ($_REQUEST['action'] === 'list_cache') {
 
     $caches = [
-        [
-            'target' => 'smarty',
-            'label' => $lang['cache_label_smarty'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/templates_c/')),
-            'clear_only' => true
-        ],
-        [
-            'target' => 'twig',
-            'label' => $lang['cache_label_twig'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/twig/')),
-            'clear_only' => true
-        ],
-        [
-            'target' => 'navigation',
-            'label' => $lang['cache_label_navigation'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/navigation/'))
-        ],
-        [
-            'target' => 'urls',
-            'label' => $lang['cache_label_urls'],
-            'size' => readable_filesize(is_file(SE_CONTENT.'/cache/active_urls.json') ? filesize(SE_CONTENT.'/cache/active_urls.json') : 0)
-        ],
-        [
-            'target' => 'categories',
-            'label' => $lang['label_categories'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/categories/'))
-        ],
-        [
-            'target' => 'tags',
-            'label' => $lang['label_keywords'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/tags/'))
-        ],
-        [
-            'target' => 'snippets',
-            'label' => $lang['cache_label_snippets'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/snippets/'))
-        ],
-        [
-            'target' => 'preferences',
-            'label' => $lang['cache_label_preferences'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/preferences/'))
-        ],
-        [
-            'target' => 'products',
-            'label' => $lang['label_products'],
-            'size' => readable_filesize(se_dir_size(SE_CONTENT.'/cache/products/')),
-            'clear_and_rebuild' => true
-        ]
+        ['target' => 'smarty', 'label' => $lang['cache_label_smarty'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/templates_c/'), 'clear_only' => true],
+        ['target' => 'twig', 'label' => $lang['cache_label_twig'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/twig/'), 'clear_only' => true],
+        ['target' => 'navigation', 'label' => $lang['cache_label_navigation'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/navigation/')],
+        ['target' => 'urls', 'label' => $lang['cache_label_urls'], 'bytes' => is_file(SE_CONTENT.'/cache/active_urls.json') ? filesize(SE_CONTENT.'/cache/active_urls.json') : 0],
+        ['target' => 'categories', 'label' => $lang['label_categories'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/categories/')],
+        ['target' => 'tags', 'label' => $lang['label_keywords'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/tags/')],
+        ['target' => 'snippets', 'label' => $lang['cache_label_snippets'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/snippets/')],
+        ['target' => 'preferences', 'label' => $lang['cache_label_preferences'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/preferences/')],
+        ['target' => 'products', 'label' => $lang['label_products'], 'bytes' => se_dir_size(SE_CONTENT.'/cache/products/'), 'clear_and_rebuild' => true]
     ];
+
+    // the bars show the size in relation to the largest cache
+    $largest = max(array_column($caches, 'bytes')) ?: 1;
+    foreach ($caches as &$cache) {
+        $cache['size'] = readable_filesize($cache['bytes']);
+        $cache['percent'] = (int) round(100 * $cache['bytes'] / $largest);
+    }
+    unset($cache);
 
     $html = $twig->render('dashboard/table-cache.twig', [
         'caches' => $caches
@@ -360,7 +197,7 @@ if ($_REQUEST['action'] === 'list_cache') {
 
 
 /**
- * OPcache status ("OPcache" card, see dashboard_top.tpl / index.php - the
+ * OPcache status ("OPcache" card, see dashboard/cards.twig / index.php - the
  * whole card is only wired in for admins, see se_hasPermission() there, but
  * the read is harmless on its own so no extra check is repeated here).
  */
@@ -375,17 +212,7 @@ if ($_REQUEST['action'] === 'list_opcache') {
 
 
 /**
- * logfile
- */
-
-if($_REQUEST['action'] == 'list_logfile') {
-    $show_log = se_show_log(10);
-    se_html_response($show_log);
-}
-
-
-/**
- * checks and warnings
+ * "To review": things somebody should look at
  */
 
 if($_REQUEST['action'] === 'list_alerts') {
@@ -414,7 +241,7 @@ if($_REQUEST['action'] === 'list_alerts') {
         }
 
         if(!is_writable($f)) {
-            $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($f).'</code>';
+            $se_check_messages[] = basename($f);
         }
     }
 
@@ -422,16 +249,17 @@ if($_REQUEST['action'] === 'list_alerts') {
     // so a missing directory is fine - only flag an existing, non-writable one
     $smarty_compile_dir = SE_ROOT.'/data/cache/templates_c/';
     if(is_dir($smarty_compile_dir) && !is_writable($smarty_compile_dir)) {
-        $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... '.basename($smarty_compile_dir).'</code>';
+        $se_check_messages[] = basename($smarty_compile_dir);
     }
 
     // se_get_site_secret() creates the file on first use - if it still doesn't
     // exist, every request gets a new secret (2FA, mail codes, IP hashes break)
     se_get_site_secret();
     if(!is_file(SE_CONTENT.'/site_secret.php')) {
-        $se_check_messages[] = $lang['msg_error_not_writable']. ':<br><code>... site_secret.php</code>';
+        $se_check_messages[] = 'site_secret.php';
     }
 
+    $missing_types = [];
     foreach($se_page_types as $pt) {
 
         if($pt == 'normal') {
@@ -443,34 +271,72 @@ if($_REQUEST['action'] === 'list_alerts') {
         ]);
 
         if(count($find_target_page) < 1) {
-            $se_check_messages[] = 'Type of use <code>'.$pt.'</code> is not available ';
+            $missing_types[] = $pt;
         }
     }
 
-    if (count($se_check_messages) < 1) {
-        se_html_response('<div class="dash-empty-hint">' . $lang['msg_no_entries_found'] . '</div>');
-    }
+    // security entries are only for those who may open the log
+    $can_view_log = se_hasPermission('drm_acp_sensitive_files');
 
-    // Same row shape as the dashboard's other list-based cards instead of a
-    // full-weight .alert per message - a bank of alert boxes crammed into a
-    // compact card looked heavier than the content warranted; a plain list
-    // reads just as clearly here.
-    echo '<div class="list-group list-group-flush">';
-    foreach($se_check_messages as $alert) {
-        echo '<div class="list-group-item">'.$alert.'</div>';
-    }
-    echo '</div>';
-    exit;
+    $html = $twig->render('dashboard/review.twig', [
+        'not_writable' => $se_check_messages,
+        'missing_types' => $missing_types,
+        'security' => $can_view_log ? se_dashboard_security_summary() : null
+    ]);
+
+    se_html_response($html);
 }
 
 
-// show some infos
+// system information
 
 if ($_REQUEST['action'] === 'list_infos') {
     $html = $twig->render('dashboard/table-infos.twig', [
         'database' => $db_type,
-        'php_version' => phpversion()
+        'php_version' => phpversion(),
+        'languages' => mb_strtoupper(implode(', ', $lang_codes))
     ]);
+
+    se_html_response($html);
+}
+
+
+// installed version and available update, loaded on its own because it may ask swiftyedit.net
+
+if ($_REQUEST['action'] === 'version_state') {
+
+    $version = json_decode((string) file_get_contents(SE_ROOT.'version.json'), true);
+    $installed_build = (string) ($version['build'] ?? '');
+
+    // the update itself needs this right, the others don't get a button they can't use
+    $can_update = $se_backend_updates !== false && se_hasPermission('drm_acp_sensitive_files');
+
+    $html = $twig->render('dashboard/version-state.twig', [
+        'installed_build' => $installed_build,
+        'can_update' => $can_update,
+        'available_build' => $can_update ? se_dashboard_available_update($installed_build) : ''
+    ]);
+
+    se_html_response($html);
+}
+
+
+// the log page
+
+if ($_REQUEST['action'] === 'log') {
+
+    if (!se_hasPermission('drm_acp_sensitive_files')) {
+        se_html_response('<div class="alert alert-info">'.$lang['rm_no_access'].'</div>', 403);
+    }
+
+    $filter = in_array($_GET['filter'] ?? '', ['content', 'security'], true) ? $_GET['filter'] : 'all';
+    $page = max(0, (int) ($_GET['p'] ?? 0));
+
+    $html = $twig->render('dashboard/log-list.twig', [
+        'reader_uri' => $reader_uri,
+        'filter' => $filter,
+        'page' => $page
+    ] + se_dashboard_log_entries($filter, $page, 50));
 
     se_html_response($html);
 }

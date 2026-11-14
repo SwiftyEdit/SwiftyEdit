@@ -1,0 +1,42 @@
+{#
+ # events with an active guestlist and their confirmations, loaded into #getBookings
+ # events: see events/data-reader.php (action list_bookings)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+{% for event in events %}
+    <div class="border-bottom py-2">
+        <div class="d-flex align-items-center gap-3">
+            <div class="flex-grow-1">
+                <h6 class="mb-0"><img src="{{ event.lang_flag }}" width="15" alt="{{ event.lang }}"> {{ event.title }}</h6>
+                <small class="text-muted">{{ icon.calendar_event|raw }} {{ event.start }} &middot; {{ event.mode_label }}</small>
+            </div>
+            <div class="text-nowrap fw-bold">{{ event.bookings|length }}{% if event.limit %} / {{ event.limit }}{% endif %}</div>
+            <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#bookings-{{ event.id }}" aria-expanded="false" aria-controls="bookings-{{ event.id }}"{% if not event.bookings %} disabled{% endif %}>{{ icon.people|raw }}</button>
+        </div>
+        {% if event.limit %}
+            <div class="progress mt-2" style="height:4px" role="progressbar" aria-valuenow="{{ event.bookings|length }}" aria-valuemin="0" aria-valuemax="{{ event.limit }}">
+                <div class="progress-bar{% if event.bookings|length >= event.limit %} bg-danger{% endif %}" style="width: {{ min(100, event.bookings|length / event.limit * 100) }}%"></div>
+            </div>
+        {% endif %}
+        <div class="collapse" id="bookings-{{ event.id }}">
+            <table class="table table-sm table-hover mt-2 mb-0">
+                {% for booking in event.bookings %}
+                    <tr>
+                        <td>
+                            {% if booking.registered %}
+                                {{ icon.user|raw }} {{ booking.name }}
+                            {% else %}
+                                <span class="text-muted" title="{{ booking.name }}">{{ icon.incognito|raw }} {{ lang.label_guestlist_anonymous }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small text-nowrap">{{ booking.time }}</td>
+                        <td class="text-end">{{ list.delete_button('delete_booking', booking.id, writer_uri) }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% else %}
+    <p class="text-muted mb-0">{{ lang.msg_info_no_guestlists }}</p>
+{% endfor %}

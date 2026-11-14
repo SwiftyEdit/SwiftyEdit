@@ -1,0 +1,21 @@
+{# orders in /admin/shop/orders/, rendered by orders.php #}
+{% extends 'layout/module-overview.twig' %}
+
+{% block list %}
+    <div id="getOrders" hx-post="{{ reader_uri }}?action=list_orders" hx-trigger="load, {{ list_triggers }}" hx-include="[name='csrf_token']"></div>
+{% endblock %}
+
+{% block sidebar %}
+    <div class="card mb-2">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="me-auto">{{ lang.total }}</div>
+                <span class="badge text-bg-primary rounded-pill" hx-get="{{ reader_uri }}?calc_orders_all" hx-trigger="load, {{ list_triggers }}">0,00</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="me-auto">{{ lang.status_order_canceled }}</div>
+                <span class="badge text-bg-danger rounded-pill" hx-get="{{ reader_uri }}?calc_orders_canceled" hx-trigger="load, {{ list_triggers }}">0,00</span>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

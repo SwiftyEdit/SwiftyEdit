@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * database connections (Medoo): $db_content, $db_user, $db_posts
+ *
+ * mysql - from config_database.php
+ * @var string $database_name
+ * @var string $database_host
+ * @var string $database_user
+ * @var string $database_psw
+ * @var int|string $database_port
+ *
+ * sqlite - from config.php
+ * @var string $se_db_content
+ * @var string $se_db_user
+ * @var string $se_db_posts
+ */
+
 if(!defined('SE_SECTION')) {
 	die("PERMISSION DENIED!");
 }

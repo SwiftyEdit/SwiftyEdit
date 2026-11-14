@@ -1,15 +1,9 @@
 .card {
 	background: $widget_background;
 	//border-color: darken($widget_background,5);
-	// darken() works in HSL percentage-points, so the same number reads very
-	// differently depending on how light/dark the base already is: 7 points off
-	// $widget_background (very light) barely shows, while the old 5 points off
-	// $widget_background_dark (already near-black, see the dark-mode block
-	// below) was a ~34% relative drop - much starker than intended. 12/2 points
-	// here instead both land on roughly the same ~13% relative difference from
-	// the card body, so the header reads equally "a little darker" in both themes.
+	// white in the light theme, the dark theme has its own value below
 	.card-header {
-		background: darken($widget_background,12%);
+		background: $white;
 	}
 	.card-header-tabs {
 		// Never let a tab wrap onto a second line: on narrow viewports (or long
@@ -91,8 +85,6 @@
 	.card {
 		background: $widget_background_dark;
 		//border-color: lighten($widget_background_dark,10);
-		// See the light-mode comment above - 2 points here matches the same
-		// ~13% relative drop as the 12 points used against $widget_background.
 		.card-header {
 			background: darken($widget_background_dark,2);
 		}
@@ -107,15 +99,66 @@
 	}
 }
 
+// .card-body has its own background (see above) but no radius of its own, its
+// corners would stick out of the rounded card.
+.card > .card-body {
+	&:first-child {
+		border-top-left-radius: var(--bs-card-inner-border-radius);
+		border-top-right-radius: var(--bs-card-inner-border-radius);
+	}
+
+	&:last-child {
+		border-bottom-left-radius: var(--bs-card-inner-border-radius);
+		border-bottom-right-radius: var(--bs-card-inner-border-radius);
+	}
+}
+
+// List area of the module overviews (acp/templates/layout/module-overview.twig):
+// translucent, so the page background shows through a little. .card sets its
+// background directly (see above), so --bs-card-bg would not apply here.
+.card.module-overview-list {
+	background: rgba($widget_background, .6);
+	backdrop-filter: blur(6px);
+}
+
+[data-bs-theme="dark"] .card.module-overview-list {
+	background: rgba($widget_background_dark, .6);
+}
+
+// A card with header and body (dashboard): both would cover the translucent
+// background with their solid colors. The header stays translucent too, white
+// in the light theme and slightly darker in the dark theme.
+.card.module-overview-list > .card-body {
+	background: transparent;
+}
+
+.card.module-overview-list > .card-header {
+	background: rgba($white, .6);
+}
+
+[data-bs-theme="dark"] .card.module-overview-list > .card-header {
+	background: rgba(0, 0, 0, .12);
+}
+
 // Nested cards: set apart by one flat tonal step plus a hairline border instead
 // of gradients. The themed widget-bg scale darkens in both themes, so the inner
-// card sits a step darker than its parent and its header one step further.
-.card .card {
+// card sits a step darker than its parent. In the light theme that step stays
+// small (the widget scale turns gray quickly) and the header is white like all
+// others, in the dark theme the header is one step darker again.
+[data-bs-theme="dark"] .card .card {
 	--se-nested-card-bg: var(--bs-widget-bg-600);
 	--se-nested-card-header-bg: var(--bs-widget-bg-700);
+}
+
+.card .card {
+	--se-nested-card-bg: #{darken($widget_background, 4%)};
+	--se-nested-card-header-bg: #{$white};
 	background: var(--se-nested-card-bg);
 	border: 1px solid var(--bs-border-color-translucent);
-	border-radius: calc(var(--bs-card-border-radius) * .6);
+	// redefined instead of only setting border-radius, so header, body and
+	// footer of the nested card follow its smaller corners
+	--bs-card-border-radius: .6rem;
+	--bs-card-inner-border-radius: calc(.6rem - 1px);
 	box-shadow: none;
 
 	.card-header {

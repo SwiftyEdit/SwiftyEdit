@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * SwiftyEdit /admin/events/ - picks the sub page by the url
+ *
+ * global variables
+ * @var string $query the current url (without /admin/)
+ * @var array $lang
+ */
+
 $subinc = match (true) {
     str_starts_with($query, 'events/new/') => 'events-edit',
     str_starts_with($query, 'events/edit/') => 'events-edit',

@@ -59,7 +59,7 @@
                                             <button type="submit" name="startUpload" class="btn btn-primary">Upload</button>
                                         </div>
                                     </div>
-                                    <input type="hidden" name="order" value="{$order.nbr}">
+                                    <input type="hidden" name="order" value="{$order_nbr}">
                                     <input type="hidden" name="pos" value="{$product.pos}">
                                     {$hidden_csrf_token}
                                 </form>

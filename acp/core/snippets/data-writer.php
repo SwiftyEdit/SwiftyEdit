@@ -1,11 +1,22 @@
 <?php
 
+/**
+ * SwiftyEdit /admin-xhr/snippets/write/
+ * list filters (search, keywords, pagination), saving and deleting snippets
+ *
+ * global variables
+ * @var array $lang
+ * @var array $lang_codes
+ * @var string $languagePack
+ * @var object $db_content
+ */
+
 // search snippet
 if(isset($_POST['snippets_text_filter'])) {
 
     $add_text_filter = sanitizeUserInputs($_POST['snippets_text_filter']);
 
-    if($_SESSION['snippets_text_filter'] == '') {
+    if(($_SESSION['snippets_text_filter'] ?? '') == '') {
         $_SESSION['snippets_text_filter'] = $add_text_filter;
     } else {
         if(!str_contains($_SESSION['snippets_text_filter'], $add_text_filter)) {
@@ -18,10 +29,12 @@ if(isset($_POST['snippets_text_filter'])) {
 // remove search string from filter list
 if(isset($_POST['rmkey'])) {
 
-    $all_filter = explode(" ", $_SESSION['snippets_text_filter']);
+    // the search strings are stored sanitized (see above), the button sends the plain string
+    $remove_keyword = sanitizeUserInputs($_POST['rmkey']);
+    $all_filter = explode(" ", $_SESSION['snippets_text_filter'] ?? '');
     $_SESSION['snippets_text_filter'] = '';
     foreach($all_filter as $f) {
-        if($_POST['rmkey'] == "$f") { continue; }
+        if($remove_keyword == "$f") { continue; }
         if($f == "") { continue; }
         $_SESSION['snippets_text_filter'] .= "$f ";
     }
@@ -30,17 +43,19 @@ if(isset($_POST['rmkey'])) {
 
 // add keyword
 if(isset($_POST['add_keyword'])) {
-    $_SESSION['snippets_keyword_filter'] = $_SESSION['snippets_keyword_filter'] . ' ' . sanitizeUserInputs($_POST['add_keyword']);
+    $_SESSION['snippets_keyword_filter'] = ($_SESSION['snippets_keyword_filter'] ?? '') . ' ' . sanitizeUserInputs($_POST['add_keyword']);
     header( "HX-Trigger: update_snippet_list");
 }
 
 // remove keyword
 if(isset($_POST['remove_keyword'])) {
 
-    $all_keywords_filter = explode(" ", $_SESSION['snippets_keyword_filter']);
+    // the keywords are stored sanitized (see above), the button sends the plain keyword
+    $remove_keyword = sanitizeUserInputs($_POST['remove_keyword']);
+    $all_keywords_filter = explode(" ", $_SESSION['snippets_keyword_filter'] ?? '');
     $_SESSION['snippets_keyword_filter'] = '';
     foreach($all_keywords_filter as $f) {
-        if($_POST['remove_keyword'] == "$f") { continue; }
+        if($remove_keyword == "$f") { continue; }
         if($f == "") { continue; }
         $_SESSION['snippets_keyword_filter'] .= "$f ";
     }
@@ -65,15 +80,15 @@ if(isset($_POST['items_per_page'])) {
 // delete snippet
 if(isset($_POST['delete_snippet'])) {
     $delete_id = (int) $_POST['delete_snippet'];
+    $deleted_snippet = $db_content->get("se_snippets", ["snippet_name", "snippet_title"], ["snippet_id" => $delete_id]);
     $cnt_changes=$db_content->delete("se_snippets",[
         "snippet_id" => $delete_id
     ]);
 
     if(($cnt_changes->rowCount()) > 0) {
         show_toast($lang['msg_info_data_deleted'],'success');
-        record_log($_SESSION['user_nick'],"deleted snippet id: $delete_snip_id","10");
+        se_log_content('delete', 'snippet', $delete_id, (string) ($deleted_snippet['snippet_title'] ?? ''), (string) ($deleted_snippet['snippet_name'] ?? ''));
         header( "HX-Redirect: /admin/snippets/");
-        $modus = 'new';
     }
 }
 
@@ -83,7 +98,11 @@ if(isset($_POST['save_snippet'])) {
     $snippet_name = clean_filename($_POST['snippet_name']);
     $snippet_title = sanitizeUserInputs($_POST['snippet_title']);
     $snippet_keywords = sanitizeUserInputs($_POST['snippet_keywords']);
-    $snippet_lang = sanitizeUserInputs($_POST['snippet_lang']);
+    // whitelist - the language becomes part of the cache file name below
+    $snippet_lang = (string) ($_POST['snippet_lang'] ?? '');
+    if(!in_array($snippet_lang, $lang_codes, true)) {
+        $snippet_lang = $languagePack;
+    }
     $snippet_label = sanitizeUserInputs($_POST['snippet_label']);
     $snippet_classes = sanitizeUserInputs($_POST['snippet_classes']);
     $snippet_permalink = sanitizeUserInputs($_POST['snippet_permalink']);
@@ -94,9 +113,10 @@ if(isset($_POST['save_snippet'])) {
 
     $snippet_priority = (int) $_POST['snippet_priority'];
 
-    $snippet_themes = explode('<|-|>', $_POST['select_template']);
+    // value of the select: theme<|-|>template file
+    $snippet_themes = explode('<|-|>', (string) ($_POST['select_template'] ?? ''));
     $snippet_theme = $snippet_themes[0];
-    $snippet_template = $snippet_themes[1];
+    $snippet_template = $snippet_themes[1] ?? '';
 
 
     if($snippet_name == '') {
@@ -104,7 +124,7 @@ if(isset($_POST['save_snippet'])) {
     }
 
     $snippet_thumbnail = '';
-    if(is_array($_POST['picker_0'])) {
+    if(is_array($_POST['picker_0'] ?? null)) {
         if(count($_POST['picker_0']) > 1) {
             $snippet_thumbnail = implode("<->", array_unique($_POST['picker_0']));
         } else {
@@ -113,7 +133,7 @@ if(isset($_POST['save_snippet'])) {
         }
     }
 
-    if (is_array($_POST['snippet_labels'])) {
+    if (is_array($_POST['snippet_labels'] ?? null)) {
         sort($_POST['snippet_labels']);
         $string_labels = implode(",", $_POST['snippet_labels']);
     } else {
@@ -156,6 +176,7 @@ if(isset($_POST['save_snippet'])) {
     if($_POST['save_snippet'] == 'new') {
         $data = $db_content->insert("se_snippets", $insert_data);
         $new_id = $db_content->id();
+        se_log_content('create', 'snippet', (int) $new_id, $snippet_title, $snippet_name);
         show_toast($lang['msg_success_new_record'],'success');
         header( 'HX-REDIRECT: /admin/snippets/edit/'.$new_id.'/');
     }
@@ -166,6 +187,7 @@ if(isset($_POST['save_snippet'])) {
         $data = $db_content->update("se_snippets", $insert_data,[
             "snippet_id" => $snippet_id
         ]);
+        se_log_content('update', 'snippet', $snippet_id, $snippet_title, $snippet_name);
         show_toast($lang['msg_success_db_changed'],'success');
     }
 }

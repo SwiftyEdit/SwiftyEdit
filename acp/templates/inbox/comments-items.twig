@@ -1,0 +1,36 @@
+{#
+ # comments of pages, posts and products in /admin/inbox/comments/, loaded by the inbox data-reader
+ # comments: list of {id, time, author, mail, text, approved, parent_id, relation}
+ #   relation: {type, title} - the page, post or product the comment belongs to
+ # status: approved comments are shown, the others wait for an administrator
+ #}
+{{ pagination|raw }}
+
+{% for comment in comments %}
+    <div class="card mb-2" id="comid{{ comment.id }}">
+        <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <span class="badge text-bg-secondary">#{{ comment.id }}</span>
+                <small class="text-muted">{{ comment.time }}</small>
+                <strong>{{ comment.author }}</strong>
+                {% if comment.mail %}<small class="text-muted">{{ comment.mail }}</small>{% endif %}
+                {% if comment.parent_id %}<small class="text-muted">&rarr; #{{ comment.parent_id }}</small>{% endif %}
+                {% if not comment.approved %}<span class="badge text-bg-warning ms-auto">{{ icon.clock|raw }}</span>{% endif %}
+            </div>
+
+            <p class="mb-2">{{ comment.text|nl2br }}</p>
+
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted me-auto">{{ comment.relation.type }}: {{ comment.relation.title|default('-') }}</small>
+                <div class="btn-group">
+                    <button hx-get="{{ reader_uri }}?open_comment={{ comment.id }}" hx-target="#infoModal" data-bs-toggle="modal" data-bs-target="#infoModal" class="btn btn-sm btn-default" title="{{ lang.edit }}">{{ icon.edit|raw }}</button>
+                    {# toggles between approved and waiting #}
+                    <button hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="body" hx-swap="beforeend" name="change_status" value="{{ comment.id }}" class="btn btn-sm btn-default{% if comment.approved %} text-success{% endif %}" title="{{ lang.label_status }}">{{ comment.approved ? icon.check|raw : icon.clock|raw }}</button>
+                </div>
+                <button hx-post="{{ writer_uri }}" hx-include="[name='csrf_token']" hx-target="body" hx-swap="beforeend" hx-confirm="{{ lang.msg_confirm_delete }}" name="delete_comment" value="{{ comment.id }}" class="btn btn-sm btn-default text-danger" title="{{ lang.btn_delete }}">{{ icon.trash_alt|raw }}</button>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <p class="text-muted mb-0">{{ lang.msg_no_entries_found }}</p>
+{% endfor %}

@@ -1,0 +1,51 @@
+{#
+ # list of the snippets, loaded into #getSnippets by the snippets data-reader
+ # snippets: see snippets/data-reader.php (action list_snippets)
+ #}
+{% import 'components/list/macros.twig' as list %}
+
+<div class="d-flex justify-content-end">
+    <div>{{ pagination|raw }}</div>
+    <div class="ps-3">
+        <input type="number" class="form-control" hx-post="{{ writer_uri }}" hx-swap="none" hx-trigger="keyup delay:500ms changed" hx-include="[name='csrf_token']" name="items_per_page" min="5" max="99" value="{{ items_per_page }}">
+    </div>
+</div>
+
+{# one entry per snippet - the middle part wraps, so the list fits narrow widths too #}
+<div class="list-group list-group-flush">
+    {% for snippet in snippets %}
+        <div class="list-group-item d-flex align-items-start gap-3 px-1">
+            <img src="{{ snippet.lang_flag }}" width="15" class="mt-2 flex-shrink-0" title="{{ snippet.lang }}" alt="{{ snippet.lang }}">
+
+            <div class="flex-grow-1" style="min-width: 0">
+                <div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-1 mb-1">
+                    {{ list.copy_text(snippet.name, '[snippet]' ~ snippet.name ~ '[/snippet]') }}
+                    <h6 class="mb-0">{% if snippet.title %}{{ snippet.title }}{% else %}<em class="opacity-50">{{ lang.msg_error_no_title }}</em>{% endif %}</h6>
+                </div>
+                <div class="small">{{ snippet.content }}{% if snippet.content_trimmed %} <small><i>(...)</i></small>{% endif %}</div>
+
+                {# date, classes, labels, images and link #}
+                <div class="d-flex flex-wrap align-items-center column-gap-2 row-gap-1 mt-1 small text-muted">
+                    <span class="text-nowrap">{{ snippet.lastedit }}</span>
+                    {% for class in snippet.classes %}<span class="badge text-bg-secondary">{{ class }}</span>{% endfor %}
+                    {% if snippet.labels %}<span>{{ list.labels(snippet.labels) }}</span>{% endif %}
+                    {% for image in snippet.images|slice(0, 3) %}
+                        <a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-title="{{ image }}" data-bs-content="{{ '<img src="' ~ image|e ~ '">' }}">{{ icon.images|raw }}</a>
+                    {% endfor %}
+                    {% if snippet.images|length > 3 %}<small>(...)</small>{% endif %}
+                    {% if snippet.link.url %}
+                        <a data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" title="{{ snippet.link.title }}" data-bs-content="{{ 'URL: ' ~ snippet.link.url|e ~ '<br>Name: ' ~ snippet.link.name|e ~ '<br>' ~ lang.label_classes|e ~ ': ' ~ snippet.link.classes|e }}">{{ icon.link|raw }}</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="text-nowrap flex-shrink-0">
+                <a href="/admin/snippets/edit/{{ snippet.id }}/" class="btn btn-sm btn-default text-success">{{ icon.edit|raw }}</a>
+                <form action="/admin/snippets/duplicate/" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-default" name="duplicate_id" value="{{ snippet.id }}">{{ icon.copy|raw }}</button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,30 @@
+name: Snyk
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Abhängigkeiten
+        uses: snyk/actions/php@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --all-projects --exclude=plugins --target-reference=develop
+
+      - name: Eigener Code
+        uses: snyk/actions/php@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --report --org=patkon --project-name=SwiftyEdit --target-reference=develop

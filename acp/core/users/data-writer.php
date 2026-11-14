@@ -2,6 +2,11 @@
 //error_reporting(E_ALL);
 
 /**
+ * @var \Medoo\Medoo $db_user
+ * @var array $lang
+ */
+
+/**
  * pagination
  */
 
@@ -56,7 +61,12 @@ if(isset($_POST['save_user'])) {
     $user_psw_reconfirmation = is_string($_POST['user_psw_reconfirmation'] ?? null) ? $_POST['user_psw_reconfirmation'] : '';
 
     if($user_psw_new != "") {
-        if($user_psw_new === $user_psw_reconfirmation) {
+        $psw_errors = se_password_check($user_psw_new, [$columns['user_nick'], $columns['user_mail']]);
+        if($user_psw_new !== $user_psw_reconfirmation) {
+            echo '<div class="alert alert-warning">'.$lang['msg_error_psw_not_saved'].' '.$lang['msg_error_psw_not_match'].'</div>';
+        } elseif($psw_errors !== []) {
+            echo '<div class="alert alert-warning">'.$lang['msg_error_psw_not_saved'].'<br>'.se_password_error_text($psw_errors, $lang).'</div>';
+        } else {
             $user_psw = password_hash($user_psw_new, PASSWORD_DEFAULT);
             $columns["user_psw_hash"] = $user_psw;
             $set_psw = 'true';
@@ -99,7 +109,7 @@ if(isset($_POST['save_user'])) {
 
         if($cnt_changes->rowCount() > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
-            record_log($_SESSION['user_nick'],"updated user <i>$user_nick</i>","5");
+            se_log_content('update', 'user', $edit_user_id, '');
 
             se_do_backend_hook('user.updated', [
                 'user_id' => $edit_user_id,
@@ -128,7 +138,7 @@ if(isset($_POST['save_user'])) {
             se_set_user_groups((int) $edituser, $user_group_ids);
 
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
-            record_log($_SESSION['user_nick'],"new user <i>$user_nick</i>","5");
+            record_log($_SESSION['user_nick'],"new user id: $edituser",5);
 
             se_do_backend_hook('user.created', [
                 'user_id' => $edituser,
@@ -168,7 +178,7 @@ if(isset($_POST['save_user_group'])) {
         $data = $db_user->update("se_groups",$columns,["group_id" => $group_id]);
         if($data->rowCount()) {
             echo '<div class="alert alert-success">'.$lang['msg_success_db_changed'].'</div>';
-            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>","5");
+            record_log($_SESSION['user_nick'],"new user group $group_name",5);
             header( "HX-Trigger: update_groups_list");
         }
 
@@ -177,7 +187,7 @@ if(isset($_POST['save_user_group'])) {
         $editgroup = $db_user->id();
         if($editgroup > 0) {
             echo '<div class="alert alert-success">'.$lang['msg_success_new_record'].'</div>';
-            record_log($_SESSION['user_nick'],"new user group <i>$group_name</i>","5");
+            record_log($_SESSION['user_nick'],"new user group $group_name",5);
             header( "HX-Trigger: update_groups_list");
         }
     }
@@ -190,7 +200,7 @@ if(isset($_POST['delete_user_group'])) {
         "group_id" => $delete_id
     ]);
     if(($delete_group->rowCount()) > 0) {
-        record_log($_SESSION['user_nick'],"deleted usergroup id: $editgroup","10");
+        record_log($_SESSION['user_nick'],"deleted usergroup id: $delete_id",10);
         header( "HX-Trigger: update_groups_list");
     }
 }

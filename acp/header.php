@@ -5,7 +5,11 @@ use Medoo\Medoo;
 
 const SE_SECTION = "backend";
 
-if($_SESSION['user_class'] !== "administrator"){
+/**
+ * @var string $se_environment config.php
+ */
+
+if(($_SESSION['user_class'] ?? '') !== "administrator"){
     header("location:../../index.php");
     die("PERMISSION DENIED!");
 }
@@ -22,19 +26,8 @@ if ($se_environment === 'd') {
     ini_set('display_errors', '1');
 }
 
-$loader = new \Twig\Loader\FilesystemLoader(SE_ROOT.'/acp/templates');
-$twig = new \Twig\Environment($loader, [
-    'cache' => SE_CONTENT.'/cache/twig',
-    // In dev, recompile on every change; in production, trust the cache
-    // (mirrors the $se_environment check in acp/core/update/functions.php).
-    'auto_reload' => $se_environment === 'd',
-]);
-
 /**
- * connect the database
- * @var string $db_content
- * @var string $db_user
- * @var string $db_posts
+ * connect the database: $db_content, $db_user, $db_posts
  */
 
 require SE_ROOT.'/app/database.php';
@@ -69,6 +62,7 @@ $se_editor_addons = se_bootstrap_editor_plugins($all_plugins);
 
 $se_get_preferences = se_get_preferences();
 
+$se_settings = [];
 foreach ($se_get_preferences as $k => $v) {
     $key = $se_get_preferences[$k]['option_key'];
     $value = $se_get_preferences[$k]['option_value'];
@@ -94,6 +88,7 @@ if ($se_settings['cms_ssl_domain'] != '') {
 
 /* set language */
 
+$languagePack = 'en'; // fallback, replaced by the session/default language below
 $all_langs = get_all_languages();
 
 if (!isset($_SESSION['lang'])) {
@@ -132,6 +127,7 @@ if (isset($se_settings['deactivated_languages']) AND $se_settings['deactivated_l
     $arr_lang_deactivated = json_decode($se_settings['deactivated_languages']);
 }
 
+$langs = [];
 foreach ($all_langs as $l) {
     if (isset($arr_lang_deactivated) && (in_array($l['lang_folder'], $arr_lang_deactivated))) {
         continue;
@@ -205,14 +201,4 @@ foreach ($hook_plugins as $pluginDir => $pluginData) {
 }
 
 
-$twig->addGlobal('icon', $icon);
-$twig->addGlobal('lang', $lang);
-$twig->addGlobal('csrf_token', $_SESSION['token']);
-$twig->addGlobal('se_settings', $se_settings);
-
-$twig_globals = [
-    'server_name' => $_SERVER['SERVER_NAME'],
-    'request_uri' => $_SERVER['REQUEST_URI'],
-];
-
-$twig->addGlobal('global', $twig_globals);
+require SE_ROOT.'/acp/core/twig.php';

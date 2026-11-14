@@ -1,42 +1,11 @@
 <?php
 
-/**
- * @var array $lang
- * @var array $mod
- */
-
-
-/**
- * get all installed Plugins
- * return as array
- */
-
-function get_all_plugins() {
-	
-	$plugins = array();
-	$scanned_directory = array_diff(scandir('assets/plugins/'), array('..', '.','.DS_Store'));
-	foreach($scanned_directory as $p) {
-		
-		$path_parts = pathinfo($p);
-		if($path_parts['extension'] == 'php') {
-			$plugins[] = $p;
-		} else {
-			if((is_dir('assets/plugins/'.$p)) && (is_file('assets/plugins/'.$p.'/index.php'))) {
-				$plugins[] = $p;
-			}
-		}
-		
-	}
-	return $plugins;
-}
-
-
-
 function se_get_all_addons(): array {
 
     $addons_root = SE_PLUGINS;
     $scanned_directory = array_diff(scandir($addons_root), array('..', '.','.DS_Store'));
 
+    $addon_info = [];
     foreach($scanned_directory as $plugin_dir) {
         $addon_info_file = "$addons_root/$plugin_dir/info.json";
         if(is_file("$addon_info_file")) {
@@ -97,7 +66,7 @@ function se_get_all_themes(): array {
  */
 function se_parse_theme_info_xml(string $file): ?array {
 
-    $xml = @simplexml_load_file($file);
+    $xml = @simplexml_load_file($file, null, LIBXML_NONET);
     if($xml === false) {
         return null;
     }
@@ -540,31 +509,36 @@ function se_load_addon_info(string $url): array {
     ];
 }
 
+/**
+ * check the addon's update_url for a newer compatible build
+ * status: update_available, up_to_date, no_source (no update_url/build in info.json)
+ * or check_failed (url rejected, not reachable, invalid response, no compatible version)
+ */
 function se_check_addon_update(array $addon_info): array {
 
-    // Return unknown if update_url or build is not defined
+    // no update source (e.g. not installed from the catalog) - nothing to check
     if(!isset($addon_info['addon']['update_url']) || !isset($addon_info['addon']['build'])) {
-        return ['status' => 'unknown'];
+        return ['status' => 'no_source'];
     }
 
     // update_url comes straight from the addon's own (self-declared) info.json,
     // not from a form the "https only" checks elsewhere validate - see
     // se_is_safe_remote_url()
     if (!se_is_safe_remote_url($addon_info['addon']['update_url'])) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     // Load remote info.json
     $json = se_fetch_remote_url($addon_info['addon']['update_url'], 5, 1048576);
 
     if($json === false) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     $remote = json_decode($json, true);
 
     if(!$remote || !isset($remote['versions'])) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     // Load SwiftyEdit build number
@@ -582,7 +556,7 @@ function se_check_addon_update(array $addon_info): array {
     }
 
     if($compatible_version === null) {
-        return ['status' => 'unknown'];
+        return ['status' => 'check_failed'];
     }
 
     // Compare build numbers
@@ -695,7 +669,7 @@ function se_install_addon_zip(string $addon_id, string $download_url, string $ta
         ) {
             $zip->close();
             unlink($tmp_zip);
-            return ['success' => false, 'message' => 'ZIP contains an invalid path: '.htmlspecialchars($filename, ENT_QUOTES)];
+            return ['success' => false, 'message' => 'ZIP contains an invalid path: '.$filename];
         }
 
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -1018,7 +992,7 @@ function se_delete_addon($addon,$type) {
 	$remove_dir = $dir.'/'.$addon;
 	se_reomove_addon_files($remove_dir);
 	$record_msg = 'removed addon: <strong>'.$addon.' ('.$type.')</strong>';
-	record_log($_SESSION['user_nick'],$record_msg,"8");
+	record_log($_SESSION['user_nick'],$record_msg,8);
 }
 
 /**
@@ -1062,6 +1036,7 @@ function get_all_templates() {
 	$cntStyles = 0;
 	$scanned_directory = array_diff(scandir($sdir), array('..', '.','.DS_Store'));
 	
+	$arr_Styles = [];
 	foreach($scanned_directory as $tpl_folder) {
 		if(is_dir("$sdir/$tpl_folder")) {
 			$arr_Styles[] = "$tpl_folder";
@@ -1070,25 +1045,6 @@ function get_all_templates() {
 
 	return($arr_Styles);
 }
-
-/**
- * return available stylesheets from a theme
- * find css files theme_*.css
- */
- 
-function se_get_stylesheets($theme){
-	
-	$stylesheets = glob('../styles/'.$theme.'/css/theme_*.css');
-	
-	if(is_array($stylesheets) && (count($stylesheets) > 0)){
-		return $stylesheets;
-	} else {
-		return '0';
-	}
-	
-	
-}
-
 
 
 /**
@@ -1195,6 +1151,30 @@ function mods_check_in() {
         SE_CONTENT . '/cache/bootstrap_endpoints.json',
         json_encode($bootstrap_endpoints, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
     );
+}
+
+/**
+ * option fields a theme defines for /admin/addons/theme/<theme>/
+ * the theme's php/options.php sets $theme_options in the backend section
+ *
+ * @param string $theme directory name of an installed theme
+ * @return array key => [label, type (text, checkbox, select), options (select)]
+ */
+function se_get_theme_option_fields(string $theme): array {
+
+	$theme = preg_replace('/[^a-zA-Z0-9_-]/', '', $theme);
+	$options_file = SE_THEMES.'/'.$theme.'/php/options.php';
+	if($theme === '' || !is_file($options_file)) {
+		return [];
+	}
+
+	// isolated scope, the file must not overwrite variables of the caller
+	$load = static function(string $file): array {
+		$theme_options = [];
+		include $file;
+		return is_array($theme_options) ? $theme_options : [];
+	};
+	return $load($options_file);
 }
 
 /**

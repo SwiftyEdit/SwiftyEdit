@@ -92,9 +92,10 @@ $active_mods = se_get_active_mods(); // plugins activated manually or included i
 $cnt_active_mods = is_array($active_mods) ? count($active_mods) : 0;
 
 // get existing urls from the cache file
+$cached_url_data = [];
 $cache_file_active_urls = SE_CONTENT . '/cache/active_urls.json';
 if(file_exists($cache_file_active_urls)) {
-    $cached_url_data = json_decode(file_get_contents($cache_file_active_urls), true);
+    $cached_url_data = json_decode(file_get_contents($cache_file_active_urls), true) ?: [];
 }
 
 $query_is_cached = false;
@@ -106,6 +107,7 @@ foreach($cached_url_data as $cached_url) {
 }
 
 // loop through installed modules
+$active_plugins = [];
 for($i=0;$i<$cnt_active_mods;$i++) {
     $mod_permalink = $active_mods[$i]['page_permalink'];
     $mod_name = $active_mods[$i]['page_modul'];
@@ -131,18 +133,19 @@ if($swifty_slug == '/' OR $swifty_slug == '') {
 }
 
 // include (once) modules global/index.php if exists
+$clean_mods = [];
 foreach($active_mods as $mods) {
     $clean_mods[] = $mods['page_modul'];
 }
 
 require_once SE_ROOT . 'app/hooks/hooks-frontend.php';
 
-if(is_array($clean_mods)) {
+if(!empty($clean_mods)) {
     $activeplugins = array_unique($clean_mods);
 
     // Load global hook handlers (fire on both frontend and backend triggers)
     // for all active plugins. This must happen before a plugin's
-    // global/index.php runs below, since some plugins (e.g. se_paypal-pay)
+    // global/index.php runs below, since some plugins (e.g. paypal-pay)
     // fire global hooks synchronously during their own bootstrap.
     require_once SE_ROOT . 'app/hooks/hooks-global.php';
 

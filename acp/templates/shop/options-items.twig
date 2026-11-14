@@ -1,0 +1,33 @@
+{#
+ # list of the product options, loaded into #getOptions by the shop data-reader
+ # options: see shop/data-reader.php (action list_options)
+ #}
+{% if options is empty %}
+    <p class="text-muted mb-0">{{ lang.msg_info_no_entries_so_far }}</p>
+{% else %}
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{{ lang.label_priority }}</th>
+                <th>{{ lang.label_language }}</th>
+                <th>{{ lang.label_text }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for option in options %}
+            <tr>
+                <td>{{ option.id }}</td>
+                <td>{{ option.priority }}</td>
+                <td><img src="{{ option.lang_flag }}" width="15" title="{{ option.lang }}" alt="{{ option.lang }}"></td>
+                <td>
+                    <strong>{{ option.title }}</strong><br>
+                    {% for value in option.values %}<span class="badge text-bg-secondary">{{ value }}</span> {% endfor %}
+                </td>
+                <td class="text-end" style="width:120px;">
+                    <a href="/admin/shop/options/edit/{{ option.id }}/" class="btn btn-sm btn-default text-success">{{ icon.edit|raw }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

@@ -16,11 +16,14 @@
  * @var string $query query string
  * @var string $swifty_slug swifty slug
  * @var string $languagePack
+ * @var string $lang_sign from languages/{lang}/index.php
  * @var array $lang
+ * @var bool $page_psw_locked from template-setup.php
  * @var array $a_allowed_p
  * @var object $smarty Smarty template engine
  * @var int|null $error_code
- * @var array $page_json_ld
+ * @var array|null $page_json_ld set by a theme's php/options.php (optional)
+ * @var array $structuredDataContext template-setup.php, handlers
  *
  */
 
@@ -59,21 +62,9 @@ if($p == "") {
     se_check_shortlinks($swifty_slug);
 }
 
-// Handle preview mode
-if(isset($_GET['preview']) AND ($_SESSION['user_class'] == "administrator")) {
-    $p = (int) $_GET['preview'];
-    list($page_contents,$se_nav) = se_get_content($p,'preview');
-    unset($prefs_logfile);
-}
-
 // Security check
 if(isset($p) && preg_match('/[^0-9A-Za-z]/', $p)) {
     die('void id');
-}
-
-// Load page content if needed
-if(!is_array($page_contents) AND ($p != "")) {
-    list($page_contents,$se_nav) = se_get_content($p);
 }
 
 // Fallback to homepage
@@ -165,7 +156,7 @@ if(($page_contents['page_comments'] == 1 OR $post_comments == 1 OR $product_comm
         $comments_filter = ['type' => 'p', 'relation_id' => (int) $page_contents['page_id']];
     }
     $cnt_comments = count(se_get_comments(0, 100, $comments_filter));
-    $smarty->assign('comments_title', str_replace('{cnt_comments}', $cnt_comments, $lang['comments_title']));
+    $smarty->assign('comments_title', str_replace('{cnt_comments}', (string) $cnt_comments, $lang['comments_title']));
 }
 
 // if we have no page id and the slug is not a valid page type, show 404
@@ -188,6 +179,14 @@ if(is_file($themes_path.'/'.$se_template.'/php/options.php')) {
     include $themes_path.'/'.$se_template.'/php/options.php';
 }
 
+// structured data of the page, unless the theme built its own $page_json_ld
+if(!isset($page_json_ld)) {
+    $page_json_ld = [
+        '@context' => 'https://schema.org',
+        '@graph' => se_structured_data_build($structuredDataContext, $se_settings, $se_base_url, (string) ($page_contents['page_language'] ?? $languagePack))
+    ];
+}
+
 if(is_array($page_json_ld)) {
     // printed raw into <script type="application/ld+json"> - JSON_HEX_TAG/AMP
     // escape < > & so a value containing "</script>" can't break out of the block
@@ -197,10 +196,14 @@ if(is_array($page_json_ld)) {
 
 // Display the template
 if($se_settings['maintenance_code'] != '') {
-    if($_POST['maintenance-access-code'] == $se_settings['maintenance_code']) {
-        $_SESSION['access_to_maintenance'] = 'permitted';
+    // the session stores a hash of the code, so changing the code locks out
+    // everybody who unlocked the site with the old one
+    $maintenance_code_hash = hash('sha256', (string) $se_settings['maintenance_code']);
+    if(is_string($_POST['maintenance-access-code'] ?? null)
+        && hash_equals((string) $se_settings['maintenance_code'], $_POST['maintenance-access-code'])) {
+        $_SESSION['access_to_maintenance'] = $maintenance_code_hash;
     }
-    if($_SESSION['access_to_maintenance'] == 'permitted') {
+    if(hash_equals($maintenance_code_hash, (string) ($_SESSION['access_to_maintenance'] ?? ''))) {
         $smarty->display('index.tpl',$cache_id);
     } else {
         header('HTTP/1.1 503 Service Unavailable');
@@ -221,7 +224,7 @@ se_do_frontend_hook('page.display.after', [
     'product_data' => $product_data ?? null,
     'post_data' => $post_data ?? null,
     'event_data' => $event_data ?? null,
-    'query' => $swifty_slug ?? null,
+    'query' => $swifty_slug,
     'session' => array_filter($_SESSION ?? [], function($key) {
         return !in_array($key, ['token', 'token_time','se_admin_helpers']);  // Exclude
     }, ARRAY_FILTER_USE_KEY)

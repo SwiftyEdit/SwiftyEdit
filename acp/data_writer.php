@@ -2,6 +2,8 @@
 
 /**
  * routing - write data
+ *
+ * @var array $lang header.php
  */
 
 

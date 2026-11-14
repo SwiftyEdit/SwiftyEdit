@@ -15,6 +15,7 @@ include_once 'functions.sanitizer.php';
 include_once 'functions.posts.php';
 include_once 'functions.shop.php';
 include_once 'functions.wishlist.php';
+include_once 'functions.password.php';
 include_once 'functions.user.php';
 include_once 'functions.user_delete.php';
 include_once 'functions.twofactor.php';
@@ -24,6 +25,7 @@ include_once 'functions.editors.php';
 include_once 'functions.tags.php';
 include_once 'functions.img.php';
 include_once 'functions.api.php';
+include_once 'functions.structured-data.php';
 
 /**
  * Retrieves all active system preferences
@@ -366,7 +368,7 @@ function se_build_thread_array(&$array, $data) {
             "childs" => []
         ];
 
-        return $array;
+        return;
     }
     foreach($array as &$e) {
         if ($e["id"] == $data["comment_parent_id"]) {
@@ -412,11 +414,16 @@ function se_comment_target(array $data): ?array {
  * to the visitor (no draft) and - for pages - not locked by a page password
  * the visitor hasn't entered (see template-setup.php).
  *
+ * With $for_writing, new comments must also still be open: they are closed
+ * comments_autoclose seconds after the reference date (posts and products:
+ * release date, pages: last edit). Existing comments stay readable.
+ *
  * @param string $type 'p' page, 'b' post, 'c' product
  * @param int $relation_id id of the page, post or product
+ * @param bool $for_writing also check that the entry is not auto-closed
  * @return bool
  */
-function se_comments_allowed(string $type, int $relation_id): bool {
+function se_comments_allowed(string $type, int $relation_id, bool $for_writing = false): bool {
 
 	global $db_content, $db_posts, $se_settings;
 
@@ -427,7 +434,7 @@ function se_comments_allowed(string $type, int $relation_id): bool {
 	$can_see_drafts = se_frontend_visitor_can_see_drafts();
 
 	if($type === 'p') {
-		$page = $db_content->get("se_pages", ["page_comments", "page_status", "page_psw"], [
+		$page = $db_content->get("se_pages", ["page_comments", "page_status", "page_psw", "page_lastedit"], [
 			"page_id" => $relation_id
 		]);
 		if(!is_array($page) || (int) $page['page_comments'] !== 1) {
@@ -440,29 +447,54 @@ function se_comments_allowed(string $type, int $relation_id): bool {
 		if($page_psw !== '' && ($_SESSION['page_psw'] ?? '') !== $page_psw) {
 			return false;
 		}
-		return true;
+		return !$for_writing || !se_comments_autoclosed((int) $page['page_lastedit']);
 	}
 
 	if($type === 'b') {
 		$post = se_get_post_data($relation_id);
-		return is_array($post) && (int) $post['post_comments'] === 1
-			&& ($can_see_drafts || se_post_is_publicly_visible($post));
+		if(!is_array($post) || (int) $post['post_comments'] !== 1
+			|| !($can_see_drafts || se_post_is_publicly_visible($post))) {
+			return false;
+		}
+		return !$for_writing || !se_comments_autoclosed((int) $post['post_releasedate']);
 	}
 
 	if($type === 'c') {
 		$product = $db_posts->get("se_products", "*", [
 			"id" => $relation_id
 		]);
-		return is_array($product) && (int) $product['comments'] === 1
-			&& ($can_see_drafts || se_product_is_publicly_visible($product));
+		if(!is_array($product) || (int) $product['comments'] !== 1
+			|| !($can_see_drafts || se_product_is_publicly_visible($product))) {
+			return false;
+		}
+		return !$for_writing || !se_comments_autoclosed((int) $product['releasedate']);
 	}
 
 	return false;
 }
 
 /**
+ * Whether the comment function of an entry is closed by the setting
+ * comments_autoclose (seconds after $reference_time). 0 or empty = never.
+ *
+ * @param int $reference_time unix timestamp the period starts from
+ * @return bool
+ */
+function se_comments_autoclosed(int $reference_time): bool {
+
+	global $se_settings;
+
+	$autoclose = (int) ($se_settings['comments_autoclose'] ?? 0);
+	if($autoclose <= 0 || $reference_time <= 0) {
+		return false;
+	}
+
+	return time() > $reference_time + $autoclose;
+}
+
+/**
  * store a comment
- * @var array $data 'input_name' 'input_mail' 'input_comment'
+ * @param array $data 'input_name' 'input_mail' 'input_comment'
  * @return mixed id of the inserted comment
  */
 
@@ -505,9 +537,10 @@ function se_write_comment($data) {
 		
 		$comment_time = time();
 
-		// only for an existing entry with comments switched on (and an unlocked page)
+		// only for an existing entry with comments switched on (and an unlocked page),
+		// which is not closed by comments_autoclose
 		$target = se_comment_target($data);
-		if($target === null || !se_comments_allowed($target['type'], $target['relation_id'])) {
+		if($target === null || !se_comments_allowed($target['type'], $target['relation_id'], true)) {
 			return 0;
 		}
 		$type = $target['type'];
@@ -587,7 +620,7 @@ function se_return_words_str(string $string, int $nbr=5): string {
  * @param array $recipient 'mail' and 'name'
  * @param string $subject subject of the email
  * @param string $message string/html content of the email
- * @return 1 if success or ErrorInfo if failed
+ * @return int|string 1 if success or ErrorInfo if failed
  * @throws Exception
  */
 
@@ -760,10 +793,13 @@ function se_send_order_status($recipient,$order,$reason): int|string {
 
     $products_str = se_build_mail_products($order_products, 'order-products', $this_order['order_currency']);
 
-    $included_taxes = $this_order['order_price_total']-($all_items_subtotal_net+$this_order['order_shipping_costs']);
+    // payment costs are part of the total but carry no tax (see app/handlers/checkout.php)
+    $payment_costs = (float) se_reformat_payment_costs((string) ($this_order['order_payment_costs'] ?? ''));
+    $included_taxes = $this_order['order_price_total']-($all_items_subtotal_net+$this_order['order_shipping_costs']+$payment_costs);
 
     $build_html_mail = str_replace("{price_subtotal}",se_post_print_currency($all_items_subtotal_net),$build_html_mail);
     $build_html_mail = str_replace("{price_shipping}",se_post_print_currency($this_order['order_shipping_costs']),$build_html_mail);
+    $build_html_mail = str_replace("{price_payment}",se_post_print_currency($payment_costs),$build_html_mail);
     $build_html_mail = str_replace("{included_tax}",se_post_print_currency($included_taxes),$build_html_mail);
     $build_html_mail = str_replace("{currency}",$this_order['order_currency'],$build_html_mail);
     $build_html_mail = str_replace("{order_user_comment}",$this_order['order_user_comment'],$build_html_mail);
@@ -1146,6 +1182,7 @@ function se_get_shortcodes($filter=NULL) {
 	} else {
 			
 		$filter_labels = explode('-', $filter['labels']);
+		$set_label_filter = '';
 		
 		for($i=0;$i<count($se_labels);$i++) {
 			$label = $se_labels[$i]['label_id'];
@@ -1180,6 +1217,7 @@ function se_get_shortcodes($filter=NULL) {
 function se_get_posts_features($mode=null) {
 	
 	global $db_content;
+	$features = [];
 
     if($mode === null) {
         $features = $db_content->select("se_snippets", "*", [
@@ -1211,6 +1249,7 @@ function se_get_posts_features($mode=null) {
 function se_get_posts_options($mode=null) {
 
     global $db_content;
+    $features = [];
 
     if($mode === null) {
         $features = $db_content->select("se_snippets", "*",[
@@ -1319,10 +1358,10 @@ function se_upload_avatar($file,$username) {
  * @param string $log_trigger system or username
  * @param string $log_entry what's happened
  * @param integer $log_priority 0-10
- * @example record_log("$_SESSION[user_nick]","the message","5");
+ * @example record_log("$_SESSION[user_nick]","the message",5);
  */
 
-function record_log($log_trigger, $log_entry, $log_priority = '0') {
+function record_log($log_trigger, $log_entry, $log_priority = 0) {
 
     global $db_content;
 
@@ -1339,6 +1378,82 @@ function record_log($log_trigger, $log_entry, $log_priority = '0') {
         "priority" => $log_priority
     ]);
 
+}
+
+/**
+ * Create a structured log entry. A failing log entry must never stop the
+ * action it describes: after a manual update the new columns are missing until
+ * /install/ has run, and MySQL in strict mode refuses values that are too long.
+ *
+ * @param string $action create, update, delete, csrf, login_failed, login_locked ...
+ * @param string $entry readable text, plain text - it is escaped on output
+ * @param int $priority 0-10
+ * @param string $source user name, empty = the logged-in user or "system"
+ * @param array{type?: string, id?: int|null, key?: string, label?: string} $object the affected object
+ */
+function se_log_event(string $action, string $entry, int $priority = 5, string $source = '', array $object = []): void {
+
+    global $db_content;
+
+    if($source === '') {
+        $source = (string) ($_SESSION['user_nick'] ?? 'system');
+    }
+
+    $entry = mb_substr($entry, 0, 255);
+
+    try {
+        $db_content->insert("se_logs", [
+            "time" => (string) time(),
+            "source" => $source,
+            "entry" => $entry,
+            "priority" => $priority,
+            "action" => $action,
+            "object_type" => $object['type'] ?? null,
+            "object_id" => $object['id'] ?? null,
+            "object_key" => $object['key'] ?? null,
+            "object_label" => $object['label'] ?? null
+        ]);
+    } catch (\Throwable $e) {
+        try {
+            record_log($source, $entry, $priority);
+        } catch (\Throwable $e) {
+            error_log('SwiftyEdit log entry failed: '.$e->getMessage());
+        }
+    }
+}
+
+/**
+ * Log the change of a content item (page, snippet, post, product, event, media).
+ * The dashboard counts these per day and item, so every save writes one entry.
+ *
+ * @param string $action create, update or delete
+ * @param string $type page, snippet, post, product, event or media
+ * @param int|null $id null for media, those are identified by $key
+ * @param string $label title at this moment, html entities are decoded (many
+ * title columns are stored encoded) - se_logs and the content tables are in
+ * separate databases, so the title can't be joined later
+ * @param string $key snippet name or media file
+ */
+function se_log_content(string $action, string $type, ?int $id, string $label, string $key = ''): void {
+
+    $label = mb_substr(html_entity_decode($label, ENT_QUOTES, 'UTF-8'), 0, 255);
+
+    $entry = $action.' '.$type;
+    if($id !== null) {
+        $entry .= ' #'.$id;
+    }
+    if($label !== '') {
+        $entry .= ': '.$label;
+    } elseif($key !== '') {
+        $entry .= ': '.$key;
+    }
+
+    se_log_event($action, $entry, $action === 'delete' ? 8 : 3, '', [
+        'type' => $type,
+        'id' => $id,
+        'key' => $key !== '' ? $key : null,
+        'label' => $label
+    ]);
 }
 
 /**

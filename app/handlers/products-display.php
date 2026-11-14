@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SfiftyEdit frontend
+ * SwiftyEdit frontend
  * display product from se_products
  *
  * @var integer $get_product_id is set in core/products.php
@@ -9,7 +9,7 @@
  * @var array $product_data product it's data
  *
  * global variables
- * @var object $db_content meedoo database object
+ * @var object $db_content medoo database object
  * @var object $smarty smarty templates
  * @var string $languagePack de | en ...
  * @var array $lang translations
@@ -18,13 +18,11 @@
  * @var string $se_base_url the base url
  * @var array $page_contents
  * @var array $cached_url_data
+ * @var string $cache_id smarty cache id (app/smarty.php)
+ *
+ * products.php only includes this file with a product - otherwise it sends a 404
  */
-
-
-
-if(!is_array($product_data)){
-    $show_404 = "true";
-}
+$productActions = [];
 
 $product_data = se_apply_frontend_filters('product.display.before', $product_data, [
     'product'    => $product_data,
@@ -32,8 +30,6 @@ $product_data = se_apply_frontend_filters('product.display.before', $product_dat
     'user'       => $currentUser ?? null,
 ]);
 
-
-$productActions = [];
 $productActions = se_apply_frontend_filters('product.display.actions', $productActions, [
     'product_id' => $product_data['id'] ?? null,
     'product'    => $product_data,
@@ -123,7 +119,7 @@ if ($se_settings['posts_price_mode'] == 1) {
 } else if($se_settings['posts_price_mode'] == 2) {
     // gross and net prices
     $product_price_tag = $post_price_net. '/'. $post_price_gross;
-    $product_tax_label = $lang['label_net']. ' / '. $lang['label_net'];
+    $product_tax_label = $lang['label_net']. ' / '. $lang['label_gross'];
 } else {
     // net only (b2b mode)
     $product_price_tag = $post_price_net;
@@ -137,7 +133,8 @@ if($product_volume_discounts_json != '') {
     $smarty->assign('label_prices_discount', $lang['label_prices_discount']);
 
     // calculate gross prices
-    foreach($product_volume_discounts as $k => $v) {
+    $show_volume_discounts = array();
+    foreach((array) $product_volume_discounts as $k => $v) {
         $vd_price = se_posts_calc_price($v['price'],$tax);
         $show_volume_discounts[$k]['amount'] = $v['amount'];
         $show_volume_discounts[$k]['price_net'] = $vd_price['net'];
@@ -172,15 +169,9 @@ if($product_data['product_features_label'] != '') {
 for($i=1;$i<6;$i++) {
     $key_text = 'text_additional'.$i;
     $key_label = 'text_additional'.$i.'_label';
-    $var_text = 'text_additional'.$i;
-    $var_label = 'text_additional'.$i.'_label';
 
-    $$var_text = text_parser(htmlspecialchars_decode($product_data[$key_text]));
-    $$var_label = text_parser(htmlspecialchars_decode($product_data[$key_label]));
-
-    $smarty->assign($var_label, $$var_label);
-    $smarty->assign($var_text, $$var_text);
-
+    $smarty->assign($key_label, text_parser(htmlspecialchars_decode($product_data[$key_label] ?? '')));
+    $smarty->assign($key_text, text_parser(htmlspecialchars_decode($product_data[$key_text] ?? '')));
 }
 
 $product_images = explode("<->", $product_data['images']);
@@ -205,8 +196,8 @@ $entrydate_year = date('Y',$product_data['date']);
 
 /* images */
 
-/* if we have more than one image */
-if(is_array($product_images) && count($product_images) > 0) {
+$show_images = array();
+if(count($product_images) > 0) {
     foreach($product_images as $image) {
         $show_images[] = se_get_images_data($image,'data=array');
     }
@@ -224,15 +215,17 @@ if(is_array($product_images) && count($product_images) > 0) {
     }
 }
 
-if($show_images[0]['media_file'] != "") {
+$first_product_img_src = '';
+$first_product_img_alt = '';
+$first_product_img_title = '';
+$first_product_img_caption = '';
+if(($show_images[0]['media_file'] ?? '') != "") {
     $first_product_img_src = $show_images[0]['media_file'];
     $first_product_img_alt = $show_images[0]['media_alt'];
     $first_product_img_title = $show_images[0]['media_title'];
     $first_product_img_caption = $show_images[0]['media_text'];
-    $first_product_image = $first_product_img_src;
-} else {
-    $first_product_image = '';
 }
+$first_product_image = $first_product_img_src;
 
 
 /* vote up or down this post */
@@ -240,20 +233,21 @@ if($product_data['votings'] == 2 || $product_data['votings'] == 3) {
     $show_voting = true;
     $voter_data = false;
     $voting_type = array("upv", "dnv");
+    $user_nick = (string) ($_SESSION['user_nick'] ?? '');
     if ($product_data['votings'] == 2) {
-        if ($_SESSION['user_nick'] == '') {
+        if ($user_nick == '') {
             $voter_data = false;
         } else {
-            $voter_data = se_check_user_legitimacy($product_data['id'], $_SESSION['user_nick'], $voting_type);
+            $voter_data = se_check_user_legitimacy($product_data['id'], $user_nick, $voting_type);
         }
     }
 
-    if ($product_data['post_votings'] == 3) {
-        if ($_SESSION['user_nick'] == '') {
+    if ($product_data['votings'] == 3) {
+        if ($user_nick == '') {
             $voter_name = se_generate_anonymous_voter();
             $voter_data = se_check_user_legitimacy($product_data['id'], $voter_name, $voting_type);
         } else {
-            $voter_data = se_check_user_legitimacy($product_data['id'], $_SESSION['user_nick'], $voting_type);
+            $voter_data = se_check_user_legitimacy($product_data['id'], $user_nick, $voting_type);
         }
     }
 
@@ -279,7 +273,6 @@ if($product_data['votings'] == 2 || $product_data['votings'] == 3) {
 
 
 $form_action = '/'.$swifty_slug.$mod_slug;
-$this_entry = str_replace("{form_action}", $form_action, $this_entry);
 
 if($se_settings['posts_products_cart'] == 1) {
     // all shopping carts are disabled - overwrite products settings
@@ -302,7 +295,7 @@ if($product_data['product_order_quantity_max'] == '' OR $product_data['product_o
 $smarty->assign('product_price_tag', $product_price_tag);
 $smarty->assign('product_tax_label', $product_tax_label);
 $smarty->assign('product_price_gross', $post_price_gross);
-$smarty->assign('product_price_net', $post_price_net_calculated);
+$smarty->assign('product_price_net', $post_price_net);
 $smarty->assign('product_price_tax', $tax);
 $smarty->assign('product_currency', $product_data['product_currency']);
 
@@ -332,14 +325,15 @@ if($product_data['product_textlib_price'] != 'no_snippet' AND $product_data['pro
 
 
 /* product options */
-$product_options = json_decode($product_data['product_options'],JSON_FORCE_OBJECT);
+$product_options = json_decode($product_data['product_options'] ?? '',true);
 if(is_array($product_options)) {
     $get_options = se_get_posts_options($product_options);
 
+    $select_options = array();
     foreach($get_options as $option) {
         $select_options[] = [
             "title" => $option['snippet_title'],
-            "values" => json_decode($option['snippet_content'],JSON_FORCE_OBJECT)
+            "values" => json_decode($option['snippet_content'],true)
         ];
 
     }
@@ -406,14 +400,14 @@ if(is_array($product_addons)) {
         ]);
 
         /* the addon product's own options (e.g. size/color), same handling as the main product's */
-        $addon_options = json_decode($addon_data['product_options'] ?? '', JSON_FORCE_OBJECT);
+        $addon_options = json_decode($addon_data['product_options'] ?? '', true);
         $addon_select_options = [];
         if(is_array($addon_options)) {
             $get_addon_options = se_get_posts_options($addon_options);
             foreach($get_addon_options as $addon_option) {
                 $addon_select_options[] = [
                     "title" => $addon_option['snippet_title'],
-                    "values" => json_decode($addon_option['snippet_content'], JSON_FORCE_OBJECT)
+                    "values" => json_decode($addon_option['snippet_content'], true)
                 ];
             }
         }
@@ -464,14 +458,15 @@ $smarty->assign(
  * check if item has a file upload option
  */
 
-if($product_data['file_attachment_user'] == 2 && $_SESSION['user_nick'] != "") {
+if($product_data['file_attachment_user'] == 2 && ($_SESSION['user_nick'] ?? '') != "") {
     $smarty->assign('file_upload_message', $lang['msg_item_needs_upload']);
 }
 
 
 /* product features */
-$product_features = json_decode($product_data['product_features'],JSON_FORCE_OBJECT);
-$product_features_values = json_decode($product_data['product_features_values'],JSON_FORCE_OBJECT);
+$product_features = json_decode($product_data['product_features'] ?? '',true);
+// without stored values array_key_exists() below would get null (TypeError)
+$product_features_values = (array) json_decode($product_data['product_features_values'] ?? '',true);
 
 if(is_array($product_features)) {
     $get_features = se_get_posts_features($product_features);
@@ -491,6 +486,8 @@ if(is_array($product_features)) {
 
 /* check for variants  */
 $variants = array();
+$parent_product = array();
+$product_lowest_price_gross = '';
 if($product_data['type'] == 'v') {
     // this product is a variant of 'parent_id'
     $variants = se_get_product_variants($product_data['parent_id']);
@@ -526,7 +523,7 @@ if($cnt_variants > 1) {
 
         $var[$k]['teaser'] = se_return_words_str(html_entity_decode($var[$k]['teaser']),10);
         $product_images = explode("<->",$v['images']);
-        if ($product_images[1] != "") {
+        if (($product_images[1] ?? '') != "") {
             $var[$k]['image'] = str_replace('../images/', '/images/', $product_images[1]);
         } else {
             $var[$k]['image'] = '';
@@ -544,7 +541,7 @@ if($cnt_variants > 1) {
             $product_catalog_base = $swifty_slug;
         }
 
-        if($product_data['product_variant_type'] == 2 OR $parent_product['product_variant_type'] == 2) {
+        if($product_data['product_variant_type'] == 2 OR ($parent_product['product_variant_type'] ?? '') == 2) {
             // link with params
             $var[$k]['product_href'] = SE_INCLUDE_PATH . "/" . $product_catalog_base . "$product_slug".'/?v=' . $v['id'];
         } else {
@@ -572,8 +569,9 @@ if($cnt_variants > 1) {
 /* check for related products */
 if($product_data['product_related'] != '') {
 
-    $related_products_array = json_decode($product_data['product_related'],true);
-    $cnt_related_products = count((array) $related_products_array);
+    $related_products_array = (array) json_decode($product_data['product_related'],true);
+    $cnt_related_products = count($related_products_array);
+    $rp = array();
     for($i=0;$i<$cnt_related_products;$i++) {
 
         $related_product = se_get_product_data($related_products_array[$i]);
@@ -588,7 +586,7 @@ if($product_data['product_related'] != '') {
 
         $product_slug = basename($related_product['slug']);
         $product_images = explode("<->",$related_product['images']);
-        if ($product_images[1] != "") {
+        if (($product_images[1] ?? '') != "") {
             $rp[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
         } else {
             $rp[$i]['image'] = '';
@@ -607,8 +605,9 @@ if($product_data['product_related'] != '') {
 /* check for accessories */
 if($product_data['product_accessories'] != '') {
 
-    $products_accessories_array = json_decode($product_data['product_accessories'],true);
-    $cnt_products_accessories = count((array) $products_accessories_array);
+    $products_accessories_array = (array) json_decode($product_data['product_accessories'],true);
+    $cnt_products_accessories = count($products_accessories_array);
+    $ap = array();
     for($i=0;$i<$cnt_products_accessories;$i++) {
         $accessories_product = se_get_product_data($products_accessories_array[$i]);
         if(empty($accessories_product)) { continue; }
@@ -622,7 +621,7 @@ if($product_data['product_accessories'] != '') {
 
         $product_slug = basename($accessories_product['slug']);
         $product_images = explode("<->",$accessories_product['images']);
-        if ($product_images[1] != "") {
+        if (($product_images[1] ?? '') != "") {
             $ap[$i]['image'] = str_replace('../images/', '/images/', $product_images[1]);
         } else {
             $ap[$i]['image'] = '';
@@ -646,7 +645,7 @@ if($product_data['meta_title'] == '') {
 }
 
 if($product_data['meta_description'] == '') {
-    $product_data['meta_description'] = substr(strip_tags($post_teaser),0,160);
+    $product_data['meta_description'] = mb_substr(trim(strip_tags($teaser)),0,160);
 }
 
 
@@ -680,10 +679,11 @@ if($product_data['file_attachment'] != '') {
 /* start download */
 if(isset($_POST['get_attachment'])) {
 
-    se_increase_downloads_hits($get_product_id);
     $download_url = SE_PUBLIC.'/assets/files'.$product_data['file_attachment'];
 
-    if(file_exists($download_url)) {
+    // count only real downloads - not products without (or with a missing) attachment
+    if($product_data['file_attachment'] != '' && is_file($download_url)) {
+        se_increase_downloads_hits($get_product_id);
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="'.basename($download_url).'"');
@@ -705,6 +705,8 @@ if($product_lowest_price_gross != '') {
 $product_data['product_price_gross'] = str_replace(".","",$product_data['product_price_gross']);
 $product_data['product_price_gross'] = str_replace(",",".",$product_data['product_price_gross']);
 
+$product_data['product_img_src'] = $first_product_img_src;
+
 $structuredDataContext = [
     'type' => 'Product',
     'data' => $product_data
@@ -715,7 +717,7 @@ $smarty->assign('page_meta_description', html_entity_decode($product_data['meta_
 $smarty->assign('page_meta_keywords', html_entity_decode($product_data['tags']));
 // without an image, keep the page/global thumbnail set in template-setup.php
 if($first_product_image != '') {
-    $page_contents['page_thumbnail'] = $se_base_url.$img_path.'/'.basename($first_product_image);
+    $page_contents['page_thumbnail'] = rtrim($se_base_url,'/').'/'.ltrim($first_product_image,'/');
     $smarty->assign('page_thumbnail', $page_contents['page_thumbnail']);
 }
 

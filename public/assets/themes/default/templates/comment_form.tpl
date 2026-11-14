@@ -1,3 +1,8 @@
+{if $comments_closed}
+<div class="comments-closed">
+    <p class="text-muted">{$comments_closed_msg}</p>
+</div>
+{else}
 <div class="form-container" id="comment-form">
 
     <div id="commentFormResponse"></div>
@@ -47,3 +52,4 @@
     </div>
 
 </div>
+{/if}

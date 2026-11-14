@@ -3,6 +3,8 @@
 /**
  * SwiftyEdit
  * Installer/Updater
+ *
+ * @var string $se_db_content config.php
  */
 require_once __DIR__.'/../app/session.php';
 require_once __DIR__.'/../app/headers.php';
@@ -65,7 +67,7 @@ if(isset($_SESSION['user_class']) AND $_SESSION['user_class'] == "administrator"
 
 if($modus == "update") {
 	/* updates for admins only */
-    if($_SESSION['user_class'] !== "administrator"){
+    if(($_SESSION['user_class'] ?? '') !== "administrator"){
         header("location:../");
         exit;
     }

@@ -23,7 +23,6 @@
   "username": "Όνομα Χρήστη",
   "email": "E-mail",
   "password": "Κωδικός",
-  "password_help_text": "Ο κωδικός πρόσβασης πρέπει να περιέχει τουλάχιστον 8 χαρακτήρες",
   "msg_form": "To start the installation SwiftyEdit needs an Username and a Password for an administrator.<br><strong>Pay attention</strong> to the correctness of the entries<br>Note: All information can later be complemented or changed.",
   "start_install": "Έναρξη Εγκατάστασης",
   "installed": "Η εγκατάσταση ήταν επιτυχής",

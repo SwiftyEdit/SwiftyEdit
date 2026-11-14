@@ -85,6 +85,7 @@
         </form>
 
         {$post_teaser}
+        {$post_text}
 
     {/if}
     {* post type file end *}

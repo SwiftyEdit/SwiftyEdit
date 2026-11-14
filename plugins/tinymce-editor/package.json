@@ -7,7 +7,7 @@
   "type": "module",
   "dependencies": {
     "@tinymce/tinymce-jquery": "^2.2.0",
-    "tinymce": "^8.6.0"
+    "tinymce": "^8.10.1"
   },
   "devDependencies": {
     "fs-extra": "^11.3.5"

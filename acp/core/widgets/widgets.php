@@ -3,11 +3,26 @@
 use Twig\Environment;
 
 /**
+ * SwiftyEdit /admin-xhr/widgets/read/
+ * image picker (acp/templates/widgets/select-img.twig) and product picker
+ * (acp/templates/widgets/select-products.twig) with search, sorting and pagination
+ *
+ * global variables
  * @var object $db_content
  * @var object $db_posts
  * @var array $lang
  * @var Environment $twig
  */
+
+// keepalive of the session clock in the top navigation - header.php has
+// already counted this request as activity (se_acp_guard())
+if (isset($_GET['session_keepalive'])) {
+    http_response_code(204);
+    exit;
+}
+
+// search filters are stored sanitized (sanitizeUserInputs), Twig escapes on output
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
 
 if (isset($_POST['pagination_img_widget'])) {
     $_SESSION['pagination_image_widget'] = (int)$_POST['pagination_img_widget'];
@@ -71,7 +86,7 @@ if ($_REQUEST['widget'] == 'img-select') {
 
     $order_by = 'media_id';
     $order_direction = 'ASC';
-    $limit_start = (int)$_SESSION['pagination_image_widget'] ?? 0;
+    $limit_start = (int) ($_SESSION['pagination_image_widget'] ?? 0);
     $nbr_show_items = 25;
 
     $match_str = $_SESSION['media_widget_text_filter'] ?? '';
@@ -89,23 +104,16 @@ if ($_REQUEST['widget'] == 'img-select') {
         ]
     ];
 
-    $filter_by_str = array();
-    if ($match_str != '') {
-        $this_filter = explode(" ", $match_str);
-        foreach ($this_filter as $f) {
-            if ($f == "") {
-                continue;
-            }
-            $filter_by_str = [
-                "OR" => [
-                    "media_file[~]" => "%$f%",
-                    "media_title[~]" => "%$f%",
-                    "media_description[~]" => "%$f%",
-                    "media_keywords[~]" => "%$f%",
-                    "media_credit[~]" => "%$f%"
-                ]
-            ];
-        }
+    // every keyword has to match one of the fields
+    $filter_by_str = [];
+    foreach (array_values(array_filter(explode(" ", $match_str))) as $i => $f) {
+        $filter_by_str["OR #search$i"] = [
+            "media_file[~]" => "%$f%",
+            "media_title[~]" => "%$f%",
+            "media_description[~]" => "%$f%",
+            "media_keywords[~]" => "%$f%",
+            "media_credit[~]" => "%$f%"
+        ];
     }
 
 
@@ -130,8 +138,7 @@ if ($_REQUEST['widget'] == 'img-select') {
     $nbr_pages = ceil($media_data_cnt / $nbr_show_items);
 
     // Sorting
-    $sorting_selected = $_SESSION['sorting_media_widget'] . '_' . $_SESSION['sorting_media_widget_direction'];
-    $sorting_selected = strtolower($sorting_selected);
+    $sorting_selected = strtolower($order_key . '_' . $order_direction);
 
 
     foreach ($media_data as &$image) {
@@ -143,17 +150,17 @@ if ($_REQUEST['widget'] == 'img-select') {
         $image_src = se_filter_filepath($image['media_file']);
         $image['image_src'] = str_replace("../", "/", $image_src);
 
-        $image['image_title'] = sanitizeUserInputs($image['media_title']);
+        // stored html-encoded, Twig escapes on output
+        $image['image_title'] = $decode($image['media_title']);
         $image['image_upload_time'] = se_format_datetime($image['media_upload_time']);
 
-        // Preview ermitteln
+        // the thumbnail as preview, stored as "../images_tmb/..." - the file is in public/assets/
         $image_tmb_name = se_filter_filepath($image['media_thumb']);
-        if (file_exists($image_tmb_name)) {
-            $preview = $image_tmb_name;
+        if (str_starts_with($image_tmb_name, '../images_tmb/') && is_file(SE_PUBLIC.'/assets/'.substr($image_tmb_name, 3))) {
+            $image['preview'] = substr($image_tmb_name, 2);
         } else {
-            $preview = $image['image_src'];
+            $image['preview'] = $image['image_src'];
         }
-        $image['preview'] = str_replace("../", "/", $preview);
     }
 
     // Pagination
@@ -163,7 +170,7 @@ if ($_REQUEST['widget'] == 'img-select') {
     $pagination = se_print_pagination(
         '/admin-xhr/widgets/read/?widget=img-select',
         $nbr_pages,
-        $_SESSION['pagination_image_widget'],
+        (int) ($_SESSION['pagination_image_widget'] ?? 0),
         '6',
         $pagination_classes,
         'pagination_img_widget'
@@ -171,7 +178,7 @@ if ($_REQUEST['widget'] == 'img-select') {
 
 
     echo $twig->render('widgets/select-img.twig', [
-        'media_widget_text_filter' => $_SESSION['media_widget_text_filter'],
+        'media_widget_text_filter' => $decode($match_str),
         'sorting_selected' => $sorting_selected,
         'media_data' => $media_data,
         'pagination' => $pagination,
@@ -188,11 +195,6 @@ if ($_REQUEST['widget'] == 'img-select') {
  */
 if ($_REQUEST['widget'] == 'product-select') {
 
-    echo '<div class="card">';
-    echo '<div class="card-header">' . $lang['label_products'] . '</div>';
-
-    echo '<div class="card-body p-0">';
-
     if (!isset($_SESSION['prod_picker_id'])) {
         $_SESSION['prod_picker_id'] = uniqid();
     }
@@ -200,7 +202,7 @@ if ($_REQUEST['widget'] == 'product-select') {
 
     $order_by = 'id';
     $order_direction = 'ASC';
-    $limit_start = (int)$_SESSION['pagination_product_widget'] ?? 0;
+    $limit_start = (int) ($_SESSION['pagination_product_widget'] ?? 0);
     $nbr_show_items = 25;
 
     $match_str = $_SESSION['product_widget_text_filter'] ?? '';
@@ -218,28 +220,21 @@ if ($_REQUEST['widget'] == 'product-select') {
         ]
     ];
 
-    $filter_by_str = array();
-    if ($match_str != '') {
-        $this_filter = explode(" ", $match_str);
-        foreach ($this_filter as $f) {
-            if ($f == "") {
-                continue;
-            }
-            $filter_by_str = [
-                "OR" => [
-                    "id[~]" => "%$f%",
-                    "title[~]" => "%$f%",
-                    "teaser[~]" => "%$f%",
-                    "text[~]" => "%$f%",
-                    "text_additional1[~]" => "%$f%",
-                    "text_additional2[~]" => "%$f%",
-                    "text_additional3[~]" => "%$f%",
-                    "text_additional4[~]" => "%$f%",
-                    "text_additional5[~]" => "%$f%",
-                    "product_number[~]" => "%$f%"
-                ]
-            ];
-        }
+    // every keyword has to match one of the fields
+    $filter_by_str = [];
+    foreach (array_values(array_filter(explode(" ", $match_str))) as $i => $f) {
+        $filter_by_str["OR #search$i"] = [
+            "id[~]" => "%$f%",
+            "title[~]" => "%$f%",
+            "teaser[~]" => "%$f%",
+            "text[~]" => "%$f%",
+            "text_additional1[~]" => "%$f%",
+            "text_additional2[~]" => "%$f%",
+            "text_additional3[~]" => "%$f%",
+            "text_additional4[~]" => "%$f%",
+            "text_additional5[~]" => "%$f%",
+            "product_number[~]" => "%$f%"
+        ];
     }
 
     $db_where = [
@@ -256,7 +251,7 @@ if ($_REQUEST['widget'] == 'product-select') {
 
     $products_data_cnt = $db_posts->count("se_products", $db_where);
 
-    $products_data = $db_posts->select("se_products", ["id", "product_lang", "title", "type"],
+    $products_data = $db_posts->select("se_products", ["id", "product_lang", "title", "type", "product_number"],
         $db_where + $db_order + $db_limit
     );
 
@@ -265,6 +260,9 @@ if ($_REQUEST['widget'] == 'product-select') {
     foreach ($products_data as &$product) {
         $product['product_id'] = (int)$product['id'];
         $product['flag_src'] = return_language_flag_src($product['product_lang']);
+        // stored html-encoded, Twig escapes on output
+        $product['title'] = $decode($product['title']);
+        $product['product_number'] = $decode($product['product_number']);
     }
 
     $pagination_classes = [
@@ -273,14 +271,14 @@ if ($_REQUEST['widget'] == 'product-select') {
     $pagination = se_print_pagination(
         '/admin-xhr/widgets/read/?widget=product-select',
         $nbr_pages,
-        $_SESSION['pagination_product_widget'],
+        (int) ($_SESSION['pagination_product_widget'] ?? 0),
         '6',
         $pagination_classes,
         'pagination_products'
     );
 
     echo $twig->render('widgets/select-products.twig', [
-        'product_widget_text_filter' => $_SESSION['product_widget_text_filter'],
+        'product_widget_text_filter' => $decode($match_str),
         'products_data' => $products_data,
         'pagination' => $pagination
     ]);
