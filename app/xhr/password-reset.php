@@ -36,8 +36,9 @@ se_rate_limit_add('reset-mail:'.strtolower($mail), 3600, false);
 $userdata_array = get_userdata_by_mail($mail);
 
 // send E-Mail - only for existing, verified accounts, but the answer below is
-// the same either way, so this form can't be used to test which addresses exist
-if(is_array($userdata_array)) {
+// the same either way, so this form can't be used to test which addresses exist.
+// Protected accounts ($se_protected_accounts) get no reset link.
+if(is_array($userdata_array) && !se_is_protected_account((string) $userdata_array['user_nick'])) {
 
     $user_nick = $userdata_array['user_nick'];
 

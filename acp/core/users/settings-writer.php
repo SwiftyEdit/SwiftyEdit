@@ -86,6 +86,15 @@ if(array_intersect($twofa_actions, array_keys($_POST)) === []) {
 }
 
 $my_user = $db_user->get("se_user", "*", ["user_id" => $my_user_id]);
+
+// protected accounts ($se_protected_accounts) can't change their 2FA - the
+// card only shows the notice (see se_acp_twofa_card())
+if(se_is_protected_account((string) $my_user['user_nick'])) {
+    unset($_SESSION['2fa_setup']);
+    echo se_acp_twofa_card($my_user);
+    exit;
+}
+
 $alerts = [];
 $recovery_codes = [];
 $code_input = is_string($_POST['twofa_code'] ?? null) ? $_POST['twofa_code'] : '';

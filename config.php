@@ -126,6 +126,18 @@ $se_backend_updates = true;
  */
 $se_send_mails = true;
 
+/* Protected accounts (usernames), e.g. a login shared on a demo or test
+ * installation. Their password, e-mail address, username and two-factor
+ * authentication can't be changed - neither by the user nor by an
+ * administrator - and they can't be deleted or reset by mail. If 2FA is
+ * required ($se_2fa_required), it is skipped for them while they have none.
+ * To use it, add the following to SE_CONTENT/config.php:
+ * $se_protected_accounts = ['demo'];
+ * Tip: with a public password, also switch off the lock after failed logins
+ * ($se_failed_logins_limit = null;), otherwise anyone can lock the account.
+ */
+$se_protected_accounts = [];
+
 /* Sources whose iframes (videos, maps ...) are kept when HTML from the editor
  * is cleaned (se_purify_html()). Only https, the host must match exactly.
  * An entry with a path ("host/path") only allows addresses starting with it.

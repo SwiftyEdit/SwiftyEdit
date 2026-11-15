@@ -91,12 +91,6 @@ parameters:
 			path: app/functions/functions.tags.php
 
 		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/functions/functions.user_delete.php
-
-		-
 			message: '#^Offset \(int\|string\) on array\{\} on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
 			count: 1

@@ -18,6 +18,12 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 - New global filter hook `mail.send`: plugins can change every mail sent via
   `se_send_mail()` (recipient, subject, message, admin copy) or stop it by
   returning `false`
+- New option `$se_protected_accounts` (in `data/config.php`), e.g.
+  `['demo']` for a login shared on a demo installation: the password, e-mail
+  address, username and two-factor authentication of these accounts can't be
+  changed, neither in the profile nor by an administrator, and they can't be
+  deleted or reset by mail. Required 2FA is skipped for them while they have
+  none
 
 ## 2.3.0 - 2026-11-14 (Build 26-0237)
 
