@@ -609,6 +609,7 @@
   "msg.success.file_delete": "The file has been deleted",
   "msg.success.entry_delete": "The entry has been deleted",
   "msg.error.file_delete": "The file could not be deleted",
+  "msg.error.upload_limit": "The storage space for uploads ({limit} MB) is used up. Delete files you no longer need and try again.",
   "msg.error.file_not_found": "The file does not exist (anymore), its database entry has been removed",
   "msg.info.media_rebase": "{found} files on the server: {added} added to the database, {removed} removed from the database",
   "msg.success.db.changed": "The data set has been updated",

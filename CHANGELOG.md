@@ -24,6 +24,9 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   changed, neither in the profile nor by an administrator, and they can't be
   deleted or reset by mail. Required 2FA is skipped for them while they have
   none
+- `$se_limit_uploads_dir` (in `data/config.php`) now works: the storage space
+  for uploads in the backend in MB. Counted are the media library and the
+  galleries, an upload that would exceed it is refused with a message
 
 ## 2.3.0 - 2026-11-14 (Build 26-0237)
 

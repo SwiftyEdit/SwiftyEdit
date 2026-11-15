@@ -358,10 +358,28 @@ document.addEventListener('DOMContentLoaded', () => {
             endpoint: '/admin-xhr/widgets/upload/',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
-            }
+            },
+            // a full upload storage (507) stays full - no retries
+            shouldRetry: (xhr) => xhr.status !== 507
         })
 
         registerUppyThemeSync(uppy);
+
+        // 507 = total size of all uploads reached ($se_limit_uploads_dir, see
+        // acp/core/widgets/upload.php) - show the translated text of the form
+        uppy.on('upload-error', (file, error, response) => {
+            if (!response || response.status !== 507) {
+                return;
+            }
+            let limit = '';
+            try {
+                limit = JSON.parse(response.responseText).limit ?? '';
+            } catch (e) {
+                // no JSON - show the text without the number
+            }
+            const message = (dropperForm.dataset.msgUploadLimit || 'Upload limit reached').replace('{limit}', limit);
+            uppy.info(message, 'error', 10000);
+        });
 
         uppy.on('complete', (result) => {
             htmx.trigger("body", "update_uploads_list");

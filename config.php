@@ -179,9 +179,17 @@ $se_mode = 0;
  */
 $se_environment = 'p';
 
+/* Storage space for uploads in the backend, in MB (empty = no limit).
+ * Counted are the media library (assets/images, assets/files) and the
+ * galleries, not the generated thumbnails. When an upload would exceed it,
+ * it is refused with a message. To set it, add to SE_CONTENT/config.php e.g.:
+ * $se_limit_uploads_dir = 200;
+ * It is defined in the limits block below.
+ */
+
 /**
  * limits
- * only relevant if you offer multisite hosting
+ * not used yet (planned for multisite hosting) - except $se_limit_uploads_dir, see above
  * limit the number of pages, snippets, posts ... that can be created
  * empty or integer values
  */
@@ -193,7 +201,7 @@ $se_limit_products = '';
 $se_limit_features = '';
 $se_limit_events = '';
 $se_limit_uploads = '';
-$se_limit_uploads_dir = ''; // filesize in MB
+$se_limit_uploads_dir = ''; // storage space for uploads in MB, see above
 $se_limit_inbox = '';
 $se_limit_users = '';
 $se_limit_groups = '';

@@ -11,6 +11,7 @@
  * @var string $se_branding_path
  * @var array $se_upload_img_types
  * @var array $se_upload_file_types
+ * @var string|int|float $se_limit_uploads_dir
  */
 
 require_once __DIR__.'/../../../app/session.php';
@@ -119,6 +120,17 @@ if ($resolved_destination !== false && str_starts_with($resolved_destination . '
 } else if ($resolved_destination !== false && str_starts_with($resolved_destination . '/', SE_PUBLIC . '/assets/files/')) {
     $destination = se_filter_filepath($upload_destination);
     $upload_type = 'files';
+}
+
+// total size of all uploads ($se_limit_uploads_dir in MB, empty = no limit).
+// 507 Insufficient Storage, not 413 - the web server answers 413 itself when
+// a single request is too large. backend.js shows the message of the form.
+$is_gallery_upload = isset($_POST['gal']) && is_numeric($_POST['gal']);
+if (($upload_type !== '' || $is_gallery_upload) && se_upload_limit_exceeded((int) ($_FILES['file']['size'] ?? 0), $se_limit_uploads_dir)) {
+    http_response_code(507);
+    header('Content-Type: application/json');
+    echo json_encode(['message' => 'Upload limit reached', 'limit' => (float) $se_limit_uploads_dir]);
+    exit;
 }
 
 /* thumbnail directories */
@@ -282,6 +294,39 @@ if((isset($_POST['gal'])) && is_numeric($_POST['gal'])) {
 
 }
 
+
+/**
+ * Would this upload exceed the total size of all uploads ($se_limit_uploads_dir
+ * in config.php)? Counted are the media library (assets/images, assets/files)
+ * and the galleries - generated thumbnails are not. The folders are read on
+ * every upload, only while a limit is set.
+ *
+ * @param int $incoming_bytes size of the file being uploaded
+ * @param mixed $limit_mb $se_limit_uploads_dir - empty or 0 = no limit
+ * @return bool
+ */
+function se_upload_limit_exceeded(int $incoming_bytes, mixed $limit_mb): bool {
+
+    if (!is_numeric($limit_mb) || (float) $limit_mb <= 0) {
+        return false;
+    }
+
+    $used = 0;
+    foreach (['images', 'files', 'galleries'] as $folder) {
+        $dir = SE_PUBLIC.'/assets/'.$folder;
+        if (!is_dir($dir)) {
+            continue;
+        }
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($files as $file) {
+            if ($file->isFile()) {
+                $used += $file->getSize();
+            }
+        }
+    }
+
+    return $used + $incoming_bytes > (float) $limit_mb * 1024 * 1024;
+}
 
 /**
  * Check an uploaded raster image before it is stored or processed:

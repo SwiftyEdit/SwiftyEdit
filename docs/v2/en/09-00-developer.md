@@ -97,6 +97,12 @@ A few more small things worth knowing:
   Usernames are compared case-insensitively. If 2FA is required, it is skipped for them while
   they have none. With a public password, also set `$se_failed_logins_limit = null;`,
   otherwise anyone can lock the account with wrong passwords.
+* __Storage space for uploads__ (`$se_limit_uploads_dir` in `config.php`) - the total size of
+  all uploads in the backend in MB, e.g. `$se_limit_uploads_dir = 200;` in `data/config.php`
+  (empty = no limit, default). Counted are the media library (`assets/images`,
+  `assets/files`) and the galleries, not the generated thumbnails. An upload that would
+  exceed it is refused with a message. The other `$se_limit_*` values in `config.php` are not
+  used yet.
 * __Folder permissions__ (`SE_DIR_PERMISSIONS`) - folders SwiftyEdit creates (cache, uploads,
   thumbnails) get `0755`. If you need write access via FTP with a different user, add
   `define('SE_DIR_PERMISSIONS', 0775);` to `data/config.php`.

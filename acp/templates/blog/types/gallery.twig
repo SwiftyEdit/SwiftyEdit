@@ -41,7 +41,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action="/admin/upload/" id="dropperGallery" class="dropper-form">
+                        <form method="post" action="/admin/upload/" id="dropperGallery" class="dropper-form" data-msg-upload-limit="{{ lang.msg_error_upload_limit }}">
                             <div class="fallback">
                                 <input name="file" type="file" multiple>
                             </div>
