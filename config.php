@@ -116,6 +116,16 @@ $se_update_htaccess = true;
  */
 $se_backend_updates = true;
 
+/* Send e-mails (registration, password reset, orders, 2FA codes ...).
+ * For test or demo installations, add the following to SE_CONTENT/config.php:
+ * $se_send_mails = false;
+ * Mails are then only logged (subject, no address) and reported as sent, so
+ * registration, checkout etc. go on as usual. Exceptions: the test mail in
+ * the settings shows that sending is switched off, and 2FA codes by mail
+ * report a failure - use an authenticator app or a recovery code instead.
+ */
+$se_send_mails = true;
+
 /* Sources whose iframes (videos, maps ...) are kept when HTML from the editor
  * is cleaned (se_purify_html()). Only https, the host must match exactly.
  * An entry with a path ("host/path") only allows addresses starting with it.

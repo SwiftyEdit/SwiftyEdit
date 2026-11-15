@@ -251,7 +251,13 @@ function se_2fa_hash_code(string $code): string {
  */
 function se_2fa_send_mail_code(array $user): string {
 
-    global $db_user, $lang, $se_settings;
+    global $db_user, $lang, $se_settings, $se_send_mails;
+
+    // with sending switched off se_send_mail() reports success - the user
+    // would wait for a code that never comes
+    if (($se_send_mails ?? true) === false) {
+        return 'failed';
+    }
 
     if (time() - (int) $user['user_2fa_mail_sent'] < SE_2FA_MAIL_RESEND_DELAY) {
         return 'wait';

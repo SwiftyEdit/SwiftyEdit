@@ -56,7 +56,8 @@ are documented together with the template variables and rendering conventions th
 
 ### Global hooks
 
-Global hooks are also `action` hooks (registered via `se_add_global_hook`, see below). Unlike
+Global hooks are registered via `se_add_global_hook` (see below). Except for the `mail.send`
+filter, they are `action` hooks. Unlike
 backend hooks, there is no `meta.php` and no checkbox selection in the ACP - every registered
 callback always runs whenever the hook fires, just like frontend hooks.
 
@@ -64,6 +65,23 @@ callback always runs whenever the hook fires, just like frontend hooks.
 |--------------|------------------------------------------|-------------------------------------------------------|
 | `order.paid` | `order_id`, `order`, `triggered_by`     | An order has been marked as paid - manually in the ACP (`triggered_by` = `admin`) or automatically by a payment plugin (`triggered_by` = e.g. `paypal-pay`). |
 | `user.deleted` | `user_id`, `user`, `deleted_by`       | A user account has been deleted - by an admin in the ACP (`deleted_by` = the admin's nick) or by the user in the frontend profile (`deleted_by` = `self`). The account is already emptied at that point; `user` holds its data from before the deletion (e.g. `user_mail`, `user_nick`, addresses), without passwords, 2FA secrets and lock or reset codes. |
+| `mail.send` (filter) | –                                   | A mail is about to be sent via `se_send_mail()` (also with `$se_send_mails = false`). The value is an array with `recipient` (`mail`, `name`), `subject`, `message` (HTML) and `bcc_admin`. Return it (changed or not) to send the mail, or `false` to stop it - the caller then gets an error text instead of `1`. |
+
+Example for the `mail.send` filter, e.g. to redirect all mails of a test system to one
+address:
+
+```php
+// plugins/{plugin}/hooks-global/mail.php
+se_add_global_hook('mail.send', function (array $mail, array $context): array|false {
+    $mail['subject'] = '[Test: '.$mail['recipient']['mail'].'] '.$mail['subject'];
+    $mail['recipient'] = ['mail' => 'test@example.com', 'name' => 'Test'];
+    $mail['bcc_admin'] = false;
+    return $mail;
+});
+```
+
+To switch mails off completely, no plugin is needed: `$se_send_mails = false;` in
+`data/config.php` suppresses sending and only writes a log entry.
 
 ## Example backend hook
 

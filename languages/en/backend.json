@@ -649,6 +649,7 @@
   "msg.info.no_entries_so_far": "There are no entries so far",
   "msg.info.no_data_so_far": "There are no data so far",
   "msg.info.upload_addons_deactivated": "The upload function for addons is deactivated. This function can only be activated via the config.php file.",
+  "msg.info.send_mails_deactivated": "Sending e-mails is deactivated ($se_send_mails = false in data/config.php). No e-mail has been sent.",
   "msg.info.no_addons": "There are no addons installed so far",
   "msg.info.gallery_upload": "You have to save the gallery before you can upload pictures",
   "msg.info.user_exists": "This user already exists",

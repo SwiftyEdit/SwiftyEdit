@@ -8,6 +8,17 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
+## Unreleased
+
+- New option `$se_send_mails` (in `data/config.php`) for test and demo
+  installations: with `$se_send_mails = false;` no e-mails are sent. Each mail
+  is logged (subject, no address) and reported as sent, so registration,
+  checkout etc. go on as usual. The test mail in the settings says that sending
+  is switched off, 2FA codes by mail report a failure
+- New global filter hook `mail.send`: plugins can change every mail sent via
+  `se_send_mail()` (recipient, subject, message, admin copy) or stop it by
+  returning `false`
+
 ## 2.3.0 - 2026-11-14 (Build 26-0237)
 
 - New backend dashboard: a 30-day activity grid per area with a history of the

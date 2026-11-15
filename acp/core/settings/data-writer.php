@@ -305,6 +305,12 @@ if(isset($_POST['sendmail_test'])) {
         $recipient = array('name' => $se_settings['mailer_name'], 'mail' => $se_settings['mailer_adr']);
     }
 
+    // with sending switched off, se_send_mail() reports success - say so instead
+    if(($se_send_mails ?? true) === false) {
+        echo '<p class="alert alert-info mt-3">'.$lang['msg_info_send_mails_deactivated'].'</p>';
+        exit;
+    }
+
     $testmail = se_send_mail($recipient,$subject,$message);
     if($testmail == 1) {
         echo '<p class="alert alert-success mt-3">'.$icon['check'].' '.$lang['msg_success_mailer_sent_test'].'</p>';
