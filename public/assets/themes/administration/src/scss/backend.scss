@@ -706,6 +706,12 @@ div.tox {
     background: transparent;
   }
 
+  // TinyMCE renders an empty promotion container even with promotion: false;
+  // its skin background shows up as a coloured block next to the menubar.
+  .tox-promotion:empty {
+    display: none;
+  }
+
   .tox-statusbar {
     background: var(--bs-widget-bg-400) !important;
     button, a, div {
