@@ -10,6 +10,15 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ## Unreleased
 
+- SQLite: the three database files (`content.sqlite3`, `user.sqlite3`,
+  `posts.sqlite3`) are merged into one file, `data/database/swiftyedit.sqlite3`.
+  Existing installations are merged automatically on the first request after
+  the update, the old files are only read and stay in place until they are
+  deleted under Settings > Database. If the merge fails, the site keeps
+  running on the old files and the dashboard shows the reason. `$db_content`,
+  `$db_user` and `$db_posts` still work, they are the same connection now (as
+  with MySQL). The constants `CONTENT_DB`, `USER_DB` and `POSTS_DB` are
+  deprecated and all point to the new file
 - New option `$se_send_mails` (in `data/config.php`) for test and demo
   installations: with `$se_send_mails = false;` no e-mails are sent. Each mail
   is logged (subject, no address) and reported as sent, so registration,

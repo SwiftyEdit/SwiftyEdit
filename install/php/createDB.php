@@ -11,9 +11,7 @@
  * @var string $prefs_database_username inc.install.php
  * @var string $prefs_database_psw inc.install.php
  * @var string $prefs_database_prefix inc.install.php
- * @var string $se_db_content config.php
- * @var string $se_db_user config.php
- * @var string $se_db_posts config.php
+ * @var string $se_db_file config.php
  */
 
 if(!defined('INSTALLER')) {
@@ -89,26 +87,14 @@ if(isset($_POST['install_mysql'])) {
 	
 } else {
 	$db_type = 'sqlite';
-	
-	define("CONTENT_DB", "$se_db_content");
-	define("USER_DB", "$se_db_user");
-	define("POSTS_DB", "$se_db_posts");
-	
-	
+
+	// one file for all tables (up to 2.3 there were three)
 	$db_content = new Medoo([
 		'type' => 'sqlite',
-		'database' => CONTENT_DB
+		'database' => "$se_db_file"
 	]);
-	
-	$db_user = new Medoo([
-		'type' => 'sqlite',
-		'database' => USER_DB
-	]);
-	
-	$db_posts = new Medoo([
-		'type' => 'sqlite',
-		'database' => POSTS_DB
-	]);
+	$db_user = $db_content;
+	$db_posts = $db_content;
 
 }
 

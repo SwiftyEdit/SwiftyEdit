@@ -2,10 +2,19 @@
  # "To review" card, rendered by the dashboard data-reader (action=list_alerts)
  #}
 {% set has_security = security and (security.csrf_users is not empty or security.csrf_paths is not empty or security.locks is not empty or security.logins) %}
-{% if not_writable is empty and missing_types is empty and not has_security %}
+{% if not_writable is empty and missing_types is empty and not has_security and db_merge_error is empty %}
     <div class="dash-empty-hint">{{ lang.msg_no_entries_found }}</div>
 {% else %}
     <div class="dash-review">
+
+        {% if db_merge_error is not empty %}
+            <div class="dash-review-item">
+                <span class="dash-review-dot is-danger"></span>
+                <div class="dash-min-w-0">
+                    {{ lang.dashboard_review_db_merge|replace({'{error}': db_merge_error}) }}
+                </div>
+            </div>
+        {% endif %}
 
         {% if not_writable is not empty %}
             <div class="dash-review-item">

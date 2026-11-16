@@ -7,7 +7,7 @@
     {% else %}
         {% embed 'components/settings/section.twig' with {help: help['database-wal']} %}
             {% block fields %}
-                {# own writer action: the journal mode is set on all three database files #}
+                {# own writer action: the journal mode is a property of the database file #}
                 <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend">
                     <div class="mb-3">{{ wal_input|raw }}</div>
                     <div class="d-flex justify-content-end">
@@ -46,5 +46,35 @@
                 </form>
             {% endblock %}
         {% endembed %}
+
+        {# the files used up to 2.3, only listed after they were merged into one file #}
+        {% if legacy_files is not empty %}
+            {% embed 'components/settings/section.twig' with {help: help['database-legacy']} %}
+                {% block fields %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>{{ lang.label_settings_vacuum_file }}</th>
+                                <th class="text-end">{{ lang.label_settings_vacuum_size }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in legacy_files %}
+                                <tr>
+                                    <td><code>{{ file.name }}</code></td>
+                                    <td class="text-end">{{ file.size }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <form hx-post="{{ writer_uri }}" hx-target="body" hx-swap="beforeend" hx-confirm="{{ lang.label_settings_legacy_db_confirm }}">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-danger" name="delete_legacy_databases" value="delete">{{ lang.delete }}</button>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+                {% endblock %}
+            {% endembed %}
+        {% endif %}
     {% endif %}
 {% endblock %}

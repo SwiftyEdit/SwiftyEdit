@@ -58,11 +58,12 @@ if (!se_ensure_htaccess_exists($publicPath, $templatePath)) {
 
 /**
  * if there is no database config we start the installer
- * @var string $se_db_content SQLite file from config.php or /content/config.php
+ * @var string $se_db_file SQLite file from config.php or /data/config.php
+ * @var string $se_db_content SQLite file used up to 2.3 (merged into $se_db_file)
  * @var string $database_host is set in config_database
  */
 
-if(!is_file(SE_ROOT.'/config_database.php') && !is_file("$se_db_content")) {
+if(!is_file(SE_ROOT.'/config_database.php') && !is_file("$se_db_file") && !is_file("$se_db_content")) {
     header("location: /install/");
     die();
 }

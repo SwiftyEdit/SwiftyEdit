@@ -55,7 +55,11 @@ $se_admin_url_path = '/admin/';
 $se_admin_xhr_url_path = '/admin-xhr/';
 
 
-/* database files if we use sqlite */
+/* database file if we use sqlite */
+$se_db_file = SE_CONTENT . "/database/swiftyedit.sqlite3";
+
+/* the three files used up to 2.3 - only read once, when they are merged
+   into $se_db_file (see app/functions/functions.database.php) */
 $se_db_content = SE_CONTENT . "/database/content.sqlite3";
 $se_db_posts = SE_CONTENT . "/database/posts.sqlite3";
 $se_db_user = SE_CONTENT . "/database/user.sqlite3";

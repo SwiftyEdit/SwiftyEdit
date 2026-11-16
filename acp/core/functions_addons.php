@@ -1050,7 +1050,7 @@ function get_all_templates() {
 /**
  * check in active modules and pages with posts
  * generate array from pages containing a module or post categories
- * and from addon_dir -> content.sqlite3
+ * and from addon_dir -> se_addons table
  * store in ... cache/active_addons.json
  */
 

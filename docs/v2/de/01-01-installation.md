@@ -23,13 +23,15 @@ echter Aufwand darin, SQLite für den produktiven Einsatz schnell und zuverläss
 * __Kein separater Datenbankserver nötig__ - PDO/SQLite bringt PHP schon mit, es muss nichts
   Zusätzliches installiert, konfiguriert oder am Laufen gehalten werden (und ein Dienst weniger,
   der ausfallen kann).
-* __Backup und Umzug sind trivial__ - die komplette Datenbank besteht aus ein paar Dateien unter
-  `data/database/`. Diese zu kopieren ist ein vollständiges, konsistentes Backup; der Umzug auf
-  einen neuen Server ist eine Dateikopie, kein Dump-und-Import.
-* __Aufteilung in drei getrennte Datenbank-Dateien__ - Content, Benutzerkonten und Posts erhalten
-  jeweils ihre eigene SQLite-Datei (siehe `app/database.php`), statt sich eine gemeinsame
-  Datenbank zu teilen. So blockiert ein stark genutzter Bereich (z. B. Logins) bei gleichzeitigen
-  Zugriffen keinen anderen (z. B. Content-Abfragen).
+* __Backup und Umzug sind trivial__ - die komplette Datenbank ist eine Datei,
+  `data/database/swiftyedit.sqlite3` (im WAL-Modus dazu ihre `-wal`/`-shm`-Dateien). Diese zu
+  kopieren ist ein vollständiges, konsistentes Backup; der Umzug auf einen neuen Server ist eine
+  Dateikopie, kein Dump-und-Import.
+* __Eine Datei, eine Transaktion__ - bis Version 2.3 lagen Content, Benutzerkonten und Posts in
+  drei getrennten Dateien. Seit 2.4 liegen alle Tabellen in einer Datei, so wird eine Änderung,
+  die mehrere Bereiche betrifft, vollständig gespeichert oder gar nicht. Bestehende Installationen
+  werden beim ersten Aufruf nach dem Update automatisch zusammengeführt. Mit dem
+  [WAL-Modus](08-00-settings.md#database-wal) läuft das Lesen weiter, während geschrieben wird.
 * __Geringerer Ressourcenverbrauch__ - kein separater Datenbankprozess, der um Arbeitsspeicher
   und CPU konkurriert - das macht sich besonders auf kleinen VPS oder Shared Hosting bemerkbar.
 * __Datenbank-intensive Bereiche werden gecacht__ - für die Bereiche, die die Datenbank am

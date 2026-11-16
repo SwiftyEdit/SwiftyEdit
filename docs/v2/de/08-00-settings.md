@@ -294,9 +294,9 @@ Datenbankdatei, sodass gleichzeitige Lesezugriffe warten müssen, bis der Schrei
 abgeschlossen ist. Im `WAL`-Modus können Lesezugriffe weiterlaufen, während geschrieben
 wird, statt die komplette Datei zu sperren. Auf Seiten mit viel gleichzeitigem Traffic kann
 das `database is locked`-Fehler und Zugriffszeiten spürbar reduzieren. Die Einstellung wird
-sofort auf alle drei SQLite-Datenbanken (content, user, posts) angewendet und lässt sich
-jederzeit wieder deaktivieren - es handelt sich um eine dauerhafte Eigenschaft der
-Datenbankdateien, die nicht bei jedem Request neu gesetzt werden muss.
+sofort auf die Datenbankdatei angewendet und lässt sich jederzeit wieder deaktivieren - es
+handelt sich um eine dauerhafte Eigenschaft der Datei, die nicht bei jedem Request neu
+gesetzt werden muss.
 
 Zwei Dinge solltest Du vor dem Aktivieren wissen:
 
@@ -311,13 +311,24 @@ Zwei Dinge solltest Du vor dem Aktivieren wissen:
   Checkpoint aus (`PRAGMA wal_checkpoint(TRUNCATE)`).
 
 ### Datenbank komprimieren {#database-vacuum}
-Die Tabelle zeigt für jede der drei Datenbankdateien die Größe und den freien
-Platz darin. Gelöschte Daten hinterlassen freien Platz in der Datei, den SQLite für neue
-Daten wiederverwendet - kleiner wird die Datei dadurch aber nicht. Der Button komprimiert
-die Dateien (`VACUUM`) und gibt diesen Platz an die Festplatte zurück. Dabei wird jede
-Datei neu geschrieben: Solange das läuft, kann nichts gespeichert werden, und es wird
-vorübergehend so viel freier Speicherplatz benötigt, wie die größte Datei groß ist.
-Sinnvoll ist das vor allem, nachdem viele Daten gelöscht wurden.
+Die Tabelle zeigt die Größe der Datenbankdatei und den freien Platz darin. Gelöschte
+Daten hinterlassen freien Platz in der Datei, den SQLite für neue Daten wiederverwendet -
+kleiner wird die Datei dadurch aber nicht. Der Button komprimiert die Datei (`VACUUM`) und
+gibt diesen Platz an die Festplatte zurück. Dabei wird die Datei neu geschrieben: Solange
+das läuft, kann nichts gespeichert werden, und es wird vorübergehend so viel freier
+Speicherplatz benötigt, wie die Datei groß ist. Sinnvoll ist das vor allem, nachdem viele
+Daten gelöscht wurden.
+
+### Alte Datenbankdateien {#database-legacy}
+Bis Version 2.3 nutzte SwiftyEdit drei Datenbankdateien (`content.sqlite3`, `user.sqlite3`,
+`posts.sqlite3`). Seit 2.4 liegt alles in `swiftyedit.sqlite3`. Die alten Dateien werden beim
+ersten Aufruf nach dem Update automatisch zusammengeführt - dabei werden sie nur gelesen, nicht
+verändert, und bleiben als Rückfallebene in `data/database/` liegen. Dieser Abschnitt erscheint
+nur, solange sie noch vorhanden sind. Läuft die Website wie gewohnt, kannst Du sie hier löschen.
+
+Schlägt das Zusammenführen fehl (z. B. weil `data/database/` nicht beschreibbar ist), läuft die
+Website mit den alten Dateien weiter, das Dashboard zeigt den Grund unter "Meldungen", und das
+Zusammenführen wird frühestens nach 10 Minuten erneut versucht.
 
 ---
 

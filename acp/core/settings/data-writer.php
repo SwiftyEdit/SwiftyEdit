@@ -11,6 +11,8 @@
  * @var object $db_user
  * @var object $db_posts
  * @var string $db_type
+ * @var array $se_db_state app/database.php
+ * @var array $se_db_legacy_files app/database.php
  * @var array $icon
  * @var array $se_settings
  * @var string $se_branding_path
@@ -125,7 +127,8 @@ if (isset($_POST['update_database']) && $db_type === 'sqlite') {
     // only needs to run when the admin actually toggles it - not on every request.
     // PRAGMA journal_mode=... returns the resulting mode as a row, so it must
     // be run through query() - exec() silently fails to apply it.
-    foreach ([$db_content, $db_user, $db_posts] as $db_conn) {
+    // Keyed by path: since 2.4 all three handles are the same connection.
+    foreach ([CONTENT_DB => $db_content, USER_DB => $db_user, POSTS_DB => $db_posts] as $db_conn) {
         try {
             $result_mode = strtolower((string) $db_conn->pdo->query('PRAGMA journal_mode = ' . $target_mode)->fetchColumn());
             if ($result_mode !== $target_mode) {
@@ -148,6 +151,7 @@ if (isset($_POST['update_database']) && $db_type === 'sqlite') {
 // compact the SQLite database files (VACUUM)
 if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
 
+    // keyed by path - since 2.4 all three point to the same file
     $db_files = [
         CONTENT_DB => $db_content,
         USER_DB => $db_user,
@@ -186,6 +190,33 @@ if (isset($_POST['vacuum_database']) && $db_type === 'sqlite') {
     } else {
         show_toast($lang['msg_error_vacuum'].' '.$sqlite_error, 'danger');
     }
+}
+
+// delete the database files used up to 2.3 (merged into one file since 2.4)
+if (isset($_POST['delete_legacy_databases']) && $db_type === 'sqlite') {
+
+    // only while the merged file is in use - never the files the site runs on
+    if (($se_db_state['mode'] ?? '') !== 'single') {
+        exit;
+    }
+
+    $not_deleted = [];
+    foreach (se_db_legacy_files_left($se_db_legacy_files) as $legacy_path) {
+        if ($legacy_path === CONTENT_DB) {
+            continue;
+        }
+        if (!se_db_remove_sqlite_file($legacy_path)) {
+            $not_deleted[] = basename($legacy_path);
+        }
+    }
+
+    if ($not_deleted === []) {
+        // reload, so the section with the old files disappears
+        header("HX-Refresh: true");
+        exit;
+    }
+    show_toast($lang['msg_error_legacy_db_deleted'].' '.implode(', ', $not_deleted), 'danger');
+    exit;
 }
 
 // labels
