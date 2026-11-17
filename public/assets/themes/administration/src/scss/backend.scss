@@ -343,15 +343,19 @@ a#dashboard {
 }
 
 
+// floating upload button - kept away from the window corner, which is
+// rounded in current browsers (Safari) and cut off a bar glued to it
 .bottom-bar {
   position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 10px;
+  bottom: 1rem;
+  right: 1rem;
   z-index: 1005;
-  background: var(--bs-widget-bg);
-  border-top-left-radius: 5px;
-  box-shadow: 0px 0px 10px 0px var(--bs-widget-bg);
+
+  .btn {
+    border-radius: 50rem;
+    padding-inline: .9rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+  }
 
   .divider {
     display: inline-block;

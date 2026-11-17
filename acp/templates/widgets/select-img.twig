@@ -2,60 +2,51 @@
  # image picker of the forms (components/form/macros.twig images, shop/product-form.twig),
  # rendered by acp/core/widgets/widgets.php - the images are dragged into the drop zone
  #}
-<div class="card">
-    <div class="card-header">Uploads</div>
-
-    <div class="card-body p-0">
-        <div class="p-1">
-            <div class="row g-2">
-                <div class="col-md-6">
-                    <div class="input-group"
-                         hx-post="/admin-xhr/widgets/read/?change_filter"
-                         hx-params="media_widget_text_filter,csrf_token"
-                         hx-trigger="input changed delay:1500ms"
-                         hx-swap="none">
-                        <span class="input-group-text">{{ icon.search|raw }}</span>
-                        <input type="text" class="form-control no-enter"
-                               name="media_widget_text_filter"
-                               value="{{ media_widget_text_filter }}">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <select class="form-control"
-                            hx-post="/admin-xhr/widgets/read/?change_filter"
-                            hx-params="sorting_media_widget,csrf_token"
-                            name="sorting_media_widget"
-                            hx-trigger="change"
-                            hx-swap="none">
-                        <option value="media_id_desc" {% if sorting_selected == 'media_id_desc' %}selected{% endif %}>{{ lang_sort_start_newest }}</option>
-                        <option value="media_id_asc" {% if sorting_selected == 'media_id_asc' %}selected{% endif %}>{{ lang_sort_start_oldest }}</option>
-                        <option value="media_file_asc" {% if sorting_selected == 'media_file_asc' %}selected{% endif %}>A-Z</option>
-                        <option value="media_file_desc" {% if sorting_selected == 'media_file_desc' %}selected{% endif %}>Z-A</option>
-                    </select>
-                </div>
-            </div>
+<div class="image-picker">
+    <div class="image-picker-toolbar">
+        <div class="input-group input-group-sm"
+             hx-post="/admin-xhr/widgets/read/?change_filter"
+             hx-params="media_widget_text_filter,csrf_token"
+             hx-trigger="input changed delay:1500ms"
+             hx-swap="none">
+            <span class="input-group-text">{{ icon.search|raw }}</span>
+            <input type="search" class="form-control no-enter"
+                   name="media_widget_text_filter"
+                   value="{{ media_widget_text_filter }}">
         </div>
-
-        <div class="scroll-container p-0">
-            <div class="sortable_source list-group list-group-flush">
-                {% for image in media_data %}
-                    <div class="list-group-item d-flex align-items-start draggable" data-id="{{ image.image_src }}">
-                        <div class="d-flex flex-row gap-2" title="{{ image.image_src }}">
-                            <div class="rounded-circle flex-shrink-0"
-                                 style="width:64px;height:64px;background-image:url({{ image.preview }});background-size:cover;"></div>
-                            <div class="text-muted small">
-                                {% if image.image_title %}<strong>{{ image.image_title }}</strong><br>{% endif %}
-                                {{ image.img_filename_short }}{% if image.img_filename_truncated %} <small><i>(...)</i></small>{% endif %}<br>
-                                {{ image.image_upload_time }}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
+        <select class="form-select form-select-sm"
+                hx-post="/admin-xhr/widgets/read/?change_filter"
+                hx-params="sorting_media_widget,csrf_token"
+                name="sorting_media_widget"
+                hx-trigger="change"
+                hx-swap="none">
+            <option value="media_id_desc" {% if sorting_selected == 'media_id_desc' %}selected{% endif %}>{{ lang_sort_start_newest }}</option>
+            <option value="media_id_asc" {% if sorting_selected == 'media_id_asc' %}selected{% endif %}>{{ lang_sort_start_oldest }}</option>
+            <option value="media_file_asc" {% if sorting_selected == 'media_file_asc' %}selected{% endif %}>A-Z</option>
+            <option value="media_file_desc" {% if sorting_selected == 'media_file_desc' %}selected{% endif %}>Z-A</option>
+        </select>
+        {# opens the global upload modal (layout/page.twig), the list reloads after the upload #}
+        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal"
+                title="{{ lang.btn_upload }}" aria-label="{{ lang.btn_upload }}">{{ icon.upload|raw }}</button>
     </div>
 
-    <div class="card-footer">
-        {{ pagination|raw }}
+    <div class="image-picker-list sortable_source">
+        {% for image in media_data %}
+            {# a click (or Enter/Space) adds the image to the drop zone, see components/image-picker.js #}
+            <div class="picker-item draggable" data-id="{{ image.image_src }}" title="{{ image.image_src }}" role="button" tabindex="0">
+                <img class="picker-thumb" src="{{ image.preview }}" alt="" loading="lazy">
+                <div class="picker-text">
+                    <div class="picker-name">{{ image.image_title ?: image.img_filename }}</div>
+                    <div class="picker-meta">{% if image.image_title %}{{ image.img_filename }} · {% endif %}{{ image.image_upload_time }}</div>
+                </div>
+                <span class="picker-add" aria-hidden="true">{{ icon.plus|raw }}</span>
+            </div>
+        {% endfor %}
     </div>
+
+    {% if pagination %}
+        <div class="image-picker-footer">
+            {{ pagination|raw }}
+        </div>
+    {% endif %}
 </div>

@@ -84,8 +84,9 @@ if ($_REQUEST['widget'] == 'img-select') {
     }
     $image_picker_id = $_SESSION['image_picker_id'];
 
+    // newest uploads first, unless the user picked another sorting
     $order_by = 'media_id';
-    $order_direction = 'ASC';
+    $order_direction = 'DESC';
     $limit_start = (int) ($_SESSION['pagination_image_widget'] ?? 0);
     $nbr_show_items = 25;
 
@@ -142,10 +143,8 @@ if ($_REQUEST['widget'] == 'img-select') {
 
 
     foreach ($media_data as &$image) {
-        $img_filename = se_filter_filepath(basename($image['media_file']));
-        // plain (autoescaped) text + flag; the ellipsis markup lives in the template
-        $image['img_filename_short'] = se_return_first_chars($img_filename, 20, false);
-        $image['img_filename_truncated'] = strlen($img_filename) > 20;
+        // plain (autoescaped) text, long names are shortened by CSS
+        $image['img_filename'] = se_filter_filepath(basename($image['media_file']));
 
         $image_src = se_filter_filepath($image['media_file']);
         $image['image_src'] = str_replace("../", "/", $image_src);

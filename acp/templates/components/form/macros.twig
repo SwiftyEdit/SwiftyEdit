@@ -31,17 +31,23 @@
 {% macro images(images) %}
     <label class="form-label">{{ lang.label_image }}</label>
     <div class="images-list">
-        <div id="imgdropper" class="sortable_target list-group mb-3">
-            {% for image in images %}
-                <div class="list-group-item draggable" data-id="{{ image.path }}">
-                    <div class="d-flex flex-row gap-2">
-                        <div class="rounded-circle flex-shrink-0" style="width:40px;height:40px;background-image:url({{ image.src }});background-size:cover;"></div>
-                        <div class="text-muted small">{{ image.name }}</div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+        {% import _self as m %}
+        {{ m.image_dropzone(images, 0) }}
         <div id="imgWidget" hx-post="/admin-xhr/widgets/read/?widget=img-select" hx-include="[name='csrf_token']" hx-trigger="load, update_image_widget from:body">Loading Images ...</div>
+    </div>
+{% endmacro %}
+
+{# drop zone of the image picker, the selected images are sent as picker_<index>[] (see backend.js) #}
+{% macro image_dropzone(images, picker_index) %}
+    <div id="imgdropper" class="sortable_target image-dropzone mb-3" data-picker-index="{{ picker_index }}" data-drop-hint="{{ lang.drop_images_here|default('Drop images here') }}">
+        {% for image in images %}
+            <div class="picker-item draggable" data-id="{{ image.path }}" title="{{ image.path }}">
+                <img class="picker-thumb" src="{{ image.src }}" alt="" loading="lazy">
+                <div class="picker-text">
+                    <div class="picker-name">{{ image.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endmacro %}
 
