@@ -47,10 +47,10 @@
 
 {# labels: list of {id, color, title, checked}, see se_get_label_checklist() #}
 {% macro labels(name, labels) %}
-    {% for label in labels %}
-        <div class="form-check form-check-inline" style="border-bottom: 1px solid {{ label.color }}">
-            <input class="form-check-input" id="label{{ label.id }}" type="checkbox"{% if label.checked %} checked{% endif %} name="{{ name }}" value="{{ label.id }}">
-            <label class="form-check-label" for="label{{ label.id }}">{{ label.title }}</label>
-        </div>
-    {% endfor %}
+    <div class="label-chips">
+        {% for label in labels %}
+            <input class="btn-check" id="label{{ label.id }}" type="checkbox" autocomplete="off"{% if label.checked %} checked{% endif %} name="{{ name }}" value="{{ label.id }}">
+            <label class="label-chip" for="label{{ label.id }}" style="--label-color: {{ label.color }}"><span class="label-chip-dot"></span>{{ label.title }}</label>
+        {% endfor %}
+    </div>
 {% endmacro %}
