@@ -142,22 +142,26 @@ function se_build_parent_options(array $pages_in_language, ?int $portal_id, ?int
  */
 function se_build_sibling_picker(array $siblings, ?int $selected_after_page_id): string {
 
-    global $lang, $icon;
+    global $lang;
 
-    // toggle buttons (like the page_role group in pages-edit.php), one per
-    // row - makes what's picked obvious at a glance, unlike a small radio
-    // dot next to a bare page title. The trailing arrow-bar-down icon marks
-    // "inserted after this page" (see the explanatory text above the list
-    // in pages-edit.php); purely decorative, so aria-hidden.
-    $after_icon = '<span class="ms-auto ps-2" aria-hidden="true">' . ($icon['arrow_bar_down'] ?? '') . '</span>';
+    /*
+     * one row per position, title left and permalink right. Every row is
+     * followed by a marker ("inserted here") that the admin stylesheet only
+     * shows after the checked row (.btn-check:checked + .sibling-row + .sibling-marker),
+     * so no JavaScript is needed to move it - see _pages.scss
+     */
+    $marker = '<div class="sibling-marker" aria-hidden="true"><span class="sibling-marker-line"></span>'
+        . htmlspecialchars($lang['label_pages_insert_marker'] ?? 'Inserted here', ENT_QUOTES)
+        . '</div>';
 
-    $html = '<div class="d-grid gap-2">';
+    $html = '<div class="sibling-picker">';
 
     $checked = $selected_after_page_id === null ? ' checked' : '';
     $html .= '<input type="radio" class="btn-check" name="insert_after_page_id" id="insert_after_start" value=""' . $checked . '>'
-        . '<label class="btn btn-outline-primary text-start" for="insert_after_start">'
-        . htmlspecialchars($lang['label_pages_insert_at_start'] ?? 'at the beginning', ENT_QUOTES)
-        . '</label>';
+        . '<label class="sibling-row" for="insert_after_start">'
+        . '<span class="sibling-row-title">' . htmlspecialchars($lang['label_pages_insert_at_start'] ?? 'at the beginning', ENT_QUOTES) . '</span>'
+        . '</label>'
+        . $marker;
 
     foreach ($siblings as $sibling) {
         // already HTML-entity-encoded in storage, see se_build_parent_options()
@@ -166,21 +170,18 @@ function se_build_sibling_picker(array $siblings, ?int $selected_after_page_id):
         $checked = ($page_id === (int) $selected_after_page_id) ? ' checked' : '';
 
         // the permalink disambiguates same-titled pages (e.g. one "Software"
-        // page per product) that a bare title can't - shown smaller/muted
-        // underneath, same idea as se_list_pages()'s page listing
-        $permalink_line = '';
+        // page per product) that a bare title can't
+        $permalink = '';
         if ($sibling['page_permalink'] !== '') {
-            $permalink_line = '<span class="d-block text-truncate small opacity-75">/' . $sibling['page_permalink'] . '</span>';
+            $permalink = '<span class="sibling-row-permalink">/' . $sibling['page_permalink'] . '</span>';
         }
 
         $html .= '<input type="radio" class="btn-check" name="insert_after_page_id" id="insert_after_' . $page_id . '" value="' . $page_id . '"' . $checked . '>'
-            . '<label class="btn btn-outline-primary text-start d-flex align-items-center" for="insert_after_' . $page_id . '">'
-            . '<span class="flex-grow-1 overflow-hidden">'
-            . '<span class="d-block text-truncate">' . $title . '</span>'
-            . $permalink_line
-            . '</span>'
-            . $after_icon
-            . '</label>';
+            . '<label class="sibling-row" for="insert_after_' . $page_id . '">'
+            . '<span class="sibling-row-title">' . $title . '</span>'
+            . $permalink
+            . '</label>'
+            . $marker;
     }
 
     $html .= '</div>';

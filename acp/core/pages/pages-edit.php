@@ -231,6 +231,7 @@ $inputs['keywords'] = se_print_form_input([
     "input_value" => $stored('page_meta_keywords'),
     "input_classes" => "form-control tags",
     "label" => $lang['label_keywords'],
+    "form_text" => $lang['label_pages_keywords_help'],
     "type" => "text"
 ]);
 $inputs['author'] = se_print_form_input([
@@ -252,12 +253,19 @@ $inputs['schema_type'] = se_print_form_input([
     "type" => "select"
 ]);
 
-$page_meta_robots = $stored('page_meta_robots') ?: 'all';
+/*
+ * robots: index and follow are switches (on = allowed), the remaining rules are chips.
+ * The stored value only lists restrictions - "none" means noindex + nofollow,
+ * "all" or an empty value means no restriction at all.
+ */
+$page_meta_robots = array_map('trim', explode(',', $stored('page_meta_robots')));
+$robots_index = !in_array('noindex', $page_meta_robots) && !in_array('none', $page_meta_robots);
+$robots_follow = !in_array('nofollow', $page_meta_robots) && !in_array('none', $page_meta_robots);
 $robots = [];
-foreach(["all", "noindex", "nofollow", "none", "noarchive", "nosnippet", "noodp", "notranslate", "noimageindex"] as $robot) {
+foreach(se_page_robots_rules() as $robot) {
     $robots[] = [
         'value' => $robot,
-        'checked' => str_contains($page_meta_robots, $robot)
+        'checked' => in_array($robot, $page_meta_robots)
     ];
 }
 
@@ -373,7 +381,7 @@ foreach([
 $inputs['categories_mode'] = se_print_form_input([
     "input_name" => "page_categories_mode",
     "input_value" => $stored('page_categories_mode'),
-    "label" => "",
+    "label" => null,
     "options" => [$lang['label_categories_show'] => "1", $lang['label_categories_hide'] => "2"],
     "type" => "select"
 ]);
@@ -478,7 +486,29 @@ foreach(get_all_groups() as $group) {
     ];
 }
 
+/*
+ * header card above the form: title, status, language and the public url -
+ * for new pages only a title
+ */
+$status_labels = [
+    'public' => $lang['status_public'],
+    'ghost' => $lang['status_ghost'],
+    'private' => $lang['status_private'],
+    'draft' => $lang['status_draft']
+];
+$header_url = rtrim($se_base_url, '/') . '/' . ltrim($stored('page_permalink'), '/');
+
+$header = [
+    'mode' => ($current_page_id !== null) ? 'edit' : (isset($_POST['duplicate_id']) ? 'duplicate' : 'new'),
+    'title' => $decode($stored('page_linkname') ?: $stored('page_title')),
+    'status' => $stored('page_status'),
+    'status_label' => $status_labels[$stored('page_status')] ?? '',
+    'url' => $header_url,
+    'url_display' => preg_replace('#^https?://#', '', $header_url)
+];
+
 echo $twig->render('pages/edit-form.twig', [
+    'header' => $header,
     'page' => array_map($decode, $get_page),
     'inputs' => $inputs,
     'writer_uri' => $writer_uri,
@@ -491,6 +521,10 @@ echo $twig->render('pages/edit-form.twig', [
     'sibling_picker' => se_build_sibling_picker($siblings, $selected_after_page_id),
     'translations' => $translations,
     'robots' => $robots,
+    'robots_index' => $robots_index,
+    'robots_follow' => $robots_follow,
+    // the advanced SEO section opens when one of its fields is in use
+    'has_seo_advanced' => ($stored('page_meta_author') != '' || $stored('page_meta_keywords') != '' || in_array(true, array_column($robots, 'checked'), true)),
     'images' => $images,
     'theme_values' => $theme_values,
     'post_types' => $post_types,
@@ -506,5 +540,9 @@ echo $twig->render('pages/edit-form.twig', [
     'labels' => se_get_label_checklist(explode(",", $stored('page_labels'))),
     'labels_docs_link' => se_print_docs_link('08-00-settings.md#labels', '', 'labels'),
     'docs_link_sorting' => se_print_docs_link('02-00-pages.md#sorting'),
-    'docs_link_redirects' => se_print_docs_link("02-00-pages.md#redirects")
+    'docs_link_redirects' => se_print_docs_link("02-00-pages.md#redirects"),
+    // the redirect section is collapsed by default, but opens when one of its fields is in use
+    'has_redirects' => ($stored('page_permalink_short') != '' || $stored('page_funnel_uri') != '' || $stored('page_redirect') != ''),
+    // same for the developer section, a priority of 0 counts as unused
+    'has_developer' => ($stored('page_custom_id') != '' || $stored('page_custom_classes') != '' || !in_array($stored('page_priority'), ['', '0'], true))
 ]);

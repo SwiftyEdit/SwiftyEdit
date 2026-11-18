@@ -161,6 +161,111 @@
 
 /* choose page position */
 
+// page role (single / portal / main menu) as selectable cards, edit-form.twig
+.page-role-card {
+  display: block;
+  height: 100%;
+  padding: .75rem 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color .15s, border-color .15s;
+
+  &:hover {
+    border-color: var(--bs-primary);
+  }
+}
+
+.btn-check:checked + .page-role-card {
+  border-color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb), .12);
+}
+
+.btn-check:focus-visible + .page-role-card {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+// "insert after" list, built by se_build_sibling_picker() - every row is
+// followed by a marker that only shows after the checked row
+.sibling-picker {
+  padding: .25rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+}
+
+.sibling-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .6rem .75rem;
+  border-radius: var(--bs-border-radius);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: var(--bs-tertiary-bg);
+  }
+}
+
+.sibling-row-title {
+  flex-grow: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sibling-row-permalink {
+  flex-shrink: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--bs-font-monospace);
+  font-size: .8rem;
+  color: var(--bs-secondary-color);
+}
+
+.btn-check:checked + .sibling-row {
+  background: rgba(var(--bs-primary-rgb), .15);
+  color: var(--bs-emphasis-color);
+}
+
+.btn-check:focus-visible + .sibling-row {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+}
+
+.sibling-marker {
+  display: none;
+  align-items: center;
+  gap: .75rem;
+  padding: .35rem .75rem;
+  font-size: .875rem;
+  color: var(--bs-primary);
+  white-space: nowrap;
+
+  // small ring at the start of the dashed line
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    width: .75rem;
+    height: .75rem;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+  }
+}
+
+.sibling-marker-line {
+  flex-grow: 1;
+  border-top: 2px dashed currentColor;
+  opacity: .7;
+}
+
+.btn-check:checked + .sibling-row + .sibling-marker {
+  display: flex;
+}
+
 ul.page-list-top {
   list-style-position: inside;
 

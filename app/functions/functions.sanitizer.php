@@ -323,6 +323,16 @@ function clean_visitors_input($text) {
  * @param array $data $_POST Data
  * @return array
  */
+/**
+ * robots rules a page can set besides noindex/nofollow,
+ * shared by the page form (chips) and se_sanitize_page_inputs() (whitelist)
+ *
+ * @return string[]
+ */
+function se_page_robots_rules(): array {
+    return ['noarchive', 'nosnippet', 'notranslate', 'noimageindex', 'noodp'];
+}
+
 function se_sanitize_page_inputs($data) {
 
     global $se_settings, $db_content;
@@ -547,6 +557,25 @@ function se_sanitize_page_inputs($data) {
     }
     if(!is_array($data['theme_values'])) {
         $sanitized['page_template_values'] = "";
+    }
+
+    /*
+     * the page form sends index/follow as switches (on = allowed) - an unchecked
+     * switch is not submitted at all, so the hidden marker page_robots_switches
+     * tells us the switches were part of the form. The stored value only lists
+     * restrictions, an empty value means "all".
+     */
+    if(isset($data['page_robots_switches'])) {
+        $robots = is_array($data['page_meta_robots'] ?? null) ? $data['page_meta_robots'] : [];
+        $robots = array_values(array_intersect(se_page_robots_rules(), $robots));
+        if(!isset($data['page_robots_index'])) {
+            $robots[] = 'noindex';
+        }
+        if(!isset($data['page_robots_follow'])) {
+            $robots[] = 'nofollow';
+        }
+        sort($robots);
+        $sanitized['page_meta_robots'] = implode(",", $robots);
     }
 
 

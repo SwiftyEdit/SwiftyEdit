@@ -23,36 +23,36 @@ Zusätzlich gibt es natürlich eine Suchfunktion.
 
 ## Sortierung {#sorting}
 
-So platzierst Du eine Seite in der Navigation, im Tab *Position*.
+So platzierst Du eine Seite in der Navigation, im Tab *Navigation*.
 
-Drei sich gegenseitig ausschließende Rollen legen fest, was eine Seite ist:
+Unter "Wo erscheint die Seite?" legen drei sich gegenseitig ausschließende Rollen fest, was eine Seite ist:
 
 ### Einzelseite
 
 - Einzelseiten sind nicht Teil des Navigationsbaums und tauchen nicht im Hauptmenü auf.
 - Sie können trotzdem in der Sitemap oder den Suchergebnissen erscheinen.
-- Ist "Einzelne Seite" ausgewählt, haben die Felder "Parent page"/"Insert position" darunter keine Wirkung.
+- Die Felder "Übergeordnete Seite" und "Einfügen nach" werden nur bei "Hauptmenü" angezeigt.
 
 ### Portal
 
 - Die Portalseite ist die Startseite einer Sprache.
 - Jede aktivierte Sprache sollte genau eine Portalseite haben.
-- Auch bei "Portal" haben "Parent page"/"Insert position" keine Wirkung.
+- Auch hier werden "Übergeordnete Seite" und "Einfügen nach" nicht angezeigt.
 
 ### Hauptmenü
 
 - Platziert die Seite im Navigationsbaum - als Eintrag oberster Ebene oder verschachtelt unter einer anderen Seite.
-- **Parent page**: wählt aus, unter welcher Seite diese Seite eingehängt wird, oder bleibt bei
-  "Top level" für einen Eintrag oberster Ebene direkt unter der Portalseite.
-- **Insert position**: wählt aus, nach welcher der bestehenden Unterseiten des Parents diese Seite
-  eingefügt wird (das Pfeil-Icon markiert das) - oder "At the beginning" für die erste Position.
-  Eine Parent-Seite oder eine Einfügeposition auszuwählen aktiviert oben automatisch "Hauptmenü",
-  da die Auswahl sonst beim Speichern keine Wirkung hätte.
+- **Übergeordnete Seite**: wählt aus, unter welcher Seite diese Seite eingehängt wird, oder bleibt bei
+  "Top Level" für einen Eintrag oberster Ebene direkt unter der Portalseite. Sie bestimmt die Ebene
+  im Menü und den Anfang der URL.
+- **Einfügen nach**: wählt aus, nach welcher der bestehenden Unterseiten diese Seite eingefügt wird -
+  oder "Am Anfang" für die erste Position. Eine gestrichelte Linie zeigt, wo die Seite landet.
+  Die Liste aktualisiert sich, sobald Du eine andere übergeordnete Seite wählst.
 
 ### Beispiel
 
-Wird bei "Flyer" als Parent Page "Startseite" (oberste Ebene) gewählt und bei "Poster"
-als Parent Page "Flyer", eingefügt danach, ergibt das:
+Wird bei "Flyer" als übergeordnete Seite "Top Level" gewählt und bei "Poster"
+als übergeordnete Seite "Flyer", ergibt das:
 
 - Startseite
 - Flyer
@@ -154,7 +154,7 @@ relevant, wenn Listen unter Einstellungen → Shop aktiviert sind.
 
 ### Seitentyp (strukturierte Daten) {#page-schema-type}
 
-Im Tab Meta wählst Du, um welche Art von Seite es sich für Suchmaschinen handelt, z.B. eine
+Im Tab SEO wählst Du, um welche Art von Seite es sich für Suchmaschinen handelt, z.B. eine
 Über-uns-, Kontakt- oder FAQ-Seite. SwiftyEdit gibt sie als schema.org-Typ der Seite in den
 strukturierten Daten (JSON-LD) aus. Ohne Auswahl ist die Seite eine normale `WebPage`. Produkte,
 Beiträge und Events bekommen automatisch ihre eigenen Typen (`Product`, `BlogPosting`, `Event`).
