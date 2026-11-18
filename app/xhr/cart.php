@@ -62,7 +62,17 @@ $subtotal_gross = 0;
 
 foreach ($cart_rows as $row) {
     $amount = (int) $row['cart_product_amount'];
-    $line_price = se_posts_calc_price($row['cart_product_price_net'], $row['cart_product_tax'], $amount);
+
+    // price from the current product data (price group, volume discount, min/max amount),
+    // like the shopping cart does - the price stored with the cart row is only a fallback
+    $product = se_get_product_data((int) $row['cart_product_id']);
+    if (is_array($product) && !empty($product)) {
+        $item_price = se_get_cart_item_price($product, $amount);
+        $amount = $item_price['amount'];
+        $line_price = se_calc_cart_line_price($item_price['price_net'], $item_price['tax'], $amount, $price_mode);
+    } else {
+        $line_price = se_calc_cart_line_price($row['cart_product_price_net'], $row['cart_product_tax'], $amount, $price_mode);
+    }
 
     $cart_items[] = [
         'cart_id' => $row['cart_id'],

@@ -2308,6 +2308,114 @@ function se_get_price_group_data($hash) {
 }
 
 /**
+ * Resolve the effective unit price of a cart line from the current product data.
+ * Used by the shopping cart and the mini cart preview, so both always show the same numbers.
+ *
+ * - clamps the amount to the product's minimum/maximum order quantity
+ * - takes price, tax class and volume discounts from the price group, if one is set
+ * - applies the volume discount matching the amount
+ *
+ * Tax exemptions by delivery area are not handled here, the checkout applies them on top.
+ *
+ * @param array $product product data from se_get_product_data()
+ * @param int $amount requested amount
+ * @return array{amount: int, price_net: string, tax: mixed}
+ */
+function se_get_cart_item_price(array $product, int $amount): array {
+
+    global $se_settings;
+
+    $min = (int) ($product['product_order_quantity_min'] ?? 0);
+    $max = (int) ($product['product_order_quantity_max'] ?? 0);
+    if ($min > 0 && $amount < $min) {
+        $amount = $min;
+    }
+    if ($max > 0 && $amount > $max) {
+        $amount = $max;
+    }
+
+    // get price from price groups or from products data
+    $price_group = $product['product_price_group'] ?? '';
+    if ($price_group != '' && $price_group != 'null') {
+        $price_data = se_get_price_group_data($price_group);
+        $product_tax = $price_data['tax'];
+        $price_net = $price_data['price_net'];
+        $volume_discounts_json = $price_data['price_volume_discount'];
+    } else {
+        $product_tax = $product['product_tax'];
+        $price_net = $product['product_price_net'];
+        $volume_discounts_json = $product['product_price_volume_discount'];
+    }
+
+    if ($product_tax == '1') {
+        $tax = $se_settings['posts_products_default_tax'];
+    } else if ($product_tax == '2') {
+        $tax = $se_settings['posts_products_tax_alt1'];
+    } else {
+        $tax = $se_settings['posts_products_tax_alt2'];
+    }
+
+    // volume discounts - the highest threshold reached by the amount wins
+    if (!empty($volume_discounts_json)) {
+        $volume_discounts = json_decode($volume_discounts_json, true);
+        if (is_array($volume_discounts)) {
+            usort($volume_discounts, fn($a, $b) => (int) $a['amount'] <=> (int) $b['amount']);
+            foreach ($volume_discounts as $v) {
+                if ($amount >= $v['amount']) {
+                    $price_net = $v['price'];
+                }
+            }
+        }
+    }
+
+    return [
+        'amount' => $amount,
+        'price_net' => $price_net,
+        'tax' => $tax,
+    ];
+}
+
+/**
+ * Calculate the prices of one cart line, rounded to cents, so that the line values
+ * always add up: net + tax = gross, and the cart subtotals are the sums of the lines.
+ *
+ * Which side is leading depends on the price mode, i.e. which price the customer sees:
+ * - gross prices (mode 1 and 2): line gross = rounded unit gross * amount,
+ *   tax is extracted from the line gross, net = gross - tax
+ * - net prices (mode 3, b2b): line net = unit net * amount (rounded),
+ *   tax is added on top of the line net, gross = net + tax
+ *
+ * @param float|string $price_net unit price net (stored in the database, decimal comma)
+ * @param mixed $tax tax rate in percent
+ * @param int $amount
+ * @param mixed $price_mode $se_settings['posts_price_mode']
+ * @return array same keys as se_posts_calc_price() plus tax_raw
+ */
+function se_calc_cart_line_price($price_net, $tax, int $amount, $price_mode): array {
+
+    $prices = se_posts_calc_price($price_net, $tax, $amount);
+    $tax = (float) $tax;
+
+    if ($price_mode == 3) {
+        $line_net = round($prices['net_raw'], 2);
+        $line_tax = round($line_net * $tax / 100, 2);
+        $line_gross = round($line_net + $line_tax, 2);
+    } else {
+        $line_gross = round($prices['gross_raw'], 2);
+        $line_tax = round($line_gross * $tax / (100 + $tax), 2);
+        $line_net = round($line_gross - $line_tax, 2);
+    }
+
+    $prices['net_raw'] = $line_net;
+    $prices['gross_raw'] = $line_gross;
+    $prices['tax_raw'] = $line_tax;
+    $prices['net'] = se_post_print_currency($line_net);
+    $prices['gross'] = se_post_print_currency($line_gross);
+
+    return $prices;
+}
+
+/**
  * @return array
  * get all keywords
  * key is the keyword, value the counter
