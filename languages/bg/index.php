@@ -5,5 +5,5 @@
  */
 
 $lang_sign = "bg";
-$lang_desc = "Bulgarian";
+$lang_desc = "Български";
 $languagePackFallback = 'en';

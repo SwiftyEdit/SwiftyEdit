@@ -5,5 +5,5 @@
  */
 
 $lang_sign = "tr";
-$lang_desc = "Turkish";
+$lang_desc = "Türkçe";
 $languagePackFallback = 'en';

@@ -84,21 +84,8 @@ $inputs['priority'] = se_print_form_input([
     "type" => "text"
 ]);
 
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
-
-$inputs['language'] = se_print_form_input([
-    "input_name" => "snippet_lang",
-    "input_value" => ($snippet['snippet_lang'] ?? '') ?: $languagePack,
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('snippet_lang', (string) (($snippet['snippet_lang'] ?? '') ?: $languagePack));
 
 /* image widget */
 $images = [];

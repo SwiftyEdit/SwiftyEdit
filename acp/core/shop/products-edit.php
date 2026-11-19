@@ -122,7 +122,8 @@ $product_lang = $product_data['product_lang'] ?? '';
 if($product_lang == '' && $default_lang_code != '') {
     $product_lang = $default_lang_code;
 }
-$lang_options = $build_options(array_combine($lang_codes, $lang_codes), $product_lang);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$language_select = se_print_language_select('product_lang', $product_lang, 'mb-0');
 
 /* categories */
 $categories = se_get_category_checklist(explode("<->", $product_data['categories'] ?? ''));
@@ -553,7 +554,7 @@ echo $twig->render('shop/product-form.twig', [
     'canonical_docs_link' => se_print_docs_link("05-00-shop.md", null, "canonical-url"),
     'addon_module_forms' => se_render_record_addons('product', $record_data),
     'main_catalog_options' => $main_catalog_options,
-    'lang_options' => $lang_options,
+    'language_select' => $language_select,
     'status_options' => $status_options,
     'comments_options' => $comments_options,
     'votings_options' => $votings_options,

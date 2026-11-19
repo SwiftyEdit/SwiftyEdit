@@ -631,10 +631,7 @@
                 </div>
 
                 <div class="mb-2 pb-3 border-bottom">
-                    <div class="input-group">
-                        <label class="input-group-text" for="product_lang">{{ lang.label_language }}</label>
-                        {{ form.select('product_lang', lang_options, 'product_lang', 'custom-select form-control') }}
-                    </div>
+                    {{ language_select|raw }}
                 </div>
 
                 <div class="mb-2 pb-3 border-bottom">

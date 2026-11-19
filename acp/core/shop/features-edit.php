@@ -52,21 +52,8 @@ $inputs = [
     ])
 ];
 
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
-
-$inputs['language'] = se_print_form_input([
-    "input_name" => "feature_lang",
-    "input_value" => $feature['snippet_lang'] ?? '',
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('feature_lang', (string) ($feature['snippet_lang'] ?? ''));
 
 // header card above the form (components/edit-header.twig)
 $header = [

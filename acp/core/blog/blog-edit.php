@@ -109,21 +109,8 @@ $inputs['text'] = se_print_form_input([
 ]);
 
 // select language
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
-
-$inputs['language'] = se_print_form_input([
-    "input_name" => "post_lang",
-    "input_value" => $post_data['post_lang'] ?? $languagePack,
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('post_lang', (string) ($post_data['post_lang'] ?? $languagePack));
 
 $inputs['status'] = se_print_form_input([
     "input_name" => "post_status",

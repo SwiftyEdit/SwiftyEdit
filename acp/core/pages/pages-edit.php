@@ -442,19 +442,8 @@ $inputs['status'] = se_print_form_input([
     "type" => "select"
 ]);
 
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(in_array($langs['lang_folder'], $lang_codes)) {
-        $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-    }
-}
-$inputs['language'] = se_print_form_input([
-    "input_name" => "page_language",
-    "input_value" => $page_language,
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('page_language', (string) ($page_language));
 
 // themes and their layout*.tpl files, the value is "theme<|-|>layout"
 $templates = [];
