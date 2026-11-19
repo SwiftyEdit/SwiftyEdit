@@ -151,7 +151,7 @@ function se_build_sibling_picker(array $siblings, ?int $selected_after_page_id):
      * so no JavaScript is needed to move it - see _pages.scss
      */
     $marker = '<div class="sibling-marker" aria-hidden="true"><span class="sibling-marker-line"></span>'
-        . htmlspecialchars($lang['label_pages_insert_marker'] ?? 'Inserted here', ENT_QUOTES)
+        . htmlspecialchars($lang['label_pages_insert_marker'] ?? 'Will be inserted here', ENT_QUOTES)
         . '</div>';
 
     $html = '<div class="sibling-picker">';
