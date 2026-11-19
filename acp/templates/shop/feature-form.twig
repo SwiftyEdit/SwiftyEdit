@@ -3,16 +3,16 @@
  # inputs: fields built by se_print_form_input()
  # feature_id: id of the edited feature, null for a new feature
  #}
-<div class="subHeader d-flex align-items-center">
-    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
-    <a href="/admin/shop/features/new/" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
-</div>
+{% include 'components/edit-header.twig' with {
+    back_url: '/admin/shop/features/',
+    title: feature_id ? header.title : lang.btn_new,
+    badges: feature_id and header.language ? [header.language|upper] : []
+} only %}
 
 <div id="formResponse"></div>
 
 <form>
     <div class="card">
-        <div class="card-header">{{ feature_id ? lang.edit : lang.new }}</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-8">{{ inputs.title|raw }}</div>

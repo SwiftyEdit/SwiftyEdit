@@ -70,7 +70,14 @@ $inputs['language'] = se_print_form_input([
 
 $values = json_decode((string) ($option['snippet_content'] ?? ''), true);
 
+// header card above the form (components/edit-header.twig)
+$header = [
+    'title' => html_entity_decode((string) ($option['snippet_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+    'language' => (string) ($option['snippet_lang'] ?? '')
+];
+
 echo $twig->render('shop/option-form.twig', [
+    'header' => $header,
     'option_id' => isset($option['snippet_id']) ? (int) $option['snippet_id'] : null,
     'writer_uri' => '/admin-xhr/shop/write/',
     'inputs' => $inputs,

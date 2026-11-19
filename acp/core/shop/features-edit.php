@@ -68,7 +68,14 @@ $inputs['language'] = se_print_form_input([
     "type" => "select"
 ]);
 
+// header card above the form (components/edit-header.twig)
+$header = [
+    'title' => html_entity_decode((string) ($feature['snippet_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+    'language' => (string) ($feature['snippet_lang'] ?? '')
+];
+
 echo $twig->render('shop/feature-form.twig', [
+    'header' => $header,
     'feature_id' => isset($feature['snippet_id']) ? (int) $feature['snippet_id'] : null,
     'writer_uri' => '/admin-xhr/shop/write/',
     'inputs' => $inputs

@@ -121,6 +121,11 @@ if($form == 'group') {
     }
 
     echo $twig->render('shop/filter-group-form.twig', [
+        // header card above the form (components/edit-header.twig)
+        'header' => [
+            'title' => html_entity_decode((string) ($filter_data['filter_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'language' => (string) ($filter_data['filter_lang'] ?? '')
+        ],
         'group_id' => isset($filter_data['filter_id']) ? (int) $filter_data['filter_id'] : null,
         'writer_uri' => $writer_uri,
         'inputs' => $inputs,
@@ -136,8 +141,12 @@ if($form == 'value') {
 
     // select for the group
     $group_options = [];
+    $parent_title = '';
     foreach(se_get_product_filter_groups('all') as $group) {
         $group_options['#'.$group['filter_id'].' | '.$group['filter_title']] = $group['filter_id'];
+        if($group['filter_id'] == $parent_id) {
+            $parent_title = html_entity_decode((string) $group['filter_title'], ENT_QUOTES, 'UTF-8');
+        }
     }
 
     $inputs['group'] = se_print_form_input([
@@ -155,6 +164,11 @@ if($form == 'value') {
     }
 
     echo $twig->render('shop/filter-value-form.twig', [
+        // header card above the form (components/edit-header.twig), the group as badge
+        'header' => [
+            'title' => html_entity_decode((string) ($filter_data['filter_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'group' => $parent_title
+        ],
         'value_id' => isset($filter_data['filter_id']) ? (int) $filter_data['filter_id'] : null,
         'writer_uri' => $writer_uri,
         'inputs' => $inputs,
