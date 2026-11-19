@@ -128,6 +128,10 @@ $cols = array(
     "product_accessories" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_addons_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_addons" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    /* products this one needs to be operated/used (e.g. charger, battery) -
+       shown on the product page and as a hint in the cart while missing */
+    "product_requires_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
+    "product_requires" => "VARCHAR(255) NOT NULL DEFAULT ''",
     /* 1 = product can only be booked as an addon, not on its own; 2 = normal */
     "product_addon_only" => "INTEGER(1) NOT NULL DEFAULT 2",
     /* plugin addon fields, see acp/core/functions_addons.php:se_render_record_addons() */

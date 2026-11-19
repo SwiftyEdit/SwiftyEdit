@@ -27,6 +27,7 @@ $checkout_error = '';
 $tax_grouped = [];
 $tax_sum = [];
 $cart_item = [];
+$cart_products = []; // product rows of the cart lines, for the required-products check
 $max_order_value_msg = '';
 $cart_error_delivery_zone = '';
 $checkout_error_msg = '';
@@ -34,6 +35,11 @@ $checkout_error_msg = '';
 if(isset($_POST['remove_from_cart'])) {
 	$id = (int) $_POST['remove_from_cart'];
 	se_remove_from_cart($id);
+}
+
+// one-click button of the required-products hint for add-ons (see shopping_cart_table.tpl)
+if(isset($_POST['add_required_addon'], $_POST['cart_parent_id'])) {
+    se_add_required_addon_to_cart((int) $_POST['cart_parent_id'], (int) $_POST['add_required_addon']);
 }
 
 if(isset($_POST['cart_product_amount'])) {
@@ -139,6 +145,7 @@ if($se_settings['user_unlock_by_admin'] == 'yes' AND $get_cd['user_verified_by_a
 for($i=0;$i<$cnt_cart_items;$i++) {
 	
 	$this_item = se_get_product_data($get_cart_items[$i]['cart_product_id']);
+    $cart_products[$i] = $this_item;
 
 	$cart_item[$i]['nbr'] = $i+1;
     $cart_item[$i]['uuid'] = $this_item['uuid'];
@@ -204,6 +211,20 @@ for($i=0;$i<$cnt_cart_items;$i++) {
     // to calculate taxes on delivery costs
     $tax_grouped[$tax] = round(($tax_grouped[$tax] ?? 0)+$item_prices['net_raw'],2);
 
+}
+
+/* required products (product_requires) that are not in the cart yet - only
+   a hint, the order is not blocked: the customer may already own them */
+$cart_families = [];
+foreach ($cart_products as $cart_product) {
+    if (is_array($cart_product)) {
+        $cart_families[] = se_get_product_family_id($cart_product);
+    }
+}
+foreach ($cart_products as $i => $cart_product) {
+    $cart_item[$i]['requires_missing'] = is_array($cart_product)
+        ? se_get_product_requirements($cart_product, $cart_families)
+        : [];
 }
 
 $smarty->assign('cart_items', $cart_item);

@@ -1178,6 +1178,175 @@ function se_get_product_price_tag(array $product): array {
     ];
 }
 
+/**
+ * the "family" of a product: a variant belongs to its main product, the main
+ * product to itself. Used to treat every variant of a required product as a
+ * match (see se_get_product_requirements()).
+ *
+ * @param array $product a product row (needs id, type, parent_id)
+ * @return int
+ */
+function se_get_product_family_id(array $product): int {
+    if (($product['type'] ?? '') === 'v' && (int) ($product['parent_id'] ?? 0) > 0) {
+        return (int) $product['parent_id'];
+    }
+    return (int) ($product['id'] ?? 0);
+}
+
+/**
+ * ids of the required products (product_requires) that are booked as an
+ * add-on of the given product instead of as an own cart line: add-on-only
+ * products (they can't be ordered on their own) and products that are also
+ * assigned as add-ons of this product. On the product page they are shown in
+ * the add-on list, in the cart they are attached to the line that needs them.
+ *
+ * @param array $product a product row (needs product_requires, product_addons)
+ * @return int[]
+ */
+function se_get_required_addon_ids(array $product): array {
+
+    $required_ids = json_decode((string) ($product['product_requires'] ?? ''), true);
+    if (!is_array($required_ids)) {
+        return [];
+    }
+
+    $addon_ids = json_decode((string) ($product['product_addons'] ?? ''), true);
+    $addon_ids = is_array($addon_ids) ? array_map('intval', array_values($addon_ids)) : [];
+
+    $ids = [];
+    foreach ($required_ids as $id) {
+        $id = (int) $id;
+        if ($id < 1 || in_array($id, $ids, true)) {
+            continue;
+        }
+        if (in_array($id, $addon_ids, true)) {
+            $ids[] = $id;
+            continue;
+        }
+        $required = se_get_product_data($id);
+        if (!empty($required) && ($required['product_addon_only'] ?? '2') == 1) {
+            $ids[] = $id;
+        }
+    }
+
+    return $ids;
+}
+
+/**
+ * products the given product needs to be operated or used (product_requires,
+ * "Required products" in the cross-selling tab of the product editor),
+ * prepared for the product page and the cart hint.
+ *
+ * Only products the visitor may see are returned (se_get_product_data()).
+ * Requirements are matched by family: a required main product is also
+ * covered by any of its variants and vice versa, so a customer who picked
+ * the 4 Ah battery isn't asked for the 2 Ah one.
+ *
+ * can_add tells the theme whether the product can be put into the cart with
+ * a single button (no options, no variant choice, in stock, cart enabled for
+ * this visitor) - otherwise it should only link to the product.
+ * as_addon marks products that are booked as an add-on of the given product
+ * (see se_get_required_addon_ids()) - the product page lists them in the
+ * add-on list, the cart attaches them to the line that needs them.
+ *
+ * @param array $product a product row (needs product_requires, product_addons, id, type, parent_id)
+ * @param int[] $skip_families family ids to leave out - the cart passes the
+ *                             families that are already in the cart
+ * @return list<array{id: int, title: string, teaser: string, image: string, product_href: string, product_number: string, product_currency: string, product_unit: string, product_amount: string, price_tag: string, price_tag_label_from: string, can_add: bool, as_addon: bool}>
+ */
+function se_get_product_requirements(array $product, array $skip_families = []): array {
+
+    global $se_settings, $swifty_slug;
+
+    $ids = json_decode((string) ($product['product_requires'] ?? ''), true);
+    if (!is_array($ids)) {
+        return [];
+    }
+
+    // cart buttons are only shown if the shop has a cart for this visitor
+    $cart_enabled = ($se_settings['posts_products_cart'] == 2 || $se_settings['posts_products_cart'] == 3);
+    if ($se_settings['posts_products_cart'] == 2 && ($_SESSION['user_nick'] ?? '') == '') {
+        $cart_enabled = false;
+    }
+
+    $own_family = se_get_product_family_id($product);
+    $required_addon_ids = se_get_required_addon_ids($product);
+    $items = [];
+    $seen = [];
+
+    foreach ($ids as $id) {
+        $id = (int) $id;
+        if ($id < 1 || isset($seen[$id])) {
+            continue;
+        }
+        $seen[$id] = true;
+
+        $required = se_get_product_data($id);
+        if (empty($required)) {
+            continue;
+        }
+
+        $family = se_get_product_family_id($required);
+        if ($family === $own_family || in_array($family, $skip_families, true)) {
+            continue;
+        }
+
+        $images = explode("<->", (string) $required['images']);
+        $image = '';
+        if (($images[1] ?? '') != '') {
+            $image = str_replace('../images/', '/images/', $images[1]);
+        }
+
+        if (!empty($required['main_catalog_slug']) && $required['main_catalog_slug'] !== 'default') {
+            $href = SE_INCLUDE_PATH . "/" . $required['main_catalog_slug'] . $required['slug'];
+        } else {
+            $href = SE_INCLUDE_PATH . "/" . $swifty_slug . $required['slug'];
+        }
+
+        // one-click add only works without any choice left to the customer
+        $can_add = $cart_enabled;
+        if (($required['product_cart_mode'] ?? '') == 2) {
+            $can_add = false;
+        }
+        $as_addon = in_array($id, $required_addon_ids, true);
+        if (!$as_addon && ($required['product_addon_only'] ?? '2') == 1) {
+            $can_add = false;
+        }
+        // add-ons are booked without a stock check on the product page as well
+        if (!$as_addon && ($required['product_stock_mode'] ?? '') == 2 && (int) ($required['product_nbr_stock'] ?? 0) < 1) {
+            $can_add = false;
+        }
+        $options = json_decode((string) ($required['product_options'] ?? ''), true);
+        if (is_array($options) && !empty($options)) {
+            $can_add = false;
+        }
+        if ($can_add && ($required['type'] ?? '') !== 'v' && count(se_get_product_variants($id)) > 1) {
+            // a main product with variants - the customer has to pick one
+            $can_add = false;
+        }
+
+        $price = se_get_product_price_tag($required);
+
+        $items[] = [
+            'id' => $id,
+            'title' => $required['title'],
+            'teaser' => se_return_words_str(html_entity_decode((string) $required['teaser']), 10),
+            'image' => $image,
+            'product_href' => $href,
+            'product_number' => (string) $required['product_number'],
+            'product_currency' => (string) $required['product_currency'],
+            'product_unit' => (string) $required['product_unit'],
+            'product_amount' => (string) $required['product_amount'],
+            'price_tag' => $price['price_tag'],
+            'price_tag_label_from' => $price['price_tag_label_from'],
+            'can_add' => $can_add,
+            'as_addon' => $as_addon
+        ];
+    }
+
+    return $items;
+}
+
 
 /**
  * increase the downloads counter
@@ -1362,24 +1531,18 @@ function se_add_to_cart() {
 	$insert_id = $db_content->id();
 
     /* booked addons: each becomes its own cart line linked to the parent.
-       only addon ids that are actually assigned to the parent product are allowed. */
+       only addon ids that are actually assigned to the parent product are allowed,
+       plus required products that are booked as an add-on (se_get_required_addon_ids()) */
     if(isset($_POST['product_addons']) && is_array($_POST['product_addons'])) {
 
         $allowed_addons = array_values((array) json_decode($this_item['product_addons'] ?? '', true));
-        $booked_addons = array_intersect($_POST['product_addons'], $allowed_addons);
+        $allowed_addons = array_merge($allowed_addons, se_get_required_addon_ids($this_item));
+        $booked_addons = array_unique(array_intersect($_POST['product_addons'], $allowed_addons));
 
         foreach($booked_addons as $addon_id) {
 
             $addon_item = se_get_product_data((int) $addon_id);
             if(empty($addon_item)) { continue; }
-
-            if($addon_item['product_tax'] == '1') {
-                $addon_tax = $se_settings['posts_products_default_tax'];
-            } else if($addon_item['product_tax'] == '2') {
-                $addon_tax = $se_settings['posts_products_tax_alt1'];
-            } else {
-                $addon_tax = $se_settings['posts_products_tax_alt2'];
-            }
 
             // options chosen for this addon (e.g. size/color), same format as the main product's
             $addon_option_string = se_build_cart_option_string($addon_item['product_options'] ?? '', $_POST['addon_options'][$addon_id] ?? null);
@@ -1387,27 +1550,107 @@ function se_add_to_cart() {
             // free-text comment for this addon's own product_options_comment_label field
             $addon_option_comment = clean_visitors_input($_POST['addon_options_comment'][$addon_id] ?? '');
 
-            $db_content->insert("se_carts", [
-                "cart_time" =>  $cart_time,
-                "cart_user_hash" =>  $cart_user_hash,
-                "cart_user_id" =>  $cart_user_id,
-                "cart_parent_id" =>  $insert_id,
-                "cart_product_id" =>  (int) $addon_id,
-                "cart_product_uuid" =>  $addon_item['uuid'],
-                "cart_product_slug" =>  $cart_product_slug,
-                "cart_product_amount" =>  $cart_product_amount,
-                "cart_product_price_net" =>  $addon_item['product_price_net'],
-                "cart_product_tax" =>  $addon_tax,
-                "cart_product_title" =>  $addon_item['title'],
-                "cart_product_options" =>  $addon_option_string,
-                "cart_product_options_comment" =>  $addon_option_comment,
-                "cart_product_number" =>  $addon_item['product_number'],
-                "cart_status" =>  $cart_status
-            ]);
+            se_insert_cart_addon_line((int) $insert_id, $addon_item, $cart_product_amount, $cart_product_slug, $addon_option_string, $addon_option_comment);
         }
     }
 
 	return $insert_id;
+}
+
+/**
+ * insert an add-on as its own cart line, linked to its parent line
+ * (cart_parent_id) - its amount follows the parent and it is removed together
+ * with it (see se_update_cart_item_amount(), se_remove_from_cart())
+ *
+ * @param int $parent_cart_id cart_id of the parent line
+ * @param array $addon_item product row of the add-on
+ * @param int $amount amount of the parent line
+ * @param string $slug product url of the parent line
+ * @param string $option_string validated options (se_build_cart_option_string())
+ * @param string $option_comment cleaned free-text comment
+ * @return void
+ */
+function se_insert_cart_addon_line(int $parent_cart_id, array $addon_item, int $amount, string $slug, string $option_string = '', string $option_comment = ''): void {
+
+    global $db_content, $se_settings;
+
+    if(is_numeric($_SESSION['user_id'])) {
+        $cart_user_id = $_SESSION['user_id'];
+        $cart_user_hash = '';
+    } else {
+        $cart_user_id = '';
+        $cart_user_hash = $_SESSION['token'];
+    }
+
+    if($addon_item['product_tax'] == '1') {
+        $addon_tax = $se_settings['posts_products_default_tax'];
+    } else if($addon_item['product_tax'] == '2') {
+        $addon_tax = $se_settings['posts_products_tax_alt1'];
+    } else {
+        $addon_tax = $se_settings['posts_products_tax_alt2'];
+    }
+
+    $db_content->insert("se_carts", [
+        "cart_time" =>  time(),
+        "cart_user_hash" =>  $cart_user_hash,
+        "cart_user_id" =>  $cart_user_id,
+        "cart_parent_id" =>  $parent_cart_id,
+        "cart_product_id" =>  (int) $addon_item['id'],
+        "cart_product_uuid" =>  $addon_item['uuid'],
+        "cart_product_slug" =>  $slug,
+        "cart_product_amount" =>  $amount,
+        "cart_product_price_net" =>  $addon_item['product_price_net'],
+        "cart_product_tax" =>  $addon_tax,
+        "cart_product_title" =>  $addon_item['title'],
+        "cart_product_options" =>  $option_string,
+        "cart_product_options_comment" =>  $option_comment,
+        "cart_product_number" =>  $addon_item['product_number'],
+        "cart_status" =>  'progress'
+    ]);
+}
+
+/**
+ * attach a required add-on (see se_get_required_addon_ids()) to a line that
+ * is already in the visitor's cart - the one-click button of the cart hint
+ *
+ * Only for add-ons without options: those need a choice and are booked on
+ * the product page instead.
+ *
+ * @param int $parent_cart_id cart_id of the line that needs the add-on
+ * @param int $addon_id product id of the add-on
+ * @return bool false if the line isn't in this visitor's cart or the add-on isn't a required add-on of it
+ */
+function se_add_required_addon_to_cart(int $parent_cart_id, int $addon_id): bool {
+
+    // ownership: the parent line must be a top-level line of this visitor's cart
+    $parent_line = null;
+    foreach(se_return_my_cart() as $line) {
+        if((int) $line['cart_id'] === $parent_cart_id && (int) $line['cart_parent_id'] === 0) {
+            $parent_line = $line;
+            break;
+        }
+    }
+    if($parent_line === null) {
+        return false;
+    }
+
+    $parent_item = se_get_product_data((int) $parent_line['cart_product_id']);
+    if(empty($parent_item) || !in_array($addon_id, se_get_required_addon_ids($parent_item), true)) {
+        return false;
+    }
+
+    $addon_item = se_get_product_data($addon_id);
+    if(empty($addon_item)) {
+        return false;
+    }
+
+    $options = json_decode((string) ($addon_item['product_options'] ?? ''), true);
+    if(is_array($options) && !empty($options)) {
+        return false;
+    }
+
+    se_insert_cart_addon_line($parent_cart_id, $addon_item, (int) $parent_line['cart_product_amount'], (string) $parent_line['cart_product_slug']);
+    return true;
 }
 
 

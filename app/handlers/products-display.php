@@ -343,7 +343,18 @@ if(is_array($product_options)) {
 
 /* product addons (bookable options with their own price) */
 $product_addons = json_decode($product_data['product_addons'] ?? '',true);
-if(is_array($product_addons)) {
+$product_addons = is_array($product_addons) ? array_map('intval', array_values($product_addons)) : [];
+
+// required products that are booked as an add-on (see se_get_required_addon_ids())
+// are listed here as well - marked as required, never pre-checked
+$required_addon_ids = se_get_required_addon_ids($product_data);
+foreach($required_addon_ids as $required_addon_id) {
+    if(!in_array($required_addon_id, $product_addons, true)) {
+        $product_addons[] = $required_addon_id;
+    }
+}
+
+if(!empty($product_addons)) {
     $select_addons = array();
     foreach($product_addons as $addon_id) {
 
@@ -424,7 +435,8 @@ if(is_array($product_addons)) {
             "unit" => $addon_unit,
             "amount" => $addon_amount,
             "options" => $addon_select_options,
-            "options_comment_label" => $addon_data['product_options_comment_label']
+            "options_comment_label" => $addon_data['product_options_comment_label'],
+            "required" => in_array((int) $addon_id, $required_addon_ids, true)
         ];
     }
     if(!empty($select_addons)) {
@@ -636,6 +648,22 @@ if($product_data['product_accessories'] != '') {
         }
     }
     $smarty->assign('show_accessories', $ap);
+}
+
+/* products needed to operate/use this product (also checked in the cart, see checkout.php) */
+// required add-ons are already part of the add-on list above
+$show_requires = array_values(array_filter(
+    se_get_product_requirements($product_data),
+    static fn($req) => !$req['as_addon']
+));
+if (!empty($show_requires)) {
+    $smarty->assign('show_requires', $show_requires);
+    $smarty->assign(
+        'label_products_requires',
+        !empty($product_data['product_requires_label'])
+            ? $product_data['product_requires_label']
+            : $lang['label_products_requires']
+    );
 }
 
 

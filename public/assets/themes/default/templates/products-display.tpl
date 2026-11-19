@@ -114,6 +114,9 @@
                                         <input class="form-check-input flex-shrink-0 fs-4" type="checkbox" name="product_addons[]" value="{$addon.id}" id="addon_{$addon.id}">
                                         <span class="pt-1 flex-grow-1 form-checked-content">
                                         <strong>{$addon.title}</strong>
+                                        {if $addon.required}
+                                            <span class="badge text-bg-warning ms-1"><i class="bi bi-exclamation-triangle"></i> {$lang_label_products_requires}</span>
+                                        {/if}
                                         <span class="d-block text-muted">(+ {$product_currency} {$addon.price} <span class="product-amount">{$addon.amount}</span> <span class="product-unit">{$addon.unit}</span>)</span>
                                         {if is_array($addon.options)}
                                             <!-- addon's own options (e.g. size/color) -->
@@ -189,6 +192,36 @@
                 <div class="mt-3">{$smarty.capture.wishlist_btn}</div>
             {/if}
             <!-- pricetag end -->
+
+            {if is_array($show_requires)}
+                <!-- products needed to operate/use this product -->
+                <div class="card border-warning mt-3 product-requires">
+                    <div class="card-header"><i class="bi bi-exclamation-triangle"></i> {$label_products_requires}</div>
+                    <div class="list-group list-group-flush">
+                        {foreach $show_requires as $req}
+                            <div class="list-group-item d-flex align-items-center gap-3">
+                                {if $req.image != ""}
+                                    <img src="{$req.image}" alt="{$req.title}" width="45" height="45" class="rounded object-fit-cover flex-shrink-0">
+                                {/if}
+                                <div class="flex-grow-1">
+                                    <a href="{$req.product_href}">{$req.title}</a>
+                                    <span class="d-block small text-muted">{$req.price_tag_label_from} {$req.product_currency} {$req.price_tag} <span class="product-amount">{$req.product_amount}</span> <span class="product-unit">{$req.product_unit}</span></span>
+                                </div>
+                                {if $req.can_add}
+                                    <form action="{$form_action}" method="POST" class="flex-shrink-0" id="requires-form-{$req.id}"
+                                          hx-post="/xhr/se/products/"
+                                          hx-target="#requires-form-{$req.id}"
+                                          hx-swap="outerHTML">
+                                        <button class="btn btn-sm btn-outline-success" name="add_to_cart" value="{$req.id}"><i class="bi bi-cart-plus"></i> <span class="visually-hidden">{$btn_add_to_cart}</span></button>
+                                        <input type="hidden" name="product_href" value="{$req.product_href}">
+                                        {$hidden_csrf_token}
+                                    </form>
+                                {/if}
+                            </div>
+                        {/foreach}
+                    </div>
+                </div>
+            {/if}
 
         </div>
     </div>

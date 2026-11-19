@@ -538,6 +538,7 @@ echo $twig->render('shop/product-form.twig', [
     'accessories' => $dropper_items($product_data['product_accessories'] ?? null),
     'related' => $dropper_items($product_data['product_related'] ?? null),
     'addons' => $dropper_items($product_data['product_addons'] ?? null),
+    'requires' => $dropper_items($product_data['product_requires'] ?? null),
     'volume_discounts' => $volume_discounts,
     'translation_urls' => $translation_urls,
     'content_tags' => $decode(se_tags_csv_for_content('product', (int) ($product_data['id'] ?? 0))),

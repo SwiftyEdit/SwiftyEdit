@@ -412,7 +412,7 @@
                                                     <div id="fake" class="sortable_source"><div></div></div>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <div class="row row-cols-3">
+                                                    <div class="row row-cols-2">
                                                         <div class="col">
                                                             <h6>{{ lang.nav_btn_accessories }}</h6>
                                                             <input type="text" name="product_accessories_label" value="{{ product.product_accessories_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
@@ -427,6 +427,12 @@
                                                             <h6>Addons</h6>
                                                             <input type="text" name="product_addons_label" value="{{ product.product_addons_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
                                                             {{ m.product_dropper('prodDropper_addons', 3, addons) }}
+                                                        </div>
+                                                        <div class="col">
+                                                            <h6>{{ lang.nav_btn_requires }}</h6>
+                                                            <input type="text" name="product_requires_label" value="{{ product.product_requires_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
+                                                            {{ m.product_dropper('prodDropper_requires', 4, requires) }}
+                                                            <div class="form-text">{{ lang.nav_btn_requires_help }}</div>
                                                         </div>
                                                     </div>
                                                 </div>

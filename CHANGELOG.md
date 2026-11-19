@@ -43,6 +43,27 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   cart and checkout show the same amounts. New functions
   `se_get_cart_item_price()` and `se_calc_cart_line_price()`. The product list
   shows the right net/gross label again
+- The product list calculates its prices (including the "from" price of
+  variants) with `se_get_product_price_tag()`, like search and wishlist.
+  The function now also returns `price_tag_net`, `price_tag_gross` and
+  `price_tag_tax`
+- Search: the arrow keys move between the search field and the results,
+  Escape goes back to the field. The dropdown on the search page closes on a
+  click outside of it. A query that is too short shows a message on the
+  search page (`$search_msg`, custom themes can print it in
+  `searchresults.tpl`)
+- Shop: new field "Required products" (tab Cross-selling) for products that
+  are needed to operate or use a product, e.g. a charger or a battery. They
+  are shown on the product page (optional custom heading) and as a hint in
+  the cart while they are missing, with a button to add them. The hint never
+  blocks the order. Any variant of a required product counts. Add-on-only
+  products can be required too: they appear in the add-on list on the
+  product page (marked, not pre-selected) and are attached as an add-on of
+  the item in the cart. New columns `product_requires` and
+  `product_requires_label`, new functions `se_get_product_requirements()`,
+  `se_get_required_addon_ids()` and `se_add_required_addon_to_cart()`.
+  Custom themes can show the hint via `$show_requires` (product page) and
+  `$item.requires_missing` (`shopping_cart_table.tpl`)
 - Page editor: tabs reordered and renamed (Content, Navigation, URL, SEO,
   Plugins, Theme, Modules), the Info tab is gone. The Navigation tab shows the
   page role as cards and the parent page next to the "insert after" list, the

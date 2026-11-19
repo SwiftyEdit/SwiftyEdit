@@ -19,6 +19,38 @@
                     </div>
                 {/if}
 
+                {if is_array($item.requires_missing) && $item.requires_missing|count > 0}
+                    <!-- products this item needs to work, not in the cart yet (hint only) -->
+                    <div class="sc-item-requires alert alert-warning small p-2 my-2">
+                        <p class="mb-1"><i class="bi bi-exclamation-triangle"></i> {$lang_msg_cart_requires_missing}</p>
+                        {foreach $item.requires_missing as $req}
+                            <div class="d-flex align-items-center gap-2 py-1">
+                                <a href="{$req.product_href}" class="flex-grow-1">{$req.title}</a>
+                                <span class="text-nowrap">{$req.price_tag_label_from} {$req.product_currency} {$req.price_tag}</span>
+                                {if $req.can_add && $req.as_addon && $item.parent_id == 0}
+                                    {* booked as an add-on of this line *}
+                                    <form action="{$shopping_cart_uri}" method="POST">
+                                        <button class="btn btn-sm btn-success" name="add_required_addon" value="{$req.id}"><i class="bi bi-cart-plus"></i> {$lang_btn_add_to_cart}</button>
+                                        <input type="hidden" name="cart_parent_id" value="{$item.cart_id}">
+                                        {$hidden_csrf_token}
+                                    </form>
+                                {elseif $req.can_add && !$req.as_addon}
+                                    <form action="{$shopping_cart_uri}" method="POST">
+                                        <button class="btn btn-sm btn-success" name="add_to_cart" value="{$req.id}"><i class="bi bi-cart-plus"></i> {$lang_btn_add_to_cart}</button>
+                                        <input type="hidden" name="product_href" value="{$req.product_href}">
+                                        {$hidden_csrf_token}
+                                    </form>
+                                {elseif $req.as_addon}
+                                    {* add-on with options - chosen on the page of the product that needs it *}
+                                    <a href="{$item.slug}" class="btn btn-sm btn-outline-secondary">{$lang_btn_open_product}</a>
+                                {else}
+                                    <a href="{$req.product_href}" class="btn btn-sm btn-outline-secondary">{$lang_btn_open_product}</a>
+                                {/if}
+                            </div>
+                        {/foreach}
+                    </div>
+                {/if}
+
                 <div class="row">
                     <div class="col-6">
                         <p class="h6">{$lang_price_single}</p>

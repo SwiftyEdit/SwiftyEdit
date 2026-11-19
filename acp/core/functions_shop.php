@@ -95,6 +95,10 @@ function se_prepareProductData($data, $id = null) {
         if(isset($data['picker_3'])) {
             $product_addons = json_encode($data['picker_3'], JSON_FORCE_OBJECT);
         }
+        $product_requires = '';
+        if(isset($data['picker_4'])) {
+            $product_requires = json_encode($data['picker_4'], JSON_FORCE_OBJECT);
+        }
 
         $product_options = json_encode($data['option_keys'],JSON_FORCE_OBJECT);
         $filter = json_encode($data['product_filter'],JSON_FORCE_OBJECT);
