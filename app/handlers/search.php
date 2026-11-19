@@ -179,6 +179,8 @@ if($s != '' && $start_search == "true") {
 }
 
 $smarty->assign('search_string', $s, true);
+// feedback for a query below the minimum length, empty otherwise
+$smarty->assign('search_msg', $search_msg ?? '', true);
 $search_tpl = $smarty->fetch("search.tpl");
 $output = $smarty->fetch("searchresults.tpl");
 $smarty->assign('page_content', "$search_tpl $output", true);

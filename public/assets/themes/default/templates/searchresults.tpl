@@ -1,4 +1,6 @@
-{if $no_results_at_all}
+{if $search_msg != ''}
+<div class="alert alert-info">{$search_msg}</div>
+{elseif $no_results_at_all}
 <div class="alert alert-info">{$msg_no_search_results}</div>
 {else}
 <div class="row">

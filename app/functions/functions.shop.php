@@ -1108,8 +1108,8 @@ function se_get_product_lowest_price(int $id) {
 
 /**
  * compute the display price tag for a product row - the "cheapest price
- * wins" logic used by the shop listing (app/handlers/products-list.php,
- * ~lines 596-648): resolve tax/net price from a price group if the product
+ * wins" logic used by the shop listing (app/handlers/products-list.php),
+ * the search and the wishlist: resolve tax/net price from a price group if the product
  * has one, then check for a lower variant/volume-discount price via
  * se_get_product_lowest_price() and show it with a "from" label if it
  * undercuts the base price. Formats gross/net/both per posts_price_mode,
@@ -1124,7 +1124,9 @@ function se_get_product_lowest_price(int $id) {
  *                        se_get_product_data(), or similar - needs at least
  *                        id, product_tax, product_price_net,
  *                        product_price_group)
- * @return array ['price_tag' => string, 'price_tag_label_from' => string]
+ * @return array{price_tag: string, price_tag_label_from: string, price_tag_net: string, price_tag_gross: string, price_tag_tax: mixed}
+ *         price_tag_net/_gross/_tax are the formatted prices and the tax rate
+ *         behind price_tag (the shop listing passes them on to the theme)
  */
 function se_get_product_price_tag(array $product): array {
 
@@ -1169,7 +1171,10 @@ function se_get_product_price_tag(array $product): array {
 
     return [
         'price_tag' => $price_tag,
-        'price_tag_label_from' => $price_tag_label_from
+        'price_tag_label_from' => $price_tag_label_from,
+        'price_tag_net' => $post_prices['net'],
+        'price_tag_gross' => $post_prices['gross'],
+        'price_tag_tax' => $tax
     ];
 }
 

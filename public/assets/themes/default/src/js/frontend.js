@@ -4,6 +4,7 @@ import '../scss/core.scss';
 
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js';
 import './lib/theme_switch.js';
+import './lib/search_suggestions.js';
 
 import GLightbox from 'glightbox';
 window.glightbox = GLightbox;
