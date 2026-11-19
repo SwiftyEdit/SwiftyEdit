@@ -14,11 +14,12 @@
 
 {# categories: list of {id, hash, name, description, flag, checked}, see se_get_category_checklist() #}
 {% macro categories(name, categories) %}
+    {# the whole row is the toggle - the checkbox stays for the form and the keyboard, but is hidden #}
     <div class="list-group">
         {% for category in categories %}
-            <label class="list-group-item d-flex gap-3">
-                <input class="form-check-input flex-shrink-0" type="checkbox" id="cat{{ category.id }}" name="{{ name }}" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
-                <span class="pt-1 form-checked-content">
+            <label class="list-group-item list-group-item-action category-pick">
+                <input class="visually-hidden" type="checkbox" id="cat{{ category.id }}" name="{{ name }}" value="{{ category.hash }}"{% if category.checked %} checked{% endif %}>
+                <span>
                     <strong>#{{ category.id }} {{ category.name }}</strong><small class="d-block opacity-75"><img src="{{ category.flag }}" width="16"> {{ category.description }}</small>
                 </span>
             </label>

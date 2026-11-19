@@ -120,9 +120,16 @@
                                                 <label class="form-label">{{ lang.label_url }}</label>
                                                 <input class="form-control" name="product_url" type="text" value="{{ product.product_url }}">
                                             </div>
-                                            <div class="mb-1">
-                                                <label class="form-label">{{ lang.label_product_manufacturer }} {{ lang.label_product_price }} {{ lang.label_product_net }}</label>
-                                                <input class="form-control" name="product_price_manufacturer" type="text" value="{{ product.product_price_manufacturer }}">
+                                            {# net/gross pair for the price calculation script, only the net price is stored #}
+                                            <div class="row g-2 mb-1">
+                                                <div class="col-6">
+                                                    <label class="form-label">{{ lang.label_product_price }} {{ lang.label_product_net }}</label>
+                                                    <input class="form-control prod_price_net" name="product_price_manufacturer" type="text" value="{{ product.product_price_manufacturer }}">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
+                                                    <input class="form-control prod_price_gross" type="text" value="">
+                                                </div>
                                             </div>
                                             <div class="mb-1">
                                                 <label class="form-label">{{ lang.label_product_supplier }}</label>
@@ -348,19 +355,31 @@
                         <div class="tab-pane fade" id="links">
                             <div class="card">
                                 <div class="card-header">
-                                    <ul class="nav nav-tabs card-header-tabs" id="content_Sections" role="tablist">
+                                    <ul class="nav nav-tabs card-header-tabs" id="links_Sections" role="tablist">
                                         <li class="nav-item">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#variants">{{ lang.nav_btn_variants }}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" data-bs-toggle="tab" href="#cross_selling">Cross-Selling</a>
                                         </li>
+                                        {# help for the active tab, toggled by the script below #}
+                                        <li class="nav-item ms-auto">
+                                            <span data-help-for="#variants">{{ variant_docs_link|raw }}</span>
+                                            <span data-help-for="#cross_selling" class="d-none">{{ cross_selling_docs_link|raw }}</span>
+                                        </li>
                                     </ul>
+                                    <script>
+                                        document.getElementById('links_Sections').addEventListener('shown.bs.tab', function (e) {
+                                            const target = e.target.getAttribute('href');
+                                            this.querySelectorAll('[data-help-for]').forEach(function (el) {
+                                                el.classList.toggle('d-none', el.dataset.helpFor !== target);
+                                            });
+                                        });
+                                    </script>
                                 </div>
                                 <div class="card-body">
                                     <div class="tab-content my-2">
                                         <div class="tab-pane fade show active" id="variants">
-                                            <span class="float-end">{{ variant_docs_link|raw }}</span>
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="form-group">
@@ -408,8 +427,11 @@
                                         <div class="tab-pane fade" id="cross_selling">
                                             <div class="row">
                                                 <div class="col-md-4">
+                                                    {# sticky, so the picker stays reachable when the drop zones get long #}
+                                                    <div class="sticky-top">
                                                     <div id="prodWidget" hx-post="/admin-xhr/widgets/read/?widget=product-select" hx-include="[name='csrf_token']" hx-trigger="load, update_product_widget from:body"></div>
                                                     <div id="fake" class="sortable_source"><div></div></div>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="row row-cols-2">
@@ -432,7 +454,6 @@
                                                             <h6>{{ lang.nav_btn_requires }}</h6>
                                                             <input type="text" name="product_requires_label" value="{{ product.product_requires_label }}" class="form-control form-control-sm mb-2" placeholder="Label">
                                                             {{ m.product_dropper('prodDropper_requires', 4, requires) }}
-                                                            <div class="form-text">{{ lang.nav_btn_requires_help }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -533,18 +554,23 @@
                             </div>
 
                             <h5 class="heading-line">{{ lang.label_translations }}</h5>
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between">
-                                    {{ lang.label_translations }} (URLs)
-                                    <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">{{ icon.plus|raw }}</button>
-                                </div>
-                                <div class="card-body collapse" id="collapseTranslationURL">
-                                    {% for code, url in translation_urls %}
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text"><i class="bi bi-translate me-1"></i> {{ code }}</span>
-                                            <input class="form-control" type="text" autocomplete="off" name="translation_url[{{ code }}]" id="set_canonical_url_{{ code }}" value="{{ url }}">
+                            {# same accordion as in the page editor, open right away when URLs are set #}
+                            {% set has_translation_urls = translation_urls|filter(url => url is not empty)|length > 0 %}
+                            <div class="accordion" id="accordionUrl">
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <button class="accordion-button{% if not has_translation_urls %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="{{ has_translation_urls ? 'true' : 'false' }}" aria-controls="collapseTranslationURL">{{ lang.label_translations }} (URLs)</button>
+                                    </div>
+                                    <div id="collapseTranslationURL" class="accordion-collapse collapse{% if has_translation_urls %} show{% endif %}">
+                                        <div class="accordion-body">
+                                            {% for code, url in translation_urls %}
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text"><i class="bi bi-translate me-1"></i> {{ code }}</span>
+                                                    <input class="form-control" type="text" autocomplete="off" name="translation_url[{{ code }}]" id="set_canonical_url_{{ code }}" value="{{ url }}">
+                                                </div>
+                                            {% endfor %}
                                         </div>
-                                    {% endfor %}
+                                    </div>
                                 </div>
                             </div>
 
@@ -560,25 +586,77 @@
                         </div> <!-- #seo -->
 
                         <div class="tab-pane fade" id="filter">
-                            <h3>Filter</h3>
-                            <button type="button" id="toggle-all" class="btn-toggle btn btn-sm btn-default">{{ lang.btn_all }}</button>
-                            {% for category in categories %}
-                                <button type="button" class="btn-toggle btn btn-sm btn-default" data-target="toggle-{{ category.hash }}">{{ category.name }}</button>
-                            {% endfor %}
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <h3 class="mb-0 me-auto">Filter</h3>
+                                <select id="filterCategorySelect" class="form-select form-select-sm w-auto" aria-label="{{ lang.label_categories }}">
+                                    <option value="product">{{ lang.label_filter_product_categories }}</option>
+                                    <option value="all">{{ lang.label_all_categories }}</option>
+                                    {% for category in filter_categories %}
+                                        <option value="{{ category.hash }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <p id="filterNoGroups" class="text-muted small d-none">{{ lang.msg_filter_none_for_product_categories }}</p>
                             {% for group in filter_groups %}
-                                {# groups are hidden until one of their categories is toggled #}
-                                <div class="toggle-item d-none{% for category in group.categories %} toggle-{{ category.hash }}{% endfor %} card mb-1">
-                                    <div class="card-header"><img src="{{ group.flag }}" width="15"> {{ group.title }} <div class="float-end">{% for category in group.categories %}<span class="badge badge-se text-opacity-50">{{ category.name }}</span>{% endfor %}</div></div>
-                                    <div class="card-body">
-                                        {% for item in group.items %}
-                                            <div class="form-check form-check-inline pe-3 border-end">
-                                                <input class="form-check-input" id="filter_{{ item.id }}" type="checkbox" name="product_filter[]" value="{{ item.id }}"{% if item.checked %} checked{% endif %}>
-                                                <label class="form-check-label" for="filter_{{ item.id }}">{{ item.title }}</label>
-                                            </div>
-                                        {% endfor %}
+                                <div class="filter-group card mb-1" data-categories="{{ group.category_hashes }}">
+                                    <div class="card-header py-1">
+                                        <img src="{{ group.flag }}" width="15"> {{ group.title }}
+                                        {% if group.nbr_checked > 0 %}<span class="badge text-bg-primary ms-1">{{ group.nbr_checked }}</span>{% endif %}
+                                        <div class="float-end">{% for category in group.categories %}<span class="badge badge-se text-opacity-50">{{ category.name }}</span>{% endfor %}</div>
+                                    </div>
+                                    <div class="card-body py-2">
+                                        <div class="label-chips">
+                                            {% for item in group.items %}
+                                                <input class="btn-check" id="filter_{{ item.id }}" type="checkbox" autocomplete="off" name="product_filter[]" value="{{ item.id }}"{% if item.checked %} checked{% endif %}>
+                                                <label class="label-chip" for="filter_{{ item.id }}" style="--label-color: var(--bs-primary)">{{ item.title }}</label>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             {% endfor %}
+                            <script>
+                                (function () {
+                                    // show the filter groups of the chosen category; "product" = the categories
+                                    // ticked in the sidebar. Groups without a category are always shown.
+                                    const select = document.getElementById('filterCategorySelect');
+                                    const groups = document.querySelectorAll('#filter .filter-group');
+                                    const noGroups = document.getElementById('filterNoGroups');
+
+                                    function update() {
+                                        const mode = select.value;
+                                        const productCats = Array.from(document.querySelectorAll('input[name="categories[]"]:checked'), el => el.value);
+                                        let visible = 0;
+                                        groups.forEach(function (group) {
+                                            const cats = group.dataset.categories.split(' ');
+                                            let show;
+                                            if (mode === 'all' || cats.includes('all')) {
+                                                show = true;
+                                            } else if (mode === 'product') {
+                                                show = cats.some(c => productCats.includes(c));
+                                            } else {
+                                                show = cats.includes(mode);
+                                            }
+                                            group.classList.toggle('d-none', !show);
+                                            visible += show ? 1 : 0;
+                                        });
+                                        noGroups.classList.toggle('d-none', visible > 0);
+                                    }
+
+                                    select.addEventListener('change', update);
+                                    // delegated - the category list in the sidebar comes later in the markup
+                                    document.addEventListener('change', function (e) {
+                                        if (e.target.name === 'categories[]' && select.value === 'product') {
+                                            update();
+                                        }
+                                    });
+                                    // first run once the sidebar categories exist
+                                    if (document.readyState === 'loading') {
+                                        document.addEventListener('DOMContentLoaded', update);
+                                    } else {
+                                        update();
+                                    }
+                                })();
+                            </script>
                         </div> <!-- #filter -->
 
                         <div class="tab-pane fade" id="addons">

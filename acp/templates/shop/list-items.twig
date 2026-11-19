@@ -48,6 +48,12 @@
                     <p class="mb-0"><small>{{ icon.link|raw }} <span class="text-success">{{ product.main_catalog_slug }}{{ product.slug }}</span></small></p>
                     {% if product.labels %}<p class="mb-0">{{ list.labels(product.labels) }}</p>{% endif %}
                     {% if product.categories %}<p class="mb-0">{{ list.categories(product.categories) }}</p>{% endif %}
+                    {% if product.variants %}
+                        {# toggles the variants row below #}
+                        <a class="btn btn-default btn-sm mt-1" data-bs-toggle="collapse" href="#collapseVariants{{ product.id }}" role="button" aria-expanded="false" aria-controls="collapseVariants{{ product.id }}">
+                            {{ lang.label_product_variants }} ({{ product.variants|length }}) <span class="toggle">{{ icon.caret_down|raw }}</span>
+                        </a>
+                    {% endif %}
                 </td>
                 <td style="width:150px;">
                     <div class="card p-2 text-nowrap">
@@ -61,14 +67,10 @@
             </tr>
             {% if product.variants %}
                 <tr{% if product.status_class %} class="{{ product.status_class }}"{% endif %}>
-                    <td colspan="6">
-                        <div class="text-center" style="margin-top:-25px;">
-                            <a class="btn btn-default btn-sm" data-bs-toggle="collapse" href="#collapseVariants{{ product.id }}" role="button" aria-expanded="false" aria-controls="collapseVariants{{ product.id }}">
-                                {{ lang.label_product_variants }} ({{ product.variants|length }}) <span class="toggle">{{ icon.caret_down|raw }}</span>
-                            </a>
-                        </div>
-                        <div class="collapse" id="collapseVariants{{ product.id }}">
-                            <table class="table table-sm mt-1">
+                    {# no padding, so the row takes no space while the variants are collapsed #}
+                    <td colspan="6" class="p-0">
+                        <div class="collapse px-2" id="collapseVariants{{ product.id }}">
+                            <table class="table table-sm my-2">
                                 {% for variant in product.variants %}
                                     <tr>
                                         <td>#{{ variant.id }}</td>

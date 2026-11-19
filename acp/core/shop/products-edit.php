@@ -260,22 +260,27 @@ $shipping_cat_options = $build_options([
 /* product filter */
 $get_product_filter = json_decode($product_data['filter'] ?? '', true);
 $filter_groups = [];
+$filter_category_hashes = [];
 foreach(se_get_product_filter_groups('all') as $group) {
 
-    $group_categories = explode(",", $group['filter_categories']);
+    $group_categories = array_filter(explode(",", (string) $group['filter_categories']));
     $filter_cats = [];
     foreach($categories as $category) {
         if(in_array($category['hash'], $group_categories)) {
             $filter_cats[] = $category;
+            $filter_category_hashes[$category['hash']] = true;
         }
     }
 
     $items = [];
+    $nbr_checked = 0;
     foreach(se_get_product_filter_values($group['filter_id']) as $filter_item) {
+        $checked = is_array($get_product_filter) && in_array((string) $filter_item['filter_id'], $get_product_filter);
+        $nbr_checked += $checked ? 1 : 0;
         $items[] = [
             'id' => $filter_item['filter_id'],
             'title' => $decode($filter_item['filter_title']),
-            'checked' => is_array($get_product_filter) && in_array((string) $filter_item['filter_id'], $get_product_filter)
+            'checked' => $checked
         ];
     }
 
@@ -283,9 +288,15 @@ foreach(se_get_product_filter_groups('all') as $group) {
         'title' => $decode($group['filter_title']),
         'flag' => return_language_flag_src($group['filter_lang']),
         'categories' => $filter_cats,
+        // groups without a category (or with "all") belong to every category
+        'category_hashes' => (empty($filter_cats) || in_array('all', $group_categories)) ? 'all' : implode(' ', array_column($filter_cats, 'hash')),
+        'nbr_checked' => $nbr_checked,
         'items' => $items
     ];
 }
+
+// only categories that have filter groups are offered in the category select
+$filter_categories = array_values(array_filter($categories, static fn($category) => isset($filter_category_hashes[$category['hash']])));
 
 /* features */
 $get_post_features = json_decode($product_data['product_features'] ?? '', true);
@@ -527,6 +538,7 @@ echo $twig->render('shop/product-form.twig', [
     'images' => $images,
     'categories' => $categories,
     'filter_groups' => $filter_groups,
+    'filter_categories' => $filter_categories,
     'features' => $features,
     'options' => $options,
     'user_uploads' => (($product_data['file_attachment_user'] ?? '') == '2'),
@@ -551,7 +563,9 @@ echo $twig->render('shop/product-form.twig', [
     'fixed' => (($product_data['fixed'] ?? '') == '1'),
     'ignore_stock' => (($product_data['product_stock_mode'] ?? '') == 1),
     'addon_only' => (($product_data['product_addon_only'] ?? '2') == 1),
-    'variant_docs_link' => se_print_docs_link("05-00-shop.md"),
+    // the help buttons share one spot in the tab bar, so they name their topic
+    'variant_docs_link' => se_print_docs_link("05-00-shop.md", $icon['question_circle'] . ' ' . $lang['nav_btn_variants'], "creating-variants", 'btn btn-link btn-sm'),
+    'cross_selling_docs_link' => se_print_docs_link("05-00-shop.md", $icon['question_circle'] . ' Cross-Selling', "cross-selling", 'btn btn-link btn-sm'),
     'canonical_docs_link' => se_print_docs_link("05-00-shop.md", null, "canonical-url"),
     'addon_module_forms' => se_render_record_addons('product', $record_data),
     'main_catalog_options' => $main_catalog_options,

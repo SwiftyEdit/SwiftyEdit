@@ -91,6 +91,24 @@
   outline-offset: 2px;
 }
 
+// category checklist in the edit forms (form.categories macro): the row is the toggle
+.category-pick {
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background-color .15s, border-color .15s;
+
+  &:has(input:checked) {
+    border-left-color: var(--bs-primary);
+    background: color-mix(in srgb, var(--bs-primary) 15%, transparent);
+    color: var(--bs-emphasis-color);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+  }
+}
+
 .btn-label-dot {
   background: transparent;
   border: none;

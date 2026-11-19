@@ -4,29 +4,35 @@
  # cols: column classes for amount, net price and gross price
  #}
 
-<div class="card my-2">
-    <div class="card-header">
-        <span>{{ lang.label_product_scaling_prices }}</span>
-        <button class="btn btn-default btn-sm float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="false" aria-controls="collapseVDP">+</button>
-    </div>
-    <div class="card-body collapse" id="collapseVDP">
-        {% for discount in discounts %}
-            <div class="calculate_price">
-                <div class="row">
-                    <div class="{{ cols[0] }}">
-                        <label>{{ lang.label_product_amount }}</label>
-                        <input class="form-control" name="product_vd_amount[]" type="number" value="{{ discount.amount }}">
+{# same accordion as in the other edit forms, open right away when volume discounts are set #}
+{% set has_discounts = discounts|filter(d => d.amount is not empty)|length > 0 %}
+
+<div class="accordion my-2" id="accordionVDP">
+    <div class="accordion-item">
+        <div class="accordion-header">
+            <button class="accordion-button{% if not has_discounts %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVDP" aria-expanded="{{ has_discounts ? 'true' : 'false' }}" aria-controls="collapseVDP">{{ lang.label_product_scaling_prices }}</button>
+        </div>
+        <div id="collapseVDP" class="accordion-collapse collapse{% if has_discounts %} show{% endif %}">
+            <div class="accordion-body">
+                {% for discount in discounts %}
+                    <div class="calculate_price">
+                        <div class="row">
+                            <div class="{{ cols[0] }}">
+                                <label>{{ lang.label_product_amount }}</label>
+                                <input class="form-control" name="product_vd_amount[]" type="number" value="{{ discount.amount }}">
+                            </div>
+                            <div class="{{ cols[1] }}">
+                                <label>{{ lang.label_product_price }} {{ lang.label_product_net }}</label>
+                                <input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="{{ discount.price }}">
+                            </div>
+                            <div class="{{ cols[2] }}">
+                                <label>{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
+                                <input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">
+                            </div>
+                        </div>
                     </div>
-                    <div class="{{ cols[1] }}">
-                        <label>{{ lang.label_product_price }} {{ lang.label_product_net }}</label>
-                        <input class="form-control prod_price_net" name="product_vd_price[]" type="text" value="{{ discount.price }}">
-                    </div>
-                    <div class="{{ cols[2] }}">
-                        <label>{{ lang.label_product_price }} {{ lang.label_product_gross }}</label>
-                        <input class="form-control prod_price_gross" name="product_vd_price_gross[]" type="text" value="">
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+        </div>
     </div>
 </div>
