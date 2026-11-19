@@ -178,8 +178,45 @@ foreach(array_filter(explode("<->", $post_data['images'] ?? '')) as $image) {
 // release date and event dates, now if not set
 $format_date = static fn($timestamp) => date('Y-m-d H:i', ($timestamp > 0) ? $timestamp : time());
 
-echo '<div id="formResponse"></div>';
+/*
+ * header card above the form (components/edit-header.twig): title, status,
+ * language, event date and the public url - the url follows the frontend search
+ * (app/handlers/search.php): the stored canonical url, else detail page + slug + id
+ */
+$header_status = ['1' => 'public', '2' => 'draft'][(string) ($post_data['status'] ?? '')] ?? '';
+$header_badges = [strtoupper(($post_data['event_lang'] ?? '') ?: $languagePack)];
+$event_startdate = (int) ($post_data['event_startdate'] ?? 0);
+$event_enddate = (int) ($post_data['event_enddate'] ?? 0);
+if($event_startdate > 0) {
+    $header_date = se_format_datetime($event_startdate);
+    if($event_enddate > $event_startdate) {
+        // same day: only the end time, otherwise date and time
+        $same_day = date('Y-m-d', $event_startdate) == date('Y-m-d', $event_enddate);
+        $header_date .= ' – ' . ($same_day ? date($se_settings['timeformat'], $event_enddate) : se_format_datetime($event_enddate));
+    }
+    $header_badges[] = $header_date;
+}
+
+$header_url = (string) ($post_data['canonical_url'] ?? '');
+if($header_url == '' && $id !== null && ($post_data['slug'] ?? '') != '') {
+    $events_target_page = se_get_type_of_use_pages('display_event');
+    if(($events_target_page['page_permalink'] ?? '') != '') {
+        $header_url = rtrim($se_base_url, '/') . '/' . $events_target_page['page_permalink'] . basename($post_data['slug']) . '-' . $id . '.html';
+    }
+}
+
+$header = [
+    'mode' => ($mode == 'update') ? 'edit' : 'new',
+    'title' => $decode($post_data['title'] ?? ''),
+    'status' => $header_status,
+    'status_label' => $header_status != '' ? $lang['status_' . $header_status] : '',
+    'badges' => $header_badges,
+    'url' => $header_url,
+    'url_display' => preg_replace('#^https?://#', '', $header_url)
+];
+
 echo $twig->render('events/event-form.twig', [
+    'header' => $header,
     'event' => array_map($decode, $post_data),
     'mode' => $mode,
     'inputs' => $inputs,

@@ -5,6 +5,18 @@
 
 {% import 'components/form/macros.twig' as form %}
 
+{% set header_edit = header.mode == 'edit' %}
+{% include 'components/edit-header.twig' with {
+    title: header_edit ? header.title : lang.btn_new,
+    status: header_edit ? header.status : null,
+    status_label: header_edit ? header.status_label : null,
+    badges: header_edit ? header.badges : [],
+    code: header_edit ? header.url_display : null,
+    view_url: header_edit ? header.url : null
+} only %}
+
+<div id="formResponse"></div>
+
 <form>
     <div class="row">
         <div class="col-md-9">
@@ -182,6 +194,10 @@
         </div>
         <div class="col-md-3">
             <div class="card p-3">
+                {# same sticky action bar as the page, snippet and product forms #}
+                <div class="sidebar-actions sticky-lg-top">
+                    <button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="{{ mode == 'new' ? 'save' : 'update' }}">{{ mode == 'new' ? lang.save : lang.update }}</button>
+                </div>
                 <div class="mb-1 pb-1 border-bottom">
                     {{ inputs.language|raw }}
                 </div>
@@ -224,7 +240,6 @@
                 <input name="id" type="hidden" value="{{ event.id }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <input type="hidden" name="date" value="{{ event.date }}">
-                <button type="submit" hx-post="/admin-xhr/events/write/" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_post" value="{{ mode == 'new' ? 'save' : 'update' }}">{{ mode == 'new' ? lang.save : lang.update }}</button>
             </div>
         </div>
     </div>
