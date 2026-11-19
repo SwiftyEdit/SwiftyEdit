@@ -145,6 +145,7 @@
   "msg_delete_account_success": "Das Benutzerkonto wurde aus der Datenbank entfernt",
   "msg_delete_account_error": "Ein Fehler ist aufgetreten, das Konto wurde nicht gelöscht.",
   "msg_delete_account_admin": "Konten mit Zugriff auf die Administration können nur von einem anderen Administrator gelöscht werden.",
+  "msg_account_protected": "Dieses Konto ist geschützt. Das Passwort, die E-Mail-Adresse und die Zwei-Faktor-Authentifizierung können nicht geändert werden, und es kann nicht gelöscht werden.",
   "msg_delete_account_open_orders": "Sie haben offene Bestellungen. Ihr Konto kann gelöscht werden, sobald diese abgeschlossen sind.",
   "label_deleted_user": "Gelöschter Benutzer",
   "msg_register_intro": "Bitte füllen Sie das untenstehende Formular aus. Sie erhalten eine E-Mail mit einem Aktivierungslink, den Sie anklicken müssen, um Ihr Konto zu aktivieren.",
