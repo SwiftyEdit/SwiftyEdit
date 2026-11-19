@@ -11,6 +11,44 @@
 
 {% import 'components/form/macros.twig' as form %}
 
+{#
+ # header card - new posts get the post type picker inside it instead of the
+ # status/url row, picking a type stores it in the session and reloads the form
+ # (set_post_type in the blog data-writer)
+ #}
+{% set header_edit = header.mode == 'edit' %}
+{% embed 'components/edit-header.twig' with {
+    title: header_edit ? header.title : lang.btn_new,
+    status: header_edit ? header.status : null,
+    status_label: header_edit ? header.status_label : null,
+    badges: header_edit ? header.badges : [],
+    code: header_edit ? header.url_display : null,
+    view_url: header_edit ? header.url : null,
+    header_edit: header_edit,
+    post_types: post_types,
+    post_type: post_type,
+    writer_uri: writer_uri,
+    csrf_token: csrf_token,
+    lang: lang,
+    icon: icon
+} only %}
+    {% block extra %}
+        {% if not header_edit %}
+            <form hx-post="{{ writer_uri }}" class="mt-3">
+                <div class="small text-body-secondary mb-2">{{ lang.label_select_post_type }}</div>
+                <div class="btn-group d-flex" role="group">
+                    {% for type, type_data in post_types %}
+                        <button name="set_post_type" value="{{ type }}" class="btn btn-default w-100{% if type == post_type %} active{% endif %}"><span class="{{ type_data.color }}">{{ icon.plus|raw }}</span> {{ type_data.label }}</button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            </form>
+        {% endif %}
+    {% endblock %}
+{% endembed %}
+
+<div id="formResponse"></div>
+
 <form>
     <div class="row">
         <div class="col-md-9">
@@ -20,7 +58,7 @@
                         {% block nav %}{% endblock %}
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#meta">{{ lang.nav_btn_seo }}</a></li>
                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#prefs">{{ lang.nav_btn_settings }}</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#addons" title="{{ lang.nav_btn_addons }}">{{ icon.plugin|raw }}</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#addons">{{ lang.catalog_filter_plugins }}</a></li>
                     </ul>
                 </div>
                 <div class="card-body">
