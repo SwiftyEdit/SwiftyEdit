@@ -1,3 +1,10 @@
+// Bootstrap gives accordions the page background (--bs-body-bg). In the dark
+// theme that is darker than the form controls, so inputs inside an accordion
+// almost vanish. Use the card surface instead, like every other form area.
+.accordion {
+  --bs-accordion-bg: var(--bs-widget-bg);
+}
+
 .btn[aria-expanded="true"] {
   .toggle {
     display: inline-block;
