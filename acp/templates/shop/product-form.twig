@@ -21,7 +21,16 @@
 
 {% import _self as m %}
 
-<div class="subHeader"></div>
+{% set header_edit = header.mode == 'edit' %}
+{% include 'components/edit-header.twig' with {
+    title: header.mode == 'new' ? lang.btn_new : (header.mode == 'duplicate' ? lang.duplicate ~ ': ' ~ header.title : header.title),
+    status: header_edit ? header.status : null,
+    status_label: header_edit ? header.status_label : null,
+    badges: header_edit ? header.badges : [],
+    code: header_edit ? header.url_display : null,
+    view_url: header_edit ? header.url : null
+} only %}
+
 <div id="formResponse"></div>
 <form class="no-enter">
     <div class="row">
@@ -597,21 +606,20 @@
         <div class="col-md-3">
             <div class="card p-3">
 
+                {# same sticky action bar as the page and snippet forms: save and delete in one row #}
                 <div class="sidebar-actions sticky-lg-top">
-                    <div class="form-mode">
-                        {{ form_header_mode }}
-                    </div>
-
                     {% if show_variant_button %}
-                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 my-1" name="save_variant" value="{{ product_id }}">{{ lang.submit_variant }}</button>
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default w-100 mb-1" name="save_variant" value="{{ product_id }}">{{ lang.submit_variant }}</button>
                     {% endif %}
 
-                    {% if is_edit %}
-                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100 my-1" name="save_product" value="{{ product_id }}">{{ lang.update }}</button>
-                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-confirm="{{ lang.msg_confirm_delete }}" hx-swap="innerHTML" class="btn btn-danger w-50" name="delete_product" value="{{ product_id }}">{{ lang.btn_delete }}</button>
-                    {% else %}
-                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">{{ lang.save }}</button>
-                    {% endif %}
+                    <div class="d-flex">
+                        {% if is_edit %}
+                            <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="{{ product_id }}">{{ lang.update }}</button>
+                            <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-confirm="{{ lang.msg_confirm_delete }}" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_product" value="{{ product_id }}">{{ lang.btn_delete }}</button>
+                        {% else %}
+                            <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_product" value="new">{{ lang.save }}</button>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class="mb-2 pb-3 border-bottom">
