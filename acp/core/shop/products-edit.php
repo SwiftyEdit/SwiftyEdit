@@ -20,7 +20,6 @@
  */
 
 $writer_uri = '/admin-xhr/shop/write/';
-$form_header_mode = $lang['btn_new'];
 $my_user_presets = se_get_my_presets();
 
 // edit mode shows the update and delete buttons, otherwise a plain save button
@@ -35,18 +34,15 @@ $lastSegment = end($segments);
 if(is_numeric($lastSegment)) {
     $get_product_id = (int) $lastSegment;
     $is_edit = true;
-    $form_header_mode = $lang['edit'].' #'.$get_product_id;
 }
 
 if(isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
     $get_product_id = (int) $_POST['product_id'];
     $is_edit = true;
-    $form_header_mode = $lang['edit'].' #'.$get_product_id;
 }
 
 if(isset($_POST['duplicate_id']) && is_numeric($_POST['duplicate_id'])) {
     $get_product_id = (int) $_POST['duplicate_id'];
-    $form_header_mode = $lang['duplicate'].' #'.$get_product_id;
     $show_variant_button = true;
 }
 
@@ -62,9 +58,6 @@ $record_data = $product_data ?? [];
 if(($product_data['type'] ?? '') == 'v') {
     // hide the submit as variant button
     $show_variant_button = false;
-    $form_header_mode .= ' ('.$lang['product_type_variant'].')';
-} else {
-    $form_header_mode .= ' ('.$lang['product_type_main'].')';
 }
 
 if(!is_array($product_data)) {
@@ -129,7 +122,8 @@ $product_lang = $product_data['product_lang'] ?? '';
 if($product_lang == '' && $default_lang_code != '') {
     $product_lang = $default_lang_code;
 }
-$lang_options = $build_options(array_combine($lang_codes, $lang_codes), $product_lang);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$language_select = se_print_language_select('product_lang', $product_lang, 'mb-0');
 
 /* categories */
 $categories = se_get_category_checklist(explode("<->", $product_data['categories'] ?? ''));
@@ -494,13 +488,40 @@ $product['product_cnt_sales'] = (int) ($product_data['product_cnt_sales'] ?? 0);
 $product['product_order_quantity_min'] = $product_order_quantity_min;
 $product['product_order_quantity_max'] = $product_order_quantity_max;
 
+/*
+ * header card above the form (components/edit-header.twig): title, status,
+ * language, main product or variant, product number and the public url
+ */
+$header_status = ['1' => 'public', '2' => 'draft', '3' => 'ghost'][(string) ($product_data['status'] ?? '')] ?? '';
+$header_badges = [strtoupper($product_lang)];
+$header_badges[] = (($record_data['type'] ?? '') == 'v') ? $lang['product_type_variant'] : $lang['product_type_main'];
+if(($product_data['product_number'] ?? '') != '') {
+    $header_badges[] = $decode($product_data['product_number']);
+}
+// the frontend builds the url from the catalog page and the slug (see app/xhr/search.php)
+$header_url = '';
+$header_catalog = (string) ($product_data['main_catalog_slug'] ?? '');
+if(($product_data['slug'] ?? '') != '' && $header_catalog != '' && $header_catalog != 'default') {
+    $header_url = rtrim($se_base_url, '/') . '/' . ltrim($header_catalog, '/') . $product_data['slug'];
+}
+
+$header = [
+    'mode' => $is_edit ? 'edit' : (isset($_POST['duplicate_id']) ? 'duplicate' : 'new'),
+    'title' => $decode($product_data['title'] ?? ''),
+    'status' => $header_status,
+    'status_label' => $header_status != '' ? $lang['status_' . $header_status] : '',
+    'badges' => $header_badges,
+    'url' => $header_url,
+    'url_display' => preg_replace('#^https?://#', '', $header_url)
+];
+
 echo $twig->render('shop/product-form.twig', [
+    'header' => $header,
     'product' => $product,
     'product_id' => $get_product_id,
     'is_edit' => $is_edit,
     'is_variant' => ($product_data['type'] == 'v'),
     'show_variant_button' => $show_variant_button,
-    'form_header_mode' => $form_header_mode,
     'writer_uri' => $writer_uri,
     'editors' => $editors,
     'images' => $images,
@@ -533,7 +554,7 @@ echo $twig->render('shop/product-form.twig', [
     'canonical_docs_link' => se_print_docs_link("05-00-shop.md", null, "canonical-url"),
     'addon_module_forms' => se_render_record_addons('product', $record_data),
     'main_catalog_options' => $main_catalog_options,
-    'lang_options' => $lang_options,
+    'language_select' => $language_select,
     'status_options' => $status_options,
     'comments_options' => $comments_options,
     'votings_options' => $votings_options,

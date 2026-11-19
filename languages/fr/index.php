@@ -5,5 +5,5 @@
  */
 
 $lang_sign = "fr";
-$lang_desc = "French";
+$lang_desc = "Français";
 $languagePackFallback = 'en';

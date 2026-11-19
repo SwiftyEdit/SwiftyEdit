@@ -84,21 +84,8 @@ $inputs['priority'] = se_print_form_input([
     "type" => "text"
 ]);
 
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
-
-$inputs['language'] = se_print_form_input([
-    "input_name" => "snippet_lang",
-    "input_value" => ($snippet['snippet_lang'] ?? '') ?: $languagePack,
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('snippet_lang', (string) (($snippet['snippet_lang'] ?? '') ?: $languagePack));
 
 /* image widget */
 $images = [];
@@ -140,7 +127,17 @@ foreach(get_all_templates() as $theme) {
     ];
 }
 
+// header card above the form (components/edit-header.twig) - title falls back to the name
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+$header = [
+    'mode' => ($snippet_id !== null) ? 'edit' : (isset($_POST['duplicate_id']) ? 'duplicate' : 'new'),
+    'title' => $decode(($snippet['snippet_title'] ?? '') ?: ($snippet['snippet_name'] ?? '')),
+    'name' => $decode($snippet['snippet_name'] ?? ''),
+    'language' => ($snippet['snippet_lang'] ?? '') ?: $languagePack
+];
+
 echo $twig->render('snippets/edit-form.twig', [
+    'header' => $header,
     'snippet_id' => $snippet_id,
     'submit_label' => $submit_label,
     'writer_uri' => $writer_uri,

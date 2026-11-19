@@ -52,23 +52,17 @@ $inputs = [
     ])
 ];
 
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('feature_lang', (string) ($feature['snippet_lang'] ?? ''));
 
-$inputs['language'] = se_print_form_input([
-    "input_name" => "feature_lang",
-    "input_value" => $feature['snippet_lang'] ?? '',
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// header card above the form (components/edit-header.twig)
+$header = [
+    'title' => html_entity_decode((string) ($feature['snippet_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+    'language' => (string) ($feature['snippet_lang'] ?? '')
+];
 
 echo $twig->render('shop/feature-form.twig', [
+    'header' => $header,
     'feature_id' => isset($feature['snippet_id']) ? (int) $feature['snippet_id'] : null,
     'writer_uri' => '/admin-xhr/shop/write/',
     'inputs' => $inputs

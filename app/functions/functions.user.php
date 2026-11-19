@@ -38,7 +38,7 @@ function se_get_usergroup_by_id($id) {
 
 /**
  * @param integer $id
- * @return array user data
+ * @return array|null user data, null if there is no such user
  */
 function se_get_userdata_by_id($id) {
 
@@ -980,4 +980,30 @@ function se_get_site_secret(): string {
     }
 
     return $secret;
+}
+
+/**
+ * Is this one of the protected accounts ($se_protected_accounts in
+ * data/config.php)? Their password, e-mail address, username and 2FA can't be
+ * changed and they can't be deleted or reset - e.g. a shared demo login.
+ * Usernames are compared case-insensitively.
+ *
+ * @param string $nick username
+ * @return bool
+ */
+function se_is_protected_account(string $nick): bool {
+
+    global $se_protected_accounts;
+
+    if ($nick === '' || !is_array($se_protected_accounts ?? null)) {
+        return false;
+    }
+
+    $nick = mb_strtolower($nick);
+    foreach ($se_protected_accounts as $protected) {
+        if (mb_strtolower((string) $protected) === $nick) {
+            return true;
+        }
+    }
+    return false;
 }

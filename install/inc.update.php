@@ -12,6 +12,7 @@
  * @var int|string $database_port
  *
  * sqlite - from config.php
+ * @var string $se_db_file
  * @var string $se_db_content
  * @var string $se_db_user
  * @var string $se_db_posts
@@ -63,25 +64,35 @@ if(is_file('../config_database.php')) {
 } else {
 	$db_type = 'sqlite';
 
-	define("CONTENT_DB", "$se_db_content");
-	define("USER_DB", "$se_db_user");
-	define("POSTS_DB", "$se_db_posts");
-
-	$db_content = new Medoo([
-		'type' => 'sqlite',
-		'database' => CONTENT_DB
-	]);
-	
-	$db_user = new Medoo([
-		'type' => 'sqlite',
-		'database' => USER_DB
+	// merges the files used up to 2.3 into $se_db_file, if not done yet
+	// (see app/functions/functions.database.php)
+	require_once SE_ROOT.'/app/functions/functions.database.php';
+	$se_db_state = se_db_prepare_sqlite($se_db_file, [
+		'content' => $se_db_content,
+		'user' => $se_db_user,
+		'posts' => $se_db_posts
 	]);
 
-	$db_posts = new Medoo([
-		'type' => 'sqlite',
-		'database' => POSTS_DB
-	]);
-	
+	if($se_db_state['mode'] === 'legacy') {
+		echo '<div class="alert alert-danger">The database files could not be merged into '.htmlspecialchars(basename($se_db_file), ENT_QUOTES).': '.htmlspecialchars($se_db_state['error'], ENT_QUOTES).'</div>';
+
+		define("CONTENT_DB", "$se_db_content");
+		define("USER_DB", "$se_db_user");
+		define("POSTS_DB", "$se_db_posts");
+
+		$db_content = new Medoo(['type' => 'sqlite', 'database' => CONTENT_DB]);
+		$db_user = new Medoo(['type' => 'sqlite', 'database' => USER_DB]);
+		$db_posts = new Medoo(['type' => 'sqlite', 'database' => POSTS_DB]);
+	} else {
+		define("CONTENT_DB", "$se_db_file");
+		define("USER_DB", "$se_db_file");
+		define("POSTS_DB", "$se_db_file");
+
+		$db_content = new Medoo(['type' => 'sqlite', 'database' => $se_db_file]);
+		$db_user = $db_content;
+		$db_posts = $db_content;
+	}
+
 }
 
 

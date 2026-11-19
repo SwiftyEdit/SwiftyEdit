@@ -12,6 +12,7 @@ import './components/global-search.js';
 import './components/copy-to-clipboard.js';
 import './components/keep-open.js';
 import './components/session-clock.js';
+import './components/image-picker.js';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;
@@ -270,6 +271,10 @@ function observeContainersForDraggableDivs(parentSelector) {
         function assignHiddenInputsToDivs() {
             const childDivs = parentDiv.querySelectorAll('div.draggable');
             childDivs.forEach((div) => {
+                // dragged in from the image picker list, where the items are buttons (components/image-picker.js)
+                div.removeAttribute('role');
+                div.removeAttribute('tabindex');
+
                 let hiddenInput = div.querySelector('input[type="hidden"]');
                 if (!hiddenInput) {
                     hiddenInput = document.createElement('input');
@@ -279,8 +284,9 @@ function observeContainersForDraggableDivs(parentSelector) {
                     hiddenInput.value = dataId ?? '';
 
                     const deleteButton = document.createElement('button');
-                    deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
-                    deleteButton.className = 'btn btn-danger btn-sm d-flex ms-auto';
+                    deleteButton.type = 'button';
+                    deleteButton.innerHTML = '<i class="bi bi-x-lg"></i>';
+                    deleteButton.className = 'picker-remove btn btn-sm';
                     deleteButton.onclick = function () {
                         this.parentElement.remove();
                     };
@@ -358,13 +364,33 @@ document.addEventListener('DOMContentLoaded', () => {
             endpoint: '/admin-xhr/widgets/upload/',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
-            }
+            },
+            // a full upload storage (507) stays full - no retries
+            shouldRetry: (xhr) => xhr.status !== 507
         })
 
         registerUppyThemeSync(uppy);
 
+        // 507 = total size of all uploads reached ($se_limit_uploads_dir, see
+        // acp/core/widgets/upload.php) - show the translated text of the form
+        uppy.on('upload-error', (file, error, response) => {
+            if (!response || response.status !== 507) {
+                return;
+            }
+            let limit = '';
+            try {
+                limit = JSON.parse(response.responseText).limit ?? '';
+            } catch (e) {
+                // no JSON - show the text without the number
+            }
+            const message = (dropperForm.dataset.msgUploadLimit || 'Upload limit reached').replace('{limit}', limit);
+            uppy.info(message, 'error', 10000);
+        });
+
         uppy.on('complete', (result) => {
             htmx.trigger("body", "update_uploads_list");
+            // the image picker of the forms (widgets/select-img.twig) shows the new images
+            htmx.trigger("body", "update_image_widget");
             htmx.trigger("body", "update_gallery_thumbs");
         });
     });

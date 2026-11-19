@@ -1,0 +1,17 @@
+{#
+ # language select of the edit forms, rendered by se_print_language_select()
+ # the translate icon replaces the visible label, "Language" stays for screen readers and as tooltip
+ # options: list of {value, label, selected} - the active languages with their full names
+ #}
+<div class="{{ container_class }}">
+    <div class="input-group">
+        <label class="input-group-text" for="{{ inputid }}" title="{{ lang.label_language }}">
+            {{ icon.language|raw }}<span class="visually-hidden">{{ lang.label_language }}</span>
+        </label>
+        <select class="form-select custom-select" name="{{ input_name }}" id="{{ inputid }}">
+            {% for option in options %}
+                <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>

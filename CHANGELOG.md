@@ -8,6 +8,63 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
+## Unreleased
+
+- SQLite: the three database files (`content.sqlite3`, `user.sqlite3`,
+  `posts.sqlite3`) are merged into one file, `data/database/swiftyedit.sqlite3`.
+  Existing installations are merged automatically on the first request after
+  the update, the old files are only read and stay in place until they are
+  deleted under Settings > Database. If the merge fails, the site keeps
+  running on the old files and the dashboard shows the reason. `$db_content`,
+  `$db_user` and `$db_posts` still work, they are the same connection now (as
+  with MySQL). The constants `CONTENT_DB`, `USER_DB` and `POSTS_DB` are
+  deprecated and all point to the new file
+- New option `$se_send_mails` (in `data/config.php`) for test and demo
+  installations: with `$se_send_mails = false;` no e-mails are sent. Each mail
+  is logged (subject, no address) and reported as sent, so registration,
+  checkout etc. go on as usual. The test mail in the settings says that sending
+  is switched off, 2FA codes by mail report a failure
+- New global filter hook `mail.send`: plugins can change every mail sent via
+  `se_send_mail()` (recipient, subject, message, admin copy) or stop it by
+  returning `false`
+- New option `$se_protected_accounts` (in `data/config.php`), e.g.
+  `['demo']` for a login shared on a demo installation: the password, e-mail
+  address, username and two-factor authentication of these accounts can't be
+  changed, neither in the profile nor by an administrator, and they can't be
+  deleted or reset by mail. Required 2FA is skipped for them while they have
+  none
+- `$se_limit_uploads_dir` (in `data/config.php`) now works: the storage space
+  for uploads in the backend in MB. Counted are the media library and the
+  galleries, an upload that would exceed it is refused with a message
+- Shop: the mini cart and the checkout take price, tax, minimum/maximum amount
+  and volume discounts from the current product data instead of the price
+  stored when the item was added (the stored price is the fallback). Line
+  values are rounded to cents and the totals are the sum of the lines, so mini
+  cart and checkout show the same amounts. New functions
+  `se_get_cart_item_price()` and `se_calc_cart_line_price()`. The product list
+  shows the right net/gross label again
+- Page editor: tabs reordered and renamed (Content, Navigation, URL, SEO,
+  Plugins, Theme, Modules), the Info tab is gone. The Navigation tab shows the
+  page role as cards and the parent page next to the "insert after" list, the
+  developer fields (ID, classes, priority) and the redirects are collapsible.
+  The SEO tab has switches for index/follow and further robots rules as chips.
+  Tags and type of use moved to the sidebar, the save buttons stay at the top.
+  In the Modules tab, events and products exclude all other post types again
+- New header card at the top of the edit forms with title, status, language,
+  URL, a view link and a back button: pages, snippets, products, events,
+  categories, blog posts (with post type picker), users and the shop features,
+  options and filters. The price group form gets a heading and a close button.
+  The language select looks the same in all edit forms
+- Labels in the edit forms are selectable chips with a color dot
+- Image picker: thumbnails with search, sorting and an upload button. A click
+  (or Enter/Space) adds an image to the drop zone, next to drag and drop.
+  Newest images are listed first
+- Accordions in the backend use the card background, so form fields inside
+  them stay visible in dark mode
+- The empty TinyMCE promotion container is hidden in the backend
+- Docs: registration rules (users) and the rules for SQLite fallback
+  migrations
+
 ## 2.3.0 - 2026-11-14 (Build 26-0237)
 
 - New backend dashboard: a 30-day activity grid per area with a history of the

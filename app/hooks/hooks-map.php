@@ -171,5 +171,17 @@ return [
             'type'    => 'action',
             'context' => ['user_id', 'user', 'deleted_by'],
         ],
+
+        // ----- Mail -----
+
+        // Every mail sent via se_send_mail(), before it is sent (also with
+        // $se_send_mails = false). The value is an array with 'recipient'
+        // ('mail', 'name'), 'subject', 'message' (html) and 'bcc_admin'.
+        // Return it (changed or not) to send it, or false to stop it - the
+        // caller then gets an error text instead of 1.
+        'mail.send' => [
+            'type'    => 'filter',
+            'context' => [],
+        ],
     ],
 ];

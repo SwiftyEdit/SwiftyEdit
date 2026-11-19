@@ -86,21 +86,8 @@ $inputs['priority'] = se_print_form_input([
     "type" => "text"
 ]);
 
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
-
-$inputs['language'] = se_print_form_input([
-    "input_name" => "cat_lang",
-    "input_value" => ($get_category['cat_lang'] ?? '') ?: $se_settings['default_language'],
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('cat_lang', (string) (($get_category['cat_lang'] ?? '') ?: $se_settings['default_language']));
 
 /* image widget - "null" is an empty value of older versions */
 $images = [];
@@ -152,7 +139,17 @@ foreach(['category-values.php', 'category_values.php'] as $file) {
     }
 }
 
+// header card above the form (components/edit-header.twig) - title falls back to the link name
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+$header = [
+    'mode' => ($category_id !== null) ? 'edit' : 'new',
+    'title' => $decode(($get_category['cat_title'] ?? '') ?: ($get_category['cat_name'] ?? '')),
+    'language' => ($get_category['cat_lang'] ?? '') ?: $se_settings['default_language'],
+    'slug' => $decode($get_category['cat_name_clean'] ?? '')
+];
+
 echo $twig->render('categories/edit-form.twig', [
+    'header' => $header,
     'category_id' => $category_id,
     'submit_label' => ($category_id ? $lang['update'] : $lang['save']),
     'writer_uri' => $writer_uri,

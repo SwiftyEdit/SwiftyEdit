@@ -87,6 +87,28 @@ Ein paar weitere Kleinigkeiten, die gut zu wissen sind:
   `$se_backend_updates = false;` in `data/config.php` lädt und installiert das Backend keine
   Updates mehr (z. B. wenn Du per Hand deployst). Neue Versionen werden weiter angezeigt, das
   Datenbank-Update über `/install/` funktioniert weiter.
+* __Mailversand__ (`$se_send_mails` in `config.php`) - mit `$se_send_mails = false;` in
+  `data/config.php` werden keine Mails verschickt, z. B. auf Test- oder Demo-Installationen.
+  Jede Mail wird protokolliert (Betreff, ohne Adresse) und als verschickt gemeldet, damit
+  Registrierung, Checkout usw. normal weiterlaufen. Die Testmail in den Einstellungen meldet,
+  dass der Versand abgeschaltet ist, 2FA-Codes per Mail melden einen Fehler. Plugins können
+  einzelne Mails über den globalen Filter-Hook `mail.send` ändern oder stoppen (siehe
+  [Hooks](09-03-hooks.md)).
+* __Geschützte Konten__ (`$se_protected_accounts` in `config.php`) - eine Liste von
+  Benutzernamen, z. B. `$se_protected_accounts = ['demo'];` für einen gemeinsam genutzten Login
+  auf einer Demo-Installation. Passwort, E-Mail-Adresse, Benutzername und
+  Zwei-Faktor-Authentifizierung dieser Konten lassen sich nicht ändern - weder im Profil noch
+  durch einen Administrator -, und sie können weder gelöscht noch per Mail zurückgesetzt werden.
+  Groß- und Kleinschreibung spielt beim Benutzernamen keine Rolle. Ist 2FA Pflicht, entfällt sie
+  für diese Konten, solange sie keine eingerichtet haben. Bei einem öffentlichen Passwort auch
+  `$se_failed_logins_limit = null;` setzen, sonst kann jeder das Konto mit falschen Passwörtern
+  sperren.
+* __Speicherplatz für Uploads__ (`$se_limit_uploads_dir` in `config.php`) - die Gesamtgröße
+  aller Uploads im Backend in MB, z. B. `$se_limit_uploads_dir = 200;` in `data/config.php`
+  (leer = kein Limit, Standard). Gezählt werden die Mediathek (`assets/images`,
+  `assets/files`) und die Galerien, nicht die erzeugten Vorschaubilder. Ein Upload, der das
+  Limit überschreiten würde, wird mit einer Meldung abgelehnt. Die übrigen `$se_limit_*`-Werte
+  in `config.php` werden noch nicht verwendet.
 * __Ordnerrechte__ (`SE_DIR_PERMISSIONS`) - Ordner, die SwiftyEdit anlegt (Cache, Uploads,
   Vorschaubilder), bekommen `0755`. Brauchst Du per FTP mit einem anderen Benutzer Schreibrechte,
   trage `define('SE_DIR_PERMISSIONS', 0775);` in `data/config.php` ein.

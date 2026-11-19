@@ -51,6 +51,12 @@ if(isset($_GET['change_mail']) && ($_GET['change_mail'] !== '')) {
         $user_data = null;
     }
 
+    // protected accounts ($se_protected_accounts) - also links requested before
+    if(is_array($user_data) && se_is_protected_account((string) $user_data['user_nick'])) {
+        $smarty->assign('page_content', $lang['msg_account_protected'], true);
+        $user_data = null;
+    }
+
     if(is_array($user_data)) {
 
         $user_new_mail = $user_data['user_mail_temp'];

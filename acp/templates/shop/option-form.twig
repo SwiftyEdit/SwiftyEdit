@@ -4,16 +4,16 @@
  # option_id: id of the edited option, null for a new option
  # values: the stored values, sortable - the empty field above adds a value
  #}
-<div class="subHeader d-flex align-items-center">
-    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
-    <a href="/admin/shop/options/new/" class="btn btn-default text-success ms-auto">{{ icon.plus|raw }} {{ lang.new }}</a>
-</div>
+{% include 'components/edit-header.twig' with {
+    back_url: '/admin/shop/options/',
+    title: option_id ? header.title : lang.btn_new,
+    badges: option_id and header.language ? [header.language|upper] : []
+} only %}
 
 <div id="formResponse"></div>
 
 <form>
     <div class="card">
-        <div class="card-header">{{ option_id ? lang.edit : lang.new }}</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-8">{{ inputs.title|raw }}</div>

@@ -33,7 +33,9 @@ if($token !== '') {
 
 	$userdata_array = get_userdata_by_token($token);
 
-	if(!is_array($userdata_array)) {
+	// protected accounts ($se_protected_accounts) get no reset link - an older
+	// link from before the account was protected must not work either
+	if(!is_array($userdata_array) || se_is_protected_account((string) $userdata_array['user_nick'])) {
 
 		$smarty->assign("alert_text", $lang['msg_forgotten_psw_invalid_link']);
 		$alert_reset = $smarty->fetch('alert/alert-danger.tpl');

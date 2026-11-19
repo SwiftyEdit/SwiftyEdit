@@ -101,7 +101,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.close }}"></button>
             </div>
             <div class="modal-body">
-                <form id="dropper" class="dropper-form" action="/admin/upload/" method="POST">
+                <form id="dropper" class="dropper-form" action="/admin/upload/" method="POST" data-msg-upload-limit="{{ lang.msg_error_upload_limit }}">
                     <div class="row mb-2">
                         <div class="col-md-6">
                             <label class="form-label" for="uploadDestination">{{ lang.upload_destination }}</label>

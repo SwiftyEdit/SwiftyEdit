@@ -20,12 +20,14 @@ making it fast and reliable for a production site:
 
 * __No separate database server__ - PDO/SQLite ships with PHP itself, so there's nothing extra
   to install, configure, or keep running (and one less service that can fail).
-* __Trivial backup and migration__ - the whole database is just a few files under
-  `data/database/`. Copying them is a complete, consistent backup; moving to a new server is a
-  file copy, not a dump-and-import.
-* __Split into three separate database files__ - content, user accounts, and posts each get
-  their own SQLite file (see `app/database.php`) instead of sharing one database. This keeps a
-  busy area (e.g. logins) from locking out another (e.g. content reads) under concurrent access.
+* __Trivial backup and migration__ - the whole database is one file,
+  `data/database/swiftyedit.sqlite3` (plus its `-wal`/`-shm` files in WAL mode). Copying it is
+  a complete, consistent backup; moving to a new server is a file copy, not a dump-and-import.
+* __One file, one transaction__ - up to version 2.3, content, user accounts and posts were three
+  separate files. Since 2.4 all tables live in one file, so a change that touches several areas
+  is saved completely or not at all. Existing installations are merged automatically on the
+  first request after the update. With [WAL mode](08-00-settings.md#database-wal), reading
+  continues while something is written.
 * __Lower resource footprint__ - no separate database process competing for memory and CPU,
   which matters especially on small VPS or shared hosting.
 * __Database-heavy areas are cached__ - for parts of the app that hit the database hardest, like

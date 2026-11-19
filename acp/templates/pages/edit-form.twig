@@ -5,10 +5,16 @@
  #}
 {% import 'components/form/macros.twig' as form %}
 
-<div class="subHeader d-flex align-items-center">
-    {{ icon.file|raw }} {{ lang.nav_btn_pages }}
-    <a href="/admin/pages/" class="btn btn-default ms-auto">{{ icon.arrow_left_short|raw }} {{ lang.nav_btn_overview }}</a>
-</div>
+{% set is_edit = header.mode == 'edit' %}
+{% include 'components/edit-header.twig' with {
+    back_url: '/admin/pages/',
+    title: header.mode == 'new' ? lang.btn_new : (header.mode == 'duplicate' ? lang.duplicate ~ ': ' ~ header.title : header.title),
+    status: is_edit ? header.status : null,
+    status_label: is_edit ? header.status_label : null,
+    badges: is_edit ? [page_language|upper] : [],
+    code: is_edit ? header.url_display : null,
+    view_url: is_edit ? header.url : null
+} only %}
 
 <div id="formResponse"></div>
 
@@ -19,61 +25,19 @@
             <div class="card">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
-                        <li class="nav-item"><a href="#" class="nav-link active" id="position" data-bs-toggle="tab" data-bs-target="#position-tab">{{ lang.label_pages_position }}</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link" id="info" data-bs-toggle="tab" data-bs-target="#info-tab">{{ lang.nav_btn_info }}</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link" id="content" data-bs-toggle="tab" data-bs-target="#content-tab">{{ lang.nav_btn_content }}</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link" id="metas" data-bs-toggle="tab" data-bs-target="#metas-tab">{{ lang.nav_btn_metas }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link active" id="content" data-bs-toggle="tab" data-bs-target="#content-tab">{{ lang.nav_btn_content }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="navigation" data-bs-toggle="tab" data-bs-target="#navigation-tab">{{ lang.cache_label_navigation }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="url" data-bs-toggle="tab" data-bs-target="#url-tab">{{ lang.label_url }}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" id="metas" data-bs-toggle="tab" data-bs-target="#metas-tab">{{ lang.nav_btn_seo }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#addons" data-bs-toggle="tab">{{ lang.catalog_filter_plugins }}</a></li>
                         <li class="nav-item"><a href="#" class="nav-link" id="theme" data-bs-toggle="tab" data-bs-target="#theme-tab">Theme</a></li>
-                        <li class="nav-item ms-auto"><a class="nav-link" href="#posts" data-bs-toggle="tab" title="{{ lang.nav_btn_posts }}">{{ icon.file_earmark_post|raw }}</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#addons" data-bs-toggle="tab" title="{{ lang.nav_btn_addons }}">{{ icon.plugin|raw }}</a></li>
+                        <li class="nav-item ms-auto"><a class="nav-link" href="#posts" data-bs-toggle="tab">{{ lang.label_modules }}</a></li>
                     </ul>
                 </div>
                 <div class="card-body">
                     <div class="tab-content" id="myTabContent">
 
-                        <div class="tab-pane fade show active" id="position-tab" role="tabpanel" tabindex="0">
-                            {# three mutually exclusive page roles, the docs link sits right after the buttons #}
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="btn-group" role="group">
-                                    {% for role, role_label in {'single': lang.label_pages_single, 'portal': lang.label_pages_portal, 'tree': lang.label_pages_mainmenu} %}
-                                        <input type="radio" class="btn-check" name="page_role" id="page_role_{{ role }}" value="{{ role }}" autocomplete="off"{% if page_role == role %} checked{% endif %} onchange="sePageRoleToggle()">
-                                        <label class="btn btn-outline-primary" for="page_role_{{ role }}">{{ role_label }}</label>
-                                    {% endfor %}
-                                </div>
-                                {{ docs_link_sorting|raw }}
-                            </div>
-
-                            {#
-                             # parent page and insert position only have an effect with page_role=tree
-                             # (see se_sanitize_page_inputs()), hidden until "main menu" is picked -
-                             # hidden fields are still submitted, only what's shown changes
-                             #}
-                            <div id="parentPickerGroup" style="display:{{ page_role == 'tree' ? 'block' : 'none' }};">
-                                <label class="form-label mt-2">{{ lang.label_pages_parent_page }}</label>
-                                <select name="new_parent_id" class="form-select custom-select mb-2"
-                                        hx-get="/admin-xhr/pages/read/?action=page_siblings"
-                                        hx-target="#siblingPicker" hx-swap="innerHTML"
-                                        hx-include="[name='new_parent_id'],[name='csrf_token']"
-                                        hx-vals='{{ {'language': page_language, 'exclude_page_id': current_page_id ?? 0}|json_encode|e('html_attr') }}'
-                                        hx-trigger="change">
-                                    {{ parent_options|raw }}
-                                </select>
-
-                                <label class="form-label mb-0">{{ lang.label_pages_insert_position }}</label>
-                                <p class="text-muted small">{{ lang.label_pages_insert_position_sub }}</p>
-                                <div id="siblingPicker" class="scroll-container">
-                                    {{ sibling_picker|raw }}
-                                </div>
-                            </div>
-
-                            <script>function sePageRoleToggle() {
-                                var t = document.getElementById("page_role_tree");
-                                var g = document.getElementById("parentPickerGroup");
-                                if (t && g) { g.style.display = t.checked ? "block" : "none"; }
-                            }</script>
-                        </div>
-
-                        <div class="tab-pane" id="info-tab" role="tabpanel" tabindex="0">
+                        <div class="tab-pane" id="navigation-tab" role="tabpanel" tabindex="0">
                             <div class="row">
                                 <div class="col-md-4">{{ inputs.linkname|raw }}</div>
                                 <div class="col-md-4">{{ inputs.classes|raw }}</div>
@@ -81,38 +45,109 @@
                                 <div class="col-md-2">{{ inputs.hash|raw }}</div>
                             </div>
 
-                            {{ inputs.permalink|raw }}
-                            {{ inputs.canonical_url|raw }}
-                            {{ inputs.content_tags|raw }}
+                            {# three mutually exclusive page roles as selectable cards, the docs link sits next to the heading #}
+                            <label class="form-label mt-2">{{ lang.label_pages_role_heading }} {{ docs_link_sorting|raw }}</label>
+                            <div class="row g-2 mb-3">
+                                {% for role, role_texts in {
+                                    'single': [lang.label_pages_single, lang.label_pages_single_help],
+                                    'portal': [lang.label_pages_portal, lang.label_pages_portal_help],
+                                    'tree': [lang.label_pages_mainmenu, lang.label_pages_mainmenu_help]
+                                } %}
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="page_role" id="page_role_{{ role }}" value="{{ role }}" autocomplete="off"{% if page_role == role %} checked{% endif %} onchange="sePageRoleToggle()">
+                                        <label class="page-role-card" for="page_role_{{ role }}">
+                                            <span class="d-block fw-semibold">{{ role_texts[0] }}</span>
+                                            <span class="d-block small text-body-secondary">{{ role_texts[1] }}</span>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
 
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between">
-                                    {{ lang.label_translations }} (URLs)
-                                    <button class="btn btn-sm btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false">{{ icon.plus|raw }}</button>
+                            {#
+                             # parent page and insert position only have an effect with page_role=tree
+                             # (see se_sanitize_page_inputs()), hidden until "main menu" is picked -
+                             # hidden fields are still submitted, only what's shown changes
+                             #}
+                            <div id="parentPickerGroup" class="row g-3" style="display:{{ page_role == 'tree' ? 'flex' : 'none' }};">
+                                <div class="col-md-5">
+                                    <label class="form-label" for="newParentId">{{ lang.label_pages_parent_page }}</label>
+                                    <select name="new_parent_id" id="newParentId" class="form-select custom-select"
+                                            hx-get="/admin-xhr/pages/read/?action=page_siblings"
+                                            hx-target="#siblingPicker" hx-swap="innerHTML"
+                                            hx-include="[name='new_parent_id'],[name='csrf_token']"
+                                            hx-vals='{{ {'language': page_language, 'exclude_page_id': current_page_id ?? 0}|json_encode|e('html_attr') }}'
+                                            hx-trigger="change">
+                                        {{ parent_options|raw }}
+                                    </select>
+                                    <div class="form-text">{{ lang.label_pages_parent_page_help }}</div>
                                 </div>
-                                <div class="card-body collapse" id="collapseTranslationURL">
-                                    {% for translation in translations %}
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text"><i class="bi bi-translate me-1"></i> {{ translation.sign }}</span>
-                                            <input class="form-control" type="text" autocomplete="off" name="translation_url[{{ translation.sign }}]" value="{{ translation.url }}">
-                                        </div>
-                                    {% endfor %}
+                                <div class="col-md-7">
+                                    <label class="form-label">{{ lang.label_pages_insert_after }}</label>
+                                    <div id="siblingPicker" class="scroll-container">
+                                        {{ sibling_picker|raw }}
+                                    </div>
                                 </div>
                             </div>
 
-                            <hr>
+                            <script>function sePageRoleToggle() {
+                                var t = document.getElementById("page_role_tree");
+                                var g = document.getElementById("parentPickerGroup");
+                                if (t && g) { g.style.display = t.checked ? "flex" : "none"; }
+                            }</script>
 
-                            {{ inputs.custom_row|raw }}
-                            {{ inputs.type_of_use|raw }}
-
-                            <div class="heading-line">{{ lang.label_redirect }} &nbsp; {{ docs_link_redirects|raw }}</div>
-
-                            {{ inputs.shortlink|raw }}
-                            {{ inputs.funnel_urls|raw }}
-                            {{ inputs.redirect_row|raw }}
+                            <div class="accordion mt-3" id="accordionDeveloper">
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <button class="accordion-button{% if not has_developer %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDeveloper" aria-expanded="{{ has_developer ? 'true' : 'false' }}" aria-controls="collapseDeveloper">{{ lang.label_developer }}</button>
+                                    </div>
+                                    <div id="collapseDeveloper" class="accordion-collapse collapse{% if has_developer %} show{% endif %}">
+                                        <div class="accordion-body">
+                                            {{ inputs.custom_row|raw }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="tab-pane" id="content-tab" role="tabpanel" tabindex="0">
+                        <div class="tab-pane" id="url-tab" role="tabpanel" tabindex="0">
+                            {{ inputs.permalink|raw }}
+                            {{ inputs.canonical_url|raw }}
+
+                            {# same accordion style as the page list sidebar, items open independently (no data-bs-parent) #}
+                            <div class="accordion" id="accordionUrl">
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTranslationURL" aria-expanded="false" aria-controls="collapseTranslationURL">{{ lang.label_translations }} (URLs)</button>
+                                    </div>
+                                    <div id="collapseTranslationURL" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            {% for translation in translations %}
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text"><i class="bi bi-translate me-1"></i> {{ translation.sign }}</span>
+                                                    <input class="form-control" type="text" autocomplete="off" name="translation_url[{{ translation.sign }}]" value="{{ translation.url }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <button class="accordion-button{% if not has_redirects %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRedirects" aria-expanded="{{ has_redirects ? 'true' : 'false' }}" aria-controls="collapseRedirects">{{ lang.label_redirect }}</button>
+                                    </div>
+                                    <div id="collapseRedirects" class="accordion-collapse collapse{% if has_redirects %} show{% endif %}">
+                                        <div class="accordion-body">
+                                            {# the docs link can't sit inside the toggle button, so it leads the body #}
+                                            <div class="mb-2">{{ docs_link_redirects|raw }}</div>
+                                            {{ inputs.shortlink|raw }}
+                                            {{ inputs.funnel_urls|raw }}
+                                            {{ inputs.redirect_row|raw }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane show active" id="content-tab" role="tabpanel" tabindex="0">
                             {# swapped in place when the format dropdown changes, see acp/core/pages/data-reader.php #}
                             <div id="pageContentField">
                                 {{ inputs.content|raw }}
@@ -124,17 +159,60 @@
                                 <div class="col-md-6">
                                     {{ inputs.title|raw }}
                                     {{ inputs.meta_description|raw }}
-                                    {{ inputs.keywords|raw }}
-                                    {{ inputs.author|raw }}
                                     {{ inputs.schema_type|raw }}
 
-                                    <p>{{ lang.label_pages_meta_robots }}</p>
-                                    {% for robot in robots %}
-                                        <div class="form-check form-check-inline">
-                                            <input type="checkbox" class="form-check-input" id="btn-check-{{ robot.value }}" name="page_meta_robots[]" value="{{ robot.value }}"{% if robot.checked %} checked{% endif %}>
-                                            <label class="form-check-label" for="btn-check-{{ robot.value }}">{{ robot.value }}</label>
+                                    {#
+                                     # robots: the switches are "on = allowed", se_sanitize_page_inputs() turns them
+                                     # into noindex/nofollow - the hidden marker tells it the switches were sent
+                                     #}
+                                    <h6 class="text-uppercase text-body-secondary small fw-semibold mt-4 mb-3">{{ lang.label_pages_robots_heading }}</h6>
+                                    <input type="hidden" name="page_robots_switches" value="1">
+
+                                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                                        <label for="robotsIndex">
+                                            <span class="d-block fw-semibold">{{ lang.label_pages_robots_index }}</span>
+                                            <span class="d-block small text-body-secondary">{{ lang.label_pages_robots_index_help }}</span>
+                                        </label>
+                                        <div class="form-check form-switch fs-5 m-0">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="robotsIndex" name="page_robots_index" value="1"{% if robots_index %} checked{% endif %}>
                                         </div>
-                                    {% endfor %}
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                                        <label for="robotsFollow">
+                                            <span class="d-block fw-semibold">{{ lang.label_pages_robots_follow }}</span>
+                                            <span class="d-block small text-body-secondary">{{ lang.label_pages_robots_follow_help }}</span>
+                                        </label>
+                                        <div class="form-check form-switch fs-5 m-0">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="robotsFollow" name="page_robots_follow" value="1"{% if robots_follow %} checked{% endif %}>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion" id="accordionSeo">
+                                        <div class="accordion-item">
+                                            <div class="accordion-header">
+                                                <button class="accordion-button{% if not has_seo_advanced %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeoAdvanced" aria-expanded="{{ has_seo_advanced ? 'true' : 'false' }}" aria-controls="collapseSeoAdvanced">
+                                                    {{ lang.label_pages_robots_advanced }}
+                                                    <span class="text-body-secondary fw-normal ms-2">{{ lang.label_pages_robots_advanced_help }}</span>
+                                                </button>
+                                            </div>
+                                            <div id="collapseSeoAdvanced" class="accordion-collapse collapse{% if has_seo_advanced %} show{% endif %}">
+                                                <div class="accordion-body">
+                                                    {{ inputs.author|raw }}
+                                                    {{ inputs.keywords|raw }}
+
+                                                    <label class="form-label">{{ lang.label_pages_robots_more }}</label>
+                                                    {# reuses the label chip styles, colored with the primary color #}
+                                                    <div class="label-chips">
+                                                        {% for robot in robots %}
+                                                            <input type="checkbox" class="btn-check" id="robot-{{ robot.value }}" name="page_meta_robots[]" value="{{ robot.value }}" autocomplete="off"{% if robot.checked %} checked{% endif %}>
+                                                            <label class="label-chip" for="robot-{{ robot.value }}" style="--label-color: var(--bs-primary)">{{ robot.value }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     {{ form.images(images) }}
@@ -160,10 +238,22 @@
                                             {% for type in post_types %}
                                                 {% if type.value == 'e' or type.value == 'p' %}<hr>{% endif %}
                                                 <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input post-types post-type-group" id="type_{{ type.value }}" name="page_post_types[]" value="{{ type.value }}"{% if type.checked %} checked{% endif %}>
+                                                    <input type="checkbox" class="form-check-input post-types" id="type_{{ type.value }}" name="page_post_types[]" value="{{ type.value }}"{% if type.checked %} checked{% endif %} onchange="sePostTypeToggle(this)">
                                                     <label class="form-check-label" for="type_{{ type.value }}">{{ type.label }}</label>
                                                 </div>
                                             {% endfor %}
+                                            {#
+                                             # events (e) and products (p) each stand alone - checking one of them
+                                             # clears every other type, checking a blog type clears events and products
+                                             #}
+                                            <script>function sePostTypeToggle(box) {
+                                                if (!box.checked) { return; }
+                                                var exclusive = (box.value === "e" || box.value === "p");
+                                                document.querySelectorAll("input.post-types").forEach(function (other) {
+                                                    if (other === box) { return; }
+                                                    if (exclusive || other.value === "e" || other.value === "p") { other.checked = false; }
+                                                });
+                                            }</script>
                                         </div>
                                     </div>
                                 </div>
@@ -233,8 +323,19 @@
         <div class="col-md-3">
 
             <div class="card p-3">
+                {# same sticky action bar as the product and post forms #}
+                <div class="sidebar-actions sticky-lg-top">
+                    <div class="d-flex">
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" hx-disabled-elt="this" class="btn btn-success w-100" name="save_page" value="{{ form_mode }}">{{ btn_submit_text }}</button>
+                        {% if form_mode != 'new' %}
+                            <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-confirm="{{ lang.msg_confirm_delete }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="{{ form_mode }}">{{ lang.btn_delete }}</button>
+                        {% endif %}
+                    </div>
+                </div>
+
                 {{ inputs.status|raw }}
                 {{ inputs.language|raw }}
+                {{ inputs.type_of_use|raw }}
 
                 <div>
                     <label class="form-label" for="select_template">Theme / {{ lang.label_template }}</label>
@@ -282,18 +383,15 @@
                     </div>
                 </div>
 
+                <div class="mt-2">
+                    {{ inputs.content_tags|raw }}
+                </div>
+
                 <div class="my-2">
                     <label>{{ lang.labels }} {{ labels_docs_link|raw }}</label>
                     <div class="p-3">
                         {{ form.labels('set_page_labels[]', labels) }}
                     </div>
-                </div>
-
-                <div class="d-flex justify-content">
-                    <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-target="#formResponse" hx-swap="innerHTML" hx-disabled-elt="this" class="btn btn-success w-100" name="save_page" value="{{ form_mode }}">{{ btn_submit_text }}</button>
-                    {% if form_mode != 'new' %}
-                        <button type="submit" hx-post="{{ writer_uri }}" hx-trigger="click" hx-confirm="{{ lang.msg_confirm_delete }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-default text-danger ms-1" name="delete_page" value="{{ form_mode }}">{{ lang.btn_delete }}</button>
-                    {% endif %}
                 </div>
 
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

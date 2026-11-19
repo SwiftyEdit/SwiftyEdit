@@ -36,9 +36,17 @@ function se_acp_twofa_card(array $user, array $alerts = [], array $recovery_code
         $html .= '<div class="alert alert-'.$type.'">'.htmlspecialchars($text, ENT_QUOTES).'</div>';
     }
 
-    $html .= '<p class="text-muted">'.($required ? $lang['account_2fa_required'] : $lang['account_2fa_not_required']).'</p>';
+    $protected = se_is_protected_account((string) $user['user_nick']);
+    if (!$protected) {
+        $html .= '<p class="text-muted">'.($required ? $lang['account_2fa_required'] : $lang['account_2fa_not_required']).'</p>';
+    }
 
-    if ($recovery_codes !== []) {
+    if ($protected) {
+
+        // $se_protected_accounts - no changes possible, see settings-writer.php
+        $html .= '<div class="alert alert-info mb-0">'.htmlspecialchars($lang['msg_account_protected'], ENT_QUOTES).'</div>';
+
+    } elseif ($recovery_codes !== []) {
         // shown once, right after the setup or a renewal
         $html .= '<p>'.$lang['account_2fa_recovery_intro'].'</p>';
         if ($method === 'mail') {

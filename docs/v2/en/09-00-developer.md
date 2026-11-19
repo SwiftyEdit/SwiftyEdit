@@ -84,6 +84,25 @@ A few more small things worth knowing:
   `$se_backend_updates = false;` in `data/config.php` the backend no longer downloads or
   installs updates (e.g. if you deploy by hand). New versions are still shown, the database
   update via `/install/` still works.
+* __Sending e-mails__ (`$se_send_mails` in `config.php`) - with `$se_send_mails = false;` in
+  `data/config.php` no e-mails are sent, e.g. on test or demo installations. Every mail is
+  logged (subject, no address) and reported as sent, so registration, checkout etc. go on as
+  usual. The test mail in the settings says that sending is switched off, 2FA codes by mail
+  report a failure. Plugins can change or stop single mails with the global filter hook
+  `mail.send` (see [Hooks](09-03-hooks.md)).
+* __Protected accounts__ (`$se_protected_accounts` in `config.php`) - a list of usernames, e.g.
+  `$se_protected_accounts = ['demo'];` for a login shared on a demo installation. The password,
+  e-mail address, username and two-factor authentication of these accounts can't be changed -
+  neither in the profile nor by an administrator - and they can't be deleted or reset by mail.
+  Usernames are compared case-insensitively. If 2FA is required, it is skipped for them while
+  they have none. With a public password, also set `$se_failed_logins_limit = null;`,
+  otherwise anyone can lock the account with wrong passwords.
+* __Storage space for uploads__ (`$se_limit_uploads_dir` in `config.php`) - the total size of
+  all uploads in the backend in MB, e.g. `$se_limit_uploads_dir = 200;` in `data/config.php`
+  (empty = no limit, default). Counted are the media library (`assets/images`,
+  `assets/files`) and the galleries, not the generated thumbnails. An upload that would
+  exceed it is refused with a message. The other `$se_limit_*` values in `config.php` are not
+  used yet.
 * __Folder permissions__ (`SE_DIR_PERMISSIONS`) - folders SwiftyEdit creates (cache, uploads,
   thumbnails) get `0755`. If you need write access via FTP with a different user, add
   `define('SE_DIR_PERMISSIONS', 0775);` to `data/config.php`.

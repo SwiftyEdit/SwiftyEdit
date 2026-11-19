@@ -308,6 +308,40 @@ function tpl_form_select(array $data): string {
 }
 
 /**
+ * language select of the edit forms: the active languages ($lang_codes) with
+ * their full names, the translate icon in front instead of a visible label
+ * markup in components/form/language-select.twig
+ *
+ * @param string $name input name, e.g. page_language
+ * @param string $value selected language folder (de, en ...)
+ * @param string $container_class class of the wrapping div
+ * @return string
+ */
+function se_print_language_select(string $name, string $value, string $container_class = 'mb-3'): string {
+
+    global $twig, $lang_codes;
+
+    $options = [];
+    foreach(get_all_languages() as $language) {
+        if(!in_array($language['lang_folder'], $lang_codes)) {
+            continue;
+        }
+        $options[] = [
+            'value' => $language['lang_folder'],
+            'label' => $language['lang_desc'],
+            'selected' => ($language['lang_folder'] == $value)
+        ];
+    }
+
+    return $twig->render('components/form/language-select.twig', [
+        'container_class' => $container_class,
+        'inputid' => uniqid(),
+        'input_name' => $name,
+        'options' => $options
+    ]);
+}
+
+/**
  * print a bootstrap row
  *
  * @param array $cols html of the columns

@@ -60,6 +60,19 @@ if(isset($_POST['save_user'])) {
     $user_psw_new = is_string($_POST['user_psw_new'] ?? null) ? $_POST['user_psw_new'] : '';
     $user_psw_reconfirmation = is_string($_POST['user_psw_reconfirmation'] ?? null) ? $_POST['user_psw_reconfirmation'] : '';
 
+    // protected accounts ($se_protected_accounts) keep username, e-mail address
+    // and password - the protection is bound to the username
+    $stored_user = is_numeric($_POST['save_user']) ? se_get_userdata_by_id((int) $_POST['save_user']) : null;
+    if(is_array($stored_user) && se_is_protected_account((string) $stored_user['user_nick'])) {
+        if($user_psw_new !== '' || $columns['user_nick'] !== $stored_user['user_nick'] || $columns['user_mail'] !== $stored_user['user_mail']) {
+            echo '<div class="alert alert-warning">'.$lang['msg_account_protected'].'</div>';
+        }
+        $columns['user_nick'] = $stored_user['user_nick'];
+        $columns['user_mail'] = $stored_user['user_mail'];
+        $user_nick = $columns['user_nick'];
+        $user_psw_new = '';
+    }
+
     if($user_psw_new != "") {
         $psw_errors = se_password_check($user_psw_new, [$columns['user_nick'], $columns['user_mail']]);
         if($user_psw_new !== $user_psw_reconfirmation) {
@@ -256,8 +269,12 @@ if(isset($_POST['reset_2fa']) && is_numeric($_POST['reset_2fa'])) {
 
     $reset_user_id = (int) $_POST['reset_2fa'];
 
+    $reset_user = se_get_userdata_by_id($reset_user_id);
+
     if($reset_user_id === (int) $_SESSION['user_id']) {
         echo '<div class="alert alert-warning">'.$lang['users_2fa_not_own'].'</div>';
+    } elseif(is_array($reset_user) && se_is_protected_account((string) $reset_user['user_nick'])) {
+        echo '<div class="alert alert-warning">'.$lang['msg_account_protected'].'</div>';
     } else {
         se_2fa_reset($reset_user_id, $_SESSION['user_nick']);
         echo '<div class="alert alert-success">'.$lang['users_2fa_msg_reset'].'</div>';

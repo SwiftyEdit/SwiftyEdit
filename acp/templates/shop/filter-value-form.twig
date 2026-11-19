@@ -4,13 +4,15 @@
  # value_id: id of the edited value, null for a new value
  # filter_hash: kept on update, new for a new value
  #}
-<div class="subHeader d-flex align-items-center">
-    {{ icon.shop|raw }} {{ lang.nav_btn_shop }}
-</div>
+{# a value belongs to a filter group, shown as badge #}
+{% include 'components/edit-header.twig' with {
+    back_url: '/admin/shop/filters/',
+    title: value_id ? header.title : lang.btn_new,
+    badges: header.group ? [header.group] : []
+} only %}
 
 <form>
     <div class="card">
-        <div class="card-header"><a href="/admin/shop/">{{ lang.nav_btn_shop }}</a> / <a href="/admin/shop/filters/">{{ lang.filter }}</a> / {{ lang.label_value }}</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-9">

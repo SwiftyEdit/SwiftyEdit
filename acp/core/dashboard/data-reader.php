@@ -9,6 +9,7 @@ use Twig\Environment;
  * @var object $db_user
  * @var object $db_posts
  * @var string $db_type
+ * @var array $se_db_state app/database.php
  * @var array $se_page_types
  * @var array $se_settings
  * @var array $lang
@@ -224,22 +225,19 @@ if($_REQUEST['action'] === 'list_alerts') {
         SE_PUBLIC.'/assets/avatars/',
         SE_ROOT.'/data/cache/',
         SE_PUBLIC.'/assets/files/',
-        SE_PUBLIC.'/assets/images/',
-        SE_ROOT.'/data/database/content.sqlite3',
-        SE_ROOT.'/data/database/user.sqlite3'
+        SE_PUBLIC.'/assets/images/'
     );
 
-    foreach($writable_items as $f) {
-
-        if($db_type !== 'sqlite') {
-            if($f == SE_ROOT.'/data/database/content.sqlite3') {
-                continue;
-            }
-            if($f == SE_ROOT.'/data/database/user.sqlite3') {
-                continue;
-            }
+    if($db_type === 'sqlite') {
+        // the directory too - SQLite creates its -wal/-journal files there
+        $writable_items[] = dirname(CONTENT_DB).'/';
+        // unique paths - since 2.4 all three point to the same file
+        foreach(array_unique([CONTENT_DB, USER_DB, POSTS_DB]) as $db_path) {
+            $writable_items[] = $db_path;
         }
+    }
 
+    foreach($writable_items as $f) {
         if(!is_writable($f)) {
             $se_check_messages[] = basename($f);
         }
@@ -280,6 +278,8 @@ if($_REQUEST['action'] === 'list_alerts') {
 
     $html = $twig->render('dashboard/review.twig', [
         'not_writable' => $se_check_messages,
+        // the files used up to 2.3 could not be merged (see app/database.php)
+        'db_merge_error' => (($se_db_state['mode'] ?? '') === 'legacy') ? $se_db_state['error'] : '',
         'missing_types' => $missing_types,
         'security' => $can_view_log ? se_dashboard_security_summary() : null
     ]);

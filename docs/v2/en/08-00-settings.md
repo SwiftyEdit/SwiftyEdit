@@ -278,9 +278,9 @@ where it does not apply).
 concurrent reads have to wait until the write is finished. `WAL` mode lets reads continue
 while a write is in progress, instead of locking the whole file. On a site with a lot of
 concurrent traffic, this can noticeably reduce `database is locked` errors and response
-times. The setting is applied immediately to all three SQLite databases (content, user,
-posts) and can be turned off again at any time - it's a persistent property of the
-database files, not something that needs to be re-applied on every request.
+times. The setting is applied immediately to the database file and can be turned off again
+at any time - it's a persistent property of the file, not something that needs to be
+re-applied on every request.
 
 Two things to know before enabling it:
 
@@ -293,12 +293,23 @@ Two things to know before enabling it:
   runs a checkpoint (`PRAGMA wal_checkpoint(TRUNCATE)`) before copying.
 
 ### Compact database {#database-vacuum}
-The table shows the size and the free space inside each of the three database
-files. Deleted data leaves free space in the file that SQLite reuses for new data - but the
-file doesn't get smaller by that. The button compacts the files (`VACUUM`) and gives this
-space back to the disk. Each file is rewritten: nothing can be saved while it runs, and it
-temporarily needs as much free disk space as the largest file. This is mainly useful after
-a lot of data has been deleted.
+The table shows the size of the database file and the free space inside it. Deleted data
+leaves free space in the file that SQLite reuses for new data - but the file doesn't get
+smaller by that. The button compacts the file (`VACUUM`) and gives this space back to the
+disk. The file is rewritten: nothing can be saved while it runs, and it temporarily needs as
+much free disk space as the file itself. This is mainly useful after a lot of data has been
+deleted.
+
+### Old database files {#database-legacy}
+Up to version 2.3, SwiftyEdit used three database files (`content.sqlite3`, `user.sqlite3`,
+`posts.sqlite3`). Since 2.4 everything is in `swiftyedit.sqlite3`. The old files are merged
+automatically on the first request after the update - they are only read, not changed, and
+stay in `data/database/` as a fallback. This section only appears while they are still
+there. Once the site runs as usual, you can delete them here.
+
+If the merge fails (e.g. because `data/database/` is not writable), the site keeps running on
+the old files, the dashboard shows the reason under "Alerts", and the merge is tried again
+after 10 minutes at the earliest.
 
 ---
 

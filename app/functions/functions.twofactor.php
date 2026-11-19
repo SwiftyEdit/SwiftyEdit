@@ -51,6 +51,11 @@ function se_2fa_required_for(array $user): bool {
         record_log($user['user_nick'], '2FA skipped by $se_2fa_bypass in config.php', 5);
         return false;
     }
+    // protected accounts ($se_protected_accounts) can't set 2FA up - forcing
+    // the setup at login would let the first visitor lock everybody else out
+    if (se_is_protected_account((string) $user['user_nick']) && ($user['user_2fa_method'] ?? '') === '') {
+        return false;
+    }
     return true;
 }
 
@@ -251,7 +256,13 @@ function se_2fa_hash_code(string $code): string {
  */
 function se_2fa_send_mail_code(array $user): string {
 
-    global $db_user, $lang, $se_settings;
+    global $db_user, $lang, $se_settings, $se_send_mails;
+
+    // with sending switched off se_send_mail() reports success - the user
+    // would wait for a code that never comes
+    if (($se_send_mails ?? true) === false) {
+        return 'failed';
+    }
 
     if (time() - (int) $user['user_2fa_mail_sent'] < SE_2FA_MAIL_RESEND_DELAY) {
         return 'wait';

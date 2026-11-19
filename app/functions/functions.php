@@ -617,6 +617,11 @@ function se_return_words_str(string $string, int $nbr=5): string {
  * sending e-mails
  * store your smtp settings in /content/config_smtp.php
  *
+ * Before sending, the mail runs through the global filter hook 'mail.send'
+ * (see app/hooks/hooks-map.php). With $se_send_mails = false (data/config.php)
+ * nothing is sent - the mail is logged and reported as sent, so registration,
+ * checkout etc. go on as usual.
+ *
  * @param array $recipient 'mail' and 'name'
  * @param string $subject subject of the email
  * @param string $message string/html content of the email
@@ -627,7 +632,7 @@ function se_return_words_str(string $string, int $nbr=5): string {
 
 function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
 
-    global $se_settings;
+    global $se_settings, $se_send_mails;
     global $smtp_host, $smtp_port, $smtp_encryption, $smtp_username, $smtp_psw;
     $prefs_mailer_adr = $se_settings['mailer_adr'];
     $prefs_mailer_name = $se_settings['mailer_name'];
@@ -635,6 +640,31 @@ function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
 
 	$subject = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $subject );
 	$message = preg_replace( "/(content-type:|bcc:|cc:|to:|from:)/im", "", $message );
+
+    // plugins can change the mail or stop it (return false). The global hooks
+    // are not loaded on every request (e.g. the backend login), hence the check.
+    if(function_exists('se_apply_global_filters')) {
+        $filtered = se_apply_global_filters('mail.send', [
+            'recipient' => $recipient,
+            'subject' => $subject,
+            'message' => $message,
+            'bcc_admin' => $bcc_admin
+        ]);
+        if(!is_array($filtered)) {
+            se_log_event('mail_stopped', 'Mail not sent, stopped by a plugin: '.$subject, 3, 'system');
+            return 'Mail not sent (stopped by a plugin)';
+        }
+        $recipient = $filtered['recipient'] ?? $recipient;
+        $subject = (string) ($filtered['subject'] ?? $subject);
+        $message = (string) ($filtered['message'] ?? $message);
+        $bcc_admin = (bool) ($filtered['bcc_admin'] ?? $bcc_admin);
+    }
+
+    // sending switched off - log it (without the address) and report success
+    if(($se_send_mails ?? true) === false) {
+        se_log_event('mail_suppressed', 'Mail not sent ($se_send_mails = false): '.$subject, 3, 'system');
+        return 1;
+    }
 
 
 	

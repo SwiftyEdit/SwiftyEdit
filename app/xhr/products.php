@@ -79,10 +79,10 @@ if (isset($_GET['calc']) && is_numeric($_GET['product_id'])) {
         // gross prices
         $product_price_tag = $post_price_gross;
         $product_tax_label = $lang['price_tag_label_gross'];
-    } else if ($se_settings['prefs_posts_price_mode'] == 2) {
+    } else if ($se_settings['posts_price_mode'] == 2) {
         // gross and net prices
         $product_price_tag = $post_price_net . '/' . $post_price_gross;
-        $product_tax_label = $lang['label_net'] . ' / ' . $lang['label_net'];
+        $product_tax_label = $lang['label_net'] . ' / ' . $lang['label_gross'];
     } else {
         // net only (b2b mode)
         $product_price_tag = $post_price_net;

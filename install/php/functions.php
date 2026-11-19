@@ -348,11 +348,30 @@ function se_write_upload_htaccess_files(): array {
  * Every migration file returns a closure `function($db_content, $db_user,
  * $db_posts) { ... }`. Its writes and the se_migrations tracking row are
  * committed together in a transaction per involved database connection
- * (deduplicated - on MySQL $db_content/$db_user/$db_posts are the very same
- * connection, on SQLite they're three separate files/connections and can
- * only be committed independently). If a migration throws, everything it did
+ * (deduplicated - on MySQL and on SQLite since 2.4 $db_content/$db_user/$db_posts
+ * are the very same connection; on a SQLite installation that still runs on
+ * the three pre-2.4 files they're three separate connections and can only be
+ * committed independently). If a migration throws, everything it did
  * is rolled back, the run stops there, and later migrations are left for the
  * next attempt - migrations 1..n-1 already committed stay applied.
+ *
+ * Rules for migrations, as long as the fallback to the pre-2.4 files exists
+ * (until V3). An installation that skips the 2.4 build runs new migrations
+ * through the ACP updater BEFORE its files are merged: that request still
+ * runs the old code, with three connections to three files - the merge only
+ * happens on the next request (see app/functions/functions.database.php).
+ * - Use the matching handle for every table: $db_user for the tables of
+ *   install/contents/ with $database = 'user', $db_posts for 'posts',
+ *   $db_content for the rest. A user table queried through $db_content is
+ *   "no such table" on these installations.
+ * - No queries across areas (e.g. a JOIN of se_posts and se_user) - they only
+ *   work in one file.
+ * - Self-contained: the updater request runs the old code, so don't rely on
+ *   functions, classes or Medoo behavior that are new in the same release.
+ *   Plain select/update/insert on the passed handles only.
+ * A migration that breaks a rule fails and is rolled back (MIGRATION ERROR
+ * in the update protocol) - nothing gets corrupted, but it stays unapplied
+ * until the next update run.
  *
  * @return array{applied: string[], error: string|null, opcache_reset: string}
  */

@@ -80,21 +80,8 @@ $inputs = [
 
 if($form == 'group') {
 
-    $lang_options = [];
-    foreach(get_all_languages() as $langs) {
-        if(!in_array($langs['lang_folder'],$lang_codes)) {
-            continue;
-        }
-        $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-    }
-
-    $inputs['language'] = se_print_form_input([
-        "input_name" => "filter_lang",
-        "input_value" => $filter_data['filter_lang'] ?? '',
-        "label" => $lang['label_language'],
-        "options" => $lang_options,
-        "type" => "select"
-    ]);
+    // language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+    $inputs['language'] = se_print_language_select('filter_lang', (string) ($filter_data['filter_lang'] ?? ''));
 
     $inputs['input_type'] = se_print_form_input([
         "input_name" => "filter_input_type",
@@ -121,6 +108,11 @@ if($form == 'group') {
     }
 
     echo $twig->render('shop/filter-group-form.twig', [
+        // header card above the form (components/edit-header.twig)
+        'header' => [
+            'title' => html_entity_decode((string) ($filter_data['filter_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'language' => (string) ($filter_data['filter_lang'] ?? '')
+        ],
         'group_id' => isset($filter_data['filter_id']) ? (int) $filter_data['filter_id'] : null,
         'writer_uri' => $writer_uri,
         'inputs' => $inputs,
@@ -136,8 +128,12 @@ if($form == 'value') {
 
     // select for the group
     $group_options = [];
+    $parent_title = '';
     foreach(se_get_product_filter_groups('all') as $group) {
         $group_options['#'.$group['filter_id'].' | '.$group['filter_title']] = $group['filter_id'];
+        if($group['filter_id'] == $parent_id) {
+            $parent_title = html_entity_decode((string) $group['filter_title'], ENT_QUOTES, 'UTF-8');
+        }
     }
 
     $inputs['group'] = se_print_form_input([
@@ -155,6 +151,11 @@ if($form == 'value') {
     }
 
     echo $twig->render('shop/filter-value-form.twig', [
+        // header card above the form (components/edit-header.twig), the group as badge
+        'header' => [
+            'title' => html_entity_decode((string) ($filter_data['filter_title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'group' => $parent_title
+        ],
         'value_id' => isset($filter_data['filter_id']) ? (int) $filter_data['filter_id'] : null,
         'writer_uri' => $writer_uri,
         'inputs' => $inputs,

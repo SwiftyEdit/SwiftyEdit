@@ -6,10 +6,13 @@
  #}
 {% import 'components/form/macros.twig' as form %}
 
-<div class="subHeader d-flex align-items-center">
-    {{ icon.bookmarks_fill|raw }} {{ lang.categories }}
-    <a href="/admin/categories/" class="btn btn-default ms-auto">{{ icon.arrow_left_short|raw }} {{ lang.nav_btn_overview }}</a>
-</div>
+{# categories have no status and no fixed url of their own, the slug is shown as code #}
+{% include 'components/edit-header.twig' with {
+    back_url: '/admin/categories/',
+    title: header.mode == 'edit' ? header.title : lang.btn_new,
+    badges: header.mode == 'edit' ? [header.language|upper] : [],
+    code: header.mode == 'edit' ? header.slug : null
+} only %}
 
 <div id="formResponse"></div>
 
@@ -21,7 +24,7 @@
                     <ul class="nav nav-tabs card-header-tabs" id="bsTabs" role="tablist">
                         <li class="nav-item"><a class="nav-link active" href="#info" data-bs-toggle="tab">{{ lang.nav_btn_info }}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#content" data-bs-toggle="tab">{{ lang.label_content }}</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#metas" data-bs-toggle="tab">{{ lang.nav_btn_metas }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#metas" data-bs-toggle="tab">{{ lang.nav_btn_seo }}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#theme" data-bs-toggle="tab">Theme</a></li>
                     </ul>
                 </div>
@@ -62,6 +65,11 @@
             <div class="card">
                 <div class="card-header">{{ lang.label_settings }}</div>
                 <div class="card-body">
+                    {# same sticky action bar as the other edit forms #}
+                    <div class="sidebar-actions sticky-lg-top">
+                        <button type="submit" hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_category" value="{{ category_id ?? 'new' }}">{{ submit_label }}</button>
+                    </div>
+
                     {{ inputs.priority|raw }}
                     {{ inputs.language|raw }}
 
@@ -76,7 +84,6 @@
                     </div>
 
                     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    <button type="submit" hx-post="{{ writer_uri }}" hx-target="#formResponse" hx-swap="innerHTML" class="btn btn-success w-100" name="save_category" value="{{ category_id ?? 'new' }}">{{ submit_label }}</button>
                 </div>
             </div>
         </div>

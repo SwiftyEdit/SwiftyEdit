@@ -153,16 +153,11 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['post_id'] = $get_cart_items[$i]['cart_product_id'];
     $cart_item[$i]['slug'] = $get_cart_items[$i]['cart_product_slug'];
 
-    // check if we have a minimum quantity for this item
-    if(($this_item['product_order_quantity_min'] > 0) && ($cart_item[$i]['amount'] < $this_item['product_order_quantity_min'])) {
-        $cart_item[$i]['amount'] = $this_item['product_order_quantity_min'];
-    }
+    // amount (min/max order quantity), price group, tax and volume discount
+    // shared with the mini cart preview (app/xhr/cart.php)
+    $item_price = se_get_cart_item_price($this_item, (int) $cart_item[$i]['amount']);
+    $cart_item[$i]['amount'] = $item_price['amount'];
 
-    // check if we have a maximum quantity for this item
-    if(($this_item['product_order_quantity_max'] > 0) && ($cart_item[$i]['amount'] > $this_item['product_order_quantity_max'])) {
-        $cart_item[$i]['amount'] = $this_item['product_order_quantity_max'];
-    }
-	
 	/* will the product be delivered? */
 	if($this_item['product_shipping_mode'] == 2) {
 		$shipping_products++;
@@ -179,57 +174,16 @@ for($i=0;$i<$cnt_cart_items;$i++) {
     }
 
 
-    // get price from price groups or from products data
-    if($this_item['product_price_group'] != '' AND $this_item['product_price_group'] != 'null') {
-        $price_data = se_get_price_group_data($this_item['product_price_group']);
-        $product_tax = $price_data['tax'];
-        $product_price_net = $price_data['price_net'];
-        $product_volume_discounts_json = $price_data['price_volume_discount'];
-    } else {
-        $product_tax = $this_item['product_tax'];
-        $product_price_net = $this_item['product_price_net'];
-        $product_volume_discounts_json = $this_item['product_price_volume_discount'];
-    }
-
-	if($product_tax == '1') {
-		$tax = $se_settings['posts_products_default_tax'];
-	} else if($product_tax == '2') {
-		$tax = $se_settings['posts_products_tax_alt1'];
-	} else {
-		$tax = $se_settings['posts_products_tax_alt2'];
-	}
+    $product_price_net = $item_price['price_net'];
+    $tax = $item_price['tax'];
 
     if($add_product_tax == false) {
         $tax = 0;
     }
-	
+
 	$cart_item[$i]['tax'] = $tax;
 
-    // check if we have to calculate volume discounts
-    if($product_volume_discounts_json != '') {
-        $volume_discounts = json_decode($product_volume_discounts_json,true);
-        if(is_array($volume_discounts)) {
-            // we sort this by amount
-            $amounts = array();
-            foreach ($volume_discounts as $k => $v) {
-                $amounts[$k] = $v['amount'];
-            }
-            array_multisort($amounts, SORT_ASC, $volume_discounts);
-
-            // now we loop through this amounts and check which price we can serve
-            // if $cart_item[$i]['amount'] is bigger or the same, we have a new price
-
-            foreach ($volume_discounts as $k => $v) {
-                if ($cart_item[$i]['amount'] >= $v['amount']) {
-                    // overwrite product_price_net with volume discount
-                    $product_price_net = $v['price'];
-                }
-            }
-        }
-    }
-
-
-	$item_prices = se_posts_calc_price($product_price_net,$tax,$cart_item[$i]['amount']);
+	$item_prices = se_calc_cart_line_price($product_price_net, $tax, (int) $cart_item[$i]['amount'], $se_settings['posts_price_mode']);
     $cart_item[$i]['price_net_single_format'] = $item_prices['net_single'];
     $cart_item[$i]['price_gross_single_format'] = $item_prices['gross_single'];
     $cart_item[$i]['price_net_format'] = $item_prices['net'];
@@ -238,16 +192,17 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['price_gross_raw'] = $item_prices['gross_raw'];
 	$cart_item[$i]['price_net'] = $this_item['product_price_net'];
 	
-	$price_all_net = $price_all_net+round($item_prices['net_raw'],2);
-    $all_items_subtotal_net = $all_items_subtotal_net+$cart_item[$i]['price_net_raw'];
-    $all_items_subtotal = $all_items_subtotal+$cart_item[$i]['price_gross_raw'];
+	// line values are already rounded to cents, the subtotals are their sums
+	$price_all_net = round($price_all_net+$item_prices['net_raw'],2);
+    $all_items_subtotal_net = round($all_items_subtotal_net+$item_prices['net_raw'],2);
+    $all_items_subtotal = round($all_items_subtotal+$item_prices['gross_raw'],2);
 
     // collect items taxes
-    $tax_sum[$i] = $cart_item[$i]['price_net_raw'] * ($tax / 100);
+    $tax_sum[$i] = $item_prices['tax_raw'];
 
     // we collect net prices; grouped by tax,
     // to calculate taxes on delivery costs
-    $tax_grouped[$tax] = ($tax_grouped[$tax] ?? 0)+round($item_prices['net_raw'],2);
+    $tax_grouped[$tax] = round(($tax_grouped[$tax] ?? 0)+$item_prices['net_raw'],2);
 
 }
 
@@ -293,7 +248,7 @@ foreach ($tax_grouped as $tax_rate => $net_value) {
     // a cart with free items only would divide by zero
     $part = ($all_items_subtotal_net > 0) ? $net_value / $all_items_subtotal_net : 0;
     $part_net = $part * $shipping_costs_net;
-    $tax = $part_net * ($tax_rate / 100);
+    $tax = round($part_net * ($tax_rate / 100), 2);
 
     $shipping_tax_split[$tax_rate] = [
         'part' => $part,
@@ -324,13 +279,10 @@ $smarty->assign('cart_agree_term', $cart_agree_term);
 
 /* calculate subtotal and total */
 $cart_price_subtotal_net = $all_items_subtotal_net;
-$cart_included_taxes = 0;
-foreach ($tax_sum as $tax) {
-    $cart_included_taxes += $tax;
-}
+$cart_included_taxes = round(array_sum($tax_sum), 2);
 
-$cart_price_subtotal = $cart_price_subtotal_net+$cart_included_taxes;
-$cart_price_total = $cart_price_subtotal + $payment_costs + $shipping_costs_total;
+$cart_price_subtotal = round($cart_price_subtotal_net+$cart_included_taxes, 2);
+$cart_price_total = round($cart_price_subtotal + (float) $payment_costs + $shipping_costs_total, 2);
 
 // check if we have a maximum order value
 if($se_settings['posts_max_order_value'] != '') {

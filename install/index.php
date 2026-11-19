@@ -4,7 +4,8 @@
  * SwiftyEdit
  * Installer/Updater
  *
- * @var string $se_db_content config.php
+ * @var string $se_db_file config.php
+ * @var string $se_db_content config.php (file used up to 2.3)
  */
 require_once __DIR__.'/../app/session.php';
 require_once __DIR__.'/../app/headers.php';
@@ -47,7 +48,7 @@ foreach($lang_data as $key => $value) {
 
 include '../acp/core/icons.php';
 
-if(is_file("$se_db_content")) {
+if(is_file("$se_db_file") || is_file("$se_db_content")) {
 	$modus = "update";
 	$db_type = 'sqlite';
 }

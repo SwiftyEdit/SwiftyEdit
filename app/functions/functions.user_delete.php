@@ -116,6 +116,11 @@ function se_user_delete_blocker(int $user_id, string $context): string {
         return 'users_delete_not_found';
     }
 
+    // $se_protected_accounts - neither the user nor an administrator
+    if(se_is_protected_account((string) $user['user_nick'])) {
+        return 'msg_account_protected';
+    }
+
     if($context === 'acp') {
         if(!se_can_manage_user($user_id)) {
             return 'rm_no_access';

@@ -25,36 +25,36 @@ In addition, there is the search field.
 
 ## Sorting {#sorting}
 
-How to place a page in the navigation, on the *Position* tab.
+How to place a page in the navigation, on the *Navigation* tab.
 
-Three mutually exclusive roles decide what a page is:
+Under "Where does the page appear?" three mutually exclusive roles decide what a page is:
 
 ### Single page
 
 - Single pages are not part of the navigation tree and don't appear in the main menu.
 - They can still show up in the sitemap or search results.
-- With "Single page" selected, the "Parent page" / "Insert position" fields below have no effect.
+- The "Parent page" and "Insert after" fields are only shown for "Main menu".
 
 ### Portal
 
 - The portal page is a language's start page.
 - Each activated language should have exactly one portal page.
-- With "Portal" selected, "Parent page" / "Insert position" also have no effect.
+- "Parent page" and "Insert after" are not shown here either.
 
 ### Main menu
 
 - Places the page in the navigation tree - as a top-level entry, or nested under another page.
 - **Parent page**: choose which page this one becomes a child of, or leave it at
-  "Top level" for a top-level main menu entry directly under the portal page.
-- **Insert position**: choose which of the parent's existing children this page is placed
-  directly after (the arrow icon marks that) - or "At the beginning" to make it the first child.
-  Picking a parent or an insert position automatically selects "Main menu" above, since
-  otherwise the choice wouldn't have any effect on save.
+  "Top level" for a top-level main menu entry directly under the portal page. It sets the level
+  in the menu and the start of the URL.
+- **Insert after**: choose which of the parent's existing children this page is placed
+  directly after - or "At the beginning" to make it the first child. A dashed line shows where
+  the page will end up. The list updates as soon as you pick another parent page.
 
 ### Example
 
-Setting Flyer's parent page to "Home" (top level) and Posters' parent page to
-"Flyer", inserted after it, results in:
+Setting Flyer's parent page to "Top level" and Posters' parent page to
+"Flyer" results in:
 
 - Home
 - Flyer
@@ -155,7 +155,7 @@ in Settings → Shop.
 
 ### Page type (structured data) {#page-schema-type}
 
-In the Meta tab you can choose which kind of page this is for search engines, e.g. an about page,
+In the SEO tab you can choose which kind of page this is for search engines, e.g. an about page,
 a contact page or an FAQ page. SwiftyEdit outputs it as the schema.org type of the page in the
 structured data (JSON-LD). Without a choice, the page is a regular `WebPage`. Products, posts and
 events get their own types (`Product`, `BlogPosting`, `Event`) automatically.

@@ -47,29 +47,16 @@ if(isset($post_data['post_type'])) {
 
 $record_data = $post_data ?? [];
 
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['files'].' '.$lang['nav_btn_blog'];
-echo '<div class="d-flex ms-auto">'.$mode.' '.$post_type_form.'</div>';
-echo '</div>';
-
-
-if($mode == 'new') {
-    echo '<form hx-post="' . $writer_uri . '">';
-    echo '<div class="card mb-3">';
-    echo '<div class="card-header">' . $lang['label_select_post_type'] . '</div>';
-    echo '<div class="btn-group d-flex" role="group">';
-    echo '<button name="set_post_type" value="m" class="btn btn-default w-100 '.($post_type_form == "m" ? 'active' :'').'"><span class="color-message">' . $icon['plus'] . '</span> ' . $lang['post_type_message'] . '</button>';
-    echo '<button name="set_post_type" value="i" class="btn btn-default w-100 '.($post_type_form == "i" ? 'active' :'').'"><span class="color-image">' . $icon['plus'] . '</span> ' . $lang['post_type_image'] . '</button>';
-    echo '<button name="set_post_type" value="g" class="btn btn-default w-100 '.($post_type_form == "g" ? 'active' :'').'"><span class="color-gallery">' . $icon['plus'] . '</span> ' . $lang['post_type_gallery'] . '</button>';
-    echo '<button name="set_post_type" value="v" class="btn btn-default w-100 '.($post_type_form == "v" ? 'active' :'').'"><span class="color-video">' . $icon['plus'] . '</span> ' . $lang['post_type_video'] . '</button>';
-    echo '<button name="set_post_type" value="l" class="btn btn-default w-100 '.($post_type_form == "l" ? 'active' :'').'"><span class="color-link">' . $icon['plus'] . '</span> ' . $lang['post_type_link'] . '</button>';
-    echo '<button name="set_post_type" value="f" class="btn btn-default w-100 '.($post_type_form == "f" ? 'active' :'').'"><span class="color-file">' . $icon['plus'] . '</span> ' . $lang['post_type_file'] . '</button>';
-    echo '</div>';
-    echo '</div>';
-    echo $hidden_csrf_token;
-    echo '</form>';
-}
-
+// post types: label and the color class of the type (see _posts.scss), used by
+// the type picker of new posts and the type badge in the header card
+$post_types = [
+    'm' => ['label' => $lang['post_type_message'], 'color' => 'color-message'],
+    'i' => ['label' => $lang['post_type_image'], 'color' => 'color-image'],
+    'g' => ['label' => $lang['post_type_gallery'], 'color' => 'color-gallery'],
+    'v' => ['label' => $lang['post_type_video'], 'color' => 'color-video'],
+    'l' => ['label' => $lang['post_type_link'], 'color' => 'color-link'],
+    'f' => ['label' => $lang['post_type_file'], 'color' => 'color-file']
+];
 
 // one template per post type, all of them extend blog/post-form.twig
 $form_templates = [
@@ -122,21 +109,8 @@ $inputs['text'] = se_print_form_input([
 ]);
 
 // select language
-$lang_options = [];
-foreach(get_all_languages() as $langs) {
-    if(!in_array($langs['lang_folder'],$lang_codes)) {
-        continue;
-    }
-    $lang_options[$langs['lang_desc']] = $langs['lang_folder'];
-}
-
-$inputs['language'] = se_print_form_input([
-    "input_name" => "post_lang",
-    "input_value" => $post_data['post_lang'] ?? $languagePack,
-    "label" => $lang['label_language'],
-    "options" => $lang_options,
-    "type" => "select"
-]);
+// language select with icon and full names, see se_print_language_select() in acp/core/templates.php
+$inputs['language'] = se_print_language_select('post_lang', (string) ($post_data['post_lang'] ?? $languagePack));
 
 $inputs['status'] = se_print_form_input([
     "input_name" => "post_status",
@@ -251,8 +225,38 @@ foreach(array_filter(explode("<->", $post_data['post_images'] ?? '')) as $image)
     ];
 }
 
-echo '<div id="formResponse"></div>';
+/*
+ * header card above the form (components/edit-header.twig): title, status,
+ * language, post type and the public url - the url follows the frontend search
+ * (app/handlers/search.php): the stored canonical url, else detail page + slug + id.
+ * New posts get the post type picker inside the card instead.
+ */
+$header_status = ['1' => 'public', '2' => 'draft'][(string) ($post_data['post_status'] ?? '')] ?? '';
+$header_url = (string) ($post_data['post_canonical_url'] ?? '');
+if($header_url == '' && $mode == 'update' && ($post_data['post_slug'] ?? '') != '') {
+    $posts_target_page = se_get_type_of_use_pages('display_post');
+    if(($posts_target_page['page_permalink'] ?? '') != '') {
+        $header_url = rtrim($se_base_url, '/') . '/' . $posts_target_page['page_permalink'] . basename($post_data['post_slug']) . '-' . $post_id . '.html';
+    }
+}
+
+$header = [
+    'mode' => ($mode == 'update') ? 'edit' : 'new',
+    'title' => $decode($post_data['post_title'] ?? ''),
+    'status' => $header_status,
+    'status_label' => $header_status != '' ? $lang['status_' . $header_status] : '',
+    'badges' => [
+        strtoupper(($post_data['post_lang'] ?? '') ?: $languagePack),
+        $post_types[$post_type_form]['label'] ?? ''
+    ],
+    'url' => $header_url,
+    'url_display' => preg_replace('#^https?://#', '', $header_url)
+];
+
 echo $twig->render($form_template, [
+    'header' => $header,
+    'post_types' => $post_types,
+    'writer_uri' => $writer_uri,
     'post' => array_map($decode, $post_data),
     'post_type' => $post_type_form,
     'mode' => $mode,

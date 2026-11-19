@@ -5,5 +5,5 @@
  */
 
 $lang_sign = "ro";
-$lang_desc = "Romanian";
+$lang_desc = "Română";
 $languagePackFallback = 'en';

@@ -55,7 +55,11 @@ $se_admin_url_path = '/admin/';
 $se_admin_xhr_url_path = '/admin-xhr/';
 
 
-/* database files if we use sqlite */
+/* database file if we use sqlite */
+$se_db_file = SE_CONTENT . "/database/swiftyedit.sqlite3";
+
+/* the three files used up to 2.3 - only read once, when they are merged
+   into $se_db_file (see app/functions/functions.database.php) */
 $se_db_content = SE_CONTENT . "/database/content.sqlite3";
 $se_db_posts = SE_CONTENT . "/database/posts.sqlite3";
 $se_db_user = SE_CONTENT . "/database/user.sqlite3";
@@ -116,6 +120,28 @@ $se_update_htaccess = true;
  */
 $se_backend_updates = true;
 
+/* Send e-mails (registration, password reset, orders, 2FA codes ...).
+ * For test or demo installations, add the following to SE_CONTENT/config.php:
+ * $se_send_mails = false;
+ * Mails are then only logged (subject, no address) and reported as sent, so
+ * registration, checkout etc. go on as usual. Exceptions: the test mail in
+ * the settings shows that sending is switched off, and 2FA codes by mail
+ * report a failure - use an authenticator app or a recovery code instead.
+ */
+$se_send_mails = true;
+
+/* Protected accounts (usernames), e.g. a login shared on a demo or test
+ * installation. Their password, e-mail address, username and two-factor
+ * authentication can't be changed - neither by the user nor by an
+ * administrator - and they can't be deleted or reset by mail. If 2FA is
+ * required ($se_2fa_required), it is skipped for them while they have none.
+ * To use it, add the following to SE_CONTENT/config.php:
+ * $se_protected_accounts = ['demo'];
+ * Tip: with a public password, also switch off the lock after failed logins
+ * ($se_failed_logins_limit = null;), otherwise anyone can lock the account.
+ */
+$se_protected_accounts = [];
+
 /* Sources whose iframes (videos, maps ...) are kept when HTML from the editor
  * is cleaned (se_purify_html()). Only https, the host must match exactly.
  * An entry with a path ("host/path") only allows addresses starting with it.
@@ -157,9 +183,17 @@ $se_mode = 0;
  */
 $se_environment = 'p';
 
+/* Storage space for uploads in the backend, in MB (empty = no limit).
+ * Counted are the media library (assets/images, assets/files) and the
+ * galleries, not the generated thumbnails. When an upload would exceed it,
+ * it is refused with a message. To set it, add to SE_CONTENT/config.php e.g.:
+ * $se_limit_uploads_dir = 200;
+ * It is defined in the limits block below.
+ */
+
 /**
  * limits
- * only relevant if you offer multisite hosting
+ * not used yet (planned for multisite hosting) - except $se_limit_uploads_dir, see above
  * limit the number of pages, snippets, posts ... that can be created
  * empty or integer values
  */
@@ -171,7 +205,7 @@ $se_limit_products = '';
 $se_limit_features = '';
 $se_limit_events = '';
 $se_limit_uploads = '';
-$se_limit_uploads_dir = ''; // filesize in MB
+$se_limit_uploads_dir = ''; // storage space for uploads in MB, see above
 $se_limit_inbox = '';
 $se_limit_users = '';
 $se_limit_groups = '';

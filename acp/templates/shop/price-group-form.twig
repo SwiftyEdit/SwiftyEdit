@@ -3,6 +3,16 @@
  # group.id is 'new' for a new price group
  #}
 
+{# which group is open - the close button loads the empty form for a new group again #}
+<div class="d-flex align-items-center gap-2 mb-3">
+    <h3 class="h6 mb-0 flex-grow-1 text-truncate">
+        {% if group.id == 'new' %}{{ lang.btn_new }}{% else %}{{ lang.edit }}: {{ group.title }}{% endif %}
+    </h3>
+    {% if group.id != 'new' %}
+        <button type="button" class="btn btn-default btn-sm" hx-get="/admin-xhr/shop/read/?action=show_price_groups_form" hx-target="#PriceGroupForm" title="{{ lang.close }}" aria-label="{{ lang.close }}">{{ icon.x|raw }}</button>
+    {% endif %}
+</div>
+
 <form>
     <div class="row">
         <div class="mb-1">

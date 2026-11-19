@@ -15,6 +15,9 @@ $get_my_userdata = get_my_userdata();
 // has no second factor, and the address receives the 2FA codes
 $mail_change_blocked = is_array($get_my_userdata) && ($get_my_userdata['user_class'] ?? '') === 'administrator';
 
+// protected accounts ($se_protected_accounts) keep password and e-mail address
+$account_protected = is_array($get_my_userdata) && se_is_protected_account((string) ($get_my_userdata['user_nick'] ?? ''));
+
 // Assign all language variables to template
 foreach($lang as $key => $val) {
     $smarty->assign("lang_$key", $val);
@@ -72,6 +75,12 @@ if(isset($_GET['address-ba'])) {
 // display shipping address form
 if(isset($_GET['address-sa'])) {
     $smarty->display('profile/address-sa.tpl');
+}
+
+if($account_protected && (isset($_POST['change_password']) || isset($_POST['change_mail']))) {
+    $smarty->assign("alert_text",$lang['msg_account_protected']);
+    $smarty->display('alert/alert-danger.tpl');
+    exit;
 }
 
 // change password
