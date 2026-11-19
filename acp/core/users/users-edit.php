@@ -4,6 +4,7 @@
  * @var \Medoo\Medoo $db_user
  * @var array $lang
  * @var array $icon
+ * @var \Twig\Environment $twig
  */
 
 $writer_uri = '/admin-xhr/users/write/';
@@ -49,10 +50,37 @@ if(is_int($get_user_id)) {
     $form_mode = 'new';
 }
 
-echo '<div class="subHeader d-flex align-items-center">';
-echo $icon['users'].' '.$lang['nav_btn_user'];
-echo '<span class="ms-auto d-inline-block">'.$form_mode.'</span>';
-echo '</div>';
+/*
+ * header card above the form (components/edit-header.twig): user name, status
+ * (colors like the user list), administrator, full name and e-mail - the
+ * $user_* values are html-encoded above, Twig escapes on output
+ */
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+$header_twig = ['title' => $lang['btn_new']];
+if($form_mode !== 'new') {
+    $user_status_map = [
+        'verified' => ['text-success', $lang['status_user_verified']],
+        'waiting' => ['text-info', $lang['status_user_waiting']],
+        'paused' => ['text-warning', $lang['status_user_paused']]
+    ];
+    $user_status = $user_status_map[$user_verified] ?? null;
+    $header_badges = [];
+    if($user_class == 'administrator') {
+        $header_badges[] = 'Administrator';
+    }
+    if(trim($user_firstname.' '.$user_lastname) != '') {
+        $header_badges[] = $decode(trim($user_firstname.' '.$user_lastname));
+    }
+    $header_twig = [
+        'title' => $decode($user_nick),
+        // the partial prints the status as class "text-<status>"
+        'status' => $user_status ? substr($user_status[0], 5) : null,
+        'status_label' => $user_status[1] ?? null,
+        'badges' => $header_badges,
+        'code' => $decode($user_mail)
+    ];
+}
+echo $twig->render('components/edit-header.twig', $header_twig);
 
 echo '<div id="formResponse"></div>';
 
@@ -669,9 +697,12 @@ $form_tpl .= '<div class="col-md-3">';
 
 
 
-$form_tpl .= '<div class="card mb-2">';
-$form_tpl .= '<div class="card-header">Avatar</div>';
-$form_tpl .= '<div class="card-body">';
+// one sidebar card that sticks as a whole: the action bar like in the other edit forms, then the avatar
+$form_tpl .= '<div class="card p-3 sticky-lg-top">';
+$form_tpl .= '<div class="sidebar-actions">';
+$form_tpl .= '<button class="btn btn-success w-100" hx-post="'.$writer_uri.'" hx-trigger="click" hx-swap="innerHTML" hx-target="#formResponse" name="save_user" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
+$form_tpl .= '</div>';
+$form_tpl .= '<label class="form-label">Avatar</label>';
 
 $user_avatar_path = '/assets/avatars/' . md5($user_nick) . '.png';
 
@@ -686,12 +717,6 @@ if(is_file("../public$user_avatar_path")) {
 
 $form_tpl .= '<label>Upload</label>';
 $form_tpl .= '<input name="avatar" class="form-control" type="file" size="50">';
-
-$form_tpl .= '</div>';
-$form_tpl .= '</div>';
-
-$form_tpl .= '<div class="card p-2">';
-$form_tpl .= '<button class="btn btn-primary" hx-post="'.$writer_uri.'" hx-trigger="click" hx-swap="innerHTML" hx-target="#formResponse" name="save_user" value="'.$form_mode.'">'.$btn_submit_text.'</button>';
 
 $form_tpl .= '</div>';
 
