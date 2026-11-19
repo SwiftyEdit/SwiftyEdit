@@ -7,6 +7,7 @@
 
 {% set header_edit = header.mode == 'edit' %}
 {% include 'components/edit-header.twig' with {
+    back_url: '/admin/events/',
     title: header_edit ? header.title : lang.btn_new,
     status: header_edit ? header.status : null,
     status_label: header_edit ? header.status_label : null,

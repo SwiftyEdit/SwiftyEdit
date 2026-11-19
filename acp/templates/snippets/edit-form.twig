@@ -7,6 +7,7 @@
 
 {# the snippet name is what templates use to include the snippet, so it is shown as code #}
 {% include 'components/edit-header.twig' with {
+    back_url: '/admin/snippets/',
     title: header.mode == 'new' ? lang.btn_new : (header.mode == 'duplicate' ? lang.duplicate ~ ': ' ~ header.title : header.title),
     badges: header.mode == 'edit' ? [header.language|upper] : [],
     code: header.mode == 'edit' and header.title != header.name ? header.name : null

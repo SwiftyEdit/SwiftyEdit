@@ -7,12 +7,16 @@
  #   badges       - optional, list of short texts shown as neutral badges (e.g. the language)
  #   code         - optional, monospace text (e.g. the public url or a snippet name)
  #   view_url     - optional, opens the record in the frontend (icon button, new tab)
+ #   back_url     - optional, the list of the module (arrow button left of the title)
  # translucent like the module overview lists (.module-overview-list)
  # use {% embed %} instead of include to fill the optional "extra" block below the title row
  # (e.g. the post type picker of new blog posts)
  #}
 <div class="card p-3 mb-3 module-overview-list">
     <div class="d-flex align-items-center gap-3">
+        {% if back_url is not empty %}
+            <a href="{{ back_url }}" class="btn btn-default" title="{{ lang.nav_btn_overview }}" aria-label="{{ lang.nav_btn_overview }}">{{ icon.arrow_left|raw }}</a>
+        {% endif %}
         <div class="flex-grow-1" style="min-width: 0;">
             <h3 class="h5 mb-1 text-truncate">{{ title }}</h3>
             {% if status_label is not empty or badges is not empty or code is not empty %}

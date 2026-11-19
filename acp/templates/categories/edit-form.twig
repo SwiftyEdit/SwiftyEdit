@@ -8,6 +8,7 @@
 
 {# categories have no status and no fixed url of their own, the slug is shown as code #}
 {% include 'components/edit-header.twig' with {
+    back_url: '/admin/categories/',
     title: header.mode == 'edit' ? header.title : lang.btn_new,
     badges: header.mode == 'edit' ? [header.language|upper] : [],
     code: header.mode == 'edit' ? header.slug : null

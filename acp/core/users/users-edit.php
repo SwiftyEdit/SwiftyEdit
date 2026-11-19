@@ -80,6 +80,7 @@ if($form_mode !== 'new') {
         'code' => $decode($user_mail)
     ];
 }
+$header_twig['back_url'] = '/admin/users/';
 echo $twig->render('components/edit-header.twig', $header_twig);
 
 echo '<div id="formResponse"></div>';

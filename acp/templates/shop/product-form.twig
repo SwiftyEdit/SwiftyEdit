@@ -23,6 +23,7 @@
 
 {% set header_edit = header.mode == 'edit' %}
 {% include 'components/edit-header.twig' with {
+    back_url: '/admin/shop/',
     title: header.mode == 'new' ? lang.btn_new : (header.mode == 'duplicate' ? lang.duplicate ~ ': ' ~ header.title : header.title),
     status: header_edit ? header.status : null,
     status_label: header_edit ? header.status_label : null,
