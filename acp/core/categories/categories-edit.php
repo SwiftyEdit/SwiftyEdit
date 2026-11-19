@@ -152,7 +152,17 @@ foreach(['category-values.php', 'category_values.php'] as $file) {
     }
 }
 
+// header card above the form (components/edit-header.twig) - title falls back to the link name
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+$header = [
+    'mode' => ($category_id !== null) ? 'edit' : 'new',
+    'title' => $decode(($get_category['cat_title'] ?? '') ?: ($get_category['cat_name'] ?? '')),
+    'language' => ($get_category['cat_lang'] ?? '') ?: $se_settings['default_language'],
+    'slug' => $decode($get_category['cat_name_clean'] ?? '')
+];
+
 echo $twig->render('categories/edit-form.twig', [
+    'header' => $header,
     'category_id' => $category_id,
     'submit_label' => ($category_id ? $lang['update'] : $lang['save']),
     'writer_uri' => $writer_uri,
