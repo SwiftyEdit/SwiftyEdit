@@ -36,6 +36,34 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 - `$se_limit_uploads_dir` (in `data/config.php`) now works: the storage space
   for uploads in the backend in MB. Counted are the media library and the
   galleries, an upload that would exceed it is refused with a message
+- Shop: the mini cart and the checkout take price, tax, minimum/maximum amount
+  and volume discounts from the current product data instead of the price
+  stored when the item was added (the stored price is the fallback). Line
+  values are rounded to cents and the totals are the sum of the lines, so mini
+  cart and checkout show the same amounts. New functions
+  `se_get_cart_item_price()` and `se_calc_cart_line_price()`. The product list
+  shows the right net/gross label again
+- Page editor: tabs reordered and renamed (Content, Navigation, URL, SEO,
+  Plugins, Theme, Modules), the Info tab is gone. The Navigation tab shows the
+  page role as cards and the parent page next to the "insert after" list, the
+  developer fields (ID, classes, priority) and the redirects are collapsible.
+  The SEO tab has switches for index/follow and further robots rules as chips.
+  Tags and type of use moved to the sidebar, the save buttons stay at the top.
+  In the Modules tab, events and products exclude all other post types again
+- New header card at the top of the edit forms with title, status, language,
+  URL, a view link and a back button: pages, snippets, products, events,
+  categories, blog posts (with post type picker), users and the shop features,
+  options and filters. The price group form gets a heading and a close button.
+  The language select looks the same in all edit forms
+- Labels in the edit forms are selectable chips with a color dot
+- Image picker: thumbnails with search, sorting and an upload button. A click
+  (or Enter/Space) adds an image to the drop zone, next to drag and drop.
+  Newest images are listed first
+- Accordions in the backend use the card background, so form fields inside
+  them stay visible in dark mode
+- The empty TinyMCE promotion container is hidden in the backend
+- Docs: registration rules (users) and the rules for SQLite fallback
+  migrations
 
 ## 2.3.0 - 2026-11-14 (Build 26-0237)
 
