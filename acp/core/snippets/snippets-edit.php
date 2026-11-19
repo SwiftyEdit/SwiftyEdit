@@ -140,7 +140,17 @@ foreach(get_all_templates() as $theme) {
     ];
 }
 
+// header card above the form (components/edit-header.twig) - title falls back to the name
+$decode = static fn($value): string => html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+$header = [
+    'mode' => ($snippet_id !== null) ? 'edit' : (isset($_POST['duplicate_id']) ? 'duplicate' : 'new'),
+    'title' => $decode(($snippet['snippet_title'] ?? '') ?: ($snippet['snippet_name'] ?? '')),
+    'name' => $decode($snippet['snippet_name'] ?? ''),
+    'language' => ($snippet['snippet_lang'] ?? '') ?: $languagePack
+];
+
 echo $twig->render('snippets/edit-form.twig', [
+    'header' => $header,
     'snippet_id' => $snippet_id,
     'submit_label' => $submit_label,
     'writer_uri' => $writer_uri,

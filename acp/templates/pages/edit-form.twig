@@ -5,28 +5,15 @@
  #}
 {% import 'components/form/macros.twig' as form %}
 
-{# header card: which page is being edited - translucent like the module overview lists #}
-<div class="card p-3 mb-3 module-overview-list">
-    <div class="d-flex align-items-center gap-3">
-        <div class="flex-grow-1" style="min-width: 0;">
-            <h3 class="mb-1 text-truncate">
-                {% if header.mode == 'new' %}{{ lang.btn_new }}{% elseif header.mode == 'duplicate' %}{{ lang.duplicate }}: {{ header.title }}{% else %}{{ header.title }}{% endif %}
-            </h3>
-            {% if header.mode == 'edit' %}
-                <div class="d-flex flex-wrap align-items-center gap-2 small">
-                    {% if header.status_label %}
-                        <span class="badge rounded-pill border fw-normal text-{{ header.status }}"><i class="bi bi-circle-fill me-1" style="font-size: .5em; vertical-align: middle;"></i>{{ header.status_label }}</span>
-                    {% endif %}
-                    <span class="badge rounded-pill border fw-normal text-body-secondary">{{ page_language|upper }}</span>
-                    <code class="text-body-secondary text-truncate">{{ header.url_display }}</code>
-                </div>
-            {% endif %}
-        </div>
-        {% if header.mode == 'edit' %}
-            <a href="{{ header.url }}" target="_blank" rel="noopener" class="btn btn-default" title="{{ header.url_display }}"><i class="bi bi-box-arrow-up-right"></i></a>
-        {% endif %}
-    </div>
-</div>
+{% set is_edit = header.mode == 'edit' %}
+{% include 'components/edit-header.twig' with {
+    title: header.mode == 'new' ? lang.btn_new : (header.mode == 'duplicate' ? lang.duplicate ~ ': ' ~ header.title : header.title),
+    status: is_edit ? header.status : null,
+    status_label: is_edit ? header.status_label : null,
+    badges: is_edit ? [page_language|upper] : [],
+    code: is_edit ? header.url_display : null,
+    view_url: is_edit ? header.url : null
+} only %}
 
 <div id="formResponse"></div>
 
