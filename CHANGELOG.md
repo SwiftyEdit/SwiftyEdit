@@ -8,7 +8,7 @@ Versions are identified by version number and build (see `version.json`).
 Security fixes are listed in the release they ship with, not in advance.
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
-## Unreleased
+## 2.4.0 - 2026-11-21 (Build 26-0238)
 
 - SQLite: the three database files (`content.sqlite3`, `user.sqlite3`,
   `posts.sqlite3`) are merged into one file, `data/database/swiftyedit.sqlite3`.
@@ -27,6 +27,9 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 - New global filter hook `mail.send`: plugins can change every mail sent via
   `se_send_mail()` (recipient, subject, message, admin copy) or stop it by
   returning `false`
+- New backend hooks `page.deleted`, `post.updated` and `post.deleted`. They
+  fire on every save or delete (no checkbox in the editor), the deleted hooks
+  pass the row from before the deletion so plugins can still get its URL
 - New option `$se_protected_accounts` (in `data/config.php`), e.g.
   `['demo']` for a login shared on a demo installation: the password, e-mail
   address, username and two-factor authentication of these accounts can't be
@@ -64,6 +67,20 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   `se_get_required_addon_ids()` and `se_add_required_addon_to_cart()`.
   Custom themes can show the hint via `$show_requires` (product page) and
   `$item.requires_missing` (`shopping_cart_table.tpl`)
+- Product editor: the help for the Variants and Cross-selling tabs sits in the
+  tab bar and opens the matching docs section, the docs list all four
+  cross-selling columns. The product picker in the Cross-selling tab stays in
+  view while scrolling. Volume discounts and translation URLs are accordions
+  like in the other edit forms and open when values are set. The
+  manufacturer price gets a gross field and converts like the other prices
+- Product editor, Filter tab: a category select replaces the toggle buttons,
+  which got out of sync for groups in several categories. By default it shows
+  the groups of the categories ticked in the sidebar and follows changes
+  there, groups without a category are always shown. Filter values are
+  selectable chips
+- Products, blog posts and events: in the category list the whole row is the
+  toggle, the checkbox is hidden
+- Product list: the variants button no longer overlaps the categories
 - Page editor: tabs reordered and renamed (Content, Navigation, URL, SEO,
   Plugins, Theme, Modules), the Info tab is gone. The Navigation tab shows the
   page role as cards and the parent page next to the "insert after" list, the
