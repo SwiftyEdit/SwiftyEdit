@@ -38,9 +38,16 @@ drift apart, but as of this writing they match.
 All backend hooks are `action` hooks (registered via `se_add_backend_hook`, see below) - they
 run code but don't transform a value.
 
+Only `page.updated` and `product.updated` are checkbox actions: their callbacks run only if
+the admin ticks them in the editor (see `meta.php` below). All other backend hooks run every
+registered callback every time they fire, they need no `meta.php` entry.
+
 | Hook              | Context                                    | Fires when...                    |
 |--------------------|----------------------------------------------|--------------------------------------|
 | `page.updated`      | `page_id`, `data`, `changes`, `user_id`       | A page has been saved in the ACP.    |
+| `page.deleted`      | `page_id`, `page`, `user_id`                   | A page has been deleted in the ACP. `page` holds the row from before the deletion. |
+| `post.updated`      | `post_id`, `post`, `is_new`, `user_id`         | A blog post has been saved in the ACP (new or existing, `is_new` tells which). `post` is the stored row. |
+| `post.deleted`      | `post_id`, `post`, `user_id`                   | A blog post has been deleted in the ACP. `post` holds the row from before the deletion. |
 | `product.updated`   | `product_id`, `data`, `changes`, `user_id`    | A product has been saved in the ACP. |
 | `product.deleted`   | `product_id`, `user_id`                        | A product has been deleted in the ACP. |
 | `user.created`      | `user_id`, `data`, `created_by`                | A user account has been created.      |

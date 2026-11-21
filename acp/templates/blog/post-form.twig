@@ -163,11 +163,10 @@
                     {{ inputs.hide_detail_page|raw }}
                 </div>
                 <div class="mb-2 pb-1 border-bottom">
-                    <label>{{ lang.label_priority }}</label>
-                    <input type="number" name="post_priority" value="{{ post.post_priority }}" class="form-control">
-                    <div class="form-check">
-                        <input class="form-check-input" id="fix" type="checkbox" name="post_fixed" value="fixed"{% if post.post_fixed == '1' %} checked{% endif %}>
-                        <label class="form-check-label" for="fix">{{ lang.label_fixed }}</label>
+                    <div class="input-group">
+                        <label class="input-group-text" for="post_priority" title="{{ lang.label_priority }}">{{ icon.sort_numeric|raw }}<span class="visually-hidden">{{ lang.label_priority }}</span></label>
+                        <input type="number" id="post_priority" name="post_priority" value="{{ post.post_priority }}" class="form-control">
+                        {{ form.fixed_star('post_fixed', post.post_fixed == '1') }}
                     </div>
                 </div>
                 <div class="mb-2 pb-1 border-bottom">

@@ -114,6 +114,7 @@ $inputs['language'] = se_print_language_select('post_lang', (string) ($post_data
 
 $inputs['status'] = se_print_form_input([
     "input_name" => "post_status",
+    "icon" => $icon['eye'],
     "input_value" => $post_data['post_status'] ?? '2',
     "label" => $lang['label_status'],
     "options" => [
@@ -134,6 +135,7 @@ $inputs['hide_detail_page'] = se_print_form_input([
 
 $inputs['comments'] = se_print_form_input([
     "input_name" => "post_comments",
+    "icon" => $icon['comments'],
     "input_value" => $post_data['post_comments'] ?? '2',
     "label" => $lang['label_comments'],
     "options" => [
@@ -145,6 +147,7 @@ $inputs['comments'] = se_print_form_input([
 
 $inputs['votings'] = se_print_form_input([
     "input_name" => "post_votings",
+    "icon" => $icon['thumbs_up'],
     "input_value" => $post_data['post_votings'] ?? $se_settings['posts_default_votings'],
     "label" => $lang['label_votings'],
     "options" => [

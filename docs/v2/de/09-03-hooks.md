@@ -39,9 +39,16 @@ diese Liste jemals auseinanderlaufen sollten, zum Zeitpunkt dieses Texts stimmen
 Alle Backend-Hooks sind `action`-Hooks (registriert über `se_add_backend_hook`, siehe unten) -
 sie führen Code aus, verändern aber keinen Wert.
 
+Nur `page.updated` und `product.updated` sind Checkbox-Aktionen: Ihre Callbacks laufen nur,
+wenn der Admin sie im Editor anhakt (siehe `meta.php` unten). Alle anderen Backend-Hooks führen
+bei jedem Feuern jeden registrierten Callback aus und brauchen keinen Eintrag in der `meta.php`.
+
 | Hook               | Context                                        | Feuert, wenn...                          |
 |---------------------|---------------------------------------------------|------------------------------------------------|
 | `page.updated`       | `page_id`, `data`, `changes`, `user_id`             | Eine Seite im ACP gespeichert wurde.            |
+| `page.deleted`       | `page_id`, `page`, `user_id`                         | Eine Seite im ACP gelöscht wurde. `page` enthält die Zeile von vor dem Löschen. |
+| `post.updated`       | `post_id`, `post`, `is_new`, `user_id`               | Ein Blog-Beitrag im ACP gespeichert wurde (neu oder bestehend, `is_new` sagt welches). `post` ist die gespeicherte Zeile. |
+| `post.deleted`       | `post_id`, `post`, `user_id`                         | Ein Blog-Beitrag im ACP gelöscht wurde. `post` enthält die Zeile von vor dem Löschen. |
 | `product.updated`    | `product_id`, `data`, `changes`, `user_id`          | Ein Produkt im ACP gespeichert wurde.           |
 | `product.deleted`    | `product_id`, `user_id`                              | Ein Produkt im ACP gelöscht wurde.               |
 | `user.created`       | `user_id`, `data`, `created_by`                      | Ein Benutzerkonto angelegt wurde.                |

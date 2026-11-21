@@ -709,7 +709,7 @@
 
                 <div class="mb-2 pb-3 border-bottom">
                     <div class="input-group">
-                        <label class="input-group-text" for="product_status">{{ lang.label_status }}</label>
+                        <label class="input-group-text" for="product_status" title="{{ lang.label_status }}">{{ icon.eye|raw }}<span class="visually-hidden">{{ lang.label_status }}</span></label>
                         {{ form.select('status', status_options, 'product_status') }}
                     </div>
                 </div>
@@ -719,11 +719,10 @@
                 </div>
 
                 <div class="mb-2 pb-3 border-bottom">
-                    <label>{{ lang.label_priority }}</label>
-                    <input type="number" name="priority" value="{{ product.priority }}" class="form-control">
-                    <div class="form-check">
-                        <input class="form-check-input" id="fix" type="checkbox" name="fixed" value="fixed"{% if fixed %} checked{% endif %}>
-                        <label class="form-check-label" for="fix">{{ lang.label_fixed }}</label>
+                    <div class="input-group">
+                        <label class="input-group-text" for="product_priority" title="{{ lang.label_priority }}">{{ icon.sort_numeric|raw }}<span class="visually-hidden">{{ lang.label_priority }}</span></label>
+                        <input type="number" id="product_priority" name="priority" value="{{ product.priority }}" class="form-control">
+                        {{ form.fixed_star('fixed', fixed) }}
                     </div>
                 </div>
 

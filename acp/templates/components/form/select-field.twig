@@ -1,11 +1,29 @@
-{# select with label, rendered by tpl_form_select() - options: list of {value, label, selected}, raw like input-text.twig #}
+{#
+ # select with label, rendered by tpl_form_select() - options: list of {value, label, selected}, raw like input-text.twig
+ # icon (optional): shown in front instead of a visible label, the label stays for screen readers and as tooltip
+ # help (optional): e.g. a docs link, behind the label or at the end of the icon group
+ #}
 <div class="{{ container_class|raw }}">
-    {% if label is not empty %}
-        <label for="{{ inputid }}" class="form-label">{{ label|raw }}</label>
+    {% if icon is not empty %}
+        <div class="input-group">
+            <label class="input-group-text" for="{{ inputid }}" title="{{ label|striptags|trim }}">
+                {{ icon|raw }}<span class="visually-hidden">{{ label|raw }}</span>
+            </label>
+            <select class="form-select custom-select" name="{{ input_name|raw }}" id="{{ inputid }}">
+                {% for option in options %}
+                    <option value="{{ option.value|raw }}"{% if option.selected %} selected{% endif %}>{{ option.label|raw }}</option>
+                {% endfor %}
+            </select>
+            {{ help|raw }}
+        </div>
+    {% else %}
+        {% if label is not empty %}
+            <label for="{{ inputid }}" class="form-label">{{ label|raw }} {{ help|raw }}</label>
+        {% endif %}
+        <select class="form-select custom-select" name="{{ input_name|raw }}" id="{{ inputid }}">
+            {% for option in options %}
+                <option value="{{ option.value|raw }}"{% if option.selected %} selected{% endif %}>{{ option.label|raw }}</option>
+            {% endfor %}
+        </select>
     {% endif %}
-    <select class="form-select custom-select" name="{{ input_name|raw }}" id="{{ inputid }}">
-        {% for option in options %}
-            <option value="{{ option.value|raw }}"{% if option.selected %} selected{% endif %}>{{ option.label|raw }}</option>
-        {% endfor %}
-    </select>
 </div>

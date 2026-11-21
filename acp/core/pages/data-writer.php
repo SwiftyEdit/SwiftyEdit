@@ -96,7 +96,10 @@ if(isset($_POST['delete_page'])) {
 
     $delete_id = (int) $_POST['delete_page'];
     $comment_id = 'p'.$delete_id;
-    $deleted_title = (string) $db_content->get("se_pages", "page_title", ["page_id" => $delete_id]);
+    // the row from before the deletion, for the log and the page.deleted hook
+    $deleted_page = $db_content->get("se_pages", "*", ["page_id" => $delete_id]);
+    $deleted_page = is_array($deleted_page) ? $deleted_page : [];
+    $deleted_title = (string) ($deleted_page['page_title'] ?? '');
 
     $del_page = $db_content->delete("se_pages", [
         "page_id" => $delete_id
@@ -119,6 +122,13 @@ if(isset($_POST['delete_page'])) {
         se_log_content('delete', 'page', $delete_id, $deleted_title);
         se_generate_xml_sitemap('pages');
         se_build_navigation_cache();
+
+        se_do_backend_hook('page.deleted', [
+            'page_id' => $delete_id,
+            'page'    => $deleted_page,
+            'user_id' => $_SESSION['user_id'],
+        ]);
+
         show_toast($lang['msg_success_page_deleted'],'success');
     }
 

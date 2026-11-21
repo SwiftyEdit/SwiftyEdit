@@ -70,10 +70,13 @@
                     {{ inputs.language|raw }}
                     {{ inputs.priority|raw }}
 
-                    <div class="mb-3">
-                        <label class="form-label" for="select_template">{{ lang.label_template }}</label>
+                    {# palette icon instead of a visible label, like the language select #}
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="select_template" title="{{ lang.label_template }}">
+                            {{ icon.palette|raw }}<span class="visually-hidden">{{ lang.label_template }}</span>
+                        </label>
                         {# value: theme<|-|>template file, split again by the data-writer #}
-                        <select id="select_template" name="select_template" class="custom-select form-control">
+                        <select id="select_template" name="select_template" class="form-select">
                             <option value="use_standard<|-|>use_standard"{% if template_standard %} selected{% endif %}>{{ lang.label_use_default }}</option>
                             {% for theme in themes %}
                                 <optgroup label="{{ theme.name }}">

@@ -337,9 +337,12 @@
                 {{ inputs.language|raw }}
                 {{ inputs.type_of_use|raw }}
 
-                <div>
-                    <label class="form-label" for="select_template">Theme / {{ lang.label_template }}</label>
-                    <select id="select_template" name="select_template" class="form-control">
+                {# palette icon instead of a visible label, like the language select #}
+                <div class="input-group">
+                    <label class="input-group-text" for="select_template" title="Theme / {{ lang.label_template }}">
+                        {{ icon.palette|raw }}<span class="visually-hidden">Theme / {{ lang.label_template }}</span>
+                    </label>
+                    <select id="select_template" name="select_template" class="form-select">
                         <option value="use_standard<|-|>use_standard"{% if template_standard %} selected{% endif %}>{{ lang.label_use_default }}</option>
                         {% for template in templates %}
                             <optgroup label="{{ template.name }}">
@@ -352,16 +355,18 @@
                 </div>
 
                 <div class="my-2">
-                    <label class="form-label">{{ lang.label_password }}</label>
-                    <input class="form-control" type="text" name="page_psw" value="" placeholder="{{ has_password ? '*****' : '' }}">
+                    <div class="input-group">
+                        <label class="input-group-text" for="page_psw" title="{{ lang.label_password }}">{{ icon.lock|raw }}<span class="visually-hidden">{{ lang.label_password }}</span></label>
+                        <input class="form-control" type="text" id="page_psw" name="page_psw" value="" placeholder="{{ has_password ? '*****' : '' }}">
+                    </div>
                     {% if has_password %}
                         <div class="checkbox"><label><input type="checkbox" name="page_psw_reset" value="reset"> {{ lang.label_password_reset }}</label></div>
                     {% endif %}
                 </div>
 
-                <div class="mb-2">
-                    <label class="form-label" for="select_comments">{{ lang.label_comments }}</label>
-                    <select id="select_comments" name="page_comments" class="custom-select form-control">
+                <div class="input-group mb-2">
+                    <label class="input-group-text" for="select_comments" title="{{ lang.label_comments }}">{{ icon.comments|raw }}<span class="visually-hidden">{{ lang.label_comments }}</span></label>
+                    <select id="select_comments" name="page_comments" class="form-select">
                         <option value="1"{% if page.page_comments == '1' %} selected{% endif %}>{{ lang.yes }}</option>
                         <option value="2"{% if page.page_comments != '1' %} selected{% endif %}>{{ lang.no }}</option>
                     </select>

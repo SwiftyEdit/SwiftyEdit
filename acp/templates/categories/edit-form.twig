@@ -73,9 +73,12 @@
                     {{ inputs.priority|raw }}
                     {{ inputs.language|raw }}
 
-                    <div class="mb-3">
-                        <label class="form-label" for="select_template">Theme / {{ lang.label_template }}</label>
-                        <select id="select_template" name="cat_template" class="form-control">
+                    {# palette icon instead of a visible label, like the language select #}
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="select_template" title="Theme / {{ lang.label_template }}">
+                            {{ icon.palette|raw }}<span class="visually-hidden">Theme / {{ lang.label_template }}</span>
+                        </label>
+                        <select id="select_template" name="cat_template" class="form-select">
                             <option value="use_standard"{% if template_standard %} selected{% endif %}>{{ lang.label_use_default }}</option>
                             {% for theme in themes %}
                                 <option value="{{ theme.name }}"{% if theme.selected %} selected{% endif %}>{{ theme.name }}</option>

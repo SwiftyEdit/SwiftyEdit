@@ -112,6 +112,30 @@ return [
             'context' => ['page_id', 'data', 'changes', 'user_id'],
         ],
 
+        // A page has been deleted in the backend. Fires unconditionally
+        // (no checkbox), 'page' holds the row from before the deletion.
+        'page.deleted' => [
+            'type'    => 'action',
+            'context' => ['page_id', 'page', 'user_id'],
+        ],
+
+        // ----- Posts -----
+
+        // A post has been saved (created or updated) in the backend. Fires
+        // unconditionally on every save (no checkbox), 'post' is the stored
+        // row, 'is_new' is true for a new post.
+        'post.updated' => [
+            'type'    => 'action',
+            'context' => ['post_id', 'post', 'is_new', 'user_id'],
+        ],
+
+        // A post has been deleted in the backend. Fires unconditionally,
+        // 'post' holds the row from before the deletion.
+        'post.deleted' => [
+            'type'    => 'action',
+            'context' => ['post_id', 'post', 'user_id'],
+        ],
+
         // ----- Products -----
 
         // A product has been updated in the backend

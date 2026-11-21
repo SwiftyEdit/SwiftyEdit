@@ -7,6 +7,7 @@
  * global variables
  * @var array $lang
  * @var array $lang_codes
+ * @var array $icon
  * @var object $db_content
  * @var array $se_settings
  * @var object $twig
@@ -81,6 +82,7 @@ $inputs['description'] = se_print_form_input([
 
 $inputs['priority'] = se_print_form_input([
     "input_name" => "cat_sort",
+    "icon" => $icon['sort_numeric'],
     "input_value" => (int) ($get_category['cat_sort'] ?? 0),
     "label" => $lang['label_priority'],
     "type" => "text"

@@ -109,6 +109,21 @@
   }
 }
 
+// "fixed on top" star toggle in the edit forms (form.fixed_star macro)
+.fixed-star .fixed-star-on {
+  display: none;
+}
+
+.btn-check:checked + .fixed-star {
+  .fixed-star-on {
+    display: inline;
+  }
+
+  .fixed-star-off {
+    display: none;
+  }
+}
+
 .btn-label-dot {
   background: transparent;
   border: none;

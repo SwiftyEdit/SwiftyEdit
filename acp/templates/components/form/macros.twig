@@ -53,6 +53,18 @@
 {% endmacro %}
 
 {# labels: list of {id, color, title, checked}, see se_get_label_checklist() #}
+{#
+ # "fixed on top" as a star toggle like in the lists, placed at the end of an input-group
+ # the checkbox stays for the form and the keyboard, the star shows its state (.fixed-star in _pages.scss)
+ #}
+{% macro fixed_star(name, checked) %}
+    <input class="btn-check" type="checkbox" id="fixedStar" autocomplete="off" name="{{ name }}" value="fixed"{% if checked %} checked{% endif %}>
+    <label class="btn btn-default fixed-star" for="fixedStar" title="{{ lang.label_fixed }}">
+        <span class="fixed-star-off">{{ icon.star_outline|raw }}</span><span class="fixed-star-on">{{ icon.star|raw }}</span>
+        <span class="visually-hidden">{{ lang.label_fixed }}</span>
+    </label>
+{% endmacro %}
+
 {% macro labels(name, labels) %}
     <div class="label-chips">
         {% for label in labels %}

@@ -3,6 +3,7 @@
 /**
  * @var array $lang
  * @var string $languagePack
+ * @var array $icon
  * @var array $se_settings
  * @var array $lang_codes
  * @var object $db_content
@@ -73,6 +74,7 @@ foreach($all_event_pages as $permalink) {
 
 $inputs['status'] = se_print_form_input([
     "input_name" => "status",
+    "icon" => $icon['eye'],
     "input_value" => $post_data['status'] ?? '2',
     "label" => $lang['label_status'],
     "options" => [
@@ -84,6 +86,7 @@ $inputs['status'] = se_print_form_input([
 
 $inputs['comments'] = se_print_form_input([
     "input_name" => "comments",
+    "icon" => $icon['comments'],
     "input_value" => $post_data['comments'] ?? '2',
     "label" => $lang['label_comments'],
     "options" => [
@@ -95,6 +98,7 @@ $inputs['comments'] = se_print_form_input([
 
 $inputs['votings'] = se_print_form_input([
     "input_name" => "votings",
+    "icon" => $icon['thumbs_up'],
     "input_value" => $post_data['votings'] ?? $se_settings['posts_default_votings'],
     "label" => $lang['label_votings'],
     "options" => [

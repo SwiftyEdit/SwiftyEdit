@@ -130,6 +130,14 @@ if(isset($_POST['delete_post'])) {
             "feed_subid" => "post_$del_id"
         ]);
         se_generate_xml_sitemap('posts');
+
+        // 'post' is the data from before the deletion, e.g. for its URL
+        se_do_backend_hook('post.deleted', [
+            'post_id' => $del_id,
+            'post'    => is_array($this_post_data) ? $this_post_data : [],
+            'user_id' => $_SESSION['user_id'],
+        ]);
+
         show_toast($lang['msg_success_entry_delete'],'success');
         se_log_content('delete', 'post', $del_id, (string) ($this_post_data['post_title'] ?? ''));
     }
@@ -325,6 +333,18 @@ if(isset($_POST['save_post'])) {
 
     // after the insert/update, otherwise the sitemap misses this save
     se_generate_xml_sitemap('posts');
+
+    // fires on every save, there is no checkbox selection in the post form;
+    // 'post' is the stored row (incl. the generated urls and the counters)
+    if($post_id > 0) {
+        $saved_post = se_get_post_data($post_id);
+        se_do_backend_hook('post.updated', [
+            'post_id' => $post_id,
+            'post'    => is_array($saved_post) ? $saved_post : [],
+            'is_new'  => ($_POST['save_post'] == 'save'),
+            'user_id' => $_SESSION['user_id'],
+        ]);
+    }
 
     // send to rss feed - $values, "hide detail page" switches rss off
     if($values['post_rss'] == 'on' && $post_page_permalink != '') {

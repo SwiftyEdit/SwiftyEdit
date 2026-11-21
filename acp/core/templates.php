@@ -74,6 +74,7 @@ function tpl_form_input_text(array $data) {
         'group_start_text' => $data['input_group_start_text'] ?? '',
         'group_end_text' => $data['input_group_end_text'] ?? '',
         'form_text' => $data['form_text'] ?? '',
+        'icon' => $data['icon'] ?? '',
         'min' => $data['min'] ?? null,
         'max' => $data['max'] ?? null
     ]);
@@ -303,7 +304,9 @@ function tpl_form_select(array $data): string {
         'inputid' => uniqid(),
         'label' => $data['label'],
         'input_name' => $data['input_name'],
-        'options' => $options
+        'options' => $options,
+        'icon' => $data['icon'] ?? '',
+        'help' => $data['help'] ?? ''
     ]);
 }
 
