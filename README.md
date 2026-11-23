@@ -84,15 +84,30 @@ SwiftyEdit just makes it a lot easier.
 
 **Requirements:** PHP 8.3+, Apache with `mod_rewrite` and PDO, SQLite or MySQL 5.6+
 
-1. **Get SwiftyEdit** — [download the latest release](https://swiftyedit.dev/en/download/) or use Composer:
-   ```bash
-   composer create-project swiftyedit/swiftyedit
-   ```
+1. **Get SwiftyEdit** — [download the latest release](https://swiftyedit.dev/en/download/).
+   The release package is ready to run: PHP dependencies, theme and editor assets are included.
 2. **Point your domain to the `/public/` directory.** This is required since version 2.0.
 3. **Open `/install.php`** in your browser and follow the installer. Choose SQLite if you
    don't want to set up a database.
 
 That's it. The full guide is in the [installation docs](https://swiftyedit.dev/en/documentation/).
+
+### Installing with Composer or from Git
+
+The repository contains no compiled assets. If you install with Composer (or clone the
+repository), you also need [Node.js](https://nodejs.org/) with npm to build the two themes and
+the editor assets before you continue with steps 2 and 3:
+
+```bash
+composer create-project swiftyedit/swiftyedit
+cd swiftyedit
+```
+
+```bash
+for dir in public/assets/themes/administration public/assets/themes/default plugins/tinymce-editor plugins/ace-editor; do (cd "$dir" && npm install && npm run build); done
+```
+
+When cloning with Git, run `composer install` first — `composer create-project` does that for you.
 
 ## For developers
 

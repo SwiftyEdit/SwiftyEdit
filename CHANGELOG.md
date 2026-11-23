@@ -67,6 +67,20 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   `se_get_required_addon_ids()` and `se_add_required_addon_to_cart()`.
   Custom themes can show the hint via `$show_requires` (product page) and
   `$item.requires_missing` (`shopping_cart_table.tpl`)
+- Shop: EU guarantee labels (Regulation (EU) 2025/1960, applies since
+  2026-09-27 to sales to consumers). The notice on the legal guarantee is
+  picked from the media library in the shop settings, shown in full in the
+  cart above the order button and attached to the order confirmation. A
+  manufacturer's durability guarantee label can be picked per product (new
+  column `product_guarantee_label`) and is shown as a thumbnail on the product
+  page and in the cart. The core ships no label graphics, shop owners upload
+  the official files themselves; without a selection nothing is shown, so
+  B2B-only shops are not affected. `se_send_mail()` takes file attachments as
+  a new optional parameter, new functions `se_shop_label_image()` and
+  `se_media_image_paths()`. Custom themes can show the labels via
+  `$warranty_notice`, `$item.guarantee_label` and `$product_guarantee_label`
+  (partials `shopping_cart_warranty_notice.tpl` and
+  `product_guarantee_label.tpl`)
 - Product editor: the help for the Variants and Cross-selling tabs sits in the
   tab bar and opens the matching docs section, the docs list all four
   cross-selling columns. The product picker in the Cross-selling tab stays in
@@ -94,12 +108,21 @@ See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
   options and filters. The price group form gets a heading and a close button.
   The language select looks the same in all edit forms
 - Labels in the edit forms are selectable chips with a color dot
+- Edit form sidebars (pages, blog posts, events, products, categories,
+  snippets) are more compact: status, comments, votings, priority, template,
+  type of use and page password show an icon instead of a visible label (the
+  label stays for screen readers and as tooltip). "Fixed on top" is a star
+  toggle next to the priority field instead of a checkbox
 - Image picker: thumbnails with search, sorting and an upload button. A click
   (or Enter/Space) adds an image to the drop zone, next to drag and drop.
   Newest images are listed first
 - Accordions in the backend use the card background, so form fields inside
   them stay visible in dark mode
 - The empty TinyMCE promotion container is hidden in the backend
+- Frontend login: after a failed attempt the login form gets a valid CSRF
+  token right away, so the next attempt no longer fails with a token error.
+  The error is shown in the login box itself, reloading the page no longer
+  ends on the bare status box
 - Docs: registration rules (users) and the rules for SQLite fallback
   migrations
 

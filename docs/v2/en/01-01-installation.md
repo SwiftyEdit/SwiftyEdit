@@ -48,16 +48,32 @@ This means that your domain must point to this folder.
 
 The installation takes only a few minutes.
 
-Installation via Composer:
-
-`composer create-project swiftyedit/swiftyedit`
-
-Or download the files from the website: https://swiftyedit.dev/en/download/
+Download the files from the website: https://swiftyedit.dev/en/download/
+The release package is ready to run - PHP dependencies, themes and editors are already included.
 
 ### The installation
 
 1. Copy all files to the server.
 2. In the web browser, go to the `/install/` directory and follow the instructions ...
+
+### Installing via Composer or from Git {#composer}
+
+The repository contains no compiled assets: the CSS/JS files of the two themes
+(`administration` and `default`) and the editors in `public/assets/editors/` are only generated
+when a release is built. If you install via Composer or clone the repository, you therefore also
+need [Node.js](https://nodejs.org/) with npm and have to build these assets yourself:
+
+```bash
+composer create-project swiftyedit/swiftyedit
+cd swiftyedit
+```
+
+```bash
+for dir in public/assets/themes/administration public/assets/themes/default plugins/tinymce-editor plugins/ace-editor; do (cd "$dir" && npm install && npm run build); done
+```
+
+After a `git clone`, run `composer install` first - `composer create-project` does that for you.
+Then continue with step 2 of the installation above.
 
 If the installation was successful, the next step is to go to the ACP.
 Just click on <kbd>Administration</kbd>.

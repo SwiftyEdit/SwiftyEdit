@@ -50,17 +50,36 @@ beiden als die "eigentliche" Datenbank.
 
 Die Installation dauert nur wenige Minuten.
 
-Installation via Composer:
-
-```composer create-project swiftyedit/swiftyedit```
-
 ### Manuelle Installation
 
 Lade die aktuelle Version von der Webseite: https://swiftyedit.dev/de/download/
+Das Release-Paket ist sofort lauffähig - PHP-Abhängigkeiten, Themes und Editoren sind bereits
+enthalten.
 
 1. Alle Dateien auf den Server kopieren.
 2. Die Domain muss auf das Verzeichnis /public/ zeigen.
 3. Im Webbrowser das Verzeichnis /install/ aufrufen und den Anweisungen folgen ...
+
+### Installation via Composer oder aus Git {#composer}
+
+Das Repository enthält keine kompilierten Assets: Die CSS/JS-Dateien der beiden Themes
+(`administration` und `default`) und die Editoren unter `public/assets/editors/` werden erst
+beim Bauen eines Releases erzeugt. Installierst Du per Composer oder klonst das Repository,
+brauchst Du deshalb zusätzlich [Node.js](https://nodejs.org/) mit npm und musst diese Assets
+selbst bauen:
+
+```bash
+composer create-project swiftyedit/swiftyedit
+cd swiftyedit
+```
+
+```bash
+for dir in public/assets/themes/administration public/assets/themes/default plugins/tinymce-editor plugins/ace-editor; do (cd "$dir" && npm install && npm run build); done
+```
+
+Nach einem `git clone` führst Du vorher noch `composer install` aus - `composer create-project`
+erledigt das automatisch. Danach geht es mit den Schritten 2 und 3 der manuellen Installation
+weiter.
 
 War die Installation erfolgreich, führt der nächste Weg in das Backend.
 Einfach auf <kbd>Administration</kbd> klicken.

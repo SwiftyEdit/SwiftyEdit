@@ -155,7 +155,8 @@ SwiftyEdit is open source and welcomes contributions. The project is hosted on
 composer create-project swiftyedit/swiftyedit=dev-main swiftyedit-dev --stability=dev
 ```
 
-and open a pull request from a `feature/short-description` or `fix/issue-number` branch. Keep
+then build the theme and editor assets with npm (see
+[Installing via Composer or from Git](01-01-installation.md#composer)) and open a pull request from a `feature/short-description` or `fix/issue-number` branch. Keep
 pull requests small and focused, reference related issues, and update the relevant docs for any
 user-facing change. Questions are best asked as a GitHub Discussion or Issue; issues labeled
 `good-first-issue` are a good place to start.

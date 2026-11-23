@@ -163,7 +163,9 @@ Dev-Version mit
 composer create-project swiftyedit/swiftyedit=dev-main swiftyedit-dev --stability=dev
 ```
 
-und erstelle einen Pull Request von einem Branch nach dem Muster `feature/kurzbeschreibung` oder
+baue anschließend die Theme- und Editor-Assets mit npm (siehe
+[Installation via Composer oder aus Git](01-01-installation.md#composer)) und erstelle einen
+Pull Request von einem Branch nach dem Muster `feature/kurzbeschreibung` oder
 `fix/issue-nummer`. Halte Pull Requests klein und fokussiert, verweise auf zugehörige Issues und
 aktualisiere bei nutzerrelevanten Änderungen auch die passende Doku. Fragen stellst Du am besten
 als GitHub Discussion oder Issue; Issues mit dem Label `good-first-issue` eignen sich gut zum
