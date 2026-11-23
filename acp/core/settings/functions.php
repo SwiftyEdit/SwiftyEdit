@@ -77,6 +77,8 @@ function se_settings_options(): array {
         'prefs_shipping_costs_mode' => ['1', '2'],
         'prefs_delivery_addons' => se_get_delivery_addons(),
         'prefs_payment_addons' => se_get_payment_addons(),
+        // '' = no notice, otherwise "/images/..." of the media library
+        'prefs_shop_warranty_notice' => array_merge([''], se_media_image_paths()),
         // schema.org type of the organization in the structured data
         'prefs_org_type' => se_structured_data_org_types(),
         // ISO 3166 alpha-2, '' = not set
@@ -234,6 +236,10 @@ function se_settings_sections(): array {
         ],
         'shop-withdrawal' => [
             'prefs_posts_order_withdrawal_days' => 'int'
+        ],
+        // EU notice on the legal guarantee, an image of the media library
+        'shop-warranty' => [
+            'prefs_shop_warranty_notice' => 'option'
         ],
         'shop-taxes' => [
             'prefs_posts_products_default_tax' => 'text',

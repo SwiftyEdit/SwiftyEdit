@@ -159,6 +159,8 @@ for($i=0;$i<$cnt_cart_items;$i++) {
 	$cart_item[$i]['parent_id'] = $get_cart_items[$i]['cart_parent_id'];
 	$cart_item[$i]['post_id'] = $get_cart_items[$i]['cart_product_id'];
     $cart_item[$i]['slug'] = $get_cart_items[$i]['cart_product_slug'];
+    // EU label of a commercial durability guarantee, null if the product has none
+    $cart_item[$i]['guarantee_label'] = se_shop_label_image($this_item['product_guarantee_label'] ?? '');
 
     // amount (min/max order quantity), price group, tax and volume discount
     // shared with the mini cart preview (app/xhr/cart.php)
@@ -418,6 +420,14 @@ $smarty->assign('cart_included_taxes', se_post_print_currency($cart_included_tax
 $smarty->assign('cart_price_total', se_post_print_currency($cart_price_total), true);
 $smarty->assign('currency', $se_settings['posts_products_default_currency'], true);
 $smarty->assign('price_mode', $se_settings['posts_price_mode'], true);
+
+/* EU notice on the legal guarantee (Regulation (EU) 2025/1960) - an image the
+   shop owner picked in the shop settings, shown in full above the order button */
+$warranty_notice = se_shop_label_image($se_settings['shop_warranty_notice'] ?? '');
+if ($warranty_notice !== null && $warranty_notice['alt'] === '') {
+    $warranty_notice['alt'] = $lang['label_warranty_notice'];
+}
+$smarty->assign('warranty_notice', $warranty_notice, true);
 
 $cart_table = $smarty->fetch("shopping_cart.tpl",$cache_id);
 

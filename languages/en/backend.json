@@ -414,6 +414,8 @@
   "label.product.number": "Product number",
   "label.product.manufacturer": "Manufacturer",
   "label.product.supplier": "Supplier",
+  "label.product.guarantee_label": "Guarantee label (EU)",
+  "label.product.guarantee_label_help": "Only if the manufacturer offers a free durability guarantee of more than two years. Upload the label provided by the manufacturer to the media library first.",
   "label.product.attachments": "Product attachments",
   "label.product.files_after_sale": "Files that can be downloaded after the item has been purchased",
   "label.product.files_before_sale": "Files that can be downloaded before the item has been purchased",

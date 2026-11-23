@@ -22,8 +22,9 @@
     </div>
 {/if}
 
-<p>{$cnt_items} {$lang_label_cnt_sc_items}</p>
-
 {if $cnt_items > 0}
+    {* the number of items is shown in the header of the items card *}
     {include file='shopping_cart_table.tpl'}
+{else}
+    <p>{$cnt_items} {$lang_label_cnt_sc_items}</p>
 {/if}

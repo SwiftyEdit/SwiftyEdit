@@ -28,6 +28,8 @@
             </div>
             </section>
             {/if}
+
+            {include file='product_guarantee_label.tpl'}
         </div>
         {/if}
 
@@ -35,6 +37,9 @@
 
             <h1>{$product_title}</h1>
             {$product_teaser}
+            {if $product_img_src == ''}
+                {include file='product_guarantee_label.tpl'}
+            {/if}
             {if $content_tags == true}
                 <p class="m-0 content-tags">
                     {foreach $content_tags as $tag}

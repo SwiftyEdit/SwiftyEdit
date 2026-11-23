@@ -625,12 +625,14 @@ function se_return_words_str(string $string, int $nbr=5): string {
  * @param array $recipient 'mail' and 'name'
  * @param string $subject subject of the email
  * @param string $message string/html content of the email
+ * @param bool $bcc_admin send a copy to the notify address (or the mailer address)
+ * @param array<int, string> $attachments absolute paths of files to attach
  * @return int|string 1 if success or ErrorInfo if failed
  * @throws Exception
  */
 
 
-function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
+function se_send_mail($recipient,$subject,$message,$bcc_admin=false,array $attachments=[]) {
 
     global $se_settings, $se_send_mails;
     global $smtp_host, $smtp_port, $smtp_encryption, $smtp_username, $smtp_psw;
@@ -702,7 +704,13 @@ function se_send_mail($recipient,$subject,$message,$bcc_admin=false) {
 	$mail->CharSet = 'utf-8';
 	$mail->Subject = "$subject";
 	$mail->Body = "$message";
-	  
+
+	foreach($attachments as $attachment) {
+		if(is_file($attachment)) {
+			$mail->addAttachment($attachment, basename($attachment));
+		}
+	}
+
 	  
 	if(!$mail->send()) {
         $fail = 'Mailer Error: ' . $mail->ErrorInfo;
@@ -842,7 +850,17 @@ function se_send_order_status($recipient,$order,$reason): int|string {
         $build_html_mail = str_replace("$search","$val",$build_html_mail);
     }
 
-    $send_mail = se_send_mail($recipient, $subject, $build_html_mail,true);
+    // the EU notice on the legal guarantee has to reach the customer on a durable
+    // medium - attached to the order confirmation (see the shop settings)
+    $attachments = [];
+    if($reason == 'order_confirmation') {
+        $warranty_notice = se_shop_label_image($se_settings['shop_warranty_notice'] ?? '');
+        if($warranty_notice !== null) {
+            $attachments[] = $warranty_notice['file'];
+        }
+    }
+
+    $send_mail = se_send_mail($recipient, $subject, $build_html_mail, true, $attachments);
     return $send_mail;
 }
 

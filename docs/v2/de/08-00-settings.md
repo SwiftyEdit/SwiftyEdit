@@ -188,6 +188,17 @@ Bestellungen" angezeigt wird. Ohne Wert sind es 14 Tage (die gesetzliche EU-Wide
 wird der Button unabhängig vom Bestellalter immer angezeigt. Das betrifft nur die Sichtbarkeit des
 Buttons - die Seite "Bestellung widerrufen" selbst ist weiterhin jederzeit direkt erreichbar.
 
+### Gewährleistungsmitteilung (EU) {#shop-warranty}
+Seit dem 27.09.2026 müssen Shops, die Waren an Verbraucher verkaufen, die einheitliche
+EU-Mitteilung zur gesetzlichen Gewährleistung anzeigen
+([Durchführungsverordnung (EU) 2025/1960](https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32025R1960)).
+Reine B2B-Shops sind nicht betroffen und lassen das Feld leer.
+
+SwiftyEdit liefert die Grafik bewusst nicht mit. Lade die offizielle Fassung in der Sprache Deines
+Shops in die Medienverwaltung hoch und wähle sie hier aus. Sie wird dann im Warenkorb vollständig
+über dem Bestellbutton angezeigt und an die Bestellbestätigung angehängt. Am besten eignet sich
+eine PNG-Datei. Die Grafik darf nicht verändert werden. Ohne Auswahl wird nichts angezeigt.
+
 ### Steuersätze und Währung {#shop-taxes}
 Du kannst bis zu drei feste Steuersätze festlegen (Steuer #1-#3); jedes Produkt wählt dann individuell
 einen davon aus - eine separate Verwaltung von Steuerklassen gibt es nicht. Die Standardwährung ist ein

@@ -308,6 +308,19 @@ $enable-dark-mode: true;
   }
 }
 
+// Checkboxes and radios are almost invisible in dark mode with the dark
+// border color (e.g. the terms checkbox in the cart) - give the unchecked
+// box the muted text color as its border instead.
+[data-bs-theme="dark"] .form-check-input:not(:checked) {
+  border-color: var(--#{$prefix}secondary-color);
+}
+
+// labels filled from snippets (e.g. the terms in the cart) come as
+// paragraphs - their bottom margin would push the label out of line
+.form-check-label p:last-child {
+  margin-bottom: 0;
+}
+
 .form-control,
 .form-select {
   // Bakes in a literal color otherwise (Bootstrap's own $input-border-color),
@@ -321,7 +334,9 @@ $enable-dark-mode: true;
 // and .btn-outline-secondary, which this theme uses for neutral/utility
 // controls (menu toggles, sort buttons, quantity steppers, ...) where the
 // lift reads as an unintended glitch rather than an affordance.
-.btn:not(.btn-link):not(.btn-outline-secondary) {
+// Toggle buttons (.btn-check + .btn, e.g. the payment methods in the cart)
+// are choices, not calls to action, so they don't lift either.
+.btn:not(.btn-link):not(.btn-outline-secondary):not(.btn-check + .btn) {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {

@@ -40,6 +40,15 @@
         {% endblock %}
     {% endembed %}
 
+    {% embed 'components/settings/section.twig' with {help: help['shop-warranty'], section: 'shop-warranty'} %}
+        {% block fields %}
+            {{ inputs.warranty_notice|raw }}
+            {% if warranty_notice_src %}
+                <img src="{{ warranty_notice_src }}" alt="" class="img-thumbnail" style="max-height: 200px;">
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+
     {% embed 'components/settings/section.twig' with {help: help['shop-taxes'], section: 'shop-taxes'} %}
         {% block fields %}
             <div class="row">

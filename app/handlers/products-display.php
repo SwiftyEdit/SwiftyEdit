@@ -767,6 +767,14 @@ $smarty->assign('product_img_caption', $first_product_img_caption);
 /* all images (array) */
 $smarty->assign('product_show_images', $show_images);
 
+/* EU label of a commercial durability guarantee (Regulation (EU) 2025/1960),
+   shown as a thumbnail that opens the full label */
+$guarantee_label = se_shop_label_image($product_data['product_guarantee_label'] ?? '');
+if ($guarantee_label !== null && $guarantee_label['alt'] === '') {
+    $guarantee_label['alt'] = $lang['label_guarantee_label'];
+}
+$smarty->assign('product_guarantee_label', $guarantee_label);
+
 
 $smarty->assign('product_id', $product_data['id']);
 $smarty->assign('product_title', $product_data['title']);

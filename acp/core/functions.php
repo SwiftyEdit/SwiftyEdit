@@ -221,6 +221,33 @@ function get_all_groups() {
 
 
 /**
+ * images of the media library as paths like they are used in the frontend ("/images/...")
+ * used to pick an image in a select field, e.g. the EU warranty notice (shop settings)
+ * and the guarantee label of a product
+ *
+ * @return array<int, string> sorted list of paths
+ */
+function se_media_image_paths(): array {
+
+	global $db_content;
+
+	$files = $db_content->select("se_media", "media_file", [
+		"media_type[~]" => "image"
+	]);
+
+	$paths = [];
+	foreach(is_array($files) ? $files : [] as $file) {
+		$file = (string) $file;
+		if(str_starts_with($file, '../images/')) {
+			$paths[] = substr($file, 2);
+		}
+	}
+	$paths = array_values(array_unique($paths));
+	sort($paths, SORT_NATURAL | SORT_FLAG_CASE);
+	return $paths;
+}
+
+/**
  * show all images from images folder and it's subfolders
  * optional filter by prefix
  * return array

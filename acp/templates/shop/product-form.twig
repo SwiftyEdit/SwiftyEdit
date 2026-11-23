@@ -120,6 +120,17 @@
                                                 <label class="form-label">{{ lang.label_url }}</label>
                                                 <input class="form-control" name="product_url" type="text" value="{{ product.product_url }}">
                                             </div>
+                                            {# EU label of the manufacturer's durability guarantee, an image of the media library #}
+                                            <div class="mb-1">
+                                                <label class="form-label" for="productGuaranteeLabel">{{ lang.label_product_guarantee_label }}</label>
+                                                <select class="form-select" id="productGuaranteeLabel" name="product_guarantee_label">
+                                                    <option value="">{{ lang.no_image }}</option>
+                                                    {% for path in guarantee_label_options %}
+                                                        <option value="{{ path }}"{% if path == product.product_guarantee_label %} selected{% endif %}>{{ path }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="form-text">{{ lang.label_product_guarantee_label_help }}</div>
+                                            </div>
                                             {# net/gross pair for the price calculation script, only the net price is stored #}
                                             <div class="row g-2 mb-1">
                                                 <div class="col-6">

@@ -102,6 +102,22 @@ $inputs['withdrawal_days'] = se_print_form_input([
     "type" => "number"
 ]);
 
+/* EU notice on the legal guarantee - the shop owner uploads the official graphic */
+
+$warranty_notice_options = [$lang['no_image'] => ''];
+foreach(se_media_image_paths() as $image_path) {
+    $warranty_notice_options[$image_path] = $image_path;
+}
+$inputs['warranty_notice'] = se_print_form_input([
+    "input_name" => "prefs_shop_warranty_notice",
+    "input_value" => $setting('shop_warranty_notice'),
+    "label" => $lang['label_image'],
+    "options" => $warranty_notice_options,
+    "type" => "select"
+]);
+$warranty_notice = se_shop_label_image($setting('shop_warranty_notice'));
+$warranty_notice_src = $warranty_notice['src'] ?? '';
+
 /* taxes and currency */
 
 foreach([
@@ -217,10 +233,11 @@ echo $twig->render('settings/shop.twig', [
     'reader_uri' => '/admin-xhr/settings/read/',
     // titles and help texts of the sections come from the docs
     'help' => se_docs_sections('08-00-settings.md', [
-        'shop-list', 'shop-cart', 'shop-lists', 'shop-guest-orders', 'shop-withdrawal', 'shop-taxes',
+        'shop-list', 'shop-cart', 'shop-lists', 'shop-guest-orders', 'shop-withdrawal', 'shop-warranty', 'shop-taxes',
         'shop-shipping', 'shop-delivery-plugins', 'shop-payment-plugins', 'shop-delivery-areas', 'shop-business'
     ]),
     'inputs' => $inputs,
+    'warranty_notice_src' => $warranty_notice_src,
     'delivery_plugins' => $plugin_list(se_get_delivery_addons(), $setting('delivery_addons')),
     'payment_plugins' => $plugin_list(se_get_payment_addons(), $setting('payment_addons'))
 ]);

@@ -177,6 +177,17 @@ Without a value it is 14 days (the EU-mandated withdrawal period); enter `0` to 
 regardless of order age. This only affects the button's visibility, not the "Order Withdrawal" page
 itself, which is always reachable directly.
 
+### Legal guarantee notice (EU) {#shop-warranty}
+Since 27 September 2026, shops selling goods to consumers have to show the harmonised EU notice on
+the legal guarantee
+([Implementing Regulation (EU) 2025/1960](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32025R1960)).
+B2B-only shops are not affected and leave the field empty.
+
+SwiftyEdit deliberately ships no graphic. Upload the official version in your shop's language to
+the media library and select it here. It is then shown in full in the cart above the order button
+and attached to the order confirmation. A PNG file works best. The graphic must not be altered.
+Without a selection nothing is shown.
+
 ### Tax rates and currency {#shop-taxes}
 You can define up to three flat tax rates (tax #1-#3); each product then picks one of them
 individually — there is no separate tax-class management. The default currency is a free-text field

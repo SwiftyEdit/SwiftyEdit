@@ -2689,3 +2689,56 @@ function se_get_products_keywords() {
 
     return $count_keywords;
 }
+/**
+ * An image of the media library used as an EU consumer label: the harmonised
+ * notice on the legal guarantee (shop setting "shop_warranty_notice") or the
+ * harmonised label of a commercial durability guarantee (product field
+ * "product_guarantee_label"), see Regulation (EU) 2025/1960.
+ *
+ * The core ships no label graphics on purpose - shop owners upload the
+ * official files themselves, so an outdated graphic is never shipped.
+ *
+ * @param string|null $path as stored by the ACP, "/images/..." (older "../images/..." is accepted)
+ * @return array{src: string, file: string, alt: string}|null null if empty or not an existing image of the media library
+ */
+function se_shop_label_image(?string $path): ?array {
+
+    global $db_content, $languagePack;
+
+    $path = trim(html_entity_decode((string) $path, ENT_QUOTES, 'UTF-8'));
+    if (str_starts_with($path, '../images/')) {
+        $path = substr($path, 2);
+    }
+    if (!str_starts_with($path, '/images/') || str_contains($path, '..')) {
+        return null;
+    }
+
+    $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    if (!in_array($extension, ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'], true)) {
+        return null;
+    }
+
+    $file = SE_PUBLIC.'/assets'.$path;
+    if (!is_file($file)) {
+        return null;
+    }
+
+    // alt text of the media library (current language first)
+    $media_file = '..'.$path;
+    $alt = (string) $db_content->get("se_media", "media_alt", [
+        "media_file" => $media_file,
+        "media_lang" => (string) $languagePack
+    ]);
+    if ($alt === '') {
+        $alt = (string) $db_content->get("se_media", "media_alt", [
+            "media_file" => $media_file,
+            "media_alt[!]" => ''
+        ]);
+    }
+
+    return [
+        'src' => $path,
+        'file' => $file,
+        'alt' => $alt
+    ];
+}

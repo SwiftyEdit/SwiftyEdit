@@ -89,6 +89,8 @@ $cols = array(
     "product_supplier" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_ean" => "VARCHAR(13) NOT NULL DEFAULT ''",
     "product_mpn" => "VARCHAR(100) NOT NULL DEFAULT ''",
+    /* EU label of a commercial durability guarantee, an image of the media library ("/images/...") */
+    "product_guarantee_label" => "VARCHAR(255) NOT NULL DEFAULT ''",
     "product_url" => "VARCHAR(100) NOT NULL DEFAULT ''",
     "product_tax" => 'INTEGER(12)',
     "product_price_manufacturer" => "VARCHAR(100) NOT NULL DEFAULT ''",
