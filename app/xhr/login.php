@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * frontend login (form in loginbox.tpl)
+ *
+ * @var object $smarty
+ * @var array $se_settings
+ */
+
 // login only per POST - anything else (e.g. a plain GET) has nothing to check
 if($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -22,7 +29,15 @@ $login_psw = is_string($_POST['login_psw'] ?? null) ? $_POST['login_psw'] : '';
 $login = se_user_login($login_name,$login_psw,$acp=FALSE);
 
 if($login === 'failed') {
-    header('HX-Location: {"path":"/xhr/se/statusbox/?error=login_failed","target":"#user-box","swap":"innerHTML"}');
+    // answer with the login box and its error message right away - the form's
+    // hx-target (#user-box) takes it. No HX-Location here: htmx would push the
+    // XHR url into the browser history and a reload would end on /xhr/se/statusbox/
+    // se_user_login() started a new session with a new CSRF token, so the
+    // hidden field from bootstrap.php is outdated and has to be rebuilt
+    $hidden_csrf_token = '<input type="hidden" name="csrf_token" value="'.$_SESSION['token'].'">';
+    $smarty->assign('hidden_csrf_token', $hidden_csrf_token, true);
+    $_GET['error'] = 'login_failed';
+    require __DIR__.'/statusbox.php';
 } else {
     // success, reload the status box
     header("HX-Trigger: update_user_status");

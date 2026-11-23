@@ -206,6 +206,15 @@ function se_user_login(string $user, string $psw, $acp=NULL) {
             se_handle_failed_logins($user_nick);
         }
         session_destroy();
+
+        // start a fresh, empty session with a new CSRF token right away - the
+        // login form shown after a failed attempt (e.g. acp/login.php, same
+        // request) must carry a token that exists on the server, otherwise
+        // the next attempt ends with "form has expired"
+        $_SESSION = [];
+        se_session_start();
+        se_generate_token();
+
         return "failed";
     }
 }
